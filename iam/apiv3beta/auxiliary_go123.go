@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,12 @@ import (
 	iampb "cloud.google.com/go/iam/apiv3beta/iampb"
 	"github.com/googleapis/gax-go/v2/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccessPolicyIterator) All() iter.Seq2[*iampb.AccessPolicy, error] {
+	return iterator.RangeAdapter(it.Next)
+}
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.

@@ -41,6 +41,7 @@ import (
 	"sort"
 	"strconv"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -59,13 +60,13 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"golang.org/x/oauth2/google"
-	"golang.org/x/sync/errgroup"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	itesting "google.golang.org/api/iterator/testing"
@@ -140,6 +141,11 @@ func TestMain(m *testing.M) {
 // Return a cleanup function.
 func initIntegrationTest() func() error {
 	flag.Parse() // needed for testing.Short()
+	if os.Getenv("GOOGLE_APPLICATION_CREDENTIALS") == "" {
+		if key := os.Getenv("GCLOUD_TESTS_GOLANG_KEY"); key != "" {
+			os.Setenv("GOOGLE_APPLICATION_CREDENTIALS", key)
+		}
+	}
 	switch {
 	case testing.Short() && *record:
 		log.Fatal("cannot combine -short and -record")
@@ -413,8 +419,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 		reader.Add(&res[0].buf, 0, int64(len(content)), callback)
 		// Read from end. We will read the last 10 bytes.
 		reader.Add(&res[1].buf, -10, 0, callback1)
-		// Read from Front. This will read the starting 10 bytes.
-		reader.Add(&res[2].buf, 0, 10, callback2)
+		// Read from Front. This will read the whole object.
+		reader.Add(&res[2].buf, 0, 0, callback2)
 		reader.Wait()
 		for _, k := range res {
 			if k.offset < 0 {
@@ -425,8 +431,8 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 				want = content[k.offset : k.offset+k.limit]
 			}
 			if !bytes.Equal(k.buf.Bytes(), want) {
-				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
-					k.offset, k.limit, k.buf.Bytes(), want)
+				t.Errorf("Error in read range offset %v, limit %v, got: %v bytes; want: %v bytes",
+					k.offset, k.limit, len(k.buf.Bytes()), len(want))
 			}
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
@@ -455,7 +461,8 @@ func TestIntegration_MRDManyReads(t *testing.T) {
 				log.Printf("failed to delete test object: %v", err)
 			}
 		}()
-		reader, err := obj.NewMultiRangeDownloader(ctx)
+		reader, err := obj.NewMultiRangeDownloader(ctx, WithMinConnections(3))
+		manager := reader.impl.(*multiRangeDownloaderManager)
 		if err != nil {
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
@@ -471,6 +478,18 @@ func TestIntegration_MRDManyReads(t *testing.T) {
 			})
 		}
 		reader.Wait()
+		// Check if ranges have been distributed across all streams
+		for id, stream := range manager.streams {
+			if stream.statsRangeBytes == 0 ||
+				stream.statsRanges == 0 {
+				t.Errorf("stream %v received no ranges: statsRanges: %v, statsRangeBytes: %v", id, stream.statsRanges, stream.statsRangeBytes)
+			}
+			if stream.totalRangeBytes != 0 ||
+				stream.totalRanges != 0 {
+				t.Errorf("totalRangeBytes or totalRanges for stream: %v is not zero. totalRangeBytes: %v, totalRanges: %v", id, stream.totalRangeBytes, stream.totalRanges)
+			}
+		}
+
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
 		}
@@ -525,14 +544,306 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 		}
 	})
 }
+func TestIntegration_MRDWithReadHandle(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		const (
+			dataSize       = 1000
+			offset         = 0
+			limit          = 100
+			negativeOffset = -200
+		)
+
+		// Generate random content for testing.
+		content := make([]byte, dataSize)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MRDWithReadHandle"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatalf("Failed to upload test object %q: %v", objName, err)
+		}
+		// Ensure cleanup after the test.
+		defer func() {
+			if err := obj.Delete(ctx); err != nil {
+				t.Logf("Failed to delete test object %q: %v", objName, err)
+			}
+		}()
+
+		mrd, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader: %v", err)
+		}
+		readHandle := mrd.GetHandle()
+		obj = obj.ReadHandle(readHandle)
+		mrd2, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("Failed to create MultiRangeDownloader with read handle: %v", err)
+		}
+
+		// Perform the read operation.
+		var res1, res2, res3, res4 multiRangeDownloaderOutput
+		mrd.Add(&res1.buf, offset, limit, func(x, y int64, err error) {
+			res1.offset = x
+			res1.limit = y
+			res1.err = err
+		})
+		mrd2.Add(&res2.buf, offset, limit, func(x, y int64, err error) {
+			res2.offset = x
+			res2.limit = y
+			res2.err = err
+		})
+		mrd2.Add(&res3.buf, negativeOffset, limit, func(x, y int64, err error) {
+			res3.offset = x
+			res3.limit = y
+			res3.err = err
+		})
+		mrd2.Add(&res4.buf, negativeOffset, 0, func(x, y int64, err error) {
+			res4.offset = x
+			res4.limit = y
+			res4.err = err
+		})
+
+		mrd.Wait()
+		mrd2.Wait()
+
+		if res1.err != nil {
+			t.Fatalf("mrd.Add callback returned error: %v", res1.err)
+		}
+		if res2.err != nil {
+			t.Fatalf("mrd2.Add callback returned error for res2: %v", res2.err)
+		}
+		if res3.err != nil {
+			t.Fatalf("mrd2.Add callback returned error for res3: %v", res3.err)
+		}
+
+		// Validate results for mrd with read handle.
+		want := content[offset : offset+limit]
+
+		if res2.offset != offset || res2.limit != limit {
+			t.Errorf("mrd2.Add callback offset/limit got %d/%d, want %d/%d", res2.offset, res2.limit, offset, limit)
+		}
+		if got := res2.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %d bytes, want %d bytes", len(got), len(want))
+		}
+
+		want = content[max(0, dataSize+negativeOffset):min(dataSize, max(0, dataSize+negativeOffset)+limit)]
+		if got := res3.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		want = content[max(0, dataSize+negativeOffset):]
+		if got := res4.buf.Bytes(); !bytes.Equal(got, want) {
+			t.Errorf("mrd2 downloaded content mismatch. got %v bytes, want %v bytes. %v", got, want, content)
+		}
+
+		if err := mrd.Close(); err != nil {
+			t.Fatalf("Error while closing reader: %v", err)
+		}
+		if err := mrd2.Close(); err != nil {
+			t.Fatalf("Error while closing reader created with read handle: %v", err)
+		}
+	})
+}
+
+func TestIntegration_MRDScaleUpConnections(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 1<<10)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "MultiRangeDownloaderConcurrentReads"
+
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		t.Cleanup(func() {
+			if err := obj.Delete(context.Background()); err != nil {
+				log.Printf("failed to delete test object: %v", err)
+			}
+		})
+		maxConnections := 2
+		// Initializing targetPendingBytes to 1 to make sure manager
+		// definitely scales up with any load.
+		reader, err := obj.NewMultiRangeDownloader(ctx, WithMaxConnections(maxConnections), WithTargetPendingBytes(1))
+		manager := reader.impl.(*multiRangeDownloaderManager)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+
+		const (
+			addCount  = 100
+			rangeSize = 100
+		)
+
+		type rangeRes struct {
+			buf       bytes.Buffer
+			offset    int64
+			limit     int64
+			gotOffset int64
+			gotLimit  int64
+			err       error
+		}
+		results := make([]*rangeRes, addCount)
+
+		var wg sync.WaitGroup
+
+		for i := 0; i < addCount; i++ {
+			wg.Add(1)
+			// Randomize offset/limit slightly to ensure varied request patterns.
+			offset := int64(0)
+			limit := int64(rangeSize)
+
+			r := &rangeRes{offset: offset, limit: limit}
+			results[i] = r
+
+			reader.Add(&r.buf, offset, limit, func(o, l int64, err error) {
+				r.err = err
+				r.gotOffset = o
+				r.gotLimit = l
+				wg.Done()
+			})
+
+			// Wait for each batch of maxConnections to finish before adding more.
+			// This gives the event loop natural breaks to process stream creation
+			// and deterministic scale-up behavior without being flooded.
+			if (i+1)%maxConnections == 0 {
+				wg.Wait()
+			}
+		}
+
+		// Wait for all goroutines to finish adding their ranges.
+		wg.Wait()
+		// Wait for all reads to complete.
+		reader.Wait()
+
+		if manager.streamIDCounter != maxConnections {
+			t.Fatalf("Manager did not scale up to maxConnections; got %d, want %d", manager.streamIDCounter, maxConnections)
+		}
+		if err = reader.Close(); err != nil {
+			t.Fatalf("Error while closing reader: %v", err)
+		}
+
+		for id, res := range results {
+			if res.err != nil {
+				t.Errorf("Range %d (offset %d) failed: %v", id, res.offset, res.err)
+				continue
+			}
+			if res.gotOffset != res.offset || res.gotLimit != res.limit {
+				t.Errorf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+					id, res.gotOffset, res.gotLimit, res.offset, res.limit)
+			}
+			want := content[res.offset : res.offset+res.limit]
+			if !bytes.Equal(res.buf.Bytes(), want) {
+				t.Errorf("Data mismatch in range %d: got %d bytes, want %d bytes",
+					id, res.buf.Len(), len(want))
+			}
+		}
+	})
+}
+
+func TestIntegration_MRDStreamFailureSurvival(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 1<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "mrd-survival"
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer obj.Delete(ctx)
+
+		tests := []struct {
+			name           string
+			minConnections int
+			WantMrdError   bool
+		}{
+			{
+				name:           "multi stream",
+				minConnections: 2,
+				WantMrdError:   false,
+			},
+			{
+				name:           "single stream",
+				minConnections: 1,
+				WantMrdError:   true,
+			},
+		}
+		for _, tc := range tests {
+			t.Run(tc.name, func(t *testing.T) {
+
+				reader, err := obj.NewMultiRangeDownloader(ctx, WithMinConnections(tc.minConnections))
+				if err != nil {
+					t.Fatalf("NewMultiRangeDownloader: %v", err)
+				}
+				type rangeRes struct {
+					buf       bytes.Buffer
+					offset    int64
+					limit     int64
+					gotOffset int64
+					gotLimit  int64
+					err       error
+				}
+				results := make([]*rangeRes, 1000)
+				var wg sync.WaitGroup
+				wg.Add(len(results))
+
+				for i := 0; i < 1000; i++ {
+					offset, limit := 0, 100
+					// Inject an out of range error.
+					if i == 100 {
+						offset = 1 << 30
+					}
+					r := &rangeRes{offset: int64(offset), limit: int64(limit)}
+					results[i] = r
+					reader.Add(&r.buf, results[i].offset, results[i].limit, func(o int64, l int64, err error) {
+						r.err = err
+						r.gotOffset = o
+						r.gotLimit = l
+						wg.Done()
+					})
+				}
+				wg.Wait()
+				reader.Wait()
+				mrdErr := reader.Close()
+				// Manager should still be alive incase of multistream.
+				if (mrdErr != nil) != tc.WantMrdError {
+					t.Fatalf("WantMrdError: got %v, want %v", mrdErr != nil, tc.WantMrdError)
+				}
+				if tc.WantMrdError {
+					return
+				}
+				for id, res := range results {
+					// We could see an EOF if receive loop sees context error before receiviing error
+					// from stream with stream.RecvMsg().
+					if res.err != nil && (status.Code(res.err) != codes.OutOfRange && res.err != io.EOF) {
+						t.Fatalf("Range %d error mismatch. want: (%v or %v); got code: %v error: %v", id, io.EOF, codes.OutOfRange, status.Code(res.err), res.err)
+					} else if res.err != nil {
+						continue
+					}
+					if res.gotOffset != res.offset || res.gotLimit != res.limit {
+						t.Fatalf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+							id, res.gotOffset, res.gotLimit, res.offset, res.limit)
+					}
+					want := content[res.offset : res.offset+res.limit]
+					if !bytes.Equal(res.buf.Bytes(), want) {
+						t.Errorf("Data mismatch in range %d: got %d bytes, want %d bytes",
+							id, res.buf.Len(), len(want))
+					}
+				}
+			})
+		}
+	})
+}
 
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
 	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		content := make([]byte, 5<<20)
+		// Use a 10MB object to allow for many non-overlapping range requests.
+		content := make([]byte, 10<<20)
 		rand.New(rand.NewSource(0)).Read(content)
-		objName := "MultiRangeDownloader"
+		objName := "MultiRangeDownloaderConcurrentReads"
 
 		// Upload test data.
 		obj := client.Bucket(bucket).Object(objName)
@@ -549,64 +860,140 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 			t.Fatalf("NewMultiRangeDownloader: %v", err)
 		}
 
-		// Create a top-level errgroup for each goroutine
-		eG, ctx := errgroup.WithContext(ctx)
-		goRoutineCount := 10
+		// Use 50 goroutines with 10 adds each (500 total).
+		// This exceeds the internal session reqC buffer of 100, stressing the manager's event loop.
+		goRoutineCount := 50
 		perGoRoutineAddCount := 10
-		res := make([]multiRangeDownloaderOutput, goRoutineCount*perGoRoutineAddCount)
 
-		// Create multiple go routines to read concurrently.
+		const (
+			minRangeSize      = 1024 // Minimum size of a range request.
+			maxExtraRangeSize = 2048 // Maximum additional size added to minRangeSize.
+			offsetStep        = 2048 // Distance between the start of consecutive range requests.
+
+			// safeEndPadding ensures that the calculated offset + limit does not exceed
+			// the total length of the content. Since the maximum limit is
+			// minRangeSize + maxExtraRangeSize (3072), a padding of 4096 is safe.
+			safeEndPadding = 4096
+		)
+
+		type rangeRes struct {
+			buf       bytes.Buffer
+			offset    int64
+			limit     int64
+			gotOffset int64
+			gotLimit  int64
+			err       error
+		}
+		results := make([]*rangeRes, goRoutineCount*perGoRoutineAddCount)
+
+		var wg sync.WaitGroup
+		wg.Add(len(results))
+
 		for i := 0; i < goRoutineCount; i++ {
-			groupID := i
-			eG.Go(func() error {
-
-				// Subgroup for tasks within this goroutine
-				subGroup, _ := errgroup.WithContext(ctx)
-
+			go func(gID int) {
 				for j := 0; j < perGoRoutineAddCount; j++ {
-					taskID := perGoRoutineAddCount*groupID + j
-					subGroup.Go(func() error {
-						// Use a channel to receive the callback results
-						done := make(chan error, 1)
+					taskID := gID*perGoRoutineAddCount + j
+					// Randomize offset/limit slightly to ensure varied request patterns.
+					offset := int64((taskID * offsetStep) % (len(content) - safeEndPadding))
+					limit := int64(minRangeSize + rand.Intn(maxExtraRangeSize))
 
-						reader.Add(&res[taskID].buf, 0, int64(len(content)), func(x, y int64, err error) {
-							res[taskID].offset = x
-							res[taskID].limit = y
-							res[taskID].err = err
-							// Send each callback result to subGroup.
-							done <- err
-						})
-						return <-done
+					r := &rangeRes{offset: offset, limit: limit}
+					results[taskID] = r
+
+					reader.Add(&r.buf, offset, limit, func(o, l int64, err error) {
+						r.err = err
+						r.gotOffset = o
+						r.gotLimit = l
+						wg.Done()
 					})
 				}
-				// Wait for all tasks in current sub-group to complete to send result to main error group.
-				return subGroup.Wait()
-			})
+			}(i)
 		}
 
-		// Wait for all top-level goroutines to complete
-		if err := eG.Wait(); err != nil {
-			t.Errorf("Possible deadlock or race condition detected during concurrent Add calls: %v\n", err)
-		}
-
+		// Wait for all goroutines to finish adding their ranges.
+		wg.Wait()
+		// Wait for all reads to complete.
 		reader.Wait()
+
 		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+			t.Fatalf("Error while closing reader: %v", err)
 		}
-		for id, k := range res {
-			if k.err != nil {
-				t.Fatalf("reading range %v: %v", id, k.err)
+
+		for id, res := range results {
+			if res.err != nil {
+				t.Errorf("Range %d (offset %d) failed: %v", id, res.offset, res.err)
+				continue
 			}
-			if got, want := k.offset, 0; got != int64(want) {
-				t.Errorf("range id %v: got callback offset %v, want %v", id, got, want)
+			if res.gotOffset != res.offset || res.gotLimit != res.limit {
+				t.Errorf("Range %d: got callback offset/limit (%d, %d), want (%d, %d)",
+					id, res.gotOffset, res.gotLimit, res.offset, res.limit)
 			}
-			if got, want := k.limit, len(content); got != int64(want) {
-				t.Errorf("range id %v: got callback limit %v, want %v", id, got, want)
+			want := content[res.offset : res.offset+res.limit]
+			if !bytes.Equal(res.buf.Bytes(), want) {
+				t.Errorf("Data mismatch in range %d: got %d bytes, want %d bytes",
+					id, res.buf.Len(), len(want))
 			}
-			if !bytes.Equal(k.buf.Bytes(), content) {
-				t.Errorf("content mismatch in read range %v: got %v bytes, want %v bytes",
-					id, len(k.buf.Bytes()), len(content))
+		}
+	})
+}
+
+func TestIntegration_MRDNoNewStreamsAfterPermanentError(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		content := make([]byte, 5<<20)
+		rand.New(rand.NewSource(0)).Read(content)
+		objName := "mrdnonretry"
+		// Upload test data.
+		obj := client.Bucket(bucket).Object(objName)
+		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
+			t.Fatal(err)
+		}
+		defer func() {
+			// Try delete again if test fails to delete the object and ignore the error.
+			_ = obj.Delete(ctx)
+		}()
+		reader, err := obj.NewMultiRangeDownloader(ctx)
+		if err != nil {
+			t.Fatalf("NewMultiRangeDownloader: %v", err)
+		}
+		manager := reader.impl.(*multiRangeDownloaderManager)
+		res := make([]multiRangeDownloaderOutput, 2)
+		callback := func(x, y int64, err error) {
+			res[0].offset = x
+			res[0].limit = y
+			res[0].err = err
+		}
+		callback1 := func(x, y int64, err error) {
+			res[1].offset = x
+			res[1].limit = y
+			res[1].err = err
+		}
+		// Read All At Once.
+		reader.Add(&res[0].buf, 0, 0, callback)
+		// Manually delete the object so MRD receives permanent error.
+		err = obj.Delete(ctx)
+		if err != nil {
+			t.Fatalf("Could not delete object during MRD download: %v", err)
+		}
+		// More permanent errors.
+		reader.Add(&res[1].buf, int64(2*len(content)), 0, callback1)
+		reader.Wait()
+		for i, k := range res {
+			// if we get nil error for any callback other than first, that should be an error.
+			if i == 0 && k.err == nil && !bytes.Equal(content, k.buf.Bytes()) {
+				t.Errorf("Error in read range offset %v, limit %v, got: %v; want: %v",
+					k.offset, k.limit, len(k.buf.Bytes()), len(content))
 			}
+			if k.err == nil && i != 0 {
+				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
+			}
+		}
+		// Simulate wait so we can check if new streams have been created
+		time.Sleep(5 * time.Second)
+		if manager.streamIDCounter > 1 {
+			t.Fatalf("Manager has tried to create more streams after a permanent error. manager.streamIDCounter: %v", manager.streamIDCounter)
+		}
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
 		}
 	})
 }
@@ -665,8 +1052,9 @@ func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
 				t.Errorf("read range %v to %v want err: nil, got: %v", k.offset, k.limit, k.err)
 			}
 		}
-		if err = reader.Close(); err != nil {
-			t.Fatalf("Error while closing reader %v", err)
+		time.Sleep(10 * time.Second)
+		if err = reader.Close(); err == nil {
+			t.Fatalf("Expected error while closing reader, got nil")
 		}
 	})
 }
@@ -758,6 +1146,71 @@ func TestIntegration_DoNotDetectDirectConnectivityWhenDisabled(t *testing.T) {
 	})
 }
 
+// Test handles the case when Direct Connectivity is enforced but disabled
+// client-side. The GCS server must return an error because the request is not
+// routed via DirectPath.
+func TestIntegration_DirectConnectivityEnforcedError(t *testing.T) {
+	ctx := skipHTTP("grpc only test")
+	multiTransportTest(skipExtraReadAPIs(ctx, "no reads in test"), t, func(t *testing.T, ctx context.Context, _ string, prefix string, _ *Client) {
+		// Detect if we are running in GCE and get the region.
+		detectedAttrs, err := resource.New(ctx, resource.WithDetectors(gcp.NewDetector()))
+		if err != nil {
+			t.Fatalf("resource.New: %v", err)
+		}
+		attrs := detectedAttrs.Set()
+		if v, exists := attrs.Value("cloud.platform"); !exists || v.AsString() != "gcp_compute_engine" {
+			t.Skip("only testable in a GCE instance")
+		}
+		regionVal, exists := attrs.Value("cloud.region")
+		if !exists {
+			t.Skip("could not detect GCE region")
+		}
+		region := regionVal.AsString()
+		t.Logf("Detected GCE region: %q", region)
+
+		// Create a temporary client to set up the bucket in the same region.
+		client := testConfigGRPC(ctx, t)
+		defer client.Close()
+		bucketName := prefix + uidSpace.New()
+		bucket := client.Bucket(bucketName)
+		if err := bucket.Create(ctx, testutil.ProjID(), &BucketAttrs{Location: region}); err != nil {
+			t.Fatalf("failed to create bucket in region %q: %v", region, err)
+		}
+		t.Cleanup(func() {
+			bucket.Delete(ctx)
+		})
+
+		// Disable DirectPath client-side using environment variable.
+		t.Setenv("GOOGLE_CLOUD_DISABLE_DIRECT_PATH", "true")
+
+		// Create a client with Direct Connectivity Enforced.
+		enforcedClient, err := NewGRPCClient(ctx,
+			experimental.WithDirectConnectivityEnforced(),
+		)
+		if err != nil {
+			t.Fatalf("failed to create enforced client: %v", err)
+		}
+		defer enforcedClient.Close()
+
+		// Try writing an object and ensure it fails.
+		obj := enforcedClient.Bucket(bucketName).Object("test-object")
+		w := obj.NewWriter(ctx)
+		_, err = w.Write([]byte("hello world"))
+		if closeErr := w.Close(); err == nil {
+			err = closeErr
+		}
+		if err == nil {
+			t.Fatal("expected error when direct connectivity is enforced but disabled client-side, got nil")
+		}
+
+		// Verify that the error is FailedPrecondition (400 / FailedPrecondition).
+		t.Logf("Got expected error: %v", err)
+		if gotCode := status.Code(err); gotCode != codes.FailedPrecondition {
+			t.Errorf("got error code %v, want FailedPrecondition", gotCode)
+		}
+	})
+}
+
 // TestIntegration_MetricsEnablement does not use multiTransportTest because it
 // only has to run once, and creating the manual reader multiple times can
 // cause it to be registered multiple times to packages that enable by default.
@@ -810,6 +1263,176 @@ func TestIntegration_MetricsEnablement(t *testing.T) {
 
 	if err := mr.Shutdown(ctx); err != nil {
 		t.Fatalf("manual reader shutdown: %v", err)
+	}
+}
+
+func TestIntegration_OtelMetricsEnablement(t *testing.T) {
+	if testing.Short() {
+		t.Skip("Integration tests skipped in short mode")
+	}
+
+	ctx := context.Background()
+	prefix := grpcTestPrefix
+
+	for _, transportType := range []string{"http", "grpc"} {
+		t.Run(transportType, func(t *testing.T) {
+			res, err := resource.New(ctx,
+				resource.WithAttributes(
+					attribute.String("gcp.client.service", "storage"),
+					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+				),
+			)
+			if err != nil {
+				t.Fatalf("resource.New: %v", err)
+			}
+			mr := metric.NewManualReader()
+			provider := metric.NewMeterProvider(
+				metric.WithReader(mr),
+				metric.WithResource(res),
+			)
+			defer provider.Shutdown(ctx)
+
+			var client *Client
+			opts := []option.ClientOption{
+				experimental.WithOtelMetrics(),
+				experimental.WithOtelDebugMetrics(),
+				experimental.WithMeterProvider(provider),
+			}
+
+			if transportType == "grpc" {
+				client = testConfigGRPC(ctx, t, opts...)
+			} else {
+				client = testConfig(ctx, t, opts...)
+			}
+			defer client.Close()
+
+			bucketName := prefix + uidSpace.New()
+			b := client.Bucket(bucketName)
+
+			if err := b.Create(ctx, testutil.ProjID(), nil); err != nil {
+				t.Fatalf("BucketHandle.Create(%q): %v", bucketName, err)
+			}
+			defer b.Delete(ctx)
+
+			it := b.Objects(ctx, nil)
+			_, err = it.Next()
+			if err != iterator.Done {
+				t.Errorf("Objects.Next: expected iterator.Done got %v", err)
+			}
+
+			rm := metricdata.ResourceMetrics{}
+			if err := mr.Collect(ctx, &rm); err != nil {
+				t.Fatalf("ManualReader.Collect: %v", err)
+			}
+
+			// Validate resource attributes.
+			resAttrs := make(map[string]string)
+			for _, attr := range rm.Resource.Attributes() {
+				resAttrs[string(attr.Key)] = attr.Value.Emit()
+			}
+			if resAttrs["gcp.client.service"] != "storage" {
+				t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
+			}
+			if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
+				t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
+			}
+
+			// Group metrics by name.
+			metricsMap := make(map[string]metricdata.Metrics)
+			for _, sm := range rm.ScopeMetrics {
+				for _, m := range sm.Metrics {
+					metricsMap[m.Name] = m
+				}
+			}
+
+			// Check transport-level duration metric.
+			expectedTransportMetric := "rpc.client.call.duration"
+			if transportType == "http" {
+				expectedTransportMetric = "http.client.request.duration"
+			}
+
+			expectedHistograms := []string{
+				expectedTransportMetric,
+				"gcp.client.request.duration",
+			}
+			expectedSums := []string{
+				"gcp.storage.client.operations",
+				"gcp.storage.client.active_requests",
+			}
+			expectedNetworkMetrics := []string{
+				"gcp.storage.client.network.tcp.connect.duration",
+				"gcp.storage.client.network.tls.handshake.duration",
+			}
+			if transportType == "http" {
+				expectedNetworkMetrics = append(expectedNetworkMetrics, "gcp.storage.client.network.dns.lookup.duration")
+			}
+
+			// gfe.duration might not be strictly populated locally, but check it if present.
+			if m, ok := metricsMap["gcp.storage.client.gfe.duration"]; ok {
+				if hist, ok := m.Data.(metricdata.Histogram[float64]); !ok {
+					t.Errorf("expected Histogram data for gfe.duration, got %T", m.Data)
+				} else if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for gcp.storage.client.gfe.duration")
+				}
+			}
+
+			for _, name := range expectedHistograms {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+				}
+			}
+
+			for _, name := range expectedSums {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				_, ok = m.Data.(metricdata.Sum[int64])
+				if !ok {
+					t.Errorf("expected Sum data for %q, got %T", name, m.Data)
+				}
+			}
+
+			for _, name := range expectedNetworkMetrics {
+				m, ok := metricsMap[name]
+				if !ok {
+					t.Errorf("expected metric %q not found", name)
+					continue
+				}
+				hist, ok := m.Data.(metricdata.Histogram[float64])
+				if !ok {
+					t.Errorf("expected Histogram data for %q, got %T", name, m.Data)
+					continue
+				}
+				if len(hist.DataPoints) == 0 {
+					t.Errorf("expected at least 1 datapoint for %q", name)
+					continue
+				}
+
+				dp := hist.DataPoints[0]
+				attrs := make(map[string]string)
+				for _, kv := range dp.Attributes.ToSlice() {
+					attrs[string(kv.Key)] = kv.Value.Emit()
+				}
+				if attrs["server.address"] == "" {
+					t.Errorf("expected non-empty server.address for %q", name)
+				}
+				if attrs["rpc.system.name"] != transportType {
+					t.Errorf("expected rpc.system.name = %q for %q, got %q", transportType, name, attrs["rpc.system.name"])
+				}
+			}
+		})
 	}
 }
 
@@ -1847,6 +2470,8 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 
 func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 	ctx := skipZonalBucket(context.Background(), "Test for resumable and oneshot writers")
+	ctx = skipExtraReadAPIs(ctx, "Test for uploads")
+
 	h := testHelper{t}
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		testCases := []struct {
@@ -1857,6 +2482,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 			disableAutoChecksum bool
 			incorrectChecksum   bool
 			wantErr             bool
+			sendMD5             bool
 		}{
 			{
 				name:       "oneshot with user-sent CRC32C",
@@ -1880,6 +2506,24 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				content:    bytes.Repeat([]byte("a"), 1*MiB),
 				chunkSize:  256 * 1024,
 				sendCRC32C: true,
+			},
+			{
+				name:      "resumable with user-sent MD5",
+				content:   bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize: 256 * 1024,
+				sendMD5:   true,
+			},
+			{
+				name:       "resumable with user-sent MD5 & CRC32C",
+				content:    bytes.Repeat([]byte("a"), 1*MiB),
+				chunkSize:  256 * 1024,
+				sendMD5:    true,
+				sendCRC32C: true,
+			},
+			{
+				name:      "small uploads - data size < chunk size with default CRC32C",
+				content:   bytes.Repeat([]byte("a"), 200*1024),
+				chunkSize: 256 * 1024,
 			},
 			{
 				name:      "resumable with default CRC32",
@@ -1918,6 +2562,10 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 					w.CRC32C = correctCRC32C + 1
 				}
 				w.DisableAutoChecksum = tc.disableAutoChecksum
+				if tc.sendMD5 {
+					md5Sum := md5.Sum(tc.content)
+					w.MD5 = md5Sum[:]
+				}
 
 				if _, err := w.Write(tc.content); err != nil {
 					t.Fatalf("Writer.Write: %v", err)
@@ -1932,6 +2580,154 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				if err != nil {
 					t.Fatalf("Writer.Close: %v", err)
 				}
+				// Verify content.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					if len(gotContent) == len(tc.content) {
+						t.Errorf("content mismatch: lengths match (%d bytes) but bytes differ", len(gotContent))
+					} else {
+						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					}
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
+	multiTransportTest(skipAllButZonal(context.Background(), "Test for appendable writes"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+		testCases := []struct {
+			name               string
+			content            []byte
+			finalizeOnClose    bool
+			sendCRC32C         bool
+			incorrectSendCRC   bool
+			setAppendFinalCRC  bool
+			incorrectAppendCRC bool
+			wantErr            bool
+		}{
+			{
+				name:              "append with correct final CRC. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    true,
+				wantErr:            true,
+			},
+			{
+				name:               "append with incorrect AppendFinalCRC32C. Don't finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				finalizeOnClose:    false,
+			},
+			{
+				name:              "append with both SendCRC32C and AppendFinalCRC32C correct. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				setAppendFinalCRC: true,
+				finalizeOnClose:   true,
+			},
+			{
+				name:               "append with correct SendCRC32C but incorrect AppendFinalCRC32C. Finalize",
+				content:            bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:         true,
+				setAppendFinalCRC:  true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+				finalizeOnClose:    true,
+			},
+			{
+				name:              "append with incorrect SendCRC32C but correct AppendFinalCRC32C. Finalize",
+				content:           bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:        true,
+				incorrectSendCRC:  true,
+				setAppendFinalCRC: true,
+				wantErr:           false,
+				finalizeOnClose:   true,
+			},
+			{
+				name:            "append with correct SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:         bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:      true,
+				finalizeOnClose: true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  true,
+				wantErr:          true,
+			},
+			{
+				name:             "append with incorrect SendCRC32C but no AppendFinalCRC32C. Don't finalize",
+				content:          bytes.Repeat([]byte("a"), 1*MiB),
+				sendCRC32C:       true,
+				incorrectSendCRC: true,
+				finalizeOnClose:  false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				correctCRC32C := crc32.Checksum(tc.content, crc32cTable)
+				obj := client.Bucket(bucket).Object(uidSpaceObjects.New())
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.Append = true
+				w.FinalizeOnClose = tc.finalizeOnClose
+				if tc.sendCRC32C {
+					w.SendCRC32C = true
+					if tc.incorrectSendCRC {
+						w.CRC32C = correctCRC32C + 1
+					} else {
+						w.CRC32C = correctCRC32C
+					}
+				}
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				// Provide CRC after write, before close.
+				if tc.setAppendFinalCRC {
+					w.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w.AppendFinalCRC32C = correctCRC32C + 1
+					} else {
+						w.AppendFinalCRC32C = correctCRC32C
+					}
+				}
+				err := w.Close()
+
+				if tc.wantErr {
+					if !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect checksum, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
 				// Verify content.
 				r, err := obj.NewReader(ctx)
 				if err != nil {
@@ -2534,6 +3330,106 @@ func TestIntegration_ObjectCompose(t *testing.T) {
 			t.Errorf("mismatching ComponentCount: got %v, want %v", attrs.ComponentCount, int64(len(objects)))
 		}
 		checkCompose(compDst, nil, customContexts.Custom)
+	})
+}
+
+func TestIntegration_ObjectCompose_DeleteSourceObjects(t *testing.T) {
+	multiTransportTest(skipZonalBucket(context.Background(), "ZB does not support compose"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		b := client.Bucket(bucket)
+
+		testCases := []struct {
+			desc                string
+			deleteSourceObjects bool
+			wantSourcesDeleted  bool
+		}{
+			{
+				desc:                "delete source objects after compose",
+				deleteSourceObjects: true,
+				wantSourcesDeleted:  true,
+			},
+			{
+				desc:                "do not delete source objects after compose",
+				deleteSourceObjects: false,
+				wantSourcesDeleted:  false,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.desc, func(t *testing.T) {
+				src1 := b.Object("delSrc1" + uidSpaceObjects.New())
+				c1 := randomContents()
+				if err := writeObject(ctx, src1, "text/plain", c1); err != nil {
+					t.Fatalf("Write for %v failed with %v", src1, err)
+				}
+				defer func() {
+					cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer cancel()
+					src1.Delete(cleanupCtx)
+				}()
+
+				src2 := b.Object("delSrc2" + uidSpaceObjects.New())
+				c2 := randomContents()
+				if err := writeObject(ctx, src2, "text/plain", c2); err != nil {
+					t.Fatalf("Write for %v failed with %v", src2, err)
+				}
+				defer func() {
+					cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(ctx), 10*time.Second)
+					defer cancel()
+					src2.Delete(cleanupCtx)
+				}()
+
+				compDst := b.Object("composedDel" + uidSpaceObjects.New())
+				c := compDst.ComposerFrom(src1, src2)
+				c.DeleteSourceObjects = tc.deleteSourceObjects
+				attrs, err := c.Run(ctx)
+				if err != nil {
+					t.Fatalf("ComposeFrom error: %v", err)
+				}
+				defer compDst.Delete(ctx)
+
+				if attrs.ComponentCount != 2 {
+					t.Errorf("ComponentCount = %v, want 2", attrs.ComponentCount)
+				}
+
+				// Verify source objects existence
+				_, err1 := src1.Attrs(ctx)
+				if tc.wantSourcesDeleted {
+					if !errors.Is(err1, ErrObjectNotExist) {
+						t.Errorf("src1 still exists, expected it to be deleted. Err: %v", err1)
+					}
+				} else {
+					if err1 != nil {
+						t.Errorf("Error: src1.Attrs(): %v", err1)
+					}
+				}
+
+				_, err2 := src2.Attrs(ctx)
+				if tc.wantSourcesDeleted {
+					if !errors.Is(err2, ErrObjectNotExist) {
+						t.Errorf("src2 still exists, expected it to be deleted. Err: %v", err2)
+					}
+				} else {
+					if err2 != nil {
+						t.Errorf("Error: src2.Attrs(): %v", err2)
+					}
+				}
+
+				// Verify contents of destination object.
+				r, err := compDst.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("new reader on composed target: %v", err)
+				}
+				defer r.Close()
+				slurp, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("reading composed target: %v", err)
+				}
+				wantContents := append(c1, c2...)
+				if !bytes.Equal(slurp, wantContents) {
+					t.Errorf("Composed object contents mismatch:\ngot  %q\nwant %q", slurp, wantContents)
+				}
+			})
+		}
 	})
 }
 
@@ -3642,6 +4538,9 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 			takeoverFlushOffset  int64
 			opts                 *AppendableWriterOpts
 			checkProgressOffsets []int64
+			sendFinalAppendCRC   bool
+			incorrectAppendCRC   bool
+			wantErr              bool
 		}{
 			{
 				name:           "first message takeover w/large flush",
@@ -3718,6 +4617,53 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 					FinalizeOnClose: true,
 				},
 			},
+			{
+				name:           "takeover and finalize with incorrect initial CRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					SendCRC32C:      true,
+					CRC32C:          1234,
+				},
+				wantErr: true,
+			},
+			{
+				name:           "takeover and finalize with incorrect FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				incorrectAppendCRC: true,
+				wantErr:            true,
+			},
+			{
+				name:           "takeover and finalize with correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
+			{
+				name:           "takeover and finalize with incorrect inital CRC but correct FinalAppendCRC",
+				content:        randomBytes9MiB,
+				takeoverOffset: MiB,
+				opts: &AppendableWriterOpts{
+					ChunkSize:       4 * MiB,
+					FinalizeOnClose: true,
+					CRC32C:          1234,
+				},
+				sendFinalAppendCRC: true,
+				wantErr:            false,
+			},
 		}
 		for _, tc := range testCases {
 			t.Run(tc.name, func(t *testing.T) {
@@ -3785,7 +4731,28 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				}
 
 				// Write remainder of the content and close.
-				h.mustWrite(w2, tc.content[remainingOffset:])
+				if _, err := w2.Write(tc.content[remainingOffset:]); err != nil && !tc.wantErr {
+					t.Fatalf("w2.Write: %v", err)
+				}
+				actualCRC := crc32.Checksum(tc.content, crc32cTable)
+				if tc.sendFinalAppendCRC {
+					w2.SendAppendFinalCRC32C = true
+					if tc.incorrectAppendCRC {
+						w2.AppendFinalCRC32C = actualCRC + 1
+					} else {
+						w2.AppendFinalCRC32C = actualCRC
+					}
+				}
+				err = w2.Close()
+				if tc.wantErr {
+					if err == nil || !errorIsStatusCode(err, http.StatusBadRequest, codes.InvalidArgument) {
+						t.Fatalf("expected an InvalidArgument error for incorrect CRC, but got %v", err)
+					}
+					return
+				}
+				if err != nil {
+					t.Fatalf("w2.Close: %v", err)
+				}
 
 				// Download content again and validate.
 				// Disabled due to b/395944605; unskip after this is resolved.
@@ -3864,8 +4831,11 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 
 		// Expect FAILED_PRECONDITION or ABORTED error when writing to orginal Writer.
 		_, err = w.Write(randomBytes3MiB)
+		if err == nil {
+			_, err = w.Flush()
+		}
 		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
-			t.Fatalf("w.Write: got error %v, want FailedPrecondition or Aborted", err)
+			t.Fatalf("w.Write or w.Flush: got error %v, want FailedPrecondition or Aborted", err)
 		}
 
 		// Another NewWriter to the unfinalized object should be able to
@@ -3879,8 +4849,8 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 			t.Fatalf("w2.Close: %v", err)
 		}
 
-		// If we add yet another takeover writer to finalize and delete the object,
-		// tw should return an error on flush.
+		// If we add yet another takeover writer to finalize the object, that should
+		// succeed.
 		tw2, _, err := obj.Generation(w2.Attrs().Generation).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{
 			FinalizeOnClose: true,
 		})
@@ -3890,13 +4860,16 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		if err := tw2.Close(); err != nil {
 			t.Fatalf("tw2.Close: %v", err)
 		}
-		h.mustDeleteObject(obj)
-		if _, err := tw.Write([]byte("abcde")); err != nil {
-			t.Fatalf("tw.Write: %v", err)
+
+		// `tw` should always fail to flush. Because `w2` overwrote the original
+		// object generation, `tw` might see either a fence error or a NOT_FOUND
+		// error.
+		_, err = tw.Write([]byte("abcde"))
+		if err == nil {
+			_, err = tw.Flush()
 		}
-		_, err = tw.Flush()
-		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted) {
-			t.Errorf("tw.Flush: got error %v, want FailedPrecondition or Aborted", err)
+		if code := status.Code(err); !(code == codes.FailedPrecondition || code == codes.Aborted || code == codes.NotFound) {
+			t.Errorf("tw.Write or tw.Flush: got error %v, want FailedPrecondition, Aborted, or NotFound", err)
 		}
 	})
 }
@@ -5909,8 +6882,111 @@ func TestIntegration_KMS(t *testing.T) {
 
 		// Remove the default KMS key.
 		attrs = h.mustUpdateBucket(bkt, BucketAttrsToUpdate{Encryption: &BucketEncryption{DefaultKMSKeyName: ""}}, attrs.MetaGeneration)
-		if attrs.Encryption != nil {
+		if attrs.Encryption != nil && attrs.Encryption.DefaultKMSKeyName != "" {
 			t.Fatalf("got %#v, want nil", attrs.Encryption)
+		}
+	})
+}
+
+func TestIntegration_BucketEncryptionEnforcement(t *testing.T) {
+	t.Skip("b/489975716")
+	ctx := skipExtraReadAPIs(context.Background(), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, prefix string, client *Client) {
+		h := testHelper{t}
+		bktName := prefix + uidSpace.New()
+		bkt := client.Bucket(bktName)
+		keyRingName := os.Getenv("GCLOUD_TESTS_GOLANG_KEYRING")
+		if keyRingName == "" {
+			t.Fatal("GCLOUD_TESTS_GOLANG_KEYRING must be set. See CONTRIBUTING.md for details")
+		}
+		keyName := keyRingName + "/cryptoKeys/key1"
+		// Create bucket with encryption enforcement config.
+		h.mustCreate(bkt, testutil.ProjID(), &BucketAttrs{
+			Encryption: &BucketEncryption{
+				DefaultKMSKeyName: keyName,
+			},
+			GoogleManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: FullyRestricted,
+			},
+			CustomerManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: FullyRestricted,
+			},
+		})
+		defer h.mustDeleteBucket(bkt)
+
+		// Verify creation.
+		attrs := h.mustBucketAttrs(bkt)
+		if attrs.Encryption == nil {
+			t.Fatal("expected encryption attrs to be set")
+		}
+		if attrs.Encryption.DefaultKMSKeyName != keyName {
+			t.Fatalf("Encryption.DefaultKMSKeyName: got: %v, want: %v", attrs.Encryption.DefaultKMSKeyName, keyName)
+		}
+		if attrs.GoogleManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected GoogleManagedEncryptionEnforcementConfig to be set")
+		}
+		if got, want := attrs.GoogleManagedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("GoogleManagedEncryptionEnforcementConfig.RestrictionMode: got %q, want %q", got, want)
+		}
+		if attrs.CustomerManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected CustomerManagedEncryptionEnforcementConfig to be set")
+		}
+		if got, want := attrs.CustomerManagedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("CustomerManagedEncryptionEnforcementConfig.RestrictionMode: got %q, want %q", got, want)
+		}
+
+		// Update encryption enforcement config.
+		ua := BucketAttrsToUpdate{
+			CustomerManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: NotRestricted,
+			},
+			CustomerSuppliedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: FullyRestricted,
+			},
+		}
+
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+
+		// Verify update from attrs.
+		if attrs.Encryption == nil || attrs.Encryption.DefaultKMSKeyName == "" {
+			t.Errorf("expected DefaultKMSKeyName to be set, got %v", attrs.Encryption)
+		}
+		if attrs.GoogleManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected GoogleManagedEncryptionEnforcementConfig to be set after update")
+		}
+		if got, want := attrs.GoogleManagedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("GoogleManagedEncryptionEnforcementConfig.RestrictionMode (after update): got %q, want %q", got, want)
+		}
+		if attrs.CustomerManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected CustomerManagedEncryptionEnforcementConfig to be set after update")
+		}
+		if got, want := attrs.CustomerManagedEncryptionEnforcementConfig.RestrictionMode, NotRestricted; got != want {
+			t.Errorf("CustomerManagedEncryptionEnforcementConfig.RestrictionMode (after update): got %q, want %q", got, want)
+		}
+		if attrs.CustomerSuppliedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected CustomerSuppliedEncryptionEnforcementConfig to be set after update")
+		}
+		if got, want := attrs.CustomerSuppliedEncryptionEnforcementConfig.RestrictionMode, FullyRestricted; got != want {
+			t.Errorf("CustomerSuppliedEncryptionEnforcementConfig.RestrictionMode (after update): got %q, want %q", got, want)
+		}
+
+		// Patching GMEK while deleting DefaultKMSKeyName.
+		ua = BucketAttrsToUpdate{
+			Encryption: &BucketEncryption{DefaultKMSKeyName: ""},
+			GoogleManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+				RestrictionMode: NotRestricted,
+			},
+		}
+		attrs = h.mustUpdateBucket(bkt, ua, attrs.MetaGeneration)
+
+		if attrs.Encryption != nil && attrs.Encryption.DefaultKMSKeyName != "" {
+			t.Errorf("expected DefaultKMSKeyName to be empty, got %v", attrs.Encryption.DefaultKMSKeyName)
+		}
+		if attrs.GoogleManagedEncryptionEnforcementConfig == nil {
+			t.Fatal("expected GoogleManagedEncryptionEnforcementConfig to be set after patch")
+		}
+		if got, want := attrs.GoogleManagedEncryptionEnforcementConfig.RestrictionMode, NotRestricted; got != want {
+			t.Errorf("GoogleManagedEncryptionEnforcementConfig.RestrictionMode (after patch): got %q, want %q", got, want)
 		}
 	})
 }
@@ -8268,4 +9344,439 @@ func setUpRequesterPaysBucket(ctx context.Context, t *testing.T, bucket, object 
 
 func crc32c(b []byte) uint32 {
 	return crc32.Checksum(b, crc32.MakeTable(crc32.Castagnoli))
+}
+
+func TestIntegration_ParallelUpload(t *testing.T) {
+	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		testCases := []struct {
+			name     string
+			content  []byte
+			config   ParallelUploadConfig
+			expected int64
+		}{
+			{
+				name:     "small object",
+				content:  bytes.Repeat([]byte("a"), 1<<20), // 1 MiB
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
+				expected: 1 << 20,
+			},
+			{
+				name:     "exact part size",
+				content:  bytes.Repeat([]byte("b"), 5<<20), // 5 MiB
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2},
+				expected: 5 << 20,
+			},
+			{
+				name:     "large object",
+				content:  bytes.Repeat([]byte("c"), 12<<20), // 12 MiB
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4},
+				expected: 12 << 20,
+			},
+			{
+				name:     "recursive composition logic",
+				content:  bytes.Repeat([]byte("d"), 165<<20), // 165 MiB = 33 parts of 5 MiB each (tests recursive compose)
+				config:   ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 16},
+				expected: 165 << 20,
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				objName := "pcu-" + uidSpaceObjects.New()
+				obj := client.Bucket(bucket).Object(objName)
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = tc.config
+
+				if _, err := w.Write(tc.content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+				if err := w.Close(); err != nil {
+					t.Fatalf("Writer.Close: %v", err)
+				}
+
+				// Verify object size and existence.
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					t.Fatalf("obj.Attrs: %v", err)
+				}
+				if attrs.Size != tc.expected {
+					t.Errorf("Object size mismatch: got %d, want %d", attrs.Size, tc.expected)
+				}
+
+				// Verify contents.
+				r, err := obj.NewReader(ctx)
+				if err != nil {
+					t.Fatalf("NewReader failed: %v", err)
+				}
+				defer r.Close()
+				gotContent, err := io.ReadAll(r)
+				if err != nil {
+					t.Fatalf("ReadAll failed: %v", err)
+				}
+				if !bytes.Equal(gotContent, tc.content) {
+					if len(gotContent) == len(tc.content) {
+						t.Errorf("content mismatch: lengths match (%d bytes) but bytes differ", len(gotContent))
+					} else {
+						t.Errorf("content mismatch: got %d bytes, want %d bytes", len(gotContent), len(tc.content))
+					}
+				}
+
+				// Verify cleanup of intermediate/part objects.
+				// Since cleanup runs in the background, we retry for a few seconds.
+				var count int
+				err = retry(ctx, func() error {
+					it := client.Bucket(bucket).Objects(ctx, &Query{Prefix: tmpObjectPrefix})
+					count = 0
+					for {
+						attrsObj, err := it.Next()
+						if err == iterator.Done {
+							break
+						}
+						if err != nil {
+							return err
+						}
+						// Only count temporary chunks belonging to this specific test object to avoid test flakes.
+						if strings.Contains(attrsObj.Name, objName) {
+							count++
+						}
+					}
+					if count != 0 {
+						return fmt.Errorf("found %d temporary objects after Parallel Upload, expected 0", count)
+					}
+					return nil
+				}, func() error {
+					return nil
+				})
+
+				if err != nil {
+					t.Error(err)
+				}
+			})
+		}
+	})
+}
+
+// TestIntegration_ParallelUploadConcurrency verifies that multiple parallel uploads
+// can occur simultaneously to different objects without resource interference or leaks.
+func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
+	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		content := bytes.Repeat([]byte("z"), 15<<20) // 15 MiB
+		config := ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 4}
+
+		var wg sync.WaitGroup
+		numUploads := 5
+		errs := make(chan error, numUploads)
+
+		for i := 0; i < numUploads; i++ {
+			wg.Add(1)
+			go func(idx int) {
+				defer wg.Done()
+				objName := fmt.Sprintf("pcu-concurrent-%d-%s", idx, uidSpaceObjects.New())
+				obj := client.Bucket(bucket).Object(objName)
+				defer h.mustDeleteObject(obj)
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = config
+
+				if _, err := w.Write(content); err != nil {
+					errs <- fmt.Errorf("Writer.Write failed: %v", err)
+					return
+				}
+				if err := w.Close(); err != nil {
+					errs <- fmt.Errorf("Writer.Close failed: %v", err)
+					return
+				}
+
+				// Verify object size.
+				attrs, err := obj.Attrs(ctx)
+				if err != nil {
+					errs <- fmt.Errorf("obj.Attrs failed: %v", err)
+					return
+				}
+				if attrs.Size != int64(len(content)) {
+					errs <- fmt.Errorf("Object size mismatch: got %d, want %d", attrs.Size, len(content))
+					return
+				}
+			}(i)
+		}
+
+		wg.Wait()
+		close(errs)
+
+		for err := range errs {
+			t.Errorf("Concurrent upload error: %v", err)
+		}
+	})
+}
+
+func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
+	ctx := skipExtraReadAPIs(skipHTTP("PCU only supported for gRPC"), "no reads in test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+		h := testHelper{t}
+
+		content := bytes.Repeat([]byte("z"), 12<<20) // 12 MiB
+		correctCRC := crc32.Checksum(content, crc32cTable)
+
+		testCases := []struct {
+			name        string
+			crc32c      uint32
+			expectedErr string
+		}{
+			{
+				name:        "correct checksum",
+				crc32c:      correctCRC,
+				expectedErr: "",
+			},
+			{
+				name:        "incorrect checksum",
+				crc32c:      correctCRC + 1,
+				expectedErr: "does not match the expected CRC32C",
+			},
+		}
+
+		for _, tc := range testCases {
+			t.Run(tc.name, func(t *testing.T) {
+				objName := "pcu-crc32c-" + uidSpaceObjects.New()
+				obj := client.Bucket(bucket).Object(objName)
+				t.Cleanup(func() {
+					h.mustDeleteObject(obj)
+				})
+
+				w := obj.NewWriter(ctx)
+				w.EnableParallelUpload = true
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2}
+				w.SendCRC32C = true
+				w.CRC32C = tc.crc32c
+
+				if _, err := w.Write(content); err != nil {
+					t.Fatalf("Writer.Write: %v", err)
+				}
+
+				err := w.Close()
+				if tc.expectedErr != "" {
+					if err == nil {
+						t.Fatalf("expected error containing %q, got nil", tc.expectedErr)
+					}
+					if !strings.Contains(err.Error(), tc.expectedErr) {
+						t.Fatalf("expected error containing %q, but got %v", tc.expectedErr, err)
+					}
+				} else {
+					if err != nil {
+						t.Fatalf("Writer.Close: %v", err)
+					}
+
+					attrs, err := obj.Attrs(ctx)
+					if err != nil {
+						t.Fatalf("obj.Attrs: %v", err)
+					}
+					if attrs.CRC32C != tc.crc32c {
+						t.Errorf("Object CRC32C mismatch: got %d, want %d", attrs.CRC32C, tc.crc32c)
+					}
+				}
+			})
+		}
+	})
+}
+
+func TestIntegration_FetchBucketMetadata(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name             string
+		bucketAttrs      *BucketAttrs
+		expectedLocation string
+	}{
+		{
+			name:             "Multi-Region",
+			bucketAttrs:      &BucketAttrs{Location: "US"},
+			expectedLocation: "global",
+		},
+		{
+			name:             "Dual-Region",
+			bucketAttrs:      &BucketAttrs{Location: "NAM4"},
+			expectedLocation: "global",
+		},
+		{
+			name:             "Regional",
+			bucketAttrs:      &BucketAttrs{Location: "US-West1"},
+			expectedLocation: "us-west1",
+		},
+		{
+			name: "Zonal",
+			bucketAttrs: &BucketAttrs{
+				Location: testZonalLocation,
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{testZonalZone},
+				},
+				StorageClass: "RAPID",
+				HierarchicalNamespace: &HierarchicalNamespace{
+					Enabled: true,
+				},
+				UniformBucketLevelAccess: UniformBucketLevelAccess{
+					Enabled: true,
+				},
+			},
+			expectedLocation: testZonalLocation,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := skipExtraReadAPIs(ctx, "bucket operations")
+			multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, _ string, _ string, client *Client) {
+				bucketName := fmt.Sprintf("test-nonreg-metadata-%d", time.Now().UnixNano())
+				err := client.Bucket(bucketName).Create(ctx, testutil.ProjID(), tc.bucketAttrs)
+				if err != nil {
+					t.Skipf("skipping: failed to create bucket in %s: %v", tc.bucketAttrs.Location, err)
+				}
+				t.Cleanup(func() {
+					client.Bucket(bucketName).Delete(ctx)
+				})
+
+				resource, location, err := client.tc.fetchBucketMetadata(ctx, bucketName)
+				if err != nil {
+					t.Fatalf("fetchBucketMetadata failed: %v", err)
+				}
+
+				if location != tc.expectedLocation {
+					t.Errorf("got location %q, want %q for %s bucket", location, tc.expectedLocation, tc.name)
+				}
+
+				if !strings.HasPrefix(resource, "projects/") || !strings.HasSuffix(resource, "/buckets/"+bucketName) {
+					t.Errorf("unexpected resource format: %q", resource)
+				}
+			})
+		})
+	}
+}
+
+func TestIntegration_ClientTracing(t *testing.T) {
+	ctx := context.Background()
+
+	tests := []struct {
+		name      string
+		newClient func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
+	}{
+		{
+			name: "gRPC",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfigGRPC(ctx, t, opts...), nil
+			},
+		},
+		{
+			name: "HTTP",
+			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
+				return testConfig(ctx, t, opts...), nil
+			},
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			// 1. Create bucket using a separate admin client.
+			adminClient, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create admin client: %v", err)
+			}
+			adminClient.bucketMetadataCache = nil
+			bucketName := fmt.Sprintf("test-trace-int-%s-%d", strings.ToLower(tc.name), time.Now().UnixNano())
+			if err := adminClient.Bucket(bucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{Location: "us-east1"}); err != nil {
+				adminClient.Close()
+				t.Fatalf("failed to create bucket: %v", err)
+			}
+			t.Cleanup(func() {
+				adminClient.Bucket(bucketName).Delete(ctx)
+				adminClient.Close()
+			})
+
+			// 2. Create the test client which will have an empty cache.
+			client, err := tc.newClient(t, ctx)
+			if err != nil {
+				t.Fatalf("failed to create test client: %v", err)
+			}
+			defer client.Close()
+
+			doneChan := make(chan struct{}, 1)
+			client.bucketMetadataCache.fetchDone = doneChan
+
+			// Get the number of spans before our test operations.
+			initialSpanCount := len(te.Spans())
+
+			// 1. First operation: Cache Miss. Should get placeholder attributes.
+			_, err = client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans := te.Spans()
+			var attrsSpan tracetest.SpanStub
+			found := false
+			for _, s := range spans[initialSpanCount:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("Bucket.Attrs span not found")
+			}
+
+			// First call should have placeholder.
+			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
+
+			// Wait for background fetch to complete and populate cache.
+			select {
+			case <-doneChan:
+			case <-time.After(fetchBackgroundTimeout):
+				t.Fatalf("timeout waiting for fetchBackground completion")
+			}
+			entry, cacheFound := client.bucketMetadataCache.get(bucketName)
+			if !cacheFound || entry.location != "us-east1" {
+				t.Fatalf("expected entry to be populated in cache with us-east1, got %+v (found: %t)", entry, cacheFound)
+			}
+
+			// 2. Second operation: Cache Hit. Should get resolved attributes.
+			spanCountAfterFirstOp := len(te.Spans())
+			bAttrs, err := client.Bucket(bucketName).Attrs(ctx)
+			if err != nil {
+				t.Fatalf("Bucket.Attrs failed: %v", err)
+			}
+
+			spans = te.Spans()
+			found = false
+			for _, s := range spans[spanCountAfterFirstOp:] {
+				if s.Name == "cloud.google.com/go/storage.Bucket.Attrs" {
+					attrsSpan = s
+					found = true
+					break
+				}
+			}
+			if !found {
+				t.Fatalf("second Bucket.Attrs span not found")
+			}
+
+			// Second call should have resolved attributes.
+			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
+		})
+	}
 }

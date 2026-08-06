@@ -231,6 +231,7 @@ func (d *Dataset) CreateWithOptions(ctx context.Context, md *DatasetMetadata, op
 	if ds.Location == "" {
 		ds.Location = d.c.Location
 	}
+	ctx = setProjectItemTraceMetadata(ctx, d.ProjectID, "datasets")
 	call := d.c.bqs.Datasets.Insert(d.ProjectID, ds).Context(ctx)
 	setClientHeader(call.Header())
 	if cOpt.accessPolicyVersion != nil {
@@ -307,6 +308,7 @@ func (d *Dataset) deleteInternal(ctx context.Context, deleteContents bool) (err 
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Dataset.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setDatasetTraceMetadata(ctx, d.ProjectID, d.DatasetID)
 	call := d.c.bqs.Datasets.Delete(d.ProjectID, d.DatasetID).Context(ctx).DeleteContents(deleteContents)
 	setClientHeader(call.Header())
 	return runWithRetry(ctx, func() (err error) {
@@ -333,6 +335,7 @@ func (d *Dataset) MetadataWithOptions(ctx context.Context, opts ...DatasetOption
 		o(cOpt)
 	}
 
+	ctx = setDatasetTraceMetadata(ctx, d.ProjectID, d.DatasetID)
 	call := d.c.bqs.Datasets.Get(d.ProjectID, d.DatasetID).Context(ctx)
 	setClientHeader(call.Header())
 	if cOpt.accessPolicyVersion != nil {
@@ -504,6 +507,7 @@ func (d *Dataset) UpdateWithOptions(ctx context.Context, dm DatasetMetadataToUpd
 		return nil, err
 	}
 
+	ctx = setDatasetTraceMetadata(ctx, d.ProjectID, d.DatasetID)
 	call := d.c.bqs.Datasets.Patch(d.ProjectID, d.DatasetID, ds).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
@@ -652,6 +656,7 @@ func (it *TableIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 // listTables exists to aid testing.
 var listTables = func(it *TableIterator, pageSize int, pageToken string) (*bq.TableList, error) {
+	it.ctx = setDatasetItemTraceMetadata(it.ctx, it.dataset.ProjectID, it.dataset.DatasetID, "tables")
 	call := it.dataset.c.bqs.Tables.List(it.dataset.ProjectID, it.dataset.DatasetID).
 		PageToken(pageToken).
 		Context(it.ctx)
@@ -739,6 +744,7 @@ func (it *ModelIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 // listTables exists to aid testing.
 var listModels = func(it *ModelIterator, pageSize int, pageToken string) (*bq.ListModelsResponse, error) {
+	it.ctx = setDatasetItemTraceMetadata(it.ctx, it.dataset.ProjectID, it.dataset.DatasetID, "models")
 	call := it.dataset.c.bqs.Models.List(it.dataset.ProjectID, it.dataset.DatasetID).
 		PageToken(pageToken).
 		Context(it.ctx)
@@ -828,6 +834,7 @@ func (it *RoutineIterator) PageInfo() *iterator.PageInfo { return it.pageInfo }
 
 // listRoutines exists to aid testing.
 var listRoutines = func(it *RoutineIterator, pageSize int, pageToken string) (*bq.ListRoutinesResponse, error) {
+	it.ctx = setDatasetItemTraceMetadata(it.ctx, it.dataset.ProjectID, it.dataset.DatasetID, "routines")
 	call := it.dataset.c.bqs.Routines.List(it.dataset.ProjectID, it.dataset.DatasetID).
 		PageToken(pageToken).
 		Context(it.ctx)
@@ -930,6 +937,7 @@ func (it *DatasetIterator) Next() (*Dataset, error) {
 
 // for testing
 var listDatasets = func(it *DatasetIterator, pageSize int, pageToken string) (*bq.DatasetList, error) {
+	it.ctx = setProjectItemTraceMetadata(it.ctx, it.ProjectID, "datasets")
 	call := it.c.bqs.Datasets.List(it.ProjectID).
 		Context(it.ctx).
 		PageToken(pageToken).

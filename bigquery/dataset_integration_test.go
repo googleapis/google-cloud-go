@@ -299,89 +299,11 @@ func TestIntegration_DatasetUpdateDefaultCollation(t *testing.T) {
 	}
 }
 
-func TestIntegration_DatasetStorageBillingModel(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	t.Skip("BigQuery flat-rate commitments enabled for project, feature skipped")
-
-	ctx := context.Background()
-	md, err := dataset.Metadata(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if md.StorageBillingModel != LogicalStorageBillingModel {
-		t.Fatalf("got %q, want %q", md.StorageBillingModel, LogicalStorageBillingModel)
-	}
-
-	ds := client.Dataset(datasetIDs.New())
-	err = ds.Create(ctx, &DatasetMetadata{
-		StorageBillingModel: PhysicalStorageBillingModel,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	md, err = ds.Metadata(ctx)
-	if err != nil {
-		t.Fatal(err)
-	}
-	if md.StorageBillingModel != PhysicalStorageBillingModel {
-		t.Fatalf("got %q, want %q", md.StorageBillingModel, PhysicalStorageBillingModel)
-	}
-	if err := ds.Delete(ctx); err != nil {
-		t.Fatalf("deleting dataset %v: %v", ds, err)
-	}
-}
-
-func TestIntegration_DatasetStorageUpdateBillingModel(t *testing.T) {
-	if client == nil {
-		t.Skip("Integration tests skipped")
-	}
-	t.Skip("BigQuery flat-rate commitments enabled for project, feature skipped")
-
-	ctx := context.Background()
-	ds := client.Dataset(datasetIDs.New())
-	err := ds.Create(ctx, &DatasetMetadata{
-		StorageBillingModel: LogicalStorageBillingModel,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	md, err := ds.Metadata(ctx)
-	if md.StorageBillingModel != LogicalStorageBillingModel {
-		t.Fatalf("got %q, want %q", md.StorageBillingModel, LogicalStorageBillingModel)
-	}
-
-	// Update the Storage billing model
-	md, err = ds.Update(ctx, DatasetMetadataToUpdate{
-		StorageBillingModel: PhysicalStorageBillingModel,
-	}, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if md.StorageBillingModel != PhysicalStorageBillingModel {
-		t.Fatalf("got %q, want %q", md.StorageBillingModel, PhysicalStorageBillingModel)
-	}
-
-	// Omitting StorageBillingModel doesn't change it.
-	md, err = ds.Update(ctx, DatasetMetadataToUpdate{Name: "xyz"}, "")
-	if err != nil {
-		t.Fatal(err)
-	}
-	if md.StorageBillingModel != PhysicalStorageBillingModel {
-		t.Fatalf("got %q, want %q", md.StorageBillingModel, PhysicalStorageBillingModel)
-	}
-
-	if err := ds.Delete(ctx); err != nil {
-		t.Fatalf("deleting dataset %v: %v", ds, err)
-	}
-}
-
 func TestIntegration_DatasetUpdateAccess(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	md, err := dataset.Metadata(ctx)
 	if err != nil {
@@ -450,6 +372,7 @@ func TestIntegration_DatasetConditions(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	// Use our test dataset for a base access policy.
 	md, err := dataset.Metadata(ctx)
@@ -577,6 +500,7 @@ func TestIntegration_DatasetUpdateLabels(t *testing.T) {
 	if client == nil {
 		t.Skip("Integration tests skipped")
 	}
+	skipOnEnvEnabled(t, skipBigQueryPublicIAMTestEnv)
 	ctx := context.Background()
 	_, err := dataset.Metadata(ctx)
 	if err != nil {

@@ -51,7 +51,7 @@ func NewHelper(c *apiv2_client.Client, projectID string, opts ...option.ClientOp
 // handle to the running query. The returned Query object can be used to wait for
 // completion and retrieve results.
 func (h *Helper) StartQuery(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*Query, error) {
-	req = proto.Clone(req).(*bigquerypb.PostQueryRequest)
+	req = proto.CloneOf(req)
 	qr := req.GetQueryRequest()
 	if qr == nil {
 		return nil, fmt.Errorf("bigquery: request is missing QueryRequest")
@@ -65,7 +65,7 @@ func (h *Helper) StartQuery(ctx context.Context, req *bigquerypb.PostQueryReques
 
 // StartQueryJob from a bigquerypb.Job definition. Should have job.Configuration.Query filled out.
 func (h *Helper) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ...gax.CallOption) (*Query, error) {
-	job = proto.Clone(job).(*bigquerypb.Job)
+	job = proto.CloneOf(job)
 	config := job.GetConfiguration()
 	if config == nil {
 		return nil, fmt.Errorf("bigquery: job is missing configuration")
@@ -94,7 +94,7 @@ func (h *Helper) StartQueryJob(ctx context.Context, job *bigquerypb.Job, opts ..
 // used to monitor the job's status, wait for its completion, and retrieve its
 // results.
 func (h *Helper) AttachJob(ctx context.Context, jobRef *bigquerypb.JobReference, opts ...gax.CallOption) (*Query, error) {
-	jobRef = proto.Clone(jobRef).(*bigquerypb.JobReference)
+	jobRef = proto.CloneOf(jobRef)
 	if jobRef == nil {
 		return nil, fmt.Errorf("bigquery: AttachJob requires a non-nil JobReference")
 	}

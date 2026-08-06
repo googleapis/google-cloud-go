@@ -1,6 +1,155 @@
 # Changes
 
 
+## [1.64.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.63.1...storage/v1.64.0) (2026-07-21)
+
+
+### Features
+
+* **storage:** Accept CRC32C for appendable objects ([#20104](https://github.com/googleapis/google-cloud-go/issues/20104)) ([1b2f5af](https://github.com/googleapis/google-cloud-go/commit/1b2f5afa0fe0f159edbc7184467928ebbd8720e2))
+
+## [1.63.1](https://github.com/googleapis/google-cloud-go/compare/storage/v1.63.0...storage/v1.63.1) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+
+### Bug Fixes
+
+* **storage:** Minor documentation fix ([#20139](https://github.com/googleapis/google-cloud-go/issues/20139)) ([37f1745](https://github.com/googleapis/google-cloud-go/commit/37f17453d73ad7abbc424f51b51ff82f8004c5b2))
+
+## [1.63.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.62.2...storage/v1.63.0) (2026-06-25)
+
+
+### Features
+
+* **go:** Add full object checksum for negative offsets &gt; size ([#20026](https://github.com/googleapis/google-cloud-go/issues/20026)) ([a04d980](https://github.com/googleapis/google-cloud-go/commit/a04d9809f8897195d796f4323d36e6880c0e02e8))
+* **storage:** Add client feature tracking in HTTP client ([#14691](https://github.com/googleapis/google-cloud-go/issues/14691)) ([319cc4c](https://github.com/googleapis/google-cloud-go/commit/319cc4c868f17196249d51faaecf91e58876ddba))
+* **storage:** App Centric Observability ([#14685](https://github.com/googleapis/google-cloud-go/issues/14685)) ([c3273bb](https://github.com/googleapis/google-cloud-go/commit/c3273bbf15b0d093dbb4e0bc62d22d26f273dbe5))
+* **storage:** Read checksums in gRPC partial reads ([#14586](https://github.com/googleapis/google-cloud-go/issues/14586)) ([d29f68a](https://github.com/googleapis/google-cloud-go/commit/d29f68afa17d1b874c374c97642afaaf0958a929))
+* **storage:** Support deleteSourceObjects option in object compose ([#14704](https://github.com/googleapis/google-cloud-go/issues/14704)) ([0d2d680](https://github.com/googleapis/google-cloud-go/commit/0d2d68046cae33909028c0c116c4743f72cc00f5))
+* Update API sources and regenerate ([#14701](https://github.com/googleapis/google-cloud-go/issues/14701)) ([a9b7921](https://github.com/googleapis/google-cloud-go/commit/a9b7921551e9c1535496731da53e880e9e364efa))
+
+## [1.62.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.3) (2026-06-03)
+
+### Bug Fixes
+
+* **storage:** Add server closed idle connection to retriable errors ([#14594](https://github.com/googleapis/google-cloud-go/issues/14594)) ([a6bd392](https://github.com/googleapis/google-cloud-go/commit/a6bd39257d261f74680c909c24102ca6f69989b9))
+* **storage:** Fix race condition during retries in gRPC writer ([#14649](https://github.com/googleapis/google-cloud-go/issues/14649)) ([c781a75](https://github.com/googleapis/google-cloud-go/commit/c781a7535f87377bb7d0b47fc82ad0bb330faf29))
+
+## [1.62.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.2) (2026-05-18)
+
+### Features
+
+* enable open telemetry attrs (#14426) ([74eab64](https://github.com/googleapis/google-cloud-go/commit/74eab64d1b4e22d8c79b0de4e5fc9a36bc4c6c19))
+
+### Bug Fixes
+
+* Set default chunkRetryDeadline to 32s in NewWriterFromAppendableObject (#14458) ([ec7c7d6](https://github.com/googleapis/google-cloud-go/commit/ec7c7d66eb0bf6e52a3ae1f529cb8e5de6f8dc86))
+* refactor userProject metadata propagation in ListObjects  (#14533) ([fbb543e](https://github.com/googleapis/google-cloud-go/commit/fbb543e3bb0d9b45c8e9aa167b6551c154f23169))
+* restore metadata operations timeout in gRPC (#14575) ([275ff56](https://github.com/googleapis/google-cloud-go/commit/275ff562aee8c0201b9e5bf2913bb85bcdbe947a))
+
+## [1.62.1](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.1) (2026-04-13)
+
+### Bug Fixes
+
+* Add retry logic for "http2: client connection lost" ([df22e9e](https://github.com/googleapis/google-cloud-go/commit/df22e9e38ea6de00d858ef00475ae286d3fc6834))
+
+* Remove redundant gRPC imports from grpc_dp_diag.go ([c5511e2](https://github.com/googleapis/google-cloud-go/commit/c5511e2101cefbf8b6e54193e39382e86b49d822))
+
+## [1.62.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.62.0) (2026-04-06)
+
+### Features
+
+* Integrate parallel uploads into storage writer (#14232) ([370e0ed](https://github.com/googleapis/google-cloud-go/commit/370e0ed14e4628ac9a8b9e6e9050d974ffb75e17))
+
+### Bug Fixes
+
+* Close HTTP2 response bodies to prevent flow-control leaks (#14324) ([b6bcfe8](https://github.com/googleapis/google-cloud-go/commit/b6bcfe8feb69afebe7a54a549097112bffcc7a27))
+
+### Documentation
+
+* Update `EnableParallelUpload` documentation in `writer.go` (#14328) ([22d0749](http://github.com/googleapis/google-cloud-go/commit/22d0749f8fdbeaa34f2a836b63510bd0c3def990))
+
+## [1.61.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.3) (2026-03-13)
+
+### Documentation
+
+* Fix godoc formatting (#14169) ([428b228](https://github.com/googleapis/google-cloud-go/commit/428b228814dc78b1b92c83868e1a58bb32ea71f0))
+
+## [1.61.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.2) (2026-03-12)
+
+### Bug Fixes
+
+* fix dependency version for auth library (#14156) ([cb354ba](https://github.com/googleapis/google-cloud-go/commit/cb354ba5691eade26d14ace3c04d79f3363c0526))
+
+## [1.61.1](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.1) (2026-03-11)
+
+## [1.61.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.61.0) (2026-03-10)
+
+### Features
+
+* add a DeleteFolderRecursive API definition ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* add bucket encryption enforcement configuration (#13874) ([245c8d7](https://github.com/googleapis/google-cloud-go/commit/245c8d7638756f3ec7c55b32b8a0f924814e8547))
+* add multistream options to MRD (#13758) ([4557675](https://github.com/googleapis/google-cloud-go/commit/4557675e058e042c614a46b55c1b2346d378204b))
+* add multistream support to MRD (#13792) ([ffa7268](https://github.com/googleapis/google-cloud-go/commit/ffa7268c6195f11f404b0c976b3c7c836df26294))
+
+### Bug Fixes
+
+* Fix TM download dir corner case (#14142) ([87cdcc9](https://github.com/googleapis/google-cloud-go/commit/87cdcc9f756881f90337d222fe3707234d1a2c71))
+* Omit auto checksum in final request when MD5 is given (#14024) ([d404777](https://github.com/googleapis/google-cloud-go/commit/d40477749f0d54c88dd92fd992c9401732ef8d50))
+* optimize gRPC writer with zero-copy and lazy allocation (#13481) ([df64147](https://github.com/googleapis/google-cloud-go/commit/df64147605e961803c7ea839bc080ffd1b814ac9))
+
+## [1.60.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.60.0) (2026-02-10)
+
+### Features
+
+* Add a new field `ComposeObjectRequest.delete_source_objects` field ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* Add support for max-retry-duration for all api other than resumable-upload (#13749) ([31c352b](https://github.com/googleapis/google-cloud-go/commit/31c352bd672637813ec251c2f48ad1c38ea13922))
+* Perform checksum for single shot and single chunk uploads (#13733) ([892c5d3](https://github.com/googleapis/google-cloud-go/commit/892c5d32bd14dfbd3a1a7d3fa5894331f41392a1))
+* Support checksum validation in resumable json uploads (#13573) ([337ca07](https://github.com/googleapis/google-cloud-go/commit/337ca078a09d687aa758ed3982f2047bee3da57a))
+
+### Bug Fixes
+
+* Change TestValidateChecksumFromServer error message (#13810) ([0741414](https://github.com/googleapis/google-cloud-go/commit/07414143ceba31ac97f8e2d083fcc95b11a2579e))
+* Fix panic error in transfermanager downloads (#13815) ([4272271](https://github.com/googleapis/google-cloud-go/commit/427227197f79dfee7edf7bf5d66e33276e9eee52))
+
+### Documentation
+
+* Update documentation for `BidiReadObject`, `ReadObjectRequest`, and `ObjectContexts` ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+## [1.59.3](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.3) (2026-05-05)
+
+### Bug Fixes
+
+* handle MRD hang corner case (#14509) ([1ca3b6f](https://github.com/googleapis/google-cloud-go/commit/1ca3b6f02d35f87c336e34358e16985557c7fd58))
+
+## [1.59.2](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.2) (2026-01-28)
+
+### Bug Fixes
+
+* Deadlock in event loop while coordinating channels (#13652) ([ff6c8e7](https://github.com/googleapis/google-cloud-go/commit/ff6c8e780b2207b154808ba22e3124b68d6b4f7d))
+
+## [1.59.1](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.1) (2026-01-14)
+
+### Bug Fixes
+
+* close attrsReady channel when metadata is missing (#13574) ([712f562](https://github.com/googleapis/google-cloud-go/commit/712f56272ac5a219bac1b20894e4825f3682c920))
+* don't update global object's readhandle in MRD (#13575) ([bc92500](https://github.com/googleapis/google-cloud-go/commit/bc925001a2f5b186c231c2885f9162713bb4b1bf))
+* remove mandatory attrs response in MRD (#13585) ([6752a49](https://github.com/googleapis/google-cloud-go/commit/6752a496e756c214faf345c302b58ed7593c6017))
+
+## [1.59.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.59.0) (2026-01-09)
+
+### Features
+
+* add default checksums for appendable writer (excludes appendable takeover writer) (#13379) ([647baf3](https://github.com/googleapis/google-cloud-go/commit/647baf3249b01e7d5eb5902197bb828706c4c08f))
+
+### Bug Fixes
+
+* refactor MultiRangeDownloader to resolve deadlock and race conditions (#13524) ([1cfd100](https://github.com/googleapis/google-cloud-go/commit/1cfd10089f206bca0bdcef1e873574b552ae6abb)
+
 ## [1.58.0](https://github.com/googleapis/google-cloud-go/releases/tag/storage%2Fv1.58.0) (2025-12-03)
 
 ### Features

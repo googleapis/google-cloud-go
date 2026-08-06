@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -32,6 +32,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -52,8 +54,11 @@ type DataAgentCallOptions struct {
 	ListAccessibleDataAgents []gax.CallOption
 	GetDataAgent             []gax.CallOption
 	CreateDataAgent          []gax.CallOption
+	CreateDataAgentSync      []gax.CallOption
 	UpdateDataAgent          []gax.CallOption
+	UpdateDataAgentSync      []gax.CallOption
 	DeleteDataAgent          []gax.CallOption
+	DeleteDataAgentSync      []gax.CallOption
 	GetIamPolicy             []gax.CallOption
 	SetIamPolicy             []gax.CallOption
 	GetLocation              []gax.CallOption
@@ -129,6 +134,18 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 				})
 			}),
 		},
+		CreateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		UpdateDataAgent: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -141,7 +158,31 @@ func defaultDataAgentCallOptions() *DataAgentCallOptions {
 				})
 			}),
 		},
+		UpdateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		DeleteDataAgent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		DeleteDataAgentSync: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -298,6 +339,17 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		CreateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		UpdateDataAgent: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -309,7 +361,29 @@ func defaultDataAgentRESTCallOptions() *DataAgentCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateDataAgentSync: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		DeleteDataAgent: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
+		DeleteDataAgentSync: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -421,10 +495,13 @@ type internalDataAgentClient interface {
 	GetDataAgent(context.Context, *geminidataanalyticspb.GetDataAgentRequest, ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error)
 	CreateDataAgent(context.Context, *geminidataanalyticspb.CreateDataAgentRequest, ...gax.CallOption) (*CreateDataAgentOperation, error)
 	CreateDataAgentOperation(name string) *CreateDataAgentOperation
+	CreateDataAgentSync(context.Context, *geminidataanalyticspb.CreateDataAgentRequest, ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error)
 	UpdateDataAgent(context.Context, *geminidataanalyticspb.UpdateDataAgentRequest, ...gax.CallOption) (*UpdateDataAgentOperation, error)
 	UpdateDataAgentOperation(name string) *UpdateDataAgentOperation
+	UpdateDataAgentSync(context.Context, *geminidataanalyticspb.UpdateDataAgentRequest, ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error)
 	DeleteDataAgent(context.Context, *geminidataanalyticspb.DeleteDataAgentRequest, ...gax.CallOption) (*DeleteDataAgentOperation, error)
 	DeleteDataAgentOperation(name string) *DeleteDataAgentOperation
+	DeleteDataAgentSync(context.Context, *geminidataanalyticspb.DeleteDataAgentRequest, ...gax.CallOption) error
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -454,7 +531,7 @@ type DataAgentClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *DataAgentClient) Close() error {
 	return c.internalClient.Close()
@@ -502,6 +579,11 @@ func (c *DataAgentClient) CreateDataAgentOperation(name string) *CreateDataAgent
 	return c.internalClient.CreateDataAgentOperation(name)
 }
 
+// CreateDataAgentSync creates a new DataAgent in a given project and location synchronously.
+func (c *DataAgentClient) CreateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.CreateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	return c.internalClient.CreateDataAgentSync(ctx, req, opts...)
+}
+
 // UpdateDataAgent updates the parameters of a single DataAgent.
 func (c *DataAgentClient) UpdateDataAgent(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*UpdateDataAgentOperation, error) {
 	return c.internalClient.UpdateDataAgent(ctx, req, opts...)
@@ -513,6 +595,11 @@ func (c *DataAgentClient) UpdateDataAgentOperation(name string) *UpdateDataAgent
 	return c.internalClient.UpdateDataAgentOperation(name)
 }
 
+// UpdateDataAgentSync updates the parameters of a single DataAgent synchronously.
+func (c *DataAgentClient) UpdateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	return c.internalClient.UpdateDataAgentSync(ctx, req, opts...)
+}
+
 // DeleteDataAgent deletes a single DataAgent.
 func (c *DataAgentClient) DeleteDataAgent(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) (*DeleteDataAgentOperation, error) {
 	return c.internalClient.DeleteDataAgent(ctx, req, opts...)
@@ -522,6 +609,11 @@ func (c *DataAgentClient) DeleteDataAgent(ctx context.Context, req *geminidataan
 // The name must be that of a previously created DeleteDataAgentOperation, possibly from a different process.
 func (c *DataAgentClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	return c.internalClient.DeleteDataAgentOperation(name)
+}
+
+// DeleteDataAgentSync deletes a single DataAgent synchronously.
+func (c *DataAgentClient) DeleteDataAgentSync(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteDataAgentSync(ctx, req, opts...)
 }
 
 // GetIamPolicy gets the IAM policy for DataAgent
@@ -540,6 +632,21 @@ func (c *DataAgentClient) GetLocation(ctx context.Context, req *locationpb.GetLo
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *DataAgentClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -598,6 +705,16 @@ type dataAgentGRPCClient struct {
 // Service describing handlers for resources.
 func NewDataAgentClient(ctx context.Context, opts ...option.ClientOption) (*DataAgentClient, error) {
 	clientOpts := defaultDataAgentGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "geminidataanalytics",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/geminidataanalytics/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "geminidataanalytics.googleapis.com",
+		}))
+	}
 	if newDataAgentClientHook != nil {
 		hookOpts, err := newDataAgentClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -621,6 +738,36 @@ func NewDataAgentClient(ctx context.Context, opts ...option.ClientOption) (*Data
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "geminidataanalytics",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/geminidataanalytics/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "geminidataanalytics.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDataAgents = append(client.CallOptions.ListDataAgents, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccessibleDataAgents = append(client.CallOptions.ListAccessibleDataAgents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDataAgent = append(client.CallOptions.GetDataAgent, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDataAgent = append(client.CallOptions.CreateDataAgent, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateDataAgentSync = append(client.CallOptions.CreateDataAgentSync, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataAgent = append(client.CallOptions.UpdateDataAgent, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateDataAgentSync = append(client.CallOptions.UpdateDataAgentSync, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataAgent = append(client.CallOptions.DeleteDataAgent, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteDataAgentSync = append(client.CallOptions.DeleteDataAgentSync, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -657,7 +804,7 @@ func (c *dataAgentGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataAgentGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -690,6 +837,16 @@ type dataAgentRESTClient struct {
 // Service describing handlers for resources.
 func NewDataAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*DataAgentClient, error) {
 	clientOpts := append(defaultDataAgentRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "geminidataanalytics",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/geminidataanalytics/apiv1beta",
+			"gcp.client.language": "go",
+			"url.domain":          "geminidataanalytics.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -703,6 +860,37 @@ func NewDataAgentRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "geminidataanalytics",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/geminidataanalytics/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "geminidataanalytics.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDataAgents = append(callOpts.ListDataAgents, gax.WithClientMetrics(metrics))
+		callOpts.ListAccessibleDataAgents = append(callOpts.ListAccessibleDataAgents, gax.WithClientMetrics(metrics))
+		callOpts.GetDataAgent = append(callOpts.GetDataAgent, gax.WithClientMetrics(metrics))
+		callOpts.CreateDataAgent = append(callOpts.CreateDataAgent, gax.WithClientMetrics(metrics))
+		callOpts.CreateDataAgentSync = append(callOpts.CreateDataAgentSync, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataAgent = append(callOpts.UpdateDataAgent, gax.WithClientMetrics(metrics))
+		callOpts.UpdateDataAgentSync = append(callOpts.UpdateDataAgentSync, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataAgent = append(callOpts.DeleteDataAgent, gax.WithClientMetrics(metrics))
+		callOpts.DeleteDataAgentSync = append(callOpts.DeleteDataAgentSync, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -740,7 +928,7 @@ func (c *dataAgentRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *dataAgentRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -759,9 +947,15 @@ func (c *dataAgentGRPCClient) ListDataAgents(ctx context.Context, req *geminidat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/ListDataAgents")
+	}
 	opts = append((*c.CallOptions).ListDataAgents[0:len((*c.CallOptions).ListDataAgents):len((*c.CallOptions).ListDataAgents)], opts...)
 	it := &DataAgentIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListDataAgentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.DataAgent, string, error) {
 		resp := &geminidataanalyticspb.ListDataAgentsResponse{}
 		if pageToken != "" {
@@ -805,9 +999,15 @@ func (c *dataAgentGRPCClient) ListAccessibleDataAgents(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/ListAccessibleDataAgents")
+	}
 	opts = append((*c.CallOptions).ListAccessibleDataAgents[0:len((*c.CallOptions).ListAccessibleDataAgents):len((*c.CallOptions).ListAccessibleDataAgents)], opts...)
 	it := &DataAgentIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListAccessibleDataAgentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.DataAgent, string, error) {
 		resp := &geminidataanalyticspb.ListAccessibleDataAgentsResponse{}
 		if pageToken != "" {
@@ -851,6 +1051,12 @@ func (c *dataAgentGRPCClient) GetDataAgent(ctx context.Context, req *geminidataa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/GetDataAgent")
+	}
 	opts = append((*c.CallOptions).GetDataAgent[0:len((*c.CallOptions).GetDataAgent):len((*c.CallOptions).GetDataAgent)], opts...)
 	var resp *geminidataanalyticspb.DataAgent
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -869,6 +1075,12 @@ func (c *dataAgentGRPCClient) CreateDataAgent(ctx context.Context, req *geminida
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgent")
+	}
 	opts = append((*c.CallOptions).CreateDataAgent[0:len((*c.CallOptions).CreateDataAgent):len((*c.CallOptions).CreateDataAgent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -879,9 +1091,37 @@ func (c *dataAgentGRPCClient) CreateDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.CreateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
+}
+
+func (c *dataAgentGRPCClient) CreateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.CreateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgentSync")
+	}
+	opts = append((*c.CallOptions).CreateDataAgentSync[0:len((*c.CallOptions).CreateDataAgentSync):len((*c.CallOptions).CreateDataAgentSync)], opts...)
+	var resp *geminidataanalyticspb.DataAgent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataAgentClient.CreateDataAgentSync, req, settings.GRPC, c.logger, "CreateDataAgentSync")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataAgentGRPCClient) UpdateDataAgent(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*UpdateDataAgentOperation, error) {
@@ -889,6 +1129,9 @@ func (c *dataAgentGRPCClient) UpdateDataAgent(ctx context.Context, req *geminida
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgent")
+	}
 	opts = append((*c.CallOptions).UpdateDataAgent[0:len((*c.CallOptions).UpdateDataAgent):len((*c.CallOptions).UpdateDataAgent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -899,9 +1142,34 @@ func (c *dataAgentGRPCClient) UpdateDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.UpdateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
+}
+
+func (c *dataAgentGRPCClient) UpdateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_agent.name", url.QueryEscape(req.GetDataAgent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgentSync")
+	}
+	opts = append((*c.CallOptions).UpdateDataAgentSync[0:len((*c.CallOptions).UpdateDataAgentSync):len((*c.CallOptions).UpdateDataAgentSync)], opts...)
+	var resp *geminidataanalyticspb.DataAgent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataAgentClient.UpdateDataAgentSync, req, settings.GRPC, c.logger, "UpdateDataAgentSync")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataAgentGRPCClient) DeleteDataAgent(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) (*DeleteDataAgentOperation, error) {
@@ -909,6 +1177,12 @@ func (c *dataAgentGRPCClient) DeleteDataAgent(ctx context.Context, req *geminida
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgent")
+	}
 	opts = append((*c.CallOptions).DeleteDataAgent[0:len((*c.CallOptions).DeleteDataAgent):len((*c.CallOptions).DeleteDataAgent)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -919,9 +1193,33 @@ func (c *dataAgentGRPCClient) DeleteDataAgent(ctx context.Context, req *geminida
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.DeleteDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
+}
+
+func (c *dataAgentGRPCClient) DeleteDataAgentSync(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgentSync")
+	}
+	opts = append((*c.CallOptions).DeleteDataAgentSync[0:len((*c.CallOptions).DeleteDataAgentSync):len((*c.CallOptions).DeleteDataAgentSync)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.dataAgentClient.DeleteDataAgentSync, req, settings.GRPC, c.logger, "DeleteDataAgentSync")
+		return err
+	}, opts...)
+	return err
 }
 
 func (c *dataAgentGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
@@ -929,6 +1227,12 @@ func (c *dataAgentGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -947,6 +1251,12 @@ func (c *dataAgentGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -965,6 +1275,9 @@ func (c *dataAgentGRPCClient) GetLocation(ctx context.Context, req *locationpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -983,9 +1296,12 @@ func (c *dataAgentGRPCClient) ListLocations(ctx context.Context, req *locationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1029,6 +1345,9 @@ func (c *dataAgentGRPCClient) CancelOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1043,6 +1362,9 @@ func (c *dataAgentGRPCClient) DeleteOperation(ctx context.Context, req *longrunn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1057,6 +1379,9 @@ func (c *dataAgentGRPCClient) GetOperation(ctx context.Context, req *longrunning
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1075,9 +1400,12 @@ func (c *dataAgentGRPCClient) ListOperations(ctx context.Context, req *longrunni
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1119,7 +1447,7 @@ func (c *dataAgentGRPCClient) ListOperations(ctx context.Context, req *longrunni
 // ListDataAgents lists DataAgents in a given project and location.
 func (c *dataAgentRESTClient) ListDataAgents(ctx context.Context, req *geminidataanalyticspb.ListDataAgentsRequest, opts ...gax.CallOption) *DataAgentIterator {
 	it := &DataAgentIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListDataAgentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.DataAgent, string, error) {
 		resp := &geminidataanalyticspb.ListDataAgentsResponse{}
@@ -1207,7 +1535,7 @@ func (c *dataAgentRESTClient) ListDataAgents(ctx context.Context, req *geminidat
 // location.
 func (c *dataAgentRESTClient) ListAccessibleDataAgents(ctx context.Context, req *geminidataanalyticspb.ListAccessibleDataAgentsRequest, opts ...gax.CallOption) *DataAgentIterator {
 	it := &DataAgentIterator{}
-	req = proto.Clone(req).(*geminidataanalyticspb.ListAccessibleDataAgentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*geminidataanalyticspb.DataAgent, string, error) {
 		resp := &geminidataanalyticspb.ListAccessibleDataAgentsResponse{}
@@ -1313,6 +1641,13 @@ func (c *dataAgentRESTClient) GetDataAgent(ctx context.Context, req *geminidataa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/GetDataAgent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataAgents/*}")
+	}
 	opts = append((*c.CallOptions).GetDataAgent[0:len((*c.CallOptions).GetDataAgent):len((*c.CallOptions).GetDataAgent)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &geminidataanalyticspb.DataAgent{}
@@ -1376,6 +1711,13 @@ func (c *dataAgentRESTClient) CreateDataAgent(ctx context.Context, req *geminida
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/dataAgents")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1404,10 +1746,84 @@ func (c *dataAgentRESTClient) CreateDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.CreateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// CreateDataAgentSync creates a new DataAgent in a given project and location synchronously.
+func (c *dataAgentRESTClient) CreateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.CreateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAgent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/dataAgents:createSync", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetDataAgentId() != "" {
+		params.Add("dataAgentId", fmt.Sprintf("%v", req.GetDataAgentId()))
+	}
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/CreateDataAgentSync")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/dataAgents:createSync")
+	}
+	opts = append((*c.CallOptions).CreateDataAgentSync[0:len((*c.CallOptions).CreateDataAgentSync):len((*c.CallOptions).CreateDataAgentSync)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &geminidataanalyticspb.DataAgent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateDataAgentSync")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // UpdateDataAgent updates the parameters of a single DataAgent.
@@ -1446,6 +1862,10 @@ func (c *dataAgentRESTClient) UpdateDataAgent(ctx context.Context, req *geminida
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{data_agent.name=projects/*/locations/*/dataAgents/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1474,10 +1894,85 @@ func (c *dataAgentRESTClient) UpdateDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.UpdateDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// UpdateDataAgentSync updates the parameters of a single DataAgent synchronously.
+func (c *dataAgentRESTClient) UpdateDataAgentSync(ctx context.Context, req *geminidataanalyticspb.UpdateDataAgentRequest, opts ...gax.CallOption) (*geminidataanalyticspb.DataAgent, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetDataAgent()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:updateSync", req.GetDataAgent().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "data_agent.name", url.QueryEscape(req.GetDataAgent().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/UpdateDataAgentSync")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{data_agent.name=projects/*/locations/*/dataAgents/*}:updateSync")
+	}
+	opts = append((*c.CallOptions).UpdateDataAgentSync[0:len((*c.CallOptions).UpdateDataAgentSync):len((*c.CallOptions).UpdateDataAgentSync)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &geminidataanalyticspb.DataAgent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateDataAgentSync")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // DeleteDataAgent deletes a single DataAgent.
@@ -1502,6 +1997,13 @@ func (c *dataAgentRESTClient) DeleteDataAgent(ctx context.Context, req *geminida
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataAgents/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1530,10 +2032,59 @@ func (c *dataAgentRESTClient) DeleteDataAgent(ctx context.Context, req *geminida
 	}
 
 	override := fmt.Sprintf("/v1beta/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*geminidataanalytics.DeleteDataAgentOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// DeleteDataAgentSync deletes a single DataAgent synchronously.
+func (c *dataAgentRESTClient) DeleteDataAgentSync(ctx context.Context, req *geminidataanalyticspb.DeleteDataAgentRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v:deleteSync", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/DeleteDataAgentSync")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/dataAgents/*}:deleteSync")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteDataAgentSync")
+		return err
+	}, opts...)
 }
 
 // GetIamPolicy gets the IAM policy for DataAgent
@@ -1561,6 +2112,13 @@ func (c *dataAgentRESTClient) GetIamPolicy(ctx context.Context, req *iampb.GetIa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/dataAgents/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1617,6 +2175,13 @@ func (c *dataAgentRESTClient) SetIamPolicy(ctx context.Context, req *iampb.SetIa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataAgentService/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{resource=projects/*/locations/*/dataAgents/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -1667,6 +2232,10 @@ func (c *dataAgentRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1699,9 +2268,24 @@ func (c *dataAgentRESTClient) GetLocation(ctx context.Context, req *locationpb.G
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *dataAgentRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1804,6 +2388,10 @@ func (c *dataAgentRESTClient) CancelOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1839,6 +2427,10 @@ func (c *dataAgentRESTClient) DeleteOperation(ctx context.Context, req *longrunn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1874,6 +2466,10 @@ func (c *dataAgentRESTClient) GetOperation(ctx context.Context, req *longrunning
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1908,7 +2504,7 @@ func (c *dataAgentRESTClient) GetOperation(ctx context.Context, req *longrunning
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *dataAgentRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1993,7 +2589,7 @@ func (c *dataAgentRESTClient) ListOperations(ctx context.Context, req *longrunni
 // The name must be that of a previously created CreateDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) CreateDataAgentOperation(name string) *CreateDataAgentOperation {
 	return &CreateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.CreateDataAgentOperation"),
 	}
 }
 
@@ -2002,7 +2598,7 @@ func (c *dataAgentGRPCClient) CreateDataAgentOperation(name string) *CreateDataA
 func (c *dataAgentRESTClient) CreateDataAgentOperation(name string) *CreateDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &CreateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.CreateDataAgentOperation"),
 		pollPath: override,
 	}
 }
@@ -2011,7 +2607,7 @@ func (c *dataAgentRESTClient) CreateDataAgentOperation(name string) *CreateDataA
 // The name must be that of a previously created DeleteDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	return &DeleteDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.DeleteDataAgentOperation"),
 	}
 }
 
@@ -2020,7 +2616,7 @@ func (c *dataAgentGRPCClient) DeleteDataAgentOperation(name string) *DeleteDataA
 func (c *dataAgentRESTClient) DeleteDataAgentOperation(name string) *DeleteDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &DeleteDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.DeleteDataAgentOperation"),
 		pollPath: override,
 	}
 }
@@ -2029,7 +2625,7 @@ func (c *dataAgentRESTClient) DeleteDataAgentOperation(name string) *DeleteDataA
 // The name must be that of a previously created UpdateDataAgentOperation, possibly from a different process.
 func (c *dataAgentGRPCClient) UpdateDataAgentOperation(name string) *UpdateDataAgentOperation {
 	return &UpdateDataAgentOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.UpdateDataAgentOperation"),
 	}
 }
 
@@ -2038,7 +2634,7 @@ func (c *dataAgentGRPCClient) UpdateDataAgentOperation(name string) *UpdateDataA
 func (c *dataAgentRESTClient) UpdateDataAgentOperation(name string) *UpdateDataAgentOperation {
 	override := fmt.Sprintf("/v1beta/%s", name)
 	return &UpdateDataAgentOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*geminidataanalytics.UpdateDataAgentOperation"),
 		pollPath: override,
 	}
 }

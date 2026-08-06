@@ -1,5 +1,114 @@
 # Changes
 
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/geminidataanalytics/v1.3.0...geminidataanalytics/v1.4.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.3.0) (2026-06-11)
+
+### Features
+
+* update API sources and regenerate (#19950) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.2.0) (2026-05-28)
+
+### Features
+
+* update API sources and regenerate (#14661) ([d0cd917](https://github.com/googleapis/google-cloud-go/commit/d0cd917ce0ad46a4d2c1cd4ea2ef8efa60b591d3))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.1.0) (2026-05-14)
+
+### Features
+
+* update API sources and regenerate (#14581) ([df96b2e](https://github.com/googleapis/google-cloud-go/commit/df96b2ecb3930d6fb2e6e542e11521ee8e9d5935))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv1.0.0) (2026-05-08)
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.13.0) (2026-05-07)
+
+### Features
+
+* generate v1 client (#14542) ([fd34e97](https://github.com/googleapis/google-cloud-go/commit/fd34e97401e8089d5af765b7664778a3038906d9))
+
+## [0.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.12.0) (2026-04-30)
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.11.0) (2026-04-13)
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.10.0) (2026-04-09)
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.9.0) (2026-04-02)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.8.0) (2026-03-12)
+
+### Features
+
+* add `ParameterizedSecureViewParameters` message and field for PSV support ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* add `ThinkingMode` enum and field to control agent thinking mode ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* update field comments for `generated_looker_query` in `DataMessage` ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.7.0) (2026-02-05)
+
+### Features
+
+* add ClarificationMessage, thought-signature, formatted-data ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* A comment for enum value THOUGHT in enum TextType is changed ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.6.0) (2026-01-15)
+
+### Features
+
+* added sync APIs for the CRUD operations of Data Agent ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.5.0) (2026-01-08)
+
+### Features
+
+* add LookerGoldenQuery to Context ([db65e79](https://github.com/googleapis/google-cloud-go/commit/db65e7927e54b21a39a54f685810495d2885cb33))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.4.0) (2025-12-18)
+
+### Features
+
+* A new field `alloy_db_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.Datasource` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `alloydb` is added to message `.google.cloud.geminidataanalytics.v1beta.DatasourceReferences` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `cloud_sql_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.DatasourceReferences` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `cloud_sql_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.Datasource` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `spanner_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.DatasourceReferences` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `spanner_reference` is added to message `.google.cloud.geminidataanalytics.v1beta.Datasource` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `AgentContextReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `AlloyDbDatabaseReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `AlloyDbReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `CloudSqlDatabaseReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `CloudSqlReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `ExecutedQueryResult` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `GenerationOptions` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `QueryDataContext` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `QueryDataRequest` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `QueryDataResponse` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `SpannerDatabaseReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `SpannerReference` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new method `QueryData` is added to service `DataChatService` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add LookerGoldenQuery to Context ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* add a QueryData API for NL2SQL conversion ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* specify the data sources supported only by the QueryData API ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/geminidataanalytics%2Fv0.3.0) (2025-12-04)
 
 ### Features

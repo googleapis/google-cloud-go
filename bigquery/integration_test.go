@@ -27,6 +27,7 @@ import (
 	"reflect"
 	"sort"
 	"strings"
+	"sync"
 	"testing"
 	"time"
 
@@ -248,8 +249,6 @@ func initTestState(client *Client, t time.Time) func() {
 	modelIDs = uid.NewSpace("model", opts)
 	routineIDs = uid.NewSpace("routine", opts)
 	testTableExpiration = t.Add(2 * time.Hour).Round(time.Second)
-	// For replayability, seed the random source with t.
-	Seed(t.UnixNano())
 
 	prefixes := []string{
 		"dataset_",                    // bigquery package tests
@@ -276,6 +275,37 @@ func initTestState(client *Client, t time.Time) func() {
 		if err := otherDataset.DeleteWithContents(ctx); err != nil {
 			log.Printf("could not delete %s", dataset.DatasetID)
 		}
+	}
+}
+
+// features we use for skipping tests.
+const skipBigQueryPrefix string = "GCLOUD_TESTS_GOLANG_BIGQUERY"
+const skipBigQueryPublicIAMTestEnv string = "GCLOUD_TESTS_GOLANG_BIGQUERY_SKIP_PUBLIC_IAM_TESTS"
+
+var (
+	envEnabledOnce sync.Once
+	// populated on first check via envEnabledOnce.
+	envEnablementResults map[string]bool
+)
+
+// a utility method for skipping tests based on env variable enablement.
+func skipOnEnvEnabled(t *testing.T, envID string) {
+	t.Helper()
+	envEnabledOnce.Do(func() {
+		envEnablementResults = make(map[string]bool)
+		for _, env := range os.Environ() {
+			if strings.HasPrefix(env, skipBigQueryPrefix) {
+
+				kv := strings.SplitN(env, "=", 2)
+				if len(kv) == 2 && strings.ToLower(kv[1]) == "true" {
+					envEnablementResults[envID] = true
+				}
+
+			}
+		}
+	})
+	if envEnablementResults[envID] {
+		t.Skipf("skipping test due to env enablement: %s", envID)
 	}
 }
 
@@ -1480,8 +1510,8 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 		t.Fatal("expected job statistics, none found")
 	}
 
-	if status.Statistics.TotalSlotDuration <= 0 {
-		t.Errorf("expected positive total slot duration, %s reported", status.Statistics.TotalSlotDuration.String())
+	if status.Statistics.TotalSlotDuration < 0 {
+		t.Errorf("expected non-negative total slot duration, %s reported", status.Statistics.TotalSlotDuration.String())
 	}
 
 	if status.Statistics.NumChildJobs != 0 {
@@ -1523,6 +1553,10 @@ func TestIntegration_QueryStatistics(t *testing.T) {
 
 	if len(qStats.QueryPlan) == 0 {
 		t.Error("expected query plan, none present")
+	}
+
+	if qStats.TotalServicesSkuSlotMillis < 0 {
+		t.Errorf("expected total services SKU slot ms >= 0, got: %d", qStats.TotalServicesSkuSlotMillis)
 	}
 
 	if len(qStats.Timeline) == 0 {

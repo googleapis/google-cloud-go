@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,11 +31,14 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
+	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
@@ -64,6 +67,8 @@ type LiveVideoAnalyticsCallOptions struct {
 	UpdateProcess       []gax.CallOption
 	DeleteProcess       []gax.CallOption
 	BatchRunProcess     []gax.CallOption
+	GetLocation         []gax.CallOption
+	ListLocations       []gax.CallOption
 	CancelOperation     []gax.CallOption
 	DeleteOperation     []gax.CallOption
 	GetOperation        []gax.CallOption
@@ -213,6 +218,8 @@ func defaultLiveVideoAnalyticsCallOptions() *LiveVideoAnalyticsCallOptions {
 				})
 			}),
 		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -340,6 +347,8 @@ func defaultLiveVideoAnalyticsRESTCallOptions() *LiveVideoAnalyticsCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetLocation:     []gax.CallOption{},
+		ListLocations:   []gax.CallOption{},
 		CancelOperation: []gax.CallOption{},
 		DeleteOperation: []gax.CallOption{},
 		GetOperation:    []gax.CallOption{},
@@ -380,6 +389,8 @@ type internalLiveVideoAnalyticsClient interface {
 	DeleteProcessOperation(name string) *DeleteProcessOperation
 	BatchRunProcess(context.Context, *visionaipb.BatchRunProcessRequest, ...gax.CallOption) (*BatchRunProcessOperation, error)
 	BatchRunProcessOperation(name string) *BatchRunProcessOperation
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
 	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
 	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
@@ -406,7 +417,7 @@ type LiveVideoAnalyticsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *LiveVideoAnalyticsClient) Close() error {
 	return c.internalClient.Close()
@@ -578,6 +589,16 @@ func (c *LiveVideoAnalyticsClient) BatchRunProcessOperation(name string) *BatchR
 	return c.internalClient.BatchRunProcessOperation(name)
 }
 
+// GetLocation gets information about a location.
+func (c *LiveVideoAnalyticsClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	return c.internalClient.GetLocation(ctx, req, opts...)
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *LiveVideoAnalyticsClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	return c.internalClient.ListLocations(ctx, req, opts...)
+}
+
 // CancelOperation is a utility method from google.longrunning.Operations.
 func (c *LiveVideoAnalyticsClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.CancelOperation(ctx, req, opts...)
@@ -618,6 +639,8 @@ type liveVideoAnalyticsGRPCClient struct {
 
 	operationsClient longrunningpb.OperationsClient
 
+	locationsClient locationpb.LocationsClient
+
 	// The x-goog-* metadata to be sent with each request.
 	xGoogHeaders []string
 
@@ -631,6 +654,16 @@ type liveVideoAnalyticsGRPCClient struct {
 // Live Video Analytics (LVA) on the streaming inputs.
 func NewLiveVideoAnalyticsClient(ctx context.Context, opts ...option.ClientOption) (*LiveVideoAnalyticsClient, error) {
 	clientOpts := defaultLiveVideoAnalyticsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "visionai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/visionai/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "visionai.googleapis.com",
+		}))
+	}
 	if newLiveVideoAnalyticsClientHook != nil {
 		hookOpts, err := newLiveVideoAnalyticsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -651,8 +684,46 @@ func NewLiveVideoAnalyticsClient(ctx context.Context, opts ...option.ClientOptio
 		CallOptions:              &client.CallOptions,
 		logger:                   internaloption.GetLogger(opts),
 		operationsClient:         longrunningpb.NewOperationsClient(connPool),
+		locationsClient:          locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListPublicOperators = append(client.CallOptions.ListPublicOperators, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResolveOperatorInfo = append(client.CallOptions.ResolveOperatorInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperators = append(client.CallOptions.ListOperators, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperator = append(client.CallOptions.GetOperator, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateOperator = append(client.CallOptions.CreateOperator, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateOperator = append(client.CallOptions.UpdateOperator, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperator = append(client.CallOptions.DeleteOperator, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAnalyses = append(client.CallOptions.ListAnalyses, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAnalysis = append(client.CallOptions.GetAnalysis, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAnalysis = append(client.CallOptions.CreateAnalysis, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAnalysis = append(client.CallOptions.UpdateAnalysis, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAnalysis = append(client.CallOptions.DeleteAnalysis, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListProcesses = append(client.CallOptions.ListProcesses, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetProcess = append(client.CallOptions.GetProcess, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateProcess = append(client.CallOptions.CreateProcess, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProcess = append(client.CallOptions.UpdateProcess, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteProcess = append(client.CallOptions.DeleteProcess, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchRunProcess = append(client.CallOptions.BatchRunProcess, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -689,7 +760,7 @@ func (c *liveVideoAnalyticsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *liveVideoAnalyticsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -723,6 +794,16 @@ type liveVideoAnalyticsRESTClient struct {
 // Live Video Analytics (LVA) on the streaming inputs.
 func NewLiveVideoAnalyticsRESTClient(ctx context.Context, opts ...option.ClientOption) (*LiveVideoAnalyticsClient, error) {
 	clientOpts := append(defaultLiveVideoAnalyticsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "visionai",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/visionai/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "visionai.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -736,6 +817,44 @@ func NewLiveVideoAnalyticsRESTClient(ctx context.Context, opts ...option.ClientO
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "visionai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/visionai/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "visionai.googleapis.com",
+			}),
+		)
+
+		callOpts.ListPublicOperators = append(callOpts.ListPublicOperators, gax.WithClientMetrics(metrics))
+		callOpts.ResolveOperatorInfo = append(callOpts.ResolveOperatorInfo, gax.WithClientMetrics(metrics))
+		callOpts.ListOperators = append(callOpts.ListOperators, gax.WithClientMetrics(metrics))
+		callOpts.GetOperator = append(callOpts.GetOperator, gax.WithClientMetrics(metrics))
+		callOpts.CreateOperator = append(callOpts.CreateOperator, gax.WithClientMetrics(metrics))
+		callOpts.UpdateOperator = append(callOpts.UpdateOperator, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperator = append(callOpts.DeleteOperator, gax.WithClientMetrics(metrics))
+		callOpts.ListAnalyses = append(callOpts.ListAnalyses, gax.WithClientMetrics(metrics))
+		callOpts.GetAnalysis = append(callOpts.GetAnalysis, gax.WithClientMetrics(metrics))
+		callOpts.CreateAnalysis = append(callOpts.CreateAnalysis, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAnalysis = append(callOpts.UpdateAnalysis, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAnalysis = append(callOpts.DeleteAnalysis, gax.WithClientMetrics(metrics))
+		callOpts.ListProcesses = append(callOpts.ListProcesses, gax.WithClientMetrics(metrics))
+		callOpts.GetProcess = append(callOpts.GetProcess, gax.WithClientMetrics(metrics))
+		callOpts.CreateProcess = append(callOpts.CreateProcess, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProcess = append(callOpts.UpdateProcess, gax.WithClientMetrics(metrics))
+		callOpts.DeleteProcess = append(callOpts.DeleteProcess, gax.WithClientMetrics(metrics))
+		callOpts.BatchRunProcess = append(callOpts.BatchRunProcess, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -773,7 +892,7 @@ func (c *liveVideoAnalyticsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *liveVideoAnalyticsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -792,9 +911,15 @@ func (c *liveVideoAnalyticsGRPCClient) ListPublicOperators(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/ListPublicOperators")
+	}
 	opts = append((*c.CallOptions).ListPublicOperators[0:len((*c.CallOptions).ListPublicOperators):len((*c.CallOptions).ListPublicOperators)], opts...)
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListPublicOperatorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListPublicOperatorsResponse{}
 		if pageToken != "" {
@@ -838,6 +963,12 @@ func (c *liveVideoAnalyticsGRPCClient) ResolveOperatorInfo(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/ResolveOperatorInfo")
+	}
 	opts = append((*c.CallOptions).ResolveOperatorInfo[0:len((*c.CallOptions).ResolveOperatorInfo):len((*c.CallOptions).ResolveOperatorInfo)], opts...)
 	var resp *visionaipb.ResolveOperatorInfoResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -856,9 +987,15 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperators(ctx context.Context, req *v
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/ListOperators")
+	}
 	opts = append((*c.CallOptions).ListOperators[0:len((*c.CallOptions).ListOperators):len((*c.CallOptions).ListOperators)], opts...)
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListOperatorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListOperatorsResponse{}
 		if pageToken != "" {
@@ -902,6 +1039,12 @@ func (c *liveVideoAnalyticsGRPCClient) GetOperator(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/GetOperator")
+	}
 	opts = append((*c.CallOptions).GetOperator[0:len((*c.CallOptions).GetOperator):len((*c.CallOptions).GetOperator)], opts...)
 	var resp *visionaipb.Operator
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -920,6 +1063,12 @@ func (c *liveVideoAnalyticsGRPCClient) CreateOperator(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/CreateOperator")
+	}
 	opts = append((*c.CallOptions).CreateOperator[0:len((*c.CallOptions).CreateOperator):len((*c.CallOptions).CreateOperator)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -930,8 +1079,12 @@ func (c *liveVideoAnalyticsGRPCClient) CreateOperator(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateOperatorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateOperatorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -940,6 +1093,9 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateOperator(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/UpdateOperator")
+	}
 	opts = append((*c.CallOptions).UpdateOperator[0:len((*c.CallOptions).UpdateOperator):len((*c.CallOptions).UpdateOperator)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -950,8 +1106,12 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateOperator(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateOperatorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateOperatorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -960,6 +1120,12 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperator(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/DeleteOperator")
+	}
 	opts = append((*c.CallOptions).DeleteOperator[0:len((*c.CallOptions).DeleteOperator):len((*c.CallOptions).DeleteOperator)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -970,8 +1136,12 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperator(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteOperatorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteOperatorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -980,9 +1150,15 @@ func (c *liveVideoAnalyticsGRPCClient) ListAnalyses(ctx context.Context, req *vi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/ListAnalyses")
+	}
 	opts = append((*c.CallOptions).ListAnalyses[0:len((*c.CallOptions).ListAnalyses):len((*c.CallOptions).ListAnalyses)], opts...)
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Analysis, string, error) {
 		resp := &visionaipb.ListAnalysesResponse{}
 		if pageToken != "" {
@@ -1026,6 +1202,12 @@ func (c *liveVideoAnalyticsGRPCClient) GetAnalysis(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/GetAnalysis")
+	}
 	opts = append((*c.CallOptions).GetAnalysis[0:len((*c.CallOptions).GetAnalysis):len((*c.CallOptions).GetAnalysis)], opts...)
 	var resp *visionaipb.Analysis
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1044,6 +1226,12 @@ func (c *liveVideoAnalyticsGRPCClient) CreateAnalysis(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/CreateAnalysis")
+	}
 	opts = append((*c.CallOptions).CreateAnalysis[0:len((*c.CallOptions).CreateAnalysis):len((*c.CallOptions).CreateAnalysis)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1054,8 +1242,12 @@ func (c *liveVideoAnalyticsGRPCClient) CreateAnalysis(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1064,6 +1256,9 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysis(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/UpdateAnalysis")
+	}
 	opts = append((*c.CallOptions).UpdateAnalysis[0:len((*c.CallOptions).UpdateAnalysis):len((*c.CallOptions).UpdateAnalysis)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1074,8 +1269,12 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysis(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1084,6 +1283,12 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysis(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/DeleteAnalysis")
+	}
 	opts = append((*c.CallOptions).DeleteAnalysis[0:len((*c.CallOptions).DeleteAnalysis):len((*c.CallOptions).DeleteAnalysis)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1094,8 +1299,12 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysis(ctx context.Context, req *
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1104,9 +1313,15 @@ func (c *liveVideoAnalyticsGRPCClient) ListProcesses(ctx context.Context, req *v
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/ListProcesses")
+	}
 	opts = append((*c.CallOptions).ListProcesses[0:len((*c.CallOptions).ListProcesses):len((*c.CallOptions).ListProcesses)], opts...)
 	it := &ProcessIterator{}
-	req = proto.Clone(req).(*visionaipb.ListProcessesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Process, string, error) {
 		resp := &visionaipb.ListProcessesResponse{}
 		if pageToken != "" {
@@ -1150,6 +1365,12 @@ func (c *liveVideoAnalyticsGRPCClient) GetProcess(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/GetProcess")
+	}
 	opts = append((*c.CallOptions).GetProcess[0:len((*c.CallOptions).GetProcess):len((*c.CallOptions).GetProcess)], opts...)
 	var resp *visionaipb.Process
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1168,6 +1389,12 @@ func (c *liveVideoAnalyticsGRPCClient) CreateProcess(ctx context.Context, req *v
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/CreateProcess")
+	}
 	opts = append((*c.CallOptions).CreateProcess[0:len((*c.CallOptions).CreateProcess):len((*c.CallOptions).CreateProcess)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1178,8 +1405,12 @@ func (c *liveVideoAnalyticsGRPCClient) CreateProcess(ctx context.Context, req *v
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1188,6 +1419,9 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateProcess(ctx context.Context, req *v
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/UpdateProcess")
+	}
 	opts = append((*c.CallOptions).UpdateProcess[0:len((*c.CallOptions).UpdateProcess):len((*c.CallOptions).UpdateProcess)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1198,8 +1432,12 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateProcess(ctx context.Context, req *v
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1208,6 +1446,12 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteProcess(ctx context.Context, req *v
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/DeleteProcess")
+	}
 	opts = append((*c.CallOptions).DeleteProcess[0:len((*c.CallOptions).DeleteProcess):len((*c.CallOptions).DeleteProcess)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1218,8 +1462,12 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteProcess(ctx context.Context, req *v
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1228,6 +1476,12 @@ func (c *liveVideoAnalyticsGRPCClient) BatchRunProcess(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/BatchRunProcess")
+	}
 	opts = append((*c.CallOptions).BatchRunProcess[0:len((*c.CallOptions).BatchRunProcess):len((*c.CallOptions).BatchRunProcess)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1238,9 +1492,83 @@ func (c *liveVideoAnalyticsGRPCClient) BatchRunProcess(ctx context.Context, req 
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.BatchRunProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRunProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
+}
+
+func (c *liveVideoAnalyticsGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	var resp *locationpb.Location
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.locationsClient.GetLocation, req, settings.GRPC, c.logger, "GetLocation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *liveVideoAnalyticsGRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
+	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
+	it := &LocationIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.locationsClient.ListLocations, req, settings.GRPC, c.logger, "ListLocations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *liveVideoAnalyticsGRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
@@ -1248,6 +1576,9 @@ func (c *liveVideoAnalyticsGRPCClient) CancelOperation(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1262,6 +1593,9 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperation(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1276,6 +1610,9 @@ func (c *liveVideoAnalyticsGRPCClient) GetOperation(ctx context.Context, req *lo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1294,9 +1631,12 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperations(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1338,7 +1678,7 @@ func (c *liveVideoAnalyticsGRPCClient) ListOperations(ctx context.Context, req *
 // ListPublicOperators listPublicOperators returns all the operators in public registry.
 func (c *liveVideoAnalyticsRESTClient) ListPublicOperators(ctx context.Context, req *visionaipb.ListPublicOperatorsRequest, opts ...gax.CallOption) *OperatorIterator {
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListPublicOperatorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListPublicOperatorsResponse{}
@@ -1444,6 +1784,13 @@ func (c *liveVideoAnalyticsRESTClient) ResolveOperatorInfo(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/ResolveOperatorInfo")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}:resolveOperatorInfo")
+	}
 	opts = append((*c.CallOptions).ResolveOperatorInfo[0:len((*c.CallOptions).ResolveOperatorInfo):len((*c.CallOptions).ResolveOperatorInfo)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.ResolveOperatorInfoResponse{}
@@ -1478,7 +1825,7 @@ func (c *liveVideoAnalyticsRESTClient) ResolveOperatorInfo(ctx context.Context, 
 // ListOperators lists Operators in a given project and location.
 func (c *liveVideoAnalyticsRESTClient) ListOperators(ctx context.Context, req *visionaipb.ListOperatorsRequest, opts ...gax.CallOption) *OperatorIterator {
 	it := &OperatorIterator{}
-	req = proto.Clone(req).(*visionaipb.ListOperatorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Operator, string, error) {
 		resp := &visionaipb.ListOperatorsResponse{}
@@ -1578,6 +1925,13 @@ func (c *liveVideoAnalyticsRESTClient) GetOperator(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/GetOperator")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operators/*}")
+	}
 	opts = append((*c.CallOptions).GetOperator[0:len((*c.CallOptions).GetOperator):len((*c.CallOptions).GetOperator)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Operator{}
@@ -1639,6 +1993,13 @@ func (c *liveVideoAnalyticsRESTClient) CreateOperator(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/CreateOperator")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/operators")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1667,8 +2028,12 @@ func (c *liveVideoAnalyticsRESTClient) CreateOperator(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateOperatorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateOperatorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1709,6 +2074,10 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperator(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/UpdateOperator")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{operator.name=projects/*/locations/*/operators/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1737,8 +2106,12 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperator(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateOperatorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateOperatorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1765,6 +2138,13 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperator(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/DeleteOperator")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operators/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1793,8 +2173,12 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperator(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteOperatorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteOperatorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1802,7 +2186,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperator(ctx context.Context, req *
 // ListAnalyses lists Analyses in a given project and location.
 func (c *liveVideoAnalyticsRESTClient) ListAnalyses(ctx context.Context, req *visionaipb.ListAnalysesRequest, opts ...gax.CallOption) *AnalysisIterator {
 	it := &AnalysisIterator{}
-	req = proto.Clone(req).(*visionaipb.ListAnalysesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Analysis, string, error) {
 		resp := &visionaipb.ListAnalysesResponse{}
@@ -1902,6 +2286,13 @@ func (c *liveVideoAnalyticsRESTClient) GetAnalysis(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/GetAnalysis")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/analyses/*}")
+	}
 	opts = append((*c.CallOptions).GetAnalysis[0:len((*c.CallOptions).GetAnalysis):len((*c.CallOptions).GetAnalysis)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Analysis{}
@@ -1963,6 +2354,13 @@ func (c *liveVideoAnalyticsRESTClient) CreateAnalysis(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/CreateAnalysis")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/analyses")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1991,8 +2389,12 @@ func (c *liveVideoAnalyticsRESTClient) CreateAnalysis(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2033,6 +2435,10 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysis(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/UpdateAnalysis")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{analysis.name=projects/*/locations/*/clusters/*/analyses/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2061,8 +2467,12 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysis(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2089,6 +2499,13 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysis(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/DeleteAnalysis")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/analyses/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2117,8 +2534,12 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysis(ctx context.Context, req *
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteAnalysisOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2126,7 +2547,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysis(ctx context.Context, req *
 // ListProcesses lists Processes in a given project and location.
 func (c *liveVideoAnalyticsRESTClient) ListProcesses(ctx context.Context, req *visionaipb.ListProcessesRequest, opts ...gax.CallOption) *ProcessIterator {
 	it := &ProcessIterator{}
-	req = proto.Clone(req).(*visionaipb.ListProcessesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*visionaipb.Process, string, error) {
 		resp := &visionaipb.ListProcessesResponse{}
@@ -2226,6 +2647,13 @@ func (c *liveVideoAnalyticsRESTClient) GetProcess(ctx context.Context, req *visi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/GetProcess")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/processes/*}")
+	}
 	opts = append((*c.CallOptions).GetProcess[0:len((*c.CallOptions).GetProcess):len((*c.CallOptions).GetProcess)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &visionaipb.Process{}
@@ -2287,6 +2715,13 @@ func (c *liveVideoAnalyticsRESTClient) CreateProcess(ctx context.Context, req *v
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/CreateProcess")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/processes")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2315,8 +2750,12 @@ func (c *liveVideoAnalyticsRESTClient) CreateProcess(ctx context.Context, req *v
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.CreateProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2357,6 +2796,10 @@ func (c *liveVideoAnalyticsRESTClient) UpdateProcess(ctx context.Context, req *v
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/UpdateProcess")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{process.name=projects/*/locations/*/clusters/*/processes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2385,8 +2828,12 @@ func (c *liveVideoAnalyticsRESTClient) UpdateProcess(ctx context.Context, req *v
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.UpdateProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2413,6 +2860,13 @@ func (c *liveVideoAnalyticsRESTClient) DeleteProcess(ctx context.Context, req *v
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/DeleteProcess")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*/processes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2441,8 +2895,12 @@ func (c *liveVideoAnalyticsRESTClient) DeleteProcess(ctx context.Context, req *v
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.DeleteProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2473,6 +2931,13 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcess(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//visionai.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.visionai.v1.LiveVideoAnalytics/BatchRunProcess")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/clusters/*}/processes:batchRun")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2501,10 +2966,149 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcess(ctx context.Context, req 
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*visionai.BatchRunProcessOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &BatchRunProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// GetLocation gets information about a location.
+func (c *liveVideoAnalyticsRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
+	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &locationpb.Location{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetLocation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListLocations lists information about the supported locations for this service.
+func (c *liveVideoAnalyticsRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
+	it := &LocationIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
+		resp := &locationpb.ListLocationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/locations", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListLocations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetLocations(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CancelOperation is a utility method from google.longrunning.Operations.
@@ -2532,6 +3136,10 @@ func (c *liveVideoAnalyticsRESTClient) CancelOperation(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2567,6 +3175,10 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperation(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2602,6 +3214,10 @@ func (c *liveVideoAnalyticsRESTClient) GetOperation(ctx context.Context, req *lo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2636,7 +3252,7 @@ func (c *liveVideoAnalyticsRESTClient) GetOperation(ctx context.Context, req *lo
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *liveVideoAnalyticsRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -2721,7 +3337,7 @@ func (c *liveVideoAnalyticsRESTClient) ListOperations(ctx context.Context, req *
 // The name must be that of a previously created BatchRunProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) BatchRunProcessOperation(name string) *BatchRunProcessOperation {
 	return &BatchRunProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.BatchRunProcessOperation"),
 	}
 }
 
@@ -2730,7 +3346,7 @@ func (c *liveVideoAnalyticsGRPCClient) BatchRunProcessOperation(name string) *Ba
 func (c *liveVideoAnalyticsRESTClient) BatchRunProcessOperation(name string) *BatchRunProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &BatchRunProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.BatchRunProcessOperation"),
 		pollPath: override,
 	}
 }
@@ -2739,7 +3355,7 @@ func (c *liveVideoAnalyticsRESTClient) BatchRunProcessOperation(name string) *Ba
 // The name must be that of a previously created CreateAnalysisOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	return &CreateAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateAnalysisOperation"),
 	}
 }
 
@@ -2748,7 +3364,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateAnalysisOperation(name string) *Cre
 func (c *liveVideoAnalyticsRESTClient) CreateAnalysisOperation(name string) *CreateAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateAnalysisOperation"),
 		pollPath: override,
 	}
 }
@@ -2757,7 +3373,7 @@ func (c *liveVideoAnalyticsRESTClient) CreateAnalysisOperation(name string) *Cre
 // The name must be that of a previously created CreateOperatorOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) CreateOperatorOperation(name string) *CreateOperatorOperation {
 	return &CreateOperatorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateOperatorOperation"),
 	}
 }
 
@@ -2766,7 +3382,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateOperatorOperation(name string) *Cre
 func (c *liveVideoAnalyticsRESTClient) CreateOperatorOperation(name string) *CreateOperatorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateOperatorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateOperatorOperation"),
 		pollPath: override,
 	}
 }
@@ -2775,7 +3391,7 @@ func (c *liveVideoAnalyticsRESTClient) CreateOperatorOperation(name string) *Cre
 // The name must be that of a previously created CreateProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) CreateProcessOperation(name string) *CreateProcessOperation {
 	return &CreateProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateProcessOperation"),
 	}
 }
 
@@ -2784,7 +3400,7 @@ func (c *liveVideoAnalyticsGRPCClient) CreateProcessOperation(name string) *Crea
 func (c *liveVideoAnalyticsRESTClient) CreateProcessOperation(name string) *CreateProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.CreateProcessOperation"),
 		pollPath: override,
 	}
 }
@@ -2793,7 +3409,7 @@ func (c *liveVideoAnalyticsRESTClient) CreateProcessOperation(name string) *Crea
 // The name must be that of a previously created DeleteAnalysisOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysisOperation(name string) *DeleteAnalysisOperation {
 	return &DeleteAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteAnalysisOperation"),
 	}
 }
 
@@ -2802,7 +3418,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteAnalysisOperation(name string) *Del
 func (c *liveVideoAnalyticsRESTClient) DeleteAnalysisOperation(name string) *DeleteAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteAnalysisOperation"),
 		pollPath: override,
 	}
 }
@@ -2811,7 +3427,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteAnalysisOperation(name string) *Del
 // The name must be that of a previously created DeleteOperatorOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) DeleteOperatorOperation(name string) *DeleteOperatorOperation {
 	return &DeleteOperatorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteOperatorOperation"),
 	}
 }
 
@@ -2820,7 +3436,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteOperatorOperation(name string) *Del
 func (c *liveVideoAnalyticsRESTClient) DeleteOperatorOperation(name string) *DeleteOperatorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteOperatorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteOperatorOperation"),
 		pollPath: override,
 	}
 }
@@ -2829,7 +3445,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteOperatorOperation(name string) *Del
 // The name must be that of a previously created DeleteProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) DeleteProcessOperation(name string) *DeleteProcessOperation {
 	return &DeleteProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteProcessOperation"),
 	}
 }
 
@@ -2838,7 +3454,7 @@ func (c *liveVideoAnalyticsGRPCClient) DeleteProcessOperation(name string) *Dele
 func (c *liveVideoAnalyticsRESTClient) DeleteProcessOperation(name string) *DeleteProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.DeleteProcessOperation"),
 		pollPath: override,
 	}
 }
@@ -2847,7 +3463,7 @@ func (c *liveVideoAnalyticsRESTClient) DeleteProcessOperation(name string) *Dele
 // The name must be that of a previously created UpdateAnalysisOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysisOperation(name string) *UpdateAnalysisOperation {
 	return &UpdateAnalysisOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateAnalysisOperation"),
 	}
 }
 
@@ -2856,7 +3472,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateAnalysisOperation(name string) *Upd
 func (c *liveVideoAnalyticsRESTClient) UpdateAnalysisOperation(name string) *UpdateAnalysisOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAnalysisOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateAnalysisOperation"),
 		pollPath: override,
 	}
 }
@@ -2865,7 +3481,7 @@ func (c *liveVideoAnalyticsRESTClient) UpdateAnalysisOperation(name string) *Upd
 // The name must be that of a previously created UpdateOperatorOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) UpdateOperatorOperation(name string) *UpdateOperatorOperation {
 	return &UpdateOperatorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateOperatorOperation"),
 	}
 }
 
@@ -2874,7 +3490,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateOperatorOperation(name string) *Upd
 func (c *liveVideoAnalyticsRESTClient) UpdateOperatorOperation(name string) *UpdateOperatorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateOperatorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateOperatorOperation"),
 		pollPath: override,
 	}
 }
@@ -2883,7 +3499,7 @@ func (c *liveVideoAnalyticsRESTClient) UpdateOperatorOperation(name string) *Upd
 // The name must be that of a previously created UpdateProcessOperation, possibly from a different process.
 func (c *liveVideoAnalyticsGRPCClient) UpdateProcessOperation(name string) *UpdateProcessOperation {
 	return &UpdateProcessOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateProcessOperation"),
 	}
 }
 
@@ -2892,7 +3508,7 @@ func (c *liveVideoAnalyticsGRPCClient) UpdateProcessOperation(name string) *Upda
 func (c *liveVideoAnalyticsRESTClient) UpdateProcessOperation(name string) *UpdateProcessOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateProcessOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*visionai.UpdateProcessOperation"),
 		pollPath: override,
 	}
 }

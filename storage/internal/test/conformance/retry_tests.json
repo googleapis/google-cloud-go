@@ -258,6 +258,19 @@
         },
         {
           "instructions": ["return-503-after-8192K", "return-408"]
+        },
+        {
+          "instructions": [ "return-503-after-4080K"]
+        },
+        {
+          "instructions": [
+            "return-503-after-1000K",
+            "return-503-after-1024K",
+            "return-503-after-1025K",
+            "return-503-after-4000K",
+            "return-503-after-4096K",
+            "return-503-after-4097K"
+          ]
         }
       ],
       "methods": [

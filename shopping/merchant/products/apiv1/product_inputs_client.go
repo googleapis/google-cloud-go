@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 
 	productspb "cloud.google.com/go/shopping/merchant/products/apiv1/productspb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -164,7 +165,7 @@ type ProductInputsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ProductInputsClient) Close() error {
 	return c.internalClient.Close()
@@ -186,11 +187,11 @@ func (c *ProductInputsClient) Connection() *grpc.ClientConn {
 }
 
 // InsertProductInput Uploads a product input to your Merchant Center
-// account (at /merchant/api/guides/products/overview#upload-product-input). You
+// account (at /merchant/api/guides/products/add-manage#add_a_product). You
 // must have a products data
-// source (at /merchant/api/guides/data-sources/overview) to be able to insert a
-// product. The unique identifier of the data source is passed as a query
-// parameter in the request URL.
+// source (at /merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+// to be able to insert a product. The unique identifier of the data source is
+// passed as a query parameter in the request URL.
 //
 // If a product input with the same contentLanguage, offerId, and dataSource
 // already exists, then the product input inserted by this method replaces
@@ -203,6 +204,8 @@ func (c *ProductInputsClient) InsertProductInput(ctx context.Context, req *produ
 }
 
 // UpdateProductInput updates the existing product input in your Merchant Center account.
+// The name of the product input to update is taken from the name field
+// within the ProductInput resource.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
@@ -243,6 +246,16 @@ type productInputsGRPCClient struct {
 // Service to use ProductInput resource.
 func NewProductInputsClient(ctx context.Context, opts ...option.ClientOption) (*ProductInputsClient, error) {
 	clientOpts := defaultProductInputsGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/products/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	if newProductInputsClientHook != nil {
 		hookOpts, err := newProductInputsClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -264,6 +277,22 @@ func NewProductInputsClient(ctx context.Context, opts ...option.ClientOption) (*
 		logger:              internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/products/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.InsertProductInput = append(client.CallOptions.InsertProductInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateProductInput = append(client.CallOptions.UpdateProductInput, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteProductInput = append(client.CallOptions.DeleteProductInput, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -289,7 +318,7 @@ func (c *productInputsGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *productInputsGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -317,6 +346,16 @@ type productInputsRESTClient struct {
 // Service to use ProductInput resource.
 func NewProductInputsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ProductInputsClient, error) {
 	clientOpts := append(defaultProductInputsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "merchantapi",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/shopping/merchant/products/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "merchantapi.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -330,6 +369,23 @@ func NewProductInputsRESTClient(ctx context.Context, opts ...option.ClientOption
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/products/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.InsertProductInput = append(callOpts.InsertProductInput, gax.WithClientMetrics(metrics))
+		callOpts.UpdateProductInput = append(callOpts.UpdateProductInput, gax.WithClientMetrics(metrics))
+		callOpts.DeleteProductInput = append(callOpts.DeleteProductInput, gax.WithClientMetrics(metrics))
+	}
 
 	return &ProductInputsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -357,7 +413,7 @@ func (c *productInputsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *productInputsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -376,6 +432,12 @@ func (c *productInputsGRPCClient) InsertProductInput(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/InsertProductInput")
+	}
 	opts = append((*c.CallOptions).InsertProductInput[0:len((*c.CallOptions).InsertProductInput):len((*c.CallOptions).InsertProductInput)], opts...)
 	var resp *productspb.ProductInput
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -394,6 +456,9 @@ func (c *productInputsGRPCClient) UpdateProductInput(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/UpdateProductInput")
+	}
 	opts = append((*c.CallOptions).UpdateProductInput[0:len((*c.CallOptions).UpdateProductInput):len((*c.CallOptions).UpdateProductInput)], opts...)
 	var resp *productspb.ProductInput
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -412,6 +477,12 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/DeleteProductInput")
+	}
 	opts = append((*c.CallOptions).DeleteProductInput[0:len((*c.CallOptions).DeleteProductInput):len((*c.CallOptions).DeleteProductInput)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -422,11 +493,11 @@ func (c *productInputsGRPCClient) DeleteProductInput(ctx context.Context, req *p
 }
 
 // InsertProductInput Uploads a product input to your Merchant Center
-// account (at /merchant/api/guides/products/overview#upload-product-input). You
+// account (at /merchant/api/guides/products/add-manage#add_a_product). You
 // must have a products data
-// source (at /merchant/api/guides/data-sources/overview) to be able to insert a
-// product. The unique identifier of the data source is passed as a query
-// parameter in the request URL.
+// source (at /merchant/api/guides/data-sources/api-sources#create-primary-data-source)
+// to be able to insert a product. The unique identifier of the data source is
+// passed as a query parameter in the request URL.
 //
 // If a product input with the same contentLanguage, offerId, and dataSource
 // already exists, then the product input inserted by this method replaces
@@ -460,6 +531,13 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/InsertProductInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/products/v1/{parent=accounts/*}/productInputs:insert")
+	}
 	opts = append((*c.CallOptions).InsertProductInput[0:len((*c.CallOptions).InsertProductInput):len((*c.CallOptions).InsertProductInput)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &productspb.ProductInput{}
@@ -492,6 +570,8 @@ func (c *productInputsRESTClient) InsertProductInput(ctx context.Context, req *p
 }
 
 // UpdateProductInput updates the existing product input in your Merchant Center account.
+// The name of the product input to update is taken from the name field
+// within the ProductInput resource.
 //
 // After inserting, updating, or deleting a product input, it may take several
 // minutes before the processed product can be retrieved.
@@ -528,6 +608,10 @@ func (c *productInputsRESTClient) UpdateProductInput(ctx context.Context, req *p
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/UpdateProductInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/products/v1/{product_input.name=accounts/*/productInputs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateProductInput[0:len((*c.CallOptions).UpdateProductInput):len((*c.CallOptions).UpdateProductInput)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &productspb.ProductInput{}
@@ -582,6 +666,13 @@ func (c *productInputsRESTClient) DeleteProductInput(ctx context.Context, req *p
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.products.v1.ProductInputsService/DeleteProductInput")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/products/v1/{name=accounts/*/productInputs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path

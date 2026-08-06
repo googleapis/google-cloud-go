@@ -241,6 +241,9 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 			client := internal.DefaultClient()
 			client.Transport = mockTransport{
 				handler: http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+					if strings.Contains(r.URL.Path, "generateAccessToken") {
+						t.Errorf("unexpected call to generateAccessToken")
+					}
 					w.Write([]byte(fmt.Sprintf(`{"token": %q}`, wantTok)))
 				}),
 			}
@@ -271,6 +274,17 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 			}
 			if tok.Value != wantTok {
 				t.Errorf("got %q, want %q", tok.Value, wantTok)
+			}
+			// Assertions for JSON and UniverseDomain propagation
+			if len(creds.JSON()) == 0 {
+				t.Error("expected non-empty JSON from credentials")
+			}
+			ud, err := creds.UniverseDomain(context.Background())
+			if err != nil {
+				t.Fatal(err)
+			}
+			if ud != internal.DefaultUniverseDomain {
+				t.Errorf("got %q, want %q", ud, internal.DefaultUniverseDomain)
 			}
 		})
 	}
@@ -355,4 +369,19 @@ func readTestFile(t *testing.T, filename string) []byte {
 		t.Fatalf("os.ReadFile(%q) = %v", filename, err)
 	}
 	return b
+}
+
+func TestNewCredentials_UserCredentials_ADC_Unsupported(t *testing.T) {
+	t.Setenv(credsfile.GoogleAppCredsEnvVar, "../../internal/testdata/user.json")
+	opts := &Options{
+		Audience: "aud",
+	}
+	_, err := NewCredentials(opts)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	wantErrMsg := "idtoken: unsupported credentials type: authorized_user"
+	if !strings.Contains(err.Error(), wantErrMsg) {
+		t.Errorf("got error message %q, want error message containing %q", err.Error(), wantErrMsg)
+	}
 }

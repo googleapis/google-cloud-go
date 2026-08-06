@@ -42,4 +42,17 @@ var (
 	// It sets the gRPC client to use the BidiReadObject API for downloads and
 	// appendable object semantics by default for uploads.
 	WithZonalBucketAPIs any // func() option.ClientOption
+
+	// WithDirectConnectivityEnforced is a function which is implemented by the storage package.
+	// It sets the gRPC client to use direct path connectivity for all requests and may fail
+	// if direct path connectivity cannot be established for a request.
+	WithDirectConnectivityEnforced any // func() option.ClientOption
+
+	// WithOtelMetrics is a function which is implemented by the storage package.
+	// It enables client-side OpenTelemetry metrics.
+	WithOtelMetrics any // func() option.ClientOption
+
+	// WithOtelDebugMetrics is a function which is implemented by the storage package.
+	// It enables debug client-side OpenTelemetry metrics.
+	WithOtelDebugMetrics any // func() option.ClientOption
 )

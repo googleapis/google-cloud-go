@@ -1,6 +1,66 @@
 # Changes
 
 
+## [1.49.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.48.0...documentai/v1.49.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.48.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [1.47.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.47.0) (2026-04-30)
+
+## [1.46.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.46.0) (2026-04-13)
+
+## [1.45.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.45.0) (2026-04-09)
+
+## [1.44.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.44.0) (2026-04-02)
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.43.0) (2026-03-23)
+
+### Features
+
+* Add a field for upgrading previous processor version when fine tuning ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.42.0) (2026-03-05)
+
+### Features
+
+* Added a field for enabling image and table annotation for layout parser processor ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.41.0) (2026-02-12)
+
+### Features
+
+* A new field `document_prompt` is added to message `.google.cloud.documentai.v1beta3.DocumentSchema` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* A new field `document_type` is added to message `.google.cloud.documentai.v1beta3.ImportDocumentsRequest` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* A new field `enable_table_split` is added to message `.google.cloud.documentai.v1beta3.OcrConfig.LayoutParsingParams` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* A new field `revisions` is added to message `.google.cloud.documentai.v1beta3.Evaluation` ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* Added new messages `Documents` and `RawDocuments` for inline document input ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* The field `skip_human_review` in messages `.google.cloud.documentai.v1beta3.ProcessRequest` and `.google.cloud.documentai.v1beta3.BatchProcessRequest` is deprecated ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+* The method `ReviewDocument` in `.google.cloud.documentai.v1beta3.DocumentProcessorService` is deprecated ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+### Bug Fixes
+
+* Removed the `SpannerIndexingConfig` message and the `spanner_indexing_config` field from `.google.cloud.documentai.v1beta3.Dataset` BREAKING CHANGE: The `SpannerIndexingConfig` message and the `spanner_indexing_config` field within the `Dataset` message have been removed. Client code referencing these will need to stop referencing these in case of an error ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+### Documentation
+
+* Updated comments for various fields and messages ([6f31019](https://github.com/googleapis/google-cloud-go/commit/6f310199e136b133bb4fadaa353e264e809db6d7))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/releases/tag/documentai%2Fv1.40.0) (2026-01-29)
+
+### Documentation
+
+* Fixed language issues in multiple message field descriptions ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+* Regenerated REST and RPC Document AI documentation to include missing changes from September 2024 to November 2025 ([d8ea738](https://github.com/googleapis/google-cloud-go/commit/d8ea738a6e8f0603593d686a44331e7e0a572c27))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/documentai/v1.38.1...documentai/v1.39.0) (2025-10-09)
 
 

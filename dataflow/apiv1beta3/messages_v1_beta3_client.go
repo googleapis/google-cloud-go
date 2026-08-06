@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -87,8 +88,7 @@ type internalMessagesV1Beta3Client interface {
 // MessagesV1Beta3Client is a client for interacting with Dataflow API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// The Dataflow Messages API is used for monitoring the progress of
-// Dataflow jobs.
+// The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 type MessagesV1Beta3Client struct {
 	// The internal transport-dependent client.
 	internalClient internalMessagesV1Beta3Client
@@ -99,7 +99,7 @@ type MessagesV1Beta3Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *MessagesV1Beta3Client) Close() error {
 	return c.internalClient.Close()
@@ -153,10 +153,19 @@ type messagesV1Beta3GRPCClient struct {
 // NewMessagesV1Beta3Client creates a new messages v1 beta3 client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// The Dataflow Messages API is used for monitoring the progress of
-// Dataflow jobs.
+// The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*MessagesV1Beta3Client, error) {
 	clientOpts := defaultMessagesV1Beta3GRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	if newMessagesV1Beta3ClientHook != nil {
 		hookOpts, err := newMessagesV1Beta3ClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -178,6 +187,20 @@ func NewMessagesV1Beta3Client(ctx context.Context, opts ...option.ClientOption) 
 		logger:                internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListJobMessages = append(client.CallOptions.ListJobMessages, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -203,7 +226,7 @@ func (c *messagesV1Beta3GRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *messagesV1Beta3GRPCClient) Close() error {
 	return c.connPool.Close()
@@ -228,10 +251,19 @@ type messagesV1Beta3RESTClient struct {
 
 // NewMessagesV1Beta3RESTClient creates a new messages v1 beta3 rest client.
 //
-// The Dataflow Messages API is used for monitoring the progress of
-// Dataflow jobs.
+// The Dataflow Messages API is used to monitor the progress of Dataflow jobs.
 func NewMessagesV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) (*MessagesV1Beta3Client, error) {
 	clientOpts := append(defaultMessagesV1Beta3RESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataflow",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataflow/apiv1beta3",
+			"gcp.client.language": "go",
+			"url.domain":          "dataflow.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -245,6 +277,21 @@ func NewMessagesV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.ListJobMessages = append(callOpts.ListJobMessages, gax.WithClientMetrics(metrics))
+	}
 
 	return &MessagesV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -272,7 +319,7 @@ func (c *messagesV1Beta3RESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *messagesV1Beta3RESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -291,9 +338,12 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.dataflow.v1beta3.MessagesV1Beta3/ListJobMessages")
+	}
 	opts = append((*c.CallOptions).ListJobMessages[0:len((*c.CallOptions).ListJobMessages):len((*c.CallOptions).ListJobMessages)], opts...)
 	it := &JobMessageIterator{}
-	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.JobMessage, string, error) {
 		resp := &dataflowpb.ListJobMessagesResponse{}
 		if pageToken != "" {
@@ -341,7 +391,7 @@ func (c *messagesV1Beta3GRPCClient) ListJobMessages(ctx context.Context, req *da
 // the status of jobs that are running in us-central1.
 func (c *messagesV1Beta3RESTClient) ListJobMessages(ctx context.Context, req *dataflowpb.ListJobMessagesRequest, opts ...gax.CallOption) *JobMessageIterator {
 	it := &JobMessageIterator{}
-	req = proto.Clone(req).(*dataflowpb.ListJobMessagesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataflowpb.JobMessage, string, error) {
 		resp := &dataflowpb.ListJobMessagesResponse{}

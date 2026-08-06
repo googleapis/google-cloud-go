@@ -1543,6 +1543,110 @@
         }
       }
     },
+    "GeneratorEvaluations": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "GeneratorEvaluationsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGeneratorEvaluation": {
+              "methods": [
+                "CreateGeneratorEvaluation"
+              ]
+            },
+            "DeleteGeneratorEvaluation": {
+              "methods": [
+                "DeleteGeneratorEvaluation"
+              ]
+            },
+            "GetGeneratorEvaluation": {
+              "methods": [
+                "GetGeneratorEvaluation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGeneratorEvaluations": {
+              "methods": [
+                "ListGeneratorEvaluations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "GeneratorEvaluationsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateGeneratorEvaluation": {
+              "methods": [
+                "CreateGeneratorEvaluation"
+              ]
+            },
+            "DeleteGeneratorEvaluation": {
+              "methods": [
+                "DeleteGeneratorEvaluation"
+              ]
+            },
+            "GetGeneratorEvaluation": {
+              "methods": [
+                "GetGeneratorEvaluation"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListGeneratorEvaluations": {
+              "methods": [
+                "ListGeneratorEvaluations"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Generators": {
       "clients": {
         "grpc": {
@@ -2261,6 +2365,234 @@
             "StreamingDetectIntent": {
               "methods": [
                 "StreamingDetectIntent"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SipTrunks": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SipTrunksClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSipTrunk": {
+              "methods": [
+                "CreateSipTrunk"
+              ]
+            },
+            "DeleteSipTrunk": {
+              "methods": [
+                "DeleteSipTrunk"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSipTrunk": {
+              "methods": [
+                "GetSipTrunk"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSipTrunks": {
+              "methods": [
+                "ListSipTrunks"
+              ]
+            },
+            "UpdateSipTrunk": {
+              "methods": [
+                "UpdateSipTrunk"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SipTrunksClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateSipTrunk": {
+              "methods": [
+                "CreateSipTrunk"
+              ]
+            },
+            "DeleteSipTrunk": {
+              "methods": [
+                "DeleteSipTrunk"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetSipTrunk": {
+              "methods": [
+                "GetSipTrunk"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListSipTrunks": {
+              "methods": [
+                "ListSipTrunks"
+              ]
+            },
+            "UpdateSipTrunk": {
+              "methods": [
+                "UpdateSipTrunk"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Tools": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ToolsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ToolsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
               ]
             }
           }

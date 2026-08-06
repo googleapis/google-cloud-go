@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	servicecontrolpb "cloud.google.com/go/servicecontrol/apiv1/servicecontrolpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -80,7 +81,7 @@ type internalQuotaControllerClient interface {
 // QuotaControllerClient is a client for interacting with Service Control API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
@@ -94,7 +95,7 @@ type QuotaControllerClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *QuotaControllerClient) Close() error {
 	return c.internalClient.Close()
@@ -152,12 +153,22 @@ type quotaControllerGRPCClient struct {
 // NewQuotaControllerClient creates a new quota controller client based on gRPC.
 // The returned client must be Closed when it is done being used to clean up its underlying connections.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
 func NewQuotaControllerClient(ctx context.Context, opts ...option.ClientOption) (*QuotaControllerClient, error) {
 	clientOpts := defaultQuotaControllerGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicecontrol",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicecontrol/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicecontrol.googleapis.com",
+		}))
+	}
 	if newQuotaControllerClientHook != nil {
 		hookOpts, err := newQuotaControllerClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -179,6 +190,20 @@ func NewQuotaControllerClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:                internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AllocateQuota = append(client.CallOptions.AllocateQuota, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -204,7 +229,7 @@ func (c *quotaControllerGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *quotaControllerGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -229,12 +254,22 @@ type quotaControllerRESTClient struct {
 
 // NewQuotaControllerRESTClient creates a new quota controller rest client.
 //
-// Google Quota Control API (at /service-control/overview)
+// Google Quota Control API (at https://cloud.google.com/service-control/overview)
 //
 // Allows clients to allocate and release quota against a managed
 // service (at https://cloud.google.com/service-management/reference/rpc/google.api/servicemanagement.v1#google.api.servicemanagement.v1.ManagedService).
 func NewQuotaControllerRESTClient(ctx context.Context, opts ...option.ClientOption) (*QuotaControllerClient, error) {
 	clientOpts := append(defaultQuotaControllerRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "servicecontrol",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/servicecontrol/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "servicecontrol.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -248,6 +283,21 @@ func NewQuotaControllerRESTClient(ctx context.Context, opts ...option.ClientOpti
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "servicecontrol",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicecontrol/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicecontrol.googleapis.com",
+			}),
+		)
+
+		callOpts.AllocateQuota = append(callOpts.AllocateQuota, gax.WithClientMetrics(metrics))
+	}
 
 	return &QuotaControllerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -275,7 +325,7 @@ func (c *quotaControllerRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *quotaControllerRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -294,6 +344,9 @@ func (c *quotaControllerGRPCClient) AllocateQuota(ctx context.Context, req *serv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicecontrol.v1.QuotaController/AllocateQuota")
+	}
 	opts = append((*c.CallOptions).AllocateQuota[0:len((*c.CallOptions).AllocateQuota):len((*c.CallOptions).AllocateQuota)], opts...)
 	var resp *servicecontrolpb.AllocateQuotaResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -342,6 +395,10 @@ func (c *quotaControllerRESTClient) AllocateQuota(ctx context.Context, req *serv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.api.servicecontrol.v1.QuotaController/AllocateQuota")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/services/{service_name}:allocateQuota")
+	}
 	opts = append((*c.CallOptions).AllocateQuota[0:len((*c.CallOptions).AllocateQuota):len((*c.CallOptions).AllocateQuota)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &servicecontrolpb.AllocateQuotaResponse{}

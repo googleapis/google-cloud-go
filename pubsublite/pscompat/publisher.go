@@ -15,8 +15,11 @@ package pscompat
 
 import (
 	"context"
+	"fmt"
 	"runtime"
 	"sync"
+
+	"github.com/IBM/sarama"
 
 	"cloud.google.com/go/pubsub"
 	"cloud.google.com/go/pubsublite/internal/wire"
@@ -89,6 +92,10 @@ func NewPublisherClient(ctx context.Context, topic string, opts ...option.Client
 // Stop must be called to release resources when a PublisherClient is no longer
 // required.
 func NewPublisherClientWithSettings(ctx context.Context, topic string, settings PublishSettings, opts ...option.ClientOption) (*PublisherClient, error) {
+	if settings.Backend == ManagedKafka {
+		return newManagedKafkaPublisherClient(ctx, settings)
+	}
+
 	topicPath, err := wire.ParseTopicPath(topic)
 	if err != nil {
 		return nil, err
@@ -113,6 +120,50 @@ func NewPublisherClientWithSettings(ctx context.Context, topic string, settings 
 	// finalizers run after an arbitrary amount of time.
 	runtime.SetFinalizer(publisher, func(p *PublisherClient) {
 		// TODO: Log a warning.
+		go p.wirePub.Stop()
+	})
+	return publisher, nil
+}
+
+// newManagedKafkaPublisherClient creates a PublisherClient backed by a Sarama
+// AsyncProducer connected to Google Managed Kafka.
+func newManagedKafkaPublisherClient(ctx context.Context, settings PublishSettings) (*PublisherClient, error) {
+	kafkaCfg := settings.KafkaConfig
+	if kafkaCfg == nil {
+		return nil, fmt.Errorf("gmk: PublishSettings.KafkaConfig must be set when Backend is ManagedKafka")
+	}
+	if kafkaCfg.BootstrapServers == "" {
+		return nil, fmt.Errorf("gmk: KafkaPublishConfig.BootstrapServers must not be empty")
+	}
+	if kafkaCfg.TopicName == "" {
+		return nil, fmt.Errorf("gmk: KafkaPublishConfig.TopicName must not be empty")
+	}
+
+	saramaCfg := kafkaCfg.SaramaConfig
+	if saramaCfg == nil {
+		var err error
+		saramaCfg, err = NewGMKSaramaConfig(ctx)
+		if err != nil {
+			return nil, fmt.Errorf("gmk: failed to create Sarama config: %w", err)
+		}
+	}
+	if err := validateKafkaPublisherConfig(saramaCfg); err != nil {
+		return nil, err
+	}
+
+	producer, err := sarama.NewAsyncProducer([]string{kafkaCfg.BootstrapServers}, saramaCfg)
+	if err != nil {
+		return nil, fmt.Errorf("gmk: failed to create Kafka producer: %w", err)
+	}
+
+	wirePub := wire.NewKafkaPublisher(producer, kafkaCfg.TopicName)
+	wirePub.Start()
+	if err := wirePub.WaitStarted(); err != nil {
+		return nil, err
+	}
+
+	publisher := &PublisherClient{settings: settings, wirePub: wirePub}
+	runtime.SetFinalizer(publisher, func(p *PublisherClient) {
 		go p.wirePub.Stop()
 	})
 	return publisher, nil

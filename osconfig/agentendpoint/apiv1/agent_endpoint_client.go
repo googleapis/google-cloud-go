@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -24,6 +24,7 @@ import (
 
 	agentendpointpb "cloud.google.com/go/osconfig/agentendpoint/apiv1/agentendpointpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
@@ -41,6 +42,7 @@ type CallOptions struct {
 	ReportTaskComplete      []gax.CallOption
 	RegisterAgent           []gax.CallOption
 	ReportInventory         []gax.CallOption
+	ReportVmInventory       []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -135,6 +137,18 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ReportVmInventory: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
@@ -149,6 +163,7 @@ type internalClient interface {
 	ReportTaskComplete(context.Context, *agentendpointpb.ReportTaskCompleteRequest, ...gax.CallOption) (*agentendpointpb.ReportTaskCompleteResponse, error)
 	RegisterAgent(context.Context, *agentendpointpb.RegisterAgentRequest, ...gax.CallOption) (*agentendpointpb.RegisterAgentResponse, error)
 	ReportInventory(context.Context, *agentendpointpb.ReportInventoryRequest, ...gax.CallOption) (*agentendpointpb.ReportInventoryResponse, error)
+	ReportVmInventory(context.Context, *agentendpointpb.ReportVmInventoryRequest, ...gax.CallOption) (*agentendpointpb.ReportVmInventoryResponse, error)
 }
 
 // Client is a client for interacting with OS Config API.
@@ -165,7 +180,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -217,6 +232,11 @@ func (c *Client) ReportInventory(ctx context.Context, req *agentendpointpb.Repor
 	return c.internalClient.ReportInventory(ctx, req, opts...)
 }
 
+// ReportVmInventory reports the VMs current inventory.
+func (c *Client) ReportVmInventory(ctx context.Context, req *agentendpointpb.ReportVmInventoryRequest, opts ...gax.CallOption) (*agentendpointpb.ReportVmInventoryResponse, error) {
+	return c.internalClient.ReportVmInventory(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with OS Config API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -242,6 +262,16 @@ type gRPCClient struct {
 // OS Config agent endpoint API.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "osconfig",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/osconfig/agentendpoint/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "osconfig.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -263,6 +293,26 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/agentendpoint/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReceiveTaskNotification = append(client.CallOptions.ReceiveTaskNotification, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartNextTask = append(client.CallOptions.StartNextTask, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReportTaskProgress = append(client.CallOptions.ReportTaskProgress, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReportTaskComplete = append(client.CallOptions.ReportTaskComplete, gax.WithClientMetrics(metrics))
+		client.CallOptions.RegisterAgent = append(client.CallOptions.RegisterAgent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReportInventory = append(client.CallOptions.ReportInventory, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReportVmInventory = append(client.CallOptions.ReportVmInventory, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -288,7 +338,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -296,6 +346,9 @@ func (c *gRPCClient) Close() error {
 
 func (c *gRPCClient) ReceiveTaskNotification(ctx context.Context, req *agentendpointpb.ReceiveTaskNotificationRequest, opts ...gax.CallOption) (agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReceiveTaskNotification")
+	}
 	opts = append((*c.CallOptions).ReceiveTaskNotification[0:len((*c.CallOptions).ReceiveTaskNotification):len((*c.CallOptions).ReceiveTaskNotification)], opts...)
 	var resp agentendpointpb.AgentEndpointService_ReceiveTaskNotificationClient
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -313,6 +366,9 @@ func (c *gRPCClient) ReceiveTaskNotification(ctx context.Context, req *agentendp
 
 func (c *gRPCClient) StartNextTask(ctx context.Context, req *agentendpointpb.StartNextTaskRequest, opts ...gax.CallOption) (*agentendpointpb.StartNextTaskResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/StartNextTask")
+	}
 	opts = append((*c.CallOptions).StartNextTask[0:len((*c.CallOptions).StartNextTask):len((*c.CallOptions).StartNextTask)], opts...)
 	var resp *agentendpointpb.StartNextTaskResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -328,6 +384,9 @@ func (c *gRPCClient) StartNextTask(ctx context.Context, req *agentendpointpb.Sta
 
 func (c *gRPCClient) ReportTaskProgress(ctx context.Context, req *agentendpointpb.ReportTaskProgressRequest, opts ...gax.CallOption) (*agentendpointpb.ReportTaskProgressResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReportTaskProgress")
+	}
 	opts = append((*c.CallOptions).ReportTaskProgress[0:len((*c.CallOptions).ReportTaskProgress):len((*c.CallOptions).ReportTaskProgress)], opts...)
 	var resp *agentendpointpb.ReportTaskProgressResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -343,6 +402,9 @@ func (c *gRPCClient) ReportTaskProgress(ctx context.Context, req *agentendpointp
 
 func (c *gRPCClient) ReportTaskComplete(ctx context.Context, req *agentendpointpb.ReportTaskCompleteRequest, opts ...gax.CallOption) (*agentendpointpb.ReportTaskCompleteResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReportTaskComplete")
+	}
 	opts = append((*c.CallOptions).ReportTaskComplete[0:len((*c.CallOptions).ReportTaskComplete):len((*c.CallOptions).ReportTaskComplete)], opts...)
 	var resp *agentendpointpb.ReportTaskCompleteResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -358,6 +420,9 @@ func (c *gRPCClient) ReportTaskComplete(ctx context.Context, req *agentendpointp
 
 func (c *gRPCClient) RegisterAgent(ctx context.Context, req *agentendpointpb.RegisterAgentRequest, opts ...gax.CallOption) (*agentendpointpb.RegisterAgentResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/RegisterAgent")
+	}
 	opts = append((*c.CallOptions).RegisterAgent[0:len((*c.CallOptions).RegisterAgent):len((*c.CallOptions).RegisterAgent)], opts...)
 	var resp *agentendpointpb.RegisterAgentResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -373,11 +438,32 @@ func (c *gRPCClient) RegisterAgent(ctx context.Context, req *agentendpointpb.Reg
 
 func (c *gRPCClient) ReportInventory(ctx context.Context, req *agentendpointpb.ReportInventoryRequest, opts ...gax.CallOption) (*agentendpointpb.ReportInventoryResponse, error) {
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReportInventory")
+	}
 	opts = append((*c.CallOptions).ReportInventory[0:len((*c.CallOptions).ReportInventory):len((*c.CallOptions).ReportInventory)], opts...)
 	var resp *agentendpointpb.ReportInventoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.ReportInventory, req, settings.GRPC, c.logger, "ReportInventory")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ReportVmInventory(ctx context.Context, req *agentendpointpb.ReportVmInventoryRequest, opts ...gax.CallOption) (*agentendpointpb.ReportVmInventoryResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.agentendpoint.v1.AgentEndpointService/ReportVmInventory")
+	}
+	opts = append((*c.CallOptions).ReportVmInventory[0:len((*c.CallOptions).ReportVmInventory):len((*c.CallOptions).ReportVmInventory)], opts...)
+	var resp *agentendpointpb.ReportVmInventoryResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ReportVmInventory, req, settings.GRPC, c.logger, "ReportVmInventory")
 		return err
 	}, opts...)
 	if err != nil {

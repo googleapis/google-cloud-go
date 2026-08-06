@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -16,6 +16,10 @@
 
 // Package geminidataanalytics is an auto-generated package for the
 // Data Analytics API with Gemini.
+//
+// The Gemini Data Analytics API enables developers to build intelligent data
+// analytics applications. Leverage AI-powered chat interfaces to allow users
+// to interact with and analyze structured data using natural language.
 //
 //	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //

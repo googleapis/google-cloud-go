@@ -1,5 +1,159 @@
 # Changes
 
+## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.51.0...bigtable/v1.52.0) (2026-08-03)
+
+
+### Features
+
+* **bigtable:** Add AFE picker (Simple / LeastInFlight / LeastLatency) ([#20204](https://github.com/googleapis/google-cloud-go/issues/20204)) ([bcbf714](https://github.com/googleapis/google-cloud-go/commit/bcbf71431d1742e2e13a13d1cbe8b0fc0433aede))
+* **bigtable:** Add ClientConfig.DisableSession to opt out of session backend ([#20297](https://github.com/googleapis/google-cloud-go/issues/20297)) ([7ee5e44](https://github.com/googleapis/google-cloud-go/commit/7ee5e44e0304c5509b9b77fe0760d97771657cd9))
+* **bigtable:** Add getClientConfigDirectAccessChecker for session pools ([#20209](https://github.com/googleapis/google-cloud-go/issues/20209)) ([3b8d30a](https://github.com/googleapis/google-cloud-go/commit/3b8d30adeaf03c8452207b056d69922646d63bf2))
+* **bigtable:** Add NoOpChannelPrimer for session channel pools ([#20208](https://github.com/googleapis/google-cloud-go/issues/20208)) ([d055a8a](https://github.com/googleapis/google-cloud-go/commit/d055a8a1b23980ad4b53c0cd690e291c9aa6248c))
+* **bigtable:** Add per-AFE sessionList for the two-tier session pool ([#20224](https://github.com/googleapis/google-cloud-go/issues/20224)) ([dbf0c3f](https://github.com/googleapis/google-cloud-go/commit/dbf0c3f3ea37279a2aa00803ded8e489229b15c9))
+* **bigtable:** Add protoRowToRow conversion helper for TableShim ([#20257](https://github.com/googleapis/google-cloud-go/issues/20257)) ([1297143](https://github.com/googleapis/google-cloud-go/commit/1297143a4fab4bf58cbd0bd6e44db4653a818c47))
+* **bigtable:** Add Session debug surface (observability fields + methods) ([#20211](https://github.com/googleapis/google-cloud-go/issues/20211)) ([d8d3e16](https://github.com/googleapis/google-cloud-go/commit/d8d3e160c3e63150ef5d14e83a2ea0fd25a7e214))
+* **bigtable:** Add Session lifecycle (Start, Close, ForceClose, readLoop, heartBeatLoop) ([#20215](https://github.com/googleapis/google-cloud-go/issues/20215)) ([b9e53c6](https://github.com/googleapis/google-cloud-go/commit/b9e53c6276efe28428adfcd4671d7ac8c7e8d330))
+* **bigtable:** Add Session struct + state machine ([#20117](https://github.com/googleapis/google-cloud-go/issues/20117)) ([09acbb3](https://github.com/googleapis/google-cloud-go/commit/09acbb37a385d2c6fca465adb70a3eb03ea4a38e))
+* **bigtable:** Add session.Config.EnableDebug to gate sessionz debug state ([#20247](https://github.com/googleapis/google-cloud-go/issues/20247)) ([ce74c31](https://github.com/googleapis/google-cloud-go/commit/ce74c315d41371b0ddf2c1ba7342446695a53900))
+* **bigtable:** Add SessionClient + SessionTable + lazyPool ([#20228](https://github.com/googleapis/google-cloud-go/issues/20228)) ([ab2c96c](https://github.com/googleapis/google-cloud-go/commit/ab2c96c3ed62514dcf6526bb32259267fbe63e97))
+* **bigtable:** Add SessionPoolImpl (two-tier pool + scaling + debug) ([#20225](https://github.com/googleapis/google-cloud-go/issues/20225)) ([683eda8](https://github.com/googleapis/google-cloud-go/commit/683eda8c690fd2b948bd3b56777039d28421ee7c))
+* **bigtable:** Rename session pool display to &lt;resource-id&gt;-&lt;PERM&gt; ([#20248](https://github.com/googleapis/google-cloud-go/issues/20248)) ([35e146e](https://github.com/googleapis/google-cloud-go/commit/35e146e25d2897082f2d1b78b9273087efd855fd))
+* **bigtable:** Route Client.Open()-returned *Table through the Diverter ([#20273](https://github.com/googleapis/google-cloud-go/issues/20273)) ([2b81c7d](https://github.com/googleapis/google-cloud-go/commit/2b81c7dc2d73739f4d5f87aa43cc9a3ac031822d))
+* **bigtable:** State-based classification for abnormal session close ([#20243](https://github.com/googleapis/google-cloud-go/issues/20243)) ([f2905b7](https://github.com/googleapis/google-cloud-go/commit/f2905b793d062ae597d9c39597d15a680e9e9967))
+* **bigtable:** TableShim fallback to classic on session UNIMPLEMENTED ([#20269](https://github.com/googleapis/google-cloud-go/issues/20269)) ([36540af](https://github.com/googleapis/google-cloud-go/commit/36540af84ab5f7360c5c1a92bbfb5a631d4c5cc6))
+* **bigtable:** TTL-on-idle cache for per-resource session.TableAPI ([#20263](https://github.com/googleapis/google-cloud-go/issues/20263)) ([00b2a49](https://github.com/googleapis/google-cloud-go/commit/00b2a49de38fe600736cf10c496f85e082ae8871))
+* **bigtable:** Wire Diverter on Client and route Open* via TableShim ([#20256](https://github.com/googleapis/google-cloud-go/issues/20256)) ([b32fbd7](https://github.com/googleapis/google-cloud-go/commit/b32fbd7d02f835e8f83b4be1926e5826c27fa8a9))
+
+
+### Bug Fixes
+
+* **bigtable:** AFE picker latency signal — subtract poolWait and compute TransportLatency = wire − backend at source ([#20281](https://github.com/googleapis/google-cloud-go/issues/20281)) ([bb8c4d5](https://github.com/googleapis/google-cloud-go/commit/bb8c4d56bf5bb53e5e1f1d510be326821fe4ddee))
+* **bigtable:** Guard NewStream OnFinish against grpc-go double-fire ([#20295](https://github.com/googleapis/google-cloud-go/issues/20295)) ([b51da29](https://github.com/googleapis/google-cloud-go/commit/b51da29536de5aa59582d2a9633a07186f8636ae))
+* **bigtable:** Real per-resource pool teardown on sessionTable.Close + cache close-race gate ([#20264](https://github.com/googleapis/google-cloud-go/issues/20264)) ([599aea9](https://github.com/googleapis/google-cloud-go/commit/599aea9e67ca2526b7822eb1e873e3aaf7b5124e))
+* **bigtable:** Session.durations / session.uptime — set explicit histogram bucket boundaries ([#20276](https://github.com/googleapis/google-cloud-go/issues/20276)) ([97eee22](https://github.com/googleapis/google-cloud-go/commit/97eee225c412db9288bb7813e6b9cc856e6aba44))
+* **bigtable:** SessionTableHandle self-heals across cache eviction ([#20296](https://github.com/googleapis/google-cloud-go/issues/20296)) ([0dd98cd](https://github.com/googleapis/google-cloud-go/commit/0dd98cd75383bd5902f3bec936d9ae68c64e6682))
+* **bigtable:** Translate ctx errors to gRPC status on session vRPC ([#20299](https://github.com/googleapis/google-cloud-go/issues/20299)) ([0f3b2a5](https://github.com/googleapis/google-cloud-go/commit/0f3b2a519e07eccdfacad1129aa0fb69bc8f06e6))
+* **bigtable:** Treat PingAndWarm NotFound as a successful prime ([#20219](https://github.com/googleapis/google-cloud-go/issues/20219)) ([a1557ad](https://github.com/googleapis/google-cloud-go/commit/a1557adec2fc8a579f70cdb4de5f959ceb8d51a1))
+
+
+### Performance Improvements
+
+* **bigtable:** Delete periodic Tick loop; sizing is event-driven ([#20285](https://github.com/googleapis/google-cloud-go/issues/20285)) ([2c096bd](https://github.com/googleapis/google-cloud-go/commit/2c096bddf6fc5353a3804d222b3683a55eda13e5))
+* **bigtable:** Drop pick_lost_race debug tag from CheckoutSession hot path ([#20280](https://github.com/googleapis/google-cloud-go/issues/20280)) ([bd0e400](https://github.com/googleapis/google-cloud-go/commit/bd0e400948a15639546f150d5d2b1a1a7ceb5741))
+
+## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.50.0...bigtable/v1.51.0) (2026-07-23)
+
+
+### Features
+
+* **bigtable:** Add ChainInterceptors and RetryingVRpc for vRPC pipeline ([#20185](https://github.com/googleapis/google-cloud-go/issues/20185)) ([c7a832a](https://github.com/googleapis/google-cloud-go/commit/c7a832aa13bad0896c3906f491d798482dd8c02a))
+* **bigtable:** Add ClientConfigurationManager ([#19986](https://github.com/googleapis/google-cloud-go/issues/19986)) ([3a8f927](https://github.com/googleapis/google-cloud-go/commit/3a8f9270d9c2831b5d76efe89c913555577ace6a))
+* **bigtable:** Add debug tag counter (recordDebugTag / assertDebugTag) ([#20114](https://github.com/googleapis/google-cloud-go/issues/20114)) ([3c97590](https://github.com/googleapis/google-cloud-go/commit/3c97590192a19306612389e9d55b93b538e8584b))
+* **bigtable:** Add lazyPool helper for on-demand session pool opening ([#20182](https://github.com/googleapis/google-cloud-go/issues/20182)) ([f6ae3fb](https://github.com/googleapis/google-cloud-go/commit/f6ae3fbf65e9e41a1c2d64f281f881ebe8828439))
+* **bigtable:** Add PeakEwma continuous time-decay latency tracker ([#20187](https://github.com/googleapis/google-cloud-go/issues/20187)) ([9d124ef](https://github.com/googleapis/google-cloud-go/commit/9d124ef7773dae916dfbb97657f83ae633d15220))
+* **bigtable:** Add PoolSizer for server-driven session pool capacity ([#20189](https://github.com/googleapis/google-cloud-go/issues/20189)) ([57ebbeb](https://github.com/googleapis/google-cloud-go/commit/57ebbeb8e846f574034e93060682309bc1a00dc1))
+* **bigtable:** Add session package with SessionClient + SessionTableAPI interfaces ([#20180](https://github.com/googleapis/google-cloud-go/issues/20180)) ([4b82fd2](https://github.com/googleapis/google-cloud-go/commit/4b82fd25cc81cdee5563d5a049b48d2694bca088))
+* **bigtable:** Add Session primitives (AttemptOutcome, vRPC ctx, msgtype) ([#20116](https://github.com/googleapis/google-cloud-go/issues/20116)) ([e1011e2](https://github.com/googleapis/google-cloud-go/commit/e1011e2d2c43a838abe080ad9d3f614f8c92e55a))
+* **bigtable:** Add Session state enum ([#19981](https://github.com/googleapis/google-cloud-go/issues/19981)) ([0748972](https://github.com/googleapis/google-cloud-go/commit/07489725b63174375f7faa68b7aad18cc638c27b))
+* **bigtable:** Add SessionThrottler / AdaptiveSessionThrottler for OpenSession pacing ([#20184](https://github.com/googleapis/google-cloud-go/issues/20184)) ([02e3c6d](https://github.com/googleapis/google-cloud-go/commit/02e3c6d19e8ff5b6a12803bc9b0636575e070dff))
+* **bigtable:** Add SessionThrottler / AdaptiveSessionThrottler for OpenSession pacing ([#20184](https://github.com/googleapis/google-cloud-go/issues/20184)) ([29be83e](https://github.com/googleapis/google-cloud-go/commit/29be83ed3b631a472e28be4d8569d34f0a071d86))
+* **bigtable:** Add sessionTracer for per-Session lifecycle + vRPC metrics ([#20190](https://github.com/googleapis/google-cloud-go/issues/20190)) ([a466345](https://github.com/googleapis/google-cloud-go/commit/a4663459260ba054af918c29a94570d5ec69f399))
+* **bigtable:** Enable new auth library and JWT for instance admin client ([#20013](https://github.com/googleapis/google-cloud-go/issues/20013)) ([21c4a44](https://github.com/googleapis/google-cloud-go/commit/21c4a448adf789e8acaebfaed7df5c49ac434aab))
+* **bigtable:** Modularize channel priming behind a ChannelPrimer interface ([#20027](https://github.com/googleapis/google-cloud-go/issues/20027)) ([5214ab7](https://github.com/googleapis/google-cloud-go/commit/5214ab7033bd8a5aa672878ae17ce828d5d78c3c))
+* **bigtable:** Modularize Direct Access compatibility check ([#19987](https://github.com/googleapis/google-cloud-go/issues/19987)) ([a25e93d](https://github.com/googleapis/google-cloud-go/commit/a25e93d25635b8fd42985edbe0290ba9a8cf2169))
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+
+### Bug Fixes
+
+* **bigtable:** Default cluster/zone in toOtelMetricAttrs to avoid Monitoring reject ([#20178](https://github.com/googleapis/google-cloud-go/issues/20178)) ([14493f4](https://github.com/googleapis/google-cloud-go/commit/14493f4de7298b8fac36c1ee67f2647fbc2e6ba9))
+* **bigtable:** Eliminate stats-handler MD race in internal/metrics tracer ([#20158](https://github.com/googleapis/google-cloud-go/issues/20158)) ([c387066](https://github.com/googleapis/google-cloud-go/commit/c38706633aa13da88e8c54b0b6340b9ce7209007))
+
+## [1.50.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.49.0...bigtable/v1.50.0) (2026-06-17)
+
+
+### Features
+
+* **bigtable:** Enable JWT ([#19957](https://github.com/googleapis/google-cloud-go/issues/19957)) ([af93528](https://github.com/googleapis/google-cloud-go/commit/af93528c6eb18e841783987820b9f586293459e4))
+* **bigtable:** Generate Admin API client using selective gapic ([#19962](https://github.com/googleapis/google-cloud-go/issues/19962)) ([a37509d](https://github.com/googleapis/google-cloud-go/commit/a37509ddadc60a81e5dfb0f373e47d0d578d8cca))
+* **bigtable:** Refactor channel_pool_factory as we need to maintain two channel factory one for session and another for unary ([#14652](https://github.com/googleapis/google-cloud-go/issues/14652)) ([0c0b6ce](https://github.com/googleapis/google-cloud-go/commit/0c0b6ceba693dbe8af778117f6ca10faf0ca67ff))
+* **bigtable:** Wrap admin client ([#14534](https://github.com/googleapis/google-cloud-go/issues/14534)) ([0bea4ba](https://github.com/googleapis/google-cloud-go/commit/0bea4ba37832608dc05293a1eb2a3c756a9f27d9))
+* Update API sources and regenerate ([#19950](https://github.com/googleapis/google-cloud-go/issues/19950)) ([c7607be](https://github.com/googleapis/google-cloud-go/commit/c7607be52757b803df345670b5d0621c2bb9ba30))
+
+## [1.49.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.49.0) (2026-06-10)
+
+### Features
+
+* add opensession descriptors for bigtable (#14647) ([8968f4f](https://github.com/googleapis/google-cloud-go/commit/8968f4fd7ca68297dcc42861878f90a5b339539d))
+* add traffic diverter and table shim  for bigtable (#14633) ([2f3c918](https://github.com/googleapis/google-cloud-go/commit/2f3c91847f882cef939496b92d5c4311583b4f5e))
+* add virtual RPC descriptors  (#14648) ([5eedda1](https://github.com/googleapis/google-cloud-go/commit/5eedda184cf228e72098a4d8c4a992b625ca9558))
+* enable new auth library and remove async refresh (#19943) ([0d3697b](https://github.com/googleapis/google-cloud-go/commit/0d3697b2f31a47b530cd7ba37323a4321d19091b))
+* update API sources and regenerate (#14701) ([a9b7921](https://github.com/googleapis/google-cloud-go/commit/a9b7921551e9c1535496731da53e880e9e364efa))
+
+### Bug Fixes
+
+* disable dynamic channel pool by default and raise default pool size to 10 (#19945) ([5ddf8d4](https://github.com/googleapis/google-cloud-go/commit/5ddf8d469ce0570aedaf925a9a377ddf51873a43))
+* raise default connection-recycler MaxAge to 7 days (#19940) ([a7959ef](https://github.com/googleapis/google-cloud-go/commit/a7959efcc0e145ac6bf0e271695a30284aa8b493))
+* retry unexpected EOF errors (#13157) ([2b4ac42](https://github.com/googleapis/google-cloud-go/commit/2b4ac429c5328ed230ead5e937cd11f7024b73bf))
+
+## [1.48.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.48.0) (2026-05-26)
+
+### Features
+
+* expose a client option to disable direct access: (#14626) ([f22b29f](https://github.com/googleapis/google-cloud-go/commit/f22b29f5d954a61b34e71995546c818883697aa6))
+
+## [1.47.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.47.0) (2026-05-01)
+
+## [1.46.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.46.0) (2026-04-09)
+
+## [1.45.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.45.0) (2026-03-31)
+
+## [1.44.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.44.0) (2026-03-30)
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.43.0) (2026-03-16)
+
+### Features
+
+* Add support for creating Instance with tags (#13459) ([1bce843](https://github.com/googleapis/google-cloud-go/commit/1bce843ee44d51199ee49bb710bc9100be73b2fa))
+* Use direct access when supported. Guarded by enabling… (#13873) ([5ea1f5f](https://github.com/googleapis/google-cloud-go/commit/5ea1f5f97fd541b76cd80dd7f7b60414143e034f))
+* add connection factory to abstract connection (#13755) ([b08ea15](https://github.com/googleapis/google-cloud-go/commit/b08ea15ff49563db93438e59c7ec78f49fc0a7bf))
+* add handling of longupdown metrics aka gauge (#13871) ([519ed9b](https://github.com/googleapis/google-cloud-go/commit/519ed9b0ab2bfd991d9d4fdc30ac86934aec66d9))
+* add load balancing penalty for channel (#14149) ([bb64998](https://github.com/googleapis/google-cloud-go/commit/bb649988e1c66b4c0c8d1a2606c106eb1acd6f8b))
+* add pacemaker in connpool (#13862) ([9af047f](https://github.com/googleapis/google-cloud-go/commit/9af047f755d35a26e09c050d9ec58ba01394572a))
+* add preemptive connection recycler (#13860) ([6b69ee3](https://github.com/googleapis/google-cloud-go/commit/6b69ee38312b8af52fa96d70576d0094b1b6ff5f))
+* cap increase in conn for dynamic chan pool (#14144) ([e0701a4](https://github.com/googleapis/google-cloud-go/commit/e0701a465804d6992dfd887a6d2d04f31e31ac10))
+* derive conn pool from resolver (#14147) ([b903e29](https://github.com/googleapis/google-cloud-go/commit/b903e2996ecb09c14d88556c16b17e0d5b7ea190))
+* make downscalling less aggressive (#14123) ([7ac72cc](https://github.com/googleapis/google-cloud-go/commit/7ac72cc8c896df83e0399cee4f4ef614a4396a8a))
+* make pow of 2 default lb policy (#14131) ([b5f7bf2](https://github.com/googleapis/google-cloud-go/commit/b5f7bf275b02122680f0b8f66c42854f46f03588))
+* populate ip protocol for direct access checker and rename a method to be concise (#14011) ([9c5e655](https://github.com/googleapis/google-cloud-go/commit/9c5e65518f50ba77271797a5cc8150c88f9b2cc3))
+* support tiered storage (#13793) ([39a25b9](https://github.com/googleapis/google-cloud-go/commit/39a25b92424fdbc083fd387d647ff8e07999a8d5))
+* switch to rand v2 (#14008) ([ee6f425](https://github.com/googleapis/google-cloud-go/commit/ee6f4251b9c6285fcf7d46a324f1c638f610c97f))
+
+### Bug Fixes
+
+* refactor bigtable.go into separate file path per interfaces (#13818) ([c8ae2e2](https://github.com/googleapis/google-cloud-go/commit/c8ae2e2a0a89e378892414af4db41ccd9b40bc9e))
+* slighly change instruction for direct access (#14119) ([7dd4948](https://github.com/googleapis/google-cloud-go/commit/7dd4948dde25b811cbf2679a011a7a24dd2e6220))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.42.0) (2026-02-04)
+
+### Features
+
+* add TieredStorageConfig to table admin api ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* add client startup time metrics.  (#13521) ([8f90da3](https://github.com/googleapis/google-cloud-go/commit/8f90da38abc674f23ad0d0289ece3b376caa8746))
+* add dynamic channel support (#2) (#13504) ([65a3c4e](https://github.com/googleapis/google-cloud-go/commit/65a3c4ec26fc3765f4665259226f93ee32abd054))
+* add ip protocol for bigtable connection (#13520) ([6f86983](https://github.com/googleapis/google-cloud-go/commit/6f86983e4b307d45397e36d1498635524ac7615e))
+* add metrics exporter for outstandingrpcs and perconnectionerror count  (#13510) ([7f1b36a](https://github.com/googleapis/google-cloud-go/commit/7f1b36acdf2fddb6bd7b41753a7244021686acf0))
+* introduce prime() method and load counting based on unary,streaming and ability to remove connection (#13419) ([c6773ce](https://github.com/googleapis/google-cloud-go/commit/c6773ceb279f2146eb13a6795d79a0415f71ea41))
+
+### Bug Fixes
+
+* fix a nil pointer deference in remove connections when… (#13535) ([9d2ba82](https://github.com/googleapis/google-cloud-go/commit/9d2ba82ecd770d3e3a18c79e2792ab7ac502240e))
+* handle client region and client host name based on ote… (#13752) ([0429170](https://github.com/googleapis/google-cloud-go/commit/0429170f45ddba05095ca3eedaec25675025fe22))
+
+### Performance Improvements
+
+* use passthrough with emulator endpoint (#13739) ([dafbca2](https://github.com/googleapis/google-cloud-go/commit/dafbca228eae9a07548996f925854d46e6a719e5))
+
 ## [1.41.0](https://github.com/googleapis/google-cloud-go/releases/tag/bigtable%2Fv1.41.0) (2025-12-15)
 
 ### Features

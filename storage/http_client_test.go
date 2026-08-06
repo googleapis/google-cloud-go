@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"fmt"
 	"net/http"
 	"testing"
 
@@ -123,5 +124,102 @@ func TestAppendableWriteUnsupported(t *testing.T) {
 	_, err = c.OpenWriter(params)
 	if err == nil {
 		t.Errorf("OpenWriter: got ok; want error")
+	}
+}
+
+func TestValidateChecksumFromServer(t *testing.T) {
+	correctChecksum := 1
+	tests := []struct {
+		name          string
+		wrongChecksum bool
+		wantErr       error
+	}{
+		{
+			name:          "correct checksum",
+			wrongChecksum: false,
+		},
+		{
+			name:          "wrong checksum",
+			wrongChecksum: true,
+			wantErr:       fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(2), encodeUint32(1)),
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			serverChecksumChan := make(chan uint32, 1)
+			checksum := correctChecksum
+			if test.wrongChecksum {
+				checksum = 2
+			}
+			hiw := &httpInternalWriter{
+				serverChecksumChan: serverChecksumChan,
+				fullObjectChecksum: uint32(checksum),
+			}
+			go func() {
+				serverChecksumChan <- uint32(correctChecksum)
+			}()
+			err := hiw.validateChecksumFromServer()
+			if test.wantErr == nil {
+				if err != nil {
+					t.Fatalf("Unexpected error: %v", err)
+				}
+				return
+			}
+			if err.Error() != test.wantErr.Error() {
+				t.Errorf("Want err: %v, got err: %v", err, test.wantErr)
+			}
+		})
+	}
+}
+
+func TestTrackingTransport(t *testing.T) {
+	mock := &mockTransport{}
+	mock.addResult(&http.Response{Status: "200 OK"}, nil)
+	tt := &trackingTransport{
+		base:     mock,
+		features: uint32(1 << featurePCU),
+	}
+
+	ctx := context.Background()
+	ctx = addFeatureAttributes(ctx, featureMultistreamInMRD)
+	req, _ := http.NewRequestWithContext(ctx, "GET", "http://example.com", nil)
+
+	_, err := tt.RoundTrip(req)
+	if err != nil {
+		t.Fatalf("RoundTrip failed: %v", err)
+	}
+
+	gotHeader := mock.gotReq.Header.Get(featureTrackerHeaderName)
+	wantFeatures := uint32(1<<featurePCU) | uint32(1<<featureMultistreamInMRD)
+	wantHeader := encodeUint32(wantFeatures)
+
+	if gotHeader != wantHeader {
+		t.Errorf("Header %s = %q; want %q", featureTrackerHeaderName, gotHeader, wantHeader)
+	}
+
+	// Verify original request was not modified.
+	if req.Header.Get(featureTrackerHeaderName) != "" {
+		t.Errorf("Original request header was modified")
+	}
+}
+
+type mockCloseIdler struct {
+	mockTransport
+	closedIdle bool
+}
+
+func (m *mockCloseIdler) CloseIdleConnections() {
+	m.closedIdle = true
+}
+
+func TestTrackingTransport_CloseIdleConnections(t *testing.T) {
+	mock := &mockCloseIdler{}
+	tt := &trackingTransport{
+		base: mock,
+	}
+
+	tt.CloseIdleConnections()
+	if !mock.closedIdle {
+		t.Errorf("CloseIdleConnections was not called on base transport")
 	}
 }

@@ -19,7 +19,6 @@ package bigtable
 import (
 	"context"
 	"log"
-	"os"
 )
 
 func ExampleCheckDirectAccessSupported() {
@@ -28,9 +27,6 @@ func ExampleCheckDirectAccessSupported() {
 	projectID := "my-project"
 	instanceID := "my-instance"
 	appProfileID := "default"
-
-	// Set the environment variable if not already set
-	os.Setenv("CBT_ENABLE_DIRECTPATH", "true")
 
 	isDirectPath, err := CheckDirectAccessSupported(ctx, projectID, instanceID, appProfileID)
 	if err != nil {

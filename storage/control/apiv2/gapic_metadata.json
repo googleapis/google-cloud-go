@@ -25,9 +25,19 @@
                 "CreateManagedFolder"
               ]
             },
+            "CreateRapidCache": {
+              "methods": [
+                "CreateRapidCache"
+              ]
+            },
             "DeleteFolder": {
               "methods": [
                 "DeleteFolder"
+              ]
+            },
+            "DeleteFolderRecursive": {
+              "methods": [
+                "DeleteFolderRecursive"
               ]
             },
             "DeleteManagedFolder": {
@@ -60,6 +70,16 @@
                 "GetIamPolicy"
               ]
             },
+            "GetIntelligenceFinding": {
+              "methods": [
+                "GetIntelligenceFinding"
+              ]
+            },
+            "GetIntelligenceFindingRevision": {
+              "methods": [
+                "GetIntelligenceFindingRevision"
+              ]
+            },
             "GetManagedFolder": {
               "methods": [
                 "GetManagedFolder"
@@ -73,6 +93,11 @@
             "GetProjectIntelligenceConfig": {
               "methods": [
                 "GetProjectIntelligenceConfig"
+              ]
+            },
+            "GetRapidCache": {
+              "methods": [
+                "GetRapidCache"
               ]
             },
             "GetStorageLayout": {
@@ -90,9 +115,24 @@
                 "ListFolders"
               ]
             },
+            "ListIntelligenceFindingRevisions": {
+              "methods": [
+                "ListIntelligenceFindingRevisions"
+              ]
+            },
+            "ListIntelligenceFindings": {
+              "methods": [
+                "ListIntelligenceFindings"
+              ]
+            },
             "ListManagedFolders": {
               "methods": [
                 "ListManagedFolders"
+              ]
+            },
+            "ListRapidCaches": {
+              "methods": [
+                "ListRapidCaches"
               ]
             },
             "PauseAnywhereCache": {
@@ -115,6 +155,11 @@
                 "SetIamPolicy"
               ]
             },
+            "SummarizeIntelligenceFindings": {
+              "methods": [
+                "SummarizeIntelligenceFindings"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -130,6 +175,11 @@
                 "UpdateFolderIntelligenceConfig"
               ]
             },
+            "UpdateManagedFolder": {
+              "methods": [
+                "UpdateManagedFolder"
+              ]
+            },
             "UpdateOrganizationIntelligenceConfig": {
               "methods": [
                 "UpdateOrganizationIntelligenceConfig"
@@ -138,6 +188,11 @@
             "UpdateProjectIntelligenceConfig": {
               "methods": [
                 "UpdateProjectIntelligenceConfig"
+              ]
+            },
+            "UpdateRapidCache": {
+              "methods": [
+                "UpdateRapidCache"
               ]
             }
           }
@@ -160,9 +215,19 @@
                 "CreateManagedFolder"
               ]
             },
+            "CreateRapidCache": {
+              "methods": [
+                "CreateRapidCache"
+              ]
+            },
             "DeleteFolder": {
               "methods": [
                 "DeleteFolder"
+              ]
+            },
+            "DeleteFolderRecursive": {
+              "methods": [
+                "DeleteFolderRecursive"
               ]
             },
             "DeleteManagedFolder": {
@@ -195,6 +260,16 @@
                 "GetIamPolicy"
               ]
             },
+            "GetIntelligenceFinding": {
+              "methods": [
+                "GetIntelligenceFinding"
+              ]
+            },
+            "GetIntelligenceFindingRevision": {
+              "methods": [
+                "GetIntelligenceFindingRevision"
+              ]
+            },
             "GetManagedFolder": {
               "methods": [
                 "GetManagedFolder"
@@ -208,6 +283,11 @@
             "GetProjectIntelligenceConfig": {
               "methods": [
                 "GetProjectIntelligenceConfig"
+              ]
+            },
+            "GetRapidCache": {
+              "methods": [
+                "GetRapidCache"
               ]
             },
             "GetStorageLayout": {
@@ -225,9 +305,24 @@
                 "ListFolders"
               ]
             },
+            "ListIntelligenceFindingRevisions": {
+              "methods": [
+                "ListIntelligenceFindingRevisions"
+              ]
+            },
+            "ListIntelligenceFindings": {
+              "methods": [
+                "ListIntelligenceFindings"
+              ]
+            },
             "ListManagedFolders": {
               "methods": [
                 "ListManagedFolders"
+              ]
+            },
+            "ListRapidCaches": {
+              "methods": [
+                "ListRapidCaches"
               ]
             },
             "PauseAnywhereCache": {
@@ -250,6 +345,11 @@
                 "SetIamPolicy"
               ]
             },
+            "SummarizeIntelligenceFindings": {
+              "methods": [
+                "SummarizeIntelligenceFindings"
+              ]
+            },
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
@@ -265,6 +365,11 @@
                 "UpdateFolderIntelligenceConfig"
               ]
             },
+            "UpdateManagedFolder": {
+              "methods": [
+                "UpdateManagedFolder"
+              ]
+            },
             "UpdateOrganizationIntelligenceConfig": {
               "methods": [
                 "UpdateOrganizationIntelligenceConfig"
@@ -273,6 +378,11 @@
             "UpdateProjectIntelligenceConfig": {
               "methods": [
                 "UpdateProjectIntelligenceConfig"
+              ]
+            },
+            "UpdateRapidCache": {
+              "methods": [
+                "UpdateRapidCache"
               ]
             }
           }

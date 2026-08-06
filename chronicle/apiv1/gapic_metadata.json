@@ -5,6 +5,238 @@
   "protoPackage": "google.cloud.chronicle.v1",
   "libraryPackage": "cloud.google.com/go/chronicle/apiv1",
   "services": {
+    "BigQueryExportService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BigQueryExportClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ProvisionBigQueryExport": {
+              "methods": [
+                "ProvisionBigQueryExport"
+              ]
+            },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BigQueryExportClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBigQueryExport": {
+              "methods": [
+                "GetBigQueryExport"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ProvisionBigQueryExport": {
+              "methods": [
+                "ProvisionBigQueryExport"
+              ]
+            },
+            "UpdateBigQueryExport": {
+              "methods": [
+                "UpdateBigQueryExport"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DashboardChartService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DashboardChartClient",
+          "rpcs": {
+            "BatchGetDashboardCharts": {
+              "methods": [
+                "BatchGetDashboardCharts"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDashboardChart": {
+              "methods": [
+                "GetDashboardChart"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DashboardChartClient",
+          "rpcs": {
+            "BatchGetDashboardCharts": {
+              "methods": [
+                "BatchGetDashboardCharts"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDashboardChart": {
+              "methods": [
+                "GetDashboardChart"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "DashboardQueryService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DashboardQueryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteDashboardQuery": {
+              "methods": [
+                "ExecuteDashboardQuery"
+              ]
+            },
+            "GetDashboardQuery": {
+              "methods": [
+                "GetDashboardQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DashboardQueryClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "ExecuteDashboardQuery": {
+              "methods": [
+                "ExecuteDashboardQuery"
+              ]
+            },
+            "GetDashboardQuery": {
+              "methods": [
+                "GetDashboardQuery"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
     "DataAccessControlService": {
       "clients": {
         "grpc": {
@@ -159,6 +391,210 @@
         }
       }
     },
+    "DataTableService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataTableClient",
+          "rpcs": {
+            "BulkCreateDataTableRows": {
+              "methods": [
+                "BulkCreateDataTableRows"
+              ]
+            },
+            "BulkGetDataTableRows": {
+              "methods": [
+                "BulkGetDataTableRows"
+              ]
+            },
+            "BulkReplaceDataTableRows": {
+              "methods": [
+                "BulkReplaceDataTableRows"
+              ]
+            },
+            "BulkUpdateDataTableRows": {
+              "methods": [
+                "BulkUpdateDataTableRows"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataTable": {
+              "methods": [
+                "CreateDataTable"
+              ]
+            },
+            "CreateDataTableRow": {
+              "methods": [
+                "CreateDataTableRow"
+              ]
+            },
+            "DeleteDataTable": {
+              "methods": [
+                "DeleteDataTable"
+              ]
+            },
+            "DeleteDataTableRow": {
+              "methods": [
+                "DeleteDataTableRow"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataTable": {
+              "methods": [
+                "GetDataTable"
+              ]
+            },
+            "GetDataTableOperationErrors": {
+              "methods": [
+                "GetDataTableOperationErrors"
+              ]
+            },
+            "GetDataTableRow": {
+              "methods": [
+                "GetDataTableRow"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataTableRows": {
+              "methods": [
+                "ListDataTableRows"
+              ]
+            },
+            "ListDataTables": {
+              "methods": [
+                "ListDataTables"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataTable": {
+              "methods": [
+                "UpdateDataTable"
+              ]
+            },
+            "UpdateDataTableRow": {
+              "methods": [
+                "UpdateDataTableRow"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataTableClient",
+          "rpcs": {
+            "BulkCreateDataTableRows": {
+              "methods": [
+                "BulkCreateDataTableRows"
+              ]
+            },
+            "BulkGetDataTableRows": {
+              "methods": [
+                "BulkGetDataTableRows"
+              ]
+            },
+            "BulkReplaceDataTableRows": {
+              "methods": [
+                "BulkReplaceDataTableRows"
+              ]
+            },
+            "BulkUpdateDataTableRows": {
+              "methods": [
+                "BulkUpdateDataTableRows"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataTable": {
+              "methods": [
+                "CreateDataTable"
+              ]
+            },
+            "CreateDataTableRow": {
+              "methods": [
+                "CreateDataTableRow"
+              ]
+            },
+            "DeleteDataTable": {
+              "methods": [
+                "DeleteDataTable"
+              ]
+            },
+            "DeleteDataTableRow": {
+              "methods": [
+                "DeleteDataTableRow"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataTable": {
+              "methods": [
+                "GetDataTable"
+              ]
+            },
+            "GetDataTableOperationErrors": {
+              "methods": [
+                "GetDataTableOperationErrors"
+              ]
+            },
+            "GetDataTableRow": {
+              "methods": [
+                "GetDataTableRow"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataTableRows": {
+              "methods": [
+                "ListDataTableRows"
+              ]
+            },
+            "ListDataTables": {
+              "methods": [
+                "ListDataTables"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateDataTable": {
+              "methods": [
+                "UpdateDataTable"
+              ]
+            },
+            "UpdateDataTableRow": {
+              "methods": [
+                "UpdateDataTableRow"
+              ]
+            }
+          }
+        }
+      }
+    },
     "EntityService": {
       "clients": {
         "grpc": {
@@ -263,6 +699,234 @@
         }
       }
     },
+    "FeaturedContentNativeDashboardService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FeaturedContentNativeDashboardClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeaturedContentNativeDashboard": {
+              "methods": [
+                "GetFeaturedContentNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "InstallFeaturedContentNativeDashboard": {
+              "methods": [
+                "InstallFeaturedContentNativeDashboard"
+              ]
+            },
+            "ListFeaturedContentNativeDashboards": {
+              "methods": [
+                "ListFeaturedContentNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FeaturedContentNativeDashboardClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFeaturedContentNativeDashboard": {
+              "methods": [
+                "GetFeaturedContentNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "InstallFeaturedContentNativeDashboard": {
+              "methods": [
+                "InstallFeaturedContentNativeDashboard"
+              ]
+            },
+            "ListFeaturedContentNativeDashboards": {
+              "methods": [
+                "ListFeaturedContentNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "FindingsRefinementService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FindingsRefinementClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ComputeAllFindingsRefinementActivities": {
+              "methods": [
+                "ComputeAllFindingsRefinementActivities"
+              ]
+            },
+            "ComputeFindingsRefinementActivity": {
+              "methods": [
+                "ComputeFindingsRefinementActivity"
+              ]
+            },
+            "CreateFindingsRefinement": {
+              "methods": [
+                "CreateFindingsRefinement"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFindingsRefinement": {
+              "methods": [
+                "GetFindingsRefinement"
+              ]
+            },
+            "GetFindingsRefinementDeployment": {
+              "methods": [
+                "GetFindingsRefinementDeployment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAllFindingsRefinementDeployments": {
+              "methods": [
+                "ListAllFindingsRefinementDeployments"
+              ]
+            },
+            "ListFindingsRefinements": {
+              "methods": [
+                "ListFindingsRefinements"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateFindingsRefinement": {
+              "methods": [
+                "UpdateFindingsRefinement"
+              ]
+            },
+            "UpdateFindingsRefinementDeployment": {
+              "methods": [
+                "UpdateFindingsRefinementDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FindingsRefinementClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "ComputeAllFindingsRefinementActivities": {
+              "methods": [
+                "ComputeAllFindingsRefinementActivities"
+              ]
+            },
+            "ComputeFindingsRefinementActivity": {
+              "methods": [
+                "ComputeFindingsRefinementActivity"
+              ]
+            },
+            "CreateFindingsRefinement": {
+              "methods": [
+                "CreateFindingsRefinement"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetFindingsRefinement": {
+              "methods": [
+                "GetFindingsRefinement"
+              ]
+            },
+            "GetFindingsRefinementDeployment": {
+              "methods": [
+                "GetFindingsRefinementDeployment"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListAllFindingsRefinementDeployments": {
+              "methods": [
+                "ListAllFindingsRefinementDeployments"
+              ]
+            },
+            "ListFindingsRefinements": {
+              "methods": [
+                "ListFindingsRefinements"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateFindingsRefinement": {
+              "methods": [
+                "UpdateFindingsRefinement"
+              ]
+            },
+            "UpdateFindingsRefinementDeployment": {
+              "methods": [
+                "UpdateFindingsRefinementDeployment"
+              ]
+            }
+          }
+        }
+      }
+    },
     "InstanceService": {
       "clients": {
         "grpc": {
@@ -327,6 +991,180 @@
         }
       }
     },
+    "NativeDashboardService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "NativeDashboardClient",
+          "rpcs": {
+            "AddChart": {
+              "methods": [
+                "AddChart"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNativeDashboard": {
+              "methods": [
+                "CreateNativeDashboard"
+              ]
+            },
+            "DeleteNativeDashboard": {
+              "methods": [
+                "DeleteNativeDashboard"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DuplicateChart": {
+              "methods": [
+                "DuplicateChart"
+              ]
+            },
+            "DuplicateNativeDashboard": {
+              "methods": [
+                "DuplicateNativeDashboard"
+              ]
+            },
+            "EditChart": {
+              "methods": [
+                "EditChart"
+              ]
+            },
+            "ExportNativeDashboards": {
+              "methods": [
+                "ExportNativeDashboards"
+              ]
+            },
+            "GetNativeDashboard": {
+              "methods": [
+                "GetNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportNativeDashboards": {
+              "methods": [
+                "ImportNativeDashboards"
+              ]
+            },
+            "ListNativeDashboards": {
+              "methods": [
+                "ListNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveChart": {
+              "methods": [
+                "RemoveChart"
+              ]
+            },
+            "UpdateNativeDashboard": {
+              "methods": [
+                "UpdateNativeDashboard"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "NativeDashboardClient",
+          "rpcs": {
+            "AddChart": {
+              "methods": [
+                "AddChart"
+              ]
+            },
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateNativeDashboard": {
+              "methods": [
+                "CreateNativeDashboard"
+              ]
+            },
+            "DeleteNativeDashboard": {
+              "methods": [
+                "DeleteNativeDashboard"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DuplicateChart": {
+              "methods": [
+                "DuplicateChart"
+              ]
+            },
+            "DuplicateNativeDashboard": {
+              "methods": [
+                "DuplicateNativeDashboard"
+              ]
+            },
+            "EditChart": {
+              "methods": [
+                "EditChart"
+              ]
+            },
+            "ExportNativeDashboards": {
+              "methods": [
+                "ExportNativeDashboards"
+              ]
+            },
+            "GetNativeDashboard": {
+              "methods": [
+                "GetNativeDashboard"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportNativeDashboards": {
+              "methods": [
+                "ImportNativeDashboards"
+              ]
+            },
+            "ListNativeDashboards": {
+              "methods": [
+                "ListNativeDashboards"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RemoveChart": {
+              "methods": [
+                "RemoveChart"
+              ]
+            },
+            "UpdateNativeDashboard": {
+              "methods": [
+                "UpdateNativeDashboard"
+              ]
+            }
+          }
+        }
+      }
+    },
     "ReferenceListService": {
       "clients": {
         "grpc": {
@@ -370,6 +1208,11 @@
             "UpdateReferenceList": {
               "methods": [
                 "UpdateReferenceList"
+              ]
+            },
+            "VerifyReferenceList": {
+              "methods": [
+                "VerifyReferenceList"
               ]
             }
           }
@@ -415,6 +1258,75 @@
             "UpdateReferenceList": {
               "methods": [
                 "UpdateReferenceList"
+              ]
+            },
+            "VerifyReferenceList": {
+              "methods": [
+                "VerifyReferenceList"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "RuleExecutionErrorService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "RuleExecutionErrorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuleExecutionErrors": {
+              "methods": [
+                "ListRuleExecutionErrors"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "RuleExecutionErrorClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListRuleExecutionErrors": {
+              "methods": [
+                "ListRuleExecutionErrors"
               ]
             }
           }
@@ -505,6 +1417,11 @@
               "methods": [
                 "UpdateRuleDeployment"
               ]
+            },
+            "VerifyRuleText": {
+              "methods": [
+                "VerifyRuleText"
+              ]
             }
           }
         },
@@ -589,6 +1506,11 @@
             "UpdateRuleDeployment": {
               "methods": [
                 "UpdateRuleDeployment"
+              ]
+            },
+            "VerifyRuleText": {
+              "methods": [
+                "VerifyRuleText"
               ]
             }
           }

@@ -158,6 +158,7 @@ func token(metadata map[string]interface{}) *auth.Token {
 }
 
 func TestLogDirectPathMisconfigDirectPathNotSet(t *testing.T) {
+	t.Setenv(disableDirectPathEnvVar, "")
 	opts := &Options{InternalOptions: &InternalOptions{}}
 	opts.InternalOptions.EnableDirectPathXds = true
 
@@ -179,6 +180,7 @@ func TestLogDirectPathMisconfigDirectPathNotSet(t *testing.T) {
 }
 
 func TestLogDirectPathMisconfigWrongCredential(t *testing.T) {
+	t.Setenv(disableDirectPathEnvVar, "")
 	opts := &Options{InternalOptions: &InternalOptions{
 		EnableDirectPathXds: true,
 		EnableDirectPath:    true,
@@ -201,6 +203,7 @@ func TestLogDirectPathMisconfigWrongCredential(t *testing.T) {
 }
 
 func TestLogDirectPathMisconfigNotOnGCE(t *testing.T) {
+	t.Setenv(disableDirectPathEnvVar, "")
 	opts := &Options{InternalOptions: &InternalOptions{}}
 	opts.InternalOptions.EnableDirectPath = true
 	opts.InternalOptions.EnableDirectPathXds = true

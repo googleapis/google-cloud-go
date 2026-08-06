@@ -1,5 +1,40 @@
 # Changes
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/speech/v1.35.0...speech/v1.36.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.35.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.35.0) (2026-05-07)
+
+## [1.34.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.34.0) (2026-04-30)
+
+## [1.33.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.33.0) (2026-04-13)
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.32.0) (2026-04-09)
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.31.0) (2026-04-02)
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.30.0) (2026-02-26)
+
+### Features
+
+* adds endpointing sensitivity to streaming recognition features ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/speech%2Fv1.29.0) (2026-01-08)
+
+### Features
+
+* add custom prompt config in the request and return prompt in the response ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* update min_speaker_count and max_speaker_count to be optional ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+
+### Documentation
+
+* Clarify that min_speaker_count and max_speaker_count in SpeakerDiarizationConfig are not currently used ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* Update guidance on how to enable speaker diarization; to enable, set the diarization_config field to an empty SpeakerDiarizationConfig message ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+
 ## [1.28.1](https://github.com/googleapis/google-cloud-go/compare/speech/v1.28.0...speech/v1.28.1) (2025-10-07)
 
 

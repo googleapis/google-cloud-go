@@ -881,3 +881,30 @@ func TestRunInTransaction(t *testing.T) {
 		})
 	}
 }
+
+func TestRunInTransaction_ContextCanceled(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	client, srv, cleanup := newMock(t)
+	defer cleanup()
+
+	srv.addRPC(&pb.BeginTransactionRequest{ProjectId: mockProjectID}, &pb.BeginTransactionResponse{Transaction: []byte("tid")})
+	// We expect Rollback to be called even though context is canceled.
+	srv.addRPC(&pb.RollbackRequest{ProjectId: mockProjectID, Transaction: []byte("tid")}, &pb.RollbackResponse{})
+
+	f := func(tx *Transaction) error {
+		cancel() // Cancel the context inside the transaction function
+		return nil
+	}
+
+	_, err := client.RunInTransaction(ctx, f)
+	if err == nil {
+		t.Fatal("expected error, got nil")
+	}
+	if status.Code(err) != codes.Canceled && err != context.Canceled {
+		t.Errorf("expected canceled error, got %v", err)
+	}
+
+	if len(srv.reqItems) != 0 {
+		t.Errorf("mock server has %d remaining expected RPCs (Rollback likely not called)", len(srv.reqItems))
+	}
+}

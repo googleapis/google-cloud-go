@@ -33,6 +33,7 @@ import (
 	bq "google.golang.org/api/bigquery/v2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
+	"google.golang.org/api/option/internaloption"
 )
 
 const (
@@ -83,6 +84,18 @@ func NewClient(ctx context.Context, projectID string, opts ...option.ClientOptio
 		option.WithScopes(Scope),
 		option.WithUserAgent(fmt.Sprintf("%s/%s", userAgentPrefix, internal.Version)),
 	}
+
+	if gax.IsFeatureEnabled("TRACING") {
+		o = append(o, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.version":  internal.Version,
+			"gcp.client.service":  "bigquery.googleapis.com",
+			"gcp.client.artifact": "cloud.google.com/go/bigquery",
+			"gcp.client.language": "go",
+			"url.domain":          "bigquery.googleapis.com",
+		}))
+	}
+
 	o = append(o, opts...)
 	bqs, err := bq.NewService(ctx, o...)
 	if err != nil {
@@ -148,6 +161,7 @@ func (c *Client) Close() error {
 
 // Calls the Jobs.Insert RPC and returns a Job.
 func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader, mediaOpts ...googleapi.MediaOption) (*Job, error) {
+	ctx = setProjectItemTraceMetadata(ctx, c.projectID, "jobs")
 	call := c.bqs.Jobs.Insert(c.projectID, job).Context(ctx)
 	setClientHeader(call.Header())
 	if media != nil {
@@ -182,6 +196,7 @@ func (c *Client) insertJob(ctx context.Context, job *bq.Job, media io.Reader, me
 // Due to differences in options it supports, it cannot be used for all existing
 // jobs.insert requests that are query jobs.
 func (c *Client) runQuery(ctx context.Context, queryRequest *bq.QueryRequest) (*bq.QueryResponse, error) {
+	ctx = setProjectItemTraceMetadata(ctx, c.projectID, "queries")
 	call := c.bqs.Jobs.Query(c.projectID, queryRequest).Context(ctx)
 	setClientHeader(call.Header())
 

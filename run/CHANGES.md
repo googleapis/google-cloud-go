@@ -1,6 +1,41 @@
 # Changes
 
 
+## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/run/v1.21.0...run/v1.22.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.21.0) (2026-05-07)
+
+## [1.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.20.0) (2026-04-30)
+
+## [1.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.19.0) (2026-04-13)
+
+## [1.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.18.0) (2026-04-09)
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.17.0) (2026-04-02)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.16.0) (2026-03-26)
+
+### Documentation
+
+* An existing repeated string field custom_audiences is marked deprecated for WorkerPools API ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.15.0) (2026-01-22)
+
+### Features
+
+* add instances client library ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+### Documentation
+
+* add instances description ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.14.0) (2026-01-15)
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/run%2Fv1.13.0) (2025-12-11)
 
 ### Features

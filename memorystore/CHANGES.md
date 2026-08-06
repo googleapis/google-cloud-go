@@ -1,6 +1,68 @@
 # Changes
 
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/memorystore/v1.2.0...memorystore/v1.3.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/memorystore/v1.1.0...memorystore/v1.2.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/memorystore/v1.0.0...memorystore/v1.1.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv1.0.0) (2026-05-08)
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.9.0) (2026-05-07)
+
+### Features
+
+* enable gRPC transport (#14532) ([6b9f6c7](https://github.com/googleapis/google-cloud-go/commit/6b9f6c7b0930a94abd717d5097fd0b8868171aa2))
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.8.0) (2026-04-30)
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.7.0) (2026-04-13)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.6.0) (2026-04-09)
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.5.0) (2026-04-02)
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/memorystore%2Fv0.4.0) (2025-12-18)
+
+### Features
+
+* A new field `Instance.simulate_maintenance_event` is added to message `.google.cloud.memorystore.v1.` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `allow_fewer_zones_deployment` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `available_maintenance_versions` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `effective_maintenance_version` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `encryption_info` is added to message `.google.cloud.memorystore.v1.Backup` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `encryption_info` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `kms_key` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `last_backup_time` is added to message `.google.cloud.memorystore.v1.BackupCollection` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `maintenance_version` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `satisfies_pzi` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `satisfies_pzs` is added to message `.google.cloud.memorystore.v1.Instance` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `total_backup_count` is added to message `.google.cloud.memorystore.v1.BackupCollection` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new field `total_backup_size_bytes` is added to message `.google.cloud.memorystore.v1.BackupCollection` ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* A new message `EncryptionInfo` is added ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* A comment for field `discovery_endpoints` in message `.google.cloud.memorystore.v1.Instance` is changed ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [0.3.1](https://github.com/googleapis/google-cloud-go/compare/memorystore/v0.3.0...memorystore/v0.3.1) (2025-09-18)
 
 

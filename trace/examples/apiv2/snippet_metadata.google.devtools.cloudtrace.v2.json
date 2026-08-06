@@ -1,0 +1,106 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.devtools.cloudtrace.v2",
+        "version": "v2"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/trace/apiv2",
+    "version": "1.16.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.cloudtrace.v2.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.devtools.cloudtrace.v2.Client.BatchWriteSpans",
+        "method": {
+          "fullName": "google.devtools.cloudtrace.v2.TraceService.BatchWriteSpans",
+          "service": {
+            "fullName": "google.devtools.cloudtrace.v2.TraceService",
+            "shortName": "TraceService"
+          },
+          "shortName": "BatchWriteSpans"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tracepb.BatchWriteSpansRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "BatchWriteSpans"
+      },
+      "description": "BatchWriteSpans batch writes new spans to new or existing traces. You cannot update\nexisting spans.",
+      "file": "Client/BatchWriteSpans/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudtrace_v2_generated_TraceService_BatchWriteSpans_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudtrace BatchWriteSpans Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.devtools.cloudtrace.v2.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.devtools.cloudtrace.v2.Client.CreateSpan",
+        "method": {
+          "fullName": "google.devtools.cloudtrace.v2.TraceService.CreateSpan",
+          "service": {
+            "fullName": "google.devtools.cloudtrace.v2.TraceService",
+            "shortName": "TraceService"
+          },
+          "shortName": "CreateSpan"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "tracepb.Span"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*tracepb.Span",
+        "shortName": "CreateSpan"
+      },
+      "description": "CreateSpan creates a new span.",
+      "file": "Client/CreateSpan/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudtrace_v2_generated_TraceService_CreateSpan_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudtrace CreateSpan Sample"
+    }
+  ]
+}

@@ -1389,3 +1389,170 @@ func TestKeyLoaderEndToEnd(t *testing.T) {
 		}
 	}
 }
+
+func TestIssue5225(t *testing.T) {
+	type CustomType struct {
+		ID   []byte `datastore:"custom_identifier"`
+		Name string `datastore:"name"`
+	}
+
+	// Case 1: Struct has []byte, but Property has string (e.g. from projection)
+	t.Run("String To []byte", func(t *testing.T) {
+		x := &CustomType{}
+		ps := []Property{
+			{Name: "custom_identifier", Value: "some-id"},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		if string(x.ID) != "some-id" {
+			t.Errorf("got x.ID = %q, want %q", string(x.ID), "some-id")
+		}
+	})
+
+	// Case 2: Struct has string, but Property has []byte (e.g. from projection)
+	t.Run("[]byte To String", func(t *testing.T) {
+		x := &CustomType{}
+		ps := []Property{
+			{Name: "name", Value: []byte("some-name")},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		if x.Name != "some-name" {
+			t.Errorf("got x.Name = %q, want %q", x.Name, "some-name")
+		}
+	})
+
+	// Case 3: Pointer to string, but Property has []byte
+	t.Run("[]byte To *String", func(t *testing.T) {
+		type PtrType struct {
+			Name *string `datastore:"name"`
+		}
+		x := &PtrType{}
+		ps := []Property{
+			{Name: "name", Value: []byte("some-name")},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		if x.Name == nil || *x.Name != "some-name" {
+			got := "nil"
+			if x.Name != nil {
+				got = *x.Name
+			}
+			t.Errorf("got x.Name = %q, want %q", got, "some-name")
+		}
+	})
+
+	// Case 4: time.Time, but Property has int64 (micros)
+	t.Run("int64 To time.Time", func(t *testing.T) {
+		type TimeType struct {
+			T time.Time `datastore:"t"`
+		}
+		x := &TimeType{}
+		// 1639728000123456 is 2021-12-17 08:00:00.123456 UTC
+		ps := []Property{
+			{Name: "t", Value: int64(1639728000123456)},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		want := time.Unix(1639728000, 123456000).In(time.UTC)
+		if !x.T.Equal(want) {
+			t.Errorf("got x.T = %v, want %v", x.T, want)
+		}
+	})
+
+	// Case 5: *time.Time, but Property has int64 (micros)
+	t.Run("int64 To *time.Time", func(t *testing.T) {
+		type TimePtrType struct {
+			T *time.Time `datastore:"t"`
+		}
+		x := &TimePtrType{}
+		ps := []Property{
+			{Name: "t", Value: int64(1639728000123456)},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		want := time.Unix(1639728000, 123456000).In(time.UTC)
+		if x.T == nil || !x.T.Equal(want) {
+			t.Errorf("got x.T = %v, want %v", x.T, want)
+		}
+	})
+
+	// Case 6: *[]byte, but Property has string
+	t.Run("String To *[]byte", func(t *testing.T) {
+		type PtrSliceType struct {
+			ID *[]byte `datastore:"id"`
+		}
+		x := &PtrSliceType{}
+		ps := []Property{
+			{Name: "id", Value: "some-id"},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		if x.ID == nil || string(*x.ID) != "some-id" {
+			got := "nil"
+			if x.ID != nil {
+				got = string(*x.ID)
+			}
+			t.Errorf("got x.ID = %q, want %q", got, "some-id")
+		}
+	})
+
+	// Case 7: *[]byte, but Property has []byte
+	t.Run("[]byte To *[]byte", func(t *testing.T) {
+		type PtrSliceType struct {
+			ID *[]byte `datastore:"id"`
+		}
+		x := &PtrSliceType{}
+		ps := []Property{
+			{Name: "id", Value: []byte("some-id")},
+		}
+		err := LoadStruct(x, ps)
+		if err != nil {
+			t.Errorf("LoadStruct failed: %v", err)
+		}
+		if x.ID == nil || string(*x.ID) != "some-id" {
+			got := "nil"
+			if x.ID != nil {
+				got = string(*x.ID)
+			}
+			t.Errorf("got x.ID = %q, want %q", got, "some-id")
+		}
+	})
+
+	// Case 8: Saving *[]byte
+	t.Run("Save *[]byte", func(t *testing.T) {
+		type PtrSliceType struct {
+			ID *[]byte `datastore:"id"`
+		}
+		data := []byte("some-id")
+		x := &PtrSliceType{ID: &data}
+		props, err := SaveStruct(x)
+		if err != nil {
+			t.Errorf("SaveStruct failed: %v", err)
+		}
+		found := false
+		for _, p := range props {
+			if p.Name == "id" {
+				found = true
+				if string(p.Value.([]byte)) != "some-id" {
+					t.Errorf("got p.Value = %q, want %q", string(p.Value.([]byte)), "some-id")
+				}
+			}
+		}
+		if !found {
+			t.Errorf("property 'id' not found in %v", props)
+		}
+	})
+}

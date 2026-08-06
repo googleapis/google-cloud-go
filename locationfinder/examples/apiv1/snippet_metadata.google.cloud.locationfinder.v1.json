@@ -1,0 +1,245 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.locationfinder.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/locationfinder/apiv1",
+    "version": "1.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient",
+          "shortName": "CloudLocationFinderClient"
+        },
+        "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient.GetCloudLocation",
+        "method": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinder.GetCloudLocation",
+          "service": {
+            "fullName": "google.cloud.locationfinder.v1.CloudLocationFinder",
+            "shortName": "CloudLocationFinder"
+          },
+          "shortName": "GetCloudLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationfinderpb.GetCloudLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationfinderpb.CloudLocation",
+        "shortName": "GetCloudLocation"
+      },
+      "description": "GetCloudLocation retrieves a resource containing information about a cloud location.",
+      "file": "CloudLocationFinderClient/GetCloudLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudlocationfinder_v1_generated_CloudLocationFinder_GetCloudLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudlocationfinder GetCloudLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient",
+          "shortName": "CloudLocationFinderClient"
+        },
+        "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "CloudLocationFinderClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudlocationfinder_v1_generated_CloudLocationFinder_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudlocationfinder GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient",
+          "shortName": "CloudLocationFinderClient"
+        },
+        "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient.ListCloudLocations",
+        "method": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinder.ListCloudLocations",
+          "service": {
+            "fullName": "google.cloud.locationfinder.v1.CloudLocationFinder",
+            "shortName": "CloudLocationFinder"
+          },
+          "shortName": "ListCloudLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationfinderpb.ListCloudLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CloudLocationIterator",
+        "shortName": "ListCloudLocations"
+      },
+      "description": "ListCloudLocations lists cloud locations under a given project and location.",
+      "file": "CloudLocationFinderClient/ListCloudLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudlocationfinder_v1_generated_CloudLocationFinder_ListCloudLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudlocationfinder ListCloudLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient",
+          "shortName": "CloudLocationFinderClient"
+        },
+        "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.",
+      "file": "CloudLocationFinderClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudlocationfinder_v1_generated_CloudLocationFinder_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudlocationfinder ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient",
+          "shortName": "CloudLocationFinderClient"
+        },
+        "fullName": "google.cloud.locationfinder.v1.CloudLocationFinderClient.SearchCloudLocations",
+        "method": {
+          "fullName": "google.cloud.locationfinder.v1.CloudLocationFinder.SearchCloudLocations",
+          "service": {
+            "fullName": "google.cloud.locationfinder.v1.CloudLocationFinder",
+            "shortName": "CloudLocationFinder"
+          },
+          "shortName": "SearchCloudLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationfinderpb.SearchCloudLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CloudLocationIterator",
+        "shortName": "SearchCloudLocations"
+      },
+      "description": "SearchCloudLocations searches for cloud locations from a given source location.",
+      "file": "CloudLocationFinderClient/SearchCloudLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudlocationfinder_v1_generated_CloudLocationFinder_SearchCloudLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudlocationfinder SearchCloudLocations Sample"
+    }
+  ]
+}

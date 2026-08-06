@@ -397,6 +397,7 @@ func TestPaginationMapResponse(t *testing.T) {
 }
 
 func TestPaginationMapResponseMaxRes(t *testing.T) {
+	t.Skip("ratelimit pushback errors - b/524324270")
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
 	}
@@ -465,6 +466,7 @@ func TestHeaders(t *testing.T) {
 }
 
 func TestInstanceGroupResize(t *testing.T) {
+	t.Skip("ratelimit pushback errors - b/524324270")
 	// we test a required query-param field set to 0
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")

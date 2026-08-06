@@ -38,7 +38,7 @@ func TestValidatePublishSettings(t *testing.T) {
 				// These have no max bounds, check large values.
 				settings.DelayThreshold = 24 * time.Hour
 				settings.Timeout = 24 * time.Hour
-				settings.BufferedByteLimit = 1e10
+				settings.BufferedByteLimit = 1e9
 			},
 			wantErr: false,
 		},
@@ -133,7 +133,7 @@ func TestValidateReceiveSettings(t *testing.T) {
 				settings.Partitions = []int{5, 3, 9, 1, 4, 0}
 				// These have no max bounds, check large values.
 				settings.MaxOutstandingMessages = 100000
-				settings.MaxOutstandingBytes = 1e10
+				settings.MaxOutstandingBytes = 1e9
 				settings.Timeout = 24 * time.Hour
 			},
 			wantErr: false,

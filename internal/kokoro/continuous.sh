@@ -36,7 +36,7 @@ export GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES=database-01
 export GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID=gcloud-golang-firestore-tests
 # TODO(codyoss): Update this
 export GCLOUD_TESTS_GOLANG_FIRESTORE_KEY=$KOKORO_KEYSTORE_DIR/72523_go_firestore_integration_service_account
-export GCLOUD_TESTS_GOLANG_FIRESTORE_DATABASES=database-02
+export GCLOUD_TESTS_GOLANG_FIRESTORE_ENTERPRISE_DATABASES=database-enterprise-01
 # TODO(codyoss): Update this
 export GCLOUD_TESTS_API_KEY=$(cat $KOKORO_KEYSTORE_DIR/72523_go_gcloud_tests_api_key)
 export GCLOUD_TESTS_GOLANG_KEYRING=projects/dulcet-port-762/locations/us/keyRings/go-integration-test
@@ -61,6 +61,8 @@ export GCLOUD_TESTS_BIGTABLE_KEYRING=projects/dulcet-port-762/locations/us-centr
 export GCLOUD_TESTS_BIGTABLE_CLUSTER="gc-bt-it-cluster"
 export GCLOUD_TESTS_BIGTABLE_PRI_PROJ_SEC_CLUSTER="gc-bt-it-cluster-02"
 export GCLOUD_TESTS_BIGTABLE_INSTANCE="gc-bt-it-instance"
+export GCLOUD_TESTS_BIGTABLE_TAG_KEY="gc-bt-it-tag-key"
+export GCLOUD_TESTS_BIGTABLE_TAG_VALUE="gc-bt-it-tag-value"
 
 # Universe domain variables. Tests will be skipped if TEST_UNIVERSE_DOMAIN is removed.
 export TEST_UNIVERSE_DOMAIN=$(cat ${KOKORO_GFILE_DIR}/secret_manager/client-library-test-universe-domain)
@@ -111,18 +113,25 @@ runDirectoryTests() {
     # bigquery/benchmarks: build constraints exclude all Go files
     return
   fi
+  if [[ "$PWD/" == *"/examples/"* && "$PWD/" != *"/internal/examples/"* ]]; then
+    # examples: build constraints exclude all Go files
+    return
+  fi
   if { [[ $PWD == *"/internal/"* ]] ||
     [[ $PWD == *"/third_party/"* ]]; } &&
     [[ $KOKORO_JOB_NAME == *"earliest"* ]]; then
     # internal tools only expected to work with latest go version
     return
   fi
-  GOWORK=off go test -race -v -timeout 45m "${1:-./...}" 2>&1 |
-    tee sponge_log.log
-  # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-  # xUnit XML file.
-  cat sponge_log.log |
-    go-junit-report -set-exit-code >sponge_log.xml
+  if [[ $PWD == *"/internal/generated"* ]]; then
+    # always tidy generated snippets
+    go mod tidy
+  fi
+  go_test_args=("-race" "--timeout" "45m")
+  gotestsum --packages="${1:-./...}" \
+    --junitfile sponge_log.xml \
+    --format standard-verbose \
+    -- "${go_test_args[@]}" 2>&1 | tee sponge_log.log
   # Add the exit codes together so we exit non-zero if any module fails.
   exit_code=$(($exit_code + $?))
 }
@@ -131,12 +140,14 @@ runDirectoryTests() {
 runEmulatorTests() {
   if [ -f "emulator_test.sh" ]; then
     ./emulator_test.sh
-    # Takes the kokoro output log (raw stdout) and creates a machine-parseable
-    # xUnit XML file.
-    cat sponge_log.log |
-      go-junit-report -set-exit-code >sponge_log.xml
     # Add the exit codes together so we exit non-zero if any module fails.
     exit_code=$(($exit_code + $?))
+
+    # Emulator tests may produce their own sponge log xml files alongside the
+    # normal directory tests.  This invocation is used to aggregate them into
+    # a single sponge_log.xml file, as gotestsum doesn't support appending to 
+    # the --junitfile.
+    gotestsum --junitfile=sponge_log.xml --raw-command | cat sponge_log*.xml
   fi
 }
 

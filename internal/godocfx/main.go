@@ -113,9 +113,7 @@ func main() {
 		log.Println("No modules to process")
 		return
 	}
-	namer := &friendlyAPINamer{
-		metaURL: "https://raw.githubusercontent.com/googleapis/google-cloud-go/main/internal/.repo-metadata-full.json",
-	}
+	namer := &friendlyAPINamer{}
 	if ok := processMods(mods, *outDir, namer, nil, *print); !ok {
 		os.Exit(1)
 	}

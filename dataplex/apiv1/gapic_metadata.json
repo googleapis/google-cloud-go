@@ -65,6 +65,11 @@
                 "GetGlossaryTerm"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -98,6 +103,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateGlossary": {
@@ -175,6 +190,11 @@
                 "GetGlossaryTerm"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -208,6 +228,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateGlossary": {
@@ -269,6 +299,11 @@
                 "CreateEntryType"
               ]
             },
+            "CreateMetadataFeed": {
+              "methods": [
+                "CreateMetadataFeed"
+              ]
+            },
             "CreateMetadataJob": {
               "methods": [
                 "CreateMetadataJob"
@@ -297,6 +332,11 @@
             "DeleteEntryType": {
               "methods": [
                 "DeleteEntryType"
+              ]
+            },
+            "DeleteMetadataFeed": {
+              "methods": [
+                "DeleteMetadataFeed"
               ]
             },
             "DeleteOperation": {
@@ -329,9 +369,19 @@
                 "GetEntryType"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetMetadataFeed": {
+              "methods": [
+                "GetMetadataFeed"
               ]
             },
             "GetMetadataJob": {
@@ -369,6 +419,11 @@
                 "ListLocations"
               ]
             },
+            "ListMetadataFeeds": {
+              "methods": [
+                "ListMetadataFeeds"
+              ]
+            },
             "ListMetadataJobs": {
               "methods": [
                 "ListMetadataJobs"
@@ -379,14 +434,39 @@
                 "ListOperations"
               ]
             },
+            "LookupContext": {
+              "methods": [
+                "LookupContext"
+              ]
+            },
             "LookupEntry": {
               "methods": [
                 "LookupEntry"
               ]
             },
+            "LookupEntryLinks": {
+              "methods": [
+                "LookupEntryLinks"
+              ]
+            },
+            "ModifyEntry": {
+              "methods": [
+                "ModifyEntry"
+              ]
+            },
             "SearchEntries": {
               "methods": [
                 "SearchEntries"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAspectType": {
@@ -404,9 +484,19 @@
                 "UpdateEntryGroup"
               ]
             },
+            "UpdateEntryLink": {
+              "methods": [
+                "UpdateEntryLink"
+              ]
+            },
             "UpdateEntryType": {
               "methods": [
                 "UpdateEntryType"
+              ]
+            },
+            "UpdateMetadataFeed": {
+              "methods": [
+                "UpdateMetadataFeed"
               ]
             }
           }
@@ -449,6 +539,11 @@
                 "CreateEntryType"
               ]
             },
+            "CreateMetadataFeed": {
+              "methods": [
+                "CreateMetadataFeed"
+              ]
+            },
             "CreateMetadataJob": {
               "methods": [
                 "CreateMetadataJob"
@@ -477,6 +572,11 @@
             "DeleteEntryType": {
               "methods": [
                 "DeleteEntryType"
+              ]
+            },
+            "DeleteMetadataFeed": {
+              "methods": [
+                "DeleteMetadataFeed"
               ]
             },
             "DeleteOperation": {
@@ -509,9 +609,19 @@
                 "GetEntryType"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
+              ]
+            },
+            "GetMetadataFeed": {
+              "methods": [
+                "GetMetadataFeed"
               ]
             },
             "GetMetadataJob": {
@@ -549,6 +659,11 @@
                 "ListLocations"
               ]
             },
+            "ListMetadataFeeds": {
+              "methods": [
+                "ListMetadataFeeds"
+              ]
+            },
             "ListMetadataJobs": {
               "methods": [
                 "ListMetadataJobs"
@@ -559,14 +674,39 @@
                 "ListOperations"
               ]
             },
+            "LookupContext": {
+              "methods": [
+                "LookupContext"
+              ]
+            },
             "LookupEntry": {
               "methods": [
                 "LookupEntry"
               ]
             },
+            "LookupEntryLinks": {
+              "methods": [
+                "LookupEntryLinks"
+              ]
+            },
+            "ModifyEntry": {
+              "methods": [
+                "ModifyEntry"
+              ]
+            },
             "SearchEntries": {
               "methods": [
                 "SearchEntries"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateAspectType": {
@@ -584,9 +724,19 @@
                 "UpdateEntryGroup"
               ]
             },
+            "UpdateEntryLink": {
+              "methods": [
+                "UpdateEntryLink"
+              ]
+            },
             "UpdateEntryType": {
               "methods": [
                 "UpdateEntryType"
+              ]
+            },
+            "UpdateMetadataFeed": {
+              "methods": [
+                "UpdateMetadataFeed"
               ]
             }
           }
@@ -623,6 +773,11 @@
                 "GetEncryptionConfig"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -646,6 +801,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateEncryptionConfig": {
@@ -683,6 +848,11 @@
                 "GetEncryptionConfig"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -708,6 +878,16 @@
                 "ListOperations"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateEncryptionConfig": {
               "methods": [
                 "UpdateEncryptionConfig"
@@ -727,24 +907,9 @@
                 "CancelOperation"
               ]
             },
-            "CreateContent": {
-              "methods": [
-                "CreateContent"
-              ]
-            },
-            "DeleteContent": {
-              "methods": [
-                "DeleteContent"
-              ]
-            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
-              ]
-            },
-            "GetContent": {
-              "methods": [
-                "GetContent"
               ]
             },
             "GetIamPolicy": {
@@ -760,11 +925,6 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
-              ]
-            },
-            "ListContent": {
-              "methods": [
-                "ListContent"
               ]
             },
             "ListLocations": {
@@ -785,11 +945,6 @@
             "TestIamPermissions": {
               "methods": [
                 "TestIamPermissions"
-              ]
-            },
-            "UpdateContent": {
-              "methods": [
-                "UpdateContent"
               ]
             }
           }
@@ -802,24 +957,9 @@
                 "CancelOperation"
               ]
             },
-            "CreateContent": {
-              "methods": [
-                "CreateContent"
-              ]
-            },
-            "DeleteContent": {
-              "methods": [
-                "DeleteContent"
-              ]
-            },
             "DeleteOperation": {
               "methods": [
                 "DeleteOperation"
-              ]
-            },
-            "GetContent": {
-              "methods": [
-                "GetContent"
               ]
             },
             "GetIamPolicy": {
@@ -835,11 +975,6 @@
             "GetOperation": {
               "methods": [
                 "GetOperation"
-              ]
-            },
-            "ListContent": {
-              "methods": [
-                "ListContent"
               ]
             },
             "ListLocations": {
@@ -861,10 +996,219 @@
               "methods": [
                 "TestIamPermissions"
               ]
-            },
-            "UpdateContent": {
+            }
+          }
+        }
+      }
+    },
+    "DataProductService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "DataProductClient",
+          "rpcs": {
+            "CancelOperation": {
               "methods": [
-                "UpdateContent"
+                "CancelOperation"
+              ]
+            },
+            "CreateDataAsset": {
+              "methods": [
+                "CreateDataAsset"
+              ]
+            },
+            "CreateDataProduct": {
+              "methods": [
+                "CreateDataProduct"
+              ]
+            },
+            "DeleteDataAsset": {
+              "methods": [
+                "DeleteDataAsset"
+              ]
+            },
+            "DeleteDataProduct": {
+              "methods": [
+                "DeleteDataProduct"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataAsset": {
+              "methods": [
+                "GetDataAsset"
+              ]
+            },
+            "GetDataProduct": {
+              "methods": [
+                "GetDataProduct"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataAssets": {
+              "methods": [
+                "ListDataAssets"
+              ]
+            },
+            "ListDataProducts": {
+              "methods": [
+                "ListDataProducts"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RequestDataProductAccess": {
+              "methods": [
+                "RequestDataProductAccess"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDataAsset": {
+              "methods": [
+                "UpdateDataAsset"
+              ]
+            },
+            "UpdateDataProduct": {
+              "methods": [
+                "UpdateDataProduct"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "DataProductClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateDataAsset": {
+              "methods": [
+                "CreateDataAsset"
+              ]
+            },
+            "CreateDataProduct": {
+              "methods": [
+                "CreateDataProduct"
+              ]
+            },
+            "DeleteDataAsset": {
+              "methods": [
+                "DeleteDataAsset"
+              ]
+            },
+            "DeleteDataProduct": {
+              "methods": [
+                "DeleteDataProduct"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetDataAsset": {
+              "methods": [
+                "GetDataAsset"
+              ]
+            },
+            "GetDataProduct": {
+              "methods": [
+                "GetDataProduct"
+              ]
+            },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListDataAssets": {
+              "methods": [
+                "ListDataAssets"
+              ]
+            },
+            "ListDataProducts": {
+              "methods": [
+                "ListDataProducts"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "RequestDataProductAccess": {
+              "methods": [
+                "RequestDataProductAccess"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
+            "UpdateDataAsset": {
+              "methods": [
+                "UpdateDataAsset"
+              ]
+            },
+            "UpdateDataProduct": {
+              "methods": [
+                "UpdateDataProduct"
               ]
             }
           }
@@ -876,6 +1220,11 @@
         "grpc": {
           "libraryClient": "DataScanClient",
           "rpcs": {
+            "CancelDataScanJob": {
+              "methods": [
+                "CancelDataScanJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -911,6 +1260,11 @@
                 "GetDataScanJob"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -944,6 +1298,16 @@
             "RunDataScan": {
               "methods": [
                 "RunDataScan"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateDataScan": {
@@ -956,6 +1320,11 @@
         "rest": {
           "libraryClient": "DataScanClient",
           "rpcs": {
+            "CancelDataScanJob": {
+              "methods": [
+                "CancelDataScanJob"
+              ]
+            },
             "CancelOperation": {
               "methods": [
                 "CancelOperation"
@@ -991,6 +1360,11 @@
                 "GetDataScanJob"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -1024,6 +1398,16 @@
             "RunDataScan": {
               "methods": [
                 "RunDataScan"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateDataScan": {
@@ -1095,6 +1479,11 @@
                 "GetDataTaxonomy"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -1128,6 +1517,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateDataAttribute": {
@@ -1205,6 +1604,11 @@
                 "GetDataTaxonomy"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -1238,6 +1642,16 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateDataAttribute": {
@@ -1279,11 +1693,6 @@
                 "CreateAsset"
               ]
             },
-            "CreateEnvironment": {
-              "methods": [
-                "CreateEnvironment"
-              ]
-            },
             "CreateLake": {
               "methods": [
                 "CreateLake"
@@ -1302,11 +1711,6 @@
             "DeleteAsset": {
               "methods": [
                 "DeleteAsset"
-              ]
-            },
-            "DeleteEnvironment": {
-              "methods": [
-                "DeleteEnvironment"
               ]
             },
             "DeleteLake": {
@@ -1334,9 +1738,9 @@
                 "GetAsset"
               ]
             },
-            "GetEnvironment": {
+            "GetIamPolicy": {
               "methods": [
-                "GetEnvironment"
+                "GetIamPolicy"
               ]
             },
             "GetJob": {
@@ -1379,11 +1783,6 @@
                 "ListAssets"
               ]
             },
-            "ListEnvironments": {
-              "methods": [
-                "ListEnvironments"
-              ]
-            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
@@ -1409,11 +1808,6 @@
                 "ListOperations"
               ]
             },
-            "ListSessions": {
-              "methods": [
-                "ListSessions"
-              ]
-            },
             "ListTasks": {
               "methods": [
                 "ListTasks"
@@ -1434,14 +1828,19 @@
                 "RunTask"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateAsset": {
               "methods": [
                 "UpdateAsset"
-              ]
-            },
-            "UpdateEnvironment": {
-              "methods": [
-                "UpdateEnvironment"
               ]
             },
             "UpdateLake": {
@@ -1479,11 +1878,6 @@
                 "CreateAsset"
               ]
             },
-            "CreateEnvironment": {
-              "methods": [
-                "CreateEnvironment"
-              ]
-            },
             "CreateLake": {
               "methods": [
                 "CreateLake"
@@ -1502,11 +1896,6 @@
             "DeleteAsset": {
               "methods": [
                 "DeleteAsset"
-              ]
-            },
-            "DeleteEnvironment": {
-              "methods": [
-                "DeleteEnvironment"
               ]
             },
             "DeleteLake": {
@@ -1534,9 +1923,9 @@
                 "GetAsset"
               ]
             },
-            "GetEnvironment": {
+            "GetIamPolicy": {
               "methods": [
-                "GetEnvironment"
+                "GetIamPolicy"
               ]
             },
             "GetJob": {
@@ -1579,11 +1968,6 @@
                 "ListAssets"
               ]
             },
-            "ListEnvironments": {
-              "methods": [
-                "ListEnvironments"
-              ]
-            },
             "ListJobs": {
               "methods": [
                 "ListJobs"
@@ -1609,11 +1993,6 @@
                 "ListOperations"
               ]
             },
-            "ListSessions": {
-              "methods": [
-                "ListSessions"
-              ]
-            },
             "ListTasks": {
               "methods": [
                 "ListTasks"
@@ -1634,14 +2013,19 @@
                 "RunTask"
               ]
             },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
+              ]
+            },
             "UpdateAsset": {
               "methods": [
                 "UpdateAsset"
-              ]
-            },
-            "UpdateEnvironment": {
-              "methods": [
-                "UpdateEnvironment"
               ]
             },
             "UpdateLake": {
@@ -1703,6 +2087,11 @@
                 "GetEntity"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -1736,6 +2125,16 @@
             "ListPartitions": {
               "methods": [
                 "ListPartitions"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateEntity": {
@@ -1783,6 +2182,11 @@
                 "GetEntity"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "GetLocation": {
               "methods": [
                 "GetLocation"
@@ -1816,6 +2220,16 @@
             "ListPartitions": {
               "methods": [
                 "ListPartitions"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
+              ]
+            },
+            "TestIamPermissions": {
+              "methods": [
+                "TestIamPermissions"
               ]
             },
             "UpdateEntity": {

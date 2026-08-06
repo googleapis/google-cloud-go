@@ -16,7 +16,7 @@ package query
 
 import (
 	"context"
-	"fmt"
+	"sync"
 	"testing"
 	"time"
 
@@ -58,15 +58,26 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 	if len(testQueryHelpers) == 0 {
 		t.Skip("integration tests skipped")
 	}
+	// Run a script with a known min duration, as this test relies on timing of requests.
+	sql := `
+	DECLARE end_target TIMESTAMP;
+	DECLARE poll_check_count INT64;
+	SET end_target = TIMESTAMP_ADD(CURRENT_TIMESTAMP, INTERVAL 1 SECOND);
+	SET poll_check_count = 0;
+	WHILE CURRENT_TIMESTAMP < end_target DO
+		SET poll_check_count = poll_check_count + 1;
+	END WHILE;
+	SELECT CURRENT_TIMESTAMP as ts, poll_check_count AS foo
+	`
 	for k, helper := range testQueryHelpers {
 		t.Run(k, func(t *testing.T) {
 			ctx, cancel := context.WithTimeout(context.Background(), defaultTestTimeout)
 			defer cancel()
 
-			numGenRows := uint64(1000000)
-			req := helper.FromSQL(fmt.Sprintf("SELECT num FROM UNNEST(GENERATE_ARRAY(1,%d)) as num", numGenRows))
-			req.QueryRequest.JobCreationMode = bigquerypb.QueryRequest_JOB_CREATION_OPTIONAL
-			req.QueryRequest.TimeoutMs = wrapperspb.UInt32(500)
+			req := helper.FromSQL(sql)
+			// We want the first RPC to return before cancellation, so we set a low timeout
+			// so that the query has populated a job reference.
+			req.QueryRequest.TimeoutMs = wrapperspb.UInt32(250)
 			req.QueryRequest.UseQueryCache = wrapperspb.Bool(false)
 
 			wctx, wcancel := context.WithCancel(ctx)
@@ -75,38 +86,49 @@ func TestIntegration_QueryCancelWait(t *testing.T) {
 				t.Fatalf("StartQuery() error: %v", err)
 			}
 
+			// Use a wg to synchronize progress of a goroutine.
+			var wg sync.WaitGroup
+			var waitErr error
+
+			wg.Add(1)
 			go func(t *testing.T) {
-				err := q.Wait(ctx)
-				if err == nil {
-					t.Errorf("Wait() should throw an error: %v", err)
-				}
+				waitErr = q.Wait(ctx)
+				wg.Done()
 			}(t)
 
-			for q.JobReference() == nil && q.Err() == nil {
-				time.Sleep(100 * time.Millisecond)
-			}
+			// sleep on main thread, then cancel.
+			// Time is later than the poll duration.
+			time.Sleep(500 * time.Millisecond)
 			wcancel()
 
+			// wait for the cancellation to return and evaluate expectations.
+			wg.Wait()
+			if waitErr != context.Canceled {
+				t.Errorf("Wait() should return context.Canceled, returned: %v", waitErr)
+			}
 			if q.Complete() {
 				t.Fatalf("Complete() should be false")
 			}
 
-			// Re-attach and wait again
-			nq, err := helper.AttachJob(ctx, q.JobReference())
-			if err != nil {
-				t.Fatalf("AttachJob() error: %v", err)
-			}
+			// It's still possible that we could have canceled before a JobReference is captured, so only attempt
+			// the reattach if the reference is present.
+			if q.JobReference() != nil {
 
-			err = nq.Wait(ctx)
-			if err != nil {
-				t.Fatalf("Wait() error: %v", err)
-			}
+				// Re-attach and wait again.
+				nq, err := helper.AttachJob(ctx, q.JobReference())
+				if err != nil {
+					t.Fatalf("AttachJob() error: %v", err)
+				}
 
-			if !nq.Complete() {
-				t.Fatalf("Complete() should be true after Wait()")
-			}
+				err = nq.Wait(ctx)
+				if err != nil {
+					t.Fatalf("Wait() error: %v", err)
+				}
 
-			// TODO: read data and assert row count
+				if !nq.Complete() {
+					t.Fatalf("Complete() should be true after Wait()")
+				}
+			}
 		})
 	}
 }

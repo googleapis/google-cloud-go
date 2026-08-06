@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -46,28 +47,41 @@ var newVertexRagDataClientHook clientHook
 
 // VertexRagDataCallOptions contains the retry settings for each method of VertexRagDataClient.
 type VertexRagDataCallOptions struct {
-	CreateRagCorpus       []gax.CallOption
-	UpdateRagCorpus       []gax.CallOption
-	GetRagCorpus          []gax.CallOption
-	ListRagCorpora        []gax.CallOption
-	DeleteRagCorpus       []gax.CallOption
-	UploadRagFile         []gax.CallOption
-	ImportRagFiles        []gax.CallOption
-	GetRagFile            []gax.CallOption
-	ListRagFiles          []gax.CallOption
-	DeleteRagFile         []gax.CallOption
-	UpdateRagEngineConfig []gax.CallOption
-	GetRagEngineConfig    []gax.CallOption
-	GetLocation           []gax.CallOption
-	ListLocations         []gax.CallOption
-	GetIamPolicy          []gax.CallOption
-	SetIamPolicy          []gax.CallOption
-	TestIamPermissions    []gax.CallOption
-	CancelOperation       []gax.CallOption
-	DeleteOperation       []gax.CallOption
-	GetOperation          []gax.CallOption
-	ListOperations        []gax.CallOption
-	WaitOperation         []gax.CallOption
+	CreateRagCorpus           []gax.CallOption
+	UpdateRagCorpus           []gax.CallOption
+	GetRagCorpus              []gax.CallOption
+	ListRagCorpora            []gax.CallOption
+	DeleteRagCorpus           []gax.CallOption
+	UploadRagFile             []gax.CallOption
+	ImportRagFiles            []gax.CallOption
+	GetRagFile                []gax.CallOption
+	ListRagFiles              []gax.CallOption
+	DeleteRagFile             []gax.CallOption
+	UpdateRagEngineConfig     []gax.CallOption
+	GetRagEngineConfig        []gax.CallOption
+	CreateRagDataSchema       []gax.CallOption
+	BatchCreateRagDataSchemas []gax.CallOption
+	GetRagDataSchema          []gax.CallOption
+	ListRagDataSchemas        []gax.CallOption
+	DeleteRagDataSchema       []gax.CallOption
+	BatchDeleteRagDataSchemas []gax.CallOption
+	CreateRagMetadata         []gax.CallOption
+	BatchCreateRagMetadata    []gax.CallOption
+	UpdateRagMetadata         []gax.CallOption
+	GetRagMetadata            []gax.CallOption
+	ListRagMetadata           []gax.CallOption
+	DeleteRagMetadata         []gax.CallOption
+	BatchDeleteRagMetadata    []gax.CallOption
+	GetLocation               []gax.CallOption
+	ListLocations             []gax.CallOption
+	GetIamPolicy              []gax.CallOption
+	SetIamPolicy              []gax.CallOption
+	TestIamPermissions        []gax.CallOption
+	CancelOperation           []gax.CallOption
+	DeleteOperation           []gax.CallOption
+	GetOperation              []gax.CallOption
+	ListOperations            []gax.CallOption
+	WaitOperation             []gax.CallOption
 }
 
 func defaultVertexRagDataGRPCClientOptions() []option.ClientOption {
@@ -87,55 +101,81 @@ func defaultVertexRagDataGRPCClientOptions() []option.ClientOption {
 
 func defaultVertexRagDataCallOptions() *VertexRagDataCallOptions {
 	return &VertexRagDataCallOptions{
-		CreateRagCorpus:       []gax.CallOption{},
-		UpdateRagCorpus:       []gax.CallOption{},
-		GetRagCorpus:          []gax.CallOption{},
-		ListRagCorpora:        []gax.CallOption{},
-		DeleteRagCorpus:       []gax.CallOption{},
-		UploadRagFile:         []gax.CallOption{},
-		ImportRagFiles:        []gax.CallOption{},
-		GetRagFile:            []gax.CallOption{},
-		ListRagFiles:          []gax.CallOption{},
-		DeleteRagFile:         []gax.CallOption{},
-		UpdateRagEngineConfig: []gax.CallOption{},
-		GetRagEngineConfig:    []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		CreateRagCorpus:           []gax.CallOption{},
+		UpdateRagCorpus:           []gax.CallOption{},
+		GetRagCorpus:              []gax.CallOption{},
+		ListRagCorpora:            []gax.CallOption{},
+		DeleteRagCorpus:           []gax.CallOption{},
+		UploadRagFile:             []gax.CallOption{},
+		ImportRagFiles:            []gax.CallOption{},
+		GetRagFile:                []gax.CallOption{},
+		ListRagFiles:              []gax.CallOption{},
+		DeleteRagFile:             []gax.CallOption{},
+		UpdateRagEngineConfig:     []gax.CallOption{},
+		GetRagEngineConfig:        []gax.CallOption{},
+		CreateRagDataSchema:       []gax.CallOption{},
+		BatchCreateRagDataSchemas: []gax.CallOption{},
+		GetRagDataSchema:          []gax.CallOption{},
+		ListRagDataSchemas:        []gax.CallOption{},
+		DeleteRagDataSchema:       []gax.CallOption{},
+		BatchDeleteRagDataSchemas: []gax.CallOption{},
+		CreateRagMetadata:         []gax.CallOption{},
+		BatchCreateRagMetadata:    []gax.CallOption{},
+		UpdateRagMetadata:         []gax.CallOption{},
+		GetRagMetadata:            []gax.CallOption{},
+		ListRagMetadata:           []gax.CallOption{},
+		DeleteRagMetadata:         []gax.CallOption{},
+		BatchDeleteRagMetadata:    []gax.CallOption{},
+		GetLocation:               []gax.CallOption{},
+		ListLocations:             []gax.CallOption{},
+		GetIamPolicy:              []gax.CallOption{},
+		SetIamPolicy:              []gax.CallOption{},
+		TestIamPermissions:        []gax.CallOption{},
+		CancelOperation:           []gax.CallOption{},
+		DeleteOperation:           []gax.CallOption{},
+		GetOperation:              []gax.CallOption{},
+		ListOperations:            []gax.CallOption{},
+		WaitOperation:             []gax.CallOption{},
 	}
 }
 
 func defaultVertexRagDataRESTCallOptions() *VertexRagDataCallOptions {
 	return &VertexRagDataCallOptions{
-		CreateRagCorpus:       []gax.CallOption{},
-		UpdateRagCorpus:       []gax.CallOption{},
-		GetRagCorpus:          []gax.CallOption{},
-		ListRagCorpora:        []gax.CallOption{},
-		DeleteRagCorpus:       []gax.CallOption{},
-		UploadRagFile:         []gax.CallOption{},
-		ImportRagFiles:        []gax.CallOption{},
-		GetRagFile:            []gax.CallOption{},
-		ListRagFiles:          []gax.CallOption{},
-		DeleteRagFile:         []gax.CallOption{},
-		UpdateRagEngineConfig: []gax.CallOption{},
-		GetRagEngineConfig:    []gax.CallOption{},
-		GetLocation:           []gax.CallOption{},
-		ListLocations:         []gax.CallOption{},
-		GetIamPolicy:          []gax.CallOption{},
-		SetIamPolicy:          []gax.CallOption{},
-		TestIamPermissions:    []gax.CallOption{},
-		CancelOperation:       []gax.CallOption{},
-		DeleteOperation:       []gax.CallOption{},
-		GetOperation:          []gax.CallOption{},
-		ListOperations:        []gax.CallOption{},
-		WaitOperation:         []gax.CallOption{},
+		CreateRagCorpus:           []gax.CallOption{},
+		UpdateRagCorpus:           []gax.CallOption{},
+		GetRagCorpus:              []gax.CallOption{},
+		ListRagCorpora:            []gax.CallOption{},
+		DeleteRagCorpus:           []gax.CallOption{},
+		UploadRagFile:             []gax.CallOption{},
+		ImportRagFiles:            []gax.CallOption{},
+		GetRagFile:                []gax.CallOption{},
+		ListRagFiles:              []gax.CallOption{},
+		DeleteRagFile:             []gax.CallOption{},
+		UpdateRagEngineConfig:     []gax.CallOption{},
+		GetRagEngineConfig:        []gax.CallOption{},
+		CreateRagDataSchema:       []gax.CallOption{},
+		BatchCreateRagDataSchemas: []gax.CallOption{},
+		GetRagDataSchema:          []gax.CallOption{},
+		ListRagDataSchemas:        []gax.CallOption{},
+		DeleteRagDataSchema:       []gax.CallOption{},
+		BatchDeleteRagDataSchemas: []gax.CallOption{},
+		CreateRagMetadata:         []gax.CallOption{},
+		BatchCreateRagMetadata:    []gax.CallOption{},
+		UpdateRagMetadata:         []gax.CallOption{},
+		GetRagMetadata:            []gax.CallOption{},
+		ListRagMetadata:           []gax.CallOption{},
+		DeleteRagMetadata:         []gax.CallOption{},
+		BatchDeleteRagMetadata:    []gax.CallOption{},
+		GetLocation:               []gax.CallOption{},
+		ListLocations:             []gax.CallOption{},
+		GetIamPolicy:              []gax.CallOption{},
+		SetIamPolicy:              []gax.CallOption{},
+		TestIamPermissions:        []gax.CallOption{},
+		CancelOperation:           []gax.CallOption{},
+		DeleteOperation:           []gax.CallOption{},
+		GetOperation:              []gax.CallOption{},
+		ListOperations:            []gax.CallOption{},
+		WaitOperation:             []gax.CallOption{},
 	}
 }
 
@@ -162,6 +202,23 @@ type internalVertexRagDataClient interface {
 	UpdateRagEngineConfig(context.Context, *aiplatformpb.UpdateRagEngineConfigRequest, ...gax.CallOption) (*UpdateRagEngineConfigOperation, error)
 	UpdateRagEngineConfigOperation(name string) *UpdateRagEngineConfigOperation
 	GetRagEngineConfig(context.Context, *aiplatformpb.GetRagEngineConfigRequest, ...gax.CallOption) (*aiplatformpb.RagEngineConfig, error)
+	CreateRagDataSchema(context.Context, *aiplatformpb.CreateRagDataSchemaRequest, ...gax.CallOption) (*aiplatformpb.RagDataSchema, error)
+	BatchCreateRagDataSchemas(context.Context, *aiplatformpb.BatchCreateRagDataSchemasRequest, ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error)
+	BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation
+	GetRagDataSchema(context.Context, *aiplatformpb.GetRagDataSchemaRequest, ...gax.CallOption) (*aiplatformpb.RagDataSchema, error)
+	ListRagDataSchemas(context.Context, *aiplatformpb.ListRagDataSchemasRequest, ...gax.CallOption) *RagDataSchemaIterator
+	DeleteRagDataSchema(context.Context, *aiplatformpb.DeleteRagDataSchemaRequest, ...gax.CallOption) error
+	BatchDeleteRagDataSchemas(context.Context, *aiplatformpb.BatchDeleteRagDataSchemasRequest, ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error)
+	BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation
+	CreateRagMetadata(context.Context, *aiplatformpb.CreateRagMetadataRequest, ...gax.CallOption) (*aiplatformpb.RagMetadata, error)
+	BatchCreateRagMetadata(context.Context, *aiplatformpb.BatchCreateRagMetadataRequest, ...gax.CallOption) (*BatchCreateRagMetadataOperation, error)
+	BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation
+	UpdateRagMetadata(context.Context, *aiplatformpb.UpdateRagMetadataRequest, ...gax.CallOption) (*aiplatformpb.RagMetadata, error)
+	GetRagMetadata(context.Context, *aiplatformpb.GetRagMetadataRequest, ...gax.CallOption) (*aiplatformpb.RagMetadata, error)
+	ListRagMetadata(context.Context, *aiplatformpb.ListRagMetadataRequest, ...gax.CallOption) *RagMetadataIterator
+	DeleteRagMetadata(context.Context, *aiplatformpb.DeleteRagMetadataRequest, ...gax.CallOption) error
+	BatchDeleteRagMetadata(context.Context, *aiplatformpb.BatchDeleteRagMetadataRequest, ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error)
+	BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
@@ -310,6 +367,95 @@ func (c *VertexRagDataClient) GetRagEngineConfig(ctx context.Context, req *aipla
 	return c.internalClient.GetRagEngineConfig(ctx, req, opts...)
 }
 
+// CreateRagDataSchema creates a RagDataSchema.
+func (c *VertexRagDataClient) CreateRagDataSchema(ctx context.Context, req *aiplatformpb.CreateRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	return c.internalClient.CreateRagDataSchema(ctx, req, opts...)
+}
+
+// BatchCreateRagDataSchemas batch Create one or more RagDataSchemas
+func (c *VertexRagDataClient) BatchCreateRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchCreateRagDataSchemasRequest, opts ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error) {
+	return c.internalClient.BatchCreateRagDataSchemas(ctx, req, opts...)
+}
+
+// BatchCreateRagDataSchemasOperation returns a new BatchCreateRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchCreateRagDataSchemasOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation {
+	return c.internalClient.BatchCreateRagDataSchemasOperation(name)
+}
+
+// GetRagDataSchema gets a RagDataSchema.
+func (c *VertexRagDataClient) GetRagDataSchema(ctx context.Context, req *aiplatformpb.GetRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	return c.internalClient.GetRagDataSchema(ctx, req, opts...)
+}
+
+// ListRagDataSchemas lists RagDataSchemas in a Location.
+func (c *VertexRagDataClient) ListRagDataSchemas(ctx context.Context, req *aiplatformpb.ListRagDataSchemasRequest, opts ...gax.CallOption) *RagDataSchemaIterator {
+	return c.internalClient.ListRagDataSchemas(ctx, req, opts...)
+}
+
+// DeleteRagDataSchema deletes a RagDataSchema.
+func (c *VertexRagDataClient) DeleteRagDataSchema(ctx context.Context, req *aiplatformpb.DeleteRagDataSchemaRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteRagDataSchema(ctx, req, opts...)
+}
+
+// BatchDeleteRagDataSchemas batch Deletes one or more RagDataSchemas
+func (c *VertexRagDataClient) BatchDeleteRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchDeleteRagDataSchemasRequest, opts ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error) {
+	return c.internalClient.BatchDeleteRagDataSchemas(ctx, req, opts...)
+}
+
+// BatchDeleteRagDataSchemasOperation returns a new BatchDeleteRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagDataSchemasOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation {
+	return c.internalClient.BatchDeleteRagDataSchemasOperation(name)
+}
+
+// CreateRagMetadata creates a RagMetadata.
+func (c *VertexRagDataClient) CreateRagMetadata(ctx context.Context, req *aiplatformpb.CreateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	return c.internalClient.CreateRagMetadata(ctx, req, opts...)
+}
+
+// BatchCreateRagMetadata batch Create one or more RagMetadatas
+func (c *VertexRagDataClient) BatchCreateRagMetadata(ctx context.Context, req *aiplatformpb.BatchCreateRagMetadataRequest, opts ...gax.CallOption) (*BatchCreateRagMetadataOperation, error) {
+	return c.internalClient.BatchCreateRagMetadata(ctx, req, opts...)
+}
+
+// BatchCreateRagMetadataOperation returns a new BatchCreateRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchCreateRagMetadataOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation {
+	return c.internalClient.BatchCreateRagMetadataOperation(name)
+}
+
+// UpdateRagMetadata updates a RagMetadata.
+func (c *VertexRagDataClient) UpdateRagMetadata(ctx context.Context, req *aiplatformpb.UpdateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	return c.internalClient.UpdateRagMetadata(ctx, req, opts...)
+}
+
+// GetRagMetadata gets a RagMetadata.
+func (c *VertexRagDataClient) GetRagMetadata(ctx context.Context, req *aiplatformpb.GetRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	return c.internalClient.GetRagMetadata(ctx, req, opts...)
+}
+
+// ListRagMetadata lists RagMetadata in a RagFile.
+func (c *VertexRagDataClient) ListRagMetadata(ctx context.Context, req *aiplatformpb.ListRagMetadataRequest, opts ...gax.CallOption) *RagMetadataIterator {
+	return c.internalClient.ListRagMetadata(ctx, req, opts...)
+}
+
+// DeleteRagMetadata deletes a RagMetadata.
+func (c *VertexRagDataClient) DeleteRagMetadata(ctx context.Context, req *aiplatformpb.DeleteRagMetadataRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteRagMetadata(ctx, req, opts...)
+}
+
+// BatchDeleteRagMetadata batch Deletes one or more RagMetadata.
+func (c *VertexRagDataClient) BatchDeleteRagMetadata(ctx context.Context, req *aiplatformpb.BatchDeleteRagMetadataRequest, opts ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error) {
+	return c.internalClient.BatchDeleteRagMetadata(ctx, req, opts...)
+}
+
+// BatchDeleteRagMetadataOperation returns a new BatchDeleteRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagMetadataOperation, possibly from a different process.
+func (c *VertexRagDataClient) BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation {
+	return c.internalClient.BatchDeleteRagMetadataOperation(name)
+}
+
 // GetLocation gets information about a location.
 func (c *VertexRagDataClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
@@ -407,6 +553,16 @@ type vertexRagDataGRPCClient struct {
 // A service for managing user data for RAG.
 func NewVertexRagDataClient(ctx context.Context, opts ...option.ClientOption) (*VertexRagDataClient, error) {
 	clientOpts := defaultVertexRagDataGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	if newVertexRagDataClientHook != nil {
 		hookOpts, err := newVertexRagDataClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -431,6 +587,54 @@ func NewVertexRagDataClient(ctx context.Context, opts ...option.ClientOption) (*
 		locationsClient:     locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateRagCorpus = append(client.CallOptions.CreateRagCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRagCorpus = append(client.CallOptions.UpdateRagCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRagCorpus = append(client.CallOptions.GetRagCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRagCorpora = append(client.CallOptions.ListRagCorpora, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRagCorpus = append(client.CallOptions.DeleteRagCorpus, gax.WithClientMetrics(metrics))
+		client.CallOptions.UploadRagFile = append(client.CallOptions.UploadRagFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ImportRagFiles = append(client.CallOptions.ImportRagFiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRagFile = append(client.CallOptions.GetRagFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRagFiles = append(client.CallOptions.ListRagFiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRagFile = append(client.CallOptions.DeleteRagFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRagEngineConfig = append(client.CallOptions.UpdateRagEngineConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRagEngineConfig = append(client.CallOptions.GetRagEngineConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRagDataSchema = append(client.CallOptions.CreateRagDataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateRagDataSchemas = append(client.CallOptions.BatchCreateRagDataSchemas, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRagDataSchema = append(client.CallOptions.GetRagDataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRagDataSchemas = append(client.CallOptions.ListRagDataSchemas, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRagDataSchema = append(client.CallOptions.DeleteRagDataSchema, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteRagDataSchemas = append(client.CallOptions.BatchDeleteRagDataSchemas, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRagMetadata = append(client.CallOptions.CreateRagMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchCreateRagMetadata = append(client.CallOptions.BatchCreateRagMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRagMetadata = append(client.CallOptions.UpdateRagMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRagMetadata = append(client.CallOptions.GetRagMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRagMetadata = append(client.CallOptions.ListRagMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRagMetadata = append(client.CallOptions.DeleteRagMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.BatchDeleteRagMetadata = append(client.CallOptions.BatchDeleteRagMetadata, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -500,6 +704,16 @@ type vertexRagDataRESTClient struct {
 // A service for managing user data for RAG.
 func NewVertexRagDataRESTClient(ctx context.Context, opts ...option.ClientOption) (*VertexRagDataClient, error) {
 	clientOpts := append(defaultVertexRagDataRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "aiplatform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/aiplatform/apiv1beta1",
+			"gcp.client.language": "go",
+			"url.domain":          "aiplatform.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -513,6 +727,55 @@ func NewVertexRagDataRESTClient(ctx context.Context, opts ...option.ClientOption
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "aiplatform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/aiplatform/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "aiplatform.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateRagCorpus = append(callOpts.CreateRagCorpus, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRagCorpus = append(callOpts.UpdateRagCorpus, gax.WithClientMetrics(metrics))
+		callOpts.GetRagCorpus = append(callOpts.GetRagCorpus, gax.WithClientMetrics(metrics))
+		callOpts.ListRagCorpora = append(callOpts.ListRagCorpora, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRagCorpus = append(callOpts.DeleteRagCorpus, gax.WithClientMetrics(metrics))
+		callOpts.UploadRagFile = append(callOpts.UploadRagFile, gax.WithClientMetrics(metrics))
+		callOpts.ImportRagFiles = append(callOpts.ImportRagFiles, gax.WithClientMetrics(metrics))
+		callOpts.GetRagFile = append(callOpts.GetRagFile, gax.WithClientMetrics(metrics))
+		callOpts.ListRagFiles = append(callOpts.ListRagFiles, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRagFile = append(callOpts.DeleteRagFile, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRagEngineConfig = append(callOpts.UpdateRagEngineConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetRagEngineConfig = append(callOpts.GetRagEngineConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateRagDataSchema = append(callOpts.CreateRagDataSchema, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateRagDataSchemas = append(callOpts.BatchCreateRagDataSchemas, gax.WithClientMetrics(metrics))
+		callOpts.GetRagDataSchema = append(callOpts.GetRagDataSchema, gax.WithClientMetrics(metrics))
+		callOpts.ListRagDataSchemas = append(callOpts.ListRagDataSchemas, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRagDataSchema = append(callOpts.DeleteRagDataSchema, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteRagDataSchemas = append(callOpts.BatchDeleteRagDataSchemas, gax.WithClientMetrics(metrics))
+		callOpts.CreateRagMetadata = append(callOpts.CreateRagMetadata, gax.WithClientMetrics(metrics))
+		callOpts.BatchCreateRagMetadata = append(callOpts.BatchCreateRagMetadata, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRagMetadata = append(callOpts.UpdateRagMetadata, gax.WithClientMetrics(metrics))
+		callOpts.GetRagMetadata = append(callOpts.GetRagMetadata, gax.WithClientMetrics(metrics))
+		callOpts.ListRagMetadata = append(callOpts.ListRagMetadata, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRagMetadata = append(callOpts.DeleteRagMetadata, gax.WithClientMetrics(metrics))
+		callOpts.BatchDeleteRagMetadata = append(callOpts.BatchDeleteRagMetadata, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -569,6 +832,12 @@ func (c *vertexRagDataGRPCClient) CreateRagCorpus(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagCorpus")
+	}
 	opts = append((*c.CallOptions).CreateRagCorpus[0:len((*c.CallOptions).CreateRagCorpus):len((*c.CallOptions).CreateRagCorpus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -589,6 +858,9 @@ func (c *vertexRagDataGRPCClient) UpdateRagCorpus(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagCorpus")
+	}
 	opts = append((*c.CallOptions).UpdateRagCorpus[0:len((*c.CallOptions).UpdateRagCorpus):len((*c.CallOptions).UpdateRagCorpus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -609,6 +881,12 @@ func (c *vertexRagDataGRPCClient) GetRagCorpus(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagCorpus")
+	}
 	opts = append((*c.CallOptions).GetRagCorpus[0:len((*c.CallOptions).GetRagCorpus):len((*c.CallOptions).GetRagCorpus)], opts...)
 	var resp *aiplatformpb.RagCorpus
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -627,6 +905,12 @@ func (c *vertexRagDataGRPCClient) ListRagCorpora(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagCorpora")
+	}
 	opts = append((*c.CallOptions).ListRagCorpora[0:len((*c.CallOptions).ListRagCorpora):len((*c.CallOptions).ListRagCorpora)], opts...)
 	it := &RagCorpusIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListRagCorporaRequest)
@@ -673,6 +957,12 @@ func (c *vertexRagDataGRPCClient) DeleteRagCorpus(ctx context.Context, req *aipl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagCorpus")
+	}
 	opts = append((*c.CallOptions).DeleteRagCorpus[0:len((*c.CallOptions).DeleteRagCorpus):len((*c.CallOptions).DeleteRagCorpus)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -693,6 +983,12 @@ func (c *vertexRagDataGRPCClient) UploadRagFile(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UploadRagFile")
+	}
 	opts = append((*c.CallOptions).UploadRagFile[0:len((*c.CallOptions).UploadRagFile):len((*c.CallOptions).UploadRagFile)], opts...)
 	var resp *aiplatformpb.UploadRagFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -711,6 +1007,12 @@ func (c *vertexRagDataGRPCClient) ImportRagFiles(ctx context.Context, req *aipla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/ImportRagFiles")
+	}
 	opts = append((*c.CallOptions).ImportRagFiles[0:len((*c.CallOptions).ImportRagFiles):len((*c.CallOptions).ImportRagFiles)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -731,6 +1033,12 @@ func (c *vertexRagDataGRPCClient) GetRagFile(ctx context.Context, req *aiplatfor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagFile")
+	}
 	opts = append((*c.CallOptions).GetRagFile[0:len((*c.CallOptions).GetRagFile):len((*c.CallOptions).GetRagFile)], opts...)
 	var resp *aiplatformpb.RagFile
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -749,6 +1057,12 @@ func (c *vertexRagDataGRPCClient) ListRagFiles(ctx context.Context, req *aiplatf
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagFiles")
+	}
 	opts = append((*c.CallOptions).ListRagFiles[0:len((*c.CallOptions).ListRagFiles):len((*c.CallOptions).ListRagFiles)], opts...)
 	it := &RagFileIterator{}
 	req = proto.Clone(req).(*aiplatformpb.ListRagFilesRequest)
@@ -795,6 +1109,12 @@ func (c *vertexRagDataGRPCClient) DeleteRagFile(ctx context.Context, req *aiplat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagFile")
+	}
 	opts = append((*c.CallOptions).DeleteRagFile[0:len((*c.CallOptions).DeleteRagFile):len((*c.CallOptions).DeleteRagFile)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -815,6 +1135,9 @@ func (c *vertexRagDataGRPCClient) UpdateRagEngineConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagEngineConfig")
+	}
 	opts = append((*c.CallOptions).UpdateRagEngineConfig[0:len((*c.CallOptions).UpdateRagEngineConfig):len((*c.CallOptions).UpdateRagEngineConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -835,6 +1158,12 @@ func (c *vertexRagDataGRPCClient) GetRagEngineConfig(ctx context.Context, req *a
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagEngineConfig")
+	}
 	opts = append((*c.CallOptions).GetRagEngineConfig[0:len((*c.CallOptions).GetRagEngineConfig):len((*c.CallOptions).GetRagEngineConfig)], opts...)
 	var resp *aiplatformpb.RagEngineConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -848,11 +1177,379 @@ func (c *vertexRagDataGRPCClient) GetRagEngineConfig(ctx context.Context, req *a
 	return resp, nil
 }
 
+func (c *vertexRagDataGRPCClient) CreateRagDataSchema(ctx context.Context, req *aiplatformpb.CreateRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagDataSchema")
+	}
+	opts = append((*c.CallOptions).CreateRagDataSchema[0:len((*c.CallOptions).CreateRagDataSchema):len((*c.CallOptions).CreateRagDataSchema)], opts...)
+	var resp *aiplatformpb.RagDataSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.CreateRagDataSchema, req, settings.GRPC, c.logger, "CreateRagDataSchema")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) BatchCreateRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchCreateRagDataSchemasRequest, opts ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchCreateRagDataSchemas")
+	}
+	opts = append((*c.CallOptions).BatchCreateRagDataSchemas[0:len((*c.CallOptions).BatchCreateRagDataSchemas):len((*c.CallOptions).BatchCreateRagDataSchemas)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchCreateRagDataSchemas, req, settings.GRPC, c.logger, "BatchCreateRagDataSchemas")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCreateRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) GetRagDataSchema(ctx context.Context, req *aiplatformpb.GetRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagDataSchema")
+	}
+	opts = append((*c.CallOptions).GetRagDataSchema[0:len((*c.CallOptions).GetRagDataSchema):len((*c.CallOptions).GetRagDataSchema)], opts...)
+	var resp *aiplatformpb.RagDataSchema
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.GetRagDataSchema, req, settings.GRPC, c.logger, "GetRagDataSchema")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) ListRagDataSchemas(ctx context.Context, req *aiplatformpb.ListRagDataSchemasRequest, opts ...gax.CallOption) *RagDataSchemaIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagDataSchemas")
+	}
+	opts = append((*c.CallOptions).ListRagDataSchemas[0:len((*c.CallOptions).ListRagDataSchemas):len((*c.CallOptions).ListRagDataSchemas)], opts...)
+	it := &RagDataSchemaIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagDataSchemasRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagDataSchema, string, error) {
+		resp := &aiplatformpb.ListRagDataSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.vertexRagDataClient.ListRagDataSchemas, req, settings.GRPC, c.logger, "ListRagDataSchemas")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRagDataSchemas(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *vertexRagDataGRPCClient) DeleteRagDataSchema(ctx context.Context, req *aiplatformpb.DeleteRagDataSchemaRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagDataSchema")
+	}
+	opts = append((*c.CallOptions).DeleteRagDataSchema[0:len((*c.CallOptions).DeleteRagDataSchema):len((*c.CallOptions).DeleteRagDataSchema)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.vertexRagDataClient.DeleteRagDataSchema, req, settings.GRPC, c.logger, "DeleteRagDataSchema")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *vertexRagDataGRPCClient) BatchDeleteRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchDeleteRagDataSchemasRequest, opts ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchDeleteRagDataSchemas")
+	}
+	opts = append((*c.CallOptions).BatchDeleteRagDataSchemas[0:len((*c.CallOptions).BatchDeleteRagDataSchemas):len((*c.CallOptions).BatchDeleteRagDataSchemas)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchDeleteRagDataSchemas, req, settings.GRPC, c.logger, "BatchDeleteRagDataSchemas")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeleteRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) CreateRagMetadata(ctx context.Context, req *aiplatformpb.CreateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagMetadata")
+	}
+	opts = append((*c.CallOptions).CreateRagMetadata[0:len((*c.CallOptions).CreateRagMetadata):len((*c.CallOptions).CreateRagMetadata)], opts...)
+	var resp *aiplatformpb.RagMetadata
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.CreateRagMetadata, req, settings.GRPC, c.logger, "CreateRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) BatchCreateRagMetadata(ctx context.Context, req *aiplatformpb.BatchCreateRagMetadataRequest, opts ...gax.CallOption) (*BatchCreateRagMetadataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchCreateRagMetadata")
+	}
+	opts = append((*c.CallOptions).BatchCreateRagMetadata[0:len((*c.CallOptions).BatchCreateRagMetadata):len((*c.CallOptions).BatchCreateRagMetadata)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchCreateRagMetadata, req, settings.GRPC, c.logger, "BatchCreateRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchCreateRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
+func (c *vertexRagDataGRPCClient) UpdateRagMetadata(ctx context.Context, req *aiplatformpb.UpdateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rag_metadata.name", url.QueryEscape(req.GetRagMetadata().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagMetadata")
+	}
+	opts = append((*c.CallOptions).UpdateRagMetadata[0:len((*c.CallOptions).UpdateRagMetadata):len((*c.CallOptions).UpdateRagMetadata)], opts...)
+	var resp *aiplatformpb.RagMetadata
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.UpdateRagMetadata, req, settings.GRPC, c.logger, "UpdateRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) GetRagMetadata(ctx context.Context, req *aiplatformpb.GetRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagMetadata")
+	}
+	opts = append((*c.CallOptions).GetRagMetadata[0:len((*c.CallOptions).GetRagMetadata):len((*c.CallOptions).GetRagMetadata)], opts...)
+	var resp *aiplatformpb.RagMetadata
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.GetRagMetadata, req, settings.GRPC, c.logger, "GetRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *vertexRagDataGRPCClient) ListRagMetadata(ctx context.Context, req *aiplatformpb.ListRagMetadataRequest, opts ...gax.CallOption) *RagMetadataIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/ListRagMetadata")
+	}
+	opts = append((*c.CallOptions).ListRagMetadata[0:len((*c.CallOptions).ListRagMetadata):len((*c.CallOptions).ListRagMetadata)], opts...)
+	it := &RagMetadataIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagMetadataRequest)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagMetadata, string, error) {
+		resp := &aiplatformpb.ListRagMetadataResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.vertexRagDataClient.ListRagMetadata, req, settings.GRPC, c.logger, "ListRagMetadata")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRagMetadata(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *vertexRagDataGRPCClient) DeleteRagMetadata(ctx context.Context, req *aiplatformpb.DeleteRagMetadataRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagMetadata")
+	}
+	opts = append((*c.CallOptions).DeleteRagMetadata[0:len((*c.CallOptions).DeleteRagMetadata):len((*c.CallOptions).DeleteRagMetadata)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.vertexRagDataClient.DeleteRagMetadata, req, settings.GRPC, c.logger, "DeleteRagMetadata")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *vertexRagDataGRPCClient) BatchDeleteRagMetadata(ctx context.Context, req *aiplatformpb.BatchDeleteRagMetadataRequest, opts ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchDeleteRagMetadata")
+	}
+	opts = append((*c.CallOptions).BatchDeleteRagMetadata[0:len((*c.CallOptions).BatchDeleteRagMetadata):len((*c.CallOptions).BatchDeleteRagMetadata)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.vertexRagDataClient.BatchDeleteRagMetadata, req, settings.GRPC, c.logger, "BatchDeleteRagMetadata")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return &BatchDeleteRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+	}, nil
+}
+
 func (c *vertexRagDataGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -871,6 +1568,9 @@ func (c *vertexRagDataGRPCClient) ListLocations(ctx context.Context, req *locati
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
 	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
@@ -917,6 +1617,12 @@ func (c *vertexRagDataGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -935,6 +1641,12 @@ func (c *vertexRagDataGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	var resp *iampb.Policy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -953,6 +1665,12 @@ func (c *vertexRagDataGRPCClient) TestIamPermissions(ctx context.Context, req *i
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	var resp *iampb.TestIamPermissionsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -971,6 +1689,9 @@ func (c *vertexRagDataGRPCClient) CancelOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -985,6 +1706,9 @@ func (c *vertexRagDataGRPCClient) DeleteOperation(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -999,6 +1723,9 @@ func (c *vertexRagDataGRPCClient) GetOperation(ctx context.Context, req *longrun
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1017,6 +1744,9 @@ func (c *vertexRagDataGRPCClient) ListOperations(ctx context.Context, req *longr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
 	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
@@ -1063,6 +1793,9 @@ func (c *vertexRagDataGRPCClient) WaitOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1102,6 +1835,13 @@ func (c *vertexRagDataRESTClient) CreateRagCorpus(ctx context.Context, req *aipl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*}/ragCorpora")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1162,6 +1902,10 @@ func (c *vertexRagDataRESTClient) UpdateRagCorpus(ctx context.Context, req *aipl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{rag_corpus.name=projects/*/locations/*/ragCorpora/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1215,6 +1959,13 @@ func (c *vertexRagDataRESTClient) GetRagCorpus(ctx context.Context, req *aiplatf
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*}")
+	}
 	opts = append((*c.CallOptions).GetRagCorpus[0:len((*c.CallOptions).GetRagCorpus):len((*c.CallOptions).GetRagCorpus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.RagCorpus{}
@@ -1337,6 +2088,9 @@ func (c *vertexRagDataRESTClient) DeleteRagCorpus(ctx context.Context, req *aipl
 	if req.GetForce() {
 		params.Add("force", fmt.Sprintf("%v", req.GetForce()))
 	}
+	if req.GetForceDelete() {
+		params.Add("forceDelete", fmt.Sprintf("%v", req.GetForceDelete()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -1346,6 +2100,13 @@ func (c *vertexRagDataRESTClient) DeleteRagCorpus(ctx context.Context, req *aipl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagCorpus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1405,6 +2166,13 @@ func (c *vertexRagDataRESTClient) UploadRagFile(ctx context.Context, req *aiplat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UploadRagFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*}/ragFiles:upload")
+	}
 	opts = append((*c.CallOptions).UploadRagFile[0:len((*c.CallOptions).UploadRagFile):len((*c.CallOptions).UploadRagFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.UploadRagFileResponse{}
@@ -1461,6 +2229,13 @@ func (c *vertexRagDataRESTClient) ImportRagFiles(ctx context.Context, req *aipla
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/ImportRagFiles")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*}/ragFiles:import")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1514,6 +2289,13 @@ func (c *vertexRagDataRESTClient) GetRagFile(ctx context.Context, req *aiplatfor
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*/ragFiles/*}")
+	}
 	opts = append((*c.CallOptions).GetRagFile[0:len((*c.CallOptions).GetRagFile):len((*c.CallOptions).GetRagFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.RagFile{}
@@ -1645,6 +2427,13 @@ func (c *vertexRagDataRESTClient) DeleteRagFile(ctx context.Context, req *aiplat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*/ragFiles/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1705,6 +2494,10 @@ func (c *vertexRagDataRESTClient) UpdateRagEngineConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagEngineConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{rag_engine_config.name=projects/*/locations/*/ragEngineConfig}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1758,6 +2551,13 @@ func (c *vertexRagDataRESTClient) GetRagEngineConfig(ctx context.Context, req *a
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagEngineConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragEngineConfig}")
+	}
 	opts = append((*c.CallOptions).GetRagEngineConfig[0:len((*c.CallOptions).GetRagEngineConfig):len((*c.CallOptions).GetRagEngineConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &aiplatformpb.RagEngineConfig{}
@@ -1789,6 +2589,819 @@ func (c *vertexRagDataRESTClient) GetRagEngineConfig(ctx context.Context, req *a
 	return resp, nil
 }
 
+// CreateRagDataSchema creates a RagDataSchema.
+func (c *vertexRagDataRESTClient) CreateRagDataSchema(ctx context.Context, req *aiplatformpb.CreateRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRagDataSchema()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.RagDataSchemaId != nil {
+		params.Add("ragDataSchemaId", fmt.Sprintf("%v", req.GetRagDataSchemaId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagDataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*}/ragDataSchemas")
+	}
+	opts = append((*c.CallOptions).CreateRagDataSchema[0:len((*c.CallOptions).CreateRagDataSchema):len((*c.CallOptions).CreateRagDataSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagDataSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRagDataSchema")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchCreateRagDataSchemas batch Create one or more RagDataSchemas
+func (c *vertexRagDataRESTClient) BatchCreateRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchCreateRagDataSchemasRequest, opts ...gax.CallOption) (*BatchCreateRagDataSchemasOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchCreateRagDataSchemas")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*}/ragDataSchemas:batchCreate")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateRagDataSchemas")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchCreateRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// GetRagDataSchema gets a RagDataSchema.
+func (c *vertexRagDataRESTClient) GetRagDataSchema(ctx context.Context, req *aiplatformpb.GetRagDataSchemaRequest, opts ...gax.CallOption) (*aiplatformpb.RagDataSchema, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagDataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*/ragDataSchemas/*}")
+	}
+	opts = append((*c.CallOptions).GetRagDataSchema[0:len((*c.CallOptions).GetRagDataSchema):len((*c.CallOptions).GetRagDataSchema)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagDataSchema{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRagDataSchema")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRagDataSchemas lists RagDataSchemas in a Location.
+func (c *vertexRagDataRESTClient) ListRagDataSchemas(ctx context.Context, req *aiplatformpb.ListRagDataSchemasRequest, opts ...gax.CallOption) *RagDataSchemaIterator {
+	it := &RagDataSchemaIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagDataSchemasRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagDataSchema, string, error) {
+		resp := &aiplatformpb.ListRagDataSchemasResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRagDataSchemas")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRagDataSchemas(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteRagDataSchema deletes a RagDataSchema.
+func (c *vertexRagDataRESTClient) DeleteRagDataSchema(ctx context.Context, req *aiplatformpb.DeleteRagDataSchemaRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagDataSchema")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*/ragDataSchemas/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRagDataSchema")
+		return err
+	}, opts...)
+}
+
+// BatchDeleteRagDataSchemas batch Deletes one or more RagDataSchemas
+func (c *vertexRagDataRESTClient) BatchDeleteRagDataSchemas(ctx context.Context, req *aiplatformpb.BatchDeleteRagDataSchemasRequest, opts ...gax.CallOption) (*BatchDeleteRagDataSchemasOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragDataSchemas:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchDeleteRagDataSchemas")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*}/ragDataSchemas:batchDelete")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteRagDataSchemas")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchDeleteRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// CreateRagMetadata creates a RagMetadata.
+func (c *vertexRagDataRESTClient) CreateRagMetadata(ctx context.Context, req *aiplatformpb.CreateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRagMetadata()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req != nil && req.RagMetadataId != nil {
+		params.Add("ragMetadataId", fmt.Sprintf("%v", req.GetRagMetadataId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/CreateRagMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*/ragFiles/*}/ragMetadata")
+	}
+	opts = append((*c.CallOptions).CreateRagMetadata[0:len((*c.CallOptions).CreateRagMetadata):len((*c.CallOptions).CreateRagMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagMetadata{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateRagMetadata")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// BatchCreateRagMetadata batch Create one or more RagMetadatas
+func (c *vertexRagDataRESTClient) BatchCreateRagMetadata(ctx context.Context, req *aiplatformpb.BatchCreateRagMetadataRequest, opts ...gax.CallOption) (*BatchCreateRagMetadataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata:batchCreate", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchCreateRagMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*/ragFiles/*}/ragMetadata:batchCreate")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchCreateRagMetadata")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchCreateRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
+// UpdateRagMetadata updates a RagMetadata.
+func (c *vertexRagDataRESTClient) UpdateRagMetadata(ctx context.Context, req *aiplatformpb.UpdateRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetRagMetadata()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetRagMetadata().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "rag_metadata.name", url.QueryEscape(req.GetRagMetadata().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/UpdateRagMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{rag_metadata.name=projects/*/locations/*/ragCorpora/*/ragFiles/*/ragMetadata/*}")
+	}
+	opts = append((*c.CallOptions).UpdateRagMetadata[0:len((*c.CallOptions).UpdateRagMetadata):len((*c.CallOptions).UpdateRagMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagMetadata{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateRagMetadata")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetRagMetadata gets a RagMetadata.
+func (c *vertexRagDataRESTClient) GetRagMetadata(ctx context.Context, req *aiplatformpb.GetRagMetadataRequest, opts ...gax.CallOption) (*aiplatformpb.RagMetadata, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/GetRagMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*/ragFiles/*/ragMetadata/*}")
+	}
+	opts = append((*c.CallOptions).GetRagMetadata[0:len((*c.CallOptions).GetRagMetadata):len((*c.CallOptions).GetRagMetadata)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &aiplatformpb.RagMetadata{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetRagMetadata")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListRagMetadata lists RagMetadata in a RagFile.
+func (c *vertexRagDataRESTClient) ListRagMetadata(ctx context.Context, req *aiplatformpb.ListRagMetadataRequest, opts ...gax.CallOption) *RagMetadataIterator {
+	it := &RagMetadataIterator{}
+	req = proto.Clone(req).(*aiplatformpb.ListRagMetadataRequest)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*aiplatformpb.RagMetadata, string, error) {
+		resp := &aiplatformpb.ListRagMetadataResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListRagMetadata")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRagMetadata(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteRagMetadata deletes a RagMetadata.
+func (c *vertexRagDataRESTClient) DeleteRagMetadata(ctx context.Context, req *aiplatformpb.DeleteRagMetadataRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/DeleteRagMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/ragCorpora/*/ragFiles/*/ragMetadata/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRagMetadata")
+		return err
+	}, opts...)
+}
+
+// BatchDeleteRagMetadata batch Deletes one or more RagMetadata.
+func (c *vertexRagDataRESTClient) BatchDeleteRagMetadata(ctx context.Context, req *aiplatformpb.BatchDeleteRagMetadataRequest, opts ...gax.CallOption) (*BatchDeleteRagMetadataOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v/ragMetadata:batchDelete", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//aiplatform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.aiplatform.v1beta1.VertexRagDataService/BatchDeleteRagMetadata")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*/locations/*/ragCorpora/*/ragFiles/*}/ragMetadata:batchDelete")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "BatchDeleteRagMetadata")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/ui/%s", resp.GetName())
+	return &BatchDeleteRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		pollPath: override,
+	}, nil
+}
+
 // GetLocation gets information about a location.
 func (c *vertexRagDataRESTClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -1808,6 +3421,10 @@ func (c *vertexRagDataRESTClient) GetLocation(ctx context.Context, req *location
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1946,6 +3563,13 @@ func (c *vertexRagDataRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:getIamPolicy")
+	}
 	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2006,6 +3630,13 @@ func (c *vertexRagDataRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:setIamPolicy")
+	}
 	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.Policy{}
@@ -2068,6 +3699,13 @@ func (c *vertexRagDataRESTClient) TestIamPermissions(ctx context.Context, req *i
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{resource=projects/*/locations/*/featurestores/*}:testIamPermissions")
+	}
 	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &iampb.TestIamPermissionsResponse{}
@@ -2118,6 +3756,10 @@ func (c *vertexRagDataRESTClient) CancelOperation(ctx context.Context, req *long
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2153,6 +3795,10 @@ func (c *vertexRagDataRESTClient) DeleteOperation(ctx context.Context, req *long
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2188,6 +3834,10 @@ func (c *vertexRagDataRESTClient) GetOperation(ctx context.Context, req *longrun
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2329,6 +3979,10 @@ func (c *vertexRagDataRESTClient) WaitOperation(ctx context.Context, req *longru
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/WaitOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/ui/{name=projects/*/locations/*/operations/*}:wait")
+	}
 	opts = append((*c.CallOptions).WaitOperation[0:len((*c.CallOptions).WaitOperation):len((*c.CallOptions).WaitOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -2358,6 +4012,78 @@ func (c *vertexRagDataRESTClient) WaitOperation(ctx context.Context, req *longru
 		return nil, e
 	}
 	return resp, nil
+}
+
+// BatchCreateRagDataSchemasOperation returns a new BatchCreateRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchCreateRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation {
+	return &BatchCreateRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchCreateRagDataSchemasOperation returns a new BatchCreateRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchCreateRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchCreateRagDataSchemasOperation(name string) *BatchCreateRagDataSchemasOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchCreateRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BatchCreateRagMetadataOperation returns a new BatchCreateRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchCreateRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation {
+	return &BatchCreateRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchCreateRagMetadataOperation returns a new BatchCreateRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchCreateRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchCreateRagMetadataOperation(name string) *BatchCreateRagMetadataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchCreateRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BatchDeleteRagDataSchemasOperation returns a new BatchDeleteRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation {
+	return &BatchDeleteRagDataSchemasOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeleteRagDataSchemasOperation returns a new BatchDeleteRagDataSchemasOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagDataSchemasOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchDeleteRagDataSchemasOperation(name string) *BatchDeleteRagDataSchemasOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchDeleteRagDataSchemasOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
+}
+
+// BatchDeleteRagMetadataOperation returns a new BatchDeleteRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataGRPCClient) BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation {
+	return &BatchDeleteRagMetadataOperation{
+		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+	}
+}
+
+// BatchDeleteRagMetadataOperation returns a new BatchDeleteRagMetadataOperation from a given name.
+// The name must be that of a previously created BatchDeleteRagMetadataOperation, possibly from a different process.
+func (c *vertexRagDataRESTClient) BatchDeleteRagMetadataOperation(name string) *BatchDeleteRagMetadataOperation {
+	override := fmt.Sprintf("/ui/%s", name)
+	return &BatchDeleteRagMetadataOperation{
+		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		pollPath: override,
+	}
 }
 
 // CreateRagCorpusOperation returns a new CreateRagCorpusOperation from a given name.

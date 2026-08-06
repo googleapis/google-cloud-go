@@ -594,6 +594,7 @@ const (
 	Proto
 	Enum // Enum used in CAST expressions
 	Tokenlist
+	UUID
 )
 
 type PrivilegeType int
@@ -624,6 +625,7 @@ type Query struct {
 // https://cloud.google.com/spanner/docs/query-syntax#select-list
 type Select struct {
 	Distinct bool
+	AsStruct bool // SELECT AS STRUCT
 	List     []Expr
 	From     []SelectFrom
 	Where    BoolExpr
@@ -821,6 +823,12 @@ type ScalarSubquery struct {
 
 func (ScalarSubquery) isExpr() {}
 
+type ArraySubquery struct {
+	Query Query
+}
+
+func (ArraySubquery) isExpr() {}
+
 type InOp struct {
 	LHS    Expr
 	Neg    bool
@@ -951,6 +959,17 @@ func (Paren) isExpr()     {}
 type Array []Expr
 
 func (Array) isExpr() {}
+
+// StructLiteral represents a struct literal.
+// https://cloud.google.com/spanner/docs/query-syntax#struct_type
+type StructLiteral struct {
+	Fields []Expr
+	// FieldTypes is optional and populated for typed struct literals.
+	// STRUCT<type1, type2>(value1, value2) vs STRUCT(value1, value2)
+	FieldTypes []Type
+}
+
+func (StructLiteral) isExpr() {}
 
 // ID represents an identifier.
 // https://cloud.google.com/spanner/docs/lexical#identifiers

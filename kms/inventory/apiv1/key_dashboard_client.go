@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -28,6 +28,7 @@ import (
 	kmspb "cloud.google.com/go/kms/apiv1/kmspb"
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -54,6 +55,7 @@ func defaultKeyDashboardGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -98,7 +100,7 @@ type KeyDashboardClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *KeyDashboardClient) Close() error {
 	return c.internalClient.Close()
@@ -151,6 +153,16 @@ type keyDashboardGRPCClient struct {
 // Provides a cross-region view of all Cloud KMS keys in a given Cloud project.
 func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*KeyDashboardClient, error) {
 	clientOpts := defaultKeyDashboardGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "kmsinventory",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/kms/inventory/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "kmsinventory.googleapis.com",
+		}))
+	}
 	if newKeyDashboardClientHook != nil {
 		hookOpts, err := newKeyDashboardClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -172,6 +184,20 @@ func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*K
 		logger:             internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCryptoKeys = append(client.CallOptions.ListCryptoKeys, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -197,7 +223,7 @@ func (c *keyDashboardGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *keyDashboardGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -225,6 +251,16 @@ type keyDashboardRESTClient struct {
 // Provides a cross-region view of all Cloud KMS keys in a given Cloud project.
 func NewKeyDashboardRESTClient(ctx context.Context, opts ...option.ClientOption) (*KeyDashboardClient, error) {
 	clientOpts := append(defaultKeyDashboardRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "kmsinventory",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/kms/inventory/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "kmsinventory.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -238,6 +274,21 @@ func NewKeyDashboardRESTClient(ctx context.Context, opts ...option.ClientOption)
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCryptoKeys = append(callOpts.ListCryptoKeys, gax.WithClientMetrics(metrics))
+	}
 
 	return &KeyDashboardClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -265,7 +316,7 @@ func (c *keyDashboardRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *keyDashboardRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -284,9 +335,15 @@ func (c *keyDashboardGRPCClient) ListCryptoKeys(ctx context.Context, req *invent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyDashboardService/ListCryptoKeys")
+	}
 	opts = append((*c.CallOptions).ListCryptoKeys[0:len((*c.CallOptions).ListCryptoKeys):len((*c.CallOptions).ListCryptoKeys)], opts...)
 	it := &CryptoKeyIterator{}
-	req = proto.Clone(req).(*inventorypb.ListCryptoKeysRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKey, string, error) {
 		resp := &inventorypb.ListCryptoKeysResponse{}
 		if pageToken != "" {
@@ -330,7 +387,7 @@ func (c *keyDashboardGRPCClient) ListCryptoKeys(ctx context.Context, req *invent
 // completely reflect the actual state of key metadata at call time.
 func (c *keyDashboardRESTClient) ListCryptoKeys(ctx context.Context, req *inventorypb.ListCryptoKeysRequest, opts ...gax.CallOption) *CryptoKeyIterator {
 	it := &CryptoKeyIterator{}
-	req = proto.Clone(req).(*inventorypb.ListCryptoKeysRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*kmspb.CryptoKey, string, error) {
 		resp := &inventorypb.ListCryptoKeysResponse{}

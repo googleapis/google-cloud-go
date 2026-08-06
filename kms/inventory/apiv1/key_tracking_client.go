@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,6 +27,7 @@ import (
 
 	inventorypb "cloud.google.com/go/kms/inventory/apiv1/inventorypb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -54,6 +55,7 @@ func defaultKeyTrackingGRPCClientOptions() []option.ClientOption {
 		internaloption.WithDefaultAudience("https://kmsinventory.googleapis.com/"),
 		internaloption.WithDefaultScopes(DefaultAuthScopes()...),
 		internaloption.EnableJwtWithScope(),
+		internaloption.AllowHardBoundTokens("MTLS_S2A"),
 		internaloption.EnableNewAuthLibrary(),
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(
 			grpc.MaxCallRecvMsgSize(math.MaxInt32))),
@@ -106,7 +108,7 @@ type KeyTrackingClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *KeyTrackingClient) Close() error {
 	return c.internalClient.Close()
@@ -128,16 +130,23 @@ func (c *KeyTrackingClient) Connection() *grpc.ClientConn {
 }
 
 // GetProtectedResourcesSummary returns aggregate information about the resources protected by the given
-// Cloud KMS CryptoKey. Only resources within
-// the same Cloud organization as the key will be returned. The project that
-// holds the key must be part of an organization in order for this call to
-// succeed.
+// Cloud KMS CryptoKey. By default,
+// summary of resources within the same Cloud organization as the key will be
+// returned, which requires the KMS organization service account to be
+// configured(refer
+// https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles (at https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles)).
+// If the KMS organization service account is not configured or key’s project
+// is not part of an organization, set
+// fallback_scope
+// to FALLBACK_SCOPE_PROJECT to retrieve a summary of protected resources
+// within the key’s project.
 func (c *KeyTrackingClient) GetProtectedResourcesSummary(ctx context.Context, req *inventorypb.GetProtectedResourcesSummaryRequest, opts ...gax.CallOption) (*inventorypb.ProtectedResourcesSummary, error) {
 	return c.internalClient.GetProtectedResourcesSummary(ctx, req, opts...)
 }
 
 // SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS
-// CryptoKey in the given Cloud organization.
+// CryptoKey in the given Cloud
+// organization/project.
 func (c *KeyTrackingClient) SearchProtectedResources(ctx context.Context, req *inventorypb.SearchProtectedResourcesRequest, opts ...gax.CallOption) *ProtectedResourceIterator {
 	return c.internalClient.SearchProtectedResources(ctx, req, opts...)
 }
@@ -168,6 +177,16 @@ type keyTrackingGRPCClient struct {
 // given Cloud KMS key via CMEK.
 func NewKeyTrackingClient(ctx context.Context, opts ...option.ClientOption) (*KeyTrackingClient, error) {
 	clientOpts := defaultKeyTrackingGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "kmsinventory",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/kms/inventory/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "kmsinventory.googleapis.com",
+		}))
+	}
 	if newKeyTrackingClientHook != nil {
 		hookOpts, err := newKeyTrackingClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -189,6 +208,21 @@ func NewKeyTrackingClient(ctx context.Context, opts ...option.ClientOption) (*Ke
 		logger:            internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetProtectedResourcesSummary = append(client.CallOptions.GetProtectedResourcesSummary, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchProtectedResources = append(client.CallOptions.SearchProtectedResources, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -214,7 +248,7 @@ func (c *keyTrackingGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *keyTrackingGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -243,6 +277,16 @@ type keyTrackingRESTClient struct {
 // given Cloud KMS key via CMEK.
 func NewKeyTrackingRESTClient(ctx context.Context, opts ...option.ClientOption) (*KeyTrackingClient, error) {
 	clientOpts := append(defaultKeyTrackingRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "kmsinventory",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/kms/inventory/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "kmsinventory.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -256,6 +300,22 @@ func NewKeyTrackingRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		callOpts.GetProtectedResourcesSummary = append(callOpts.GetProtectedResourcesSummary, gax.WithClientMetrics(metrics))
+		callOpts.SearchProtectedResources = append(callOpts.SearchProtectedResources, gax.WithClientMetrics(metrics))
+	}
 
 	return &KeyTrackingClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -283,7 +343,7 @@ func (c *keyTrackingRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *keyTrackingRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -302,6 +362,12 @@ func (c *keyTrackingGRPCClient) GetProtectedResourcesSummary(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyTrackingService/GetProtectedResourcesSummary")
+	}
 	opts = append((*c.CallOptions).GetProtectedResourcesSummary[0:len((*c.CallOptions).GetProtectedResourcesSummary):len((*c.CallOptions).GetProtectedResourcesSummary)], opts...)
 	var resp *inventorypb.ProtectedResourcesSummary
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -320,9 +386,15 @@ func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetScope()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyTrackingService/SearchProtectedResources")
+	}
 	opts = append((*c.CallOptions).SearchProtectedResources[0:len((*c.CallOptions).SearchProtectedResources):len((*c.CallOptions).SearchProtectedResources)], opts...)
 	it := &ProtectedResourceIterator{}
-	req = proto.Clone(req).(*inventorypb.SearchProtectedResourcesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventorypb.ProtectedResource, string, error) {
 		resp := &inventorypb.SearchProtectedResourcesResponse{}
 		if pageToken != "" {
@@ -362,10 +434,16 @@ func (c *keyTrackingGRPCClient) SearchProtectedResources(ctx context.Context, re
 }
 
 // GetProtectedResourcesSummary returns aggregate information about the resources protected by the given
-// Cloud KMS CryptoKey. Only resources within
-// the same Cloud organization as the key will be returned. The project that
-// holds the key must be part of an organization in order for this call to
-// succeed.
+// Cloud KMS CryptoKey. By default,
+// summary of resources within the same Cloud organization as the key will be
+// returned, which requires the KMS organization service account to be
+// configured(refer
+// https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles (at https://docs.cloud.google.com/kms/docs/view-key-usage#required-roles)).
+// If the KMS organization service account is not configured or key’s project
+// is not part of an organization, set
+// fallback_scope
+// to FALLBACK_SCOPE_PROJECT to retrieve a summary of protected resources
+// within the key’s project.
 func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context, req *inventorypb.GetProtectedResourcesSummaryRequest, opts ...gax.CallOption) (*inventorypb.ProtectedResourcesSummary, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -375,6 +453,9 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetFallbackScope() != 0 {
+		params.Add("fallbackScope", fmt.Sprintf("%v", req.GetFallbackScope()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -384,6 +465,13 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyTrackingService/GetProtectedResourcesSummary")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/keyRings/*/cryptoKeys/**}/protectedResourcesSummary")
+	}
 	opts = append((*c.CallOptions).GetProtectedResourcesSummary[0:len((*c.CallOptions).GetProtectedResourcesSummary):len((*c.CallOptions).GetProtectedResourcesSummary)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &inventorypb.ProtectedResourcesSummary{}
@@ -416,10 +504,11 @@ func (c *keyTrackingRESTClient) GetProtectedResourcesSummary(ctx context.Context
 }
 
 // SearchProtectedResources returns metadata about the resources protected by the given Cloud KMS
-// CryptoKey in the given Cloud organization.
+// CryptoKey in the given Cloud
+// organization/project.
 func (c *keyTrackingRESTClient) SearchProtectedResources(ctx context.Context, req *inventorypb.SearchProtectedResourcesRequest, opts ...gax.CallOption) *ProtectedResourceIterator {
 	it := &ProtectedResourceIterator{}
-	req = proto.Clone(req).(*inventorypb.SearchProtectedResourcesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*inventorypb.ProtectedResource, string, error) {
 		resp := &inventorypb.SearchProtectedResourcesResponse{}

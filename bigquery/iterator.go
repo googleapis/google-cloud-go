@@ -26,7 +26,7 @@ import (
 )
 
 const (
-	defaultTimestampWireFormat string = "INT64"
+	defaultUseInt64Timestamp = true
 )
 
 // Construct a RowIterator.
@@ -273,6 +273,7 @@ func fetchPage(ctx context.Context, src *rowSource, schema Schema, startIndex ui
 }
 
 func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
+	ctx = setTableItemTraceMetadata(ctx, src.t.ProjectID, src.t.DatasetID, src.t.TableID, "data")
 	// Fetch the table schema in the background, if necessary.
 	errc := make(chan error, 1)
 	if schema != nil {
@@ -294,7 +295,7 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 		}()
 	}
 	call := src.t.c.bqs.Tabledata.List(src.t.ProjectID, src.t.DatasetID, src.t.TableID)
-	call = call.FormatOptionsTimestampOutputFormat(defaultTimestampWireFormat)
+	call = call.FormatOptionsUseInt64Timestamp(defaultUseInt64Timestamp)
 	setClientHeader(call.Header())
 	if pageToken != "" {
 		call.PageToken(pageToken)
@@ -331,8 +332,9 @@ func fetchTableResultPage(ctx context.Context, src *rowSource, schema Schema, st
 func fetchJobResultPage(ctx context.Context, src *rowSource, schema Schema, startIndex uint64, pageSize int64, pageToken string) (*fetchPageResult, error) {
 	// reduce data transferred by leveraging api projections
 	projectedFields := []googleapi.Field{"rows", "pageToken", "totalRows"}
+	ctx = setJobItemTraceMetadata(ctx, src.j.projectID, src.j.jobID, "getQueryResults")
 	call := src.j.c.bqs.Jobs.GetQueryResults(src.j.projectID, src.j.jobID).Location(src.j.location).Context(ctx)
-	call = call.FormatOptionsTimestampOutputFormat(defaultTimestampWireFormat)
+	call = call.FormatOptionsUseInt64Timestamp(defaultUseInt64Timestamp)
 	if schema == nil {
 		// only project schema if we weren't supplied one.
 		projectedFields = append(projectedFields, "schema")

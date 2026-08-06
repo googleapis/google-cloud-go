@@ -25,7 +25,7 @@ echo "Running the Cloud Spanner emulator: $SPANNER_EMULATOR_HOST";
 
 # Download the emulator
 # TODO: Find a way to use 'latest' here.
-EMULATOR_VERSION=1.5.40
+EMULATOR_VERSION=1.5.47
 wget https://storage.googleapis.com/cloud-spanner-emulator/releases/${EMULATOR_VERSION}/cloud-spanner-emulator_linux_amd64-${EMULATOR_VERSION}.tar.gz
 tar zxvf cloud-spanner-emulator_linux_amd64-${EMULATOR_VERSION}.tar.gz
 chmod u+x emulator_main
@@ -44,8 +44,16 @@ function cleanup() {
 }
 trap cleanup EXIT
 
-echo "Testing without GCPMultiEnpoint..." | tee -a sponge_log.log
-go test -count=1 -v -timeout 10m ./... -run '^TestIntegration_' 2>&1 | tee -a sponge_log.log
+go_test_args=("-count=1" "--timeout" "10m" "-run" "^TestIntegration_")
 
-echo "Testing with GCPMultiEnpoint..." | tee -a sponge_log.log
-GCLOUD_TESTS_GOLANG_USE_GRPC_GCP=true go test -count=1 -v -timeout 10m ./... -run '^TestIntegration_' 2>&1 | tee -a sponge_log.log
+echo "Testing without GCPMultiEndpoint..." | tee -a sponge_log.log
+gotestsum --packages="./..." \
+    --junitfile sponge_log_noGCPMultiEndpoint.xml \
+    --format standard-verbose \
+    -- "${go_test_args[@]}" 2>&1 | tee -a sponge_log.log
+
+echo "Testing with GCPMultiEndpoint..." | tee -a sponge_log.log
+GCLOUD_TESTS_GOLANG_USE_GRPC_GCP=true gotestsum --packages="./..." \
+    --junitfile sponge_log_withGCPMultiEndpoint.xml \
+    --format standard-verbose \
+    -- "${go_test_args[@]}" 2>&1 | tee -a sponge_log.log

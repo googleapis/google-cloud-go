@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -19,8 +19,6 @@
 //
 // The Oracle Database@Google Cloud API provides a set of APIs to manage
 // Oracle database services, such as Exadata and Autonomous Databases.
-//
-//	NOTE: This package is in beta. It is not stable, and may be subject to changes.
 //
 // # General documentation
 //
@@ -59,11 +57,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &oracledatabasepb.CreateAutonomousDatabaseRequest{
+//	req := &oracledatabasepb.ConfigureExascaleCloudExadataInfrastructureRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#CreateAutonomousDatabaseRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/oracledatabase/apiv1/oracledatabasepb#ConfigureExascaleCloudExadataInfrastructureRequest.
 //	}
-//	op, err := c.CreateAutonomousDatabase(ctx, req)
+//	op, err := c.ConfigureExascaleCloudExadataInfrastructure(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

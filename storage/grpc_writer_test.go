@@ -15,26 +15,37 @@
 package storage
 
 import (
+	"context"
+	"errors"
+	"io"
+	"sync"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/protobuf/proto"
 )
 
 func TestGetObjectChecksums(t *testing.T) {
 	tests := []struct {
 		name                string
-		fullObjectChecksum  func() uint32
+		fullObjectChecksum  func() *uint32
 		finishWrite         bool
 		sendCRC32C          bool
-		takeoverWriter      bool
 		disableAutoChecksum bool
 		attrs               *ObjectAttrs
+		append              bool
 		want                *storagepb.ObjectChecksums
 	}{
 		{
 			name:        "finishWrite is false",
 			finishWrite: false,
+			want:        nil,
+		},
+		{
+			name:        "objectAttrs is nil",
+			finishWrite: true,
 			want:        nil,
 		},
 		{
@@ -57,6 +68,23 @@ func TestGetObjectChecksums(t *testing.T) {
 			},
 		},
 		{
+			name:        "sendCRC32C is true",
+			finishWrite: true,
+			sendCRC32C:  true,
+			attrs:       &ObjectAttrs{CRC32C: 123},
+			want: &storagepb.ObjectChecksums{
+				Crc32C: proto.Uint32(123),
+			},
+		},
+		{
+			name:        "MD5 is provided",
+			finishWrite: true,
+			attrs:       &ObjectAttrs{MD5: []byte{1, 5, 0}},
+			want: &storagepb.ObjectChecksums{
+				Md5Hash: []byte{1, 5, 0},
+			},
+		},
+		{
 			name:                "disableCRC32C is true and sendCRC32C is false",
 			finishWrite:         true,
 			sendCRC32C:          false,
@@ -65,7 +93,7 @@ func TestGetObjectChecksums(t *testing.T) {
 		},
 		{
 			name:                "CRC32C enabled, no user-provided checksum",
-			fullObjectChecksum:  func() uint32 { return 456 },
+			fullObjectChecksum:  func() *uint32 { return proto.Uint32(456) },
 			finishWrite:         true,
 			sendCRC32C:          false,
 			disableAutoChecksum: false,
@@ -74,12 +102,36 @@ func TestGetObjectChecksums(t *testing.T) {
 				Crc32C: proto.Uint32(456),
 			},
 		},
-		// TODO(b/461982277): remove this testcase once checksums for takeover writer is implemented
 		{
-			name:           "takeover writer should return nil",
-			finishWrite:    true,
-			takeoverWriter: true,
-			want:           nil,
+			name:                "CRC32C enabled, but callback returns nil (missing initial checksum)",
+			fullObjectChecksum:  func() *uint32 { return nil },
+			finishWrite:         true,
+			sendCRC32C:          false,
+			disableAutoChecksum: false,
+			attrs:               &ObjectAttrs{},
+			want:                nil,
+		},
+		{
+			name:                "Append operation without final user-provided CRC32C (callback returns nil)",
+			fullObjectChecksum:  func() *uint32 { return nil },
+			finishWrite:         true,
+			append:              true,
+			sendCRC32C:          false,
+			disableAutoChecksum: false,
+			attrs:               &ObjectAttrs{},
+			want:                nil,
+		},
+		{
+			name:                "Append operation with final CRC32C and initial CRC32C",
+			fullObjectChecksum:  func() *uint32 { return proto.Uint32(123) },
+			finishWrite:         true,
+			append:              true,
+			sendCRC32C:          false,
+			disableAutoChecksum: false,
+			attrs:               &ObjectAttrs{CRC32C: 456},
+			want: &storagepb.ObjectChecksums{
+				Crc32C: proto.Uint32(123),
+			},
 		},
 	}
 
@@ -91,11 +143,296 @@ func TestGetObjectChecksums(t *testing.T) {
 				objectAttrs:         tt.attrs,
 				fullObjectChecksum:  tt.fullObjectChecksum,
 				finishWrite:         tt.finishWrite,
-				takeoverWriter:      tt.takeoverWriter,
+				append:              tt.append,
 			})
 			if !proto.Equal(got, tt.want) {
 				t.Errorf("getObjectChecksums() = %v, want %v", got, tt.want)
 			}
 		})
 	}
+}
+func TestGRPCWriter_MemoryAllocationPaths(t *testing.T) {
+	tests := []struct {
+		name         string
+		chunkSize    int
+		dataSize     int
+		forceOneShot bool
+		wantZeroCopy bool
+	}{
+		{
+			name:         "OneShot_ZeroCopy_1MB",
+			chunkSize:    0,
+			dataSize:     1 * 1024 * 1024, // 1 MiB
+			forceOneShot: true,
+			wantZeroCopy: true,
+		},
+		{
+			name:         "OneShot_ZeroCopy_10MB",
+			chunkSize:    0,
+			dataSize:     10 * 1024 * 1024, // 10 MiB
+			forceOneShot: true,
+			wantZeroCopy: true,
+		},
+		{
+			name:         "Resumable_Buffering",
+			chunkSize:    2 * 1024 * 1024, // 2 MiB
+			dataSize:     1 * 1024 * 1024, // 1 MiB
+			forceOneShot: false,
+			wantZeroCopy: false,
+		},
+		{
+			name:         "Resumable_ZeroCopy",
+			chunkSize:    1 * 1024 * 1024, // 1 MiB
+			dataSize:     2 * 1024 * 1024, // 2 MiB
+			forceOneShot: false,
+			wantZeroCopy: true,
+		},
+		{
+			name:         "Resumable_Hybrid",
+			chunkSize:    2 * 1024 * 1024, // 2 MiB
+			dataSize:     3 * 1024 * 1024, // 3 MiB
+			forceOneShot: false,
+			wantZeroCopy: false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			data := make([]byte, tt.dataSize)
+			data[0] = 1
+			data[tt.dataSize-1] = 2
+			chunkSize := gRPCChunkSize(tt.chunkSize)
+			mockSender := &mockSender{}
+			w := &gRPCWriter{
+				buf:           nil, // Allocated lazily on first buffered write.
+				chunkSize:     chunkSize,
+				forceOneShot:  tt.forceOneShot,
+				writeQuantum:  maxPerMessageWriteSize,
+				preRunCtx:     context.Background(),
+				sendableUnits: 10,
+				writesChan:    make(chan gRPCWriterCommand, 1),
+				donec:         make(chan struct{}),
+				streamSender:  mockSender,
+				settings:      &settings{},
+			}
+			w.progress = func(int64) {}
+			w.setObj = func(*ObjectAttrs) {}
+			w.setSize = func(int64) {}
+
+			go func() {
+				w.writeLoop(context.Background())
+				close(w.donec)
+			}()
+
+			if _, err := w.Write(data); err != nil {
+				t.Fatalf("Write failed: %v", err)
+			}
+			if err := w.Close(); err != nil {
+				t.Fatalf("Close failed: %v", err)
+			}
+			mockSender.wg.Wait()
+
+			mockSender.mu.Lock()
+			defer mockSender.mu.Unlock()
+
+			reqs := filterDataRequests(mockSender.requests)
+			if len(reqs) == 0 {
+				t.Fatalf("Expected at least 1 data request, got 0")
+			}
+
+			// Verify memory address logic:
+			// The last byte of the last request buffer should match the last byte of the input data for zero-copy.
+			// For buffering/copying, the pointers must differ.
+			idx := len(reqs) - 1
+			bufIdx := len(reqs[idx].buf) - 1
+			isZeroCopy := &reqs[idx].buf[bufIdx] == &data[tt.dataSize-1]
+			if isZeroCopy != tt.wantZeroCopy {
+				if tt.wantZeroCopy && tt.forceOneShot {
+					t.Errorf("One-shot upload bypassed zero-copy path; data was unexpectedly copied")
+				} else if !tt.wantZeroCopy && !tt.forceOneShot {
+					t.Errorf("Resumable upload bypassed buffering path; data was unexpectedly zero-copied")
+				} else if tt.wantZeroCopy && !tt.forceOneShot {
+					t.Errorf("Resumable upload bypassed zero-copy path; data was unexpectedly copied")
+				}
+			}
+		})
+	}
+}
+
+type mockSender struct {
+	mu        sync.Mutex
+	requests  []gRPCBidiWriteRequest
+	errResult error
+	wg        sync.WaitGroup // Waits for all async operations to complete.
+}
+
+func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	m.wg.Add(1)
+	go func() {
+		defer m.wg.Done()
+
+		// Track active flush goroutines to prevent closing the channel prematurely.
+		var completionWg sync.WaitGroup
+
+		defer func() {
+			completionWg.Wait()
+			close(cs.completions)
+		}()
+
+		for req := range cs.requests {
+			m.mu.Lock()
+			m.requests = append(m.requests, req)
+			m.mu.Unlock()
+
+			if req.requestAck {
+				select {
+				case cs.requestAcks <- struct{}{}:
+				case <-ctx.Done():
+					return
+				}
+			}
+
+			if req.flush {
+				completionWg.Add(1)
+				// Send completions asynchronously to avoid blocking the request loop.
+				go func(offset int64) {
+					defer completionWg.Done()
+					select {
+					case cs.completions <- gRPCBidiWriteCompletion{
+						flushOffset: offset,
+					}:
+					case <-ctx.Done():
+					}
+				}(req.offset + int64(len(req.buf)))
+			}
+		}
+	}()
+}
+
+func (m *mockSender) err() error { return m.errResult }
+
+// filterDataRequests returns only requests containing data, ignoring protocol overhead.
+func filterDataRequests(reqs []gRPCBidiWriteRequest) []gRPCBidiWriteRequest {
+	var dataReqs []gRPCBidiWriteRequest
+	for _, r := range reqs {
+		if len(r.buf) > 0 {
+			dataReqs = append(dataReqs, r)
+		}
+	}
+	return dataReqs
+}
+
+// Test the logic correctly handles the combination of io.EOF
+// from Recv (recvErr) and a generic error from Send (sendErr).
+func TestGRPCWriterErrorHandling(t *testing.T) {
+	// As this is deeply embedded in the unexported types, we verify the logic
+	// by simulating the exact error assignment sequence.
+	tests := []struct {
+		name      string
+		recvErr   error
+		sendErr   error
+		wantError error
+	}{
+		{
+			name:      "recvErr is io.EOF, sendErr is nil",
+			recvErr:   io.EOF,
+			sendErr:   nil,
+			wantError: nil,
+		},
+		{
+			name:      "recvErr is io.EOF, sendErr is an error",
+			recvErr:   io.EOF,
+			sendErr:   errors.New("send error"),
+			wantError: errors.New("send error"), // Send error takes precedence.
+		},
+		{
+			name:      "recvErr is an error, sendErr is nil",
+			recvErr:   errors.New("recv error"),
+			sendErr:   nil,
+			wantError: errors.New("recv error"), // Recv error takes precedence.
+		},
+		{
+			name:      "recvErr is an error, sendErr is an error",
+			recvErr:   errors.New("recv error"),
+			sendErr:   errors.New("send error"),
+			wantError: errors.New("recv error"), // Recv error takes precedence.
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			var streamErr error
+
+			streamErr = pickStreamError(tt.recvErr, tt.sendErr)
+
+			if tt.wantError == nil {
+				if streamErr != nil {
+					t.Errorf("got error %v, want nil", streamErr)
+				}
+			} else {
+				if streamErr == nil || streamErr.Error() != tt.wantError.Error() {
+					t.Errorf("got error %v, want %v", streamErr, tt.wantError)
+				}
+			}
+		})
+	}
+}
+
+// TestGRPCWriter_Deadlock simulates a deadlock scenario if Recv and Send channels
+// were not isolated in gRPCOneshotBidiWriteBufferSender.
+func TestGRPCWriter_Deadlock(t *testing.T) {
+	// A timeout means a deadlock likely occurred.
+	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Second)
+	defer cancel()
+
+	sendDone := make(chan struct{})
+	recvDone := make(chan struct{})
+
+	requests := make(chan gRPCBidiWriteRequest)
+	completions := make(chan gRPCBidiWriteCompletion)
+
+	var sendErr error
+
+	go func() {
+		sendErr = func() error {
+			for {
+				select {
+				case <-recvDone:
+					return nil
+				case r, ok := <-requests:
+					if !ok {
+						return nil
+					}
+					if r.requestAck {
+						continue
+					}
+					// mimic send logic
+					if r.finishWrite {
+						return nil
+					}
+				}
+			}
+		}()
+		close(sendDone)
+	}()
+
+	go func() {
+		// Mimic recv loop that immediately exits.
+		// If recvDone isn't checked by the sender loop, sending
+		// requests could block forever if the consumer closes early.
+		close(recvDone)
+	}()
+
+	// sendDone should be closed immediately.
+	select {
+	case <-sendDone:
+		// Success, no deadlock.
+	case <-ctx.Done():
+		t.Fatal("deadlock detected: send loop did not exit after recvDone was closed")
+	}
+
+	if sendErr != nil {
+		t.Errorf("expected no error, got %v", sendErr)
+	}
+	close(completions)
 }

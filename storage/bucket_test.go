@@ -33,6 +33,7 @@ import (
 	raw "google.golang.org/api/storage/v1"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/durationpb"
+	"google.golang.org/protobuf/types/known/timestamppb"
 )
 
 func TestBucketAttrsToRawBucket(t *testing.T) {
@@ -480,9 +481,12 @@ func TestBucketAttrsToUpdateToRawBucket(t *testing.T) {
 	}
 	got = au3.toRawBucket()
 	want = &raw.Bucket{
-		NullFields: []string{"RetentionPolicy", "Encryption", "Logging", "Website"},
+		NullFields: []string{"RetentionPolicy", "Logging", "Website"},
 		SoftDeletePolicy: &raw.BucketSoftDeletePolicy{
 			ForceSendFields: []string{"RetentionDurationSeconds"},
+		},
+		Encryption: &raw.BucketEncryption{
+			NullFields: []string{"DefaultKmsKeyName"},
 		},
 	}
 	if msg := testutil.Diff(got, want); msg != "" {
@@ -1121,7 +1125,8 @@ func TestBucketRetryer(t *testing.T) {
 					}),
 					WithPolicy(RetryAlways),
 					WithMaxAttempts(5),
-					WithErrorFunc(func(err error) bool { return false }))
+					WithMaxRetryDuration(120*time.Second),
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
 				backoff: &gax.Backoff{
@@ -1129,9 +1134,10 @@ func TestBucketRetryer(t *testing.T) {
 					Max:        30 * time.Second,
 					Multiplier: 3,
 				},
-				policy:      RetryAlways,
-				maxAttempts: intPointer(5),
-				shouldRetry: func(err error) bool { return false },
+				policy:           RetryAlways,
+				maxAttempts:      intPointer(5),
+				maxRetryDuration: 120 * time.Second,
+				shouldRetry:      func(err error, ctx *RetryContext) bool { return false },
 			},
 		},
 		{
@@ -1169,10 +1175,19 @@ func TestBucketRetryer(t *testing.T) {
 			name: "set ErrorFunc only",
 			call: func(b *BucketHandle) *BucketHandle {
 				return b.Retryer(
-					WithErrorFunc(func(err error) bool { return false }))
+					WithErrorFuncWithContext(func(err error, ctx *RetryContext) bool { return false }))
 			},
 			want: &retryConfig{
-				shouldRetry: func(err error) bool { return false },
+				shouldRetry: func(err error, ctx *RetryContext) bool { return false },
+			},
+		},
+		{
+			name: "set max retry duration only",
+			call: func(b *BucketHandle) *BucketHandle {
+				return b.Retryer(WithMaxRetryDuration(75 * time.Second))
+			},
+			want: &retryConfig{
+				maxRetryDuration: 75 * time.Second,
 			},
 		},
 	}
@@ -1185,7 +1200,7 @@ func TestBucketRetryer(t *testing.T) {
 				cmp.AllowUnexported(retryConfig{}, gax.Backoff{}),
 				// ErrorFunc cannot be compared directly, but we check if both are
 				// either nil or non-nil.
-				cmp.Comparer(func(a, b func(err error) bool) bool {
+				cmp.Comparer(func(a, b func(err error, ctx *RetryContext) bool) bool {
 					return (a == nil && b == nil) || (a != nil && b != nil)
 				}),
 			); diff != "" {
@@ -1777,5 +1792,134 @@ func TestBucketIterator_PartialSuccess(t *testing.T) {
 				t.Errorf("Unreachable() mismatch (-want +got):\n%s", diff)
 			}
 		})
+	}
+}
+
+func TestBucketEncryption_ToRaw(t *testing.T) {
+	e := &BucketEncryption{
+		DefaultKMSKeyName: "key",
+	}
+	bAttrs := &BucketAttrs{
+		Encryption: e,
+		GoogleManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+			RestrictionMode: FullyRestricted,
+		},
+		CustomerManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+			RestrictionMode: NotRestricted,
+		},
+		CustomerSuppliedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+			RestrictionMode: FullyRestricted,
+		},
+	}
+
+	got := bAttrs.toRawBucketEncryption()
+	want := &raw.BucketEncryption{
+		DefaultKmsKeyName: "key",
+		GoogleManagedEncryptionEnforcementConfig: &raw.BucketEncryptionGoogleManagedEncryptionEnforcementConfig{
+			RestrictionMode: "FullyRestricted",
+		},
+		CustomerManagedEncryptionEnforcementConfig: &raw.BucketEncryptionCustomerManagedEncryptionEnforcementConfig{
+			RestrictionMode: "NotRestricted",
+		},
+		CustomerSuppliedEncryptionEnforcementConfig: &raw.BucketEncryptionCustomerSuppliedEncryptionEnforcementConfig{
+			RestrictionMode: "FullyRestricted",
+		},
+	}
+
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("toRawBucketEncryption mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestBucketEncryption_FromRaw(t *testing.T) {
+	rawE := &raw.BucketEncryption{
+		DefaultKmsKeyName: "key",
+		GoogleManagedEncryptionEnforcementConfig: &raw.BucketEncryptionGoogleManagedEncryptionEnforcementConfig{
+			RestrictionMode: "FullyRestricted",
+			EffectiveTime:   "2024-01-01T00:00:00Z",
+		},
+	}
+
+	got := toBucketEncryption(rawE)
+	want := &BucketEncryption{
+		DefaultKMSKeyName: "key",
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("toBucketEncryption mismatch (-got +want):\n%s", diff)
+	}
+
+	gotGMEK := toGoogleManagedEncryptionEnforcementConfig(rawE)
+	wantGMEK := &EncryptionEnforcementConfig{
+		RestrictionMode: FullyRestricted,
+		EffectiveTime:   time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+	}
+	if diff := cmp.Diff(gotGMEK, wantGMEK); diff != "" {
+		t.Errorf("toGoogleManagedEncryptionEnforcementConfig mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestBucketEncryption_ToProto(t *testing.T) {
+	e := &BucketEncryption{
+		DefaultKMSKeyName: "key",
+	}
+	bAttrs := &BucketAttrs{
+		Encryption: e,
+		GoogleManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+			RestrictionMode: FullyRestricted,
+		},
+		CustomerManagedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+			RestrictionMode: NotRestricted,
+		},
+		CustomerSuppliedEncryptionEnforcementConfig: &EncryptionEnforcementConfig{
+			RestrictionMode: FullyRestricted,
+		},
+	}
+
+	got := bAttrs.toProtoBucketEncryption()
+	// Helper to create string pointer
+	s := func(s string) *string { return &s }
+	want := &storagepb.Bucket_Encryption{
+		DefaultKmsKey: "key",
+		GoogleManagedEncryptionEnforcementConfig: &storagepb.Bucket_Encryption_GoogleManagedEncryptionEnforcementConfig{
+			RestrictionMode: s("FullyRestricted"),
+		},
+		CustomerManagedEncryptionEnforcementConfig: &storagepb.Bucket_Encryption_CustomerManagedEncryptionEnforcementConfig{
+			RestrictionMode: s("NotRestricted"),
+		},
+		CustomerSuppliedEncryptionEnforcementConfig: &storagepb.Bucket_Encryption_CustomerSuppliedEncryptionEnforcementConfig{
+			RestrictionMode: s("FullyRestricted"),
+		},
+	}
+
+	if diff := cmp.Diff(got, want, cmp.Comparer(proto.Equal)); diff != "" {
+		t.Errorf("toProtoBucketEncryption mismatch (-got +want):\n%s", diff)
+	}
+}
+
+func TestBucketEncryption_FromProto(t *testing.T) {
+	s := func(s string) *string { return &s }
+	protoE := &storagepb.Bucket_Encryption{
+		DefaultKmsKey: "key",
+		GoogleManagedEncryptionEnforcementConfig: &storagepb.Bucket_Encryption_GoogleManagedEncryptionEnforcementConfig{
+			RestrictionMode: s("FullyRestricted"),
+			EffectiveTime:   timestamppb.New(time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC)),
+		},
+	}
+
+	got := toBucketEncryptionFromProto(protoE)
+	want := &BucketEncryption{
+		DefaultKMSKeyName: "key",
+	}
+	if diff := cmp.Diff(got, want); diff != "" {
+		t.Errorf("toBucketEncryptionFromProto mismatch (-got +want):\n%s", diff)
+	}
+
+	gotGMEK := toGoogleManagedEncryptionEnforcementConfigFromProto(protoE)
+	wantGMEK := &EncryptionEnforcementConfig{
+		RestrictionMode: FullyRestricted,
+		EffectiveTime:   time.Date(2024, 1, 1, 0, 0, 0, 0, time.UTC),
+	}
+	if diff := cmp.Diff(gotGMEK, wantGMEK); diff != "" {
+		t.Errorf("toGoogleManagedEncryptionEnforcementConfig mismatch (-got +want):\n%s", diff)
 	}
 }

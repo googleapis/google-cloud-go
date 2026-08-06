@@ -19,6 +19,7 @@ import (
 	"crypto/sha256"
 	"encoding/base64"
 	"errors"
+	"fmt"
 	"net/http"
 	"strings"
 	"testing"
@@ -193,4 +194,37 @@ func TestCloseDoesNotLeak(t *testing.T) {
 	wc.Write([]byte(contents))
 
 	wc.Close()
+}
+
+// newClosedWriter is a test helper that returns a Writer
+// which has already been closed and has an optional error state.
+func newClosedWriter(ctx context.Context, err error) *Writer {
+	w := &Writer{
+		ctx:   ctx,
+		donec: make(chan struct{}),
+	}
+	w.closed = true
+	w.err = err
+	return w
+}
+
+func TestWriterDoubleClose(t *testing.T) {
+	ctx := context.Background()
+	expectedErr := fmt.Errorf("some previous error")
+	w := newClosedWriter(ctx, expectedErr)
+
+	err := w.Close()
+	if err == nil || err.Error() != expectedErr.Error() {
+		t.Fatalf("expected some previous error, got: %v", err)
+	}
+}
+
+func TestWriterWriteAfterClose(t *testing.T) {
+	ctx := context.Background()
+	w := newClosedWriter(ctx, nil)
+
+	_, err := w.Write([]byte("hello"))
+	if err == nil || err.Error() != "storage: Writer is closed" {
+		t.Fatalf("expected Writer is closed error, got: %v", err)
+	}
 }

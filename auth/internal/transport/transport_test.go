@@ -112,3 +112,22 @@ func TestCloneDetectOptions(t *testing.T) {
 		t.Fatalf("Scopes should not reference the same slice")
 	}
 }
+
+func TestStaticTelemetryAttributes_KnownKeys(t *testing.T) {
+	// Existing keys are used by generated code and cannot be removed or modified.
+	// New keys may be added, but they will need to also be added to
+	// auth/internal/transport/transport.go and transport wrappers
+	// auth/httptransport/transport.go and auth/grpctransport/grpctransport.go
+	// before they will appear in telemetry.
+	want := []string{
+		"gcp.client.service",
+		"gcp.client.version",
+		"gcp.client.repo",
+		"gcp.client.artifact",
+		"gcp.client.language",
+		"url.domain",
+	}
+	if !reflect.DeepEqual(knownKeys, want) {
+		t.Errorf("got %v, want %v", knownKeys, want)
+	}
+}

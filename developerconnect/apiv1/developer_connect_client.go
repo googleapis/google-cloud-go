@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -71,6 +73,8 @@ type CallOptions struct {
 	DeleteUser                   []gax.CallOption
 	FetchSelf                    []gax.CallOption
 	DeleteSelf                   []gax.CallOption
+	StartOAuth                   []gax.CallOption
+	FinishOAuth                  []gax.CallOption
 	GetLocation                  []gax.CallOption
 	ListLocations                []gax.CallOption
 	CancelOperation              []gax.CallOption
@@ -252,6 +256,8 @@ func defaultCallOptions() *CallOptions {
 		DeleteUser:             []gax.CallOption{},
 		FetchSelf:              []gax.CallOption{},
 		DeleteSelf:             []gax.CallOption{},
+		StartOAuth:             []gax.CallOption{},
+		FinishOAuth:            []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
 		CancelOperation:        []gax.CallOption{},
@@ -407,6 +413,8 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteUser:             []gax.CallOption{},
 		FetchSelf:              []gax.CallOption{},
 		DeleteSelf:             []gax.CallOption{},
+		StartOAuth:             []gax.CallOption{},
+		FinishOAuth:            []gax.CallOption{},
 		GetLocation:            []gax.CallOption{},
 		ListLocations:          []gax.CallOption{},
 		CancelOperation:        []gax.CallOption{},
@@ -455,6 +463,8 @@ type internalClient interface {
 	FetchSelf(context.Context, *developerconnectpb.FetchSelfRequest, ...gax.CallOption) (*developerconnectpb.User, error)
 	DeleteSelf(context.Context, *developerconnectpb.DeleteSelfRequest, ...gax.CallOption) (*DeleteSelfOperation, error)
 	DeleteSelfOperation(name string) *DeleteSelfOperation
+	StartOAuth(context.Context, *developerconnectpb.StartOAuthRequest, ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error)
+	FinishOAuth(context.Context, *developerconnectpb.FinishOAuthRequest, ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -482,7 +492,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -549,8 +559,9 @@ func (c *Client) DeleteConnectionOperation(name string) *DeleteConnectionOperati
 // CreateGitRepositoryLink creates a GitRepositoryLink. Upon linking a Git Repository, Developer
 // Connect will configure the Git Repository to send webhook events to
 // Developer Connect. Connections that use Firebase GitHub Application will
-// have events forwarded to the Firebase service. All other Connections will
-// have events forwarded to Cloud Build.
+// have events forwarded to the Firebase service. Connections that use Gemini
+// Code Assist will have events forwarded to Gemini Code Assist service. All
+// other Connections will have events forwarded to Cloud Build.
 func (c *Client) CreateGitRepositoryLink(ctx context.Context, req *developerconnectpb.CreateGitRepositoryLinkRequest, opts ...gax.CallOption) (*CreateGitRepositoryLinkOperation, error) {
 	return c.internalClient.CreateGitRepositoryLink(ctx, req, opts...)
 }
@@ -691,12 +702,30 @@ func (c *Client) DeleteSelfOperation(name string) *DeleteSelfOperation {
 	return c.internalClient.DeleteSelfOperation(name)
 }
 
+// StartOAuth starts OAuth flow for an account connector.
+func (c *Client) StartOAuth(ctx context.Context, req *developerconnectpb.StartOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error) {
+	return c.internalClient.StartOAuth(ctx, req, opts...)
+}
+
+// FinishOAuth finishes OAuth flow for an account connector.
+func (c *Client) FinishOAuth(ctx context.Context, req *developerconnectpb.FinishOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error) {
+	return c.internalClient.FinishOAuth(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -755,6 +784,16 @@ type gRPCClient struct {
 // Service describing handlers for resources
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "developerconnect",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/developerconnect/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "developerconnect.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -778,6 +817,51 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListConnections = append(client.CallOptions.ListConnections, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConnection = append(client.CallOptions.GetConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateConnection = append(client.CallOptions.CreateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConnection = append(client.CallOptions.UpdateConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteConnection = append(client.CallOptions.DeleteConnection, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateGitRepositoryLink = append(client.CallOptions.CreateGitRepositoryLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteGitRepositoryLink = append(client.CallOptions.DeleteGitRepositoryLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListGitRepositoryLinks = append(client.CallOptions.ListGitRepositoryLinks, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetGitRepositoryLink = append(client.CallOptions.GetGitRepositoryLink, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchReadWriteToken = append(client.CallOptions.FetchReadWriteToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchReadToken = append(client.CallOptions.FetchReadToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchLinkableGitRepositories = append(client.CallOptions.FetchLinkableGitRepositories, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitHubInstallations = append(client.CallOptions.FetchGitHubInstallations, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitRefs = append(client.CallOptions.FetchGitRefs, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAccountConnectors = append(client.CallOptions.ListAccountConnectors, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAccountConnector = append(client.CallOptions.GetAccountConnector, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateAccountConnector = append(client.CallOptions.CreateAccountConnector, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAccountConnector = append(client.CallOptions.UpdateAccountConnector, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteAccountConnector = append(client.CallOptions.DeleteAccountConnector, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchAccessToken = append(client.CallOptions.FetchAccessToken, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListUsers = append(client.CallOptions.ListUsers, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteUser = append(client.CallOptions.DeleteUser, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchSelf = append(client.CallOptions.FetchSelf, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSelf = append(client.CallOptions.DeleteSelf, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartOAuth = append(client.CallOptions.StartOAuth, gax.WithClientMetrics(metrics))
+		client.CallOptions.FinishOAuth = append(client.CallOptions.FinishOAuth, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -814,7 +898,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -847,6 +931,16 @@ type restClient struct {
 // Service describing handlers for resources
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "developerconnect",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/developerconnect/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "developerconnect.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -860,6 +954,52 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		callOpts.ListConnections = append(callOpts.ListConnections, gax.WithClientMetrics(metrics))
+		callOpts.GetConnection = append(callOpts.GetConnection, gax.WithClientMetrics(metrics))
+		callOpts.CreateConnection = append(callOpts.CreateConnection, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConnection = append(callOpts.UpdateConnection, gax.WithClientMetrics(metrics))
+		callOpts.DeleteConnection = append(callOpts.DeleteConnection, gax.WithClientMetrics(metrics))
+		callOpts.CreateGitRepositoryLink = append(callOpts.CreateGitRepositoryLink, gax.WithClientMetrics(metrics))
+		callOpts.DeleteGitRepositoryLink = append(callOpts.DeleteGitRepositoryLink, gax.WithClientMetrics(metrics))
+		callOpts.ListGitRepositoryLinks = append(callOpts.ListGitRepositoryLinks, gax.WithClientMetrics(metrics))
+		callOpts.GetGitRepositoryLink = append(callOpts.GetGitRepositoryLink, gax.WithClientMetrics(metrics))
+		callOpts.FetchReadWriteToken = append(callOpts.FetchReadWriteToken, gax.WithClientMetrics(metrics))
+		callOpts.FetchReadToken = append(callOpts.FetchReadToken, gax.WithClientMetrics(metrics))
+		callOpts.FetchLinkableGitRepositories = append(callOpts.FetchLinkableGitRepositories, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitHubInstallations = append(callOpts.FetchGitHubInstallations, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitRefs = append(callOpts.FetchGitRefs, gax.WithClientMetrics(metrics))
+		callOpts.ListAccountConnectors = append(callOpts.ListAccountConnectors, gax.WithClientMetrics(metrics))
+		callOpts.GetAccountConnector = append(callOpts.GetAccountConnector, gax.WithClientMetrics(metrics))
+		callOpts.CreateAccountConnector = append(callOpts.CreateAccountConnector, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAccountConnector = append(callOpts.UpdateAccountConnector, gax.WithClientMetrics(metrics))
+		callOpts.DeleteAccountConnector = append(callOpts.DeleteAccountConnector, gax.WithClientMetrics(metrics))
+		callOpts.FetchAccessToken = append(callOpts.FetchAccessToken, gax.WithClientMetrics(metrics))
+		callOpts.ListUsers = append(callOpts.ListUsers, gax.WithClientMetrics(metrics))
+		callOpts.DeleteUser = append(callOpts.DeleteUser, gax.WithClientMetrics(metrics))
+		callOpts.FetchSelf = append(callOpts.FetchSelf, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSelf = append(callOpts.DeleteSelf, gax.WithClientMetrics(metrics))
+		callOpts.StartOAuth = append(callOpts.StartOAuth, gax.WithClientMetrics(metrics))
+		callOpts.FinishOAuth = append(callOpts.FinishOAuth, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -897,7 +1037,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -916,9 +1056,15 @@ func (c *gRPCClient) ListConnections(ctx context.Context, req *developerconnectp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListConnections")
+	}
 	opts = append((*c.CallOptions).ListConnections[0:len((*c.CallOptions).ListConnections):len((*c.CallOptions).ListConnections)], opts...)
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.Connection, string, error) {
 		resp := &developerconnectpb.ListConnectionsResponse{}
 		if pageToken != "" {
@@ -962,6 +1108,12 @@ func (c *gRPCClient) GetConnection(ctx context.Context, req *developerconnectpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetConnection")
+	}
 	opts = append((*c.CallOptions).GetConnection[0:len((*c.CallOptions).GetConnection):len((*c.CallOptions).GetConnection)], opts...)
 	var resp *developerconnectpb.Connection
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -980,6 +1132,12 @@ func (c *gRPCClient) CreateConnection(ctx context.Context, req *developerconnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateConnection")
+	}
 	opts = append((*c.CallOptions).CreateConnection[0:len((*c.CallOptions).CreateConnection):len((*c.CallOptions).CreateConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -990,8 +1148,12 @@ func (c *gRPCClient) CreateConnection(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1000,6 +1162,9 @@ func (c *gRPCClient) UpdateConnection(ctx context.Context, req *developerconnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/UpdateConnection")
+	}
 	opts = append((*c.CallOptions).UpdateConnection[0:len((*c.CallOptions).UpdateConnection):len((*c.CallOptions).UpdateConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1010,8 +1175,12 @@ func (c *gRPCClient) UpdateConnection(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1020,6 +1189,12 @@ func (c *gRPCClient) DeleteConnection(ctx context.Context, req *developerconnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteConnection")
+	}
 	opts = append((*c.CallOptions).DeleteConnection[0:len((*c.CallOptions).DeleteConnection):len((*c.CallOptions).DeleteConnection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1030,8 +1205,12 @@ func (c *gRPCClient) DeleteConnection(ctx context.Context, req *developerconnect
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1040,6 +1219,12 @@ func (c *gRPCClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateGitRepositoryLink")
+	}
 	opts = append((*c.CallOptions).CreateGitRepositoryLink[0:len((*c.CallOptions).CreateGitRepositoryLink):len((*c.CallOptions).CreateGitRepositoryLink)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1050,8 +1235,12 @@ func (c *gRPCClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateGitRepositoryLinkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGitRepositoryLinkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1060,6 +1249,12 @@ func (c *gRPCClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteGitRepositoryLink")
+	}
 	opts = append((*c.CallOptions).DeleteGitRepositoryLink[0:len((*c.CallOptions).DeleteGitRepositoryLink):len((*c.CallOptions).DeleteGitRepositoryLink)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1070,8 +1265,12 @@ func (c *gRPCClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteGitRepositoryLinkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGitRepositoryLinkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1080,9 +1279,15 @@ func (c *gRPCClient) ListGitRepositoryLinks(ctx context.Context, req *developerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListGitRepositoryLinks")
+	}
 	opts = append((*c.CallOptions).ListGitRepositoryLinks[0:len((*c.CallOptions).ListGitRepositoryLinks):len((*c.CallOptions).ListGitRepositoryLinks)], opts...)
 	it := &GitRepositoryLinkIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListGitRepositoryLinksRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.GitRepositoryLink, string, error) {
 		resp := &developerconnectpb.ListGitRepositoryLinksResponse{}
 		if pageToken != "" {
@@ -1126,6 +1331,12 @@ func (c *gRPCClient) GetGitRepositoryLink(ctx context.Context, req *developercon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetGitRepositoryLink")
+	}
 	opts = append((*c.CallOptions).GetGitRepositoryLink[0:len((*c.CallOptions).GetGitRepositoryLink):len((*c.CallOptions).GetGitRepositoryLink)], opts...)
 	var resp *developerconnectpb.GitRepositoryLink
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1144,6 +1355,12 @@ func (c *gRPCClient) FetchReadWriteToken(ctx context.Context, req *developerconn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadWriteToken")
+	}
 	opts = append((*c.CallOptions).FetchReadWriteToken[0:len((*c.CallOptions).FetchReadWriteToken):len((*c.CallOptions).FetchReadWriteToken)], opts...)
 	var resp *developerconnectpb.FetchReadWriteTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1162,6 +1379,12 @@ func (c *gRPCClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadToken")
+	}
 	opts = append((*c.CallOptions).FetchReadToken[0:len((*c.CallOptions).FetchReadToken):len((*c.CallOptions).FetchReadToken)], opts...)
 	var resp *developerconnectpb.FetchReadTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1180,9 +1403,15 @@ func (c *gRPCClient) FetchLinkableGitRepositories(ctx context.Context, req *deve
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetConnection()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchLinkableGitRepositories")
+	}
 	opts = append((*c.CallOptions).FetchLinkableGitRepositories[0:len((*c.CallOptions).FetchLinkableGitRepositories):len((*c.CallOptions).FetchLinkableGitRepositories)], opts...)
 	it := &LinkableGitRepositoryIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchLinkableGitRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.LinkableGitRepository, string, error) {
 		resp := &developerconnectpb.FetchLinkableGitRepositoriesResponse{}
 		if pageToken != "" {
@@ -1226,6 +1455,12 @@ func (c *gRPCClient) FetchGitHubInstallations(ctx context.Context, req *develope
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetConnection()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitHubInstallations")
+	}
 	opts = append((*c.CallOptions).FetchGitHubInstallations[0:len((*c.CallOptions).FetchGitHubInstallations):len((*c.CallOptions).FetchGitHubInstallations)], opts...)
 	var resp *developerconnectpb.FetchGitHubInstallationsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1244,9 +1479,15 @@ func (c *gRPCClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitRefs")
+	}
 	opts = append((*c.CallOptions).FetchGitRefs[0:len((*c.CallOptions).FetchGitRefs):len((*c.CallOptions).FetchGitRefs)], opts...)
 	it := &StringIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchGitRefsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &developerconnectpb.FetchGitRefsResponse{}
 		if pageToken != "" {
@@ -1290,9 +1531,15 @@ func (c *gRPCClient) ListAccountConnectors(ctx context.Context, req *developerco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListAccountConnectors")
+	}
 	opts = append((*c.CallOptions).ListAccountConnectors[0:len((*c.CallOptions).ListAccountConnectors):len((*c.CallOptions).ListAccountConnectors)], opts...)
 	it := &AccountConnectorIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListAccountConnectorsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.AccountConnector, string, error) {
 		resp := &developerconnectpb.ListAccountConnectorsResponse{}
 		if pageToken != "" {
@@ -1336,6 +1583,12 @@ func (c *gRPCClient) GetAccountConnector(ctx context.Context, req *developerconn
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetAccountConnector")
+	}
 	opts = append((*c.CallOptions).GetAccountConnector[0:len((*c.CallOptions).GetAccountConnector):len((*c.CallOptions).GetAccountConnector)], opts...)
 	var resp *developerconnectpb.AccountConnector
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1354,6 +1607,12 @@ func (c *gRPCClient) CreateAccountConnector(ctx context.Context, req *developerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateAccountConnector")
+	}
 	opts = append((*c.CallOptions).CreateAccountConnector[0:len((*c.CallOptions).CreateAccountConnector):len((*c.CallOptions).CreateAccountConnector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1364,8 +1623,12 @@ func (c *gRPCClient) CreateAccountConnector(ctx context.Context, req *developerc
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateAccountConnectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAccountConnectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1374,6 +1637,9 @@ func (c *gRPCClient) UpdateAccountConnector(ctx context.Context, req *developerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/UpdateAccountConnector")
+	}
 	opts = append((*c.CallOptions).UpdateAccountConnector[0:len((*c.CallOptions).UpdateAccountConnector):len((*c.CallOptions).UpdateAccountConnector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1384,8 +1650,12 @@ func (c *gRPCClient) UpdateAccountConnector(ctx context.Context, req *developerc
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateAccountConnectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAccountConnectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1394,6 +1664,12 @@ func (c *gRPCClient) DeleteAccountConnector(ctx context.Context, req *developerc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteAccountConnector")
+	}
 	opts = append((*c.CallOptions).DeleteAccountConnector[0:len((*c.CallOptions).DeleteAccountConnector):len((*c.CallOptions).DeleteAccountConnector)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1404,8 +1680,12 @@ func (c *gRPCClient) DeleteAccountConnector(ctx context.Context, req *developerc
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteAccountConnectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAccountConnectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1414,6 +1694,12 @@ func (c *gRPCClient) FetchAccessToken(ctx context.Context, req *developerconnect
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchAccessToken")
+	}
 	opts = append((*c.CallOptions).FetchAccessToken[0:len((*c.CallOptions).FetchAccessToken):len((*c.CallOptions).FetchAccessToken)], opts...)
 	var resp *developerconnectpb.FetchAccessTokenResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1432,9 +1718,15 @@ func (c *gRPCClient) ListUsers(ctx context.Context, req *developerconnectpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/ListUsers")
+	}
 	opts = append((*c.CallOptions).ListUsers[0:len((*c.CallOptions).ListUsers):len((*c.CallOptions).ListUsers)], opts...)
 	it := &UserIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.User, string, error) {
 		resp := &developerconnectpb.ListUsersResponse{}
 		if pageToken != "" {
@@ -1478,6 +1770,12 @@ func (c *gRPCClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteUser")
+	}
 	opts = append((*c.CallOptions).DeleteUser[0:len((*c.CallOptions).DeleteUser):len((*c.CallOptions).DeleteUser)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1488,8 +1786,12 @@ func (c *gRPCClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteUserOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1498,6 +1800,12 @@ func (c *gRPCClient) FetchSelf(ctx context.Context, req *developerconnectpb.Fetc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchSelf")
+	}
 	opts = append((*c.CallOptions).FetchSelf[0:len((*c.CallOptions).FetchSelf):len((*c.CallOptions).FetchSelf)], opts...)
 	var resp *developerconnectpb.User
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1516,6 +1824,12 @@ func (c *gRPCClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteSelf")
+	}
 	opts = append((*c.CallOptions).DeleteSelf[0:len((*c.CallOptions).DeleteSelf):len((*c.CallOptions).DeleteSelf)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1526,9 +1840,61 @@ func (c *gRPCClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteSelfOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSelfOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
+}
+
+func (c *gRPCClient) StartOAuth(ctx context.Context, req *developerconnectpb.StartOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/StartOAuth")
+	}
+	opts = append((*c.CallOptions).StartOAuth[0:len((*c.CallOptions).StartOAuth):len((*c.CallOptions).StartOAuth)], opts...)
+	var resp *developerconnectpb.StartOAuthResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StartOAuth, req, settings.GRPC, c.logger, "StartOAuth")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FinishOAuth(ctx context.Context, req *developerconnectpb.FinishOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FinishOAuth")
+	}
+	opts = append((*c.CallOptions).FinishOAuth[0:len((*c.CallOptions).FinishOAuth):len((*c.CallOptions).FinishOAuth)], opts...)
+	var resp *developerconnectpb.FinishOAuthResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FinishOAuth, req, settings.GRPC, c.logger, "FinishOAuth")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -1536,6 +1902,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1554,9 +1923,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -1600,6 +1972,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1614,6 +1989,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1628,6 +2006,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1646,9 +2027,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -1690,7 +2074,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListConnections lists Connections in a given project and location.
 func (c *restClient) ListConnections(ctx context.Context, req *developerconnectpb.ListConnectionsRequest, opts ...gax.CallOption) *ConnectionIterator {
 	it := &ConnectionIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListConnectionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.Connection, string, error) {
 		resp := &developerconnectpb.ListConnectionsResponse{}
@@ -1790,6 +2174,13 @@ func (c *restClient) GetConnection(ctx context.Context, req *developerconnectpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*}")
+	}
 	opts = append((*c.CallOptions).GetConnection[0:len((*c.CallOptions).GetConnection):len((*c.CallOptions).GetConnection)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.Connection{}
@@ -1854,6 +2245,13 @@ func (c *restClient) CreateConnection(ctx context.Context, req *developerconnect
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/connections")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1882,8 +2280,12 @@ func (c *restClient) CreateConnection(ctx context.Context, req *developerconnect
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1930,6 +2332,10 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *developerconnect
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/UpdateConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{connection.name=projects/*/locations/*/connections/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1958,8 +2364,12 @@ func (c *restClient) UpdateConnection(ctx context.Context, req *developerconnect
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -1992,6 +2402,13 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *developerconnect
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteConnection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2020,8 +2437,12 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *developerconnect
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteConnectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2029,8 +2450,9 @@ func (c *restClient) DeleteConnection(ctx context.Context, req *developerconnect
 // CreateGitRepositoryLink creates a GitRepositoryLink. Upon linking a Git Repository, Developer
 // Connect will configure the Git Repository to send webhook events to
 // Developer Connect. Connections that use Firebase GitHub Application will
-// have events forwarded to the Firebase service. All other Connections will
-// have events forwarded to Cloud Build.
+// have events forwarded to the Firebase service. Connections that use Gemini
+// Code Assist will have events forwarded to Gemini Code Assist service. All
+// other Connections will have events forwarded to Cloud Build.
 func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developerconnectpb.CreateGitRepositoryLinkRequest, opts ...gax.CallOption) (*CreateGitRepositoryLinkOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetGitRepositoryLink()
@@ -2063,6 +2485,13 @@ func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateGitRepositoryLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/connections/*}/gitRepositoryLinks")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2091,8 +2520,12 @@ func (c *restClient) CreateGitRepositoryLink(ctx context.Context, req *developer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateGitRepositoryLinkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateGitRepositoryLinkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2125,6 +2558,13 @@ func (c *restClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteGitRepositoryLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2153,8 +2593,12 @@ func (c *restClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteGitRepositoryLinkOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteGitRepositoryLinkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2162,7 +2606,7 @@ func (c *restClient) DeleteGitRepositoryLink(ctx context.Context, req *developer
 // ListGitRepositoryLinks lists GitRepositoryLinks in a given project, location, and connection.
 func (c *restClient) ListGitRepositoryLinks(ctx context.Context, req *developerconnectpb.ListGitRepositoryLinksRequest, opts ...gax.CallOption) *GitRepositoryLinkIterator {
 	it := &GitRepositoryLinkIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListGitRepositoryLinksRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.GitRepositoryLink, string, error) {
 		resp := &developerconnectpb.ListGitRepositoryLinksResponse{}
@@ -2262,6 +2706,13 @@ func (c *restClient) GetGitRepositoryLink(ctx context.Context, req *developercon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetGitRepositoryLink")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/connections/*/gitRepositoryLinks/*}")
+	}
 	opts = append((*c.CallOptions).GetGitRepositoryLink[0:len((*c.CallOptions).GetGitRepositoryLink):len((*c.CallOptions).GetGitRepositoryLink)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.GitRepositoryLink{}
@@ -2318,6 +2769,13 @@ func (c *restClient) FetchReadWriteToken(ctx context.Context, req *developerconn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadWriteToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchReadWriteToken")
+	}
 	opts = append((*c.CallOptions).FetchReadWriteToken[0:len((*c.CallOptions).FetchReadWriteToken):len((*c.CallOptions).FetchReadWriteToken)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.FetchReadWriteTokenResponse{}
@@ -2374,6 +2832,13 @@ func (c *restClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetGitRepositoryLink()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchReadToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{git_repository_link=projects/*/locations/*/connections/*/gitRepositoryLinks/*}:fetchReadToken")
+	}
 	opts = append((*c.CallOptions).FetchReadToken[0:len((*c.CallOptions).FetchReadToken):len((*c.CallOptions).FetchReadToken)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.FetchReadTokenResponse{}
@@ -2409,7 +2874,7 @@ func (c *restClient) FetchReadToken(ctx context.Context, req *developerconnectpb
 // that are available to be added to a Connection.
 func (c *restClient) FetchLinkableGitRepositories(ctx context.Context, req *developerconnectpb.FetchLinkableGitRepositoriesRequest, opts ...gax.CallOption) *LinkableGitRepositoryIterator {
 	it := &LinkableGitRepositoryIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchLinkableGitRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.LinkableGitRepository, string, error) {
 		resp := &developerconnectpb.FetchLinkableGitRepositoriesResponse{}
@@ -2506,6 +2971,13 @@ func (c *restClient) FetchGitHubInstallations(ctx context.Context, req *develope
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetConnection()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchGitHubInstallations")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{connection=projects/*/locations/*/connections/*}:fetchGitHubInstallations")
+	}
 	opts = append((*c.CallOptions).FetchGitHubInstallations[0:len((*c.CallOptions).FetchGitHubInstallations):len((*c.CallOptions).FetchGitHubInstallations)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.FetchGitHubInstallationsResponse{}
@@ -2540,7 +3012,7 @@ func (c *restClient) FetchGitHubInstallations(ctx context.Context, req *develope
 // FetchGitRefs fetch the list of branches or tags for a given repository.
 func (c *restClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.FetchGitRefsRequest, opts ...gax.CallOption) *StringIterator {
 	it := &StringIterator{}
-	req = proto.Clone(req).(*developerconnectpb.FetchGitRefsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]string, string, error) {
 		resp := &developerconnectpb.FetchGitRefsResponse{}
@@ -2619,7 +3091,7 @@ func (c *restClient) FetchGitRefs(ctx context.Context, req *developerconnectpb.F
 // ListAccountConnectors lists AccountConnectors in a given project and location.
 func (c *restClient) ListAccountConnectors(ctx context.Context, req *developerconnectpb.ListAccountConnectorsRequest, opts ...gax.CallOption) *AccountConnectorIterator {
 	it := &AccountConnectorIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListAccountConnectorsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.AccountConnector, string, error) {
 		resp := &developerconnectpb.ListAccountConnectorsResponse{}
@@ -2719,6 +3191,13 @@ func (c *restClient) GetAccountConnector(ctx context.Context, req *developerconn
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/GetAccountConnector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}")
+	}
 	opts = append((*c.CallOptions).GetAccountConnector[0:len((*c.CallOptions).GetAccountConnector):len((*c.CallOptions).GetAccountConnector)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.AccountConnector{}
@@ -2783,6 +3262,13 @@ func (c *restClient) CreateAccountConnector(ctx context.Context, req *developerc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/CreateAccountConnector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/accountConnectors")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2811,8 +3297,12 @@ func (c *restClient) CreateAccountConnector(ctx context.Context, req *developerc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateAccountConnectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2859,6 +3349,10 @@ func (c *restClient) UpdateAccountConnector(ctx context.Context, req *developerc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/UpdateAccountConnector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_connector.name=projects/*/locations/*/accountConnectors/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2887,8 +3381,12 @@ func (c *restClient) UpdateAccountConnector(ctx context.Context, req *developerc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateAccountConnectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2924,6 +3422,13 @@ func (c *restClient) DeleteAccountConnector(ctx context.Context, req *developerc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteAccountConnector")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2952,8 +3457,12 @@ func (c *restClient) DeleteAccountConnector(ctx context.Context, req *developerc
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteAccountConnectorOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -2983,6 +3492,13 @@ func (c *restClient) FetchAccessToken(ctx context.Context, req *developerconnect
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchAccessToken")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_connector=projects/*/locations/*/accountConnectors/*}/users:fetchAccessToken")
+	}
 	opts = append((*c.CallOptions).FetchAccessToken[0:len((*c.CallOptions).FetchAccessToken):len((*c.CallOptions).FetchAccessToken)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.FetchAccessTokenResponse{}
@@ -3017,7 +3533,7 @@ func (c *restClient) FetchAccessToken(ctx context.Context, req *developerconnect
 // ListUsers lists Users in a given project, location, and account_connector.
 func (c *restClient) ListUsers(ctx context.Context, req *developerconnectpb.ListUsersRequest, opts ...gax.CallOption) *UserIterator {
 	it := &UserIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListUsersRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.User, string, error) {
 		resp := &developerconnectpb.ListUsersResponse{}
@@ -3126,6 +3642,13 @@ func (c *restClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteUser")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*/users/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3154,8 +3677,12 @@ func (c *restClient) DeleteUser(ctx context.Context, req *developerconnectpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteUserOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteUserOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3179,6 +3706,13 @@ func (c *restClient) FetchSelf(ctx context.Context, req *developerconnectpb.Fetc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FetchSelf")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}/users:fetchSelf")
+	}
 	opts = append((*c.CallOptions).FetchSelf[0:len((*c.CallOptions).FetchSelf):len((*c.CallOptions).FetchSelf)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.User{}
@@ -3229,6 +3763,13 @@ func (c *restClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/DeleteSelf")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/accountConnectors/*}/users:deleteSelf")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3257,10 +3798,139 @@ func (c *restClient) DeleteSelf(ctx context.Context, req *developerconnectpb.Del
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteSelfOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSelfOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// StartOAuth starts OAuth flow for an account connector.
+func (c *restClient) StartOAuth(ctx context.Context, req *developerconnectpb.StartOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.StartOAuthResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/users:startOAuthFlow", req.GetAccountConnector())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/StartOAuth")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_connector=projects/*/locations/*/accountConnectors/*}/users:startOAuthFlow")
+	}
+	opts = append((*c.CallOptions).StartOAuth[0:len((*c.CallOptions).StartOAuth):len((*c.CallOptions).StartOAuth)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.StartOAuthResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "StartOAuth")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FinishOAuth finishes OAuth flow for an account connector.
+func (c *restClient) FinishOAuth(ctx context.Context, req *developerconnectpb.FinishOAuthRequest, opts ...gax.CallOption) (*developerconnectpb.FinishOAuthResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/users:finishOAuthFlow", req.GetAccountConnector())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetGoogleOauthParams().GetScopes(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("googleOauthParams.scopes", fmt.Sprintf("%v", item))
+		}
+	}
+	params.Add("googleOauthParams.ticket", fmt.Sprintf("%v", req.GetGoogleOauthParams().GetTicket()))
+	if req.GetGoogleOauthParams().GetVersionInfo() != "" {
+		params.Add("googleOauthParams.versionInfo", fmt.Sprintf("%v", req.GetGoogleOauthParams().GetVersionInfo()))
+	}
+	params.Add("oauthParams.code", fmt.Sprintf("%v", req.GetOauthParams().GetCode()))
+	params.Add("oauthParams.ticket", fmt.Sprintf("%v", req.GetOauthParams().GetTicket()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "account_connector", url.QueryEscape(req.GetAccountConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetAccountConnector()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.DeveloperConnect/FinishOAuth")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{account_connector=projects/*/locations/*/accountConnectors/*}/users:finishOAuthFlow")
+	}
+	opts = append((*c.CallOptions).FinishOAuth[0:len((*c.CallOptions).FinishOAuth):len((*c.CallOptions).FinishOAuth)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.FinishOAuthResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FinishOAuth")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.
@@ -3282,6 +3952,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -3314,9 +3988,17 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -3419,6 +4101,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3454,6 +4140,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3489,6 +4179,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -3523,7 +4217,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -3608,7 +4302,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateAccountConnectorOperation, possibly from a different process.
 func (c *gRPCClient) CreateAccountConnectorOperation(name string) *CreateAccountConnectorOperation {
 	return &CreateAccountConnectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateAccountConnectorOperation"),
 	}
 }
 
@@ -3617,7 +4311,7 @@ func (c *gRPCClient) CreateAccountConnectorOperation(name string) *CreateAccount
 func (c *restClient) CreateAccountConnectorOperation(name string) *CreateAccountConnectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateAccountConnectorOperation"),
 		pollPath: override,
 	}
 }
@@ -3626,7 +4320,7 @@ func (c *restClient) CreateAccountConnectorOperation(name string) *CreateAccount
 // The name must be that of a previously created CreateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) CreateConnectionOperation(name string) *CreateConnectionOperation {
 	return &CreateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateConnectionOperation"),
 	}
 }
 
@@ -3635,7 +4329,7 @@ func (c *gRPCClient) CreateConnectionOperation(name string) *CreateConnectionOpe
 func (c *restClient) CreateConnectionOperation(name string) *CreateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -3644,7 +4338,7 @@ func (c *restClient) CreateConnectionOperation(name string) *CreateConnectionOpe
 // The name must be that of a previously created CreateGitRepositoryLinkOperation, possibly from a different process.
 func (c *gRPCClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRepositoryLinkOperation {
 	return &CreateGitRepositoryLinkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateGitRepositoryLinkOperation"),
 	}
 }
 
@@ -3653,7 +4347,7 @@ func (c *gRPCClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRep
 func (c *restClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRepositoryLinkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateGitRepositoryLinkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateGitRepositoryLinkOperation"),
 		pollPath: override,
 	}
 }
@@ -3662,7 +4356,7 @@ func (c *restClient) CreateGitRepositoryLinkOperation(name string) *CreateGitRep
 // The name must be that of a previously created DeleteAccountConnectorOperation, possibly from a different process.
 func (c *gRPCClient) DeleteAccountConnectorOperation(name string) *DeleteAccountConnectorOperation {
 	return &DeleteAccountConnectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteAccountConnectorOperation"),
 	}
 }
 
@@ -3671,7 +4365,7 @@ func (c *gRPCClient) DeleteAccountConnectorOperation(name string) *DeleteAccount
 func (c *restClient) DeleteAccountConnectorOperation(name string) *DeleteAccountConnectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteAccountConnectorOperation"),
 		pollPath: override,
 	}
 }
@@ -3680,7 +4374,7 @@ func (c *restClient) DeleteAccountConnectorOperation(name string) *DeleteAccount
 // The name must be that of a previously created DeleteConnectionOperation, possibly from a different process.
 func (c *gRPCClient) DeleteConnectionOperation(name string) *DeleteConnectionOperation {
 	return &DeleteConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteConnectionOperation"),
 	}
 }
 
@@ -3689,7 +4383,7 @@ func (c *gRPCClient) DeleteConnectionOperation(name string) *DeleteConnectionOpe
 func (c *restClient) DeleteConnectionOperation(name string) *DeleteConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteConnectionOperation"),
 		pollPath: override,
 	}
 }
@@ -3698,7 +4392,7 @@ func (c *restClient) DeleteConnectionOperation(name string) *DeleteConnectionOpe
 // The name must be that of a previously created DeleteGitRepositoryLinkOperation, possibly from a different process.
 func (c *gRPCClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRepositoryLinkOperation {
 	return &DeleteGitRepositoryLinkOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteGitRepositoryLinkOperation"),
 	}
 }
 
@@ -3707,7 +4401,7 @@ func (c *gRPCClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRep
 func (c *restClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRepositoryLinkOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteGitRepositoryLinkOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteGitRepositoryLinkOperation"),
 		pollPath: override,
 	}
 }
@@ -3716,7 +4410,7 @@ func (c *restClient) DeleteGitRepositoryLinkOperation(name string) *DeleteGitRep
 // The name must be that of a previously created DeleteSelfOperation, possibly from a different process.
 func (c *gRPCClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 	return &DeleteSelfOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteSelfOperation"),
 	}
 }
 
@@ -3725,7 +4419,7 @@ func (c *gRPCClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 func (c *restClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSelfOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteSelfOperation"),
 		pollPath: override,
 	}
 }
@@ -3734,7 +4428,7 @@ func (c *restClient) DeleteSelfOperation(name string) *DeleteSelfOperation {
 // The name must be that of a previously created DeleteUserOperation, possibly from a different process.
 func (c *gRPCClient) DeleteUserOperation(name string) *DeleteUserOperation {
 	return &DeleteUserOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteUserOperation"),
 	}
 }
 
@@ -3743,7 +4437,7 @@ func (c *gRPCClient) DeleteUserOperation(name string) *DeleteUserOperation {
 func (c *restClient) DeleteUserOperation(name string) *DeleteUserOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteUserOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteUserOperation"),
 		pollPath: override,
 	}
 }
@@ -3752,7 +4446,7 @@ func (c *restClient) DeleteUserOperation(name string) *DeleteUserOperation {
 // The name must be that of a previously created UpdateAccountConnectorOperation, possibly from a different process.
 func (c *gRPCClient) UpdateAccountConnectorOperation(name string) *UpdateAccountConnectorOperation {
 	return &UpdateAccountConnectorOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateAccountConnectorOperation"),
 	}
 }
 
@@ -3761,7 +4455,7 @@ func (c *gRPCClient) UpdateAccountConnectorOperation(name string) *UpdateAccount
 func (c *restClient) UpdateAccountConnectorOperation(name string) *UpdateAccountConnectorOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateAccountConnectorOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateAccountConnectorOperation"),
 		pollPath: override,
 	}
 }
@@ -3770,7 +4464,7 @@ func (c *restClient) UpdateAccountConnectorOperation(name string) *UpdateAccount
 // The name must be that of a previously created UpdateConnectionOperation, possibly from a different process.
 func (c *gRPCClient) UpdateConnectionOperation(name string) *UpdateConnectionOperation {
 	return &UpdateConnectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateConnectionOperation"),
 	}
 }
 
@@ -3779,7 +4473,7 @@ func (c *gRPCClient) UpdateConnectionOperation(name string) *UpdateConnectionOpe
 func (c *restClient) UpdateConnectionOperation(name string) *UpdateConnectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateConnectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateConnectionOperation"),
 		pollPath: override,
 	}
 }

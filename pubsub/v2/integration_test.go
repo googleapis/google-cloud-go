@@ -480,8 +480,7 @@ func TestIntegration_OrderedKeys_JSON(t *testing.T) {
 		scanner := bufio.NewScanner(inFile)
 		for scanner.Scan() {
 			line := scanner.Text()
-			// TODO: use strings.ReplaceAll once we only support 1.11+.
-			line = strings.Replace(line, "\"", "", -1)
+			line = strings.ReplaceAll(line, "\"", "")
 			parts := strings.Split(line, ",")
 			key := parts[0]
 			msg := parts[1]
@@ -784,6 +783,7 @@ func TestIntegration_PublishCompression(t *testing.T) {
 		t.Errorf("publish result got err: %v", err)
 	}
 }
+
 func newTopicName() string {
 	return fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicIDs.New())
 }

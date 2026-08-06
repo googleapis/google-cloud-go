@@ -1,5 +1,84 @@
 # Changes
 
+## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.84.0...dialogflow/v1.85.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.83.0...dialogflow/v1.84.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/dialogflow/v1.82.0...dialogflow/v1.83.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.82.0) (2026-05-07)
+
+## [1.81.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.81.0) (2026-04-30)
+
+## [1.80.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.80.0) (2026-04-13)
+
+## [1.79.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.79.0) (2026-04-09)
+
+## [1.78.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.78.0) (2026-04-02)
+
+## [1.77.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.77.0) (2026-03-26)
+
+### Features
+
+* updated v2 dialogflow client libraries ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* updated v2beta1 dialogflow client libraries ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* updated v3 dialogflow client libraries with `dtmf_pattern` and `trace_blocks` ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+* updated v3beta1 dialogflow client libraries with `dtmf_pattern` and `trace_blocks` ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
+## [1.76.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.76.0) (2026-02-19)
+
+### Features
+
+* Add new value `DETECT_INTENT_RESPONSE_VIEW_DEFAULT` to enum `DetectIntentResponseView` ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+### Documentation
+
+* Add comment for enum value `DETECT_INTENT_RESPONSE_VIEW_UNSPECIFIED` in enum `DetectIntentResponseView` ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+## [1.75.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.75.0) (2026-02-05)
+
+### Features
+
+* added a new field StreamingAnalyzeContentRequest.output_multiple_utterances ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+## [1.74.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.74.0) (2026-01-22)
+
+### Features
+
+* updated v3 dialogflow client libraries ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+### Bug Fixes
+
+* An existing field `start_flow` is moved in to oneof in message `.google.cloud.dialogflow.cx.v3.Agent` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_display_names` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_ids` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_latencies` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* An existing field `webhook_tags` is removed from message `.google.cloud.dialogflow.cx.v3.QueryResult` ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+## [1.73.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.73.0) (2025-12-18)
+
+### Features
+
+* updated v2 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v2beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* updated v3beta1 dialogflow client libraries ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [1.72.0](https://github.com/googleapis/google-cloud-go/releases/tag/dialogflow%2Fv1.72.0) (2025-12-04)
 
 ### Features

@@ -1,6 +1,30 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.12.0...gkemulticloud/v1.13.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.11.0...gkemulticloud/v1.12.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.11.0) (2026-05-07)
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.10.0) (2026-04-30)
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.9.0) (2026-04-13)
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.8.0) (2026-04-09)
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.7.0) (2026-04-02)
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/gkemulticloud%2Fv1.6.0) (2025-12-04)
 
 ### Features

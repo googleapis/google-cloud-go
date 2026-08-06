@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -30,6 +30,8 @@ import (
 	lroauto "cloud.google.com/go/longrunning/autogen"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -50,6 +52,8 @@ type InsightsConfigCallOptions struct {
 	GetInsightsConfig    []gax.CallOption
 	UpdateInsightsConfig []gax.CallOption
 	DeleteInsightsConfig []gax.CallOption
+	GetDeploymentEvent   []gax.CallOption
+	ListDeploymentEvents []gax.CallOption
 	GetLocation          []gax.CallOption
 	ListLocations        []gax.CallOption
 	CancelOperation      []gax.CallOption
@@ -80,6 +84,8 @@ func defaultInsightsConfigCallOptions() *InsightsConfigCallOptions {
 		GetInsightsConfig:    []gax.CallOption{},
 		UpdateInsightsConfig: []gax.CallOption{},
 		DeleteInsightsConfig: []gax.CallOption{},
+		GetDeploymentEvent:   []gax.CallOption{},
+		ListDeploymentEvents: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
 		CancelOperation:      []gax.CallOption{},
@@ -96,6 +102,8 @@ func defaultInsightsConfigRESTCallOptions() *InsightsConfigCallOptions {
 		GetInsightsConfig:    []gax.CallOption{},
 		UpdateInsightsConfig: []gax.CallOption{},
 		DeleteInsightsConfig: []gax.CallOption{},
+		GetDeploymentEvent:   []gax.CallOption{},
+		ListDeploymentEvents: []gax.CallOption{},
 		GetLocation:          []gax.CallOption{},
 		ListLocations:        []gax.CallOption{},
 		CancelOperation:      []gax.CallOption{},
@@ -118,6 +126,8 @@ type internalInsightsConfigClient interface {
 	UpdateInsightsConfigOperation(name string) *UpdateInsightsConfigOperation
 	DeleteInsightsConfig(context.Context, *developerconnectpb.DeleteInsightsConfigRequest, ...gax.CallOption) (*DeleteInsightsConfigOperation, error)
 	DeleteInsightsConfigOperation(name string) *DeleteInsightsConfigOperation
+	GetDeploymentEvent(context.Context, *developerconnectpb.GetDeploymentEventRequest, ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error)
+	ListDeploymentEvents(context.Context, *developerconnectpb.ListDeploymentEventsRequest, ...gax.CallOption) *DeploymentEventIterator
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -133,7 +143,7 @@ type internalInsightsConfigClient interface {
 //
 // The InsightsConfig resource is the core configuration object to capture
 // events from your Software Development Lifecycle. It acts as the central hub
-// for managing how Developer connect understands your application, its runtime
+// for managing how Developer Connect understands your application, its runtime
 // environments, and the artifacts deployed within them.
 // A user can create an InsightsConfig, list previously-requested
 // InsightsConfigs or get InsightsConfigs by their ID to determine the status of
@@ -153,7 +163,7 @@ type InsightsConfigClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *InsightsConfigClient) Close() error {
 	return c.internalClient.Close()
@@ -206,7 +216,7 @@ func (c *InsightsConfigClient) UpdateInsightsConfigOperation(name string) *Updat
 	return c.internalClient.UpdateInsightsConfigOperation(name)
 }
 
-// DeleteInsightsConfig delete a single Insight.
+// DeleteInsightsConfig deletes a single Insight.
 func (c *InsightsConfigClient) DeleteInsightsConfig(ctx context.Context, req *developerconnectpb.DeleteInsightsConfigRequest, opts ...gax.CallOption) (*DeleteInsightsConfigOperation, error) {
 	return c.internalClient.DeleteInsightsConfig(ctx, req, opts...)
 }
@@ -217,12 +227,30 @@ func (c *InsightsConfigClient) DeleteInsightsConfigOperation(name string) *Delet
 	return c.internalClient.DeleteInsightsConfigOperation(name)
 }
 
+// GetDeploymentEvent gets a single Deployment Event.
+func (c *InsightsConfigClient) GetDeploymentEvent(ctx context.Context, req *developerconnectpb.GetDeploymentEventRequest, opts ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error) {
+	return c.internalClient.GetDeploymentEvent(ctx, req, opts...)
+}
+
+// ListDeploymentEvents lists Deployment Events in a given insights config.
+func (c *InsightsConfigClient) ListDeploymentEvents(ctx context.Context, req *developerconnectpb.ListDeploymentEventsRequest, opts ...gax.CallOption) *DeploymentEventIterator {
+	return c.internalClient.ListDeploymentEvents(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *InsightsConfigClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *InsightsConfigClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -282,13 +310,23 @@ type insightsConfigGRPCClient struct {
 //
 // The InsightsConfig resource is the core configuration object to capture
 // events from your Software Development Lifecycle. It acts as the central hub
-// for managing how Developer connect understands your application, its runtime
+// for managing how Developer Connect understands your application, its runtime
 // environments, and the artifacts deployed within them.
 // A user can create an InsightsConfig, list previously-requested
 // InsightsConfigs or get InsightsConfigs by their ID to determine the status of
 // the InsightsConfig.
 func NewInsightsConfigClient(ctx context.Context, opts ...option.ClientOption) (*InsightsConfigClient, error) {
 	clientOpts := defaultInsightsConfigGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "developerconnect",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/developerconnect/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "developerconnect.googleapis.com",
+		}))
+	}
 	if newInsightsConfigClientHook != nil {
 		hookOpts, err := newInsightsConfigClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -312,6 +350,32 @@ func NewInsightsConfigClient(ctx context.Context, opts ...option.ClientOption) (
 		locationsClient:      locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInsightsConfigs = append(client.CallOptions.ListInsightsConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateInsightsConfig = append(client.CallOptions.CreateInsightsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetInsightsConfig = append(client.CallOptions.GetInsightsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateInsightsConfig = append(client.CallOptions.UpdateInsightsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteInsightsConfig = append(client.CallOptions.DeleteInsightsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetDeploymentEvent = append(client.CallOptions.GetDeploymentEvent, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListDeploymentEvents = append(client.CallOptions.ListDeploymentEvents, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -348,7 +412,7 @@ func (c *insightsConfigGRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *insightsConfigGRPCClient) Close() error {
 	return c.connPool.Close()
@@ -382,13 +446,23 @@ type insightsConfigRESTClient struct {
 //
 // The InsightsConfig resource is the core configuration object to capture
 // events from your Software Development Lifecycle. It acts as the central hub
-// for managing how Developer connect understands your application, its runtime
+// for managing how Developer Connect understands your application, its runtime
 // environments, and the artifacts deployed within them.
 // A user can create an InsightsConfig, list previously-requested
 // InsightsConfigs or get InsightsConfigs by their ID to determine the status of
 // the InsightsConfig.
 func NewInsightsConfigRESTClient(ctx context.Context, opts ...option.ClientOption) (*InsightsConfigClient, error) {
 	clientOpts := append(defaultInsightsConfigRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "developerconnect",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/developerconnect/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "developerconnect.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -402,6 +476,33 @@ func NewInsightsConfigRESTClient(ctx context.Context, opts ...option.ClientOptio
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "developerconnect",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/developerconnect/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "developerconnect.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInsightsConfigs = append(callOpts.ListInsightsConfigs, gax.WithClientMetrics(metrics))
+		callOpts.CreateInsightsConfig = append(callOpts.CreateInsightsConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetInsightsConfig = append(callOpts.GetInsightsConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateInsightsConfig = append(callOpts.UpdateInsightsConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteInsightsConfig = append(callOpts.DeleteInsightsConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetDeploymentEvent = append(callOpts.GetDeploymentEvent, gax.WithClientMetrics(metrics))
+		callOpts.ListDeploymentEvents = append(callOpts.ListDeploymentEvents, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -439,7 +540,7 @@ func (c *insightsConfigRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *insightsConfigRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -458,9 +559,15 @@ func (c *insightsConfigGRPCClient) ListInsightsConfigs(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/ListInsightsConfigs")
+	}
 	opts = append((*c.CallOptions).ListInsightsConfigs[0:len((*c.CallOptions).ListInsightsConfigs):len((*c.CallOptions).ListInsightsConfigs)], opts...)
 	it := &InsightsConfigIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListInsightsConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.InsightsConfig, string, error) {
 		resp := &developerconnectpb.ListInsightsConfigsResponse{}
 		if pageToken != "" {
@@ -504,6 +611,12 @@ func (c *insightsConfigGRPCClient) CreateInsightsConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/CreateInsightsConfig")
+	}
 	opts = append((*c.CallOptions).CreateInsightsConfig[0:len((*c.CallOptions).CreateInsightsConfig):len((*c.CallOptions).CreateInsightsConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -514,8 +627,12 @@ func (c *insightsConfigGRPCClient) CreateInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateInsightsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInsightsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -524,6 +641,12 @@ func (c *insightsConfigGRPCClient) GetInsightsConfig(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetInsightsConfig")
+	}
 	opts = append((*c.CallOptions).GetInsightsConfig[0:len((*c.CallOptions).GetInsightsConfig):len((*c.CallOptions).GetInsightsConfig)], opts...)
 	var resp *developerconnectpb.InsightsConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -542,6 +665,9 @@ func (c *insightsConfigGRPCClient) UpdateInsightsConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/UpdateInsightsConfig")
+	}
 	opts = append((*c.CallOptions).UpdateInsightsConfig[0:len((*c.CallOptions).UpdateInsightsConfig):len((*c.CallOptions).UpdateInsightsConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -552,8 +678,12 @@ func (c *insightsConfigGRPCClient) UpdateInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateInsightsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInsightsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -562,6 +692,12 @@ func (c *insightsConfigGRPCClient) DeleteInsightsConfig(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/DeleteInsightsConfig")
+	}
 	opts = append((*c.CallOptions).DeleteInsightsConfig[0:len((*c.CallOptions).DeleteInsightsConfig):len((*c.CallOptions).DeleteInsightsConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -572,9 +708,89 @@ func (c *insightsConfigGRPCClient) DeleteInsightsConfig(ctx context.Context, req
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteInsightsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInsightsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
+}
+
+func (c *insightsConfigGRPCClient) GetDeploymentEvent(ctx context.Context, req *developerconnectpb.GetDeploymentEventRequest, opts ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetDeploymentEvent")
+	}
+	opts = append((*c.CallOptions).GetDeploymentEvent[0:len((*c.CallOptions).GetDeploymentEvent):len((*c.CallOptions).GetDeploymentEvent)], opts...)
+	var resp *developerconnectpb.DeploymentEvent
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.insightsConfigClient.GetDeploymentEvent, req, settings.GRPC, c.logger, "GetDeploymentEvent")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *insightsConfigGRPCClient) ListDeploymentEvents(ctx context.Context, req *developerconnectpb.ListDeploymentEventsRequest, opts ...gax.CallOption) *DeploymentEventIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/ListDeploymentEvents")
+	}
+	opts = append((*c.CallOptions).ListDeploymentEvents[0:len((*c.CallOptions).ListDeploymentEvents):len((*c.CallOptions).ListDeploymentEvents)], opts...)
+	it := &DeploymentEventIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.DeploymentEvent, string, error) {
+		resp := &developerconnectpb.ListDeploymentEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.insightsConfigClient.ListDeploymentEvents, req, settings.GRPC, c.logger, "ListDeploymentEvents")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetDeploymentEvents(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *insightsConfigGRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -582,6 +798,9 @@ func (c *insightsConfigGRPCClient) GetLocation(ctx context.Context, req *locatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -600,9 +819,12 @@ func (c *insightsConfigGRPCClient) ListLocations(ctx context.Context, req *locat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -646,6 +868,9 @@ func (c *insightsConfigGRPCClient) CancelOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -660,6 +885,9 @@ func (c *insightsConfigGRPCClient) DeleteOperation(ctx context.Context, req *lon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -674,6 +902,9 @@ func (c *insightsConfigGRPCClient) GetOperation(ctx context.Context, req *longru
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -692,9 +923,12 @@ func (c *insightsConfigGRPCClient) ListOperations(ctx context.Context, req *long
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -736,7 +970,7 @@ func (c *insightsConfigGRPCClient) ListOperations(ctx context.Context, req *long
 // ListInsightsConfigs lists InsightsConfigs in a given project and location.
 func (c *insightsConfigRESTClient) ListInsightsConfigs(ctx context.Context, req *developerconnectpb.ListInsightsConfigsRequest, opts ...gax.CallOption) *InsightsConfigIterator {
 	it := &InsightsConfigIterator{}
-	req = proto.Clone(req).(*developerconnectpb.ListInsightsConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.InsightsConfig, string, error) {
 		resp := &developerconnectpb.ListInsightsConfigsResponse{}
@@ -847,6 +1081,13 @@ func (c *insightsConfigRESTClient) CreateInsightsConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/CreateInsightsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/insightsConfigs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -875,8 +1116,12 @@ func (c *insightsConfigRESTClient) CreateInsightsConfig(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.CreateInsightsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -900,6 +1145,13 @@ func (c *insightsConfigRESTClient) GetInsightsConfig(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetInsightsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/insightsConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetInsightsConfig[0:len((*c.CallOptions).GetInsightsConfig):len((*c.CallOptions).GetInsightsConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &developerconnectpb.InsightsConfig{}
@@ -966,6 +1218,10 @@ func (c *insightsConfigRESTClient) UpdateInsightsConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/UpdateInsightsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{insights_config.name=projects/*/locations/*/insightsConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -994,13 +1250,17 @@ func (c *insightsConfigRESTClient) UpdateInsightsConfig(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.UpdateInsightsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
 
-// DeleteInsightsConfig delete a single Insight.
+// DeleteInsightsConfig deletes a single Insight.
 func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req *developerconnectpb.DeleteInsightsConfigRequest, opts ...gax.CallOption) (*DeleteInsightsConfigOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1028,6 +1288,13 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/DeleteInsightsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/insightsConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1056,10 +1323,152 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfig(ctx context.Context, req
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*developerconnect.DeleteInsightsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// GetDeploymentEvent gets a single Deployment Event.
+func (c *insightsConfigRESTClient) GetDeploymentEvent(ctx context.Context, req *developerconnectpb.GetDeploymentEventRequest, opts ...gax.CallOption) (*developerconnectpb.DeploymentEvent, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//developerconnect.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.developerconnect.v1.InsightsConfigService/GetDeploymentEvent")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/insightsConfigs/*/deploymentEvents/*}")
+	}
+	opts = append((*c.CallOptions).GetDeploymentEvent[0:len((*c.CallOptions).GetDeploymentEvent):len((*c.CallOptions).GetDeploymentEvent)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &developerconnectpb.DeploymentEvent{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetDeploymentEvent")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListDeploymentEvents lists Deployment Events in a given insights config.
+func (c *insightsConfigRESTClient) ListDeploymentEvents(ctx context.Context, req *developerconnectpb.ListDeploymentEventsRequest, opts ...gax.CallOption) *DeploymentEventIterator {
+	it := &DeploymentEventIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*developerconnectpb.DeploymentEvent, string, error) {
+		resp := &developerconnectpb.ListDeploymentEventsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/deploymentEvents", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListDeploymentEvents")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetDeploymentEvents(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetLocation gets information about a location.
@@ -1081,6 +1490,10 @@ func (c *insightsConfigRESTClient) GetLocation(ctx context.Context, req *locatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -1113,9 +1526,17 @@ func (c *insightsConfigRESTClient) GetLocation(ctx context.Context, req *locatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+// This method can be called in two ways:
+//
+//	List all public locations: Use the path GET /v1/locations.
+//
+//	List project-visible locations: Use the path
+//	GET /v1/projects/{project_id}/locations. This may include public
+//	locations as well as private or other locations specifically visible
+//	to the project.
 func (c *insightsConfigRESTClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -1218,6 +1639,10 @@ func (c *insightsConfigRESTClient) CancelOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1253,6 +1678,10 @@ func (c *insightsConfigRESTClient) DeleteOperation(ctx context.Context, req *lon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -1288,6 +1717,10 @@ func (c *insightsConfigRESTClient) GetOperation(ctx context.Context, req *longru
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -1322,7 +1755,7 @@ func (c *insightsConfigRESTClient) GetOperation(ctx context.Context, req *longru
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *insightsConfigRESTClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -1407,7 +1840,7 @@ func (c *insightsConfigRESTClient) ListOperations(ctx context.Context, req *long
 // The name must be that of a previously created CreateInsightsConfigOperation, possibly from a different process.
 func (c *insightsConfigGRPCClient) CreateInsightsConfigOperation(name string) *CreateInsightsConfigOperation {
 	return &CreateInsightsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateInsightsConfigOperation"),
 	}
 }
 
@@ -1416,7 +1849,7 @@ func (c *insightsConfigGRPCClient) CreateInsightsConfigOperation(name string) *C
 func (c *insightsConfigRESTClient) CreateInsightsConfigOperation(name string) *CreateInsightsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.CreateInsightsConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1425,7 +1858,7 @@ func (c *insightsConfigRESTClient) CreateInsightsConfigOperation(name string) *C
 // The name must be that of a previously created DeleteInsightsConfigOperation, possibly from a different process.
 func (c *insightsConfigGRPCClient) DeleteInsightsConfigOperation(name string) *DeleteInsightsConfigOperation {
 	return &DeleteInsightsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteInsightsConfigOperation"),
 	}
 }
 
@@ -1434,7 +1867,7 @@ func (c *insightsConfigGRPCClient) DeleteInsightsConfigOperation(name string) *D
 func (c *insightsConfigRESTClient) DeleteInsightsConfigOperation(name string) *DeleteInsightsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.DeleteInsightsConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -1443,7 +1876,7 @@ func (c *insightsConfigRESTClient) DeleteInsightsConfigOperation(name string) *D
 // The name must be that of a previously created UpdateInsightsConfigOperation, possibly from a different process.
 func (c *insightsConfigGRPCClient) UpdateInsightsConfigOperation(name string) *UpdateInsightsConfigOperation {
 	return &UpdateInsightsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateInsightsConfigOperation"),
 	}
 }
 
@@ -1452,7 +1885,7 @@ func (c *insightsConfigGRPCClient) UpdateInsightsConfigOperation(name string) *U
 func (c *insightsConfigRESTClient) UpdateInsightsConfigOperation(name string) *UpdateInsightsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateInsightsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*developerconnect.UpdateInsightsConfigOperation"),
 		pollPath: override,
 	}
 }

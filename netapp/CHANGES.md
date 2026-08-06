@@ -1,6 +1,29 @@
 # Changes
 
 
+## [1.18.0](https://github.com/googleapis/google-cloud-go/compare/netapp/v1.17.0...netapp/v1.18.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.17.0) (2026-05-07)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.16.0) (2026-04-30)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.15.0) (2026-04-13)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.14.0) (2026-04-09)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.13.0) (2026-04-02)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.12.0) (2026-01-15)
+
+### Features
+
+* Update NetApp v1 API with Host Groups, Block Volumes, Cache Volumes, and Backup Restore This CL introduces several new features and enhancements to the NetApp API: - **Host Groups:** Added a new `HostGroup` resource to manage collections of hosts for Block Volume access. Includes full CRUD operations. - **Block Volumes:** Enhanced the `Volume` resource to support `ISCSI` protocol and `BlockDevice` configurations. - **Cache Volumes:** Added `CacheParameters` to the `Volume` resource to support FlexCache volumes. - **Backup Restore:** Introduced a new `RestoreBackupFiles` RPC to restore individual files from a backup. - **CMEK for Backup Vaults:** Added fields to `BackupVault` to support Customer Managed Encryption Keys (CMEK). - **Storage Pool Type:** Added a `type` field to `StoragePool` to specify support for FILE, UNIFIED, or UNIFIED_LARGE_CAPACITY volumes. -   **Location Metadata:** Added `has_ontap_proxy` flag. -   Updated copyright year to 2026. ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/netapp%2Fv1.11.0) (2025-12-04)
 
 ### Features

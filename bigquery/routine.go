@@ -81,6 +81,7 @@ func (r *Routine) Create(ctx context.Context, rm *RoutineMetadata) (err error) {
 		DatasetId: r.DatasetID,
 		RoutineId: r.RoutineID,
 	}
+	ctx = setDatasetItemTraceMetadata(ctx, r.ProjectID, r.DatasetID, "routines")
 	req := r.c.bqs.Routines.Insert(r.ProjectID, r.DatasetID, routine).Context(ctx)
 	setClientHeader(req.Header())
 	_, err = req.Do()
@@ -92,6 +93,7 @@ func (r *Routine) Metadata(ctx context.Context) (rm *RoutineMetadata, err error)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Routine.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setRoutineTraceMetadata(ctx, r.ProjectID, r.DatasetID, r.RoutineID)
 	req := r.c.bqs.Routines.Get(r.ProjectID, r.DatasetID, r.RoutineID).Context(ctx)
 	setClientHeader(req.Header())
 	var routine *bq.Routine
@@ -123,6 +125,7 @@ func (r *Routine) Update(ctx context.Context, upd *RoutineMetadataToUpdate, etag
 		RoutineId: r.RoutineID,
 	}
 
+	ctx = setRoutineTraceMetadata(ctx, r.ProjectID, r.DatasetID, r.RoutineID)
 	call := r.c.bqs.Routines.Update(r.ProjectID, r.DatasetID, r.RoutineID, bqr).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
@@ -145,6 +148,7 @@ func (r *Routine) Delete(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Model.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setRoutineTraceMetadata(ctx, r.ProjectID, r.DatasetID, r.RoutineID)
 	req := r.c.bqs.Routines.Delete(r.ProjectID, r.DatasetID, r.RoutineID).Context(ctx)
 	setClientHeader(req.Header())
 	return req.Do()

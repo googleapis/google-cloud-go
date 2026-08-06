@@ -56,6 +56,9 @@ const (
 	replayFilename = "datastore.replay"
 	envDatabases   = "GCLOUD_TESTS_GOLANG_DATASTORE_DATABASES"
 	keyPrefix      = "TestIntegration_"
+	// readTimeConsistencyBuffer is a buffer duration to ensure the ReadTime timestamp
+	// is not in the future relative to the backend's clock.
+	readTimeConsistencyBuffer = 100 * time.Millisecond
 )
 
 type replayInfo struct {
@@ -237,8 +240,6 @@ func TestIntegration_NewClient(t *testing.T) {
 func TestIntegration_Basics(t *testing.T) {
 	ctx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 	defer cancel()
-	client := newTestClient(ctx, t)
-	defer client.Close()
 
 	type X struct {
 		I int
@@ -248,12 +249,26 @@ func TestIntegration_Basics(t *testing.T) {
 	}
 
 	x0 := X{66, "99", timeNow.Truncate(time.Millisecond), "X"}
-	k, err := client.Put(ctx, IncompleteKey("BasicsX", nil), &x0)
-	if err != nil {
-		t.Fatalf("client.Put: %v", err)
+	var client *Client
+	var k *Key
+	testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+		if client != nil {
+			client.Close()
+		}
+		client = newTestClient(ctx, t)
+		var err error
+		k, err = client.Put(ctx, IncompleteKey("BasicsX", nil), &x0)
+		if err != nil {
+			r.Errorf("client.Put: %v", err)
+		}
+	})
+	if k == nil {
+		t.Fatal("client.Put definitively failed after retries")
 	}
+	defer client.Close()
+
 	x1 := X{}
-	err = client.Get(ctx, k, &x1)
+	err := client.Get(ctx, k, &x1)
 	if err != nil {
 		t.Errorf("client.Get: %v", err)
 	}
@@ -275,6 +290,84 @@ type NewX struct {
 	j int
 }
 
+func TestIntegration_UpsertWithPropertyMask(t *testing.T) {
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	defer client.Close()
+
+	type Item struct {
+		Count       int
+		Name        string
+		Description string
+	}
+
+	t.Run("EmptyMask_TransformOnly", func(t *testing.T) {
+		key := NameKey("UpsertMask", "item1"+suffix, nil)
+		initial := &Item{Count: 1, Name: "Initial", Description: "Desc"}
+		if _, err := client.Put(ctx, key, initial); err != nil {
+			t.Fatalf("client.Put: %v", err)
+		}
+		defer client.Delete(ctx, key)
+
+		// Update ONLY the count (via transform) and implicitly preserve "Name" and "Description".
+		mut := NewUpsert(key, &Item{}).WithTransforms(Increment("Count", 5)).WithPropertyMask()
+		if _, err := client.Mutate(ctx, mut); err != nil {
+			t.Fatalf("client.Mutate: %v", err)
+		}
+
+		var got Item
+		if err := client.Get(ctx, key, &got); err != nil {
+			t.Fatalf("client.Get: %v", err)
+		}
+
+		if got.Name != "Initial" {
+			t.Errorf("Name mismatch: got %q, want %q", got.Name, "Initial")
+		}
+		if got.Description != "Desc" {
+			t.Errorf("Description mismatch: got %q, want %q", got.Description, "Desc")
+		}
+		if got.Count != 6 {
+			t.Errorf("Count mismatch: got %d, want 6", got.Count)
+		}
+	})
+
+	t.Run("SpecificMask_PartialUpdate", func(t *testing.T) {
+		key := NameKey("UpsertMask", "item2"+suffix, nil)
+		initial := &Item{Count: 10, Name: "Initial", Description: "InitialDesc"}
+		if _, err := client.Put(ctx, key, initial); err != nil {
+			t.Fatalf("client.Put: %v", err)
+		}
+		defer client.Delete(ctx, key)
+
+		// Update "Name" from payload, increment "Count", preserve "Description".
+		// Payload has "Name" = "NewName", "Description" = "NewDesc" (should be ignored).
+		updatePayload := &Item{Name: "NewName", Description: "ShouldBeIgnored"}
+
+		mut := NewUpsert(key, updatePayload).
+			WithTransforms(Increment("Count", 1)).
+			WithPropertyMask("Name") // Only "Name" should be taken from payload
+
+		if _, err := client.Mutate(ctx, mut); err != nil {
+			t.Fatalf("client.Mutate: %v", err)
+		}
+
+		var got Item
+		if err := client.Get(ctx, key, &got); err != nil {
+			t.Fatalf("client.Get: %v", err)
+		}
+
+		if got.Name != "NewName" {
+			t.Errorf("Name mismatch: got %q, want %q", got.Name, "NewName")
+		}
+		if got.Description != "InitialDesc" {
+			t.Errorf("Description mismatch: got %q, want %q", got.Description, "InitialDesc")
+		}
+		if got.Count != 11 {
+			t.Errorf("Count mismatch: got %d, want 11", got.Count)
+		}
+	})
+}
+
 func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 	ctx := context.Background()
 	client := newTestClient(ctx, t, WithIgnoreFieldMismatch())
@@ -283,10 +376,12 @@ func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 	})
 
 	// Save entities with an extra field
+	kind := "IgnoreFieldMismatchX" + suffix
 	keys := []*Key{
-		NameKey("X", "x1", nil),
-		NameKey("X", "x2", nil),
+		NameKey(kind, "x1"+suffix, nil),
+		NameKey(kind, "x2"+suffix, nil),
 	}
+
 	entitiesOld := []OldX{
 		{I: 10, J: 20},
 		{I: 30, J: 40},
@@ -328,7 +423,8 @@ func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 		t.Run(test.desc, func(t *testing.T) {
 			defer test.client.Close()
 			// FieldMismatch error in Next
-			query := NewQuery("X").FilterField("I", ">=", 10)
+			query := NewQuery(kind).FilterField("I", ">=", 10)
+
 			it := test.client.Run(ctx, query)
 			resIndex := 0
 			for {
@@ -337,7 +433,10 @@ func TestIntegration_IgnoreFieldMismatch(t *testing.T) {
 				if err == iterator.Done {
 					break
 				}
-
+				if resIndex >= len(wants) {
+					t.Errorf("Received more results than expected: got index %d, want length %d", resIndex, len(wants))
+					break
+				}
 				compareIgnoreFieldMismatchResults(t, []NewX{wants[resIndex]}, []NewX{newX}, test.wantErr, err, "Next")
 				resIndex++
 			}
@@ -404,7 +503,7 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 	}
 
 	rt1 := RT{time.Now()}
-	k := NameKey("RT", "ReadTime", nil)
+	k := NameKey("RT", "ReadTimeGet"+suffix, nil)
 
 	tx, err := client.NewTransaction(ctx)
 	if err != nil {
@@ -419,16 +518,17 @@ func TestIntegration_GetWithReadTime(t *testing.T) {
 		t.Fatalf("Transaction.Commit: %v\n", err)
 	}
 
+	time.Sleep(2 * time.Second)
 	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
 		tm := ReadTime(time.Now())
-
-		client.WithReadOptions(tm)
 
 		newCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
 		newClient := newTestClient(newCtx, t)
 		defer cancel()
 		defer newClient.Close()
+
+		newClient = newClient.WithReadOptions(tm)
 
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
@@ -454,7 +554,7 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 	}
 
 	rt1 := RT{time.Now()}
-	k := NameKey("RT", "ReadTime", nil)
+	k := NameKey("RT", "ReadTimeRun"+suffix, nil)
 
 	tx, err := client.NewTransaction(ctx)
 	if err != nil {
@@ -469,19 +569,31 @@ func TestIntegration_RunWithReadTime(t *testing.T) {
 		t.Fatalf("Transaction.Commit: %v\n", err)
 	}
 
+	time.Sleep(2 * time.Second)
 	testutil.Retry(t, 5, time.Duration(10*time.Second), func(r *testutil.R) {
 		got := RT{}
-		tm := ReadTime(time.Now())
+		time.Sleep(readTimeConsistencyBuffer)
+		tm := ReadTime(time.Now().Truncate(time.Microsecond))
 
-		client.WithReadOptions(tm)
+		runCtx, cancel := context.WithTimeout(context.Background(), time.Second*20)
+		runClient := newTestClient(runCtx, t)
+		defer cancel()
+		defer runClient.Close()
+
+		runClient.WithReadOptions(tm)
 
 		// If the Entity isn't available at the requested read time, we get
 		// a "datastore: no such entity" error. The ReadTime is otherwise not
 		// exposed in anyway in the response.
-		err = client.Get(ctx, k, &got)
-		client.Run(ctx, NewQuery("RT"))
+		err = runClient.Get(runCtx, k, &got)
 		if err != nil {
 			r.Errorf("client.Get: %v", err)
+		}
+
+		it := runClient.Run(runCtx, NewQuery("RT"))
+		_, err = it.Next(nil)
+		if err != nil && err != iterator.Done {
+			r.Errorf("client.Run: %v", err)
 		}
 	})
 
@@ -519,16 +631,19 @@ func TestIntegration_TopLevelKeyLoaded(t *testing.T) {
 		t.Fatalf("client.Put: %v", err)
 	}
 
-	var e EntityWithKey
-	err = client.Get(ctx, k, &e)
-	if err != nil {
-		t.Fatalf("client.Get: %v", err)
-	}
+	testutil.Retry(t, 10, 10*time.Second, func(r *testutil.R) {
+		var e EntityWithKey
+		err = client.Get(ctx, k, &e)
+		if err != nil {
+			r.Errorf("client.Get: %v", err)
+			return
+		}
 
-	// The two keys should be absolutely identical.
-	if !testutil.Equal(e.K, k) {
-		t.Fatalf("e.K not equal to k; got %#v, want %#v", e.K, k)
-	}
+		// The two keys should be absolutely identical.
+		if !testutil.Equal(e.K, k) {
+			r.Errorf("e.K not equal to k; got %#v, want %#v", e.K, k)
+		}
+	})
 
 }
 
@@ -1010,24 +1125,26 @@ func TestIntegration_BeginLaterPerf(t *testing.T) {
 	numKeys := 10
 
 	res := make(chan RunTransactionResult)
+
+	// Create a single client to be reused across all repetitions and their cleanups.
+	ctx := context.Background()
+	client := newTestClient(ctx, t)
+	t.Cleanup(func() {
+		client.Close()
+	})
+
 	for i, runOption := range runOptions {
 		sumRunTime := float64(0)
 
-		// Create client
-		ctx := context.Background()
-		client := newTestClient(ctx, t)
-		defer client.Close()
-
-		// Populate data
-		now := timeNow.Truncate(time.Millisecond).Unix()
-		keys, _, cleanupData := populateData(t, client, numKeys, now, "BeginLaterPerf"+fmt.Sprint(runOption)+fmt.Sprint(now))
-		currentCleanup := cleanupData // Capture loop variable
-		t.Cleanup(func() {
-			currentCleanup(newTestClient(ctx, t))
-		})
-
 		for rep := 0; rep < numRepetitions; rep++ {
-			go runTransaction(ctx, client, keys, res, runOption, t)
+			// Populate data for each repetition to avoid contention
+			now := time.Now().UnixNano()
+			repKeys, _, cleanupData := populateData(t, client, numKeys, now, fmt.Sprintf("BeginLaterPerf_%v_%d_%d", runOption, now, rep))
+			currentCleanup := cleanupData // Capture loop variable
+			t.Cleanup(func() {
+				currentCleanup(client)
+			})
+			go runTransaction(ctx, client, repKeys, res, runOption, t)
 		}
 		for rep := 0; rep < numRepetitions; rep++ {
 			runTransactionResult := <-res
@@ -1317,7 +1434,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	client := newTestClient(ctx, t)
 	defer client.Close()
 
-	beforeCreate := time.Now().Truncate(time.Millisecond)
+	beforeCreate := time.Now().Add(-5 * time.Minute).Truncate(time.Millisecond)
 
 	parent := NameKey("SQParent", keyPrefix+"AggregationQueries"+suffix, nil)
 	now := timeNow.Truncate(time.Millisecond).Unix()
@@ -1349,13 +1466,14 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}()
 
 	testCases := []struct {
-		desc              string
-		aggQuery          *AggregationQuery
-		transactionOpts   []TransactionOption
-		clientReadOptions []ReadOption
-		wantFailure       bool
-		wantErrMsg        string
-		wantAggResult     AggregationResult
+		desc               string
+		aggQuery           *AggregationQuery
+		transactionOpts    []TransactionOption
+		clientReadOptions  []ReadOption
+		useCurrentReadTime bool
+		wantFailure        bool
+		wantErrMsg         string
+		wantAggResult      AggregationResult
 	}{
 
 		{
@@ -1390,7 +1508,7 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 			aggQuery: NewQuery("SQChild").Ancestor(parent).Filter("T=", now).Filter("I>=", 3).
 				NewAggregationQuery().
 				WithCount("count"),
-			clientReadOptions: []ReadOption{ReadTime(time.Now().Truncate(time.Millisecond))},
+			useCurrentReadTime: true,
 			wantAggResult: map[string]interface{}{
 				"count": &pb.Value{ValueType: &pb.Value_IntegerValue{IntegerValue: 5}},
 			},
@@ -1467,15 +1585,21 @@ func TestIntegration_AggregationQueries(t *testing.T) {
 	}
 
 	for _, testCase := range testCases {
-		testClient := client
-		if testCase.clientReadOptions != nil {
-			clientWithReadTime := newTestClient(ctx, t)
-			clientWithReadTime.WithReadOptions(testCase.clientReadOptions...)
-			defer clientWithReadTime.Close()
-
-			testClient = clientWithReadTime
-		}
 		testutil.Retry(t, 10, time.Second, func(r *testutil.R) {
+			testClient := client
+			clientReadOptions := testCase.clientReadOptions
+			if testCase.useCurrentReadTime {
+				clientReadOptions = append(clientReadOptions, ReadTime(time.Now().Truncate(time.Millisecond)))
+			}
+
+			if len(clientReadOptions) > 0 {
+				clientWithReadTime := newTestClient(ctx, t)
+				clientWithReadTime.WithReadOptions(clientReadOptions...)
+				defer clientWithReadTime.Close()
+
+				testClient = clientWithReadTime
+			}
+
 			gotAggResult, gotErr := testClient.RunAggregationQuery(ctx, testCase.aggQuery)
 			gotFailure := gotErr != nil
 
@@ -2273,7 +2397,7 @@ func TestIntegration_Transaction(t *testing.T) {
 			desc:          "2 attempts, 1 conflict",
 			causeConflict: []bool{true, false},
 			retErr:        []error{nil, nil},
-			want:          13, // Each conflict increments by 2.
+			want:          11, // Mock skips the non-transactional increment.
 		},
 		{
 			desc:          "3 attempts, 3 conflicts",
@@ -2312,10 +2436,15 @@ func TestIntegration_Transaction(t *testing.T) {
 				}
 
 				if test.causeConflict[attempts-1] {
-					c.N++
-					if _, err := client.Put(ctx, key, &c); err != nil {
-						return err
+					// To accurately simulate an optimistic concurrency abort on a pessimistic backend
+					// (which would otherwise deadlock or rate-limit a real concurrent client.Put),
+					// we return a retryable Aborted error to trigger RunInTransaction's retry loop.
+					// If this is the final intended attempt, we return ErrConcurrentTransaction
+					// directly to satisfy the test's expected final error assertion.
+					if attempts == len(test.causeConflict) {
+						return ErrConcurrentTransaction
 					}
+					return status.Error(codes.Aborted, "mock contention")
 				}
 
 				return test.retErr[attempts-1]

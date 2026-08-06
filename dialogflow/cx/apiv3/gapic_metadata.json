@@ -635,6 +635,120 @@
         }
       }
     },
+    "Examples": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ExamplesClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateExample": {
+              "methods": [
+                "CreateExample"
+              ]
+            },
+            "DeleteExample": {
+              "methods": [
+                "DeleteExample"
+              ]
+            },
+            "GetExample": {
+              "methods": [
+                "GetExample"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListExamples": {
+              "methods": [
+                "ListExamples"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateExample": {
+              "methods": [
+                "UpdateExample"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ExamplesClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateExample": {
+              "methods": [
+                "CreateExample"
+              ]
+            },
+            "DeleteExample": {
+              "methods": [
+                "DeleteExample"
+              ]
+            },
+            "GetExample": {
+              "methods": [
+                "GetExample"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListExamples": {
+              "methods": [
+                "ListExamples"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateExample": {
+              "methods": [
+                "UpdateExample"
+              ]
+            }
+          }
+        }
+      }
+    },
     "Experiments": {
       "clients": {
         "grpc": {
@@ -1295,6 +1409,190 @@
         }
       }
     },
+    "Playbooks": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "PlaybooksClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePlaybook": {
+              "methods": [
+                "CreatePlaybook"
+              ]
+            },
+            "CreatePlaybookVersion": {
+              "methods": [
+                "CreatePlaybookVersion"
+              ]
+            },
+            "DeletePlaybook": {
+              "methods": [
+                "DeletePlaybook"
+              ]
+            },
+            "DeletePlaybookVersion": {
+              "methods": [
+                "DeletePlaybookVersion"
+              ]
+            },
+            "ExportPlaybook": {
+              "methods": [
+                "ExportPlaybook"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPlaybook": {
+              "methods": [
+                "GetPlaybook"
+              ]
+            },
+            "GetPlaybookVersion": {
+              "methods": [
+                "GetPlaybookVersion"
+              ]
+            },
+            "ImportPlaybook": {
+              "methods": [
+                "ImportPlaybook"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPlaybookVersions": {
+              "methods": [
+                "ListPlaybookVersions"
+              ]
+            },
+            "ListPlaybooks": {
+              "methods": [
+                "ListPlaybooks"
+              ]
+            },
+            "RestorePlaybookVersion": {
+              "methods": [
+                "RestorePlaybookVersion"
+              ]
+            },
+            "UpdatePlaybook": {
+              "methods": [
+                "UpdatePlaybook"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "PlaybooksClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreatePlaybook": {
+              "methods": [
+                "CreatePlaybook"
+              ]
+            },
+            "CreatePlaybookVersion": {
+              "methods": [
+                "CreatePlaybookVersion"
+              ]
+            },
+            "DeletePlaybook": {
+              "methods": [
+                "DeletePlaybook"
+              ]
+            },
+            "DeletePlaybookVersion": {
+              "methods": [
+                "DeletePlaybookVersion"
+              ]
+            },
+            "ExportPlaybook": {
+              "methods": [
+                "ExportPlaybook"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetPlaybook": {
+              "methods": [
+                "GetPlaybook"
+              ]
+            },
+            "GetPlaybookVersion": {
+              "methods": [
+                "GetPlaybookVersion"
+              ]
+            },
+            "ImportPlaybook": {
+              "methods": [
+                "ImportPlaybook"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListPlaybookVersions": {
+              "methods": [
+                "ListPlaybookVersions"
+              ]
+            },
+            "ListPlaybooks": {
+              "methods": [
+                "ListPlaybooks"
+              ]
+            },
+            "RestorePlaybookVersion": {
+              "methods": [
+                "RestorePlaybookVersion"
+              ]
+            },
+            "UpdatePlaybook": {
+              "methods": [
+                "UpdatePlaybook"
+              ]
+            }
+          }
+        }
+      }
+    },
     "SecuritySettingsService": {
       "clients": {
         "grpc": {
@@ -1825,6 +2123,170 @@
             "UpdateTestCase": {
               "methods": [
                 "UpdateTestCase"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "Tools": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "ToolsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "CreateToolVersion": {
+              "methods": [
+                "CreateToolVersion"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "DeleteToolVersion": {
+              "methods": [
+                "DeleteToolVersion"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "GetToolVersion": {
+              "methods": [
+                "GetToolVersion"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListToolVersions": {
+              "methods": [
+                "ListToolVersions"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "RestoreToolVersion": {
+              "methods": [
+                "RestoreToolVersion"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "ToolsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateTool": {
+              "methods": [
+                "CreateTool"
+              ]
+            },
+            "CreateToolVersion": {
+              "methods": [
+                "CreateToolVersion"
+              ]
+            },
+            "DeleteTool": {
+              "methods": [
+                "DeleteTool"
+              ]
+            },
+            "DeleteToolVersion": {
+              "methods": [
+                "DeleteToolVersion"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetTool": {
+              "methods": [
+                "GetTool"
+              ]
+            },
+            "GetToolVersion": {
+              "methods": [
+                "GetToolVersion"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListToolVersions": {
+              "methods": [
+                "ListToolVersions"
+              ]
+            },
+            "ListTools": {
+              "methods": [
+                "ListTools"
+              ]
+            },
+            "RestoreToolVersion": {
+              "methods": [
+                "RestoreToolVersion"
+              ]
+            },
+            "UpdateTool": {
+              "methods": [
+                "UpdateTool"
               ]
             }
           }

@@ -1,5 +1,91 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/vectorsearch/v1.1.0...vectorsearch/v1.2.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/vectorsearch/v1.0.0...vectorsearch/v1.1.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv1.0.0) (2026-05-08)
+
+## [0.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.11.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [0.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.10.0) (2026-04-30)
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.9.0) (2026-04-13)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.8.0) (2026-04-09)
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.7.0) (2026-04-02)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.6.0) (2026-03-23)
+
+### Features
+
+* Add support for ExportDataObjects ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Mark Vector Search v1 API as GA ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.5.0) (2026-03-12)
+
+### Features
+
+* upgrade protobuf from v25.7 to v31.0 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Bug Fixes
+
+* Removed field DenseScannParams from SearchHint ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* Changed default values for max_replica_count for AutoScaling ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.4.0) (2026-03-05)
+
+### Features
+
+* Added index and search configuration management ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+### Bug Fixes
+
+* Removed obsolete field `vertex` from message `.google.cloud.vectorsearch.v1.Ranker` ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+* Removed obsolete message `VertexRanker` ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+### Documentation
+
+* Updated documentation for Index Creation, Import Data Objects, Search ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.3.0) (2026-02-19)
+
+### Features
+
+* add new clients (#13853) ([822ac7e](https://github.com/googleapis/google-cloud-go/commit/822ac7e478cc5ad0db2bffeda3563dd09aef5278))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.2.0) (2026-02-05)
+
+### Features
+
+* Allow requesting search metadata in SearchDataObjects ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* add ExportDataObjects API ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* add SearchHint to SemanticSearch requests ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+* add filter param for TextSearch requests ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
 ## [0.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/vectorsearch%2Fv0.1.0) (2025-12-04)
 
 ### Features
@@ -10,4 +96,3 @@
 ### Documentation
 
 * Added clarification of expected format of collection and index fields ([185951b](https://github.com/googleapis/google-cloud-go/commit/185951b3bea9fb942979e81ce248ccdebb40d94b))
-

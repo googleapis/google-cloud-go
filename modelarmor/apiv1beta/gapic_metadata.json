@@ -55,6 +55,16 @@
                 "SanitizeUserPrompt"
               ]
             },
+            "StreamSanitizeModelResponse": {
+              "methods": [
+                "StreamSanitizeModelResponse"
+              ]
+            },
+            "StreamSanitizeUserPrompt": {
+              "methods": [
+                "StreamSanitizeUserPrompt"
+              ]
+            },
             "UpdateFloorSetting": {
               "methods": [
                 "UpdateFloorSetting"
@@ -113,6 +123,16 @@
             "SanitizeUserPrompt": {
               "methods": [
                 "SanitizeUserPrompt"
+              ]
+            },
+            "StreamSanitizeModelResponse": {
+              "methods": [
+                "StreamSanitizeModelResponse"
+              ]
+            },
+            "StreamSanitizeUserPrompt": {
+              "methods": [
+                "StreamSanitizeUserPrompt"
               ]
             },
             "UpdateFloorSetting": {

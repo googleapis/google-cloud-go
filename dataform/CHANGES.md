@@ -1,5 +1,52 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v1.1.0...dataform/v1.2.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v1.0.0...dataform/v1.1.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv1.0.0) (2026-05-08)
+
+## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.19.0) (2026-05-07)
+
+## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.18.0) (2026-04-30)
+
+## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.17.0) (2026-04-13)
+
+## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.16.0) (2026-04-09)
+
+## [0.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.15.0) (2026-04-02)
+
+## [0.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.14.0) (2026-03-26)
+
+### Features
+
+* add folders and teamFolders related changes to v1 ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
+### Documentation
+
+* A comment for field `force` in message `.google.cloud.dataform.v1.DeleteRepositoryRequest` is changed ([5e50d57](https://github.com/googleapis/google-cloud-go/commit/5e50d57d4ca4bceff2e7dfe4118c281c24375b99))
+
+## [0.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/dataform%2Fv0.13.0) (2026-02-19)
+
+### Features
+
+* Update GCP Client Libraries in v1beta1 to support Folders, TeamFolders, and other relevant APIs The v1beta1 API now includes support for Folders and TeamFolders, allowing users to organize repositories and files hierarchically and manage access controls. New Features: - Added TeamFolder resource and methods: CreateTeamFolder, GetTeamFolder, UpdateTeamFolder, DeleteTeamFolder QueryTeamFolderContents to list folder contents. SearchTeamFolders to search for TeamFolders. - Added Folder resource and methods: CreateFolder, GetFolder, UpdateFolder, DeleteFolder QueryFolderContents to list folder contents. Added MoveFolder to move Folders between TeamFolders, other Folders, or the user root folder. - Added MoveRepository to move Repositories between TeamFolders, Folders, or the user root folder. - Added QueryUserRootContents to list contents of a user&#39;s root folder. Repository resource now includes containing_folder and team_folder_name fields to indicate its location within the folder hierarchy. - IAM methods (GetIamPolicy, SetIamPolicy, TestIamPermissions) now support Folder and TeamFolder resources for access control management ([cc0ef5a](https://github.com/googleapis/google-cloud-go/commit/cc0ef5a91ba73f591f63beffb1a9026cf9a3fb8c))
+
+### Documentation
+
+* A comment for field `force` in message `.google.cloud.dataform.v1beta1.DeleteRepositoryRequest` is changed PiperOrigin-RevId: 868182714 ([cc0ef5a](https://github.com/googleapis/google-cloud-go/commit/cc0ef5a91ba73f591f63beffb1a9026cf9a3fb8c))
+
 ## [0.12.1](https://github.com/googleapis/google-cloud-go/compare/dataform/v0.12.0...dataform/v0.12.1) (2025-09-16)
 
 

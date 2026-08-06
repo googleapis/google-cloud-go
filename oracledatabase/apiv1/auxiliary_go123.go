@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -132,6 +132,48 @@ func (it *ExascaleDbStorageVaultIterator) All() iter.Seq2[*oracledatabasepb.Exas
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *GiVersionIterator) All() iter.Seq2[*oracledatabasepb.GiVersion, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateConnectionAssignmentIterator) All() iter.Seq2[*oracledatabasepb.GoldengateConnectionAssignment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateConnectionIterator) All() iter.Seq2[*oracledatabasepb.GoldengateConnection, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateConnectionTypeIterator) All() iter.Seq2[*oracledatabasepb.GoldengateConnectionType, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentEnvironmentIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeploymentEnvironment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeployment, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentTypeIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeploymentType, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GoldengateDeploymentVersionIterator) All() iter.Seq2[*oracledatabasepb.GoldengateDeploymentVersion, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 

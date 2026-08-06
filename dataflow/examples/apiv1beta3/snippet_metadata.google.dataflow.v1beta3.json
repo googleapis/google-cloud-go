@@ -1,0 +1,843 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.dataflow.v1beta3",
+        "version": "v1beta3"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/dataflow/apiv1beta3",
+    "version": "0.16.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.FlexTemplatesClient",
+          "shortName": "FlexTemplatesClient"
+        },
+        "fullName": "google.dataflow.v1beta3.FlexTemplatesClient.LaunchFlexTemplate",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.FlexTemplatesService.LaunchFlexTemplate",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.FlexTemplatesService",
+            "shortName": "FlexTemplatesService"
+          },
+          "shortName": "LaunchFlexTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.LaunchFlexTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.LaunchFlexTemplateResponse",
+        "shortName": "LaunchFlexTemplate"
+      },
+      "description": "LaunchFlexTemplate launch a job with a FlexTemplate.",
+      "file": "FlexTemplatesClient/LaunchFlexTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_FlexTemplatesService_LaunchFlexTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow LaunchFlexTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client",
+          "shortName": "JobsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client.AggregatedListJobs",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3.AggregatedListJobs",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.JobsV1Beta3",
+            "shortName": "JobsV1Beta3"
+          },
+          "shortName": "AggregatedListJobs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.ListJobsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "JobIterator",
+        "shortName": "AggregatedListJobs"
+      },
+      "description": "AggregatedListJobs list the jobs of a project across all regions.\n\n**Note: ** This method doesn't support filtering the list of\njobs by name.",
+      "file": "JobsV1Beta3Client/AggregatedListJobs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_AggregatedListJobs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow AggregatedListJobs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client",
+          "shortName": "JobsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client.CheckActiveJobs",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3.CheckActiveJobs",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.JobsV1Beta3",
+            "shortName": "JobsV1Beta3"
+          },
+          "shortName": "CheckActiveJobs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.CheckActiveJobsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.CheckActiveJobsResponse",
+        "shortName": "CheckActiveJobs"
+      },
+      "description": "CheckActiveJobs check for existence of active jobs in the given project across all regions.",
+      "file": "JobsV1Beta3Client/CheckActiveJobs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_CheckActiveJobs_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow CheckActiveJobs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client",
+          "shortName": "JobsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client.CreateJob",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3.CreateJob",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.JobsV1Beta3",
+            "shortName": "JobsV1Beta3"
+          },
+          "shortName": "CreateJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.CreateJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.Job",
+        "shortName": "CreateJob"
+      },
+      "description": "CreateJob creates a Dataflow job.\n\nTo create a job, we recommend using `projects.locations.jobs.create` with a\n[regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.create` is not recommended, as your job will always start\nin `us-central1`.\n\nDo not enter confidential information when you supply string values using\nthe API.",
+      "file": "JobsV1Beta3Client/CreateJob/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_CreateJob_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow CreateJob Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client",
+          "shortName": "JobsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client.GetJob",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3.GetJob",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.JobsV1Beta3",
+            "shortName": "JobsV1Beta3"
+          },
+          "shortName": "GetJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.GetJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.Job",
+        "shortName": "GetJob"
+      },
+      "description": "GetJob gets the state of the specified Cloud Dataflow job.\n\nTo get the state of a job, we recommend using `projects.locations.jobs.get`\nwith a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.get` is not recommended, as you can only get the state of\njobs that are running in `us-central1`.",
+      "file": "JobsV1Beta3Client/GetJob/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_GetJob_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow GetJob Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client",
+          "shortName": "JobsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client.ListJobs",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3.ListJobs",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.JobsV1Beta3",
+            "shortName": "JobsV1Beta3"
+          },
+          "shortName": "ListJobs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.ListJobsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "JobIterator",
+        "shortName": "ListJobs"
+      },
+      "description": "ListJobs list the jobs of a project.\n\nTo list the jobs of a project in a region, we recommend using\n`projects.locations.jobs.list` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). To\nlist the all jobs across all regions, use `projects.jobs.aggregated`. Using\n`projects.jobs.list` is not recommended, because you can only get the list\nof jobs that are running in `us-central1`.\n\n`projects.locations.jobs.list` and `projects.jobs.list` support filtering\nthe list of jobs by name. Filtering by name isn't supported by\n`projects.jobs.aggregated`.",
+      "file": "JobsV1Beta3Client/ListJobs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_ListJobs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow ListJobs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client",
+          "shortName": "JobsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client.SnapshotJob",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3.SnapshotJob",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.JobsV1Beta3",
+            "shortName": "JobsV1Beta3"
+          },
+          "shortName": "SnapshotJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.SnapshotJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.Snapshot",
+        "shortName": "SnapshotJob"
+      },
+      "description": "SnapshotJob snapshot the state of a streaming job.",
+      "file": "JobsV1Beta3Client/SnapshotJob/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_SnapshotJob_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow SnapshotJob Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client",
+          "shortName": "JobsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.JobsV1Beta3Client.UpdateJob",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.JobsV1Beta3.UpdateJob",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.JobsV1Beta3",
+            "shortName": "JobsV1Beta3"
+          },
+          "shortName": "UpdateJob"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.UpdateJobRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.Job",
+        "shortName": "UpdateJob"
+      },
+      "description": "UpdateJob updates the state of an existing Cloud Dataflow job.\n\nTo update the state of an existing job, we recommend using\n`projects.locations.jobs.update` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.update` is not recommended, as you can only update the state\nof jobs that are running in `us-central1`.",
+      "file": "JobsV1Beta3Client/UpdateJob/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_JobsV1Beta3_UpdateJob_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow UpdateJob Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.MessagesV1Beta3Client",
+          "shortName": "MessagesV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.MessagesV1Beta3Client.ListJobMessages",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.MessagesV1Beta3.ListJobMessages",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.MessagesV1Beta3",
+            "shortName": "MessagesV1Beta3"
+          },
+          "shortName": "ListJobMessages"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.ListJobMessagesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "JobMessageIterator",
+        "shortName": "ListJobMessages"
+      },
+      "description": "ListJobMessages request the job status.\n\nTo request the status of a job, we recommend using\n`projects.locations.jobs.messages.list` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.messages.list` is not recommended, as you can only request\nthe status of jobs that are running in `us-central1`.",
+      "file": "MessagesV1Beta3Client/ListJobMessages/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_MessagesV1Beta3_ListJobMessages_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow ListJobMessages Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.MetricsV1Beta3Client",
+          "shortName": "MetricsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.MetricsV1Beta3Client.GetJobExecutionDetails",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.MetricsV1Beta3.GetJobExecutionDetails",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.MetricsV1Beta3",
+            "shortName": "MetricsV1Beta3"
+          },
+          "shortName": "GetJobExecutionDetails"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.GetJobExecutionDetailsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "StageSummaryIterator",
+        "shortName": "GetJobExecutionDetails"
+      },
+      "description": "GetJobExecutionDetails request detailed information about the execution status of the job.\n\nEXPERIMENTAL.  This API is subject to change or removal without notice.",
+      "file": "MetricsV1Beta3Client/GetJobExecutionDetails/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_MetricsV1Beta3_GetJobExecutionDetails_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow GetJobExecutionDetails Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.MetricsV1Beta3Client",
+          "shortName": "MetricsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.MetricsV1Beta3Client.GetJobMetrics",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.MetricsV1Beta3.GetJobMetrics",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.MetricsV1Beta3",
+            "shortName": "MetricsV1Beta3"
+          },
+          "shortName": "GetJobMetrics"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.GetJobMetricsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.JobMetrics",
+        "shortName": "GetJobMetrics"
+      },
+      "description": "GetJobMetrics request the job status.\n\nTo request the status of a job, we recommend using\n`projects.locations.jobs.getMetrics` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.jobs.getMetrics` is not recommended, as you can only request the\nstatus of jobs that are running in `us-central1`.",
+      "file": "MetricsV1Beta3Client/GetJobMetrics/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_MetricsV1Beta3_GetJobMetrics_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow GetJobMetrics Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.MetricsV1Beta3Client",
+          "shortName": "MetricsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.MetricsV1Beta3Client.GetStageExecutionDetails",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.MetricsV1Beta3.GetStageExecutionDetails",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.MetricsV1Beta3",
+            "shortName": "MetricsV1Beta3"
+          },
+          "shortName": "GetStageExecutionDetails"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.GetStageExecutionDetailsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "WorkerDetailsIterator",
+        "shortName": "GetStageExecutionDetails"
+      },
+      "description": "GetStageExecutionDetails request detailed information about the execution status of a stage of the\njob.\n\nEXPERIMENTAL.  This API is subject to change or removal without notice.",
+      "file": "MetricsV1Beta3Client/GetStageExecutionDetails/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_MetricsV1Beta3_GetStageExecutionDetails_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow GetStageExecutionDetails Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client",
+          "shortName": "SnapshotsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client.DeleteSnapshot",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3.DeleteSnapshot",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3",
+            "shortName": "SnapshotsV1Beta3"
+          },
+          "shortName": "DeleteSnapshot"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.DeleteSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.DeleteSnapshotResponse",
+        "shortName": "DeleteSnapshot"
+      },
+      "description": "DeleteSnapshot deletes a snapshot.",
+      "file": "SnapshotsV1Beta3Client/DeleteSnapshot/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_SnapshotsV1Beta3_DeleteSnapshot_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow DeleteSnapshot Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client",
+          "shortName": "SnapshotsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client.GetSnapshot",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3.GetSnapshot",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3",
+            "shortName": "SnapshotsV1Beta3"
+          },
+          "shortName": "GetSnapshot"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.GetSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.Snapshot",
+        "shortName": "GetSnapshot"
+      },
+      "description": "GetSnapshot gets information about a snapshot.",
+      "file": "SnapshotsV1Beta3Client/GetSnapshot/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_SnapshotsV1Beta3_GetSnapshot_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow GetSnapshot Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client",
+          "shortName": "SnapshotsV1Beta3Client"
+        },
+        "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3Client.ListSnapshots",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3.ListSnapshots",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.SnapshotsV1Beta3",
+            "shortName": "SnapshotsV1Beta3"
+          },
+          "shortName": "ListSnapshots"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.ListSnapshotsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.ListSnapshotsResponse",
+        "shortName": "ListSnapshots"
+      },
+      "description": "ListSnapshots lists snapshots.",
+      "file": "SnapshotsV1Beta3Client/ListSnapshots/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_SnapshotsV1Beta3_ListSnapshots_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow ListSnapshots Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.TemplatesClient",
+          "shortName": "TemplatesClient"
+        },
+        "fullName": "google.dataflow.v1beta3.TemplatesClient.CreateJobFromTemplate",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.TemplatesService.CreateJobFromTemplate",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.TemplatesService",
+            "shortName": "TemplatesService"
+          },
+          "shortName": "CreateJobFromTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.CreateJobFromTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.Job",
+        "shortName": "CreateJobFromTemplate"
+      },
+      "description": "CreateJobFromTemplate creates a Cloud Dataflow job from a template. Do not enter confidential\ninformation when you supply string values using the API.\n\nTo create a job, we recommend using `projects.locations.templates.create`\nwith a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.templates.create` is not recommended, because your job will\nalways start in `us-central1`.",
+      "file": "TemplatesClient/CreateJobFromTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_TemplatesService_CreateJobFromTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow CreateJobFromTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.TemplatesClient",
+          "shortName": "TemplatesClient"
+        },
+        "fullName": "google.dataflow.v1beta3.TemplatesClient.GetTemplate",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.TemplatesService.GetTemplate",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.TemplatesService",
+            "shortName": "TemplatesService"
+          },
+          "shortName": "GetTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.GetTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.GetTemplateResponse",
+        "shortName": "GetTemplate"
+      },
+      "description": "GetTemplate get the template associated with a template.\n\nTo get the template, we recommend using `projects.locations.templates.get`\nwith a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.templates.get` is not recommended, because only\ntemplates that are running in `us-central1` are retrieved.",
+      "file": "TemplatesClient/GetTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_TemplatesService_GetTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow GetTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.dataflow.v1beta3.TemplatesClient",
+          "shortName": "TemplatesClient"
+        },
+        "fullName": "google.dataflow.v1beta3.TemplatesClient.LaunchTemplate",
+        "method": {
+          "fullName": "google.dataflow.v1beta3.TemplatesService.LaunchTemplate",
+          "service": {
+            "fullName": "google.dataflow.v1beta3.TemplatesService",
+            "shortName": "TemplatesService"
+          },
+          "shortName": "LaunchTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataflowpb.LaunchTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataflowpb.LaunchTemplateResponse",
+        "shortName": "LaunchTemplate"
+      },
+      "description": "LaunchTemplate launches a template.\n\nTo launch a template, we recommend using\n`projects.locations.templates.launch` with a [regional endpoint]\n(https: //cloud.google.com/dataflow/docs/concepts/regional-endpoints). Using\n`projects.templates.launch` is not recommended, because jobs launched\nfrom the template will always start in `us-central1`.",
+      "file": "TemplatesClient/LaunchTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataflow_v1beta3_generated_TemplatesService_LaunchTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataflow LaunchTemplate Sample"
+    }
+  ]
+}

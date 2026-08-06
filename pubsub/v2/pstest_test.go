@@ -21,6 +21,7 @@ import (
 	"strconv"
 	"sync"
 	"testing"
+	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/pubsub/v2"
@@ -104,5 +105,80 @@ func TestPSTest(t *testing.T) {
 	})
 	if err != nil && !errors.Is(err, context.Canceled) {
 		t.Fatal(err)
+	}
+}
+
+func TestNackRedelivery(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+	srv := pstest.NewServer()
+	defer srv.Close()
+
+	conn, err := grpc.Dial(srv.Addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer conn.Close()
+
+	projID := "test-project"
+	opts := withGRPCHeadersAssertionAlt(t, option.WithGRPCConn(conn))
+	client, err := pubsub.NewClient(ctx, projID, opts...)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer client.Close()
+
+	topicName := fmt.Sprintf("projects/%s/topics/test-topic", projID)
+	_, err = client.TopicAdminClient.CreateTopic(ctx, &pb.Topic{
+		Name: topicName,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	subName := fmt.Sprintf("projects/%s/subscriptions/test-sub", projID)
+	_, err = client.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:               subName,
+		Topic:              topicName,
+		AckDeadlineSeconds: 10,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	publisher := client.Publisher(topicName)
+	res := publisher.Publish(ctx, &pubsub.Message{Data: []byte("hello")})
+	_, err = res.Get(ctx)
+	if err != nil {
+		t.Fatal(err)
+	}
+	publisher.Stop()
+
+	sub := client.Subscriber("test-sub")
+
+	ctx, cancel := context.WithTimeout(ctx, 10*time.Second)
+	defer cancel()
+
+	var mu sync.Mutex
+	var deliveryCount int
+	err = sub.Receive(ctx, func(ctx context.Context, msg *pubsub.Message) {
+		mu.Lock()
+		defer mu.Unlock()
+		deliveryCount++
+		if deliveryCount == 1 {
+			msg.Nack()
+		} else {
+			msg.Ack()
+			cancel()
+		}
+	})
+	if err != nil && !errors.Is(err, context.Canceled) && !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatal(err)
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if deliveryCount < 2 {
+		t.Errorf("Expected at least 2 deliveries, got %d", deliveryCount)
 	}
 }

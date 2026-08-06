@@ -1,5 +1,57 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/storagebatchoperations/v1.0.0...storagebatchoperations/v1.1.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv1.0.0) (2026-05-08)
+
+## [0.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.9.0) (2026-05-07)
+
+## [0.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.8.0) (2026-04-30)
+
+## [0.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.7.0) (2026-04-13)
+
+## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.6.0) (2026-04-09)
+
+## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.5.0) (2026-04-02)
+
+## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.4.0) (2026-03-05)
+
+### Features
+
+* add new transformation `update_object_custom_context` ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.3.0) (2026-02-19)
+
+### Features
+
+* add QUEUED state to Storage Batch Operations API ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* add `is_multi_bucket_job` output field added to StorageBatchOperations Job ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* add bucket operations ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
+## [0.2.0](https://github.com/googleapis/google-cloud-go/releases/tag/storagebatchoperations%2Fv0.2.0) (2025-12-18)
+
+### Features
+
+* Add inclusion scopes ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Add object retention setting to StorageBatchOperations API ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Add support for creating Job resource in dry-run mode ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Launch StorageBatchOperations permissions and roles to GA ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Launch storagebatchoperations resource permissions to GA ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* Fix comment formatting ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [0.1.1](https://github.com/googleapis/google-cloud-go/compare/storagebatchoperations/v0.1.0...storagebatchoperations/v0.1.1) (2025-09-22)
 
 

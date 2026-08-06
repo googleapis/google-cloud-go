@@ -295,3 +295,24 @@ func (s *mockServer) BatchWrite(_ context.Context, req *pb.BatchWriteRequest) (*
 	}
 	return res.(*pb.BatchWriteResponse), nil
 }
+
+func (s *mockServer) ExecutePipeline(req *pb.ExecutePipelineRequest, stream pb.Firestore_ExecutePipelineServer) error {
+	res, err := s.popRPC(req)
+	if err != nil {
+		return err
+	}
+	responses := res.([]interface{})
+	for _, res := range responses {
+		switch res := res.(type) {
+		case *pb.ExecutePipelineResponse:
+			if err := stream.Send(res); err != nil {
+				return err
+			}
+		case error:
+			return res
+		default:
+			return fmt.Errorf("bad response type in ExecutePipeline: %+v", res)
+		}
+	}
+	return nil
+}

@@ -177,6 +177,7 @@ func (u *Inserter) putMulti(ctx context.Context, src []ValueSaver) error {
 	if req == nil {
 		return nil
 	}
+	ctx = setTableItemTraceMetadata(ctx, u.t.ProjectID, u.t.DatasetID, u.t.TableID, "insertAll")
 	call := u.t.c.bqs.Tabledata.InsertAll(u.t.ProjectID, u.t.DatasetID, u.t.TableID, req).Context(ctx)
 	setClientHeader(call.Header())
 	var res *bq.TableDataInsertAllResponse

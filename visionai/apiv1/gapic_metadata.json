@@ -85,6 +85,11 @@
                 "GetInstance"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -108,6 +113,11 @@
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -240,6 +250,11 @@
                 "GetInstance"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -263,6 +278,11 @@
             "ListInstances": {
               "methods": [
                 "ListInstances"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -334,6 +354,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -342,6 +367,11 @@
             "HealthCheck": {
               "methods": [
                 "HealthCheck"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -364,6 +394,11 @@
                 "DeleteOperation"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -372,6 +407,11 @@
             "HealthCheck": {
               "methods": [
                 "HealthCheck"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -438,6 +478,11 @@
                 "GetAnalysis"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -456,6 +501,11 @@
             "ListAnalyses": {
               "methods": [
                 "ListAnalyses"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -553,6 +603,11 @@
                 "GetAnalysis"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -571,6 +626,11 @@
             "ListAnalyses": {
               "methods": [
                 "ListAnalyses"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -637,9 +697,19 @@
                 "DeleteOperation"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -692,9 +762,19 @@
                 "DeleteOperation"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -801,6 +881,11 @@
                 "GetEvent"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -829,6 +914,11 @@
             "ListEvents": {
               "methods": [
                 "ListEvents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -941,6 +1031,11 @@
                 "GetEvent"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -969,6 +1064,11 @@
             "ListEvents": {
               "methods": [
                 "ListEvents"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -1190,6 +1290,11 @@
                 "GetIndexEndpoint"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -1253,6 +1358,11 @@
             "ListIndexes": {
               "methods": [
                 "ListIndexes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {
@@ -1530,6 +1640,11 @@
                 "GetIndexEndpoint"
               ]
             },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
             "GetOperation": {
               "methods": [
                 "GetOperation"
@@ -1593,6 +1708,11 @@
             "ListIndexes": {
               "methods": [
                 "ListIndexes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
               ]
             },
             "ListOperations": {

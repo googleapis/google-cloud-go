@@ -1,5 +1,78 @@
 # Changes
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.4.0...chat/v1.5.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.3.0...chat/v1.4.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.2.0...chat/v1.3.0) (2026-07-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.1.0...chat/v1.2.0) (2026-06-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20047](https://github.com/googleapis/google-cloud-go/issues/20047)) ([e10c9bf](https://github.com/googleapis/google-cloud-go/commit/e10c9bf14d4fc23906d0b369e106420d44915660))
+
+## [1.1.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv1.1.0) (2026-05-14)
+
+### Features
+
+* update API sources and regenerate (#14581) ([df96b2e](https://github.com/googleapis/google-cloud-go/commit/df96b2ecb3930d6fb2e6e542e11521ee8e9d5935))
+
+## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv1.0.0) (2026-05-08)
+
+## [0.23.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.23.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [0.22.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.22.0) (2026-04-30)
+
+## [0.21.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.21.0) (2026-04-13)
+
+## [0.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.20.0) (2026-04-09)
+
+## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.19.0) (2026-04-02)
+
+## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.18.0) (2026-02-05)
+
+### Features
+
+* Addition of QuoteType enum, QuotedMessageSnapshot &amp; ForwardMetadata in the QuotedMessageMetadata proto ([611f239](https://github.com/googleapis/google-cloud-go/commit/611f239219225fb03f6475c7238f497a349961e2))
+
+### Documentation
+
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
+## [0.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.17.0) (2025-12-18)
+
+### Features
+
+* Add accessory widget support for private messages ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Add app authorization support to space APIs ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+* Addition of GMAIL_MESSAGE value for RichLinkType enum in the RichLinkMetadata proto ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
+### Documentation
+
+* Improve documentation of attachment.proto, event_payload.proto and space.proto ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [0.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/chat%2Fv0.16.0) (2025-11-06)
 
 ### Features

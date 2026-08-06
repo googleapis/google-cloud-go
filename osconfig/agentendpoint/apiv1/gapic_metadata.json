@@ -35,6 +35,11 @@
                 "ReportTaskProgress"
               ]
             },
+            "ReportVmInventory": {
+              "methods": [
+                "ReportVmInventory"
+              ]
+            },
             "StartNextTask": {
               "methods": [
                 "StartNextTask"

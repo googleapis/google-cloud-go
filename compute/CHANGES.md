@@ -1,5 +1,80 @@
 # Changes
 
+## [1.65.0](https://github.com/googleapis/google-cloud-go/compare/compute/v1.64.0...compute/v1.65.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.64.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.64.0) (2026-05-21)
+
+### Features
+
+* update API sources and regenerate (#14621) ([6641db8](https://github.com/googleapis/google-cloud-go/commit/6641db88e5a1c62a967d0505d35c3bc1dedefe9f))
+
+## [1.63.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.63.0) (2026-05-14)
+
+### Features
+
+* update API sources and regenerate (#14581) ([df96b2e](https://github.com/googleapis/google-cloud-go/commit/df96b2ecb3930d6fb2e6e542e11521ee8e9d5935))
+
+## [1.62.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.62.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [1.61.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.61.0) (2026-04-30)
+
+## [1.60.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.60.0) (2026-04-13)
+
+## [1.59.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.59.0) (2026-04-08)
+
+## [1.58.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.58.0) (2026-04-02)
+
+## [1.57.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.57.0) (2026-03-12)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20260227 (googleapis#1166) ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* Update Compute Engine v1beta API to revision 20260227 (googleapis#1164) ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+## [1.56.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.56.0) (2026-03-05)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20260213 The breaking change exemption is approved in internal http://b/488396206 ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+* Update Compute Engine v1beta API to revision 20260213 ([9c80b8b](https://github.com/googleapis/google-cloud-go/commit/9c80b8b4442a54c610826c1bb89cec5158b49314))
+
+## [1.55.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.55.0) (2026-02-26)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20260106 (#1148) ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Update Compute Engine v1beta API to revision 20260106 (#1147) ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+* Update Compute Engine v1beta API to revision 20260206 (https://github.com/googleapis/googleapis/pull/1159) ([b21a3b8](https://github.com/googleapis/google-cloud-go/commit/b21a3b8409f1af4f077be833949c1b6cc3e4c319))
+
+## [1.54.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.54.0) (2026-01-22)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20251230 (#1144) ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* Update Compute Engine v1beta API to revision 20251230 (#1143) ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+## [1.53.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.53.0) (2026-01-08)
+
+### Features
+
+* Update Compute Engine v1 API to revision 20251210 (#1137) ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+* Update Compute Engine v1beta API to revision 20251210 (#1138) ([d19e89c](https://github.com/googleapis/google-cloud-go/commit/d19e89cabf2fe93f95411bc2884a111568d5a5b0))
+
+## [1.52.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.52.0) (2025-12-18)
+
+### Features
+
+* Update Compute Engine v1beta API to revision 20251202 ([ce62012](https://github.com/googleapis/google-cloud-go/commit/ce62012fadb0774979ce17f1d922d7c9ebd6232f))
+
 ## [1.51.0](https://github.com/googleapis/google-cloud-go/releases/tag/compute%2Fv1.51.0) (2025-12-11)
 
 ### Features

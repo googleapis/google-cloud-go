@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -31,6 +31,8 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	netapppb "cloud.google.com/go/netapp/apiv1/netapppb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -60,6 +62,7 @@ type CallOptions struct {
 	UpdateVolume                []gax.CallOption
 	DeleteVolume                []gax.CallOption
 	RevertVolume                []gax.CallOption
+	EstablishVolumePeering      []gax.CallOption
 	ListSnapshots               []gax.CallOption
 	GetSnapshot                 []gax.CallOption
 	CreateSnapshot              []gax.CallOption
@@ -107,6 +110,16 @@ type CallOptions struct {
 	CreateQuotaRule             []gax.CallOption
 	UpdateQuotaRule             []gax.CallOption
 	DeleteQuotaRule             []gax.CallOption
+	RestoreBackupFiles          []gax.CallOption
+	ListHostGroups              []gax.CallOption
+	GetHostGroup                []gax.CallOption
+	CreateHostGroup             []gax.CallOption
+	UpdateHostGroup             []gax.CallOption
+	DeleteHostGroup             []gax.CallOption
+	ExecuteOntapPost            []gax.CallOption
+	ExecuteOntapGet             []gax.CallOption
+	ExecuteOntapDelete          []gax.CallOption
+	ExecuteOntapPatch           []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -203,6 +216,7 @@ func defaultCallOptions() *CallOptions {
 		RevertVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishVolumePeering: []gax.CallOption{},
 		ListSnapshots: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -451,17 +465,27 @@ func defaultCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		ListQuotaRules:  []gax.CallOption{},
-		GetQuotaRule:    []gax.CallOption{},
-		CreateQuotaRule: []gax.CallOption{},
-		UpdateQuotaRule: []gax.CallOption{},
-		DeleteQuotaRule: []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListQuotaRules:     []gax.CallOption{},
+		GetQuotaRule:       []gax.CallOption{},
+		CreateQuotaRule:    []gax.CallOption{},
+		UpdateQuotaRule:    []gax.CallOption{},
+		DeleteQuotaRule:    []gax.CallOption{},
+		RestoreBackupFiles: []gax.CallOption{},
+		ListHostGroups:     []gax.CallOption{},
+		GetHostGroup:       []gax.CallOption{},
+		CreateHostGroup:    []gax.CallOption{},
+		UpdateHostGroup:    []gax.CallOption{},
+		DeleteHostGroup:    []gax.CallOption{},
+		ExecuteOntapPost:   []gax.CallOption{},
+		ExecuteOntapGet:    []gax.CallOption{},
+		ExecuteOntapDelete: []gax.CallOption{},
+		ExecuteOntapPatch:  []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -534,6 +558,7 @@ func defaultRESTCallOptions() *CallOptions {
 		RevertVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		EstablishVolumePeering: []gax.CallOption{},
 		ListSnapshots: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -768,17 +793,27 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteBackupPolicy: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
-		ListQuotaRules:  []gax.CallOption{},
-		GetQuotaRule:    []gax.CallOption{},
-		CreateQuotaRule: []gax.CallOption{},
-		UpdateQuotaRule: []gax.CallOption{},
-		DeleteQuotaRule: []gax.CallOption{},
-		GetLocation:     []gax.CallOption{},
-		ListLocations:   []gax.CallOption{},
-		CancelOperation: []gax.CallOption{},
-		DeleteOperation: []gax.CallOption{},
-		GetOperation:    []gax.CallOption{},
-		ListOperations:  []gax.CallOption{},
+		ListQuotaRules:     []gax.CallOption{},
+		GetQuotaRule:       []gax.CallOption{},
+		CreateQuotaRule:    []gax.CallOption{},
+		UpdateQuotaRule:    []gax.CallOption{},
+		DeleteQuotaRule:    []gax.CallOption{},
+		RestoreBackupFiles: []gax.CallOption{},
+		ListHostGroups:     []gax.CallOption{},
+		GetHostGroup:       []gax.CallOption{},
+		CreateHostGroup:    []gax.CallOption{},
+		UpdateHostGroup:    []gax.CallOption{},
+		DeleteHostGroup:    []gax.CallOption{},
+		ExecuteOntapPost:   []gax.CallOption{},
+		ExecuteOntapGet:    []gax.CallOption{},
+		ExecuteOntapDelete: []gax.CallOption{},
+		ExecuteOntapPatch:  []gax.CallOption{},
+		GetLocation:        []gax.CallOption{},
+		ListLocations:      []gax.CallOption{},
+		CancelOperation:    []gax.CallOption{},
+		DeleteOperation:    []gax.CallOption{},
+		GetOperation:       []gax.CallOption{},
+		ListOperations:     []gax.CallOption{},
 	}
 }
 
@@ -809,6 +844,8 @@ type internalClient interface {
 	DeleteVolumeOperation(name string) *DeleteVolumeOperation
 	RevertVolume(context.Context, *netapppb.RevertVolumeRequest, ...gax.CallOption) (*RevertVolumeOperation, error)
 	RevertVolumeOperation(name string) *RevertVolumeOperation
+	EstablishVolumePeering(context.Context, *netapppb.EstablishVolumePeeringRequest, ...gax.CallOption) (*EstablishVolumePeeringOperation, error)
+	EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation
 	ListSnapshots(context.Context, *netapppb.ListSnapshotsRequest, ...gax.CallOption) *SnapshotIterator
 	GetSnapshot(context.Context, *netapppb.GetSnapshotRequest, ...gax.CallOption) (*netapppb.Snapshot, error)
 	CreateSnapshot(context.Context, *netapppb.CreateSnapshotRequest, ...gax.CallOption) (*CreateSnapshotOperation, error)
@@ -886,6 +923,20 @@ type internalClient interface {
 	UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation
 	DeleteQuotaRule(context.Context, *netapppb.DeleteQuotaRuleRequest, ...gax.CallOption) (*DeleteQuotaRuleOperation, error)
 	DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation
+	RestoreBackupFiles(context.Context, *netapppb.RestoreBackupFilesRequest, ...gax.CallOption) (*RestoreBackupFilesOperation, error)
+	RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation
+	ListHostGroups(context.Context, *netapppb.ListHostGroupsRequest, ...gax.CallOption) *HostGroupIterator
+	GetHostGroup(context.Context, *netapppb.GetHostGroupRequest, ...gax.CallOption) (*netapppb.HostGroup, error)
+	CreateHostGroup(context.Context, *netapppb.CreateHostGroupRequest, ...gax.CallOption) (*CreateHostGroupOperation, error)
+	CreateHostGroupOperation(name string) *CreateHostGroupOperation
+	UpdateHostGroup(context.Context, *netapppb.UpdateHostGroupRequest, ...gax.CallOption) (*UpdateHostGroupOperation, error)
+	UpdateHostGroupOperation(name string) *UpdateHostGroupOperation
+	DeleteHostGroup(context.Context, *netapppb.DeleteHostGroupRequest, ...gax.CallOption) (*DeleteHostGroupOperation, error)
+	DeleteHostGroupOperation(name string) *DeleteHostGroupOperation
+	ExecuteOntapPost(context.Context, *netapppb.ExecuteOntapPostRequest, ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error)
+	ExecuteOntapGet(context.Context, *netapppb.ExecuteOntapGetRequest, ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error)
+	ExecuteOntapDelete(context.Context, *netapppb.ExecuteOntapDeleteRequest, ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error)
+	ExecuteOntapPatch(context.Context, *netapppb.ExecuteOntapPatchRequest, ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error)
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -913,7 +964,7 @@ type Client struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -1055,6 +1106,18 @@ func (c *Client) RevertVolume(ctx context.Context, req *netapppb.RevertVolumeReq
 // The name must be that of a previously created RevertVolumeOperation, possibly from a different process.
 func (c *Client) RevertVolumeOperation(name string) *RevertVolumeOperation {
 	return c.internalClient.RevertVolumeOperation(name)
+}
+
+// EstablishVolumePeering establish volume peering. This is used to establish cluster and svm
+// peerings between the GCNV and OnPrem clusters.
+func (c *Client) EstablishVolumePeering(ctx context.Context, req *netapppb.EstablishVolumePeeringRequest, opts ...gax.CallOption) (*EstablishVolumePeeringOperation, error) {
+	return c.internalClient.EstablishVolumePeering(ctx, req, opts...)
+}
+
+// EstablishVolumePeeringOperation returns a new EstablishVolumePeeringOperation from a given name.
+// The name must be that of a previously created EstablishVolumePeeringOperation, possibly from a different process.
+func (c *Client) EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation {
+	return c.internalClient.EstablishVolumePeeringOperation(name)
 }
 
 // ListSnapshots returns descriptions of all snapshots for a volume.
@@ -1479,12 +1542,106 @@ func (c *Client) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation
 	return c.internalClient.DeleteQuotaRuleOperation(name)
 }
 
+// RestoreBackupFiles restore files from a backup to a volume.
+func (c *Client) RestoreBackupFiles(ctx context.Context, req *netapppb.RestoreBackupFilesRequest, opts ...gax.CallOption) (*RestoreBackupFilesOperation, error) {
+	return c.internalClient.RestoreBackupFiles(ctx, req, opts...)
+}
+
+// RestoreBackupFilesOperation returns a new RestoreBackupFilesOperation from a given name.
+// The name must be that of a previously created RestoreBackupFilesOperation, possibly from a different process.
+func (c *Client) RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation {
+	return c.internalClient.RestoreBackupFilesOperation(name)
+}
+
+// ListHostGroups returns a list of host groups in a location. Use - as location to list
+// host groups across all locations.
+func (c *Client) ListHostGroups(ctx context.Context, req *netapppb.ListHostGroupsRequest, opts ...gax.CallOption) *HostGroupIterator {
+	return c.internalClient.ListHostGroups(ctx, req, opts...)
+}
+
+// GetHostGroup returns details of the specified host group.
+func (c *Client) GetHostGroup(ctx context.Context, req *netapppb.GetHostGroupRequest, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	return c.internalClient.GetHostGroup(ctx, req, opts...)
+}
+
+// CreateHostGroup creates a new host group.
+func (c *Client) CreateHostGroup(ctx context.Context, req *netapppb.CreateHostGroupRequest, opts ...gax.CallOption) (*CreateHostGroupOperation, error) {
+	return c.internalClient.CreateHostGroup(ctx, req, opts...)
+}
+
+// CreateHostGroupOperation returns a new CreateHostGroupOperation from a given name.
+// The name must be that of a previously created CreateHostGroupOperation, possibly from a different process.
+func (c *Client) CreateHostGroupOperation(name string) *CreateHostGroupOperation {
+	return c.internalClient.CreateHostGroupOperation(name)
+}
+
+// UpdateHostGroup updates an existing host group.
+func (c *Client) UpdateHostGroup(ctx context.Context, req *netapppb.UpdateHostGroupRequest, opts ...gax.CallOption) (*UpdateHostGroupOperation, error) {
+	return c.internalClient.UpdateHostGroup(ctx, req, opts...)
+}
+
+// UpdateHostGroupOperation returns a new UpdateHostGroupOperation from a given name.
+// The name must be that of a previously created UpdateHostGroupOperation, possibly from a different process.
+func (c *Client) UpdateHostGroupOperation(name string) *UpdateHostGroupOperation {
+	return c.internalClient.UpdateHostGroupOperation(name)
+}
+
+// DeleteHostGroup deletes a host group.
+func (c *Client) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHostGroupRequest, opts ...gax.CallOption) (*DeleteHostGroupOperation, error) {
+	return c.internalClient.DeleteHostGroup(ctx, req, opts...)
+}
+
+// DeleteHostGroupOperation returns a new DeleteHostGroupOperation from a given name.
+// The name must be that of a previously created DeleteHostGroupOperation, possibly from a different process.
+func (c *Client) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation {
+	return c.internalClient.DeleteHostGroupOperation(name)
+}
+
+// ExecuteOntapPost ExecuteOntapPost dispatches the ONTAP POST request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
+	return c.internalClient.ExecuteOntapPost(ctx, req, opts...)
+}
+
+// ExecuteOntapGet ExecuteOntapGet dispatches the ONTAP GET request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
+	return c.internalClient.ExecuteOntapGet(ctx, req, opts...)
+}
+
+// ExecuteOntapDelete ExecuteOntapDelete dispatches the ONTAP DELETE request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
+	return c.internalClient.ExecuteOntapDelete(ctx, req, opts...)
+}
+
+// ExecuteOntapPatch ExecuteOntapPatch dispatches the ONTAP PATCH request to the
+// StoragePool cluster.
+func (c *Client) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
+	return c.internalClient.ExecuteOntapPatch(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1543,6 +1700,16 @@ type gRPCClient struct {
 // NetApp Files Google Cloud Service
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "netapp",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/netapp/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "netapp.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -1566,6 +1733,96 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "netapp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/netapp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "netapp.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListStoragePools = append(client.CallOptions.ListStoragePools, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateStoragePool = append(client.CallOptions.CreateStoragePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetStoragePool = append(client.CallOptions.GetStoragePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateStoragePool = append(client.CallOptions.UpdateStoragePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteStoragePool = append(client.CallOptions.DeleteStoragePool, gax.WithClientMetrics(metrics))
+		client.CallOptions.ValidateDirectoryService = append(client.CallOptions.ValidateDirectoryService, gax.WithClientMetrics(metrics))
+		client.CallOptions.SwitchActiveReplicaZone = append(client.CallOptions.SwitchActiveReplicaZone, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListVolumes = append(client.CallOptions.ListVolumes, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetVolume = append(client.CallOptions.GetVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateVolume = append(client.CallOptions.CreateVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateVolume = append(client.CallOptions.UpdateVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteVolume = append(client.CallOptions.DeleteVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.RevertVolume = append(client.CallOptions.RevertVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.EstablishVolumePeering = append(client.CallOptions.EstablishVolumePeering, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateSnapshot = append(client.CallOptions.CreateSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteSnapshot = append(client.CallOptions.DeleteSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateSnapshot = append(client.CallOptions.UpdateSnapshot, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListActiveDirectories = append(client.CallOptions.ListActiveDirectories, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetActiveDirectory = append(client.CallOptions.GetActiveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateActiveDirectory = append(client.CallOptions.CreateActiveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateActiveDirectory = append(client.CallOptions.UpdateActiveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteActiveDirectory = append(client.CallOptions.DeleteActiveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListKmsConfigs = append(client.CallOptions.ListKmsConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateKmsConfig = append(client.CallOptions.CreateKmsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetKmsConfig = append(client.CallOptions.GetKmsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateKmsConfig = append(client.CallOptions.UpdateKmsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.EncryptVolumes = append(client.CallOptions.EncryptVolumes, gax.WithClientMetrics(metrics))
+		client.CallOptions.VerifyKmsConfig = append(client.CallOptions.VerifyKmsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteKmsConfig = append(client.CallOptions.DeleteKmsConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReplications = append(client.CallOptions.ListReplications, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetReplication = append(client.CallOptions.GetReplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateReplication = append(client.CallOptions.CreateReplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteReplication = append(client.CallOptions.DeleteReplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateReplication = append(client.CallOptions.UpdateReplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.StopReplication = append(client.CallOptions.StopReplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResumeReplication = append(client.CallOptions.ResumeReplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReverseReplicationDirection = append(client.CallOptions.ReverseReplicationDirection, gax.WithClientMetrics(metrics))
+		client.CallOptions.EstablishPeering = append(client.CallOptions.EstablishPeering, gax.WithClientMetrics(metrics))
+		client.CallOptions.SyncReplication = append(client.CallOptions.SyncReplication, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBackupVault = append(client.CallOptions.CreateBackupVault, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBackupVault = append(client.CallOptions.GetBackupVault, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBackupVaults = append(client.CallOptions.ListBackupVaults, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBackupVault = append(client.CallOptions.UpdateBackupVault, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBackupVault = append(client.CallOptions.DeleteBackupVault, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateBackupPolicy = append(client.CallOptions.CreateBackupPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetBackupPolicy = append(client.CallOptions.GetBackupPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBackupPolicies = append(client.CallOptions.ListBackupPolicies, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBackupPolicy = append(client.CallOptions.UpdateBackupPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBackupPolicy = append(client.CallOptions.DeleteBackupPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListQuotaRules = append(client.CallOptions.ListQuotaRules, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetQuotaRule = append(client.CallOptions.GetQuotaRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateQuotaRule = append(client.CallOptions.CreateQuotaRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateQuotaRule = append(client.CallOptions.UpdateQuotaRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteQuotaRule = append(client.CallOptions.DeleteQuotaRule, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestoreBackupFiles = append(client.CallOptions.RestoreBackupFiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListHostGroups = append(client.CallOptions.ListHostGroups, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetHostGroup = append(client.CallOptions.GetHostGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateHostGroup = append(client.CallOptions.CreateHostGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateHostGroup = append(client.CallOptions.UpdateHostGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteHostGroup = append(client.CallOptions.DeleteHostGroup, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExecuteOntapPost = append(client.CallOptions.ExecuteOntapPost, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExecuteOntapGet = append(client.CallOptions.ExecuteOntapGet, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExecuteOntapDelete = append(client.CallOptions.ExecuteOntapDelete, gax.WithClientMetrics(metrics))
+		client.CallOptions.ExecuteOntapPatch = append(client.CallOptions.ExecuteOntapPatch, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
@@ -1602,7 +1859,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -1635,6 +1892,16 @@ type restClient struct {
 // NetApp Files Google Cloud Service
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "netapp",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/netapp/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "netapp.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -1648,6 +1915,97 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "netapp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/netapp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "netapp.googleapis.com",
+			}),
+		)
+
+		callOpts.ListStoragePools = append(callOpts.ListStoragePools, gax.WithClientMetrics(metrics))
+		callOpts.CreateStoragePool = append(callOpts.CreateStoragePool, gax.WithClientMetrics(metrics))
+		callOpts.GetStoragePool = append(callOpts.GetStoragePool, gax.WithClientMetrics(metrics))
+		callOpts.UpdateStoragePool = append(callOpts.UpdateStoragePool, gax.WithClientMetrics(metrics))
+		callOpts.DeleteStoragePool = append(callOpts.DeleteStoragePool, gax.WithClientMetrics(metrics))
+		callOpts.ValidateDirectoryService = append(callOpts.ValidateDirectoryService, gax.WithClientMetrics(metrics))
+		callOpts.SwitchActiveReplicaZone = append(callOpts.SwitchActiveReplicaZone, gax.WithClientMetrics(metrics))
+		callOpts.ListVolumes = append(callOpts.ListVolumes, gax.WithClientMetrics(metrics))
+		callOpts.GetVolume = append(callOpts.GetVolume, gax.WithClientMetrics(metrics))
+		callOpts.CreateVolume = append(callOpts.CreateVolume, gax.WithClientMetrics(metrics))
+		callOpts.UpdateVolume = append(callOpts.UpdateVolume, gax.WithClientMetrics(metrics))
+		callOpts.DeleteVolume = append(callOpts.DeleteVolume, gax.WithClientMetrics(metrics))
+		callOpts.RevertVolume = append(callOpts.RevertVolume, gax.WithClientMetrics(metrics))
+		callOpts.EstablishVolumePeering = append(callOpts.EstablishVolumePeering, gax.WithClientMetrics(metrics))
+		callOpts.ListSnapshots = append(callOpts.ListSnapshots, gax.WithClientMetrics(metrics))
+		callOpts.GetSnapshot = append(callOpts.GetSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.CreateSnapshot = append(callOpts.CreateSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.DeleteSnapshot = append(callOpts.DeleteSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.UpdateSnapshot = append(callOpts.UpdateSnapshot, gax.WithClientMetrics(metrics))
+		callOpts.ListActiveDirectories = append(callOpts.ListActiveDirectories, gax.WithClientMetrics(metrics))
+		callOpts.GetActiveDirectory = append(callOpts.GetActiveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.CreateActiveDirectory = append(callOpts.CreateActiveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.UpdateActiveDirectory = append(callOpts.UpdateActiveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.DeleteActiveDirectory = append(callOpts.DeleteActiveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.ListKmsConfigs = append(callOpts.ListKmsConfigs, gax.WithClientMetrics(metrics))
+		callOpts.CreateKmsConfig = append(callOpts.CreateKmsConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetKmsConfig = append(callOpts.GetKmsConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateKmsConfig = append(callOpts.UpdateKmsConfig, gax.WithClientMetrics(metrics))
+		callOpts.EncryptVolumes = append(callOpts.EncryptVolumes, gax.WithClientMetrics(metrics))
+		callOpts.VerifyKmsConfig = append(callOpts.VerifyKmsConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteKmsConfig = append(callOpts.DeleteKmsConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListReplications = append(callOpts.ListReplications, gax.WithClientMetrics(metrics))
+		callOpts.GetReplication = append(callOpts.GetReplication, gax.WithClientMetrics(metrics))
+		callOpts.CreateReplication = append(callOpts.CreateReplication, gax.WithClientMetrics(metrics))
+		callOpts.DeleteReplication = append(callOpts.DeleteReplication, gax.WithClientMetrics(metrics))
+		callOpts.UpdateReplication = append(callOpts.UpdateReplication, gax.WithClientMetrics(metrics))
+		callOpts.StopReplication = append(callOpts.StopReplication, gax.WithClientMetrics(metrics))
+		callOpts.ResumeReplication = append(callOpts.ResumeReplication, gax.WithClientMetrics(metrics))
+		callOpts.ReverseReplicationDirection = append(callOpts.ReverseReplicationDirection, gax.WithClientMetrics(metrics))
+		callOpts.EstablishPeering = append(callOpts.EstablishPeering, gax.WithClientMetrics(metrics))
+		callOpts.SyncReplication = append(callOpts.SyncReplication, gax.WithClientMetrics(metrics))
+		callOpts.CreateBackupVault = append(callOpts.CreateBackupVault, gax.WithClientMetrics(metrics))
+		callOpts.GetBackupVault = append(callOpts.GetBackupVault, gax.WithClientMetrics(metrics))
+		callOpts.ListBackupVaults = append(callOpts.ListBackupVaults, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBackupVault = append(callOpts.UpdateBackupVault, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBackupVault = append(callOpts.DeleteBackupVault, gax.WithClientMetrics(metrics))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientMetrics(metrics))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientMetrics(metrics))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientMetrics(metrics))
+		callOpts.CreateBackupPolicy = append(callOpts.CreateBackupPolicy, gax.WithClientMetrics(metrics))
+		callOpts.GetBackupPolicy = append(callOpts.GetBackupPolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListBackupPolicies = append(callOpts.ListBackupPolicies, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBackupPolicy = append(callOpts.UpdateBackupPolicy, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBackupPolicy = append(callOpts.DeleteBackupPolicy, gax.WithClientMetrics(metrics))
+		callOpts.ListQuotaRules = append(callOpts.ListQuotaRules, gax.WithClientMetrics(metrics))
+		callOpts.GetQuotaRule = append(callOpts.GetQuotaRule, gax.WithClientMetrics(metrics))
+		callOpts.CreateQuotaRule = append(callOpts.CreateQuotaRule, gax.WithClientMetrics(metrics))
+		callOpts.UpdateQuotaRule = append(callOpts.UpdateQuotaRule, gax.WithClientMetrics(metrics))
+		callOpts.DeleteQuotaRule = append(callOpts.DeleteQuotaRule, gax.WithClientMetrics(metrics))
+		callOpts.RestoreBackupFiles = append(callOpts.RestoreBackupFiles, gax.WithClientMetrics(metrics))
+		callOpts.ListHostGroups = append(callOpts.ListHostGroups, gax.WithClientMetrics(metrics))
+		callOpts.GetHostGroup = append(callOpts.GetHostGroup, gax.WithClientMetrics(metrics))
+		callOpts.CreateHostGroup = append(callOpts.CreateHostGroup, gax.WithClientMetrics(metrics))
+		callOpts.UpdateHostGroup = append(callOpts.UpdateHostGroup, gax.WithClientMetrics(metrics))
+		callOpts.DeleteHostGroup = append(callOpts.DeleteHostGroup, gax.WithClientMetrics(metrics))
+		callOpts.ExecuteOntapPost = append(callOpts.ExecuteOntapPost, gax.WithClientMetrics(metrics))
+		callOpts.ExecuteOntapGet = append(callOpts.ExecuteOntapGet, gax.WithClientMetrics(metrics))
+		callOpts.ExecuteOntapDelete = append(callOpts.ExecuteOntapDelete, gax.WithClientMetrics(metrics))
+		callOpts.ExecuteOntapPatch = append(callOpts.ExecuteOntapPatch, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1685,7 +2043,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -1704,9 +2062,15 @@ func (c *gRPCClient) ListStoragePools(ctx context.Context, req *netapppb.ListSto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListStoragePools")
+	}
 	opts = append((*c.CallOptions).ListStoragePools[0:len((*c.CallOptions).ListStoragePools):len((*c.CallOptions).ListStoragePools)], opts...)
 	it := &StoragePoolIterator{}
-	req = proto.Clone(req).(*netapppb.ListStoragePoolsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.StoragePool, string, error) {
 		resp := &netapppb.ListStoragePoolsResponse{}
 		if pageToken != "" {
@@ -1750,6 +2114,12 @@ func (c *gRPCClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateStoragePool")
+	}
 	opts = append((*c.CallOptions).CreateStoragePool[0:len((*c.CallOptions).CreateStoragePool):len((*c.CallOptions).CreateStoragePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1760,8 +2130,12 @@ func (c *gRPCClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateStoragePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateStoragePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1770,6 +2144,12 @@ func (c *gRPCClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetStoragePool")
+	}
 	opts = append((*c.CallOptions).GetStoragePool[0:len((*c.CallOptions).GetStoragePool):len((*c.CallOptions).GetStoragePool)], opts...)
 	var resp *netapppb.StoragePool
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1788,6 +2168,9 @@ func (c *gRPCClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateStoragePool")
+	}
 	opts = append((*c.CallOptions).UpdateStoragePool[0:len((*c.CallOptions).UpdateStoragePool):len((*c.CallOptions).UpdateStoragePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1798,8 +2181,12 @@ func (c *gRPCClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateStoragePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateStoragePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1808,6 +2195,12 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteStoragePool")
+	}
 	opts = append((*c.CallOptions).DeleteStoragePool[0:len((*c.CallOptions).DeleteStoragePool):len((*c.CallOptions).DeleteStoragePool)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1818,8 +2211,12 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteStoragePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteStoragePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1828,6 +2225,12 @@ func (c *gRPCClient) ValidateDirectoryService(ctx context.Context, req *netapppb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ValidateDirectoryService")
+	}
 	opts = append((*c.CallOptions).ValidateDirectoryService[0:len((*c.CallOptions).ValidateDirectoryService):len((*c.CallOptions).ValidateDirectoryService)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1838,8 +2241,12 @@ func (c *gRPCClient) ValidateDirectoryService(ctx context.Context, req *netapppb
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.ValidateDirectoryServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ValidateDirectoryServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1848,6 +2255,12 @@ func (c *gRPCClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SwitchActiveReplicaZone")
+	}
 	opts = append((*c.CallOptions).SwitchActiveReplicaZone[0:len((*c.CallOptions).SwitchActiveReplicaZone):len((*c.CallOptions).SwitchActiveReplicaZone)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1858,8 +2271,12 @@ func (c *gRPCClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.SwitchActiveReplicaZoneOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SwitchActiveReplicaZoneOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1868,9 +2285,15 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListVolumes")
+	}
 	opts = append((*c.CallOptions).ListVolumes[0:len((*c.CallOptions).ListVolumes):len((*c.CallOptions).ListVolumes)], opts...)
 	it := &VolumeIterator{}
-	req = proto.Clone(req).(*netapppb.ListVolumesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Volume, string, error) {
 		resp := &netapppb.ListVolumesResponse{}
 		if pageToken != "" {
@@ -1914,6 +2337,12 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetVolume")
+	}
 	opts = append((*c.CallOptions).GetVolume[0:len((*c.CallOptions).GetVolume):len((*c.CallOptions).GetVolume)], opts...)
 	var resp *netapppb.Volume
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1932,6 +2361,12 @@ func (c *gRPCClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateVolume")
+	}
 	opts = append((*c.CallOptions).CreateVolume[0:len((*c.CallOptions).CreateVolume):len((*c.CallOptions).CreateVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1942,8 +2377,12 @@ func (c *gRPCClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1952,6 +2391,9 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateVolume")
+	}
 	opts = append((*c.CallOptions).UpdateVolume[0:len((*c.CallOptions).UpdateVolume):len((*c.CallOptions).UpdateVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1962,8 +2404,12 @@ func (c *gRPCClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1972,6 +2418,12 @@ func (c *gRPCClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteVolume")
+	}
 	opts = append((*c.CallOptions).DeleteVolume[0:len((*c.CallOptions).DeleteVolume):len((*c.CallOptions).DeleteVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1982,8 +2434,12 @@ func (c *gRPCClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -1992,6 +2448,12 @@ func (c *gRPCClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RevertVolume")
+	}
 	opts = append((*c.CallOptions).RevertVolume[0:len((*c.CallOptions).RevertVolume):len((*c.CallOptions).RevertVolume)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2002,8 +2464,42 @@ func (c *gRPCClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.RevertVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevertVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) EstablishVolumePeering(ctx context.Context, req *netapppb.EstablishVolumePeeringRequest, opts ...gax.CallOption) (*EstablishVolumePeeringOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishVolumePeering")
+	}
+	opts = append((*c.CallOptions).EstablishVolumePeering[0:len((*c.CallOptions).EstablishVolumePeering):len((*c.CallOptions).EstablishVolumePeering)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.EstablishVolumePeering, req, settings.GRPC, c.logger, "EstablishVolumePeering")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.EstablishVolumePeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &EstablishVolumePeeringOperation{
+		lro: lro,
 	}, nil
 }
 
@@ -2012,9 +2508,15 @@ func (c *gRPCClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapsh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListSnapshots")
+	}
 	opts = append((*c.CallOptions).ListSnapshots[0:len((*c.CallOptions).ListSnapshots):len((*c.CallOptions).ListSnapshots)], opts...)
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*netapppb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Snapshot, string, error) {
 		resp := &netapppb.ListSnapshotsResponse{}
 		if pageToken != "" {
@@ -2058,6 +2560,12 @@ func (c *gRPCClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetSnapshot")
+	}
 	opts = append((*c.CallOptions).GetSnapshot[0:len((*c.CallOptions).GetSnapshot):len((*c.CallOptions).GetSnapshot)], opts...)
 	var resp *netapppb.Snapshot
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2076,6 +2584,12 @@ func (c *gRPCClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateSnapshot")
+	}
 	opts = append((*c.CallOptions).CreateSnapshot[0:len((*c.CallOptions).CreateSnapshot):len((*c.CallOptions).CreateSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2086,8 +2600,12 @@ func (c *gRPCClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2096,6 +2614,12 @@ func (c *gRPCClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteSnapshot")
+	}
 	opts = append((*c.CallOptions).DeleteSnapshot[0:len((*c.CallOptions).DeleteSnapshot):len((*c.CallOptions).DeleteSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2106,8 +2630,12 @@ func (c *gRPCClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2116,6 +2644,9 @@ func (c *gRPCClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateSnapshot")
+	}
 	opts = append((*c.CallOptions).UpdateSnapshot[0:len((*c.CallOptions).UpdateSnapshot):len((*c.CallOptions).UpdateSnapshot)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2126,8 +2657,12 @@ func (c *gRPCClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2136,9 +2671,15 @@ func (c *gRPCClient) ListActiveDirectories(ctx context.Context, req *netapppb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListActiveDirectories")
+	}
 	opts = append((*c.CallOptions).ListActiveDirectories[0:len((*c.CallOptions).ListActiveDirectories):len((*c.CallOptions).ListActiveDirectories)], opts...)
 	it := &ActiveDirectoryIterator{}
-	req = proto.Clone(req).(*netapppb.ListActiveDirectoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.ActiveDirectory, string, error) {
 		resp := &netapppb.ListActiveDirectoriesResponse{}
 		if pageToken != "" {
@@ -2182,6 +2723,12 @@ func (c *gRPCClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetActiveDirectory")
+	}
 	opts = append((*c.CallOptions).GetActiveDirectory[0:len((*c.CallOptions).GetActiveDirectory):len((*c.CallOptions).GetActiveDirectory)], opts...)
 	var resp *netapppb.ActiveDirectory
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2200,6 +2747,12 @@ func (c *gRPCClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateActiveDirectory")
+	}
 	opts = append((*c.CallOptions).CreateActiveDirectory[0:len((*c.CallOptions).CreateActiveDirectory):len((*c.CallOptions).CreateActiveDirectory)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2210,8 +2763,12 @@ func (c *gRPCClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateActiveDirectoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateActiveDirectoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2220,6 +2777,9 @@ func (c *gRPCClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateActiveDirectory")
+	}
 	opts = append((*c.CallOptions).UpdateActiveDirectory[0:len((*c.CallOptions).UpdateActiveDirectory):len((*c.CallOptions).UpdateActiveDirectory)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2230,8 +2790,12 @@ func (c *gRPCClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateActiveDirectoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateActiveDirectoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2240,6 +2804,12 @@ func (c *gRPCClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteActiveDirectory")
+	}
 	opts = append((*c.CallOptions).DeleteActiveDirectory[0:len((*c.CallOptions).DeleteActiveDirectory):len((*c.CallOptions).DeleteActiveDirectory)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2250,8 +2820,12 @@ func (c *gRPCClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteActiveDirectoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteActiveDirectoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2260,9 +2834,15 @@ func (c *gRPCClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsCo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListKmsConfigs")
+	}
 	opts = append((*c.CallOptions).ListKmsConfigs[0:len((*c.CallOptions).ListKmsConfigs):len((*c.CallOptions).ListKmsConfigs)], opts...)
 	it := &KmsConfigIterator{}
-	req = proto.Clone(req).(*netapppb.ListKmsConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.KmsConfig, string, error) {
 		resp := &netapppb.ListKmsConfigsResponse{}
 		if pageToken != "" {
@@ -2306,6 +2886,12 @@ func (c *gRPCClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateKmsConfig")
+	}
 	opts = append((*c.CallOptions).CreateKmsConfig[0:len((*c.CallOptions).CreateKmsConfig):len((*c.CallOptions).CreateKmsConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2316,8 +2902,12 @@ func (c *gRPCClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateKmsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateKmsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2326,6 +2916,12 @@ func (c *gRPCClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetKmsConfig")
+	}
 	opts = append((*c.CallOptions).GetKmsConfig[0:len((*c.CallOptions).GetKmsConfig):len((*c.CallOptions).GetKmsConfig)], opts...)
 	var resp *netapppb.KmsConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2344,6 +2940,9 @@ func (c *gRPCClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateKmsConfig")
+	}
 	opts = append((*c.CallOptions).UpdateKmsConfig[0:len((*c.CallOptions).UpdateKmsConfig):len((*c.CallOptions).UpdateKmsConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2354,8 +2953,12 @@ func (c *gRPCClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateKmsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateKmsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2364,6 +2967,12 @@ func (c *gRPCClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EncryptVolumes")
+	}
 	opts = append((*c.CallOptions).EncryptVolumes[0:len((*c.CallOptions).EncryptVolumes):len((*c.CallOptions).EncryptVolumes)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2374,8 +2983,12 @@ func (c *gRPCClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.EncryptVolumesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EncryptVolumesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2384,6 +2997,12 @@ func (c *gRPCClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/VerifyKmsConfig")
+	}
 	opts = append((*c.CallOptions).VerifyKmsConfig[0:len((*c.CallOptions).VerifyKmsConfig):len((*c.CallOptions).VerifyKmsConfig)], opts...)
 	var resp *netapppb.VerifyKmsConfigResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2402,6 +3021,12 @@ func (c *gRPCClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteKmsConfig")
+	}
 	opts = append((*c.CallOptions).DeleteKmsConfig[0:len((*c.CallOptions).DeleteKmsConfig):len((*c.CallOptions).DeleteKmsConfig)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2412,8 +3037,12 @@ func (c *gRPCClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteKmsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteKmsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2422,9 +3051,15 @@ func (c *gRPCClient) ListReplications(ctx context.Context, req *netapppb.ListRep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListReplications")
+	}
 	opts = append((*c.CallOptions).ListReplications[0:len((*c.CallOptions).ListReplications):len((*c.CallOptions).ListReplications)], opts...)
 	it := &ReplicationIterator{}
-	req = proto.Clone(req).(*netapppb.ListReplicationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Replication, string, error) {
 		resp := &netapppb.ListReplicationsResponse{}
 		if pageToken != "" {
@@ -2468,6 +3103,12 @@ func (c *gRPCClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetReplication")
+	}
 	opts = append((*c.CallOptions).GetReplication[0:len((*c.CallOptions).GetReplication):len((*c.CallOptions).GetReplication)], opts...)
 	var resp *netapppb.Replication
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2486,6 +3127,12 @@ func (c *gRPCClient) CreateReplication(ctx context.Context, req *netapppb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateReplication")
+	}
 	opts = append((*c.CallOptions).CreateReplication[0:len((*c.CallOptions).CreateReplication):len((*c.CallOptions).CreateReplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2496,8 +3143,12 @@ func (c *gRPCClient) CreateReplication(ctx context.Context, req *netapppb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2506,6 +3157,12 @@ func (c *gRPCClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteReplication")
+	}
 	opts = append((*c.CallOptions).DeleteReplication[0:len((*c.CallOptions).DeleteReplication):len((*c.CallOptions).DeleteReplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2516,8 +3173,12 @@ func (c *gRPCClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2526,6 +3187,9 @@ func (c *gRPCClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateReplication")
+	}
 	opts = append((*c.CallOptions).UpdateReplication[0:len((*c.CallOptions).UpdateReplication):len((*c.CallOptions).UpdateReplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2536,8 +3200,12 @@ func (c *gRPCClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2546,6 +3214,12 @@ func (c *gRPCClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/StopReplication")
+	}
 	opts = append((*c.CallOptions).StopReplication[0:len((*c.CallOptions).StopReplication):len((*c.CallOptions).StopReplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2556,8 +3230,12 @@ func (c *gRPCClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.StopReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2566,6 +3244,12 @@ func (c *gRPCClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ResumeReplication")
+	}
 	opts = append((*c.CallOptions).ResumeReplication[0:len((*c.CallOptions).ResumeReplication):len((*c.CallOptions).ResumeReplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2576,8 +3260,12 @@ func (c *gRPCClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.ResumeReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResumeReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2586,6 +3274,12 @@ func (c *gRPCClient) ReverseReplicationDirection(ctx context.Context, req *netap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ReverseReplicationDirection")
+	}
 	opts = append((*c.CallOptions).ReverseReplicationDirection[0:len((*c.CallOptions).ReverseReplicationDirection):len((*c.CallOptions).ReverseReplicationDirection)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2596,8 +3290,12 @@ func (c *gRPCClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.ReverseReplicationDirectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReverseReplicationDirectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2606,6 +3304,12 @@ func (c *gRPCClient) EstablishPeering(ctx context.Context, req *netapppb.Establi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishPeering")
+	}
 	opts = append((*c.CallOptions).EstablishPeering[0:len((*c.CallOptions).EstablishPeering):len((*c.CallOptions).EstablishPeering)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2616,8 +3320,12 @@ func (c *gRPCClient) EstablishPeering(ctx context.Context, req *netapppb.Establi
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.EstablishPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EstablishPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2626,6 +3334,12 @@ func (c *gRPCClient) SyncReplication(ctx context.Context, req *netapppb.SyncRepl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SyncReplication")
+	}
 	opts = append((*c.CallOptions).SyncReplication[0:len((*c.CallOptions).SyncReplication):len((*c.CallOptions).SyncReplication)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2636,8 +3350,12 @@ func (c *gRPCClient) SyncReplication(ctx context.Context, req *netapppb.SyncRepl
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.SyncReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SyncReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2646,6 +3364,12 @@ func (c *gRPCClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupVault")
+	}
 	opts = append((*c.CallOptions).CreateBackupVault[0:len((*c.CallOptions).CreateBackupVault):len((*c.CallOptions).CreateBackupVault)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2656,8 +3380,12 @@ func (c *gRPCClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateBackupVaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupVaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2666,6 +3394,12 @@ func (c *gRPCClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupVault")
+	}
 	opts = append((*c.CallOptions).GetBackupVault[0:len((*c.CallOptions).GetBackupVault):len((*c.CallOptions).GetBackupVault)], opts...)
 	var resp *netapppb.BackupVault
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2684,9 +3418,15 @@ func (c *gRPCClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListBackupVaults")
+	}
 	opts = append((*c.CallOptions).ListBackupVaults[0:len((*c.CallOptions).ListBackupVaults):len((*c.CallOptions).ListBackupVaults)], opts...)
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
 		resp := &netapppb.ListBackupVaultsResponse{}
 		if pageToken != "" {
@@ -2730,6 +3470,9 @@ func (c *gRPCClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackupVault")
+	}
 	opts = append((*c.CallOptions).UpdateBackupVault[0:len((*c.CallOptions).UpdateBackupVault):len((*c.CallOptions).UpdateBackupVault)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2740,8 +3483,12 @@ func (c *gRPCClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupVaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupVaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2750,6 +3497,12 @@ func (c *gRPCClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupVault")
+	}
 	opts = append((*c.CallOptions).DeleteBackupVault[0:len((*c.CallOptions).DeleteBackupVault):len((*c.CallOptions).DeleteBackupVault)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2760,8 +3513,12 @@ func (c *gRPCClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteBackupVaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupVaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2770,6 +3527,12 @@ func (c *gRPCClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackup")
+	}
 	opts = append((*c.CallOptions).CreateBackup[0:len((*c.CallOptions).CreateBackup):len((*c.CallOptions).CreateBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2780,8 +3543,12 @@ func (c *gRPCClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2790,6 +3557,12 @@ func (c *gRPCClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackup")
+	}
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	var resp *netapppb.Backup
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2808,9 +3581,15 @@ func (c *gRPCClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListBackups")
+	}
 	opts = append((*c.CallOptions).ListBackups[0:len((*c.CallOptions).ListBackups):len((*c.CallOptions).ListBackups)], opts...)
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
 		resp := &netapppb.ListBackupsResponse{}
 		if pageToken != "" {
@@ -2854,6 +3633,12 @@ func (c *gRPCClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackup")
+	}
 	opts = append((*c.CallOptions).DeleteBackup[0:len((*c.CallOptions).DeleteBackup):len((*c.CallOptions).DeleteBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2864,8 +3649,12 @@ func (c *gRPCClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2874,6 +3663,9 @@ func (c *gRPCClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackup")
+	}
 	opts = append((*c.CallOptions).UpdateBackup[0:len((*c.CallOptions).UpdateBackup):len((*c.CallOptions).UpdateBackup)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2884,8 +3676,12 @@ func (c *gRPCClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2894,6 +3690,12 @@ func (c *gRPCClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupPolicy")
+	}
 	opts = append((*c.CallOptions).CreateBackupPolicy[0:len((*c.CallOptions).CreateBackupPolicy):len((*c.CallOptions).CreateBackupPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2904,8 +3706,12 @@ func (c *gRPCClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateBackupPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2914,6 +3720,12 @@ func (c *gRPCClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupPolicy")
+	}
 	opts = append((*c.CallOptions).GetBackupPolicy[0:len((*c.CallOptions).GetBackupPolicy):len((*c.CallOptions).GetBackupPolicy)], opts...)
 	var resp *netapppb.BackupPolicy
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2932,9 +3744,15 @@ func (c *gRPCClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListB
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListBackupPolicies")
+	}
 	opts = append((*c.CallOptions).ListBackupPolicies[0:len((*c.CallOptions).ListBackupPolicies):len((*c.CallOptions).ListBackupPolicies)], opts...)
 	it := &BackupPolicyIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
 		resp := &netapppb.ListBackupPoliciesResponse{}
 		if pageToken != "" {
@@ -2978,6 +3796,9 @@ func (c *gRPCClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackupPolicy")
+	}
 	opts = append((*c.CallOptions).UpdateBackupPolicy[0:len((*c.CallOptions).UpdateBackupPolicy):len((*c.CallOptions).UpdateBackupPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2988,8 +3809,12 @@ func (c *gRPCClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -2998,6 +3823,12 @@ func (c *gRPCClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupPolicy")
+	}
 	opts = append((*c.CallOptions).DeleteBackupPolicy[0:len((*c.CallOptions).DeleteBackupPolicy):len((*c.CallOptions).DeleteBackupPolicy)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3008,8 +3839,12 @@ func (c *gRPCClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteBackupPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3018,9 +3853,15 @@ func (c *gRPCClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuota
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListQuotaRules")
+	}
 	opts = append((*c.CallOptions).ListQuotaRules[0:len((*c.CallOptions).ListQuotaRules):len((*c.CallOptions).ListQuotaRules)], opts...)
 	it := &QuotaRuleIterator{}
-	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
 		resp := &netapppb.ListQuotaRulesResponse{}
 		if pageToken != "" {
@@ -3064,6 +3905,12 @@ func (c *gRPCClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetQuotaRule")
+	}
 	opts = append((*c.CallOptions).GetQuotaRule[0:len((*c.CallOptions).GetQuotaRule):len((*c.CallOptions).GetQuotaRule)], opts...)
 	var resp *netapppb.QuotaRule
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3082,6 +3929,12 @@ func (c *gRPCClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateQuotaRule")
+	}
 	opts = append((*c.CallOptions).CreateQuotaRule[0:len((*c.CallOptions).CreateQuotaRule):len((*c.CallOptions).CreateQuotaRule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3092,8 +3945,12 @@ func (c *gRPCClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateQuotaRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateQuotaRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3102,6 +3959,9 @@ func (c *gRPCClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateQuotaRule")
+	}
 	opts = append((*c.CallOptions).UpdateQuotaRule[0:len((*c.CallOptions).UpdateQuotaRule):len((*c.CallOptions).UpdateQuotaRule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3112,8 +3972,12 @@ func (c *gRPCClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateQuotaRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateQuotaRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
 }
 
@@ -3122,6 +3986,12 @@ func (c *gRPCClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteQuotaRule")
+	}
 	opts = append((*c.CallOptions).DeleteQuotaRule[0:len((*c.CallOptions).DeleteQuotaRule):len((*c.CallOptions).DeleteQuotaRule)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3132,9 +4002,290 @@ func (c *gRPCClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 	if err != nil {
 		return nil, err
 	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteQuotaRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteQuotaRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro: lro,
 	}, nil
+}
+
+func (c *gRPCClient) RestoreBackupFiles(ctx context.Context, req *netapppb.RestoreBackupFilesRequest, opts ...gax.CallOption) (*RestoreBackupFilesOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RestoreBackupFiles")
+	}
+	opts = append((*c.CallOptions).RestoreBackupFiles[0:len((*c.CallOptions).RestoreBackupFiles):len((*c.CallOptions).RestoreBackupFiles)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RestoreBackupFiles, req, settings.GRPC, c.logger, "RestoreBackupFiles")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.RestoreBackupFilesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &RestoreBackupFilesOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) ListHostGroups(ctx context.Context, req *netapppb.ListHostGroupsRequest, opts ...gax.CallOption) *HostGroupIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListHostGroups")
+	}
+	opts = append((*c.CallOptions).ListHostGroups[0:len((*c.CallOptions).ListHostGroups):len((*c.CallOptions).ListHostGroups)], opts...)
+	it := &HostGroupIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.HostGroup, string, error) {
+		resp := &netapppb.ListHostGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListHostGroups, req, settings.GRPC, c.logger, "ListHostGroups")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetHostGroups(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetHostGroup(ctx context.Context, req *netapppb.GetHostGroupRequest, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetHostGroup")
+	}
+	opts = append((*c.CallOptions).GetHostGroup[0:len((*c.CallOptions).GetHostGroup):len((*c.CallOptions).GetHostGroup)], opts...)
+	var resp *netapppb.HostGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetHostGroup, req, settings.GRPC, c.logger, "GetHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateHostGroup(ctx context.Context, req *netapppb.CreateHostGroupRequest, opts ...gax.CallOption) (*CreateHostGroupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateHostGroup")
+	}
+	opts = append((*c.CallOptions).CreateHostGroup[0:len((*c.CallOptions).CreateHostGroup):len((*c.CallOptions).CreateHostGroup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateHostGroup, req, settings.GRPC, c.logger, "CreateHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateHostGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateHostGroupOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) UpdateHostGroup(ctx context.Context, req *netapppb.UpdateHostGroupRequest, opts ...gax.CallOption) (*UpdateHostGroupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "host_group.name", url.QueryEscape(req.GetHostGroup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateHostGroup")
+	}
+	opts = append((*c.CallOptions).UpdateHostGroup[0:len((*c.CallOptions).UpdateHostGroup):len((*c.CallOptions).UpdateHostGroup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateHostGroup, req, settings.GRPC, c.logger, "UpdateHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateHostGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateHostGroupOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHostGroupRequest, opts ...gax.CallOption) (*DeleteHostGroupOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteHostGroup")
+	}
+	opts = append((*c.CallOptions).DeleteHostGroup[0:len((*c.CallOptions).DeleteHostGroup):len((*c.CallOptions).DeleteHostGroup)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteHostGroup, req, settings.GRPC, c.logger, "DeleteHostGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteHostGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteHostGroupOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapPost")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapPost[0:len((*c.CallOptions).ExecuteOntapPost):len((*c.CallOptions).ExecuteOntapPost)], opts...)
+	var resp *netapppb.ExecuteOntapPostResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapPost, req, settings.GRPC, c.logger, "ExecuteOntapPost")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapGet")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapGet[0:len((*c.CallOptions).ExecuteOntapGet):len((*c.CallOptions).ExecuteOntapGet)], opts...)
+	var resp *netapppb.ExecuteOntapGetResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapGet, req, settings.GRPC, c.logger, "ExecuteOntapGet")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapDelete")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapDelete[0:len((*c.CallOptions).ExecuteOntapDelete):len((*c.CallOptions).ExecuteOntapDelete)], opts...)
+	var resp *netapppb.ExecuteOntapDeleteResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapDelete, req, settings.GRPC, c.logger, "ExecuteOntapDelete")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapPatch")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapPatch[0:len((*c.CallOptions).ExecuteOntapPatch):len((*c.CallOptions).ExecuteOntapPatch)], opts...)
+	var resp *netapppb.ExecuteOntapPatchResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ExecuteOntapPatch, req, settings.GRPC, c.logger, "ExecuteOntapPatch")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
@@ -3142,6 +4293,9 @@ func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3160,9 +4314,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -3206,6 +4363,9 @@ func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
 	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3220,6 +4380,9 @@ func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
 	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -3234,6 +4397,9 @@ func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	var resp *longrunningpb.Operation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3252,9 +4418,12 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
 	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
 		if pageToken != "" {
@@ -3296,7 +4465,7 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // ListStoragePools returns descriptions of all storage pools owned by the caller.
 func (c *restClient) ListStoragePools(ctx context.Context, req *netapppb.ListStoragePoolsRequest, opts ...gax.CallOption) *StoragePoolIterator {
 	it := &StoragePoolIterator{}
-	req = proto.Clone(req).(*netapppb.ListStoragePoolsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.StoragePool, string, error) {
 		resp := &netapppb.ListStoragePoolsResponse{}
@@ -3404,6 +4573,13 @@ func (c *restClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateStoragePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/storagePools")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3432,8 +4608,12 @@ func (c *restClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateStoragePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateStoragePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3457,6 +4637,13 @@ func (c *restClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetStoragePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}")
+	}
 	opts = append((*c.CallOptions).GetStoragePool[0:len((*c.CallOptions).GetStoragePool):len((*c.CallOptions).GetStoragePool)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.StoragePool{}
@@ -3521,6 +4708,10 @@ func (c *restClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateStoragePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{storage_pool.name=projects/*/locations/*/storagePools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3549,8 +4740,12 @@ func (c *restClient) UpdateStoragePool(ctx context.Context, req *netapppb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateStoragePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateStoragePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3574,6 +4769,13 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteStoragePool")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3602,8 +4804,12 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteStoragePoolOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteStoragePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3634,6 +4840,13 @@ func (c *restClient) ValidateDirectoryService(ctx context.Context, req *netapppb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ValidateDirectoryService")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}:validateDirectoryService")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3662,8 +4875,12 @@ func (c *restClient) ValidateDirectoryService(ctx context.Context, req *netapppb
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.ValidateDirectoryServiceOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ValidateDirectoryServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3694,6 +4911,13 @@ func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SwitchActiveReplicaZone")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}:switch")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3722,8 +4946,12 @@ func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.SwitchActiveReplicaZoneOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SwitchActiveReplicaZoneOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3731,7 +4959,7 @@ func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 // ListVolumes lists Volumes in a given project.
 func (c *restClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesRequest, opts ...gax.CallOption) *VolumeIterator {
 	it := &VolumeIterator{}
-	req = proto.Clone(req).(*netapppb.ListVolumesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Volume, string, error) {
 		resp := &netapppb.ListVolumesResponse{}
@@ -3831,6 +5059,13 @@ func (c *restClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}")
+	}
 	opts = append((*c.CallOptions).GetVolume[0:len((*c.CallOptions).GetVolume):len((*c.CallOptions).GetVolume)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.Volume{}
@@ -3889,6 +5124,13 @@ func (c *restClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/volumes")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3917,8 +5159,12 @@ func (c *restClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -3956,6 +5202,10 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{volume.name=projects/*/locations/*/volumes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -3984,8 +5234,12 @@ func (c *restClient) UpdateVolume(ctx context.Context, req *netapppb.UpdateVolum
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4012,6 +5266,13 @@ func (c *restClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4040,8 +5301,12 @@ func (c *restClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4073,6 +5338,13 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RevertVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:revert")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4101,8 +5373,83 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.RevertVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &RevertVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// EstablishVolumePeering establish volume peering. This is used to establish cluster and svm
+// peerings between the GCNV and OnPrem clusters.
+func (c *restClient) EstablishVolumePeering(ctx context.Context, req *netapppb.EstablishVolumePeeringRequest, opts ...gax.CallOption) (*EstablishVolumePeeringOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:establishPeering", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishVolumePeering")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:establishPeering")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "EstablishVolumePeering")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.EstablishVolumePeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &EstablishVolumePeeringOperation{
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4110,7 +5457,7 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 // ListSnapshots returns descriptions of all snapshots for a volume.
 func (c *restClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapshotsRequest, opts ...gax.CallOption) *SnapshotIterator {
 	it := &SnapshotIterator{}
-	req = proto.Clone(req).(*netapppb.ListSnapshotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Snapshot, string, error) {
 		resp := &netapppb.ListSnapshotsResponse{}
@@ -4210,6 +5557,13 @@ func (c *restClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/snapshots/*}")
+	}
 	opts = append((*c.CallOptions).GetSnapshot[0:len((*c.CallOptions).GetSnapshot):len((*c.CallOptions).GetSnapshot)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.Snapshot{}
@@ -4268,6 +5622,13 @@ func (c *restClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/volumes/*}/snapshots")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4296,8 +5657,12 @@ func (c *restClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4321,6 +5686,13 @@ func (c *restClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/snapshots/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4349,8 +5721,12 @@ func (c *restClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4388,6 +5764,10 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateSnapshot")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{snapshot.name=projects/*/locations/*/volumes/*/snapshots/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4416,8 +5796,12 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateSnapshotOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4425,7 +5809,7 @@ func (c *restClient) UpdateSnapshot(ctx context.Context, req *netapppb.UpdateSna
 // ListActiveDirectories lists active directories.
 func (c *restClient) ListActiveDirectories(ctx context.Context, req *netapppb.ListActiveDirectoriesRequest, opts ...gax.CallOption) *ActiveDirectoryIterator {
 	it := &ActiveDirectoryIterator{}
-	req = proto.Clone(req).(*netapppb.ListActiveDirectoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.ActiveDirectory, string, error) {
 		resp := &netapppb.ListActiveDirectoriesResponse{}
@@ -4525,6 +5909,13 @@ func (c *restClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetActiveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/activeDirectories/*}")
+	}
 	opts = append((*c.CallOptions).GetActiveDirectory[0:len((*c.CallOptions).GetActiveDirectory):len((*c.CallOptions).GetActiveDirectory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.ActiveDirectory{}
@@ -4584,6 +5975,13 @@ func (c *restClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateActiveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/activeDirectories")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4612,8 +6010,12 @@ func (c *restClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateActiveDirectoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateActiveDirectoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4651,6 +6053,10 @@ func (c *restClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateActiveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{active_directory.name=projects/*/locations/*/activeDirectories/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4679,8 +6085,12 @@ func (c *restClient) UpdateActiveDirectory(ctx context.Context, req *netapppb.Up
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateActiveDirectoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateActiveDirectoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4704,6 +6114,13 @@ func (c *restClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteActiveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/activeDirectories/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4732,8 +6149,12 @@ func (c *restClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteActiveDirectoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteActiveDirectoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4741,7 +6162,7 @@ func (c *restClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 // ListKmsConfigs returns descriptions of all KMS configs owned by the caller.
 func (c *restClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsConfigsRequest, opts ...gax.CallOption) *KmsConfigIterator {
 	it := &KmsConfigIterator{}
-	req = proto.Clone(req).(*netapppb.ListKmsConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.KmsConfig, string, error) {
 		resp := &netapppb.ListKmsConfigsResponse{}
@@ -4849,6 +6270,13 @@ func (c *restClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateKmsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/kmsConfigs")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4877,8 +6305,12 @@ func (c *restClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateKmsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateKmsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -4902,6 +6334,13 @@ func (c *restClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetKmsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetKmsConfig[0:len((*c.CallOptions).GetKmsConfig):len((*c.CallOptions).GetKmsConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.KmsConfig{}
@@ -4966,6 +6405,10 @@ func (c *restClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateKmsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{kms_config.name=projects/*/locations/*/kmsConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -4994,8 +6437,12 @@ func (c *restClient) UpdateKmsConfig(ctx context.Context, req *netapppb.UpdateKm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateKmsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateKmsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5026,6 +6473,13 @@ func (c *restClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EncryptVolumes")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}:encrypt")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5054,8 +6508,12 @@ func (c *restClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.EncryptVolumesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EncryptVolumesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5085,6 +6543,13 @@ func (c *restClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/VerifyKmsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}:verify")
+	}
 	opts = append((*c.CallOptions).VerifyKmsConfig[0:len((*c.CallOptions).VerifyKmsConfig):len((*c.CallOptions).VerifyKmsConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.VerifyKmsConfigResponse{}
@@ -5135,6 +6600,13 @@ func (c *restClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteKmsConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5163,8 +6635,12 @@ func (c *restClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteKmsConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteKmsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5172,7 +6648,7 @@ func (c *restClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 // ListReplications returns descriptions of all replications for a volume.
 func (c *restClient) ListReplications(ctx context.Context, req *netapppb.ListReplicationsRequest, opts ...gax.CallOption) *ReplicationIterator {
 	it := &ReplicationIterator{}
-	req = proto.Clone(req).(*netapppb.ListReplicationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Replication, string, error) {
 		resp := &netapppb.ListReplicationsResponse{}
@@ -5272,6 +6748,13 @@ func (c *restClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}")
+	}
 	opts = append((*c.CallOptions).GetReplication[0:len((*c.CallOptions).GetReplication):len((*c.CallOptions).GetReplication)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.Replication{}
@@ -5330,6 +6813,13 @@ func (c *restClient) CreateReplication(ctx context.Context, req *netapppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/volumes/*}/replications")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5358,8 +6848,12 @@ func (c *restClient) CreateReplication(ctx context.Context, req *netapppb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5383,6 +6877,13 @@ func (c *restClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5411,8 +6912,12 @@ func (c *restClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5450,6 +6955,10 @@ func (c *restClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{replication.name=projects/*/locations/*/volumes/*/replications/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5478,8 +6987,12 @@ func (c *restClient) UpdateReplication(ctx context.Context, req *netapppb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5509,6 +7022,13 @@ func (c *restClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/StopReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:stop")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5537,8 +7057,12 @@ func (c *restClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.StopReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &StopReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5568,6 +7092,13 @@ func (c *restClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ResumeReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:resume")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5596,8 +7127,12 @@ func (c *restClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.ResumeReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ResumeReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5628,6 +7163,13 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ReverseReplicationDirection")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:reverseDirection")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5656,8 +7198,12 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.ReverseReplicationDirectionOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &ReverseReplicationDirectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5687,6 +7233,13 @@ func (c *restClient) EstablishPeering(ctx context.Context, req *netapppb.Establi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishPeering")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:establishPeering")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5715,8 +7268,12 @@ func (c *restClient) EstablishPeering(ctx context.Context, req *netapppb.Establi
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.EstablishPeeringOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &EstablishPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5747,6 +7304,13 @@ func (c *restClient) SyncReplication(ctx context.Context, req *netapppb.SyncRepl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SyncReplication")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:sync")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5775,8 +7339,12 @@ func (c *restClient) SyncReplication(ctx context.Context, req *netapppb.SyncRepl
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.SyncReplicationOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &SyncReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5808,6 +7376,13 @@ func (c *restClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupVault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/backupVaults")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -5836,8 +7411,12 @@ func (c *restClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateBackupVaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupVaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -5861,6 +7440,13 @@ func (c *restClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupVault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*}")
+	}
 	opts = append((*c.CallOptions).GetBackupVault[0:len((*c.CallOptions).GetBackupVault):len((*c.CallOptions).GetBackupVault)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.BackupVault{}
@@ -5895,7 +7481,7 @@ func (c *restClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 // ListBackupVaults returns list of all available backup vaults.
 func (c *restClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBackupVaultsRequest, opts ...gax.CallOption) *BackupVaultIterator {
 	it := &BackupVaultIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupVaultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupVault, string, error) {
 		resp := &netapppb.ListBackupVaultsResponse{}
@@ -6009,6 +7595,10 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackupVault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{backup_vault.name=projects/*/locations/*/backupVaults/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6037,8 +7627,12 @@ func (c *restClient) UpdateBackupVault(ctx context.Context, req *netapppb.Update
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupVaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupVaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6062,6 +7656,13 @@ func (c *restClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupVault")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6090,8 +7691,12 @@ func (c *restClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteBackupVaultOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupVaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6126,6 +7731,13 @@ func (c *restClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/backupVaults/*}/backups")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6154,8 +7766,12 @@ func (c *restClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6179,6 +7795,13 @@ func (c *restClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*/backups/*}")
+	}
 	opts = append((*c.CallOptions).GetBackup[0:len((*c.CallOptions).GetBackup):len((*c.CallOptions).GetBackup)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.Backup{}
@@ -6213,7 +7836,7 @@ func (c *restClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 // ListBackups returns descriptions of all backups for a backupVault.
 func (c *restClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsRequest, opts ...gax.CallOption) *BackupIterator {
 	it := &BackupIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.Backup, string, error) {
 		resp := &netapppb.ListBackupsResponse{}
@@ -6313,6 +7936,13 @@ func (c *restClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*/backups/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6341,8 +7971,12 @@ func (c *restClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6380,6 +8014,10 @@ func (c *restClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{backup.name=projects/*/locations/*/backupVaults/*/backups/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6408,8 +8046,12 @@ func (c *restClient) UpdateBackup(ctx context.Context, req *netapppb.UpdateBacku
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6441,6 +8083,13 @@ func (c *restClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/backupPolicies")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6469,8 +8118,12 @@ func (c *restClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateBackupPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateBackupPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6494,6 +8147,13 @@ func (c *restClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPolicies/*}")
+	}
 	opts = append((*c.CallOptions).GetBackupPolicy[0:len((*c.CallOptions).GetBackupPolicy):len((*c.CallOptions).GetBackupPolicy)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.BackupPolicy{}
@@ -6528,7 +8188,7 @@ func (c *restClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 // ListBackupPolicies returns list of all available backup policies.
 func (c *restClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListBackupPoliciesRequest, opts ...gax.CallOption) *BackupPolicyIterator {
 	it := &BackupPolicyIterator{}
-	req = proto.Clone(req).(*netapppb.ListBackupPoliciesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.BackupPolicy, string, error) {
 		resp := &netapppb.ListBackupPoliciesResponse{}
@@ -6642,6 +8302,10 @@ func (c *restClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackupPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{backup_policy.name=projects/*/locations/*/backupPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6670,8 +8334,12 @@ func (c *restClient) UpdateBackupPolicy(ctx context.Context, req *netapppb.Updat
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateBackupPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6695,6 +8363,13 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPolicies/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6723,8 +8398,12 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteBackupPolicyOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteBackupPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6732,7 +8411,7 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 // ListQuotaRules returns list of all quota rules in a location.
 func (c *restClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuotaRulesRequest, opts ...gax.CallOption) *QuotaRuleIterator {
 	it := &QuotaRuleIterator{}
-	req = proto.Clone(req).(*netapppb.ListQuotaRulesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.QuotaRule, string, error) {
 		resp := &netapppb.ListQuotaRulesResponse{}
@@ -6832,6 +8511,13 @@ func (c *restClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRul
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetQuotaRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/quotaRules/*}")
+	}
 	opts = append((*c.CallOptions).GetQuotaRule[0:len((*c.CallOptions).GetQuotaRule):len((*c.CallOptions).GetQuotaRule)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &netapppb.QuotaRule{}
@@ -6890,6 +8576,13 @@ func (c *restClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateQuotaRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/volumes/*}/quotaRules")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6918,8 +8611,12 @@ func (c *restClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateQuotaRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &CreateQuotaRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -6957,6 +8654,10 @@ func (c *restClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateQuotaRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{quota_rule.name=projects/*/locations/*/volumes/*/quotaRules/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -6985,8 +8686,12 @@ func (c *restClient) UpdateQuotaRule(ctx context.Context, req *netapppb.UpdateQu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateQuotaRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &UpdateQuotaRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
 }
@@ -7010,6 +8715,13 @@ func (c *restClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteQuotaRule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/quotaRules/*}")
+	}
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -7038,10 +8750,669 @@ func (c *restClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 	}
 
 	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteQuotaRuleOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
 	return &DeleteQuotaRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, resp),
+		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// RestoreBackupFiles restore files from a backup to a volume.
+func (c *restClient) RestoreBackupFiles(ctx context.Context, req *netapppb.RestoreBackupFilesRequest, opts ...gax.CallOption) (*RestoreBackupFilesOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:restore", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RestoreBackupFiles")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:restore")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestoreBackupFiles")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.RestoreBackupFilesOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &RestoreBackupFilesOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// ListHostGroups returns a list of host groups in a location. Use - as location to list
+// host groups across all locations.
+func (c *restClient) ListHostGroups(ctx context.Context, req *netapppb.ListHostGroupsRequest, opts ...gax.CallOption) *HostGroupIterator {
+	it := &HostGroupIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.HostGroup, string, error) {
+		resp := &netapppb.ListHostGroupsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/hostGroups", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListHostGroups")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetHostGroups(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetHostGroup returns details of the specified host group.
+func (c *restClient) GetHostGroup(ctx context.Context, req *netapppb.GetHostGroupRequest, opts ...gax.CallOption) (*netapppb.HostGroup, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetHostGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/hostGroups/*}")
+	}
+	opts = append((*c.CallOptions).GetHostGroup[0:len((*c.CallOptions).GetHostGroup):len((*c.CallOptions).GetHostGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.HostGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetHostGroup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateHostGroup creates a new host group.
+func (c *restClient) CreateHostGroup(ctx context.Context, req *netapppb.CreateHostGroupRequest, opts ...gax.CallOption) (*CreateHostGroupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetHostGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/hostGroups", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("hostGroupId", fmt.Sprintf("%v", req.GetHostGroupId()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateHostGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/hostGroups")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateHostGroup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.CreateHostGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &CreateHostGroupOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// UpdateHostGroup updates an existing host group.
+func (c *restClient) UpdateHostGroup(ctx context.Context, req *netapppb.UpdateHostGroupRequest, opts ...gax.CallOption) (*UpdateHostGroupOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetHostGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetHostGroup().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "host_group.name", url.QueryEscape(req.GetHostGroup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateHostGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{host_group.name=projects/*/locations/*/hostGroups/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateHostGroup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateHostGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateHostGroupOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// DeleteHostGroup deletes a host group.
+func (c *restClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHostGroupRequest, opts ...gax.CallOption) (*DeleteHostGroupOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteHostGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/hostGroups/*}")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteHostGroup")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.DeleteHostGroupOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteHostGroupOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// ExecuteOntapPost ExecuteOntapPost dispatches the ONTAP POST request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapPost")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapPost[0:len((*c.CallOptions).ExecuteOntapPost):len((*c.CallOptions).ExecuteOntapPost)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapPostResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteOntapPost")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExecuteOntapGet ExecuteOntapGet dispatches the ONTAP GET request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapGet")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapGet[0:len((*c.CallOptions).ExecuteOntapGet):len((*c.CallOptions).ExecuteOntapGet)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapGetResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ExecuteOntapGet")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExecuteOntapDelete ExecuteOntapDelete dispatches the ONTAP DELETE request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapDelete")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapDelete[0:len((*c.CallOptions).ExecuteOntapDelete):len((*c.CallOptions).ExecuteOntapDelete)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapDeleteResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ExecuteOntapDelete")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ExecuteOntapPatch ExecuteOntapPatch dispatches the ONTAP PATCH request to the
+// StoragePool cluster.
+func (c *restClient) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetOntapPath())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "ontap_path", url.QueryEscape(req.GetOntapPath()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ExecuteOntapPatch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{ontap_path=projects/*/locations/*/storagePools/*/ontap/**}")
+	}
+	opts = append((*c.CallOptions).ExecuteOntapPatch[0:len((*c.CallOptions).ExecuteOntapPatch):len((*c.CallOptions).ExecuteOntapPatch)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.ExecuteOntapPatchResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "ExecuteOntapPatch")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetLocation gets information about a location.
@@ -7063,6 +9434,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -7095,9 +9470,24 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -7200,6 +9590,10 @@ func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.Can
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7235,6 +9629,10 @@ func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -7270,6 +9668,10 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
 	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &longrunningpb.Operation{}
@@ -7304,7 +9706,7 @@ func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOpe
 // ListOperations is a utility method from google.longrunning.Operations.
 func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
 	it := &OperationIterator{}
-	req = proto.Clone(req).(*longrunningpb.ListOperationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
 		resp := &longrunningpb.ListOperationsResponse{}
@@ -7389,7 +9791,7 @@ func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.List
 // The name must be that of a previously created CreateActiveDirectoryOperation, possibly from a different process.
 func (c *gRPCClient) CreateActiveDirectoryOperation(name string) *CreateActiveDirectoryOperation {
 	return &CreateActiveDirectoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateActiveDirectoryOperation"),
 	}
 }
 
@@ -7398,7 +9800,7 @@ func (c *gRPCClient) CreateActiveDirectoryOperation(name string) *CreateActiveDi
 func (c *restClient) CreateActiveDirectoryOperation(name string) *CreateActiveDirectoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateActiveDirectoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateActiveDirectoryOperation"),
 		pollPath: override,
 	}
 }
@@ -7407,7 +9809,7 @@ func (c *restClient) CreateActiveDirectoryOperation(name string) *CreateActiveDi
 // The name must be that of a previously created CreateBackupOperation, possibly from a different process.
 func (c *gRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	return &CreateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateBackupOperation"),
 	}
 }
 
@@ -7416,7 +9818,7 @@ func (c *gRPCClient) CreateBackupOperation(name string) *CreateBackupOperation {
 func (c *restClient) CreateBackupOperation(name string) *CreateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -7425,7 +9827,7 @@ func (c *restClient) CreateBackupOperation(name string) *CreateBackupOperation {
 // The name must be that of a previously created CreateBackupPolicyOperation, possibly from a different process.
 func (c *gRPCClient) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
 	return &CreateBackupPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateBackupPolicyOperation"),
 	}
 }
 
@@ -7434,7 +9836,7 @@ func (c *gRPCClient) CreateBackupPolicyOperation(name string) *CreateBackupPolic
 func (c *restClient) CreateBackupPolicyOperation(name string) *CreateBackupPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateBackupPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -7443,7 +9845,7 @@ func (c *restClient) CreateBackupPolicyOperation(name string) *CreateBackupPolic
 // The name must be that of a previously created CreateBackupVaultOperation, possibly from a different process.
 func (c *gRPCClient) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
 	return &CreateBackupVaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateBackupVaultOperation"),
 	}
 }
 
@@ -7452,7 +9854,25 @@ func (c *gRPCClient) CreateBackupVaultOperation(name string) *CreateBackupVaultO
 func (c *restClient) CreateBackupVaultOperation(name string) *CreateBackupVaultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateBackupVaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateBackupVaultOperation"),
+		pollPath: override,
+	}
+}
+
+// CreateHostGroupOperation returns a new CreateHostGroupOperation from a given name.
+// The name must be that of a previously created CreateHostGroupOperation, possibly from a different process.
+func (c *gRPCClient) CreateHostGroupOperation(name string) *CreateHostGroupOperation {
+	return &CreateHostGroupOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateHostGroupOperation"),
+	}
+}
+
+// CreateHostGroupOperation returns a new CreateHostGroupOperation from a given name.
+// The name must be that of a previously created CreateHostGroupOperation, possibly from a different process.
+func (c *restClient) CreateHostGroupOperation(name string) *CreateHostGroupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &CreateHostGroupOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateHostGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -7461,7 +9881,7 @@ func (c *restClient) CreateBackupVaultOperation(name string) *CreateBackupVaultO
 // The name must be that of a previously created CreateKmsConfigOperation, possibly from a different process.
 func (c *gRPCClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOperation {
 	return &CreateKmsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateKmsConfigOperation"),
 	}
 }
 
@@ -7470,7 +9890,7 @@ func (c *gRPCClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOpera
 func (c *restClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateKmsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateKmsConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -7479,7 +9899,7 @@ func (c *restClient) CreateKmsConfigOperation(name string) *CreateKmsConfigOpera
 // The name must be that of a previously created CreateQuotaRuleOperation, possibly from a different process.
 func (c *gRPCClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
 	return &CreateQuotaRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateQuotaRuleOperation"),
 	}
 }
 
@@ -7488,7 +9908,7 @@ func (c *gRPCClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOpera
 func (c *restClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateQuotaRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateQuotaRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -7497,7 +9917,7 @@ func (c *restClient) CreateQuotaRuleOperation(name string) *CreateQuotaRuleOpera
 // The name must be that of a previously created CreateReplicationOperation, possibly from a different process.
 func (c *gRPCClient) CreateReplicationOperation(name string) *CreateReplicationOperation {
 	return &CreateReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateReplicationOperation"),
 	}
 }
 
@@ -7506,7 +9926,7 @@ func (c *gRPCClient) CreateReplicationOperation(name string) *CreateReplicationO
 func (c *restClient) CreateReplicationOperation(name string) *CreateReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateReplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -7515,7 +9935,7 @@ func (c *restClient) CreateReplicationOperation(name string) *CreateReplicationO
 // The name must be that of a previously created CreateSnapshotOperation, possibly from a different process.
 func (c *gRPCClient) CreateSnapshotOperation(name string) *CreateSnapshotOperation {
 	return &CreateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateSnapshotOperation"),
 	}
 }
 
@@ -7524,7 +9944,7 @@ func (c *gRPCClient) CreateSnapshotOperation(name string) *CreateSnapshotOperati
 func (c *restClient) CreateSnapshotOperation(name string) *CreateSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateSnapshotOperation"),
 		pollPath: override,
 	}
 }
@@ -7533,7 +9953,7 @@ func (c *restClient) CreateSnapshotOperation(name string) *CreateSnapshotOperati
 // The name must be that of a previously created CreateStoragePoolOperation, possibly from a different process.
 func (c *gRPCClient) CreateStoragePoolOperation(name string) *CreateStoragePoolOperation {
 	return &CreateStoragePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateStoragePoolOperation"),
 	}
 }
 
@@ -7542,7 +9962,7 @@ func (c *gRPCClient) CreateStoragePoolOperation(name string) *CreateStoragePoolO
 func (c *restClient) CreateStoragePoolOperation(name string) *CreateStoragePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateStoragePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateStoragePoolOperation"),
 		pollPath: override,
 	}
 }
@@ -7551,7 +9971,7 @@ func (c *restClient) CreateStoragePoolOperation(name string) *CreateStoragePoolO
 // The name must be that of a previously created CreateVolumeOperation, possibly from a different process.
 func (c *gRPCClient) CreateVolumeOperation(name string) *CreateVolumeOperation {
 	return &CreateVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateVolumeOperation"),
 	}
 }
 
@@ -7560,7 +9980,7 @@ func (c *gRPCClient) CreateVolumeOperation(name string) *CreateVolumeOperation {
 func (c *restClient) CreateVolumeOperation(name string) *CreateVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &CreateVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.CreateVolumeOperation"),
 		pollPath: override,
 	}
 }
@@ -7569,7 +9989,7 @@ func (c *restClient) CreateVolumeOperation(name string) *CreateVolumeOperation {
 // The name must be that of a previously created DeleteActiveDirectoryOperation, possibly from a different process.
 func (c *gRPCClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDirectoryOperation {
 	return &DeleteActiveDirectoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteActiveDirectoryOperation"),
 	}
 }
 
@@ -7578,7 +9998,7 @@ func (c *gRPCClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDi
 func (c *restClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDirectoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteActiveDirectoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteActiveDirectoryOperation"),
 		pollPath: override,
 	}
 }
@@ -7587,7 +10007,7 @@ func (c *restClient) DeleteActiveDirectoryOperation(name string) *DeleteActiveDi
 // The name must be that of a previously created DeleteBackupOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	return &DeleteBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteBackupOperation"),
 	}
 }
 
@@ -7596,7 +10016,7 @@ func (c *gRPCClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 func (c *restClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -7605,7 +10025,7 @@ func (c *restClient) DeleteBackupOperation(name string) *DeleteBackupOperation {
 // The name must be that of a previously created DeleteBackupPolicyOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
 	return &DeleteBackupPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteBackupPolicyOperation"),
 	}
 }
 
@@ -7614,7 +10034,7 @@ func (c *gRPCClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolic
 func (c *restClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteBackupPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -7623,7 +10043,7 @@ func (c *restClient) DeleteBackupPolicyOperation(name string) *DeleteBackupPolic
 // The name must be that of a previously created DeleteBackupVaultOperation, possibly from a different process.
 func (c *gRPCClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
 	return &DeleteBackupVaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteBackupVaultOperation"),
 	}
 }
 
@@ -7632,7 +10052,25 @@ func (c *gRPCClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultO
 func (c *restClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteBackupVaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteBackupVaultOperation"),
+		pollPath: override,
+	}
+}
+
+// DeleteHostGroupOperation returns a new DeleteHostGroupOperation from a given name.
+// The name must be that of a previously created DeleteHostGroupOperation, possibly from a different process.
+func (c *gRPCClient) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation {
+	return &DeleteHostGroupOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteHostGroupOperation"),
+	}
+}
+
+// DeleteHostGroupOperation returns a new DeleteHostGroupOperation from a given name.
+// The name must be that of a previously created DeleteHostGroupOperation, possibly from a different process.
+func (c *restClient) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteHostGroupOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteHostGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -7641,7 +10079,7 @@ func (c *restClient) DeleteBackupVaultOperation(name string) *DeleteBackupVaultO
 // The name must be that of a previously created DeleteKmsConfigOperation, possibly from a different process.
 func (c *gRPCClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOperation {
 	return &DeleteKmsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteKmsConfigOperation"),
 	}
 }
 
@@ -7650,7 +10088,7 @@ func (c *gRPCClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOpera
 func (c *restClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteKmsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteKmsConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -7659,7 +10097,7 @@ func (c *restClient) DeleteKmsConfigOperation(name string) *DeleteKmsConfigOpera
 // The name must be that of a previously created DeleteQuotaRuleOperation, possibly from a different process.
 func (c *gRPCClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
 	return &DeleteQuotaRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteQuotaRuleOperation"),
 	}
 }
 
@@ -7668,7 +10106,7 @@ func (c *gRPCClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOpera
 func (c *restClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteQuotaRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteQuotaRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -7677,7 +10115,7 @@ func (c *restClient) DeleteQuotaRuleOperation(name string) *DeleteQuotaRuleOpera
 // The name must be that of a previously created DeleteReplicationOperation, possibly from a different process.
 func (c *gRPCClient) DeleteReplicationOperation(name string) *DeleteReplicationOperation {
 	return &DeleteReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteReplicationOperation"),
 	}
 }
 
@@ -7686,7 +10124,7 @@ func (c *gRPCClient) DeleteReplicationOperation(name string) *DeleteReplicationO
 func (c *restClient) DeleteReplicationOperation(name string) *DeleteReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteReplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -7695,7 +10133,7 @@ func (c *restClient) DeleteReplicationOperation(name string) *DeleteReplicationO
 // The name must be that of a previously created DeleteSnapshotOperation, possibly from a different process.
 func (c *gRPCClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
 	return &DeleteSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteSnapshotOperation"),
 	}
 }
 
@@ -7704,7 +10142,7 @@ func (c *gRPCClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperati
 func (c *restClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteSnapshotOperation"),
 		pollPath: override,
 	}
 }
@@ -7713,7 +10151,7 @@ func (c *restClient) DeleteSnapshotOperation(name string) *DeleteSnapshotOperati
 // The name must be that of a previously created DeleteStoragePoolOperation, possibly from a different process.
 func (c *gRPCClient) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
 	return &DeleteStoragePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteStoragePoolOperation"),
 	}
 }
 
@@ -7722,7 +10160,7 @@ func (c *gRPCClient) DeleteStoragePoolOperation(name string) *DeleteStoragePoolO
 func (c *restClient) DeleteStoragePoolOperation(name string) *DeleteStoragePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteStoragePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteStoragePoolOperation"),
 		pollPath: override,
 	}
 }
@@ -7731,7 +10169,7 @@ func (c *restClient) DeleteStoragePoolOperation(name string) *DeleteStoragePoolO
 // The name must be that of a previously created DeleteVolumeOperation, possibly from a different process.
 func (c *gRPCClient) DeleteVolumeOperation(name string) *DeleteVolumeOperation {
 	return &DeleteVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteVolumeOperation"),
 	}
 }
 
@@ -7740,7 +10178,7 @@ func (c *gRPCClient) DeleteVolumeOperation(name string) *DeleteVolumeOperation {
 func (c *restClient) DeleteVolumeOperation(name string) *DeleteVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &DeleteVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.DeleteVolumeOperation"),
 		pollPath: override,
 	}
 }
@@ -7749,7 +10187,7 @@ func (c *restClient) DeleteVolumeOperation(name string) *DeleteVolumeOperation {
 // The name must be that of a previously created EncryptVolumesOperation, possibly from a different process.
 func (c *gRPCClient) EncryptVolumesOperation(name string) *EncryptVolumesOperation {
 	return &EncryptVolumesOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.EncryptVolumesOperation"),
 	}
 }
 
@@ -7758,7 +10196,7 @@ func (c *gRPCClient) EncryptVolumesOperation(name string) *EncryptVolumesOperati
 func (c *restClient) EncryptVolumesOperation(name string) *EncryptVolumesOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EncryptVolumesOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.EncryptVolumesOperation"),
 		pollPath: override,
 	}
 }
@@ -7767,7 +10205,7 @@ func (c *restClient) EncryptVolumesOperation(name string) *EncryptVolumesOperati
 // The name must be that of a previously created EstablishPeeringOperation, possibly from a different process.
 func (c *gRPCClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
 	return &EstablishPeeringOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.EstablishPeeringOperation"),
 	}
 }
 
@@ -7776,7 +10214,43 @@ func (c *gRPCClient) EstablishPeeringOperation(name string) *EstablishPeeringOpe
 func (c *restClient) EstablishPeeringOperation(name string) *EstablishPeeringOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &EstablishPeeringOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.EstablishPeeringOperation"),
+		pollPath: override,
+	}
+}
+
+// EstablishVolumePeeringOperation returns a new EstablishVolumePeeringOperation from a given name.
+// The name must be that of a previously created EstablishVolumePeeringOperation, possibly from a different process.
+func (c *gRPCClient) EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation {
+	return &EstablishVolumePeeringOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.EstablishVolumePeeringOperation"),
+	}
+}
+
+// EstablishVolumePeeringOperation returns a new EstablishVolumePeeringOperation from a given name.
+// The name must be that of a previously created EstablishVolumePeeringOperation, possibly from a different process.
+func (c *restClient) EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &EstablishVolumePeeringOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.EstablishVolumePeeringOperation"),
+		pollPath: override,
+	}
+}
+
+// RestoreBackupFilesOperation returns a new RestoreBackupFilesOperation from a given name.
+// The name must be that of a previously created RestoreBackupFilesOperation, possibly from a different process.
+func (c *gRPCClient) RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation {
+	return &RestoreBackupFilesOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.RestoreBackupFilesOperation"),
+	}
+}
+
+// RestoreBackupFilesOperation returns a new RestoreBackupFilesOperation from a given name.
+// The name must be that of a previously created RestoreBackupFilesOperation, possibly from a different process.
+func (c *restClient) RestoreBackupFilesOperation(name string) *RestoreBackupFilesOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RestoreBackupFilesOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.RestoreBackupFilesOperation"),
 		pollPath: override,
 	}
 }
@@ -7785,7 +10259,7 @@ func (c *restClient) EstablishPeeringOperation(name string) *EstablishPeeringOpe
 // The name must be that of a previously created ResumeReplicationOperation, possibly from a different process.
 func (c *gRPCClient) ResumeReplicationOperation(name string) *ResumeReplicationOperation {
 	return &ResumeReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.ResumeReplicationOperation"),
 	}
 }
 
@@ -7794,7 +10268,7 @@ func (c *gRPCClient) ResumeReplicationOperation(name string) *ResumeReplicationO
 func (c *restClient) ResumeReplicationOperation(name string) *ResumeReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ResumeReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.ResumeReplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -7803,7 +10277,7 @@ func (c *restClient) ResumeReplicationOperation(name string) *ResumeReplicationO
 // The name must be that of a previously created ReverseReplicationDirectionOperation, possibly from a different process.
 func (c *gRPCClient) ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation {
 	return &ReverseReplicationDirectionOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.ReverseReplicationDirectionOperation"),
 	}
 }
 
@@ -7812,7 +10286,7 @@ func (c *gRPCClient) ReverseReplicationDirectionOperation(name string) *ReverseR
 func (c *restClient) ReverseReplicationDirectionOperation(name string) *ReverseReplicationDirectionOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ReverseReplicationDirectionOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.ReverseReplicationDirectionOperation"),
 		pollPath: override,
 	}
 }
@@ -7821,7 +10295,7 @@ func (c *restClient) ReverseReplicationDirectionOperation(name string) *ReverseR
 // The name must be that of a previously created RevertVolumeOperation, possibly from a different process.
 func (c *gRPCClient) RevertVolumeOperation(name string) *RevertVolumeOperation {
 	return &RevertVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.RevertVolumeOperation"),
 	}
 }
 
@@ -7830,7 +10304,7 @@ func (c *gRPCClient) RevertVolumeOperation(name string) *RevertVolumeOperation {
 func (c *restClient) RevertVolumeOperation(name string) *RevertVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RevertVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.RevertVolumeOperation"),
 		pollPath: override,
 	}
 }
@@ -7839,7 +10313,7 @@ func (c *restClient) RevertVolumeOperation(name string) *RevertVolumeOperation {
 // The name must be that of a previously created StopReplicationOperation, possibly from a different process.
 func (c *gRPCClient) StopReplicationOperation(name string) *StopReplicationOperation {
 	return &StopReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.StopReplicationOperation"),
 	}
 }
 
@@ -7848,7 +10322,7 @@ func (c *gRPCClient) StopReplicationOperation(name string) *StopReplicationOpera
 func (c *restClient) StopReplicationOperation(name string) *StopReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &StopReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.StopReplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -7857,7 +10331,7 @@ func (c *restClient) StopReplicationOperation(name string) *StopReplicationOpera
 // The name must be that of a previously created SwitchActiveReplicaZoneOperation, possibly from a different process.
 func (c *gRPCClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
 	return &SwitchActiveReplicaZoneOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.SwitchActiveReplicaZoneOperation"),
 	}
 }
 
@@ -7866,7 +10340,7 @@ func (c *gRPCClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActive
 func (c *restClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActiveReplicaZoneOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SwitchActiveReplicaZoneOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.SwitchActiveReplicaZoneOperation"),
 		pollPath: override,
 	}
 }
@@ -7875,7 +10349,7 @@ func (c *restClient) SwitchActiveReplicaZoneOperation(name string) *SwitchActive
 // The name must be that of a previously created SyncReplicationOperation, possibly from a different process.
 func (c *gRPCClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
 	return &SyncReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.SyncReplicationOperation"),
 	}
 }
 
@@ -7884,7 +10358,7 @@ func (c *gRPCClient) SyncReplicationOperation(name string) *SyncReplicationOpera
 func (c *restClient) SyncReplicationOperation(name string) *SyncReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &SyncReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.SyncReplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -7893,7 +10367,7 @@ func (c *restClient) SyncReplicationOperation(name string) *SyncReplicationOpera
 // The name must be that of a previously created UpdateActiveDirectoryOperation, possibly from a different process.
 func (c *gRPCClient) UpdateActiveDirectoryOperation(name string) *UpdateActiveDirectoryOperation {
 	return &UpdateActiveDirectoryOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateActiveDirectoryOperation"),
 	}
 }
 
@@ -7902,7 +10376,7 @@ func (c *gRPCClient) UpdateActiveDirectoryOperation(name string) *UpdateActiveDi
 func (c *restClient) UpdateActiveDirectoryOperation(name string) *UpdateActiveDirectoryOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateActiveDirectoryOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateActiveDirectoryOperation"),
 		pollPath: override,
 	}
 }
@@ -7911,7 +10385,7 @@ func (c *restClient) UpdateActiveDirectoryOperation(name string) *UpdateActiveDi
 // The name must be that of a previously created UpdateBackupOperation, possibly from a different process.
 func (c *gRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	return &UpdateBackupOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupOperation"),
 	}
 }
 
@@ -7920,7 +10394,7 @@ func (c *gRPCClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 func (c *restClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupOperation"),
 		pollPath: override,
 	}
 }
@@ -7929,7 +10403,7 @@ func (c *restClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 // The name must be that of a previously created UpdateBackupPolicyOperation, possibly from a different process.
 func (c *gRPCClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
 	return &UpdateBackupPolicyOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupPolicyOperation"),
 	}
 }
 
@@ -7938,7 +10412,7 @@ func (c *gRPCClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolic
 func (c *restClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolicyOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupPolicyOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupPolicyOperation"),
 		pollPath: override,
 	}
 }
@@ -7947,7 +10421,7 @@ func (c *restClient) UpdateBackupPolicyOperation(name string) *UpdateBackupPolic
 // The name must be that of a previously created UpdateBackupVaultOperation, possibly from a different process.
 func (c *gRPCClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
 	return &UpdateBackupVaultOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupVaultOperation"),
 	}
 }
 
@@ -7956,7 +10430,25 @@ func (c *gRPCClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultO
 func (c *restClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupVaultOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupVaultOperation"),
+		pollPath: override,
+	}
+}
+
+// UpdateHostGroupOperation returns a new UpdateHostGroupOperation from a given name.
+// The name must be that of a previously created UpdateHostGroupOperation, possibly from a different process.
+func (c *gRPCClient) UpdateHostGroupOperation(name string) *UpdateHostGroupOperation {
+	return &UpdateHostGroupOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateHostGroupOperation"),
+	}
+}
+
+// UpdateHostGroupOperation returns a new UpdateHostGroupOperation from a given name.
+// The name must be that of a previously created UpdateHostGroupOperation, possibly from a different process.
+func (c *restClient) UpdateHostGroupOperation(name string) *UpdateHostGroupOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateHostGroupOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateHostGroupOperation"),
 		pollPath: override,
 	}
 }
@@ -7965,7 +10457,7 @@ func (c *restClient) UpdateBackupVaultOperation(name string) *UpdateBackupVaultO
 // The name must be that of a previously created UpdateKmsConfigOperation, possibly from a different process.
 func (c *gRPCClient) UpdateKmsConfigOperation(name string) *UpdateKmsConfigOperation {
 	return &UpdateKmsConfigOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateKmsConfigOperation"),
 	}
 }
 
@@ -7974,7 +10466,7 @@ func (c *gRPCClient) UpdateKmsConfigOperation(name string) *UpdateKmsConfigOpera
 func (c *restClient) UpdateKmsConfigOperation(name string) *UpdateKmsConfigOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateKmsConfigOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateKmsConfigOperation"),
 		pollPath: override,
 	}
 }
@@ -7983,7 +10475,7 @@ func (c *restClient) UpdateKmsConfigOperation(name string) *UpdateKmsConfigOpera
 // The name must be that of a previously created UpdateQuotaRuleOperation, possibly from a different process.
 func (c *gRPCClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
 	return &UpdateQuotaRuleOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateQuotaRuleOperation"),
 	}
 }
 
@@ -7992,7 +10484,7 @@ func (c *gRPCClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOpera
 func (c *restClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateQuotaRuleOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateQuotaRuleOperation"),
 		pollPath: override,
 	}
 }
@@ -8001,7 +10493,7 @@ func (c *restClient) UpdateQuotaRuleOperation(name string) *UpdateQuotaRuleOpera
 // The name must be that of a previously created UpdateReplicationOperation, possibly from a different process.
 func (c *gRPCClient) UpdateReplicationOperation(name string) *UpdateReplicationOperation {
 	return &UpdateReplicationOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateReplicationOperation"),
 	}
 }
 
@@ -8010,7 +10502,7 @@ func (c *gRPCClient) UpdateReplicationOperation(name string) *UpdateReplicationO
 func (c *restClient) UpdateReplicationOperation(name string) *UpdateReplicationOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateReplicationOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateReplicationOperation"),
 		pollPath: override,
 	}
 }
@@ -8019,7 +10511,7 @@ func (c *restClient) UpdateReplicationOperation(name string) *UpdateReplicationO
 // The name must be that of a previously created UpdateSnapshotOperation, possibly from a different process.
 func (c *gRPCClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperation {
 	return &UpdateSnapshotOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateSnapshotOperation"),
 	}
 }
 
@@ -8028,7 +10520,7 @@ func (c *gRPCClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperati
 func (c *restClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateSnapshotOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateSnapshotOperation"),
 		pollPath: override,
 	}
 }
@@ -8037,7 +10529,7 @@ func (c *restClient) UpdateSnapshotOperation(name string) *UpdateSnapshotOperati
 // The name must be that of a previously created UpdateStoragePoolOperation, possibly from a different process.
 func (c *gRPCClient) UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation {
 	return &UpdateStoragePoolOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateStoragePoolOperation"),
 	}
 }
 
@@ -8046,7 +10538,7 @@ func (c *gRPCClient) UpdateStoragePoolOperation(name string) *UpdateStoragePoolO
 func (c *restClient) UpdateStoragePoolOperation(name string) *UpdateStoragePoolOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateStoragePoolOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateStoragePoolOperation"),
 		pollPath: override,
 	}
 }
@@ -8055,7 +10547,7 @@ func (c *restClient) UpdateStoragePoolOperation(name string) *UpdateStoragePoolO
 // The name must be that of a previously created UpdateVolumeOperation, possibly from a different process.
 func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	return &UpdateVolumeOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateVolumeOperation"),
 	}
 }
 
@@ -8064,7 +10556,7 @@ func (c *gRPCClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateVolumeOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateVolumeOperation"),
 		pollPath: override,
 	}
 }
@@ -8073,7 +10565,7 @@ func (c *restClient) UpdateVolumeOperation(name string) *UpdateVolumeOperation {
 // The name must be that of a previously created ValidateDirectoryServiceOperation, possibly from a different process.
 func (c *gRPCClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
 	return &ValidateDirectoryServiceOperation{
-		lro: longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.ValidateDirectoryServiceOperation"),
 	}
 }
 
@@ -8082,7 +10574,7 @@ func (c *gRPCClient) ValidateDirectoryServiceOperation(name string) *ValidateDir
 func (c *restClient) ValidateDirectoryServiceOperation(name string) *ValidateDirectoryServiceOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &ValidateDirectoryServiceOperation{
-		lro:      longrunning.InternalNewOperation(*c.LROClient, &longrunningpb.Operation{Name: name}),
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.ValidateDirectoryServiceOperation"),
 		pollPath: override,
 	}
 }

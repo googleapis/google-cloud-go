@@ -1,5 +1,21 @@
 # Changes
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/releases/tag/iap%2Fv1.17.0) (2026-05-07)
+
+## [1.16.0](https://github.com/googleapis/google-cloud-go/releases/tag/iap%2Fv1.16.0) (2026-04-30)
+
+## [1.15.0](https://github.com/googleapis/google-cloud-go/releases/tag/iap%2Fv1.15.0) (2026-04-13)
+
+## [1.14.0](https://github.com/googleapis/google-cloud-go/releases/tag/iap%2Fv1.14.0) (2026-04-09)
+
+## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/iap%2Fv1.13.0) (2026-04-02)
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/iap%2Fv1.12.0) (2026-03-23)
+
+### Features
+
+* add oauth fields for IapSettings ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
 ## [1.11.3](https://github.com/googleapis/google-cloud-go/compare/iap/v1.11.2...iap/v1.11.3) (2025-09-18)
 
 

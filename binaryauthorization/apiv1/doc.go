@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -17,9 +17,10 @@
 // Package binaryauthorization is an auto-generated package for the
 // Binary Authorization API.
 //
-// The management interface for Binary Authorization, a system providing
-// policy control for images deployed to Kubernetes Engine clusters, Anthos
-// clusters on VMware, and Cloud Run.
+// The management interface for Binary Authorization, a service that provides
+// policy-based deployment validation and control for images deployed to
+// Google Kubernetes Engine (GKE), Anthos Service Mesh, Anthos Clusters, and
+// Cloud Run.
 //
 // # General documentation
 //

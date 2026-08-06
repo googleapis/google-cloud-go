@@ -1,6 +1,65 @@
 # Changes
 
 
+## [1.33.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.32.0...kms/v1.33.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
+## [1.32.0](https://github.com/googleapis/google-cloud-go/compare/kms/v1.31.0...kms/v1.32.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+* Update API sources and regenerate ([#20109](https://github.com/googleapis/google-cloud-go/issues/20109)) ([4314d30](https://github.com/googleapis/google-cloud-go/commit/4314d305008d9a4b2d9f464d07519f8081b2277d))
+
+## [1.31.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.31.0) (2026-05-07)
+
+## [1.30.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.30.0) (2026-04-30)
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.29.0) (2026-04-13)
+
+## [1.28.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.28.0) (2026-04-09)
+
+## [1.27.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.27.0) (2026-04-02)
+
+## [1.26.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.26.0) (2026-02-19)
+
+### Features
+
+* Add KeyProjectResolutionMode to AutokeyConfig to support project-level configurations ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Add more post-quantum (PQ) signature algorithms to CryptoKeyVersion ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Add support for project level key usage tracking ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Added DeleteCryptoKey and DeleteCryptoKeyVersion RPCs to permanently remove resources ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Added ListRetiredResources and GetRetiredResource RPCs to manage and view these records ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Introduced the RetiredResource resource to track records of deleted keys and prevent the reuse of their resource names ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+### Documentation
+
+* Clarify supported resources for the crypto_key_backend field in ImportJob ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+* Update documentation for AutokeyAdmin service and messages to support folder and project-level configurations ([d3eb851](https://github.com/googleapis/google-cloud-go/commit/d3eb851d1b09f28ae2b6c7c63d694eb67b0c11c7))
+
+## [1.25.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.25.0) (2026-01-22)
+
+### Features
+
+* add the SingleTenantHsm functionality including the management API and resource types ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+### Documentation
+
+* A comment for enum value `MODIFIED_CUSTOMER_INITIATED_ACCESS` in enum `AccessReason` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* A comment for enum value `MODIFIED_GOOGLE_INITIATED_SYSTEM_OPERATION` in enum `AccessReason` is changed ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+* A comment for field `crypto_key_backend` in message `.google.cloud.kms.v1.CryptoKey` is expanded to include SingleTenantHsmInstances ([8ddeca5](https://github.com/googleapis/google-cloud-go/commit/8ddeca50844ba7c19cdbab149ff5b25718dd825c))
+
+## [1.24.0](https://github.com/googleapis/google-cloud-go/releases/tag/kms%2Fv1.24.0) (2026-01-15)
+
+### Documentation
+
+* Marking MODIFIED_CUSTOMER_INITIATED_ACCESS and MODIFIED_GOOGLE_INITIATED_SYSTEM_OPERATION Key Access Justification codes as deprecated in favor of GOOGLE_RESPONSE_TO_PRODUCTION_ALERT ([80379ed](https://github.com/googleapis/google-cloud-go/commit/80379edb1c47cd7c2d928d18762029cfe28420c0))
+
 ## [1.23.2](https://github.com/googleapis/google-cloud-go/compare/kms/v1.23.1...kms/v1.23.2) (2025-10-15)
 
 

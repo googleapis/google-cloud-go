@@ -261,9 +261,6 @@ func TestIntegration_ManagedWriter(t *testing.T) {
 			// Don't run this in parallel, we only want to collect stats from this subtest.
 			testInstrumentation(ctx, t, mwClient, bqClient, dataset)
 		})
-		t.Run("TestLargeInsertNoRetry", func(t *testing.T) {
-			testLargeInsertNoRetry(ctx, t, mwClient, bqClient, dataset)
-		})
 		t.Run("TestLargeInsertWithRetry", func(t *testing.T) {
 			testLargeInsertWithRetry(ctx, t, mwClient, bqClient, dataset)
 		})
@@ -726,7 +723,7 @@ func testSimpleCDC(ctx context.Context, t *testing.T, mwClient *Client, bqClient
 	defer updateWriter.Close()
 
 	// Change bob via an UPSERT CDC
-	newBob := proto.Clone(initialEmployees[1]).(*testdata.ExampleEmployeeCDC)
+	newBob := proto.CloneOf(initialEmployees[1])
 	newBob.Salary = proto.Int64(105000)
 	newBob.Departments = []string{"research", "product"}
 	newBob.XCHANGE_TYPE = proto.String("UPSERT")

@@ -1,6 +1,69 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.12.0...shopping/v1.13.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/shopping/v1.11.0...shopping/v1.12.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.11.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.10.0) (2026-04-30)
+
+## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.9.0) (2026-04-13)
+
+## [1.8.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.8.0) (2026-04-09)
+
+## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.7.0) (2026-04-02)
+
+## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.6.0) (2026-03-23)
+
+### Features
+
+* Add CreateTestAccount RPC to Accounts service for creating test-only Merchant Center accounts ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* add product rating fields to CSS API v1. This is in preparation for an upcoming feature and the new fields are not yet used. ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* update products_common fields to include `handling_cutoff_timezone `, `shipping_handling_business_days`, `shipping_transit_business_days` ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
+### Documentation
+
+* A comment for field `name` in message `.google.shopping.css.v1.AccountLabel` is changed ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* A comment for field `name` in message `.google.shopping.css.v1.CssProductInput` is changed ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* A comment for field `name` in message `.google.shopping.css.v1.GetCssProductRequest` is changed ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* A comment for field `size_types` in message `.google.shopping.css.v1.Attributes` is changed ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Add product-ratings to Program documentation ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Clarify CheckoutSettings.eligible_destinations usage ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Improve TermsOfServiceKind.MERCHANT_CENTER comment ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Refine DeveloperRegistration.developer_email behavior description ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Update Account.account_name documentation for naming restrictions ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Update DeleteUser method description ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+* Update Region to support radius_area and clarify area type exclusivity ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.5.0) (2026-03-12)
+
+### Features
+
+* add more values in DestintionEnum ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* upgrade protobuf from v25.7 to v31.0 ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+
+### Documentation
+
+* A comment for message `DestintionEnum` is changed ([177550d](https://github.com/googleapis/google-cloud-go/commit/177550d454fe98dcd1cd6645bf9b4c51eef7a419))
+* another bulk typo correction (#13527) ([90a4f21](https://github.com/googleapis/google-cloud-go/commit/90a4f21fc7c19aec71e92dfa9b810bad9544a7c0))
+* fix typo in README.md entries (#13526) ([ac32b85](https://github.com/googleapis/google-cloud-go/commit/ac32b85197bf5b33aeb3af1ac69b752dff7a8a57))
+
 ## [1.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/shopping%2Fv1.4.0) (2025-12-04)
 
 ### Features

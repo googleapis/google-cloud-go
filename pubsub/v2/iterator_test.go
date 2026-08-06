@@ -512,7 +512,7 @@ func TestIterator_StreamingPullExactlyOnce(t *testing.T) {
 		maxExtensionPeriod:     10 * time.Second,
 	})
 
-	if _, err := iter.receive(10); err != nil {
+	if _, err := iter.receive(); err != nil {
 		t.Fatalf("Got error in recvMessages: %v", err)
 	}
 
@@ -587,7 +587,7 @@ func TestPingStreamAckDeadline(t *testing.T) {
 	}
 	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
 	// Receive one message via the stream to trigger the update to enableExactlyOnceDelivery
-	iter.receive(1)
+	iter.receive()
 	iter.eoMu.RLock()
 	if !iter.enableExactlyOnceDelivery {
 		t.Error("iter.enableExactlyOnceDelivery should be true")
@@ -797,4 +797,62 @@ func TestExactlyOnceProcessRequests(t *testing.T) {
 			compareCompletedRetryLengths(t, completed, retry, 0, 1)
 		}
 	})
+}
+
+// When the server doesn't respond with keep alive pings,
+// test that the client reopens the stream.
+func TestStreamingPullKeepAlive_ReopenStream(t *testing.T) {
+	// save old variables
+	oldClient := clientPingInterval
+	oldServerPing := serverPingTimeoutDuration
+	oldServerMonitor := serverMonitorInterval
+	oldProtocol := protocolVersion
+
+	clientPingInterval = 1 * time.Second
+	// any ping check should result in stream closure
+	serverPingTimeoutDuration = 0 * time.Second
+	// check for server pings more frequently to trigger test faster
+	serverMonitorInterval = 1 * time.Second
+
+	// Revert protocolVersion to 0 to make fake server
+	// not respond to client pings to test stream reopening.
+	// None of the client library code is gated on protocolVersion
+	// since it is assumed that newer versions of the client library
+	// will always be communicating with the latest protocol version.
+	protocolVersion = 0
+
+	t.Cleanup(func() {
+		clientPingInterval = oldClient
+		serverPingTimeoutDuration = oldServerPing
+		serverMonitorInterval = oldServerMonitor
+		protocolVersion = oldProtocol
+	})
+
+	c, srv := newFake(t)
+	ctx, cancel := context.WithCancel(t.Context())
+	defer cancel()
+
+	srv.Publish(fullyQualifiedTopicName, []byte("creating a topic"), nil)
+	_, err := c.SubscriptionAdminClient.CreateSubscription(ctx, &pb.Subscription{
+		Name:  fullyQualifiedSubName,
+		Topic: fullyQualifiedTopicName,
+	})
+	if err != nil {
+		t.Errorf("failed to create subscription: %v", err)
+	}
+
+	iter := newMessageIterator(c.SubscriptionAdminClient, fullyQualifiedSubName, &pullOptions{})
+	defer iter.stop()
+
+	go func() {
+		iter.receive()
+	}()
+
+	time.Sleep(3 * time.Second)
+	iter.stop()
+
+	streamsOpened := iter.ps.openCount.Load()
+	if !(streamsOpened >= 2) {
+		t.Fatalf("expected at least 2 streams opened, got %v", streamsOpened)
+	}
 }

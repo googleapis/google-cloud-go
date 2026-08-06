@@ -814,6 +814,8 @@ func (tb TypeBase) SQL() string {
 		return "ENUM"
 	case Tokenlist:
 		return "TOKENLIST"
+	case UUID:
+		return "UUID"
 	}
 
 	panic("unknown TypeBase")
@@ -872,6 +874,9 @@ func (sel Select) addSQL(sb *strings.Builder) {
 	sb.WriteString("SELECT")
 	if sel.Distinct {
 		sb.WriteString(" DISTINCT")
+	}
+	if sel.AsStruct {
+		sb.WriteString(" AS STRUCT")
 	}
 
 	// SELECT list with aliases
@@ -1091,6 +1096,13 @@ func (ss ScalarSubquery) addSQL(sb *strings.Builder) {
 	sb.WriteString(")")
 }
 
+func (as ArraySubquery) SQL() string { return buildSQL(as) }
+func (as ArraySubquery) addSQL(sb *strings.Builder) {
+	sb.WriteString("ARRAY(")
+	as.Query.addSQL(sb)
+	sb.WriteString(")")
+}
+
 func (io InOp) SQL() string { return buildSQL(io) }
 func (io InOp) addSQL(sb *strings.Builder) {
 	io.LHS.addSQL(sb)
@@ -1230,6 +1242,24 @@ func (a Array) addSQL(sb *strings.Builder) {
 	sb.WriteString("[")
 	addExprList(sb, []Expr(a), ", ")
 	sb.WriteString("]")
+}
+
+func (sl StructLiteral) SQL() string { return buildSQL(sl) }
+func (sl StructLiteral) addSQL(sb *strings.Builder) {
+	sb.WriteString("STRUCT")
+	if len(sl.FieldTypes) > 0 {
+		sb.WriteString("<")
+		for i, typ := range sl.FieldTypes {
+			if i > 0 {
+				sb.WriteString(", ")
+			}
+			sb.WriteString(typ.SQL())
+		}
+		sb.WriteString(">")
+	}
+	sb.WriteString("(")
+	addExprList(sb, sl.Fields, ", ")
+	sb.WriteString(")")
 }
 
 func (id ID) SQL() string { return buildSQL(id) }

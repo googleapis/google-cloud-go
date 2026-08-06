@@ -37,6 +37,7 @@ import (
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/alts"
 	"google.golang.org/grpc/experimental/stats"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/stats/opentelemetry"
@@ -48,6 +49,7 @@ import (
 const (
 	builtInMetricsMeterName = "gax-go"
 	grpcMetricMeterName     = "grpc-go"
+	grpcGcpMetricMeterName  = "grpc-gcp-go"
 
 	nativeMetricsPrefix = "spanner.googleapis.com/internal/client/"
 
@@ -69,6 +71,13 @@ const (
 	metricLabelKeyGRPCLBPickResult      = "grpc.lb.pick_result"
 	metricLabelKeyGRPCLBDataPlaneTarget = "grpc.lb.rls.data_plane_target"
 	metricLabelKeyGRPCXDSResourceType   = "grpc.xds.resource_type"
+	metricLabelKeyGRPCLBLocality        = "grpc.lb.locality"
+	metricLabelKeyGRPCLBBackendService  = "grpc.lb.backend_service"
+	metricLabelKeyGRPCDisconnectError   = "grpc.disconnect_error"
+	metricLabelKeyFromChannelName       = "from_channel_name"
+	metricLabelKeyToChannelName         = "to_channel_name"
+	metricLabelKeyChannelName           = "channel_name"
+	metricLabelKeyStatusCode            = "status_code"
 
 	// Metric names
 	metricNameOperationLatencies        = "operation_latencies"
@@ -79,6 +88,8 @@ const (
 	metricNameGFELatencies              = "gfe_latencies"
 	metricNameGFEConnectivityErrorCount = "gfe_connectivity_error_count"
 	metricNameAFEConnectivityErrorCount = "afe_connectivity_error_count"
+	metricNameEEFFallbackCount          = "eef.fallback_count"
+	metricNameEEFCallStatus             = "eef.call_status"
 
 	// Metric units
 	metricUnitMS    = "ms"
@@ -222,11 +233,22 @@ var (
 	}
 
 	grpcMetricsToEnable = []string{
+		"grpc.client.attempt.started",
+		"grpc.subchannel.open_connections",
+		"grpc.subchannel.disconnections",
+		"grpc.subchannel.connection_attempts_succeeded",
+		"grpc.subchannel.connection_attempts_failed",
 		"grpc.lb.rls.default_target_picks",
 		"grpc.lb.rls.target_picks",
 		"grpc.xds_client.server_failure",
 		"grpc.xds_client.resource_updates_invalid",
 		"grpc.xds_client.resource_updates_valid",
+	}
+
+	grpcOptionalLabels = []string{
+		"grpc.disconnect_error",
+		"grpc.lb.backend_service",
+		"grpc.lb.locality",
 	}
 )
 
@@ -258,6 +280,8 @@ type builtinMetricsTracerFactory struct {
 	afeErrorCount      metric.Int64Counter     // Counter for the number of requests that failed to reach the Spanner API Frontend.
 	operationCount     metric.Int64Counter     // Counter for the number of operations.
 	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
+
+	meterProvider metric.MeterProvider
 }
 
 func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider metric.MeterProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
@@ -296,11 +320,13 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 			return tracerFactory, err
 		}
 		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
+		tracerFactory.meterProvider = meterProvider
 
 		if isEnableGRPCBuiltInMetrics {
 			mo := opentelemetry.MetricsOptions{
-				MeterProvider: meterProvider,
-				Metrics:       stats.NewMetrics(grpcMetricsToEnable...),
+				MeterProvider:  meterProvider,
+				Metrics:        stats.NewMetrics(grpcMetricsToEnable...),
+				OptionalLabels: grpcOptionalLabels,
 			}
 
 			// Configure gRPC dial options to enable gRPC metrics collection and static method call option.
@@ -350,6 +376,36 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 				Aggregation: sdkmetric.AggregationSum{},
 				AttributeFilter: func(kv attribute.KeyValue) bool {
 					if _, ok := allowedMetricLabels[string(kv.Key)]; ok {
+						return true
+					}
+					return false
+				},
+			},
+		))
+	}
+	skippedEEFMetrics := []string{
+		"eef.probe_result",
+		"eef.error_ratio",
+		"eef.current_channel",
+		"eef.channel_downtime",
+	}
+	for _, m := range skippedEEFMetrics {
+		views = append(views, sdkmetric.NewView(
+			sdkmetric.Instrument{Name: m},
+			sdkmetric.Stream{Aggregation: sdkmetric.AggregationDrop{}},
+		))
+	}
+	eefMetricsToEnable := []string{
+		metricNameEEFFallbackCount,
+		metricNameEEFCallStatus,
+	}
+	for _, m := range eefMetricsToEnable {
+		views = append(views, sdkmetric.NewView(
+			sdkmetric.Instrument{Name: m},
+			sdkmetric.Stream{
+				Aggregation: sdkmetric.AggregationSum{},
+				AttributeFilter: func(kv attribute.KeyValue) bool {
+					if _, ok := allowedEEFMetricLabels[string(kv.Key)]; ok {
 						return true
 					}
 					return false
@@ -426,12 +482,18 @@ func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) err
 		metric.WithDescription("The number of attempts made for the operation, including the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	tf.gfeErrorCount, err = meter.Int64Counter(
 		nativeMetricsPrefix+metricNameGFEConnectivityErrorCount,
 		metric.WithDescription("Number of requests that failed to reach the Google network."),
 		metric.WithUnit(metricUnitCount),
 	)
+	if err != nil {
+		return err
+	}
 
 	tf.afeErrorCount, err = meter.Int64Counter(
 		nativeMetricsPrefix+metricNameAFEConnectivityErrorCount,
@@ -518,9 +580,8 @@ func (o *opTracer) incrementAttemptCount() {
 // setDirectPathUsed sets whether DirectPath was used for the attempt.
 func (a *attemptTracer) setDirectPathUsed(ctx context.Context) {
 	peerInfo, ok := peer.FromContext(ctx)
-	if ok && peerInfo.Addr != nil {
-		remoteIP := peerInfo.Addr.String()
-		if strings.HasPrefix(remoteIP, directPathIPV4Prefix) || strings.HasPrefix(remoteIP, directPathIPV6Prefix) {
+	if ok {
+		if _, isALTS := peerInfo.AuthInfo.(alts.AuthInfo); isALTS {
 			a.directPathUsed = true
 		}
 	}
@@ -617,8 +678,14 @@ func (t *builtinMetricsTracer) recordGFEError() {
 }
 
 func (t *builtinMetricsTracer) recordAFEError() {
-	// no-op: disable afe_connectivity_error_count metric as AFE header is disabled in backend currently
-	return
+	if !t.isAFEBuiltInMetricEnabled {
+		return
+	}
+	attrs, err := t.toOtelMetricAttrs(metricNameAFEConnectivityErrorCount)
+	if err != nil {
+		return
+	}
+	t.instrumentAFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 }
 
 // Convert error to grpc status error

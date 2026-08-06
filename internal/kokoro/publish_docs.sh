@@ -32,7 +32,7 @@ if [[ -n "$FORCE_GENERATE_ALL" ]]; then
 elif [[ -n "$MODULE" ]]; then
   godocfx "$MODULE"
 else
-  godocfx -project $RELEASE_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine
+  godocfx -project $RELEASE_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine/v2
 fi
 
 for f in $(find obj/api -name docs.metadata); do
@@ -48,5 +48,5 @@ for f in $(find obj/api -name docs.metadata); do
     --file=$name \
     --gzip \
     .
-  gsutil cp $name gs://docs-staging-v2/$tar_dir
+  gcloud storage cp $name gs://docs-staging-v2/$tar_dir
 done

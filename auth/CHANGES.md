@@ -1,5 +1,46 @@
 # Changes
 
+## [0.22.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.21.0...auth/v0.22.0) (2026-07-13)
+
+
+### Features
+
+* **auth:** Populate http.response.status_code in http transport ([#20053](https://github.com/googleapis/google-cloud-go/issues/20053)) ([bff5d7c](https://github.com/googleapis/google-cloud-go/commit/bff5d7c9bc7f8ea8c0059f7d8e2d4294ba92c5bc))
+
+## [0.21.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.20.0...auth/v0.21.0) (2026-07-07)
+
+
+### Features
+
+* **auth:** Implement updated design for regional access boundary ([#13417](https://github.com/googleapis/google-cloud-go/issues/13417)) ([fadb6c7](https://github.com/googleapis/google-cloud-go/commit/fadb6c764dbe869fca736d9f0446b5010f21d2f2))
+
+
+### Bug Fixes
+
+* **auth:** Avoid double impersonation in idtoken and clarify docs ([#14474](https://github.com/googleapis/google-cloud-go/issues/14474)) ([995bfc3](https://github.com/googleapis/google-cloud-go/commit/995bfc36199ba6ae1c88803c71f39a0b19fc8c0f)), closes [#11105](https://github.com/googleapis/google-cloud-go/issues/11105)
+* **auth:** Correct go min version ([#20094](https://github.com/googleapis/google-cloud-go/issues/20094)) ([6bb4358](https://github.com/googleapis/google-cloud-go/commit/6bb4358dca69b803e52eb2af882fa5afc24d54e2))
+
+## [0.20.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.20.0) (2026-04-06)
+
+## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.19.0) (2026-03-23)
+
+### Features
+
+* add OpenTelemetry gRPC and HTTP wrappers for T4 tracing (#14133) ([d38abf9](https://github.com/googleapis/google-cloud-go/commit/d38abf988d4017b4832434abae9a90874bec5ce9))
+
+## [0.18.2](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.18.2) (2026-02-13)
+
+### Bug Fixes
+
+* fixes gdch credentials logic (#13741) ([f82cda5](https://github.com/googleapis/google-cloud-go/commit/f82cda58bd9885b7b8a9d8b15126f5a1e0add0dc))
+
+## [0.18.1](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.18.1) (2026-01-21)
+
+### Bug Fixes
+
+* add InternalOptions.TelemetryAttributes for internal client use (#13641) ([3876978](https://github.com/googleapis/google-cloud-go/commit/38769789755ed47d85e85dcd56596109de65f780))
+* remove singleton and restore normal usage of otelgrpc.clientHandler (#13522) ([673d4b0](https://github.com/googleapis/google-cloud-go/commit/673d4b05617f833aa433f7f6a350b5cb888ea20d))
+
 ## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/auth%2Fv0.18.0) (2025-12-15)
 
 ### Features

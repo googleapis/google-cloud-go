@@ -1,0 +1,173 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.maps.mapmanagement.v2beta",
+  "libraryPackage": "cloud.google.com/go/maps/mapmanagement/apiv2beta",
+  "services": {
+    "MapManagement": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateMapConfig": {
+              "methods": [
+                "CreateMapConfig"
+              ]
+            },
+            "CreateMapContextConfig": {
+              "methods": [
+                "CreateMapContextConfig"
+              ]
+            },
+            "CreateStyleConfig": {
+              "methods": [
+                "CreateStyleConfig"
+              ]
+            },
+            "DeleteMapConfig": {
+              "methods": [
+                "DeleteMapConfig"
+              ]
+            },
+            "DeleteMapContextConfig": {
+              "methods": [
+                "DeleteMapContextConfig"
+              ]
+            },
+            "DeleteStyleConfig": {
+              "methods": [
+                "DeleteStyleConfig"
+              ]
+            },
+            "GetMapConfig": {
+              "methods": [
+                "GetMapConfig"
+              ]
+            },
+            "GetMapContextConfig": {
+              "methods": [
+                "GetMapContextConfig"
+              ]
+            },
+            "GetStyleConfig": {
+              "methods": [
+                "GetStyleConfig"
+              ]
+            },
+            "ListMapConfigs": {
+              "methods": [
+                "ListMapConfigs"
+              ]
+            },
+            "ListMapContextConfigs": {
+              "methods": [
+                "ListMapContextConfigs"
+              ]
+            },
+            "ListStyleConfigs": {
+              "methods": [
+                "ListStyleConfigs"
+              ]
+            },
+            "UpdateMapConfig": {
+              "methods": [
+                "UpdateMapConfig"
+              ]
+            },
+            "UpdateMapContextConfig": {
+              "methods": [
+                "UpdateMapContextConfig"
+              ]
+            },
+            "UpdateStyleConfig": {
+              "methods": [
+                "UpdateStyleConfig"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CreateMapConfig": {
+              "methods": [
+                "CreateMapConfig"
+              ]
+            },
+            "CreateMapContextConfig": {
+              "methods": [
+                "CreateMapContextConfig"
+              ]
+            },
+            "CreateStyleConfig": {
+              "methods": [
+                "CreateStyleConfig"
+              ]
+            },
+            "DeleteMapConfig": {
+              "methods": [
+                "DeleteMapConfig"
+              ]
+            },
+            "DeleteMapContextConfig": {
+              "methods": [
+                "DeleteMapContextConfig"
+              ]
+            },
+            "DeleteStyleConfig": {
+              "methods": [
+                "DeleteStyleConfig"
+              ]
+            },
+            "GetMapConfig": {
+              "methods": [
+                "GetMapConfig"
+              ]
+            },
+            "GetMapContextConfig": {
+              "methods": [
+                "GetMapContextConfig"
+              ]
+            },
+            "GetStyleConfig": {
+              "methods": [
+                "GetStyleConfig"
+              ]
+            },
+            "ListMapConfigs": {
+              "methods": [
+                "ListMapConfigs"
+              ]
+            },
+            "ListMapContextConfigs": {
+              "methods": [
+                "ListMapContextConfigs"
+              ]
+            },
+            "ListStyleConfigs": {
+              "methods": [
+                "ListStyleConfigs"
+              ]
+            },
+            "UpdateMapConfig": {
+              "methods": [
+                "UpdateMapConfig"
+              ]
+            },
+            "UpdateMapContextConfig": {
+              "methods": [
+                "UpdateMapContextConfig"
+              ]
+            },
+            "UpdateStyleConfig": {
+              "methods": [
+                "UpdateStyleConfig"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

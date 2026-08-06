@@ -25,6 +25,7 @@ import (
 
 	"cloud.google.com/go/civil"
 	"cloud.google.com/go/spanner/spansql"
+	"github.com/google/uuid"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 )
@@ -212,6 +213,8 @@ func convert(val interface{}, tp spansql.Type) (interface{}, error) {
 		res, convertErr, err = convertToTimestamp(val)
 	case spansql.Numeric:
 	case spansql.JSON:
+	case spansql.UUID:
+		res, convertErr, err = convertToUUID(val)
 	}
 	if err != nil {
 		return nil, err
@@ -310,6 +313,20 @@ func convertToTimestamp(val interface{}) (res time.Time, convertErr error, err e
 		return res, nil, nil
 	}
 	return time.Time{}, nil, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to TIMESTAMP", val)
+}
+
+func convertToUUID(val interface{}) (res uuid.UUID, convertErr error, err error) {
+	switch v := val.(type) {
+	case uuid.UUID:
+		return v, nil, nil
+	case string:
+		id, parseErr := uuid.Parse(v)
+		if parseErr != nil {
+			return uuid.UUID{}, status.Errorf(codes.InvalidArgument, "invalid value for UUID: %q", v), nil
+		}
+		return id, nil, nil
+	}
+	return uuid.UUID{}, nil, status.Errorf(codes.Unimplemented, "unsupported conversion for %v to UUID", val)
 }
 
 type aggregateFunc struct {

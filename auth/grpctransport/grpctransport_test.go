@@ -350,6 +350,47 @@ func TestGrpcCredentialsProvider_TokenType(t *testing.T) {
 	}
 }
 
+type mockRABProvider struct {
+	gotCtx context.Context
+}
+
+func (m *mockRABProvider) GetHeaderValue(ctx context.Context, reqURL string, token *auth.Token) string {
+	m.gotCtx = ctx
+	return ""
+}
+
+func TestGrpcCredentialsProvider_GetRequestMetadata_Context(t *testing.T) {
+	type testKeyType struct{}
+	var testKey testKeyType
+	testCtx := context.WithValue(context.Background(), testKey, "testVal")
+
+	rabProvider := &mockRABProvider{}
+	cp := grpcCredentialsProvider{
+		creds: &auth.Credentials{
+			TokenProvider: &staticTP{
+				tok: &auth.Token{
+					Value: "token",
+					Metadata: map[string]interface{}{
+						"regionalaccessboundary.ProviderKey": rabProvider,
+					},
+				},
+			},
+		},
+	}
+
+	_, err := cp.GetRequestMetadata(testCtx, "")
+	if err != nil {
+		t.Fatalf("cp.GetRequestMetadata() unexpected error: %v", err)
+	}
+
+	if rabProvider.gotCtx == nil {
+		t.Fatal("GetRequestMetadata did not pass context to RAB provider")
+	}
+	if v := rabProvider.gotCtx.Value(testKey); v != "testVal" {
+		t.Errorf("GetRequestMetadata did not pass context to RAB provider, got value %v", v)
+	}
+}
+
 func TestNewClient_DetectedServiceAccount(t *testing.T) {
 	testQuota := "testquota"
 	wantHeader := "bar"

@@ -1,0 +1,705 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.apigateway.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/apigateway/apiv1",
+    "version": "1.13.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.CreateApi",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.CreateApi",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "CreateApi"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.CreateApiRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateApiOperation",
+        "shortName": "CreateApi"
+      },
+      "description": "CreateApi creates a new Api in a given project and location.",
+      "file": "Client/CreateApi/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_CreateApi_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway CreateApi Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.CreateApiConfig",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.CreateApiConfig",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "CreateApiConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.CreateApiConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateApiConfigOperation",
+        "shortName": "CreateApiConfig"
+      },
+      "description": "CreateApiConfig creates a new ApiConfig in a given project and location.",
+      "file": "Client/CreateApiConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_CreateApiConfig_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway CreateApiConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.CreateGateway",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.CreateGateway",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "CreateGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.CreateGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateGatewayOperation",
+        "shortName": "CreateGateway"
+      },
+      "description": "CreateGateway creates a new Gateway in a given project and location.",
+      "file": "Client/CreateGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_CreateGateway_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway CreateGateway Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.DeleteApi",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.DeleteApi",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "DeleteApi"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.DeleteApiRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteApiOperation",
+        "shortName": "DeleteApi"
+      },
+      "description": "DeleteApi deletes a single Api.",
+      "file": "Client/DeleteApi/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_DeleteApi_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway DeleteApi Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.DeleteApiConfig",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.DeleteApiConfig",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "DeleteApiConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.DeleteApiConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteApiConfigOperation",
+        "shortName": "DeleteApiConfig"
+      },
+      "description": "DeleteApiConfig deletes a single ApiConfig.",
+      "file": "Client/DeleteApiConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_DeleteApiConfig_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway DeleteApiConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.DeleteGateway",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.DeleteGateway",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "DeleteGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.DeleteGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteGatewayOperation",
+        "shortName": "DeleteGateway"
+      },
+      "description": "DeleteGateway deletes a single Gateway.",
+      "file": "Client/DeleteGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_DeleteGateway_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway DeleteGateway Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.GetApi",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.GetApi",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "GetApi"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.GetApiRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apigatewaypb.Api",
+        "shortName": "GetApi"
+      },
+      "description": "GetApi gets details of a single Api.",
+      "file": "Client/GetApi/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_GetApi_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway GetApi Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.GetApiConfig",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.GetApiConfig",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "GetApiConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.GetApiConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apigatewaypb.ApiConfig",
+        "shortName": "GetApiConfig"
+      },
+      "description": "GetApiConfig gets details of a single ApiConfig.",
+      "file": "Client/GetApiConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_GetApiConfig_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway GetApiConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.GetGateway",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.GetGateway",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "GetGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.GetGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*apigatewaypb.Gateway",
+        "shortName": "GetGateway"
+      },
+      "description": "GetGateway gets details of a single Gateway.",
+      "file": "Client/GetGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_GetGateway_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway GetGateway Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.ListApiConfigs",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.ListApiConfigs",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "ListApiConfigs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.ListApiConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApiConfigIterator",
+        "shortName": "ListApiConfigs"
+      },
+      "description": "ListApiConfigs lists ApiConfigs in a given project and location.",
+      "file": "Client/ListApiConfigs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_ListApiConfigs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway ListApiConfigs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.ListApis",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.ListApis",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "ListApis"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.ListApisRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ApiIterator",
+        "shortName": "ListApis"
+      },
+      "description": "ListApis lists Apis in a given project and location.",
+      "file": "Client/ListApis/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_ListApis_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway ListApis Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.ListGateways",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.ListGateways",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "ListGateways"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.ListGatewaysRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "GatewayIterator",
+        "shortName": "ListGateways"
+      },
+      "description": "ListGateways lists Gateways in a given project and location.",
+      "file": "Client/ListGateways/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_ListGateways_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway ListGateways Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.UpdateApi",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.UpdateApi",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "UpdateApi"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.UpdateApiRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateApiOperation",
+        "shortName": "UpdateApi"
+      },
+      "description": "UpdateApi updates the parameters of a single Api.",
+      "file": "Client/UpdateApi/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_UpdateApi_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway UpdateApi Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.UpdateApiConfig",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.UpdateApiConfig",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "UpdateApiConfig"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.UpdateApiConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateApiConfigOperation",
+        "shortName": "UpdateApiConfig"
+      },
+      "description": "UpdateApiConfig updates the parameters of a single ApiConfig.",
+      "file": "Client/UpdateApiConfig/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_UpdateApiConfig_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway UpdateApiConfig Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apigateway.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.apigateway.v1.Client.UpdateGateway",
+        "method": {
+          "fullName": "google.cloud.apigateway.v1.ApiGatewayService.UpdateGateway",
+          "service": {
+            "fullName": "google.cloud.apigateway.v1.ApiGatewayService",
+            "shortName": "ApiGatewayService"
+          },
+          "shortName": "UpdateGateway"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apigatewaypb.UpdateGatewayRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateGatewayOperation",
+        "shortName": "UpdateGateway"
+      },
+      "description": "UpdateGateway updates the parameters of a single Gateway.",
+      "file": "Client/UpdateGateway/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apigateway_v1_generated_ApiGatewayService_UpdateGateway_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apigateway UpdateGateway Sample"
+    }
+  ]
+}

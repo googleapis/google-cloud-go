@@ -1,5 +1,39 @@
 # Changes
 
+## [1.46.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.45.0...securitycenter/v1.46.0) (2026-07-20)
+
+
+### Features
+
+* Update API sources and regenerate ([#20159](https://github.com/googleapis/google-cloud-go/issues/20159)) ([6395ba5](https://github.com/googleapis/google-cloud-go/commit/6395ba5d059d7e0d6ccfbf57b15d8d5ffcd70d0e))
+
+## [1.45.0](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.44.0...securitycenter/v1.45.0) (2026-07-13)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
+## [1.44.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.44.0) (2026-05-07)
+
+### Features
+
+* update API sources and regenerate (#14537) ([07fe29b](https://github.com/googleapis/google-cloud-go/commit/07fe29ba4c5069d27d4149d8fa5f8814eb8789d7))
+
+## [1.43.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.43.0) (2026-04-30)
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.42.0) (2026-04-13)
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.41.0) (2026-04-09)
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.40.0) (2026-04-02)
+
+## [1.39.0](https://github.com/googleapis/google-cloud-go/releases/tag/securitycenter%2Fv1.39.0) (2026-03-23)
+
+### Features
+
+* Support Chokepoint and external exposure in findings Proto ([790bab5](https://github.com/googleapis/google-cloud-go/commit/790bab51084e22725bdb2daaa2870d862dc453c6))
+
 ## [1.38.1](https://github.com/googleapis/google-cloud-go/compare/securitycenter/v1.38.0...securitycenter/v1.38.1) (2025-09-22)
 
 

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -25,6 +25,12 @@ import (
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	"github.com/googleapis/gax-go/v2/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssistantIterator) All() iter.Seq2[*discoveryenginepb.Assistant, error] {
+	return iterator.RangeAdapter(it.Next)
+}
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
@@ -59,6 +65,24 @@ func (it *EngineIterator) All() iter.Seq2[*discoveryenginepb.Engine, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *EvaluationIterator) All() iter.Seq2[*discoveryenginepb.Evaluation, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IdentityMappingEntryIterator) All() iter.Seq2[*discoveryenginepb.IdentityMappingEntry, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IdentityMappingStoreIterator) All() iter.Seq2[*discoveryenginepb.IdentityMappingStore, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LicenseConfigIterator) All() iter.Seq2[*discoveryenginepb.LicenseConfig, error] {
 	return iterator.RangeAdapter(it.Next)
 }
 
@@ -113,5 +137,11 @@ func (it *SessionIterator) All() iter.Seq2[*discoveryenginepb.Session, error] {
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
 func (it *TargetSiteIterator) All() iter.Seq2[*discoveryenginepb.TargetSite, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserLicenseIterator) All() iter.Seq2[*discoveryenginepb.UserLicense, error] {
 	return iterator.RangeAdapter(it.Next)
 }

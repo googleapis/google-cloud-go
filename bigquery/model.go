@@ -82,6 +82,7 @@ func (m *Model) Metadata(ctx context.Context) (mm *ModelMetadata, err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Model.Metadata")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setModelTraceMetadata(ctx, m.ProjectID, m.DatasetID, m.ModelID)
 	req := m.c.bqs.Models.Get(m.ProjectID, m.DatasetID, m.ModelID).Context(ctx)
 	setClientHeader(req.Header())
 	var model *bq.Model
@@ -106,6 +107,7 @@ func (m *Model) Update(ctx context.Context, mm ModelMetadataToUpdate, etag strin
 	if err != nil {
 		return nil, err
 	}
+	ctx = setModelTraceMetadata(ctx, m.ProjectID, m.DatasetID, m.ModelID)
 	call := m.c.bqs.Models.Patch(m.ProjectID, m.DatasetID, m.ModelID, bqm).Context(ctx)
 	setClientHeader(call.Header())
 	if etag != "" {
@@ -128,6 +130,7 @@ func (m *Model) Delete(ctx context.Context) (err error) {
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigquery.Model.Delete")
 	defer func() { trace.EndSpan(ctx, err) }()
 
+	ctx = setModelTraceMetadata(ctx, m.ProjectID, m.DatasetID, m.ModelID)
 	req := m.c.bqs.Models.Delete(m.ProjectID, m.DatasetID, m.ModelID).Context(ctx)
 	setClientHeader(req.Header())
 	return req.Do()

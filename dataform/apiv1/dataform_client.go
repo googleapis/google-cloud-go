@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -27,7 +27,12 @@ import (
 
 	dataformpb "cloud.google.com/go/dataform/apiv1/dataformpb"
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/longrunning"
+	lroauto "cloud.google.com/go/longrunning/autogen"
+	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
+	trace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -43,11 +48,27 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
+	GetTeamFolder                      []gax.CallOption
+	CreateTeamFolder                   []gax.CallOption
+	UpdateTeamFolder                   []gax.CallOption
+	DeleteTeamFolder                   []gax.CallOption
+	DeleteTeamFolderTree               []gax.CallOption
+	QueryTeamFolderContents            []gax.CallOption
+	SearchTeamFolders                  []gax.CallOption
+	GetFolder                          []gax.CallOption
+	CreateFolder                       []gax.CallOption
+	UpdateFolder                       []gax.CallOption
+	DeleteFolder                       []gax.CallOption
+	DeleteFolderTree                   []gax.CallOption
+	QueryFolderContents                []gax.CallOption
+	QueryUserRootContents              []gax.CallOption
+	MoveFolder                         []gax.CallOption
 	ListRepositories                   []gax.CallOption
 	GetRepository                      []gax.CallOption
 	CreateRepository                   []gax.CallOption
 	UpdateRepository                   []gax.CallOption
 	DeleteRepository                   []gax.CallOption
+	MoveRepository                     []gax.CallOption
 	CommitRepositoryChanges            []gax.CallOption
 	ReadRepositoryFile                 []gax.CallOption
 	QueryRepositoryDirectoryContents   []gax.CallOption
@@ -97,11 +118,15 @@ type CallOptions struct {
 	QueryWorkflowInvocationActions     []gax.CallOption
 	GetConfig                          []gax.CallOption
 	UpdateConfig                       []gax.CallOption
-	GetLocation                        []gax.CallOption
-	ListLocations                      []gax.CallOption
 	GetIamPolicy                       []gax.CallOption
 	SetIamPolicy                       []gax.CallOption
 	TestIamPermissions                 []gax.CallOption
+	GetLocation                        []gax.CallOption
+	ListLocations                      []gax.CallOption
+	CancelOperation                    []gax.CallOption
+	DeleteOperation                    []gax.CallOption
+	GetOperation                       []gax.CallOption
+	ListOperations                     []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -121,11 +146,27 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
+		GetTeamFolder:                      []gax.CallOption{},
+		CreateTeamFolder:                   []gax.CallOption{},
+		UpdateTeamFolder:                   []gax.CallOption{},
+		DeleteTeamFolder:                   []gax.CallOption{},
+		DeleteTeamFolderTree:               []gax.CallOption{},
+		QueryTeamFolderContents:            []gax.CallOption{},
+		SearchTeamFolders:                  []gax.CallOption{},
+		GetFolder:                          []gax.CallOption{},
+		CreateFolder:                       []gax.CallOption{},
+		UpdateFolder:                       []gax.CallOption{},
+		DeleteFolder:                       []gax.CallOption{},
+		DeleteFolderTree:                   []gax.CallOption{},
+		QueryFolderContents:                []gax.CallOption{},
+		QueryUserRootContents:              []gax.CallOption{},
+		MoveFolder:                         []gax.CallOption{},
 		ListRepositories:                   []gax.CallOption{},
 		GetRepository:                      []gax.CallOption{},
 		CreateRepository:                   []gax.CallOption{},
 		UpdateRepository:                   []gax.CallOption{},
 		DeleteRepository:                   []gax.CallOption{},
+		MoveRepository:                     []gax.CallOption{},
 		CommitRepositoryChanges:            []gax.CallOption{},
 		ReadRepositoryFile:                 []gax.CallOption{},
 		QueryRepositoryDirectoryContents:   []gax.CallOption{},
@@ -175,21 +216,41 @@ func defaultCallOptions() *CallOptions {
 		QueryWorkflowInvocationActions:     []gax.CallOption{},
 		GetConfig:                          []gax.CallOption{},
 		UpdateConfig:                       []gax.CallOption{},
-		GetLocation:                        []gax.CallOption{},
-		ListLocations:                      []gax.CallOption{},
 		GetIamPolicy:                       []gax.CallOption{},
 		SetIamPolicy:                       []gax.CallOption{},
 		TestIamPermissions:                 []gax.CallOption{},
+		GetLocation:                        []gax.CallOption{},
+		ListLocations:                      []gax.CallOption{},
+		CancelOperation:                    []gax.CallOption{},
+		DeleteOperation:                    []gax.CallOption{},
+		GetOperation:                       []gax.CallOption{},
+		ListOperations:                     []gax.CallOption{},
 	}
 }
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
+		GetTeamFolder:                      []gax.CallOption{},
+		CreateTeamFolder:                   []gax.CallOption{},
+		UpdateTeamFolder:                   []gax.CallOption{},
+		DeleteTeamFolder:                   []gax.CallOption{},
+		DeleteTeamFolderTree:               []gax.CallOption{},
+		QueryTeamFolderContents:            []gax.CallOption{},
+		SearchTeamFolders:                  []gax.CallOption{},
+		GetFolder:                          []gax.CallOption{},
+		CreateFolder:                       []gax.CallOption{},
+		UpdateFolder:                       []gax.CallOption{},
+		DeleteFolder:                       []gax.CallOption{},
+		DeleteFolderTree:                   []gax.CallOption{},
+		QueryFolderContents:                []gax.CallOption{},
+		QueryUserRootContents:              []gax.CallOption{},
+		MoveFolder:                         []gax.CallOption{},
 		ListRepositories:                   []gax.CallOption{},
 		GetRepository:                      []gax.CallOption{},
 		CreateRepository:                   []gax.CallOption{},
 		UpdateRepository:                   []gax.CallOption{},
 		DeleteRepository:                   []gax.CallOption{},
+		MoveRepository:                     []gax.CallOption{},
 		CommitRepositoryChanges:            []gax.CallOption{},
 		ReadRepositoryFile:                 []gax.CallOption{},
 		QueryRepositoryDirectoryContents:   []gax.CallOption{},
@@ -239,11 +300,15 @@ func defaultRESTCallOptions() *CallOptions {
 		QueryWorkflowInvocationActions:     []gax.CallOption{},
 		GetConfig:                          []gax.CallOption{},
 		UpdateConfig:                       []gax.CallOption{},
-		GetLocation:                        []gax.CallOption{},
-		ListLocations:                      []gax.CallOption{},
 		GetIamPolicy:                       []gax.CallOption{},
 		SetIamPolicy:                       []gax.CallOption{},
 		TestIamPermissions:                 []gax.CallOption{},
+		GetLocation:                        []gax.CallOption{},
+		ListLocations:                      []gax.CallOption{},
+		CancelOperation:                    []gax.CallOption{},
+		DeleteOperation:                    []gax.CallOption{},
+		GetOperation:                       []gax.CallOption{},
+		ListOperations:                     []gax.CallOption{},
 	}
 }
 
@@ -252,11 +317,31 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	GetTeamFolder(context.Context, *dataformpb.GetTeamFolderRequest, ...gax.CallOption) (*dataformpb.TeamFolder, error)
+	CreateTeamFolder(context.Context, *dataformpb.CreateTeamFolderRequest, ...gax.CallOption) (*dataformpb.TeamFolder, error)
+	UpdateTeamFolder(context.Context, *dataformpb.UpdateTeamFolderRequest, ...gax.CallOption) (*dataformpb.TeamFolder, error)
+	DeleteTeamFolder(context.Context, *dataformpb.DeleteTeamFolderRequest, ...gax.CallOption) error
+	DeleteTeamFolderTree(context.Context, *dataformpb.DeleteTeamFolderTreeRequest, ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error)
+	DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation
+	QueryTeamFolderContents(context.Context, *dataformpb.QueryTeamFolderContentsRequest, ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator
+	SearchTeamFolders(context.Context, *dataformpb.SearchTeamFoldersRequest, ...gax.CallOption) *SearchTeamFoldersResponse_TeamFolderSearchResultIterator
+	GetFolder(context.Context, *dataformpb.GetFolderRequest, ...gax.CallOption) (*dataformpb.Folder, error)
+	CreateFolder(context.Context, *dataformpb.CreateFolderRequest, ...gax.CallOption) (*dataformpb.Folder, error)
+	UpdateFolder(context.Context, *dataformpb.UpdateFolderRequest, ...gax.CallOption) (*dataformpb.Folder, error)
+	DeleteFolder(context.Context, *dataformpb.DeleteFolderRequest, ...gax.CallOption) error
+	DeleteFolderTree(context.Context, *dataformpb.DeleteFolderTreeRequest, ...gax.CallOption) (*DeleteFolderTreeOperation, error)
+	DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation
+	QueryFolderContents(context.Context, *dataformpb.QueryFolderContentsRequest, ...gax.CallOption) *QueryFolderContentsResponse_FolderContentsEntryIterator
+	QueryUserRootContents(context.Context, *dataformpb.QueryUserRootContentsRequest, ...gax.CallOption) *QueryUserRootContentsResponse_RootContentsEntryIterator
+	MoveFolder(context.Context, *dataformpb.MoveFolderRequest, ...gax.CallOption) (*MoveFolderOperation, error)
+	MoveFolderOperation(name string) *MoveFolderOperation
 	ListRepositories(context.Context, *dataformpb.ListRepositoriesRequest, ...gax.CallOption) *RepositoryIterator
 	GetRepository(context.Context, *dataformpb.GetRepositoryRequest, ...gax.CallOption) (*dataformpb.Repository, error)
 	CreateRepository(context.Context, *dataformpb.CreateRepositoryRequest, ...gax.CallOption) (*dataformpb.Repository, error)
 	UpdateRepository(context.Context, *dataformpb.UpdateRepositoryRequest, ...gax.CallOption) (*dataformpb.Repository, error)
 	DeleteRepository(context.Context, *dataformpb.DeleteRepositoryRequest, ...gax.CallOption) error
+	MoveRepository(context.Context, *dataformpb.MoveRepositoryRequest, ...gax.CallOption) (*MoveRepositoryOperation, error)
+	MoveRepositoryOperation(name string) *MoveRepositoryOperation
 	CommitRepositoryChanges(context.Context, *dataformpb.CommitRepositoryChangesRequest, ...gax.CallOption) (*dataformpb.CommitRepositoryChangesResponse, error)
 	ReadRepositoryFile(context.Context, *dataformpb.ReadRepositoryFileRequest, ...gax.CallOption) (*dataformpb.ReadRepositoryFileResponse, error)
 	QueryRepositoryDirectoryContents(context.Context, *dataformpb.QueryRepositoryDirectoryContentsRequest, ...gax.CallOption) *DirectoryEntryIterator
@@ -306,11 +391,15 @@ type internalClient interface {
 	QueryWorkflowInvocationActions(context.Context, *dataformpb.QueryWorkflowInvocationActionsRequest, ...gax.CallOption) *WorkflowInvocationActionIterator
 	GetConfig(context.Context, *dataformpb.GetConfigRequest, ...gax.CallOption) (*dataformpb.Config, error)
 	UpdateConfig(context.Context, *dataformpb.UpdateConfigRequest, ...gax.CallOption) (*dataformpb.Config, error)
-	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
-	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	GetIamPolicy(context.Context, *iampb.GetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	SetIamPolicy(context.Context, *iampb.SetIamPolicyRequest, ...gax.CallOption) (*iampb.Policy, error)
 	TestIamPermissions(context.Context, *iampb.TestIamPermissionsRequest, ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error)
+	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
+	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
+	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
+	DeleteOperation(context.Context, *longrunningpb.DeleteOperationRequest, ...gax.CallOption) error
+	GetOperation(context.Context, *longrunningpb.GetOperationRequest, ...gax.CallOption) (*longrunningpb.Operation, error)
+	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
 // Client is a client for interacting with Dataform API.
@@ -324,11 +413,16 @@ type Client struct {
 
 	// The call options for this service.
 	CallOptions *CallOptions
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient *lroauto.OperationsClient
 }
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *Client) Close() error {
 	return c.internalClient.Close()
@@ -347,6 +441,104 @@ func (c *Client) setGoogleClientInfo(keyval ...string) {
 // return the same resource.
 func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
+}
+
+// GetTeamFolder fetches a single TeamFolder.
+func (c *Client) GetTeamFolder(ctx context.Context, req *dataformpb.GetTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	return c.internalClient.GetTeamFolder(ctx, req, opts...)
+}
+
+// CreateTeamFolder creates a new TeamFolder in a given project and location.
+func (c *Client) CreateTeamFolder(ctx context.Context, req *dataformpb.CreateTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	return c.internalClient.CreateTeamFolder(ctx, req, opts...)
+}
+
+// UpdateTeamFolder updates a single TeamFolder.
+func (c *Client) UpdateTeamFolder(ctx context.Context, req *dataformpb.UpdateTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	return c.internalClient.UpdateTeamFolder(ctx, req, opts...)
+}
+
+// DeleteTeamFolder deletes a single TeamFolder.
+func (c *Client) DeleteTeamFolder(ctx context.Context, req *dataformpb.DeleteTeamFolderRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteTeamFolder(ctx, req, opts...)
+}
+
+// DeleteTeamFolderTree deletes a TeamFolder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *Client) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.DeleteTeamFolderTreeRequest, opts ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error) {
+	return c.internalClient.DeleteTeamFolderTree(ctx, req, opts...)
+}
+
+// DeleteTeamFolderTreeOperation returns a new DeleteTeamFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteTeamFolderTreeOperation, possibly from a different process.
+func (c *Client) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
+	return c.internalClient.DeleteTeamFolderTreeOperation(name)
+}
+
+// QueryTeamFolderContents returns the contents of a given TeamFolder.
+func (c *Client) QueryTeamFolderContents(ctx context.Context, req *dataformpb.QueryTeamFolderContentsRequest, opts ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator {
+	return c.internalClient.QueryTeamFolderContents(ctx, req, opts...)
+}
+
+// SearchTeamFolders returns all TeamFolders in a given location that the caller has access to
+// and match the provided filter.
+func (c *Client) SearchTeamFolders(ctx context.Context, req *dataformpb.SearchTeamFoldersRequest, opts ...gax.CallOption) *SearchTeamFoldersResponse_TeamFolderSearchResultIterator {
+	return c.internalClient.SearchTeamFolders(ctx, req, opts...)
+}
+
+// GetFolder fetches a single Folder.
+func (c *Client) GetFolder(ctx context.Context, req *dataformpb.GetFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	return c.internalClient.GetFolder(ctx, req, opts...)
+}
+
+// CreateFolder creates a new Folder in a given project and location.
+func (c *Client) CreateFolder(ctx context.Context, req *dataformpb.CreateFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	return c.internalClient.CreateFolder(ctx, req, opts...)
+}
+
+// UpdateFolder updates a single Folder.
+func (c *Client) UpdateFolder(ctx context.Context, req *dataformpb.UpdateFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	return c.internalClient.UpdateFolder(ctx, req, opts...)
+}
+
+// DeleteFolder deletes a single Folder.
+func (c *Client) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFolderRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteFolder(ctx, req, opts...)
+}
+
+// DeleteFolderTree deletes a Folder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *Client) DeleteFolderTree(ctx context.Context, req *dataformpb.DeleteFolderTreeRequest, opts ...gax.CallOption) (*DeleteFolderTreeOperation, error) {
+	return c.internalClient.DeleteFolderTree(ctx, req, opts...)
+}
+
+// DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteFolderTreeOperation, possibly from a different process.
+func (c *Client) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
+	return c.internalClient.DeleteFolderTreeOperation(name)
+}
+
+// QueryFolderContents returns the contents of a given Folder.
+func (c *Client) QueryFolderContents(ctx context.Context, req *dataformpb.QueryFolderContentsRequest, opts ...gax.CallOption) *QueryFolderContentsResponse_FolderContentsEntryIterator {
+	return c.internalClient.QueryFolderContents(ctx, req, opts...)
+}
+
+// QueryUserRootContents returns the contents of a caller’s root folder in a given location.
+// The root folder contains all resources that are created by the user and not
+// contained in any other folder.
+func (c *Client) QueryUserRootContents(ctx context.Context, req *dataformpb.QueryUserRootContentsRequest, opts ...gax.CallOption) *QueryUserRootContentsResponse_RootContentsEntryIterator {
+	return c.internalClient.QueryUserRootContents(ctx, req, opts...)
+}
+
+// MoveFolder moves a Folder to a new Folder, TeamFolder, or the root location.
+func (c *Client) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
+	return c.internalClient.MoveFolder(ctx, req, opts...)
+}
+
+// MoveFolderOperation returns a new MoveFolderOperation from a given name.
+// The name must be that of a previously created MoveFolderOperation, possibly from a different process.
+func (c *Client) MoveFolderOperation(name string) *MoveFolderOperation {
+	return c.internalClient.MoveFolderOperation(name)
 }
 
 // ListRepositories lists Repositories in a given project and location.
@@ -380,6 +572,17 @@ func (c *Client) UpdateRepository(ctx context.Context, req *dataformpb.UpdateRep
 // DeleteRepository deletes a single Repository.
 func (c *Client) DeleteRepository(ctx context.Context, req *dataformpb.DeleteRepositoryRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRepository(ctx, req, opts...)
+}
+
+// MoveRepository moves a Repository to a new location.
+func (c *Client) MoveRepository(ctx context.Context, req *dataformpb.MoveRepositoryRequest, opts ...gax.CallOption) (*MoveRepositoryOperation, error) {
+	return c.internalClient.MoveRepository(ctx, req, opts...)
+}
+
+// MoveRepositoryOperation returns a new MoveRepositoryOperation from a given name.
+// The name must be that of a previously created MoveRepositoryOperation, possibly from a different process.
+func (c *Client) MoveRepositoryOperation(name string) *MoveRepositoryOperation {
+	return c.internalClient.MoveRepositoryOperation(name)
 }
 
 // CommitRepositoryChanges applies a Git commit to a Repository. The Repository must not have a value
@@ -647,40 +850,75 @@ func (c *Client) UpdateConfig(ctx context.Context, req *dataformpb.UpdateConfigR
 	return c.internalClient.UpdateConfig(ctx, req, opts...)
 }
 
+// GetIamPolicy gets the access control policy for a resource.
+// Returns an empty policy if the resource exists and does not have a policy
+// set.
+func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces any
+// existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+// If the resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building permission-aware
+// UIs and command-line tools, not for authorization checking. This operation
+// may “fail open” without warning.
+func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+}
+
 // GetLocation gets information about a location.
 func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	return c.internalClient.GetLocation(ctx, req, opts...)
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
 
-// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
-// if the resource exists and does not have a policy set.
-func (c *Client) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	return c.internalClient.GetIamPolicy(ctx, req, opts...)
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *Client) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CancelOperation(ctx, req, opts...)
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces
-// any existing policy.
-//
-// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
-// errors.
-func (c *Client) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	return c.internalClient.SetIamPolicy(ctx, req, opts...)
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *Client) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteOperation(ctx, req, opts...)
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource. If the
-// resource does not exist, this will return an empty set of
-// permissions, not a NOT_FOUND error.
-//
-// Note: This operation is designed to be used for building
-// permission-aware UIs and command-line tools, not for authorization
-// checking. This operation may “fail open” without warning.
-func (c *Client) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	return c.internalClient.TestIamPermissions(ctx, req, opts...)
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *Client) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	return c.internalClient.GetOperation(ctx, req, opts...)
+}
+
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *Client) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
 // gRPCClient is a client for interacting with Dataform API over gRPC transport.
@@ -696,7 +934,12 @@ type gRPCClient struct {
 	// The gRPC API client.
 	client dataformpb.DataformClient
 
-	iamPolicyClient iampb.IAMPolicyClient
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
+
+	operationsClient longrunningpb.OperationsClient
 
 	locationsClient locationpb.LocationsClient
 
@@ -713,6 +956,16 @@ type gRPCClient struct {
 // tables in BigQuery.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataform/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataform.googleapis.com",
+		}))
+	}
 	if newClientHook != nil {
 		hookOpts, err := newClientHook(ctx, clientHookParams{})
 		if err != nil {
@@ -728,17 +981,120 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	client := Client{CallOptions: defaultCallOptions()}
 
 	c := &gRPCClient{
-		connPool:        connPool,
-		client:          dataformpb.NewDataformClient(connPool),
-		CallOptions:     &client.CallOptions,
-		logger:          internaloption.GetLogger(opts),
-		iamPolicyClient: iampb.NewIAMPolicyClient(connPool),
-		locationsClient: locationpb.NewLocationsClient(connPool),
+		connPool:         connPool,
+		client:           dataformpb.NewDataformClient(connPool),
+		CallOptions:      &client.CallOptions,
+		logger:           internaloption.GetLogger(opts),
+		operationsClient: longrunningpb.NewOperationsClient(connPool),
+		locationsClient:  locationpb.NewLocationsClient(connPool),
 	}
 	c.setGoogleClientInfo()
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataform/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataform.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetTeamFolder = append(client.CallOptions.GetTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateTeamFolder = append(client.CallOptions.CreateTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateTeamFolder = append(client.CallOptions.UpdateTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTeamFolder = append(client.CallOptions.DeleteTeamFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteTeamFolderTree = append(client.CallOptions.DeleteTeamFolderTree, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryTeamFolderContents = append(client.CallOptions.QueryTeamFolderContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchTeamFolders = append(client.CallOptions.SearchTeamFolders, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetFolder = append(client.CallOptions.GetFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateFolder = append(client.CallOptions.CreateFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateFolder = append(client.CallOptions.UpdateFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFolder = append(client.CallOptions.DeleteFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteFolderTree = append(client.CallOptions.DeleteFolderTree, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryFolderContents = append(client.CallOptions.QueryFolderContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryUserRootContents = append(client.CallOptions.QueryUserRootContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveFolder = append(client.CallOptions.MoveFolder, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveRepository = append(client.CallOptions.MoveRepository, gax.WithClientMetrics(metrics))
+		client.CallOptions.CommitRepositoryChanges = append(client.CallOptions.CommitRepositoryChanges, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadRepositoryFile = append(client.CallOptions.ReadRepositoryFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryRepositoryDirectoryContents = append(client.CallOptions.QueryRepositoryDirectoryContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchRepositoryHistory = append(client.CallOptions.FetchRepositoryHistory, gax.WithClientMetrics(metrics))
+		client.CallOptions.ComputeRepositoryAccessTokenStatus = append(client.CallOptions.ComputeRepositoryAccessTokenStatus, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchRemoteBranches = append(client.CallOptions.FetchRemoteBranches, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkspaces = append(client.CallOptions.ListWorkspaces, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkspace = append(client.CallOptions.GetWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateWorkspace = append(client.CallOptions.CreateWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkspace = append(client.CallOptions.DeleteWorkspace, gax.WithClientMetrics(metrics))
+		client.CallOptions.InstallNpmPackages = append(client.CallOptions.InstallNpmPackages, gax.WithClientMetrics(metrics))
+		client.CallOptions.PullGitCommits = append(client.CallOptions.PullGitCommits, gax.WithClientMetrics(metrics))
+		client.CallOptions.PushGitCommits = append(client.CallOptions.PushGitCommits, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchFileGitStatuses = append(client.CallOptions.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchGitAheadBehind = append(client.CallOptions.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
+		client.CallOptions.CommitWorkspaceChanges = append(client.CallOptions.CommitWorkspaceChanges, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResetWorkspaceChanges = append(client.CallOptions.ResetWorkspaceChanges, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchFileDiff = append(client.CallOptions.FetchFileDiff, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryDirectoryContents = append(client.CallOptions.QueryDirectoryContents, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchFiles = append(client.CallOptions.SearchFiles, gax.WithClientMetrics(metrics))
+		client.CallOptions.MakeDirectory = append(client.CallOptions.MakeDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveDirectory = append(client.CallOptions.RemoveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveDirectory = append(client.CallOptions.MoveDirectory, gax.WithClientMetrics(metrics))
+		client.CallOptions.ReadFile = append(client.CallOptions.ReadFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveFile = append(client.CallOptions.RemoveFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.MoveFile = append(client.CallOptions.MoveFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.WriteFile = append(client.CallOptions.WriteFile, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListReleaseConfigs = append(client.CallOptions.ListReleaseConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetReleaseConfig = append(client.CallOptions.GetReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateReleaseConfig = append(client.CallOptions.CreateReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateReleaseConfig = append(client.CallOptions.UpdateReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteReleaseConfig = append(client.CallOptions.DeleteReleaseConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListCompilationResults = append(client.CallOptions.ListCompilationResults, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetCompilationResult = append(client.CallOptions.GetCompilationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateCompilationResult = append(client.CallOptions.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryCompilationResultActions = append(client.CallOptions.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkflowConfigs = append(client.CallOptions.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkflowConfig = append(client.CallOptions.GetWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateWorkflowConfig = append(client.CallOptions.CreateWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateWorkflowConfig = append(client.CallOptions.UpdateWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkflowConfig = append(client.CallOptions.DeleteWorkflowConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListWorkflowInvocations = append(client.CallOptions.ListWorkflowInvocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetWorkflowInvocation = append(client.CallOptions.GetWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateWorkflowInvocation = append(client.CallOptions.CreateWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteWorkflowInvocation = append(client.CallOptions.DeleteWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelWorkflowInvocation = append(client.CallOptions.CancelWorkflowInvocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.QueryWorkflowInvocationActions = append(client.CallOptions.QueryWorkflowInvocationActions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetConfig = append(client.CallOptions.GetConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConfig = append(client.CallOptions.UpdateConfig, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientMetrics(metrics))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
+	}
 
 	client.internalClient = c
 
+	client.LROClient, err = lroauto.NewOperationsClient(ctx, gtransport.WithConnPool(connPool))
+	if err != nil {
+		// This error "should not happen", since we are just reusing old connection pool
+		// and never actually need to dial.
+		// If this does happen, we could leak connp. However, we cannot close conn:
+		// If the user invoked the constructor with option.WithGRPCConn,
+		// we would close a connection that's still in use.
+		// TODO: investigate error conditions.
+		return nil, err
+	}
+	c.LROClient = &client.LROClient
 	return &client, nil
 }
 
@@ -761,7 +1117,7 @@ func (c *gRPCClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *gRPCClient) Close() error {
 	return c.connPool.Close()
@@ -774,6 +1130,11 @@ type restClient struct {
 
 	// The http client.
 	httpClient *http.Client
+
+	// LROClient is used internally to handle long-running operations.
+	// It is exposed so that its CallOptions can be modified if required.
+	// Users should not Close this client.
+	LROClient **lroauto.OperationsClient
 
 	// The x-goog-* headers to be sent with each request.
 	xGoogHeaders []string
@@ -790,6 +1151,16 @@ type restClient struct {
 // tables in BigQuery.
 func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := append(defaultRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "dataform",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/dataform/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "dataform.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -803,6 +1174,109 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "dataform",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataform/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataform.googleapis.com",
+			}),
+		)
+
+		callOpts.GetTeamFolder = append(callOpts.GetTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.CreateTeamFolder = append(callOpts.CreateTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.UpdateTeamFolder = append(callOpts.UpdateTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTeamFolder = append(callOpts.DeleteTeamFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteTeamFolderTree = append(callOpts.DeleteTeamFolderTree, gax.WithClientMetrics(metrics))
+		callOpts.QueryTeamFolderContents = append(callOpts.QueryTeamFolderContents, gax.WithClientMetrics(metrics))
+		callOpts.SearchTeamFolders = append(callOpts.SearchTeamFolders, gax.WithClientMetrics(metrics))
+		callOpts.GetFolder = append(callOpts.GetFolder, gax.WithClientMetrics(metrics))
+		callOpts.CreateFolder = append(callOpts.CreateFolder, gax.WithClientMetrics(metrics))
+		callOpts.UpdateFolder = append(callOpts.UpdateFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFolder = append(callOpts.DeleteFolder, gax.WithClientMetrics(metrics))
+		callOpts.DeleteFolderTree = append(callOpts.DeleteFolderTree, gax.WithClientMetrics(metrics))
+		callOpts.QueryFolderContents = append(callOpts.QueryFolderContents, gax.WithClientMetrics(metrics))
+		callOpts.QueryUserRootContents = append(callOpts.QueryUserRootContents, gax.WithClientMetrics(metrics))
+		callOpts.MoveFolder = append(callOpts.MoveFolder, gax.WithClientMetrics(metrics))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientMetrics(metrics))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientMetrics(metrics))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientMetrics(metrics))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientMetrics(metrics))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientMetrics(metrics))
+		callOpts.MoveRepository = append(callOpts.MoveRepository, gax.WithClientMetrics(metrics))
+		callOpts.CommitRepositoryChanges = append(callOpts.CommitRepositoryChanges, gax.WithClientMetrics(metrics))
+		callOpts.ReadRepositoryFile = append(callOpts.ReadRepositoryFile, gax.WithClientMetrics(metrics))
+		callOpts.QueryRepositoryDirectoryContents = append(callOpts.QueryRepositoryDirectoryContents, gax.WithClientMetrics(metrics))
+		callOpts.FetchRepositoryHistory = append(callOpts.FetchRepositoryHistory, gax.WithClientMetrics(metrics))
+		callOpts.ComputeRepositoryAccessTokenStatus = append(callOpts.ComputeRepositoryAccessTokenStatus, gax.WithClientMetrics(metrics))
+		callOpts.FetchRemoteBranches = append(callOpts.FetchRemoteBranches, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkspaces = append(callOpts.ListWorkspaces, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkspace = append(callOpts.GetWorkspace, gax.WithClientMetrics(metrics))
+		callOpts.CreateWorkspace = append(callOpts.CreateWorkspace, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkspace = append(callOpts.DeleteWorkspace, gax.WithClientMetrics(metrics))
+		callOpts.InstallNpmPackages = append(callOpts.InstallNpmPackages, gax.WithClientMetrics(metrics))
+		callOpts.PullGitCommits = append(callOpts.PullGitCommits, gax.WithClientMetrics(metrics))
+		callOpts.PushGitCommits = append(callOpts.PushGitCommits, gax.WithClientMetrics(metrics))
+		callOpts.FetchFileGitStatuses = append(callOpts.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
+		callOpts.FetchGitAheadBehind = append(callOpts.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
+		callOpts.CommitWorkspaceChanges = append(callOpts.CommitWorkspaceChanges, gax.WithClientMetrics(metrics))
+		callOpts.ResetWorkspaceChanges = append(callOpts.ResetWorkspaceChanges, gax.WithClientMetrics(metrics))
+		callOpts.FetchFileDiff = append(callOpts.FetchFileDiff, gax.WithClientMetrics(metrics))
+		callOpts.QueryDirectoryContents = append(callOpts.QueryDirectoryContents, gax.WithClientMetrics(metrics))
+		callOpts.SearchFiles = append(callOpts.SearchFiles, gax.WithClientMetrics(metrics))
+		callOpts.MakeDirectory = append(callOpts.MakeDirectory, gax.WithClientMetrics(metrics))
+		callOpts.RemoveDirectory = append(callOpts.RemoveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.MoveDirectory = append(callOpts.MoveDirectory, gax.WithClientMetrics(metrics))
+		callOpts.ReadFile = append(callOpts.ReadFile, gax.WithClientMetrics(metrics))
+		callOpts.RemoveFile = append(callOpts.RemoveFile, gax.WithClientMetrics(metrics))
+		callOpts.MoveFile = append(callOpts.MoveFile, gax.WithClientMetrics(metrics))
+		callOpts.WriteFile = append(callOpts.WriteFile, gax.WithClientMetrics(metrics))
+		callOpts.ListReleaseConfigs = append(callOpts.ListReleaseConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetReleaseConfig = append(callOpts.GetReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateReleaseConfig = append(callOpts.CreateReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateReleaseConfig = append(callOpts.UpdateReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteReleaseConfig = append(callOpts.DeleteReleaseConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListCompilationResults = append(callOpts.ListCompilationResults, gax.WithClientMetrics(metrics))
+		callOpts.GetCompilationResult = append(callOpts.GetCompilationResult, gax.WithClientMetrics(metrics))
+		callOpts.CreateCompilationResult = append(callOpts.CreateCompilationResult, gax.WithClientMetrics(metrics))
+		callOpts.QueryCompilationResultActions = append(callOpts.QueryCompilationResultActions, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkflowConfigs = append(callOpts.ListWorkflowConfigs, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkflowConfig = append(callOpts.GetWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.CreateWorkflowConfig = append(callOpts.CreateWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateWorkflowConfig = append(callOpts.UpdateWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkflowConfig = append(callOpts.DeleteWorkflowConfig, gax.WithClientMetrics(metrics))
+		callOpts.ListWorkflowInvocations = append(callOpts.ListWorkflowInvocations, gax.WithClientMetrics(metrics))
+		callOpts.GetWorkflowInvocation = append(callOpts.GetWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.CreateWorkflowInvocation = append(callOpts.CreateWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteWorkflowInvocation = append(callOpts.DeleteWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.CancelWorkflowInvocation = append(callOpts.CancelWorkflowInvocation, gax.WithClientMetrics(metrics))
+		callOpts.QueryWorkflowInvocationActions = append(callOpts.QueryWorkflowInvocationActions, gax.WithClientMetrics(metrics))
+		callOpts.GetConfig = append(callOpts.GetConfig, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConfig = append(callOpts.UpdateConfig, gax.WithClientMetrics(metrics))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+
+	lroOpts := []option.ClientOption{
+		option.WithHTTPClient(httpClient),
+		option.WithEndpoint(endpoint),
+	}
+	opClient, err := lroauto.NewOperationsRESTClient(ctx, lroOpts...)
+	if err != nil {
+		return nil, err
+	}
+	c.LROClient = &opClient
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -830,7 +1304,7 @@ func (c *restClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *restClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -844,14 +1318,496 @@ func (c *restClient) Close() error {
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *gRPCClient) GetTeamFolder(ctx context.Context, req *dataformpb.GetTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetTeamFolder")
+	}
+	opts = append((*c.CallOptions).GetTeamFolder[0:len((*c.CallOptions).GetTeamFolder):len((*c.CallOptions).GetTeamFolder)], opts...)
+	var resp *dataformpb.TeamFolder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetTeamFolder, req, settings.GRPC, c.logger, "GetTeamFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateTeamFolder(ctx context.Context, req *dataformpb.CreateTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateTeamFolder")
+	}
+	opts = append((*c.CallOptions).CreateTeamFolder[0:len((*c.CallOptions).CreateTeamFolder):len((*c.CallOptions).CreateTeamFolder)], opts...)
+	var resp *dataformpb.TeamFolder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateTeamFolder, req, settings.GRPC, c.logger, "CreateTeamFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateTeamFolder(ctx context.Context, req *dataformpb.UpdateTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "team_folder.name", url.QueryEscape(req.GetTeamFolder().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateTeamFolder")
+	}
+	opts = append((*c.CallOptions).UpdateTeamFolder[0:len((*c.CallOptions).UpdateTeamFolder):len((*c.CallOptions).UpdateTeamFolder)], opts...)
+	var resp *dataformpb.TeamFolder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateTeamFolder, req, settings.GRPC, c.logger, "UpdateTeamFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteTeamFolder(ctx context.Context, req *dataformpb.DeleteTeamFolderRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolder")
+	}
+	opts = append((*c.CallOptions).DeleteTeamFolder[0:len((*c.CallOptions).DeleteTeamFolder):len((*c.CallOptions).DeleteTeamFolder)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteTeamFolder, req, settings.GRPC, c.logger, "DeleteTeamFolder")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.DeleteTeamFolderTreeRequest, opts ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolderTree")
+	}
+	opts = append((*c.CallOptions).DeleteTeamFolderTree[0:len((*c.CallOptions).DeleteTeamFolderTree):len((*c.CallOptions).DeleteTeamFolderTree)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteTeamFolderTree, req, settings.GRPC, c.logger, "DeleteTeamFolderTree")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteTeamFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteTeamFolderTreeOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) QueryTeamFolderContents(ctx context.Context, req *dataformpb.QueryTeamFolderContentsRequest, opts ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "team_folder", url.QueryEscape(req.GetTeamFolder()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetTeamFolder()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryTeamFolderContents")
+	}
+	opts = append((*c.CallOptions).QueryTeamFolderContents[0:len((*c.CallOptions).QueryTeamFolderContents):len((*c.CallOptions).QueryTeamFolderContents)], opts...)
+	it := &QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, string, error) {
+		resp := &dataformpb.QueryTeamFolderContentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.QueryTeamFolderContents, req, settings.GRPC, c.logger, "QueryTeamFolderContents")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) SearchTeamFolders(ctx context.Context, req *dataformpb.SearchTeamFoldersRequest, opts ...gax.CallOption) *SearchTeamFoldersResponse_TeamFolderSearchResultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SearchTeamFolders")
+	}
+	opts = append((*c.CallOptions).SearchTeamFolders[0:len((*c.CallOptions).SearchTeamFolders):len((*c.CallOptions).SearchTeamFolders)], opts...)
+	it := &SearchTeamFoldersResponse_TeamFolderSearchResultIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, string, error) {
+		resp := &dataformpb.SearchTeamFoldersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.SearchTeamFolders, req, settings.GRPC, c.logger, "SearchTeamFolders")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) GetFolder(ctx context.Context, req *dataformpb.GetFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetFolder")
+	}
+	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
+	var resp *dataformpb.Folder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetFolder, req, settings.GRPC, c.logger, "GetFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CreateFolder(ctx context.Context, req *dataformpb.CreateFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateFolder")
+	}
+	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
+	var resp *dataformpb.Folder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateFolder, req, settings.GRPC, c.logger, "CreateFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateFolder(ctx context.Context, req *dataformpb.UpdateFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "folder.name", url.QueryEscape(req.GetFolder().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateFolder")
+	}
+	opts = append((*c.CallOptions).UpdateFolder[0:len((*c.CallOptions).UpdateFolder):len((*c.CallOptions).UpdateFolder)], opts...)
+	var resp *dataformpb.Folder
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateFolder, req, settings.GRPC, c.logger, "UpdateFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFolderRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolder")
+	}
+	opts = append((*c.CallOptions).DeleteFolder[0:len((*c.CallOptions).DeleteFolder):len((*c.CallOptions).DeleteFolder)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteFolder, req, settings.GRPC, c.logger, "DeleteFolder")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteFolderTree(ctx context.Context, req *dataformpb.DeleteFolderTreeRequest, opts ...gax.CallOption) (*DeleteFolderTreeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolderTree")
+	}
+	opts = append((*c.CallOptions).DeleteFolderTree[0:len((*c.CallOptions).DeleteFolderTree):len((*c.CallOptions).DeleteFolderTree)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteFolderTree, req, settings.GRPC, c.logger, "DeleteFolderTree")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteFolderTreeOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) QueryFolderContents(ctx context.Context, req *dataformpb.QueryFolderContentsRequest, opts ...gax.CallOption) *QueryFolderContentsResponse_FolderContentsEntryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "folder", url.QueryEscape(req.GetFolder()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetFolder()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryFolderContents")
+	}
+	opts = append((*c.CallOptions).QueryFolderContents[0:len((*c.CallOptions).QueryFolderContents):len((*c.CallOptions).QueryFolderContents)], opts...)
+	it := &QueryFolderContentsResponse_FolderContentsEntryIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, string, error) {
+		resp := &dataformpb.QueryFolderContentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.QueryFolderContents, req, settings.GRPC, c.logger, "QueryFolderContents")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) QueryUserRootContents(ctx context.Context, req *dataformpb.QueryUserRootContentsRequest, opts ...gax.CallOption) *QueryUserRootContentsResponse_RootContentsEntryIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "location", url.QueryEscape(req.GetLocation()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetLocation()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryUserRootContents")
+	}
+	opts = append((*c.CallOptions).QueryUserRootContents[0:len((*c.CallOptions).QueryUserRootContents):len((*c.CallOptions).QueryUserRootContents)], opts...)
+	it := &QueryUserRootContentsResponse_RootContentsEntryIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, string, error) {
+		resp := &dataformpb.QueryUserRootContentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.QueryUserRootContents, req, settings.GRPC, c.logger, "QueryUserRootContents")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFolder")
+	}
+	opts = append((*c.CallOptions).MoveFolder[0:len((*c.CallOptions).MoveFolder):len((*c.CallOptions).MoveFolder)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MoveFolder, req, settings.GRPC, c.logger, "MoveFolder")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &MoveFolderOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *gRPCClient) ListRepositories(ctx context.Context, req *dataformpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListRepositories")
+	}
 	opts = append((*c.CallOptions).ListRepositories[0:len((*c.CallOptions).ListRepositories):len((*c.CallOptions).ListRepositories)], opts...)
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*dataformpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Repository, string, error) {
 		resp := &dataformpb.ListRepositoriesResponse{}
 		if pageToken != "" {
@@ -895,6 +1851,12 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *dataformpb.GetRepos
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetRepository")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -913,6 +1875,12 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateRepository")
+	}
 	opts = append((*c.CallOptions).CreateRepository[0:len((*c.CallOptions).CreateRepository):len((*c.CallOptions).CreateRepository)], opts...)
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -931,6 +1899,9 @@ func (c *gRPCClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateRepository")
+	}
 	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	var resp *dataformpb.Repository
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -949,6 +1920,12 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteRepository")
+	}
 	opts = append((*c.CallOptions).DeleteRepository[0:len((*c.CallOptions).DeleteRepository):len((*c.CallOptions).DeleteRepository)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -958,11 +1935,47 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 	return err
 }
 
+func (c *gRPCClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRepositoryRequest, opts ...gax.CallOption) (*MoveRepositoryOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveRepository")
+	}
+	opts = append((*c.CallOptions).MoveRepository[0:len((*c.CallOptions).MoveRepository):len((*c.CallOptions).MoveRepository)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.MoveRepository, req, settings.GRPC, c.logger, "MoveRepository")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &MoveRepositoryOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *gRPCClient) CommitRepositoryChanges(ctx context.Context, req *dataformpb.CommitRepositoryChangesRequest, opts ...gax.CallOption) (*dataformpb.CommitRepositoryChangesResponse, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitRepositoryChanges")
+	}
 	opts = append((*c.CallOptions).CommitRepositoryChanges[0:len((*c.CallOptions).CommitRepositoryChanges):len((*c.CallOptions).CommitRepositoryChanges)], opts...)
 	var resp *dataformpb.CommitRepositoryChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -981,6 +1994,12 @@ func (c *gRPCClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.Rea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadRepositoryFile")
+	}
 	opts = append((*c.CallOptions).ReadRepositoryFile[0:len((*c.CallOptions).ReadRepositoryFile):len((*c.CallOptions).ReadRepositoryFile)], opts...)
 	var resp *dataformpb.ReadRepositoryFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -999,9 +2018,15 @@ func (c *gRPCClient) QueryRepositoryDirectoryContents(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryRepositoryDirectoryContents")
+	}
 	opts = append((*c.CallOptions).QueryRepositoryDirectoryContents[0:len((*c.CallOptions).QueryRepositoryDirectoryContents):len((*c.CallOptions).QueryRepositoryDirectoryContents)], opts...)
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryRepositoryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryRepositoryDirectoryContentsResponse{}
 		if pageToken != "" {
@@ -1045,9 +2070,15 @@ func (c *gRPCClient) FetchRepositoryHistory(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchRepositoryHistory")
+	}
 	opts = append((*c.CallOptions).FetchRepositoryHistory[0:len((*c.CallOptions).FetchRepositoryHistory):len((*c.CallOptions).FetchRepositoryHistory)], opts...)
 	it := &CommitLogEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.FetchRepositoryHistoryRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CommitLogEntry, string, error) {
 		resp := &dataformpb.FetchRepositoryHistoryResponse{}
 		if pageToken != "" {
@@ -1091,6 +2122,12 @@ func (c *gRPCClient) ComputeRepositoryAccessTokenStatus(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ComputeRepositoryAccessTokenStatus")
+	}
 	opts = append((*c.CallOptions).ComputeRepositoryAccessTokenStatus[0:len((*c.CallOptions).ComputeRepositoryAccessTokenStatus):len((*c.CallOptions).ComputeRepositoryAccessTokenStatus)], opts...)
 	var resp *dataformpb.ComputeRepositoryAccessTokenStatusResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1109,6 +2146,12 @@ func (c *gRPCClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchRemoteBranches")
+	}
 	opts = append((*c.CallOptions).FetchRemoteBranches[0:len((*c.CallOptions).FetchRemoteBranches):len((*c.CallOptions).FetchRemoteBranches)], opts...)
 	var resp *dataformpb.FetchRemoteBranchesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1127,9 +2170,15 @@ func (c *gRPCClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWor
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListWorkspaces")
+	}
 	opts = append((*c.CallOptions).ListWorkspaces[0:len((*c.CallOptions).ListWorkspaces):len((*c.CallOptions).ListWorkspaces)], opts...)
 	it := &WorkspaceIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkspacesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Workspace, string, error) {
 		resp := &dataformpb.ListWorkspacesResponse{}
 		if pageToken != "" {
@@ -1173,6 +2222,12 @@ func (c *gRPCClient) GetWorkspace(ctx context.Context, req *dataformpb.GetWorksp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkspace")
+	}
 	opts = append((*c.CallOptions).GetWorkspace[0:len((*c.CallOptions).GetWorkspace):len((*c.CallOptions).GetWorkspace)], opts...)
 	var resp *dataformpb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1191,6 +2246,12 @@ func (c *gRPCClient) CreateWorkspace(ctx context.Context, req *dataformpb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkspace")
+	}
 	opts = append((*c.CallOptions).CreateWorkspace[0:len((*c.CallOptions).CreateWorkspace):len((*c.CallOptions).CreateWorkspace)], opts...)
 	var resp *dataformpb.Workspace
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1209,6 +2270,12 @@ func (c *gRPCClient) DeleteWorkspace(ctx context.Context, req *dataformpb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkspace")
+	}
 	opts = append((*c.CallOptions).DeleteWorkspace[0:len((*c.CallOptions).DeleteWorkspace):len((*c.CallOptions).DeleteWorkspace)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1223,6 +2290,12 @@ func (c *gRPCClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/InstallNpmPackages")
+	}
 	opts = append((*c.CallOptions).InstallNpmPackages[0:len((*c.CallOptions).InstallNpmPackages):len((*c.CallOptions).InstallNpmPackages)], opts...)
 	var resp *dataformpb.InstallNpmPackagesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1241,6 +2314,12 @@ func (c *gRPCClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PullGitCommits")
+	}
 	opts = append((*c.CallOptions).PullGitCommits[0:len((*c.CallOptions).PullGitCommits):len((*c.CallOptions).PullGitCommits)], opts...)
 	var resp *dataformpb.PullGitCommitsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1259,6 +2338,12 @@ func (c *gRPCClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PushGitCommits")
+	}
 	opts = append((*c.CallOptions).PushGitCommits[0:len((*c.CallOptions).PushGitCommits):len((*c.CallOptions).PushGitCommits)], opts...)
 	var resp *dataformpb.PushGitCommitsResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1277,6 +2362,12 @@ func (c *gRPCClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileGitStatuses")
+	}
 	opts = append((*c.CallOptions).FetchFileGitStatuses[0:len((*c.CallOptions).FetchFileGitStatuses):len((*c.CallOptions).FetchFileGitStatuses)], opts...)
 	var resp *dataformpb.FetchFileGitStatusesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1295,6 +2386,12 @@ func (c *gRPCClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchGitAheadBehind")
+	}
 	opts = append((*c.CallOptions).FetchGitAheadBehind[0:len((*c.CallOptions).FetchGitAheadBehind):len((*c.CallOptions).FetchGitAheadBehind)], opts...)
 	var resp *dataformpb.FetchGitAheadBehindResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1313,6 +2410,12 @@ func (c *gRPCClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitWorkspaceChanges")
+	}
 	opts = append((*c.CallOptions).CommitWorkspaceChanges[0:len((*c.CallOptions).CommitWorkspaceChanges):len((*c.CallOptions).CommitWorkspaceChanges)], opts...)
 	var resp *dataformpb.CommitWorkspaceChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1331,6 +2434,12 @@ func (c *gRPCClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ResetWorkspaceChanges")
+	}
 	opts = append((*c.CallOptions).ResetWorkspaceChanges[0:len((*c.CallOptions).ResetWorkspaceChanges):len((*c.CallOptions).ResetWorkspaceChanges)], opts...)
 	var resp *dataformpb.ResetWorkspaceChangesResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1349,6 +2458,12 @@ func (c *gRPCClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileDiff")
+	}
 	opts = append((*c.CallOptions).FetchFileDiff[0:len((*c.CallOptions).FetchFileDiff):len((*c.CallOptions).FetchFileDiff)], opts...)
 	var resp *dataformpb.FetchFileDiffResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1367,9 +2482,15 @@ func (c *gRPCClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryDirectoryContents")
+	}
 	opts = append((*c.CallOptions).QueryDirectoryContents[0:len((*c.CallOptions).QueryDirectoryContents):len((*c.CallOptions).QueryDirectoryContents)], opts...)
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryDirectoryContentsResponse{}
 		if pageToken != "" {
@@ -1413,9 +2534,15 @@ func (c *gRPCClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFile
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SearchFiles")
+	}
 	opts = append((*c.CallOptions).SearchFiles[0:len((*c.CallOptions).SearchFiles):len((*c.CallOptions).SearchFiles)], opts...)
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*dataformpb.SearchFilesRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchResult, string, error) {
 		resp := &dataformpb.SearchFilesResponse{}
 		if pageToken != "" {
@@ -1459,6 +2586,12 @@ func (c *gRPCClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MakeDirectory")
+	}
 	opts = append((*c.CallOptions).MakeDirectory[0:len((*c.CallOptions).MakeDirectory):len((*c.CallOptions).MakeDirectory)], opts...)
 	var resp *dataformpb.MakeDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1477,6 +2610,12 @@ func (c *gRPCClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveDirectory")
+	}
 	opts = append((*c.CallOptions).RemoveDirectory[0:len((*c.CallOptions).RemoveDirectory):len((*c.CallOptions).RemoveDirectory)], opts...)
 	var resp *dataformpb.RemoveDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1495,6 +2634,12 @@ func (c *gRPCClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveDirectory")
+	}
 	opts = append((*c.CallOptions).MoveDirectory[0:len((*c.CallOptions).MoveDirectory):len((*c.CallOptions).MoveDirectory)], opts...)
 	var resp *dataformpb.MoveDirectoryResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1513,6 +2658,12 @@ func (c *gRPCClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadFile")
+	}
 	opts = append((*c.CallOptions).ReadFile[0:len((*c.CallOptions).ReadFile):len((*c.CallOptions).ReadFile)], opts...)
 	var resp *dataformpb.ReadFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1531,6 +2682,12 @@ func (c *gRPCClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveFile")
+	}
 	opts = append((*c.CallOptions).RemoveFile[0:len((*c.CallOptions).RemoveFile):len((*c.CallOptions).RemoveFile)], opts...)
 	var resp *dataformpb.RemoveFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1549,6 +2706,12 @@ func (c *gRPCClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFile")
+	}
 	opts = append((*c.CallOptions).MoveFile[0:len((*c.CallOptions).MoveFile):len((*c.CallOptions).MoveFile)], opts...)
 	var resp *dataformpb.MoveFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1567,6 +2730,12 @@ func (c *gRPCClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/WriteFile")
+	}
 	opts = append((*c.CallOptions).WriteFile[0:len((*c.CallOptions).WriteFile):len((*c.CallOptions).WriteFile)], opts...)
 	var resp *dataformpb.WriteFileResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1585,9 +2754,15 @@ func (c *gRPCClient) ListReleaseConfigs(ctx context.Context, req *dataformpb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListReleaseConfigs")
+	}
 	opts = append((*c.CallOptions).ListReleaseConfigs[0:len((*c.CallOptions).ListReleaseConfigs):len((*c.CallOptions).ListReleaseConfigs)], opts...)
 	it := &ReleaseConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListReleaseConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.ReleaseConfig, string, error) {
 		resp := &dataformpb.ListReleaseConfigsResponse{}
 		if pageToken != "" {
@@ -1631,6 +2806,12 @@ func (c *gRPCClient) GetReleaseConfig(ctx context.Context, req *dataformpb.GetRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetReleaseConfig")
+	}
 	opts = append((*c.CallOptions).GetReleaseConfig[0:len((*c.CallOptions).GetReleaseConfig):len((*c.CallOptions).GetReleaseConfig)], opts...)
 	var resp *dataformpb.ReleaseConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1649,6 +2830,12 @@ func (c *gRPCClient) CreateReleaseConfig(ctx context.Context, req *dataformpb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateReleaseConfig")
+	}
 	opts = append((*c.CallOptions).CreateReleaseConfig[0:len((*c.CallOptions).CreateReleaseConfig):len((*c.CallOptions).CreateReleaseConfig)], opts...)
 	var resp *dataformpb.ReleaseConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1667,6 +2854,9 @@ func (c *gRPCClient) UpdateReleaseConfig(ctx context.Context, req *dataformpb.Up
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateReleaseConfig")
+	}
 	opts = append((*c.CallOptions).UpdateReleaseConfig[0:len((*c.CallOptions).UpdateReleaseConfig):len((*c.CallOptions).UpdateReleaseConfig)], opts...)
 	var resp *dataformpb.ReleaseConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1685,6 +2875,12 @@ func (c *gRPCClient) DeleteReleaseConfig(ctx context.Context, req *dataformpb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteReleaseConfig")
+	}
 	opts = append((*c.CallOptions).DeleteReleaseConfig[0:len((*c.CallOptions).DeleteReleaseConfig):len((*c.CallOptions).DeleteReleaseConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1699,9 +2895,15 @@ func (c *gRPCClient) ListCompilationResults(ctx context.Context, req *dataformpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListCompilationResults")
+	}
 	opts = append((*c.CallOptions).ListCompilationResults[0:len((*c.CallOptions).ListCompilationResults):len((*c.CallOptions).ListCompilationResults)], opts...)
 	it := &CompilationResultIterator{}
-	req = proto.Clone(req).(*dataformpb.ListCompilationResultsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResult, string, error) {
 		resp := &dataformpb.ListCompilationResultsResponse{}
 		if pageToken != "" {
@@ -1745,6 +2947,12 @@ func (c *gRPCClient) GetCompilationResult(ctx context.Context, req *dataformpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetCompilationResult")
+	}
 	opts = append((*c.CallOptions).GetCompilationResult[0:len((*c.CallOptions).GetCompilationResult):len((*c.CallOptions).GetCompilationResult)], opts...)
 	var resp *dataformpb.CompilationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1763,6 +2971,12 @@ func (c *gRPCClient) CreateCompilationResult(ctx context.Context, req *dataformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResult")
+	}
 	opts = append((*c.CallOptions).CreateCompilationResult[0:len((*c.CallOptions).CreateCompilationResult):len((*c.CallOptions).CreateCompilationResult)], opts...)
 	var resp *dataformpb.CompilationResult
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1781,9 +2995,15 @@ func (c *gRPCClient) QueryCompilationResultActions(ctx context.Context, req *dat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryCompilationResultActions")
+	}
 	opts = append((*c.CallOptions).QueryCompilationResultActions[0:len((*c.CallOptions).QueryCompilationResultActions):len((*c.CallOptions).QueryCompilationResultActions)], opts...)
 	it := &CompilationResultActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryCompilationResultActionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResultAction, string, error) {
 		resp := &dataformpb.QueryCompilationResultActionsResponse{}
 		if pageToken != "" {
@@ -1827,9 +3047,15 @@ func (c *gRPCClient) ListWorkflowConfigs(ctx context.Context, req *dataformpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListWorkflowConfigs")
+	}
 	opts = append((*c.CallOptions).ListWorkflowConfigs[0:len((*c.CallOptions).ListWorkflowConfigs):len((*c.CallOptions).ListWorkflowConfigs)], opts...)
 	it := &WorkflowConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowConfigsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowConfig, string, error) {
 		resp := &dataformpb.ListWorkflowConfigsResponse{}
 		if pageToken != "" {
@@ -1873,6 +3099,12 @@ func (c *gRPCClient) GetWorkflowConfig(ctx context.Context, req *dataformpb.GetW
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).GetWorkflowConfig[0:len((*c.CallOptions).GetWorkflowConfig):len((*c.CallOptions).GetWorkflowConfig)], opts...)
 	var resp *dataformpb.WorkflowConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1891,6 +3123,12 @@ func (c *gRPCClient) CreateWorkflowConfig(ctx context.Context, req *dataformpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowConfig[0:len((*c.CallOptions).CreateWorkflowConfig):len((*c.CallOptions).CreateWorkflowConfig)], opts...)
 	var resp *dataformpb.WorkflowConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1909,6 +3147,9 @@ func (c *gRPCClient) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).UpdateWorkflowConfig[0:len((*c.CallOptions).UpdateWorkflowConfig):len((*c.CallOptions).UpdateWorkflowConfig)], opts...)
 	var resp *dataformpb.WorkflowConfig
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -1927,6 +3168,12 @@ func (c *gRPCClient) DeleteWorkflowConfig(ctx context.Context, req *dataformpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowConfig")
+	}
 	opts = append((*c.CallOptions).DeleteWorkflowConfig[0:len((*c.CallOptions).DeleteWorkflowConfig):len((*c.CallOptions).DeleteWorkflowConfig)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -1941,9 +3188,15 @@ func (c *gRPCClient) ListWorkflowInvocations(ctx context.Context, req *dataformp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ListWorkflowInvocations")
+	}
 	opts = append((*c.CallOptions).ListWorkflowInvocations[0:len((*c.CallOptions).ListWorkflowInvocations):len((*c.CallOptions).ListWorkflowInvocations)], opts...)
 	it := &WorkflowInvocationIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowInvocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocation, string, error) {
 		resp := &dataformpb.ListWorkflowInvocationsResponse{}
 		if pageToken != "" {
@@ -1987,6 +3240,12 @@ func (c *gRPCClient) GetWorkflowInvocation(ctx context.Context, req *dataformpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).GetWorkflowInvocation[0:len((*c.CallOptions).GetWorkflowInvocation):len((*c.CallOptions).GetWorkflowInvocation)], opts...)
 	var resp *dataformpb.WorkflowInvocation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2005,6 +3264,12 @@ func (c *gRPCClient) CreateWorkflowInvocation(ctx context.Context, req *dataform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowInvocation[0:len((*c.CallOptions).CreateWorkflowInvocation):len((*c.CallOptions).CreateWorkflowInvocation)], opts...)
 	var resp *dataformpb.WorkflowInvocation
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2023,6 +3288,12 @@ func (c *gRPCClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).DeleteWorkflowInvocation[0:len((*c.CallOptions).DeleteWorkflowInvocation):len((*c.CallOptions).DeleteWorkflowInvocation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
@@ -2037,6 +3308,12 @@ func (c *gRPCClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CancelWorkflowInvocation")
+	}
 	opts = append((*c.CallOptions).CancelWorkflowInvocation[0:len((*c.CallOptions).CancelWorkflowInvocation):len((*c.CallOptions).CancelWorkflowInvocation)], opts...)
 	var resp *dataformpb.CancelWorkflowInvocationResponse
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2055,9 +3332,15 @@ func (c *gRPCClient) QueryWorkflowInvocationActions(ctx context.Context, req *da
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/QueryWorkflowInvocationActions")
+	}
 	opts = append((*c.CallOptions).QueryWorkflowInvocationActions[0:len((*c.CallOptions).QueryWorkflowInvocationActions):len((*c.CallOptions).QueryWorkflowInvocationActions)], opts...)
 	it := &WorkflowInvocationActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryWorkflowInvocationActionsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocationAction, string, error) {
 		resp := &dataformpb.QueryWorkflowInvocationActionsResponse{}
 		if pageToken != "" {
@@ -2101,6 +3384,12 @@ func (c *gRPCClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigReq
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetConfig")
+	}
 	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
 	var resp *dataformpb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2119,6 +3408,9 @@ func (c *gRPCClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateConfig")
+	}
 	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
 	var resp *dataformpb.Config
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2132,11 +3424,86 @@ func (c *gRPCClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 	return resp, nil
 }
 
+func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SetIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	var resp *iampb.Policy
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/TestIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	var resp *iampb.TestIamPermissionsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	var resp *locationpb.Location
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
@@ -2155,9 +3522,12 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/ListLocations")
+	}
 	opts = append((*c.CallOptions).ListLocations[0:len((*c.CallOptions).ListLocations):len((*c.CallOptions).ListLocations)], opts...)
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
 		if pageToken != "" {
@@ -2196,16 +3566,53 @@ func (c *gRPCClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	return it
 }
 
-func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+func (c *gRPCClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
-	var resp *iampb.Policy
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+	}
+	opts = append((*c.CallOptions).CancelOperation[0:len((*c.CallOptions).CancelOperation):len((*c.CallOptions).CancelOperation)], opts...)
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
-		resp, err = executeRPC(ctx, c.iamPolicyClient.GetIamPolicy, req, settings.GRPC, c.logger, "GetIamPolicy")
+		_, err = executeRPC(ctx, c.operationsClient.CancelOperation, req, settings.GRPC, c.logger, "CancelOperation")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+	}
+	opts = append((*c.CallOptions).DeleteOperation[0:len((*c.CallOptions).DeleteOperation):len((*c.CallOptions).DeleteOperation)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.operationsClient.DeleteOperation, req, settings.GRPC, c.logger, "DeleteOperation")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+	}
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.operationsClient.GetOperation, req, settings.GRPC, c.logger, "GetOperation")
 		return err
 	}, opts...)
 	if err != nil {
@@ -2214,40 +3621,1066 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	return resp, nil
 }
 
-func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
-	var resp *iampb.Policy
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.iamPolicyClient.SetIamPolicy, req, settings.GRPC, c.logger, "SetIamPolicy")
-		return err
-	}, opts...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/ListOperations")
+	}
+	opts = append((*c.CallOptions).ListOperations[0:len((*c.CallOptions).ListOperations):len((*c.CallOptions).ListOperations)], opts...)
+	it := &OperationIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.operationsClient.ListOperations, req, settings.GRPC, c.logger, "ListOperations")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetTeamFolder fetches a single TeamFolder.
+func (c *restClient) GetTeamFolder(ctx context.Context, req *dataformpb.GetTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
 		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/teamFolders/*}")
+	}
+	opts = append((*c.CallOptions).GetTeamFolder[0:len((*c.CallOptions).GetTeamFolder):len((*c.CallOptions).GetTeamFolder)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.TeamFolder{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetTeamFolder")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
 	}
 	return resp, nil
 }
 
-func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
-	var resp *iampb.TestIamPermissionsResponse
-	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		var err error
-		resp, err = executeRPC(ctx, c.iamPolicyClient.TestIamPermissions, req, settings.GRPC, c.logger, "TestIamPermissions")
-		return err
-	}, opts...)
+// CreateTeamFolder creates a new TeamFolder in a given project and location.
+func (c *restClient) CreateTeamFolder(ctx context.Context, req *dataformpb.CreateTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTeamFolder()
+	jsonReq, err := m.Marshal(body)
 	if err != nil {
 		return nil, err
 	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/teamFolders", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/teamFolders")
+	}
+	opts = append((*c.CallOptions).CreateTeamFolder[0:len((*c.CallOptions).CreateTeamFolder):len((*c.CallOptions).CreateTeamFolder)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.TeamFolder{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateTeamFolder")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
 	return resp, nil
+}
+
+// UpdateTeamFolder updates a single TeamFolder.
+func (c *restClient) UpdateTeamFolder(ctx context.Context, req *dataformpb.UpdateTeamFolderRequest, opts ...gax.CallOption) (*dataformpb.TeamFolder, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetTeamFolder()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetTeamFolder().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "team_folder.name", url.QueryEscape(req.GetTeamFolder().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{team_folder.name=projects/*/locations/*/teamFolders/*}")
+	}
+	opts = append((*c.CallOptions).UpdateTeamFolder[0:len((*c.CallOptions).UpdateTeamFolder):len((*c.CallOptions).UpdateTeamFolder)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.TeamFolder{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateTeamFolder")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteTeamFolder deletes a single TeamFolder.
+func (c *restClient) DeleteTeamFolder(ctx context.Context, req *dataformpb.DeleteTeamFolderRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/teamFolders/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteTeamFolder")
+		return err
+	}, opts...)
+}
+
+// DeleteTeamFolderTree deletes a TeamFolder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *restClient) DeleteTeamFolderTree(ctx context.Context, req *dataformpb.DeleteTeamFolderTreeRequest, opts ...gax.CallOption) (*DeleteTeamFolderTreeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:deleteTree", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteTeamFolderTree")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/teamFolders/*}:deleteTree")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteTeamFolderTree")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteTeamFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteTeamFolderTreeOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// QueryTeamFolderContents returns the contents of a given TeamFolder.
+func (c *restClient) QueryTeamFolderContents(ctx context.Context, req *dataformpb.QueryTeamFolderContentsRequest, opts ...gax.CallOption) *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator {
+	it := &QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, string, error) {
+		resp := &dataformpb.QueryTeamFolderContentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:queryContents", req.GetTeamFolder())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryTeamFolderContents")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// SearchTeamFolders returns all TeamFolders in a given location that the caller has access to
+// and match the provided filter.
+func (c *restClient) SearchTeamFolders(ctx context.Context, req *dataformpb.SearchTeamFoldersRequest, opts ...gax.CallOption) *SearchTeamFoldersResponse_TeamFolderSearchResultIterator {
+	it := &SearchTeamFoldersResponse_TeamFolderSearchResultIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, string, error) {
+		resp := &dataformpb.SearchTeamFoldersResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/teamFolders:search", req.GetLocation())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "SearchTeamFolders")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// GetFolder fetches a single Folder.
+func (c *restClient) GetFolder(ctx context.Context, req *dataformpb.GetFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}")
+	}
+	opts = append((*c.CallOptions).GetFolder[0:len((*c.CallOptions).GetFolder):len((*c.CallOptions).GetFolder)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.Folder{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetFolder")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CreateFolder creates a new Folder in a given project and location.
+func (c *restClient) CreateFolder(ctx context.Context, req *dataformpb.CreateFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFolder()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/folders", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/folders")
+	}
+	opts = append((*c.CallOptions).CreateFolder[0:len((*c.CallOptions).CreateFolder):len((*c.CallOptions).CreateFolder)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.Folder{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateFolder")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateFolder updates a single Folder.
+func (c *restClient) UpdateFolder(ctx context.Context, req *dataformpb.UpdateFolderRequest, opts ...gax.CallOption) (*dataformpb.Folder, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetFolder()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetFolder().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "folder.name", url.QueryEscape(req.GetFolder().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{folder.name=projects/*/locations/*/folders/*}")
+	}
+	opts = append((*c.CallOptions).UpdateFolder[0:len((*c.CallOptions).UpdateFolder):len((*c.CallOptions).UpdateFolder)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.Folder{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateFolder")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteFolder deletes a single Folder.
+func (c *restClient) DeleteFolder(ctx context.Context, req *dataformpb.DeleteFolderRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteFolder")
+		return err
+	}, opts...)
+}
+
+// DeleteFolderTree deletes a Folder with its contents (Folders, Repositories, Workspaces,
+// ReleaseConfigs, and WorkflowConfigs).
+func (c *restClient) DeleteFolderTree(ctx context.Context, req *dataformpb.DeleteFolderTreeRequest, opts ...gax.CallOption) (*DeleteFolderTreeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:deleteTree", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteFolderTree")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}:deleteTree")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteFolderTree")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.DeleteFolderTreeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DeleteFolderTreeOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// QueryFolderContents returns the contents of a given Folder.
+func (c *restClient) QueryFolderContents(ctx context.Context, req *dataformpb.QueryFolderContentsRequest, opts ...gax.CallOption) *QueryFolderContentsResponse_FolderContentsEntryIterator {
+	it := &QueryFolderContentsResponse_FolderContentsEntryIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, string, error) {
+		resp := &dataformpb.QueryFolderContentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:queryFolderContents", req.GetFolder())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryFolderContents")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// QueryUserRootContents returns the contents of a caller’s root folder in a given location.
+// The root folder contains all resources that are created by the user and not
+// contained in any other folder.
+func (c *restClient) QueryUserRootContents(ctx context.Context, req *dataformpb.QueryUserRootContentsRequest, opts ...gax.CallOption) *QueryUserRootContentsResponse_RootContentsEntryIterator {
+	it := &QueryUserRootContentsResponse_RootContentsEntryIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, string, error) {
+		resp := &dataformpb.QueryUserRootContentsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:queryUserRootContents", req.GetLocation())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "QueryUserRootContents")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetEntries(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// MoveFolder moves a Folder to a new Folder, TeamFolder, or the root location.
+func (c *restClient) MoveFolder(ctx context.Context, req *dataformpb.MoveFolderRequest, opts ...gax.CallOption) (*MoveFolderOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFolder")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/folders/*}:move")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveFolder")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveFolderOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &MoveFolderOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
 }
 
 // ListRepositories lists Repositories in a given project and location.
@@ -2256,7 +4689,7 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 // UI (at https://console.cloud.google.com/bigquery/dataform).
 func (c *restClient) ListRepositories(ctx context.Context, req *dataformpb.ListRepositoriesRequest, opts ...gax.CallOption) *RepositoryIterator {
 	it := &RepositoryIterator{}
-	req = proto.Clone(req).(*dataformpb.ListRepositoriesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Repository, string, error) {
 		resp := &dataformpb.ListRepositoriesResponse{}
@@ -2356,6 +4789,13 @@ func (c *restClient) GetRepository(ctx context.Context, req *dataformpb.GetRepos
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	opts = append((*c.CallOptions).GetRepository[0:len((*c.CallOptions).GetRepository):len((*c.CallOptions).GetRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Repository{}
@@ -2414,6 +4854,13 @@ func (c *restClient) CreateRepository(ctx context.Context, req *dataformpb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/repositories")
+	}
 	opts = append((*c.CallOptions).CreateRepository[0:len((*c.CallOptions).CreateRepository):len((*c.CallOptions).CreateRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Repository{}
@@ -2483,6 +4930,10 @@ func (c *restClient) UpdateRepository(ctx context.Context, req *dataformpb.Updat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{repository.name=projects/*/locations/*/repositories/*}")
+	}
 	opts = append((*c.CallOptions).UpdateRepository[0:len((*c.CallOptions).UpdateRepository):len((*c.CallOptions).UpdateRepository)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Repository{}
@@ -2536,6 +4987,13 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -2550,6 +5008,76 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *dataformpb.Delet
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteRepository")
 		return err
 	}, opts...)
+}
+
+// MoveRepository moves a Repository to a new location.
+func (c *restClient) MoveRepository(ctx context.Context, req *dataformpb.MoveRepositoryRequest, opts ...gax.CallOption) (*MoveRepositoryOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:move", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveRepository")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:move")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "MoveRepository")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*dataform.MoveRepositoryOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &MoveRepositoryOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
 }
 
 // CommitRepositoryChanges applies a Git commit to a Repository. The Repository must not have a value
@@ -2578,6 +5106,13 @@ func (c *restClient) CommitRepositoryChanges(ctx context.Context, req *dataformp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitRepositoryChanges")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:commit")
+	}
 	opts = append((*c.CallOptions).CommitRepositoryChanges[0:len((*c.CallOptions).CommitRepositoryChanges):len((*c.CallOptions).CommitRepositoryChanges)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CommitRepositoryChangesResponse{}
@@ -2633,6 +5168,13 @@ func (c *restClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.Rea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadRepositoryFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:readFile")
+	}
 	opts = append((*c.CallOptions).ReadRepositoryFile[0:len((*c.CallOptions).ReadRepositoryFile):len((*c.CallOptions).ReadRepositoryFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReadRepositoryFileResponse{}
@@ -2668,7 +5210,7 @@ func (c *restClient) ReadRepositoryFile(ctx context.Context, req *dataformpb.Rea
 // not have a value for git_remote_settings.url.
 func (c *restClient) QueryRepositoryDirectoryContents(ctx context.Context, req *dataformpb.QueryRepositoryDirectoryContentsRequest, opts ...gax.CallOption) *DirectoryEntryIterator {
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryRepositoryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryRepositoryDirectoryContentsResponse{}
@@ -2753,7 +5295,7 @@ func (c *restClient) QueryRepositoryDirectoryContents(ctx context.Context, req *
 // value for git_remote_settings.url.
 func (c *restClient) FetchRepositoryHistory(ctx context.Context, req *dataformpb.FetchRepositoryHistoryRequest, opts ...gax.CallOption) *CommitLogEntryIterator {
 	it := &CommitLogEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.FetchRepositoryHistoryRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CommitLogEntry, string, error) {
 		resp := &dataformpb.FetchRepositoryHistoryResponse{}
@@ -2847,6 +5389,13 @@ func (c *restClient) ComputeRepositoryAccessTokenStatus(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ComputeRepositoryAccessTokenStatus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:computeAccessTokenStatus")
+	}
 	opts = append((*c.CallOptions).ComputeRepositoryAccessTokenStatus[0:len((*c.CallOptions).ComputeRepositoryAccessTokenStatus):len((*c.CallOptions).ComputeRepositoryAccessTokenStatus)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ComputeRepositoryAccessTokenStatusResponse{}
@@ -2897,6 +5446,13 @@ func (c *restClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchRemoteBranches")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}:fetchRemoteBranches")
+	}
 	opts = append((*c.CallOptions).FetchRemoteBranches[0:len((*c.CallOptions).FetchRemoteBranches):len((*c.CallOptions).FetchRemoteBranches)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchRemoteBranchesResponse{}
@@ -2931,7 +5487,7 @@ func (c *restClient) FetchRemoteBranches(ctx context.Context, req *dataformpb.Fe
 // ListWorkspaces lists Workspaces in a given Repository.
 func (c *restClient) ListWorkspaces(ctx context.Context, req *dataformpb.ListWorkspacesRequest, opts ...gax.CallOption) *WorkspaceIterator {
 	it := &WorkspaceIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkspacesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.Workspace, string, error) {
 		resp := &dataformpb.ListWorkspacesResponse{}
@@ -3031,6 +5587,13 @@ func (c *restClient) GetWorkspace(ctx context.Context, req *dataformpb.GetWorksp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkspace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkspace[0:len((*c.CallOptions).GetWorkspace):len((*c.CallOptions).GetWorkspace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Workspace{}
@@ -3089,6 +5652,13 @@ func (c *restClient) CreateWorkspace(ctx context.Context, req *dataformpb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkspace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/workspaces")
+	}
 	opts = append((*c.CallOptions).CreateWorkspace[0:len((*c.CallOptions).CreateWorkspace):len((*c.CallOptions).CreateWorkspace)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Workspace{}
@@ -3139,6 +5709,13 @@ func (c *restClient) DeleteWorkspace(ctx context.Context, req *dataformpb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkspace")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -3180,6 +5757,13 @@ func (c *restClient) InstallNpmPackages(ctx context.Context, req *dataformpb.Ins
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/InstallNpmPackages")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:installNpmPackages")
+	}
 	opts = append((*c.CallOptions).InstallNpmPackages[0:len((*c.CallOptions).InstallNpmPackages):len((*c.CallOptions).InstallNpmPackages)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.InstallNpmPackagesResponse{}
@@ -3236,6 +5820,13 @@ func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PullGitCommits")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:pull")
+	}
 	opts = append((*c.CallOptions).PullGitCommits[0:len((*c.CallOptions).PullGitCommits):len((*c.CallOptions).PullGitCommits)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.PullGitCommitsResponse{}
@@ -3292,6 +5883,13 @@ func (c *restClient) PushGitCommits(ctx context.Context, req *dataformpb.PushGit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/PushGitCommits")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:push")
+	}
 	opts = append((*c.CallOptions).PushGitCommits[0:len((*c.CallOptions).PushGitCommits):len((*c.CallOptions).PushGitCommits)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.PushGitCommitsResponse{}
@@ -3342,6 +5940,13 @@ func (c *restClient) FetchFileGitStatuses(ctx context.Context, req *dataformpb.F
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileGitStatuses")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:fetchFileGitStatuses")
+	}
 	opts = append((*c.CallOptions).FetchFileGitStatuses[0:len((*c.CallOptions).FetchFileGitStatuses):len((*c.CallOptions).FetchFileGitStatuses)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchFileGitStatusesResponse{}
@@ -3395,6 +6000,13 @@ func (c *restClient) FetchGitAheadBehind(ctx context.Context, req *dataformpb.Fe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchGitAheadBehind")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:fetchGitAheadBehind")
+	}
 	opts = append((*c.CallOptions).FetchGitAheadBehind[0:len((*c.CallOptions).FetchGitAheadBehind):len((*c.CallOptions).FetchGitAheadBehind)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchGitAheadBehindResponse{}
@@ -3451,6 +6063,13 @@ func (c *restClient) CommitWorkspaceChanges(ctx context.Context, req *dataformpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CommitWorkspaceChanges")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:commit")
+	}
 	opts = append((*c.CallOptions).CommitWorkspaceChanges[0:len((*c.CallOptions).CommitWorkspaceChanges):len((*c.CallOptions).CommitWorkspaceChanges)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CommitWorkspaceChangesResponse{}
@@ -3507,6 +6126,13 @@ func (c *restClient) ResetWorkspaceChanges(ctx context.Context, req *dataformpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ResetWorkspaceChanges")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workspaces/*}:reset")
+	}
 	opts = append((*c.CallOptions).ResetWorkspaceChanges[0:len((*c.CallOptions).ResetWorkspaceChanges):len((*c.CallOptions).ResetWorkspaceChanges)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ResetWorkspaceChangesResponse{}
@@ -3558,6 +6184,13 @@ func (c *restClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/FetchFileDiff")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:fetchFileDiff")
+	}
 	opts = append((*c.CallOptions).FetchFileDiff[0:len((*c.CallOptions).FetchFileDiff):len((*c.CallOptions).FetchFileDiff)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.FetchFileDiffResponse{}
@@ -3592,7 +6225,7 @@ func (c *restClient) FetchFileDiff(ctx context.Context, req *dataformpb.FetchFil
 // QueryDirectoryContents returns the contents of a given Workspace directory.
 func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb.QueryDirectoryContentsRequest, opts ...gax.CallOption) *DirectoryEntryIterator {
 	it := &DirectoryEntryIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryDirectoryContentsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.DirectoryEntry, string, error) {
 		resp := &dataformpb.QueryDirectoryContentsResponse{}
@@ -3620,6 +6253,9 @@ func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 		}
 		if req.GetPath() != "" {
 			params.Add("path", fmt.Sprintf("%v", req.GetPath()))
+		}
+		if req.GetView() != 0 {
+			params.Add("view", fmt.Sprintf("%v", req.GetView()))
 		}
 
 		baseUrl.RawQuery = params.Encode()
@@ -3673,7 +6309,7 @@ func (c *restClient) QueryDirectoryContents(ctx context.Context, req *dataformpb
 // SearchFiles finds the contents of a given Workspace directory by filter.
 func (c *restClient) SearchFiles(ctx context.Context, req *dataformpb.SearchFilesRequest, opts ...gax.CallOption) *SearchResultIterator {
 	it := &SearchResultIterator{}
-	req = proto.Clone(req).(*dataformpb.SearchFilesRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.SearchResult, string, error) {
 		resp := &dataformpb.SearchFilesResponse{}
@@ -3776,6 +6412,13 @@ func (c *restClient) MakeDirectory(ctx context.Context, req *dataformpb.MakeDire
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MakeDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:makeDirectory")
+	}
 	opts = append((*c.CallOptions).MakeDirectory[0:len((*c.CallOptions).MakeDirectory):len((*c.CallOptions).MakeDirectory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.MakeDirectoryResponse{}
@@ -3832,6 +6475,13 @@ func (c *restClient) RemoveDirectory(ctx context.Context, req *dataformpb.Remove
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:removeDirectory")
+	}
 	opts = append((*c.CallOptions).RemoveDirectory[0:len((*c.CallOptions).RemoveDirectory):len((*c.CallOptions).RemoveDirectory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.RemoveDirectoryResponse{}
@@ -3889,6 +6539,13 @@ func (c *restClient) MoveDirectory(ctx context.Context, req *dataformpb.MoveDire
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveDirectory")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:moveDirectory")
+	}
 	opts = append((*c.CallOptions).MoveDirectory[0:len((*c.CallOptions).MoveDirectory):len((*c.CallOptions).MoveDirectory)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.MoveDirectoryResponse{}
@@ -3943,6 +6600,13 @@ func (c *restClient) ReadFile(ctx context.Context, req *dataformpb.ReadFileReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/ReadFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:readFile")
+	}
 	opts = append((*c.CallOptions).ReadFile[0:len((*c.CallOptions).ReadFile):len((*c.CallOptions).ReadFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReadFileResponse{}
@@ -3999,6 +6663,13 @@ func (c *restClient) RemoveFile(ctx context.Context, req *dataformpb.RemoveFileR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/RemoveFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:removeFile")
+	}
 	opts = append((*c.CallOptions).RemoveFile[0:len((*c.CallOptions).RemoveFile):len((*c.CallOptions).RemoveFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.RemoveFileResponse{}
@@ -4055,6 +6726,13 @@ func (c *restClient) MoveFile(ctx context.Context, req *dataformpb.MoveFileReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/MoveFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:moveFile")
+	}
 	opts = append((*c.CallOptions).MoveFile[0:len((*c.CallOptions).MoveFile):len((*c.CallOptions).MoveFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.MoveFileResponse{}
@@ -4111,6 +6789,13 @@ func (c *restClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetWorkspace()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/WriteFile")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workspace=projects/*/locations/*/repositories/*/workspaces/*}:writeFile")
+	}
 	opts = append((*c.CallOptions).WriteFile[0:len((*c.CallOptions).WriteFile):len((*c.CallOptions).WriteFile)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WriteFileResponse{}
@@ -4145,7 +6830,7 @@ func (c *restClient) WriteFile(ctx context.Context, req *dataformpb.WriteFileReq
 // ListReleaseConfigs lists ReleaseConfigs in a given Repository.
 func (c *restClient) ListReleaseConfigs(ctx context.Context, req *dataformpb.ListReleaseConfigsRequest, opts ...gax.CallOption) *ReleaseConfigIterator {
 	it := &ReleaseConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListReleaseConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.ReleaseConfig, string, error) {
 		resp := &dataformpb.ListReleaseConfigsResponse{}
@@ -4239,6 +6924,13 @@ func (c *restClient) GetReleaseConfig(ctx context.Context, req *dataformpb.GetRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/releaseConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetReleaseConfig[0:len((*c.CallOptions).GetReleaseConfig):len((*c.CallOptions).GetReleaseConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReleaseConfig{}
@@ -4297,6 +6989,13 @@ func (c *restClient) CreateReleaseConfig(ctx context.Context, req *dataformpb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/releaseConfigs")
+	}
 	opts = append((*c.CallOptions).CreateReleaseConfig[0:len((*c.CallOptions).CreateReleaseConfig):len((*c.CallOptions).CreateReleaseConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReleaseConfig{}
@@ -4366,6 +7065,10 @@ func (c *restClient) UpdateReleaseConfig(ctx context.Context, req *dataformpb.Up
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{release_config.name=projects/*/locations/*/repositories/*/releaseConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateReleaseConfig[0:len((*c.CallOptions).UpdateReleaseConfig):len((*c.CallOptions).UpdateReleaseConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.ReleaseConfig{}
@@ -4416,6 +7119,13 @@ func (c *restClient) DeleteReleaseConfig(ctx context.Context, req *dataformpb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteReleaseConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/releaseConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4435,7 +7145,7 @@ func (c *restClient) DeleteReleaseConfig(ctx context.Context, req *dataformpb.De
 // ListCompilationResults lists CompilationResults in a given Repository.
 func (c *restClient) ListCompilationResults(ctx context.Context, req *dataformpb.ListCompilationResultsRequest, opts ...gax.CallOption) *CompilationResultIterator {
 	it := &CompilationResultIterator{}
-	req = proto.Clone(req).(*dataformpb.ListCompilationResultsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResult, string, error) {
 		resp := &dataformpb.ListCompilationResultsResponse{}
@@ -4535,6 +7245,13 @@ func (c *restClient) GetCompilationResult(ctx context.Context, req *dataformpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetCompilationResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/compilationResults/*}")
+	}
 	opts = append((*c.CallOptions).GetCompilationResult[0:len((*c.CallOptions).GetCompilationResult):len((*c.CallOptions).GetCompilationResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CompilationResult{}
@@ -4592,6 +7309,13 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateCompilationResult")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/compilationResults")
+	}
 	opts = append((*c.CallOptions).CreateCompilationResult[0:len((*c.CallOptions).CreateCompilationResult):len((*c.CallOptions).CreateCompilationResult)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CompilationResult{}
@@ -4626,7 +7350,7 @@ func (c *restClient) CreateCompilationResult(ctx context.Context, req *dataformp
 // QueryCompilationResultActions returns CompilationResultActions in a given CompilationResult.
 func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dataformpb.QueryCompilationResultActionsRequest, opts ...gax.CallOption) *CompilationResultActionIterator {
 	it := &CompilationResultActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryCompilationResultActionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.CompilationResultAction, string, error) {
 		resp := &dataformpb.QueryCompilationResultActionsResponse{}
@@ -4707,7 +7431,7 @@ func (c *restClient) QueryCompilationResultActions(ctx context.Context, req *dat
 // ListWorkflowConfigs lists WorkflowConfigs in a given Repository.
 func (c *restClient) ListWorkflowConfigs(ctx context.Context, req *dataformpb.ListWorkflowConfigsRequest, opts ...gax.CallOption) *WorkflowConfigIterator {
 	it := &WorkflowConfigIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowConfigsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowConfig, string, error) {
 		resp := &dataformpb.ListWorkflowConfigsResponse{}
@@ -4801,6 +7525,13 @@ func (c *restClient) GetWorkflowConfig(ctx context.Context, req *dataformpb.GetW
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowConfigs/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkflowConfig[0:len((*c.CallOptions).GetWorkflowConfig):len((*c.CallOptions).GetWorkflowConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowConfig{}
@@ -4859,6 +7590,13 @@ func (c *restClient) CreateWorkflowConfig(ctx context.Context, req *dataformpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/workflowConfigs")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowConfig[0:len((*c.CallOptions).CreateWorkflowConfig):len((*c.CallOptions).CreateWorkflowConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowConfig{}
@@ -4928,6 +7666,10 @@ func (c *restClient) UpdateWorkflowConfig(ctx context.Context, req *dataformpb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{workflow_config.name=projects/*/locations/*/repositories/*/workflowConfigs/*}")
+	}
 	opts = append((*c.CallOptions).UpdateWorkflowConfig[0:len((*c.CallOptions).UpdateWorkflowConfig):len((*c.CallOptions).UpdateWorkflowConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowConfig{}
@@ -4978,6 +7720,13 @@ func (c *restClient) DeleteWorkflowConfig(ctx context.Context, req *dataformpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowConfigs/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -4997,7 +7746,7 @@ func (c *restClient) DeleteWorkflowConfig(ctx context.Context, req *dataformpb.D
 // ListWorkflowInvocations lists WorkflowInvocations in a given Repository.
 func (c *restClient) ListWorkflowInvocations(ctx context.Context, req *dataformpb.ListWorkflowInvocationsRequest, opts ...gax.CallOption) *WorkflowInvocationIterator {
 	it := &WorkflowInvocationIterator{}
-	req = proto.Clone(req).(*dataformpb.ListWorkflowInvocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocation, string, error) {
 		resp := &dataformpb.ListWorkflowInvocationsResponse{}
@@ -5097,6 +7846,13 @@ func (c *restClient) GetWorkflowInvocation(ctx context.Context, req *dataformpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowInvocations/*}")
+	}
 	opts = append((*c.CallOptions).GetWorkflowInvocation[0:len((*c.CallOptions).GetWorkflowInvocation):len((*c.CallOptions).GetWorkflowInvocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowInvocation{}
@@ -5154,6 +7910,13 @@ func (c *restClient) CreateWorkflowInvocation(ctx context.Context, req *dataform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CreateWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/workflowInvocations")
+	}
 	opts = append((*c.CallOptions).CreateWorkflowInvocation[0:len((*c.CallOptions).CreateWorkflowInvocation):len((*c.CallOptions).CreateWorkflowInvocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.WorkflowInvocation{}
@@ -5204,6 +7967,13 @@ func (c *restClient) DeleteWorkflowInvocation(ctx context.Context, req *dataform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/DeleteWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowInvocations/*}")
+	}
 	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5245,6 +8015,13 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/CancelWorkflowInvocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/workflowInvocations/*}:cancel")
+	}
 	opts = append((*c.CallOptions).CancelWorkflowInvocation[0:len((*c.CallOptions).CancelWorkflowInvocation):len((*c.CallOptions).CancelWorkflowInvocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.CancelWorkflowInvocationResponse{}
@@ -5279,7 +8056,7 @@ func (c *restClient) CancelWorkflowInvocation(ctx context.Context, req *dataform
 // QueryWorkflowInvocationActions returns WorkflowInvocationActions in a given WorkflowInvocation.
 func (c *restClient) QueryWorkflowInvocationActions(ctx context.Context, req *dataformpb.QueryWorkflowInvocationActionsRequest, opts ...gax.CallOption) *WorkflowInvocationActionIterator {
 	it := &WorkflowInvocationActionIterator{}
-	req = proto.Clone(req).(*dataformpb.QueryWorkflowInvocationActionsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.WorkflowInvocationAction, string, error) {
 		resp := &dataformpb.QueryWorkflowInvocationActionsResponse{}
@@ -5373,6 +8150,13 @@ func (c *restClient) GetConfig(ctx context.Context, req *dataformpb.GetConfigReq
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/config}")
+	}
 	opts = append((*c.CallOptions).GetConfig[0:len((*c.CallOptions).GetConfig):len((*c.CallOptions).GetConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Config{}
@@ -5442,6 +8226,10 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/UpdateConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{config.name=projects/*/locations/*/config}")
+	}
 	opts = append((*c.CallOptions).UpdateConfig[0:len((*c.CallOptions).UpdateConfig):len((*c.CallOptions).UpdateConfig)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &dataformpb.Config{}
@@ -5457,6 +8245,203 @@ func (c *restClient) UpdateConfig(ctx context.Context, req *dataformpb.UpdateCon
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConfig")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetIamPolicy gets the access control policy for a resource.
+// Returns an empty policy if the resource exists and does not have a policy
+// set.
+func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
+		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/GetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:getIamPolicy")
+	}
+	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SetIamPolicy sets the access control policy on the specified resource. Replaces any
+// existing policy.
+//
+// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED errors.
+func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/SetIamPolicy")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:setIamPolicy")
+	}
+	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.Policy{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// TestIamPermissions returns permissions that a caller has on the specified resource.
+// If the resource does not exist, this will return an empty set of
+// permissions, not a NOT_FOUND error.
+//
+// Note: This operation is designed to be used for building permission-aware
+// UIs and command-line tools, not for authorization checking. This operation
+// may “fail open” without warning.
+func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetResource()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1.Dataform/TestIamPermissions")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:testIamPermissions")
+	}
+	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &iampb.TestIamPermissionsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
 		if err != nil {
 			return err
 		}
@@ -5492,6 +8477,10 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.location.Locations/GetLocation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*}")
+	}
 	opts = append((*c.CallOptions).GetLocation[0:len((*c.CallOptions).GetLocation):len((*c.CallOptions).GetLocation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &locationpb.Location{}
@@ -5524,9 +8513,24 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
-	req = proto.Clone(req).(*locationpb.ListLocationsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*locationpb.Location, string, error) {
 		resp := &locationpb.ListLocationsResponse{}
@@ -5604,32 +8608,116 @@ func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLoca
 	return it
 }
 
-// GetIamPolicy gets the access control policy for a resource. Returns an empty policy
-// if the resource exists and does not have a policy set.
-func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
+// CancelOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) CancelOperation(ctx context.Context, req *longrunningpb.CancelOperationRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
-		return nil, err
+		return err
 	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v:getIamPolicy", req.GetResource())
+	baseUrl.Path += fmt.Sprintf("/v1/%v:cancel", req.GetName())
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
-	if req.GetOptions().GetRequestedPolicyVersion() != 0 {
-		params.Add("options.requestedPolicyVersion", fmt.Sprintf("%v", req.GetOptions().GetRequestedPolicyVersion()))
-	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).GetIamPolicy[0:len((*c.CallOptions).GetIamPolicy):len((*c.CallOptions).GetIamPolicy)], opts...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/CancelOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}:cancel")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CancelOperation")
+		return err
+	}, opts...)
+}
+
+// DeleteOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) DeleteOperation(ctx context.Context, req *longrunningpb.DeleteOperationRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/DeleteOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteOperation")
+		return err
+	}, opts...)
+}
+
+// GetOperation is a utility method from google.longrunning.Operations.
+func (c *restClient) GetOperation(ctx context.Context, req *longrunningpb.GetOperationRequest, opts ...gax.CallOption) (*longrunningpb.Operation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.longrunning.Operations/GetOperation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/operations/*}")
+	}
+	opts = append((*c.CallOptions).GetOperation[0:len((*c.CallOptions).GetOperation):len((*c.CallOptions).GetOperation)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &iampb.Policy{}
+	resp := &longrunningpb.Operation{}
 	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		if settings.Path != "" {
 			baseUrl.Path = settings.Path
@@ -5641,7 +8729,7 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 		httpReq = httpReq.WithContext(ctx)
 		httpReq.Header = headers
 
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetIamPolicy")
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetOperation")
 		if err != nil {
 			return err
 		}
@@ -5658,124 +8746,158 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	return resp, nil
 }
 
-// SetIamPolicy sets the access control policy on the specified resource. Replaces
-// any existing policy.
-//
-// Can return NOT_FOUND, INVALID_ARGUMENT, and PERMISSION_DENIED
-// errors.
-func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRequest, opts ...gax.CallOption) (*iampb.Policy, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
-	}
-
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
-	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v:setIamPolicy", req.GetResource())
-
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).SetIamPolicy[0:len((*c.CallOptions).SetIamPolicy):len((*c.CallOptions).SetIamPolicy)], opts...)
+// ListOperations is a utility method from google.longrunning.Operations.
+func (c *restClient) ListOperations(ctx context.Context, req *longrunningpb.ListOperationsRequest, opts ...gax.CallOption) *OperationIterator {
+	it := &OperationIterator{}
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &iampb.Policy{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*longrunningpb.Operation, string, error) {
+		resp := &longrunningpb.ListOperationsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
 		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
-			return err
+			return nil, "", err
 		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
+		baseUrl.Path += fmt.Sprintf("/v1/%v/operations", req.GetName())
 
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SetIamPolicy")
-		if err != nil {
-			return err
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetReturnPartialSuccess() {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
+		baseUrl.RawQuery = params.Encode()
 
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListOperations")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetOperations(), resp.GetNextPageToken(), nil
 	}
-	return resp, nil
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
-// TestIamPermissions returns permissions that a caller has on the specified resource. If the
-// resource does not exist, this will return an empty set of
-// permissions, not a NOT_FOUND error.
-//
-// Note: This operation is designed to be used for building
-// permission-aware UIs and command-line tools, not for authorization
-// checking. This operation may “fail open” without warning.
-func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamPermissionsRequest, opts ...gax.CallOption) (*iampb.TestIamPermissionsResponse, error) {
-	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
-	jsonReq, err := m.Marshal(req)
-	if err != nil {
-		return nil, err
+// DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteFolderTreeOperation, possibly from a different process.
+func (c *gRPCClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
+	return &DeleteFolderTreeOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteFolderTreeOperation"),
 	}
+}
 
-	baseUrl, err := url.Parse(c.endpoint)
-	if err != nil {
-		return nil, err
+// DeleteFolderTreeOperation returns a new DeleteFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteFolderTreeOperation, possibly from a different process.
+func (c *restClient) DeleteFolderTreeOperation(name string) *DeleteFolderTreeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteFolderTreeOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteFolderTreeOperation"),
+		pollPath: override,
 	}
-	baseUrl.Path += fmt.Sprintf("/v1/%v:testIamPermissions", req.GetResource())
+}
 
-	params := url.Values{}
-	params.Add("$alt", "json;enum-encoding=int")
-
-	baseUrl.RawQuery = params.Encode()
-
-	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "resource", url.QueryEscape(req.GetResource()))}
-
-	hds = append(c.xGoogHeaders, hds...)
-	hds = append(hds, "Content-Type", "application/json")
-	headers := gax.BuildHeaders(ctx, hds...)
-	opts = append((*c.CallOptions).TestIamPermissions[0:len((*c.CallOptions).TestIamPermissions):len((*c.CallOptions).TestIamPermissions)], opts...)
-	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
-	resp := &iampb.TestIamPermissionsResponse{}
-	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
-		if settings.Path != "" {
-			baseUrl.Path = settings.Path
-		}
-		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
-		if err != nil {
-			return err
-		}
-		httpReq = httpReq.WithContext(ctx)
-		httpReq.Header = headers
-
-		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "TestIamPermissions")
-		if err != nil {
-			return err
-		}
-
-		if err := unm.Unmarshal(buf, resp); err != nil {
-			return err
-		}
-
-		return nil
-	}, opts...)
-	if e != nil {
-		return nil, e
+// DeleteTeamFolderTreeOperation returns a new DeleteTeamFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteTeamFolderTreeOperation, possibly from a different process.
+func (c *gRPCClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
+	return &DeleteTeamFolderTreeOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteTeamFolderTreeOperation"),
 	}
-	return resp, nil
+}
+
+// DeleteTeamFolderTreeOperation returns a new DeleteTeamFolderTreeOperation from a given name.
+// The name must be that of a previously created DeleteTeamFolderTreeOperation, possibly from a different process.
+func (c *restClient) DeleteTeamFolderTreeOperation(name string) *DeleteTeamFolderTreeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &DeleteTeamFolderTreeOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.DeleteTeamFolderTreeOperation"),
+		pollPath: override,
+	}
+}
+
+// MoveFolderOperation returns a new MoveFolderOperation from a given name.
+// The name must be that of a previously created MoveFolderOperation, possibly from a different process.
+func (c *gRPCClient) MoveFolderOperation(name string) *MoveFolderOperation {
+	return &MoveFolderOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveFolderOperation"),
+	}
+}
+
+// MoveFolderOperation returns a new MoveFolderOperation from a given name.
+// The name must be that of a previously created MoveFolderOperation, possibly from a different process.
+func (c *restClient) MoveFolderOperation(name string) *MoveFolderOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &MoveFolderOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveFolderOperation"),
+		pollPath: override,
+	}
+}
+
+// MoveRepositoryOperation returns a new MoveRepositoryOperation from a given name.
+// The name must be that of a previously created MoveRepositoryOperation, possibly from a different process.
+func (c *gRPCClient) MoveRepositoryOperation(name string) *MoveRepositoryOperation {
+	return &MoveRepositoryOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveRepositoryOperation"),
+	}
+}
+
+// MoveRepositoryOperation returns a new MoveRepositoryOperation from a given name.
+// The name must be that of a previously created MoveRepositoryOperation, possibly from a different process.
+func (c *restClient) MoveRepositoryOperation(name string) *MoveRepositoryOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &MoveRepositoryOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*dataform.MoveRepositoryOperation"),
+		pollPath: override,
+	}
 }

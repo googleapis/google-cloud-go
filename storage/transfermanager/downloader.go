@@ -485,9 +485,12 @@ func (d *Downloader) gatherShards(in *DownloadObjectInput, out *DownloadOutput, 
 			// If a shard errored, track the error and cancel the shared ctx.
 			errs = append(errs, shardOut.Err)
 			in.cancelCtx(errCancelAllShards)
+			continue
 		}
-
-		orderedChecksums[shardOut.shard-1] = crc32cPiece{sum: shardOut.crc32c, length: shardOut.shardLength}
+		// Collect remaining checksums starting from second shard.
+		if shardOut.shard > 0 && shardOut.shard < shards {
+			orderedChecksums[shardOut.shard-1] = crc32cPiece{sum: shardOut.crc32c, length: shardOut.shardLength}
+		}
 	}
 
 	// All pieces gathered.
@@ -991,9 +994,11 @@ func isSubPath(localDirectory, filePath string) (bool, error) {
 		return false, fmt.Errorf("cannot convert file path to absolute path: %w", err)
 	}
 
-	// The relative path from the local directory to the file path.
-	// ex: if localDirectory is /tmp/foo and filePath is /tmp/foo/bar, rel will be "bar".
-	rel, err := filepath.Rel(absLocalDirectory, absFilePath)
+	absFilePathFolder := filepath.Dir(absFilePath)
+	// The relative path from the local directory to the final file path's directory.
+	// ex 1: if localDirectory is /tmp/foo and filePath is /tmp/foo/bar, rel will be ".".
+	// ex 2: if localDirectory is /tmp/foo and filePath is /tmp/bar, rel will be "..".
+	rel, err := filepath.Rel(absLocalDirectory, absFilePathFolder)
 	if err != nil {
 		return false, err
 	}
