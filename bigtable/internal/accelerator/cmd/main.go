@@ -26,11 +26,21 @@ import (
 	"context"
 	"flag"
 	"log"
+	"os"
+	"os/signal"
 	"strings"
+	"syscall"
+	"time"
 
 	"cloud.google.com/go/bigtable/internal/accelerator"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 )
+
+// identityResolveTimeout bounds the pre-bind identity resolution so a hung
+// metadata server (GCE/GKE) can never stall daemon startup. On timeout the
+// principal is left unresolved and the client falls back to its native path.
+const identityResolveTimeout = 15 * time.Second
 
 func main() {
 	udsPath := flag.String("uds-path", "", "path to unix domain socket (required)")
@@ -77,6 +87,25 @@ func main() {
 	}
 
 	ctx := context.Background()
+
+	// Resolve ADC once, using the effective scopes the channel will dial with,
+	// then hand the resolved credentials to both the channel (via
+	// WithCredentials) and the identity resolver below. This avoids a second
+	// FindDefaultCredentials lookup in identity resolution and guarantees the
+	// published principal matches the credentials the channel actually dials.
+	effectiveScopes := scopes
+	if len(effectiveScopes) == 0 {
+		effectiveScopes = []string{accelerator.DataScope}
+	}
+	creds, err := google.FindDefaultCredentials(ctx, effectiveScopes...)
+	if err != nil {
+		log.Fatalf("failed to resolve credentials: %v", err)
+	}
+	// Appended last so it overrides the channel's default credential resolution;
+	// the dial can no longer re-resolve to a different principal than the one we
+	// publish in identity.json.
+	opts = append(opts, option.WithCredentials(creds))
+
 	channel, err := accelerator.NewChannel(ctx, *project, *instance, *appProfile, opts...)
 	if err != nil {
 		log.Fatalf("failed to construct accelerator channel: %v", err)
@@ -87,8 +116,19 @@ func main() {
 
 	// Resolve and publish the daemon's identity BEFORE binding the socket, so
 	// the file is present by the time the client detects a connectable UDS.
-	// Non-fatal on failure: the client's verify step falls back to native.
-	if err := resolveAndWriteIdentity(ctx, *udsPath, scopes); err != nil {
+	// Non-fatal on failure: the client's verify step falls back to native. The
+	// resolution is bound by a timeout so a hung metadata server can't stall
+	// startup.
+	identityCtx, cancelIdentity := context.WithTimeout(ctx, identityResolveTimeout)
+	principal, err := principalFromCreds(identityCtx, creds)
+	if err != nil {
+		log.Printf("warning: principal resolution failed: %v", err)
+	}
+	cancelIdentity()
+	// Record effectiveScopes (not the raw override), so identity.json reflects
+	// the scope the daemon actually dials with rather than an empty list when no
+	// --scopes flag was passed.
+	if err := writeIdentity(*udsPath, principal, effectiveScopes); err != nil {
 		log.Printf("warning: failed to write identity document: %v", err)
 	}
 
@@ -97,9 +137,18 @@ func main() {
 	}
 	defer srv.Stop()
 
-	// Block until the watchdog (stdin EOF or parent-PID change) trips.
-	<-srv.ShutdownChan()
-	log.Printf("Teardown signal detected, exiting...")
+	// Block until either the watchdog (stdin EOF or parent-PID change) trips or
+	// the process receives a termination signal, then shut down cleanly.
+	sigCh := make(chan os.Signal, 1)
+	signal.Notify(sigCh, syscall.SIGTERM, syscall.SIGINT)
+	defer signal.Stop(sigCh)
+
+	select {
+	case <-srv.ShutdownChan():
+		log.Printf("accelerator: watchdog-initiated shutdown, exiting...")
+	case s := <-sigCh:
+		log.Printf("accelerator: received %s, shutting down...", s)
+	}
 }
 
 // splitScopes parses a comma-separated scopes flag into a trimmed, non-empty

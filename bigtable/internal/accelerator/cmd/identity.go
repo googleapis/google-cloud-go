@@ -39,19 +39,14 @@ type identityDoc struct {
 	Scopes    []string `json:"scopes"`
 }
 
-// resolveAndWriteIdentity resolves the daemon's Application Default Credentials
-// locally (no token introspection) and writes the resulting principal + scopes
-// to identity.json in the same directory as udsPath. It must be called before
-// the UDS is bound so the file is present by the time the client can connect.
+// writeIdentity writes the daemon's resolved principal + scopes to
+// identity.json in the same directory as udsPath. It must be called before the
+// UDS is bound so the file is present by the time the client can connect.
 //
 // An empty principal (e.g. plain user ADC, which exposes no local email) is
 // written as-is; the client treats "no principal" as unverifiable and falls
 // back to its native path rather than risking an identity mismatch.
-func resolveAndWriteIdentity(ctx context.Context, udsPath string, scopes []string) error {
-	principal, err := resolvePrincipal(ctx, scopes)
-	if err != nil {
-		return err
-	}
+func writeIdentity(udsPath, principal string, scopes []string) error {
 	doc := identityDoc{Principal: principal, Scopes: scopes}
 	b, err := json.Marshal(doc)
 	if err != nil {
@@ -65,17 +60,18 @@ func resolveAndWriteIdentity(ctx context.Context, udsPath string, scopes []strin
 	return nil
 }
 
-// resolvePrincipal returns the service-account email of the daemon's ADC using
-// only local sources: the credential JSON for keyed creds (SA key, impersonated,
-// Workload Identity Federation) and the link-local metadata server for GCE/GKE
-// creds. Returns "" (no error) when no principal can be resolved locally.
-func resolvePrincipal(ctx context.Context, scopes []string) (string, error) {
-	creds, err := google.FindDefaultCredentials(ctx, scopes...)
-	if err != nil {
-		return "", fmt.Errorf("find default credentials: %w", err)
-	}
-	if email := emailFromCredsJSON(creds.JSON); email != "" {
-		return email, nil
+// principalFromCreds returns the service-account email of already-resolved ADC
+// using only local sources: the credential JSON for keyed creds (SA key,
+// impersonated, Workload Identity Federation) and the link-local metadata
+// server for GCE/GKE creds. It takes pre-resolved credentials so the daemon
+// resolves ADC exactly once (the same creds it dials the channel with) rather
+// than calling FindDefaultCredentials a second time here. Returns "" (no error)
+// when no principal can be resolved locally.
+func principalFromCreds(ctx context.Context, creds *google.Credentials) (string, error) {
+	if creds != nil {
+		if email := emailFromCredsJSON(creds.JSON); email != "" {
+			return email, nil
+		}
 	}
 	if metadata.OnGCE() {
 		// Link-local metadata server; no external egress, no IAM permission.

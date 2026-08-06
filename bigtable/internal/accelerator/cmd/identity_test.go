@@ -20,6 +20,8 @@ import (
 	"path/filepath"
 	"strings"
 	"testing"
+
+	"golang.org/x/oauth2/google"
 )
 
 func TestEmailFromCredsJSON(t *testing.T) {
@@ -85,7 +87,7 @@ func TestEmailFromImpersonationURL(t *testing.T) {
 	}
 }
 
-func TestResolveAndWriteIdentity_WritesDocNextToSocket(t *testing.T) {
+func TestWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 	dir := t.TempDir()
 	udsPath := filepath.Join(dir, "sock")
 
@@ -102,8 +104,18 @@ func TestResolveAndWriteIdentity_WritesDocNextToSocket(t *testing.T) {
 	t.Setenv("GOOGLE_APPLICATION_CREDENTIALS", keyPath)
 
 	scopes := []string{"https://www.googleapis.com/auth/bigtable.data"}
-	if err := resolveAndWriteIdentity(t.Context(), udsPath, scopes); err != nil {
-		t.Fatalf("resolveAndWriteIdentity: %v", err)
+	// Resolve ADC once (as main.go does) and derive the principal from those same
+	// creds, rather than a second FindDefaultCredentials call inside resolution.
+	creds, err := google.FindDefaultCredentials(t.Context(), scopes...)
+	if err != nil {
+		t.Fatalf("FindDefaultCredentials: %v", err)
+	}
+	principal, err := principalFromCreds(t.Context(), creds)
+	if err != nil {
+		t.Fatalf("principalFromCreds: %v", err)
+	}
+	if err := writeIdentity(udsPath, principal, scopes); err != nil {
+		t.Fatalf("writeIdentity: %v", err)
 	}
 
 	path := filepath.Join(dir, identityFilename)
