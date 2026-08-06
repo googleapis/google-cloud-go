@@ -312,7 +312,7 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				// Verify dynamic attributes are present on the data point.
 				attrMap := make(map[string]string)
 				for _, kv := range dp.Attributes.ToSlice() {
-					attrMap[string(kv.Key)] = kv.Value.AsString()
+					attrMap[string(kv.Key)] = kv.Value.Emit()
 				}
 
 				if attrMap["rpc.system.name"] != "http" {
@@ -476,7 +476,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					dpCopy := dp
 					attrs := make(map[string]string)
 					for _, kv := range dp.Attributes.ToSlice() {
-						attrs[string(kv.Key)] = kv.Value.AsString()
+						attrs[string(kv.Key)] = kv.Value.Emit()
 					}
 					if attrs["rpc.method"] == "GetObject" {
 						unaryDp = &dpCopy
@@ -514,7 +514,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	} else {
 		attrs := make(map[string]string)
 		for _, kv := range unaryDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.AsString()
+			attrs[string(kv.Key)] = kv.Value.Emit()
 		}
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
@@ -535,7 +535,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	} else {
 		attrs := make(map[string]string)
 		for _, kv := range streamDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.AsString()
+			attrs[string(kv.Key)] = kv.Value.Emit()
 		}
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
@@ -556,7 +556,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 	} else {
 		attrs := make(map[string]string)
 		for _, kv := range writeDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.AsString()
+			attrs[string(kv.Key)] = kv.Value.Emit()
 		}
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
@@ -580,7 +580,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		}
 		attrs := make(map[string]string)
 		for _, kv := range bidiDp.Attributes.ToSlice() {
-			attrs[string(kv.Key)] = kv.Value.AsString()
+			attrs[string(kv.Key)] = kv.Value.Emit()
 		}
 		if attrs["rpc.system.name"] != "grpc" {
 			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
@@ -751,7 +751,7 @@ func TestStandardMetricsRecording(t *testing.T) {
 		for _, dp := range hist.DataPoints {
 			for _, kv := range dp.Attributes.ToSlice() {
 				if kv.Key == "rpc.method" {
-					methods[kv.Value.AsString()] = true
+					methods[kv.Value.Emit()] = true
 				}
 			}
 		}
@@ -922,7 +922,7 @@ func TestGRPCMetricsStatsHandler(t *testing.T) {
 func getAttr(dp metricdata.DataPoint[int64], key string) string {
 	for _, kv := range dp.Attributes.ToSlice() {
 		if string(kv.Key) == key {
-			return kv.Value.AsString()
+			return kv.Value.Emit()
 		}
 	}
 	return ""
@@ -931,7 +931,7 @@ func getAttr(dp metricdata.DataPoint[int64], key string) string {
 func getHistAttr(dp metricdata.HistogramDataPoint[float64], key string) string {
 	for _, kv := range dp.Attributes.ToSlice() {
 		if string(kv.Key) == key {
-			return kv.Value.AsString()
+			return kv.Value.Emit()
 		}
 	}
 	return ""

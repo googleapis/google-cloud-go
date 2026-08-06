@@ -226,13 +226,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		return nil, fmt.Errorf("storage: %w", err)
 	}
 
-	if creds != nil {
-		if mtp, ok := creds.TokenProvider.(*metricsTokenProvider); ok {
-			if hcTc, ok := tc.(*httpStorageClient); ok {
-				mtp.metrics = hcTc.metrics
-			}
-		}
-	}
+	injectHTTPClientMetrics(creds, tc)
 
 	var tcWrapped storageClient = tc
 	if httpClient, ok := tc.(*httpStorageClient); ok && httpClient.metrics != nil {
