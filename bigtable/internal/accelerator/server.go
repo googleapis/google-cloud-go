@@ -43,6 +43,14 @@ import (
 // never exiting.
 const defaultHandshakeTimeout = 5 * time.Second
 
+// gracefulStopTimeout bounds the graceful drain in Stop before falling back to a
+// hard grpc.Server.Stop, so a wedged in-flight RPC can't hang shutdown forever.
+const gracefulStopTimeout = 5 * time.Second
+
+// parentPidPollInterval is how often monitorParentPid samples the parent PID to
+// detect reparenting (original parent death).
+const parentPidPollInterval = 500 * time.Millisecond
+
 // Server manages the lifecycle of the local gRPC UDS server.
 type Server struct {
 	udsPath      string
@@ -96,6 +104,16 @@ func NewServer(udsPath string, channel *Channel, opts ...ServerOption) *Server {
 
 // Start boots the gRPC server on the Unix Domain Socket asynchronously.
 func (s *Server) Start() error {
+	// Capture the parent PID before serving so monitorParentPid can detect a
+	// later reparent (the original parent dying). A ppid of 1 is ambiguous — it
+	// means either we were orphaned and reparented to init, OR the parent
+	// legitimately IS pid 1 (e.g. the SDK process running as a container's
+	// entrypoint, `CMD ["python", "app.py"]`). We can't distinguish the two from
+	// ppid alone, so we don't refuse to serve; instead we skip the parent-PID
+	// watchdog below and rely on monitorStdin, whose EOF signal detects parent
+	// death without the ppid ambiguity.
+	initialPpid := os.Getppid()
+
 	// Read the auth secret from stdin BEFORE binding — the parent process writes
 	// the secret before the daemon starts serving, so it is always present on the
 	// pipe.
@@ -180,7 +198,13 @@ func (s *Server) Start() error {
 	}()
 
 	go s.monitorStdin()
-	go s.monitorParentPid()
+	// Skip the parent-PID watchdog when initialPpid is 1: it's ambiguous (orphan
+	// vs. legitimate child of pid 1), and monitorStdin already covers parent
+	// death. When initialPpid is a real parent, any later change to it means the
+	// parent we shadow has died.
+	if initialPpid != 1 {
+		go s.monitorParentPid(initialPpid)
+	}
 
 	return nil
 }
@@ -204,7 +228,7 @@ func (s *Server) Stop() {
 			}()
 			select {
 			case <-stopped:
-			case <-time.After(5 * time.Second):
+			case <-time.After(gracefulStopTimeout):
 				s.grpcServer.Stop()
 			}
 		}
@@ -299,17 +323,13 @@ func (s *Server) monitorStdin() {
 	}
 }
 
-// monitorParentPid stops the daemon if its parent PID changes, which happens
-// when the original parent dies and the process is reparented (to init or a
-// subreaper). If the daemon is already parented to init at startup (e.g. under
-// a process supervisor or in a container), there is no original parent to
-// outlive, so the watchdog is disabled.
-func (s *Server) monitorParentPid() {
-	initialPpid := os.Getppid()
-	if initialPpid == 1 {
-		return
-	}
-	ticker := time.NewTicker(500 * time.Millisecond)
+// monitorParentPid stops the daemon if its parent PID changes from initialPpid,
+// which happens when the original parent dies and the process is reparented (to
+// init or a subreaper). initialPpid is captured and passed in by Start, which
+// only launches this watchdog when initialPpid is a real parent (not 1) — see
+// Start for why a ppid of 1 is ambiguous and handled by monitorStdin instead.
+func (s *Server) monitorParentPid(initialPpid int) {
+	ticker := time.NewTicker(parentPidPollInterval)
 	defer ticker.Stop()
 
 	for {
