@@ -28,12 +28,12 @@ func BenchmarkPublisher_Unkeyed(b *testing.B) {
 	wait := make(chan struct{}, b.N)
 	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle interface{}) {
 		nlen := reflect.ValueOf(bundle).Len()
-		for i := 0; i < nlen; i++ {
+		for range nlen {
 			wait <- struct{}{}
 		}
 	})
 	go func() {
-		for i := 0; i < b.N; i++ {
+		for i := range b.N {
 			if err := ps.Add("", fmt.Sprintf("item_%d", i), 1); err != nil {
 				b.Error(err)
 			}
@@ -48,12 +48,12 @@ func BenchmarkPublisher_SingleKey(b *testing.B) {
 	wait := make(chan struct{}, b.N)
 	ps := scheduler.NewPublishScheduler(pubSchedulerWorkers, func(bundle interface{}) {
 		nlen := reflect.ValueOf(bundle).Len()
-		for i := 0; i < nlen; i++ {
+		for range nlen {
 			wait <- struct{}{}
 		}
 	})
 	go func() {
-		for i := 0; i < b.N; i++ {
+		for i := range b.N {
 			if err := ps.Add("some-key", fmt.Sprintf("item_%d", i), 1); err != nil {
 				b.Error(err)
 			}
