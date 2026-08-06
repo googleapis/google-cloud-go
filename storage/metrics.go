@@ -336,34 +336,42 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	var networkBytesReceived metric.Int64Counter
 	var stallDuration metric.Float64Histogram
 
-	networkBytesSent, err = meter.Int64Counter(
-		"gcp.storage.client.network.egress_bytes_count",
-		metric.WithDescription("Total physical compressed bytes sent over the wire socket (gRPC only)."),
-		metric.WithUnit("By"),
-	)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	networkBytesReceived, err = meter.Int64Counter(
-		"gcp.storage.client.network.ingress_bytes_count",
-		metric.WithDescription("Total physical compressed bytes received over the wire socket (gRPC only)."),
-		metric.WithUnit("By"),
-	)
-	if err != nil {
-		return nil, nil, err
-	}
-
-	stallDuration, err = meter.Float64Histogram(
-		"gcp.storage.client.stall.duration",
-		metric.WithDescription("Measure time delta where a streaming connection yields 0 bytes of progress."),
-		metric.WithUnit("s"),
-	)
-	if err != nil {
-		return nil, nil, err
-	}
-
 	if isOtelDebugMetricsEnabled(config) {
+		networkBytesSent, err = meter.Int64Counter(
+			"gcp.storage.client.network.egress_bytes_count",
+			metric.WithDescription("Total physical compressed bytes sent over the wire socket (gRPC only)."),
+			metric.WithUnit("By"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		networkBytesReceived, err = meter.Int64Counter(
+			"gcp.storage.client.network.ingress_bytes_count",
+			metric.WithDescription("Total physical compressed bytes received over the wire socket (gRPC only)."),
+			metric.WithUnit("By"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		stallDuration, err = meter.Float64Histogram(
+			"gcp.storage.client.stall.duration",
+			metric.WithDescription("Measure time delta where a streaming connection yields 0 bytes of progress."),
+			metric.WithUnit("s"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		credentialRefreshDuration, err = meter.Float64Histogram(
+			"gcp.storage.client.auth.credential_refresh.duration",
+			metric.WithDescription("Duration of the background API/network calls made to refresh OAuth2/JWT access credentials."),
+			metric.WithUnit("s"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
 		activeRequests, err = meter.Int64UpDownCounter(
 			"gcp.storage.client.active_requests",
 			metric.WithDescription("Number of active GCS client requests"),
@@ -418,15 +426,6 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 			return nil, nil, err
 		}
 
-	}
-
-	credentialRefreshDuration, err = meter.Float64Histogram(
-		"gcp.storage.client.auth.credential_refresh.duration",
-		metric.WithDescription("Duration of the background API/network calls made to refresh OAuth2/JWT access credentials."),
-		metric.WithUnit("s"),
-	)
-	if err != nil {
-		return nil, nil, err
 	}
 
 	cm := &clientMetrics{
@@ -1540,7 +1539,11 @@ type grpcMetricsStatsHandler struct {
 type contextKeyRPCTag string
 
 func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	return context.WithValue(ctx, contextKeyRPCTag("rpcMethod"), info.FullMethodName)
+	method := info.FullMethodName
+	if idx := strings.LastIndex(method, "/"); idx != -1 {
+		method = method[idx+1:]
+	}
+	return context.WithValue(ctx, contextKeyRPCTag("rpcMethod"), method)
 }
 func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if h.metrics == nil {
@@ -1549,9 +1552,6 @@ func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStat
 	method := ""
 	if v := ctx.Value(contextKeyRPCTag("rpcMethod")); v != nil {
 		method = v.(string)
-		if idx := strings.LastIndex(method, "/"); idx != -1 {
-			method = method[idx+1:]
-		}
 	}
 	attrs := metric.WithAttributes(attribute.String("rpc.method", method))
 
@@ -1645,8 +1645,8 @@ func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 }
 
 func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credentials {
-	if c == nil {
-		return nil
+	if c == nil || c.TokenProvider == nil {
+		return c
 	}
 	// Avoid double wrapping
 	if _, ok := c.TokenProvider.(*metricsTokenProvider); ok {
