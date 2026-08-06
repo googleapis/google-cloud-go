@@ -21,6 +21,7 @@ import (
 	"log"
 	"math"
 	"runtime"
+	"strconv"
 	"strings"
 	"sync"
 	"time"
@@ -38,6 +39,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/encoding/gzip"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -49,16 +51,12 @@ const (
 	// MaxPublishRequestBytes is the maximum size of a single publish request
 	// in bytes, as defined by the PubSub service.
 	MaxPublishRequestBytes = 1e7
-
-	// hedging is disabled by default but if HedgingSettings is set to a zero value,
-	// we will use a default value of 50ms.
-	defaultHedgingDelay time.Duration = 50 * time.Millisecond
 )
 
-// Default Token Bucket configurations
 const (
-	defaultHedgingRatio     float64 = 0.1
-	defaultMaxHedgingTokens float64 = 100.0
+	defaultHedgingDelay     time.Duration = 1 * time.Second
+	defaultHedgingRatio     float64       = 0.1
+	defaultMaxHedgingTokens float64       = 25
 )
 
 // ErrOversizedMessage indicates that a message's size exceeds MaxPublishRequestBytes.
@@ -225,19 +223,26 @@ type PublishSettings struct {
 	HedgingSettings *HedgingSettings
 }
 
+// HedgingSettings enables the publisher to issue hedged requests.
 type HedgingSettings struct {
+	// Delay configures the delay of when the hedged RPC should be attempted.
+	// Default is 1s.
+	// Must be between > 0.1s and <= 10s.
 	Delay time.Duration
 
-	// MaxHedgedAttempts is the maximum number of hedged requests to send.
-	// If 0, there is no limit on hedged attempts (dynamic multi-hedging).
-	// If set to 1, at most 1 hedged request is sent per bundle (single hedging).
-	MaxHedgedAttempts int
-
-	// MaxTokens is the maximum number of tokens for the hedging token bucket.
+	// MaxTokens configures the upper bound of the internal token bucket limiter.
+	//
+	// Every time an RPC exceeds the hedging delay, it consumes 1 token to fire
+	// a hedged request. Therefore, MaxTokens bounds the number of
+	// hedged requests the client can issue in a period of time if it is not
+	// refilled by successful requests, see RefillRatio.
+	//
+	// Default is 50.
+	// Must be between > 0 and <= 250.
 	MaxTokens float64
 
-	// TokenRatio is the amount of tokens added to the bucket per successful publish.
-	TokenRatio float64
+	// RefillRatio is the amount of tokens added to the bucket per successful publish.
+	RefillRatio float64
 }
 
 func (ps *PublishSettings) shouldCompress(batchSize int) bool {
@@ -614,20 +619,17 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 		return
 	}
 
-	maxHedged := t.PublishSettings.HedgingSettings.MaxHedgedAttempts
-	if maxHedged == 0 || req.attemptID < maxHedged {
-		t.enqueueHedgedRequest(&hedgedRequest{
-			attemptID: req.attemptID + 1,
-			sendAfter: time.Now().Add(t.hedgingDelay),
-			resCh:     req.resCh,
-			cs:        req.cs,
-			ctx:       req.ctx,
-			pbMsgs:    req.pbMsgs,
-			gaxOpts:   req.gaxOpts,
-			bmsgs:     req.bmsgs,
-			retryer:   req.retryer,
-		})
-	}
+	t.enqueueHedgedRequest(&hedgedRequest{
+		attemptID: req.attemptID + 1,
+		sendAfter: time.Now().Add(t.hedgingDelay),
+		resCh:     req.resCh,
+		cs:        req.cs,
+		ctx:       req.ctx,
+		pbMsgs:    req.pbMsgs,
+		gaxOpts:   req.gaxOpts,
+		bmsgs:     req.bmsgs,
+		retryer:   req.retryer,
+	})
 
 	hedgedCtx, hedgedCancel := context.WithCancel(req.ctx)
 	id := req.cs.add(hedgedCancel)
@@ -656,6 +658,8 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 			m.createSpan.AddEvent(eventHedgedPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(req.bmsgs))))
 		}
 	}
+
+	hedgedCtx = metadata.AppendToOutgoingContext(hedgedCtx, "x-goog-pubsub-hedged", strconv.Itoa(req.attemptID))
 
 	r, e := t.c.TopicAdminClient.Publish(hedgedCtx, &pb.PublishRequest{
 		Topic:    t.name,
@@ -688,8 +692,8 @@ func (t *Publisher) replenishHedgingTokens() {
 	ratio := defaultHedgingRatio
 	maxTokens := defaultMaxHedgingTokens
 	if t.PublishSettings.HedgingSettings != nil {
-		if t.PublishSettings.HedgingSettings.TokenRatio > 0 {
-			ratio = t.PublishSettings.HedgingSettings.TokenRatio
+		if t.PublishSettings.HedgingSettings.RefillRatio > 0 {
+			ratio = t.PublishSettings.HedgingSettings.RefillRatio
 		}
 		if t.PublishSettings.HedgingSettings.MaxTokens > 0 {
 			maxTokens = t.PublishSettings.HedgingSettings.MaxTokens
