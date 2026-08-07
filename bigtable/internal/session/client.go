@@ -313,10 +313,19 @@ func NewClient(
 		}
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
+	// AllowNonDefaultServiceAccount mirrors the classic path (see
+	// bigtable.NewClientWithConfig and direct_access_check.go). Without it,
+	// api/transport's DirectPath compatibility check requires the ADC token
+	// to carry the legacy oauth2 extras oauth2.google.tokenSource=
+	// "compute-metadata" and oauth2.google.serviceAccount="default". The
+	// newer cloud.google.com/go/auth library — now the default ADC path —
+	// does not populate those extras, so the check fails and the dial
+	// silently falls back to CFE+TLS instead of DirectPath.
 	daDialOpts := append(append([]option.ClientOption{}, opts...),
 		internaloption.EnableDirectPath(true),
 		internaloption.EnableDirectPathXds(),
-		internaloption.AllowHardBoundTokens("ALTS"))
+		internaloption.AllowHardBoundTokens("ALTS"),
+		internaloption.AllowNonDefaultServiceAccount(true))
 	daDial := func() (*btransport.BigtableConn, error) {
 		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
 		if dialErr != nil {
