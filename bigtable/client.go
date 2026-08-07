@@ -187,14 +187,12 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
 
-	var directAccessOptions = []option.ClientOption{
-		internaloption.EnableDirectPath(true),
-		internaloption.EnableDirectPathXds(),
-		internaloption.AllowHardBoundTokens("ALTS"),
-	}
+	// DirectAccess opt-set is centralized in btopt so the classic
+	// client, the DirectAccess probe (direct_access_check.go), and the
+	// session client (internal/session) cannot drift on which options
+	// are applied to a DirectPath dial.
+	directAccessOptions := btopt.DirectAccessOptions()
 
-	// Allow non-default service account in DirectPath.
-	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, internaloption.EnableJwtWithScope())
