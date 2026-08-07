@@ -55,6 +55,10 @@ func main() {
 	universeDomain := flag.String("universe-domain", "", "override the service universe domain, e.g. googleapis.com (optional)")
 	scopesFlag := flag.String("scopes", "", "comma-separated OAuth scopes to override the default data scope (optional)")
 	quotaProject := flag.String("quota-project", "", "quota/billing project override (optional)")
+	// User-agent prefix. Cross-language clients (e.g. the Python SDK) pass their
+	// own client user agent here so the service sees both the caller and the
+	// daemon build, e.g. "python-bigtable/2.1.0 go-acc/v1.38.0".
+	userAgent := flag.String("user-agent", "", "user-agent prefix prepended to the daemon's own token (optional)")
 	flag.Parse()
 
 	if *udsPath == "" {
@@ -85,6 +89,12 @@ func main() {
 	if *quotaProject != "" {
 		opts = append(opts, option.WithQuotaProject(*quotaProject))
 	}
+	// Prepend the caller's user-agent prefix to the daemon's own token. Appended
+	// after the channel's defaults so it overrides the default WithUserAgent; a
+	// blank flag leaves the default (daemon-token-only) user agent untouched.
+	if strings.TrimSpace(*userAgent) != "" {
+		opts = append(opts, option.WithUserAgent(accelerator.ComposeUserAgent(*userAgent)))
+	}
 
 	ctx := context.Background()
 
@@ -111,8 +121,8 @@ func main() {
 		log.Fatalf("failed to construct accelerator channel: %v", err)
 	}
 	srv := accelerator.NewServer(*udsPath, channel)
-	log.Printf("Starting accelerator daemon on UDS=%s project=%s instance=%s app-profile=%q data-endpoint=%q universe-domain=%q scopes=%q quota-project=%q",
-		*udsPath, *project, *instance, *appProfile, *dataEndpoint, *universeDomain, *scopesFlag, *quotaProject)
+	log.Printf("Starting accelerator daemon on UDS=%s project=%s instance=%s app-profile=%q data-endpoint=%q universe-domain=%q scopes=%q quota-project=%q user-agent=%q",
+		*udsPath, *project, *instance, *appProfile, *dataEndpoint, *universeDomain, *scopesFlag, *quotaProject, accelerator.ComposeUserAgent(*userAgent))
 
 	// Resolve and publish the daemon's identity BEFORE binding the socket, so
 	// the file is present by the time the client detects a connectable UDS.

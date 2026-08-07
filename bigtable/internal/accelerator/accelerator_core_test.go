@@ -756,3 +756,22 @@ func TestNewStream_UnknownMethod_ReturnsUnimplemented(t *testing.T) {
 		t.Errorf("NewStream(unknown) code = %v; want Unimplemented", status.Code(err))
 	}
 }
+
+func TestComposeUserAgent(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		prefix string
+		want   string
+	}{
+		{name: "empty prefix returns daemon token", prefix: "", want: userAgent},
+		{name: "blank prefix returns daemon token", prefix: "   ", want: userAgent},
+		{name: "prefix is prepended and space-separated", prefix: "python-bigtable/2.1.0", want: "python-bigtable/2.1.0 " + userAgent},
+		{name: "prefix is trimmed before joining", prefix: "  python-bigtable/2.1.0  ", want: "python-bigtable/2.1.0 " + userAgent},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := ComposeUserAgent(tc.prefix); got != tc.want {
+				t.Errorf("ComposeUserAgent(%q) = %q; want %q", tc.prefix, got, tc.want)
+			}
+		})
+	}
+}

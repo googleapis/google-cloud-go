@@ -29,6 +29,7 @@ import (
 	"bytes"
 	"context"
 	"io"
+	"strings"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal"
@@ -61,7 +62,20 @@ const (
 // credentials back via option.WithCredentials (avoiding a second ADC lookup).
 const DataScope = "https://www.googleapis.com/auth/bigtable.data"
 
-var userAgent = "cbt-go-accelerator/v" + internal.Version
+var userAgent = "go-acc/v" + internal.Version
+
+// ComposeUserAgent joins a caller-supplied user-agent prefix with the daemon's
+// own token. Cross-language clients (e.g. the Python SDK) pass their own client
+// user agent so the service sees both the caller and the accelerator build, e.g.
+// "python-bigtable/2.1.0 go-acc/v1.38.0". Tokens are space-separated
+// per the HTTP/gRPC user-agent product-token convention. An empty or blank
+// prefix yields the daemon token alone.
+func ComposeUserAgent(prefix string) string {
+	if prefix = strings.TrimSpace(prefix); prefix == "" {
+		return userAgent
+	}
+	return prefix + " " + userAgent
+}
 
 // Ensure Channel implements grpc.ClientConnInterface.
 var _ grpc.ClientConnInterface = (*Channel)(nil)
