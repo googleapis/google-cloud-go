@@ -18,6 +18,7 @@ import (
 	"context"
 	"sync"
 	"testing"
+	"testing/synctest"
 	"time"
 
 	bigtablepb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -76,44 +77,57 @@ func TestManagerPoll_Success(t *testing.T) {
 }
 
 func TestManagerPoll_FailureKeepsOldConfig(t *testing.T) {
-	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+	// Wrapped in synctest.Test so fetchClientConfiguration's exponential
+	// backoff (time.After up to maxBackoffSeconds per retry × default
+	// MaxRpcRetryCount=5) uses the bubble's fake clock — finishes in
+	// milliseconds instead of tens of seconds of real sleep. Callers of
+	// manager.Start(ctx) inside a synctest bubble would deadlock; this
+	// test only calls manager.poll synchronously so no goroutine
+	// escapes the bubble.
+	synctest.Test(t, func(t *testing.T) {
+		client := &mockBigtableClient{}
+		manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
-	// Set a valid until time in the future
-	manager.validUntil = time.Now().Add(time.Hour)
+		// Set a valid until time in the future
+		manager.validUntil = time.Now().Add(time.Hour)
 
-	client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
-		return nil, status.Error(codes.Unavailable, "service unavailable")
-	}
+		client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			return nil, status.Error(codes.Unavailable, "service unavailable")
+		}
 
-	manager.poll(context.Background())
+		manager.poll(context.Background())
 
-	cfg := manager.getConfig()
-	if !proto.Equal(cfg, manager.defaultConfig) {
-		t.Error("Expected config to be equivalent to default config on failure before expiration")
-	}
+		cfg := manager.getConfig()
+		if !proto.Equal(cfg, manager.defaultConfig) {
+			t.Error("Expected config to be equivalent to default config on failure before expiration")
+		}
+	})
 }
 
 func TestManagerPoll_FailureFallbackToDefault(t *testing.T) {
-	client := &mockBigtableClient{}
-	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+	// See TestManagerPoll_FailureKeepsOldConfig — synctest bubble
+	// virtualizes the retry backoff.
+	synctest.Test(t, func(t *testing.T) {
+		client := &mockBigtableClient{}
+		manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
 
-	// Set a valid until time in the past
-	manager.validUntil = time.Now().Add(-time.Hour)
+		// Set a valid until time in the past
+		manager.validUntil = time.Now().Add(-time.Hour)
 
-	// Change current config to something non-default.
-	manager.currentConfig = &bigtablepb.ClientConfiguration{}
+		// Change current config to something non-default.
+		manager.currentConfig = &bigtablepb.ClientConfiguration{}
 
-	client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
-		return nil, status.Error(codes.Unavailable, "service unavailable")
-	}
+		client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+			return nil, status.Error(codes.Unavailable, "service unavailable")
+		}
 
-	manager.poll(context.Background())
+		manager.poll(context.Background())
 
-	cfg := manager.getConfig()
-	if !proto.Equal(cfg, manager.defaultConfig) {
-		t.Error("Expected config to fallback to default config on failure after expiration")
-	}
+		cfg := manager.getConfig()
+		if !proto.Equal(cfg, manager.defaultConfig) {
+			t.Error("Expected config to fallback to default config on failure after expiration")
+		}
+	})
 }
 
 func TestManagerNotifyListeners(t *testing.T) {
