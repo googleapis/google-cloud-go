@@ -1,5 +1,25 @@
 # Changes
 
+## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.52.0...bigtable/v1.53.0) (2026-08-07)
+
+
+### Features
+
+* **bigtable/accelerator:** Add --user-agent flag to daemon ([#20341](https://github.com/googleapis/google-cloud-go/issues/20341)) ([6b33c06](https://github.com/googleapis/google-cloud-go/commit/6b33c06f6a19ce512cbe9556fe2932f5d7878b66))
+* **bigtable/accelerator:** Add daemon binary with identity verification   ([#20330](https://github.com/googleapis/google-cloud-go/issues/20330)) ([2f9cf89](https://github.com/googleapis/google-cloud-go/commit/2f9cf898f165c0b4fee6fdda8d037c109b0779e1))
+* **bigtable/accelerator:** Add proxy channel scaffold owning a sessi… ([#20310](https://github.com/googleapis/google-cloud-go/issues/20310)) ([d65ca7d](https://github.com/googleapis/google-cloud-go/commit/d65ca7da8108c643abc56237e2db0a17c3447c7c))
+* **bigtable/accelerator:** Add stdin-EOF and parent-PID lifecycle wa… ([#20328](https://github.com/googleapis/google-cloud-go/issues/20328)) ([dc1c6ae](https://github.com/googleapis/google-cloud-go/commit/dc1c6ae0f773d405e35ffe68741c46d220e450d1))
+* **bigtable/accelerator:** Add UDS server with authenticated proxy i… ([#20320](https://github.com/googleapis/google-cloud-go/issues/20320)) ([a837020](https://github.com/googleapis/google-cloud-go/commit/a837020465473f8cc21213de818dc96d5ff46f3a))
+* **bigtable/accelerator:** Add V2-to-session request adapters ([#20271](https://github.com/googleapis/google-cloud-go/issues/20271)) ([4cb6f16](https://github.com/googleapis/google-cloud-go/commit/4cb6f1644d070b0af8ee3706d36640a91ded48d8))
+* **bigtable/accelerator:** Authenticate UDS callers with a stdin tok… ([#20324](https://github.com/googleapis/google-cloud-go/issues/20324)) ([7847ab7](https://github.com/googleapis/google-cloud-go/commit/7847ab71efc0c5745eaa49235762ecab523312f1))
+* **bigtable/accelerator:** Dispatch MutateRow and single-row ReadRow… ([#20312](https://github.com/googleapis/google-cloud-go/issues/20312)) ([c89f336](https://github.com/googleapis/google-cloud-go/commit/c89f336749601fa958d02c984cafd7e96007c8f1))
+
+
+### Bug Fixes
+
+* **bigtable/internal/transport:** Drop redundant defer p.Close() in AFE picker tests ([#20311](https://github.com/googleapis/google-cloud-go/issues/20311)) ([c05b767](https://github.com/googleapis/google-cloud-go/commit/c05b76788b76de616cf49ca7c3a7cfec863913b8))
+* **bigtable:** Session client — set AllowNonDefaultServiceAccount on DirectPath dial ([#20343](https://github.com/googleapis/google-cloud-go/issues/20343)) ([b9c76ec](https://github.com/googleapis/google-cloud-go/commit/b9c76ec52f46f4fb1f1252b4ca159ca3cd2f86fa))
+
 ## [1.52.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.51.0...bigtable/v1.52.0) (2026-08-03)
 
 
