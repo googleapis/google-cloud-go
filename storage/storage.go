@@ -173,7 +173,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		// client which does not auth with ADC or other common conventions.
 		c, err := internaloption.AuthCreds(ctx, opts)
 		if err == nil {
-			creds = c
+			creds = wrapAuthCredentials(c, nil)
 			opts = append(opts, option.WithAuthCredentials(creds))
 		}
 	} else {
@@ -225,6 +225,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	if err != nil {
 		return nil, fmt.Errorf("storage: %w", err)
 	}
+
+	injectHTTPClientMetrics(creds, tc)
 
 	var tcWrapped storageClient = tc
 	if httpClient, ok := tc.(*httpStorageClient); ok && httpClient.metrics != nil {

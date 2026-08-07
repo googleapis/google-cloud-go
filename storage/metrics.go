@@ -31,6 +31,7 @@ import (
 	"sync/atomic"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
@@ -40,6 +41,8 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
+	"golang.org/x/oauth2"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -71,6 +74,10 @@ type clientMetrics struct {
 	tcpConnectDuration        metric.Float64Histogram
 	tlsHandshakeDuration      metric.Float64Histogram
 	gfeDuration               metric.Float64Histogram
+	credentialRefreshDuration metric.Float64Histogram
+	networkBytesSent          metric.Int64Counter
+	networkBytesReceived      metric.Int64Counter
+	stallDuration             metric.Float64Histogram
 }
 
 func formatMetricWithPrefix(m metricdata.Metrics, prefix string) string {
@@ -225,6 +232,10 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 					sdkmetric.Instrument{Name: "gcp.storage.client.gfe.duration", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
+				sdkmetric.NewView(
+					sdkmetric.Instrument{Name: "gcp.storage.client.auth.credential_refresh.duration", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
+				),
 			),
 		)
 		ownProvider = true
@@ -319,8 +330,48 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	var tcpConnectDuration metric.Float64Histogram
 	var tlsHandshakeDuration metric.Float64Histogram
 	var gfeDuration metric.Float64Histogram
+	var credentialRefreshDuration metric.Float64Histogram
+
+	var networkBytesSent metric.Int64Counter
+	var networkBytesReceived metric.Int64Counter
+	var stallDuration metric.Float64Histogram
 
 	if isOtelDebugMetricsEnabled(config) {
+		networkBytesSent, err = meter.Int64Counter(
+			"gcp.storage.client.network.egress_bytes_count",
+			metric.WithDescription("Total physical compressed bytes sent over the wire socket (gRPC only)."),
+			metric.WithUnit("By"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		networkBytesReceived, err = meter.Int64Counter(
+			"gcp.storage.client.network.ingress_bytes_count",
+			metric.WithDescription("Total physical compressed bytes received over the wire socket (gRPC only)."),
+			metric.WithUnit("By"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		stallDuration, err = meter.Float64Histogram(
+			"gcp.storage.client.stall.duration",
+			metric.WithDescription("Measure time delta where a streaming connection yields 0 bytes of progress."),
+			metric.WithUnit("s"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
+
+		credentialRefreshDuration, err = meter.Float64Histogram(
+			"gcp.storage.client.auth.credential_refresh.duration",
+			metric.WithDescription("Duration of the background API/network calls made to refresh OAuth2/JWT access credentials."),
+			metric.WithUnit("s"),
+		)
+		if err != nil {
+			return nil, nil, err
+		}
 		activeRequests, err = meter.Int64UpDownCounter(
 			"gcp.storage.client.active_requests",
 			metric.WithDescription("Number of active GCS client requests"),
@@ -374,6 +425,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		if err != nil {
 			return nil, nil, err
 		}
+
 	}
 
 	cm := &clientMetrics{
@@ -393,6 +445,10 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		tcpConnectDuration:        tcpConnectDuration,
 		tlsHandshakeDuration:      tlsHandshakeDuration,
 		gfeDuration:               gfeDuration,
+		credentialRefreshDuration: credentialRefreshDuration,
+		networkBytesSent:          networkBytesSent,
+		networkBytesReceived:      networkBytesReceived,
+		stallDuration:             stallDuration,
 	}
 
 	var cleanup func()
@@ -582,6 +638,9 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		attribute.Int64("rpc.grpc.status_code", statusCode),
 		attribute.String("error.type", errorType),
 	}
+	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+		attemptAttrs = append(attemptAttrs, attribute.String("api.method", apiMethod))
+	}
 	cm.attempts.Add(ctx, 1, metric.WithAttributes(attemptAttrs...))
 
 	// Record standard error metric: gcp.storage.client.errors.
@@ -591,13 +650,14 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 			attribute.String("error.type", errorType),
 			attribute.String("gcp.errors.domain", "storage.googleapis.com"),
 		}
-		cm.errors.Add(ctx, 1, metric.WithAttributes(errorAttrs...))
+		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, errorAttrs)...))
 	}
 
 	// For unary calls, record TTFB equal to the total attempt latency.
 	isStreaming := methodName == "ReadObject" || methodName == "WriteObject" || methodName == "BidiReadObject" || methodName == "BidiWriteObject"
 	if !isStreaming {
-		cm.ttfb.Record(ctx, duration, metric.WithAttributes(attribute.String("rpc.method", logicalMethod)))
+		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.method", logicalMethod)}
+		cm.ttfb.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, ttfbAttrs)...))
 	}
 }
 
@@ -776,7 +836,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 			attribute.Int64("http.response.status_code", statusCode),
 			attribute.String("error.type", errorType),
 		}
-		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(attemptAttrs...))
+		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), attemptAttrs)...))
 
 		// Record error if failed.
 		if err != nil || (resp != nil && resp.StatusCode >= 400) {
@@ -785,7 +845,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				attribute.String("error.type", errorType),
 				attribute.String("gcp.errors.domain", "storage.googleapis.com"),
 			}
-			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(errorAttrs...))
+			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), errorAttrs)...))
 		}
 
 		if rt.metrics.gfeHeaderMissing != nil {
@@ -813,7 +873,8 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 		isResumableInit := req.Method == "POST" && strings.Contains(req.URL.Path, "/upload/") && req.URL.Query().Get("uploadType") == "resumable"
 		if !isDownload || isResumableInit {
 			duration := time.Since(startTime).Seconds()
-			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(attribute.String("rpc.method", logicalMethod)))
+			ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.method", logicalMethod)}
+			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(injectAPIMethod(req.Context(), ttfbAttrs)...))
 		}
 	}
 
@@ -1100,6 +1161,15 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 
 type metricsKey struct{}
 
+type apiMethodKey struct{}
+
+func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribute.KeyValue {
+	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+		return append(attrs, attribute.String("api.method", apiMethod))
+	}
+	return attrs
+}
+
 type metricsState struct {
 	method    string
 	startTime time.Time
@@ -1154,6 +1224,9 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 				attribute.String("rpc.method", method),
 				attribute.String("status", statusStr),
 				attribute.String("error.type", errorType),
+			}
+			if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+				attrs = append(attrs, attribute.String("api.method", apiMethod))
 			}
 			opts := metric.WithAttributes(attrs...)
 			cm.duration.Record(ctx, duration, opts)
@@ -1480,10 +1553,36 @@ type grpcMetricsStatsHandler struct {
 	dialTimes *sync.Map
 }
 
+type contextKeyRPCTag string
+
 func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
-	return ctx
+	method := info.FullMethodName
+	if idx := strings.LastIndex(method, "/"); idx != -1 {
+		method = method[idx+1:]
+	}
+	return context.WithValue(ctx, contextKeyRPCTag("rpcMethod"), method)
 }
-func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {}
+func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
+	if h.metrics == nil {
+		return
+	}
+	method := ""
+	if v := ctx.Value(contextKeyRPCTag("rpcMethod")); v != nil {
+		method = v.(string)
+	}
+	attrs := metric.WithAttributes(attribute.String("rpc.method", method))
+
+	switch st := s.(type) {
+	case *stats.InPayload:
+		if h.metrics.networkBytesReceived != nil {
+			h.metrics.networkBytesReceived.Add(ctx, int64(st.WireLength), attrs)
+		}
+	case *stats.OutPayload:
+		if h.metrics.networkBytesSent != nil {
+			h.metrics.networkBytesSent.Add(ctx, int64(st.WireLength), attrs)
+		}
+	}
+}
 func (h *grpcMetricsStatsHandler) TagConn(ctx context.Context, info *stats.ConnTagInfo) context.Context {
 	if info.LocalAddr != nil && h.dialTimes != nil {
 		if val, ok := h.dialTimes.LoadAndDelete(info.LocalAddr.String()); ok {
@@ -1509,7 +1608,7 @@ func (h *grpcMetricsStatsHandler) HandleConn(ctx context.Context, s stats.ConnSt
 
 // grpcNetworkMetricsDialOptions returns dial options that instrument TCP and TLS handshake metrics.
 func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option.ClientOption {
-	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil) {
+	if metrics == nil || (metrics.tcpConnectDuration == nil && metrics.tlsHandshakeDuration == nil && metrics.networkBytesSent == nil && metrics.networkBytesReceived == nil) {
 		return nil
 	}
 	var dialTimes sync.Map
@@ -1548,4 +1647,88 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 		option.WithGRPCDialOption(grpc.WithContextDialer(dialer)),
 		option.WithGRPCDialOption(grpc.WithStatsHandler(sh)),
 	}
+}
+
+type metricsTokenProvider struct {
+	base    auth.TokenProvider
+	metrics *clientMetrics
+}
+
+func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	start := time.Now()
+	tok, err := p.base.Token(ctx)
+	p.metrics.recordCredentialRefreshDuration(ctx, time.Since(start), err)
+	return tok, err
+}
+
+func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credentials {
+	if c == nil || c.TokenProvider == nil {
+		return c
+	}
+	// Avoid double wrapping
+	if _, ok := c.TokenProvider.(*metricsTokenProvider); ok {
+		return c
+	}
+	clone := *c
+	clone.TokenProvider = &metricsTokenProvider{base: c.TokenProvider, metrics: m}
+	return &clone
+}
+
+type metricsTokenSource struct {
+	base    oauth2.TokenSource
+	metrics *clientMetrics
+}
+
+func (s *metricsTokenSource) Token() (*oauth2.Token, error) {
+	start := time.Now()
+	tok, err := s.base.Token()
+	s.metrics.recordCredentialRefreshDuration(context.Background(), time.Since(start), err)
+	return tok, err
+}
+
+func wrapGoogleCredentials(c *google.Credentials, metrics *clientMetrics) *google.Credentials {
+	if c == nil || c.TokenSource == nil {
+		return c
+	}
+	clone := &google.Credentials{
+		ProjectID:              c.ProjectID,
+		TokenSource:            &metricsTokenSource{base: c.TokenSource, metrics: metrics},
+		JSON:                   c.JSON,
+		UniverseDomainProvider: c.UniverseDomainProvider,
+	}
+	return clone
+}
+
+func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {
+	if cm == nil || cm.credentialRefreshDuration == nil {
+		return
+	}
+	errorType := "OK"
+	if err != nil {
+		errorType = "CLIENT_AUTHENTICATION_ERROR"
+	}
+	attrs := []attribute.KeyValue{attribute.String("error.type", errorType)}
+	cm.credentialRefreshDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
+}
+
+func injectHTTPClientMetrics(creds *auth.Credentials, tc storageClient) {
+	if creds == nil {
+		return
+	}
+	if mtp, ok := creds.TokenProvider.(*metricsTokenProvider); ok {
+		if hcTc, ok := tc.(*httpStorageClient); ok {
+			mtp.metrics = hcTc.metrics
+		}
+	}
+}
+
+func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string) {
+	if cm == nil || cm.stallDuration == nil {
+		return
+	}
+	attrs := []attribute.KeyValue{attribute.String("rpc.method", method)}
+	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+		attrs = append(attrs, attribute.String("api.method", apiMethod))
+	}
+	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
