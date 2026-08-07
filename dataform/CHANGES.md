@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v1.2.0...dataform/v1.3.0) (2026-08-07)
+
+
+### Features
+
+* Update API sources and regenerate ([#20326](https://github.com/googleapis/google-cloud-go/issues/20326)) ([a25826f](https://github.com/googleapis/google-cloud-go/commit/a25826f05527527005b7868284df86df4d46ce05))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/dataform/v1.1.0...dataform/v1.2.0) (2026-07-13)
 
 
