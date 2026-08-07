@@ -196,7 +196,7 @@ libraries:
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.22.0
+    version: 0.23.0
     keep:
       - README.md
       - internal/version.go
@@ -248,7 +248,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.79.0
+    version: 1.79.1
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -429,7 +429,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -502,12 +502,12 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: commerceproducer
-    version: 0.3.0
+    version: 0.4.0
     apis:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
   - name: compute
-    version: 1.65.0
+    version: 1.66.0
     preview:
       version: 1.66.0-preview.1
       apis:
@@ -587,7 +587,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: dataform
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -600,7 +600,7 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/ads/datamanager/v1
         go:
@@ -725,7 +725,7 @@ libraries:
     apis:
       - path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.24.0
+    version: 1.25.0
     apis:
       - path: google/firestore/v1
         go:
@@ -795,7 +795,7 @@ libraries:
       - path: google/cloud/hypercomputecluster/v1
       - path: google/cloud/hypercomputecluster/v1beta
   - name: iam
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/iam/v3
         go:
@@ -873,7 +873,7 @@ libraries:
     apis:
       - path: google/cloud/locationfinder/v1
   - name: logging
-    version: 1.19.0
+    version: 1.19.1
     apis:
       - path: google/logging/v2
         go:
