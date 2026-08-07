@@ -638,6 +638,9 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		attribute.Int64("rpc.grpc.status_code", statusCode),
 		attribute.String("error.type", errorType),
 	}
+	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+		attemptAttrs = append(attemptAttrs, attribute.String("api.method", apiMethod))
+	}
 	cm.attempts.Add(ctx, 1, metric.WithAttributes(attemptAttrs...))
 
 	// Record standard error metric: gcp.storage.client.errors.
@@ -647,13 +650,14 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 			attribute.String("error.type", errorType),
 			attribute.String("gcp.errors.domain", "storage.googleapis.com"),
 		}
-		cm.errors.Add(ctx, 1, metric.WithAttributes(errorAttrs...))
+		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, errorAttrs)...))
 	}
 
 	// For unary calls, record TTFB equal to the total attempt latency.
 	isStreaming := methodName == "ReadObject" || methodName == "WriteObject" || methodName == "BidiReadObject" || methodName == "BidiWriteObject"
 	if !isStreaming {
-		cm.ttfb.Record(ctx, duration, metric.WithAttributes(attribute.String("rpc.method", logicalMethod)))
+		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.method", logicalMethod)}
+		cm.ttfb.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, ttfbAttrs)...))
 	}
 }
 
@@ -832,7 +836,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 			attribute.Int64("http.response.status_code", statusCode),
 			attribute.String("error.type", errorType),
 		}
-		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(attemptAttrs...))
+		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), attemptAttrs)...))
 
 		// Record error if failed.
 		if err != nil || (resp != nil && resp.StatusCode >= 400) {
@@ -841,7 +845,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 				attribute.String("error.type", errorType),
 				attribute.String("gcp.errors.domain", "storage.googleapis.com"),
 			}
-			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(errorAttrs...))
+			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), errorAttrs)...))
 		}
 
 		if rt.metrics.gfeHeaderMissing != nil {
@@ -869,7 +873,8 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 		isResumableInit := req.Method == "POST" && strings.Contains(req.URL.Path, "/upload/") && req.URL.Query().Get("uploadType") == "resumable"
 		if !isDownload || isResumableInit {
 			duration := time.Since(startTime).Seconds()
-			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(attribute.String("rpc.method", logicalMethod)))
+			ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.method", logicalMethod)}
+			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(injectAPIMethod(req.Context(), ttfbAttrs)...))
 		}
 	}
 
@@ -1156,6 +1161,15 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 
 type metricsKey struct{}
 
+type apiMethodKey struct{}
+
+func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribute.KeyValue {
+	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+		return append(attrs, attribute.String("api.method", apiMethod))
+	}
+	return attrs
+}
+
 type metricsState struct {
 	method    string
 	startTime time.Time
@@ -1210,6 +1224,9 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 				attribute.String("rpc.method", method),
 				attribute.String("status", statusStr),
 				attribute.String("error.type", errorType),
+			}
+			if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+				attrs = append(attrs, attribute.String("api.method", apiMethod))
 			}
 			opts := metric.WithAttributes(attrs...)
 			cm.duration.Record(ctx, duration, opts)
@@ -1709,5 +1726,9 @@ func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.
 	if cm == nil || cm.stallDuration == nil {
 		return
 	}
-	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attribute.String("rpc.method", method)))
+	attrs := []attribute.KeyValue{attribute.String("rpc.method", method)}
+	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
+		attrs = append(attrs, attribute.String("api.method", apiMethod))
+	}
+	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
