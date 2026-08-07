@@ -106,6 +106,7 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 // If the context.Context provided in `ctx` contains a span then the newly-created
 // span will be a child of that span, otherwise it will be a root span.
 func startSpan(ctx context.Context, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	ctx = context.WithValue(ctx, apiMethodKey{}, name)
 	name = appendPackageName(name)
 	// TODO: Remove internalTrace upon experimental launch.
 	if !isOTelTracingDevEnabled() {
