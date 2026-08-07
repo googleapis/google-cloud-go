@@ -30,7 +30,6 @@ import (
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -313,19 +312,14 @@ func NewClient(
 		}
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
-	// AllowNonDefaultServiceAccount mirrors the classic path (see
-	// bigtable.NewClientWithConfig and direct_access_check.go). Without it,
-	// api/transport's DirectPath compatibility check requires the ADC token
-	// to carry the legacy oauth2 extras oauth2.google.tokenSource=
-	// "compute-metadata" and oauth2.google.serviceAccount="default". The
-	// newer cloud.google.com/go/auth library — now the default ADC path —
-	// does not populate those extras, so the check fails and the dial
-	// silently falls back to CFE+TLS instead of DirectPath.
-	daDialOpts := append(append([]option.ClientOption{}, opts...),
-		internaloption.EnableDirectPath(true),
-		internaloption.EnableDirectPathXds(),
-		internaloption.AllowHardBoundTokens("ALTS"),
-		internaloption.AllowNonDefaultServiceAccount(true))
+	// DirectAccess opt-set is centralized in btopt (shared with the
+	// classic client and the DirectAccess probe) so the three call
+	// sites cannot drift on which options are applied to a DirectPath
+	// dial. See btopt.DirectAccessOptions for the rationale on each
+	// individual option (in particular AllowNonDefaultServiceAccount,
+	// without which the dial silently falls back to CFE+TLS under the
+	// newer cloud.google.com/go/auth ADC path).
+	daDialOpts := append(append([]option.ClientOption{}, opts...), btopt.DirectAccessOptions()...)
 	daDial := func() (*btransport.BigtableConn, error) {
 		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
 		if dialErr != nil {
