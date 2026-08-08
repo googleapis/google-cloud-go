@@ -91,6 +91,16 @@ type AfeSnapshot struct {
 	NumOutstanding int     // refCount − IdleCount, ≥ 0
 	TransportCost  float64 // PeakEwma nanoseconds; 0 if never updated
 	E2eCost        float64 // PeakEwma nanoseconds; 0 if never updated
+	// OutlierScore is a cost multiplier populated by SessionPoolImpl
+	// from its plugged-in OutlierScorer before handing the snapshot to
+	// the picker. 1.0 = no penalty (default; NoopScorer never returns
+	// anything else). >1.0 = downweight this AFE in the picker's cost
+	// function. Only latency-based pickers (LeastLatencyAfePicker)
+	// currently consume this field; SimpleAfePicker and
+	// LeastInFlightAfePicker ignore it. ReadyAfes leaves this at 0 so
+	// the picker's zero-default check can detect an undecorated snapshot
+	// and fall back to 1.0.
+	OutlierScore float64
 }
 
 // afeHandle is the per-AFE bucket in sessionList: FIFO idle queue,

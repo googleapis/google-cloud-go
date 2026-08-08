@@ -181,6 +181,21 @@ type SessionPoolImpl struct {
 	// Pure atomic-counter bumps (msgsSent, retries, etc.) are NOT
 	// gated — a branch check costs more than the atomic.
 	debugEnabled bool
+
+	// scorer is the plugged-in OutlierScorer. Defaults to NoopScorer{}
+	// (returns 1.0 for every AFE — picker cost unchanged). Callers
+	// swap in a real scorer via SetOutlierScorer BEFORE Start; changing
+	// the scorer after Start is not supported (Start may have invoked
+	// LifecycleScorer.Start on the initial scorer, and swapping would
+	// leak that goroutine). Held under p.mu.
+	//
+	// hasCustomScorer is the atomic fast-path check consulted by
+	// CheckoutSession's decorateReady: when false (default), decorateReady
+	// short-circuits without acquiring p.mu or iterating ready — zero
+	// hot-path cost when no scorer is plugged in. Only SetOutlierScorer
+	// flips it, so writes are rare (once at pool construction).
+	scorer          OutlierScorer
+	hasCustomScorer atomic.Bool
 }
 
 // noteVRpcOutcome forwards the outcome to the AFE's PeakEwma trackers
@@ -190,6 +205,99 @@ type SessionPoolImpl struct {
 // of failed opens and keep the breaker from tripping.
 func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.Duration, ok bool) {
 	p.sl.RecordVRpcOutcome(sh, e2e, backend, ok)
+}
+
+// SetOutlierScorer plugs in an OutlierScorer that latency-based pickers
+// will consult on every CheckoutSession. Passing nil resets to
+// NoopScorer{}. Must be called BEFORE SessionPoolImpl.Start — the pool
+// invokes LifecycleScorer.Start on the plugged-in scorer during its own
+// startup, so swapping mid-run would leak the previous scorer's
+// background goroutine. Intended plug-point for
+// bigtable.ClientConfig.OutlierScorerFactory.
+//
+// Flips hasCustomScorer so the CheckoutSession hot path can skip
+// decorateReady entirely when no custom scorer is plugged in — the
+// default state pays zero cost per checkout beyond one atomic.Bool
+// load.
+func (p *SessionPoolImpl) SetOutlierScorer(s OutlierScorer) {
+	if s == nil {
+		s = NoopScorer{}
+	}
+	_, isNoop := s.(NoopScorer)
+	p.mu.Lock()
+	p.scorer = s
+	p.mu.Unlock()
+	p.hasCustomScorer.Store(!isNoop)
+}
+
+// AfeSnapshotSource returns the pool's own AFE snapshot source. Passed
+// to an OutlierScorerFactory during pool construction so factories can
+// build stateful scorers (e.g. LatencyOutlierScorer) over the pool's
+// live per-AFE state without knowing about *sessionList directly.
+func (p *SessionPoolImpl) AfeSnapshotSource() AfeSnapshotSource {
+	return p.sl
+}
+
+// decorateReady populates OutlierScore on each snapshot from the
+// currently-installed scorer. Fast-path when no custom scorer is
+// plugged in: a single atomic.Bool.Load and immediate return — no
+// p.mu acquisition, no allocation, no per-candidate loop. That fast
+// path keeps the pool's default behaviour byte-identical to the
+// pre-outlier-framework code, so poolwait latency doesn't regress
+// when the framework is present-but-unused (the common case).
+//
+// Slow path only runs when SetOutlierScorer installed a non-NoopScorer.
+// O(len(ready)) scorer calls under one p.mu take/release.
+func (p *SessionPoolImpl) decorateReady(ready []AfeSnapshot) {
+	if !p.hasCustomScorer.Load() {
+		return
+	}
+	p.mu.Lock()
+	scorer := p.scorer
+	p.mu.Unlock()
+	if scorer == nil {
+		return
+	}
+	for i := range ready {
+		ready[i].OutlierScore = scorer.Score(ready[i].ID)
+	}
+}
+
+// OutlierDebugSnapshot returns per-pool outlier-scorer state for the
+// /debug/outlierz page. Always non-empty: even a pool running
+// NoopScorer produces an entry with ScorerName="noop" and empty
+// Params/Scores/Recent so operators can see WHICH pools have outlier
+// detection wired.
+func (p *SessionPoolImpl) OutlierDebugSnapshot() OutlierPoolSnapshot {
+	p.mu.Lock()
+	scorer := p.scorer
+	p.mu.Unlock()
+	snap := OutlierPoolSnapshot{
+		PoolName:   p.poolName,
+		ScorerName: "noop",
+		CapturedAt: time.Now(),
+	}
+	if scorer == nil {
+		return snap
+	}
+	// Preferred path: the scorer knows how to snapshot itself
+	// (LatencyOutlierScorer and any custom impl that satisfies the
+	// interface). This is the only place we assert the optional
+	// debug interface — other paths deliberately stay behind the
+	// minimal OutlierScorer + Name contract.
+	type debugSnapshotter interface {
+		DebugSnapshot() OutlierPoolSnapshot
+	}
+	if d, ok := scorer.(debugSnapshotter); ok {
+		s := d.DebugSnapshot()
+		s.PoolName = p.poolName
+		s.CapturedAt = snap.CapturedAt
+		return s
+	}
+	// Fallback: scorer is minimally-conformant — we can name it but
+	// have no visibility into its internal state.
+	snap.ScorerName = scorer.Name()
+	return snap
 }
 
 // NewSessionPoolImpl creates a new SessionPoolImpl. id is baked into
@@ -220,6 +328,7 @@ func NewSessionPoolImpl(id uint64, poolName string, streamFactory func(ctx conte
 		poolCancel:         poolCancel,
 		sl:                 newSessionList(),
 		debugEnabled:       debugEnabled,
+		scorer:             NoopScorer{},
 	}
 	pool.m.afePickCounts = make(map[AfeID]int64)
 
@@ -263,8 +372,11 @@ func (p *SessionPoolImpl) CheckoutSession(ctx context.Context) (*SessionHandle, 
 		p.mu.Unlock()
 
 		// Two-tier pick: picker chooses an AFE from the ready snapshot,
-		// then sessionList dequeues one idle session in that AFE.
+		// then sessionList dequeues one idle session in that AFE. The
+		// scorer decorates each snapshot with an OutlierScore before the
+		// picker sees it — latency pickers multiply E2eCost × score.
 		ready := p.sl.ReadyAfes()
+		p.decorateReady(ready)
 		pickerName := picker.Name()
 		afeID, picked, decision := picker.PickAfe(ready)
 		p.recordPickDecision(decision, pickerName)

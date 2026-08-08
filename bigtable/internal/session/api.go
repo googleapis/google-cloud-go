@@ -108,6 +108,10 @@ type Client interface {
 	SessionDebug() btransport.SessionDebugProvider
 	ChannelDebug() btransport.ChannelDebugProvider
 	ConfigDebug() btransport.ConfigDebugProvider
+	// OutlierDebug exposes per-pool outlier-scorer state (name, config,
+	// current per-AFE scores, recent transitions) for the /debug/outlierz
+	// page. Nil when EnableDebug is false.
+	OutlierDebug() btransport.OutlierDebugProvider
 
 	// AddSessionLoadListener registers a listener invoked every time
 	// the server-driven ClientConfigurationManager reports a new
