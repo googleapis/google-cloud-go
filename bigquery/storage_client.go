@@ -37,16 +37,18 @@ type readClient struct {
 }
 
 type readClientSettings struct {
-	maxStreamCount int
-	maxWorkerCount int
+	maxStreamCount        int
+	maxWorkerCount        int
+	arrowCompressionCodec ArrowCompressionCodec
 }
 
 func defaultReadClientSettings() readClientSettings {
 	maxWorkerCount := runtime.GOMAXPROCS(0)
 	return readClientSettings{
 		// with zero, the server will provide a value of streams so as to produce reasonable throughput
-		maxStreamCount: 0,
-		maxWorkerCount: maxWorkerCount,
+		maxStreamCount:        0,
+		maxWorkerCount:        maxWorkerCount,
+		arrowCompressionCodec: ArrowCompressionUnspecified,
 	}
 }
 
@@ -74,7 +76,10 @@ func newReadClient(ctx context.Context, projectID string, opts ...option.ClientO
 		return nil, err
 	}
 
+	conf := newCustomClientConfig(opts...)
 	settings := defaultReadClientSettings()
+	settings.arrowCompressionCodec = conf.arrowCompressionCodec
+
 	rc := &readClient{
 		rawClient: rawClient,
 		projectID: projectID,
@@ -151,6 +156,26 @@ func (rs *readSession) start() error {
 		MaxStreamCount:          maxStreamCount,
 		PreferredMinStreamCount: preferredMinStreamCount,
 	}
+
+	codec := storagepb.ArrowSerializationOptions_COMPRESSION_UNSPECIFIED
+	switch rs.settings.arrowCompressionCodec {
+	case ArrowCompressionLZ4Frame:
+		codec = storagepb.ArrowSerializationOptions_LZ4_FRAME
+	case ArrowCompressionZSTD:
+		codec = storagepb.ArrowSerializationOptions_ZSTD
+	}
+
+	if codec != storagepb.ArrowSerializationOptions_COMPRESSION_UNSPECIFIED {
+		if createReadSessionRequest.ReadSession.ReadOptions == nil {
+			createReadSessionRequest.ReadSession.ReadOptions = &storagepb.ReadSession_TableReadOptions{}
+		}
+		createReadSessionRequest.ReadSession.ReadOptions.OutputFormatSerializationOptions = &storagepb.ReadSession_TableReadOptions_ArrowSerializationOptions{
+			ArrowSerializationOptions: &storagepb.ArrowSerializationOptions{
+				BufferCompression: codec,
+			},
+		}
+	}
+
 	rpcOpts := gax.WithGRPCOptions(
 		// Read API can send batches up to 128MB
 		// https://cloud.google.com/bigquery/quotas#storage-limits
