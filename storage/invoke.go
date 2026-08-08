@@ -131,7 +131,11 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 	}
 
 	var lastErr error
+	var attemptEnd time.Time
 	return internal.Retry(ctx, bo, func() (stop bool, err error) {
+		if attempts > 1 && !attemptEnd.IsZero() {
+			recordRetryBackoffEvent(ctx, time.Since(attemptEnd), attempts, attemptEnd)
+		}
 		if retry.maxRetryDuration != 0 {
 			select {
 			case <-quitAfterTimer.C:
@@ -158,6 +162,9 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		// sent by the server) in both cases.
 		if ctxErr := ctx.Err(); errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
 			retryable = false
+		}
+		if retryable {
+			attemptEnd = time.Now()
 		}
 		return !retryable, lastErr
 	})

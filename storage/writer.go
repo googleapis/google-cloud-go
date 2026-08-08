@@ -287,6 +287,7 @@ func (w *Writer) getOrInitPCU() (*pcuState, error) {
 		if err := w.initPCU(w.ctx); err != nil {
 			return nil, err
 		}
+		recordWriterTraceAttributes(w.ctx, w)
 	}
 	return w.pcu, nil
 }
@@ -453,6 +454,7 @@ func (w *Writer) markClosed(err error) error {
 }
 
 func (w *Writer) openWriter() (err error) {
+	recordWriterTraceAttributes(w.ctx, w)
 	if err := w.validateWriteAttrs(); err != nil {
 		return err
 	}
