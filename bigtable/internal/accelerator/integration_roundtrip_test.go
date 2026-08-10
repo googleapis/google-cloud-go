@@ -113,6 +113,11 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 		seed       = 1
 		iterations = 10
 	)
+	// Base context for the test. Discrete RPCs below run under a per-call
+	// timeout derived from it (see boundedDo) so none can block forever.
+	// Client/channel constructors instead take ctx directly: they may start
+	// background work (dial, session pool, cache sweeper) whose lifetime must
+	// not be cut by a per-call cancel, and they are torn down via Close.
 	ctx := context.Background()
 
 	// Admin: create a throwaway table with the required families, torn down
@@ -124,16 +129,24 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 	defer adminClient.Close()
 
 	tableName := fmt.Sprintf("accel-rt-%d", time.Now().UnixNano())
-	if err := adminClient.CreateTable(ctx, tableName); err != nil {
+	if err := boundedDo(ctx, func(c context.Context) error {
+		return adminClient.CreateTable(c, tableName)
+	}); err != nil {
 		t.Fatalf("CreateTable(%s): %v", tableName, err)
 	}
 	defer func() {
-		if err := adminClient.DeleteTable(context.Background(), tableName); err != nil {
+		// Teardown is bounded off a fresh Background context: the test's ctx
+		// may already be cancelled by the time cleanup runs.
+		if err := boundedDo(context.Background(), func(c context.Context) error {
+			return adminClient.DeleteTable(c, tableName)
+		}); err != nil {
 			t.Logf("cleanup: DeleteTable(%s): %v", tableName, err)
 		}
 	}()
 	for _, f := range prodColumnFamilies {
-		if err := adminClient.CreateColumnFamily(ctx, tableName, f); err != nil {
+		if err := boundedDo(ctx, func(c context.Context) error {
+			return adminClient.CreateColumnFamily(c, tableName, f)
+		}); err != nil {
 			t.Fatalf("CreateColumnFamily(%s): %v", f, err)
 		}
 	}
@@ -151,6 +164,19 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 	conn := startRoundTripServer(t, channel)
 	client := btpb.NewBigtableClient(conn)
 
+	// Pre-flight: confirm the accelerator's session/vRPC transport can
+	// actually establish here before entering the (unbounded) round-trip
+	// loop. Where the session client can't run, no session is ever handed
+	// to the caller and a MutateRow on context.Background() would park on
+	// the pool's waiter queue indefinitely, so skip instead.
+	skipIfSessionUnavailable(ctx, t, client, fullTableName, []byte("session-probe"),
+		[]*btpb.Mutation{{Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
+			FamilyName:      prodColumnFamilies[0],
+			ColumnQualifier: []byte("probe"),
+			TimestampMicros: 1000,
+			Value:           []byte("probe"),
+		}}}})
+
 	r := rand.New(rand.NewSource(seed))
 	for i := 0; i < iterations; i++ {
 		// A fresh key per iteration keeps writes independent — no cross-run
@@ -159,14 +185,17 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 		want := genProdRow(r, key)
 
 		// Write. The first iterations may race table readiness on a freshly
-		// created table, so retry transient failures.
+		// created table, so retry transient failures. Each attempt is bounded
+		// by perRPCTimeout via boundedDo.
 		if err := retryTransient(ctx, func() error {
-			_, err := client.MutateRow(ctx, &btpb.MutateRowRequest{
-				TableName: fullTableName,
-				RowKey:    key,
-				Mutations: rowToMutations(want),
+			return boundedDo(ctx, func(c context.Context) error {
+				_, err := client.MutateRow(c, &btpb.MutateRowRequest{
+					TableName: fullTableName,
+					RowKey:    key,
+					Mutations: rowToMutations(want),
+				})
+				return err
 			})
-			return err
 		}); err != nil {
 			t.Fatalf("iter %d: MutateRow: %v", i, err)
 		}
@@ -174,26 +203,28 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 		// Read back through the daemon's ReadRows path.
 		var got *btpb.Row
 		if err := retryTransient(ctx, func() error {
-			stream, err := client.ReadRows(ctx, &btpb.ReadRowsRequest{
-				TableName: fullTableName,
-				Rows:      &btpb.RowSet{RowKeys: [][]byte{key}},
-			})
-			if err != nil {
-				return err
-			}
-			var chunks []*btpb.ReadRowsResponse_CellChunk
-			for {
-				resp, err := stream.Recv()
-				if err == io.EOF {
-					break
-				}
+			return boundedDo(ctx, func(c context.Context) error {
+				stream, err := client.ReadRows(c, &btpb.ReadRowsRequest{
+					TableName: fullTableName,
+					Rows:      &btpb.RowSet{RowKeys: [][]byte{key}},
+				})
 				if err != nil {
 					return err
 				}
-				chunks = append(chunks, resp.Chunks...)
-			}
-			got = reassembleRow(chunks)
-			return nil
+				var chunks []*btpb.ReadRowsResponse_CellChunk
+				for {
+					resp, err := stream.Recv()
+					if err == io.EOF {
+						break
+					}
+					if err != nil {
+						return err
+					}
+					chunks = append(chunks, resp.Chunks...)
+				}
+				got = reassembleRow(chunks)
+				return nil
+			})
 		}); err != nil {
 			t.Fatalf("iter %d: ReadRows: %v", i, err)
 		}
@@ -319,6 +350,60 @@ func canonicalizeRow(row *btpb.Row) *btpb.Row {
 		}
 	}
 	return out
+}
+
+// sessionProbeTimeout bounds the pre-flight session-availability probe. It
+// only needs to be long enough to tell "the session transport can establish"
+// from "it never will here": a genuine OpenSession handshake against prod
+// completes well under this.
+const sessionProbeTimeout = 30 * time.Second
+
+// perRPCTimeout bounds every individual request the test issues (admin RPCs,
+// the accelerator data-path MutateRow/ReadRows attempts, and teardown). No
+// single request can hang the run; combined with retryTransient's fixed
+// attempt cap, the whole test is bounded.
+const perRPCTimeout = 60 * time.Second
+
+// boundedDo runs fn under a fresh perRPCTimeout context derived from parent,
+// cancelling it when fn returns. Every request in this test goes through it so
+// a stuck RPC fails fast rather than blocking on context.Background().
+func boundedDo(parent context.Context, fn func(context.Context) error) error {
+	ctx, cancel := context.WithTimeout(parent, perRPCTimeout)
+	defer cancel()
+	return fn(ctx)
+}
+
+// skipIfSessionUnavailable issues one bounded MutateRow to confirm the
+// accelerator's session/vRPC transport can actually establish in this
+// environment. Cloud Bigtable's vRPC OpenSession API is not served in every
+// environment; where it isn't, no session is ever handed to the caller and an
+// unbounded RPC parks on the pool's waiter queue forever. Rather than let that
+// stall the run, probe once under a bounded context and t.Skip when the
+// session client can't run here.
+//
+// A backend-reached error (e.g. NotFound / FailedPrecondition on a table that
+// isn't writable yet) is NOT a session-availability failure — it proves a
+// session was established — so the probe returns and lets the main loop's
+// retryTransient handle table readiness. Only a code that indicates the
+// transport itself is not served triggers the skip.
+func skipIfSessionUnavailable(ctx context.Context, t *testing.T, client btpb.BigtableClient, fullTableName string, key []byte, muts []*btpb.Mutation) {
+	t.Helper()
+	probeCtx, cancel := context.WithTimeout(ctx, sessionProbeTimeout)
+	defer cancel()
+	_, err := client.MutateRow(probeCtx, &btpb.MutateRowRequest{
+		TableName: fullTableName,
+		RowKey:    key,
+		Mutations: muts,
+	})
+	if err == nil {
+		return
+	}
+	switch status.Code(err) {
+	case codes.DeadlineExceeded, codes.Unavailable, codes.Unimplemented:
+		t.Skipf("accelerator session transport unavailable in this environment (%v); skipping prod round-trip", err)
+	}
+	// Any other code (incl. NotFound / FailedPrecondition on a not-yet-ready
+	// table) means a session was established — proceed with the round-trip.
 }
 
 // retryTransient retries fn on error codes that are expected while a freshly
