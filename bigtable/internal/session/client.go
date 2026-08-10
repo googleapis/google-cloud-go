@@ -30,7 +30,6 @@ import (
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -313,10 +312,14 @@ func NewClient(
 		}
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
-	daDialOpts := append(append([]option.ClientOption{}, opts...),
-		internaloption.EnableDirectPath(true),
-		internaloption.EnableDirectPathXds(),
-		internaloption.AllowHardBoundTokens("ALTS"))
+	// DirectAccess opt-set is centralized in btopt (shared with the
+	// classic client and the DirectAccess probe) so the three call
+	// sites cannot drift on which options are applied to a DirectPath
+	// dial. See btopt.DirectAccessOptions for the rationale on each
+	// individual option (in particular AllowNonDefaultServiceAccount,
+	// without which the dial silently falls back to CFE+TLS under the
+	// newer cloud.google.com/go/auth ADC path).
+	daDialOpts := append(append([]option.ClientOption{}, opts...), btopt.DirectAccessOptions()...)
 	daDial := func() (*btransport.BigtableConn, error) {
 		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
 		if dialErr != nil {

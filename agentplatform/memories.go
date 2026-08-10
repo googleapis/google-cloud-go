@@ -489,8 +489,7 @@ func updateMemoryRequestParametersToVertex(fromObject map[string]any, parentObje
 }
 
 type Memories struct {
-	apiClient       *genai.InternalAPIClient
-	MemoryRevisions *MemoryRevisions
+	apiClient *genai.InternalAPIClient
 }
 
 func (m Memories) create(ctx context.Context, name string, fact string, scope map[string]string, config *types.MemoryConfig) (*types.MemoryOperation, error) {
