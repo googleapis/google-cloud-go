@@ -226,6 +226,7 @@ func TestComputeURLTemplate(t *testing.T) {
 
 func TestHTTPMetricsRecording(t *testing.T) {
 	ctx := context.Background()
+	ctx = context.WithValue(ctx, apiMethodKey{}, "storage.Object.Read")
 	mr := sdkmetric.NewManualReader()
 
 	// Create a resource with static attributes so that we can test resource propagation.
@@ -332,6 +333,9 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 				if attrMap["error.type"] != "OK" {
 					t.Errorf("expected error.type OK, got %q", attrMap["error.type"])
+				}
+				if attrMap["gcp.client.method"] != "storage.Object.Read" {
+					t.Errorf("expected gcp.client.method storage.Object.Read, got %q", attrMap["gcp.client.method"])
 				}
 			}
 

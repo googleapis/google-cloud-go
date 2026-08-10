@@ -625,7 +625,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		attribute.String("error.type", errorType),
 	}
 
-	cm.rpcClientCallDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
+	cm.rpcClientCallDuration.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, attrs)...))
 
 	// Record standard attempt metric: gcp.storage.client.attempts.
 	state := metricsStateFromContext(ctx)
@@ -639,7 +639,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		attribute.String("error.type", errorType),
 	}
 	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
-		attemptAttrs = append(attemptAttrs, attribute.String("api.method", apiMethod))
+		attemptAttrs = append(attemptAttrs, attribute.String("gcp.client.method", apiMethod))
 	}
 	cm.attempts.Add(ctx, 1, metric.WithAttributes(attemptAttrs...))
 
@@ -680,7 +680,7 @@ func (cm *clientMetrics) recordHTTP(ctx context.Context, req *http.Request, resp
 		attribute.String("error.type", errorType),
 	}
 
-	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(attrs...))
+	cm.httpClientRequestDuration.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, attrs)...))
 }
 
 // computeURLTemplate extracts a parameterized template path for a given GCS HTTP request URL path.
@@ -1165,7 +1165,7 @@ type apiMethodKey struct{}
 
 func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribute.KeyValue {
 	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
-		return append(attrs, attribute.String("api.method", apiMethod))
+		return append(attrs, attribute.String("gcp.client.method", apiMethod))
 	}
 	return attrs
 }
@@ -1226,7 +1226,7 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 				attribute.String("error.type", errorType),
 			}
 			if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
-				attrs = append(attrs, attribute.String("api.method", apiMethod))
+				attrs = append(attrs, attribute.String("gcp.client.method", apiMethod))
 			}
 			opts := metric.WithAttributes(attrs...)
 			cm.duration.Record(ctx, duration, opts)
@@ -1727,8 +1727,5 @@ func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.
 		return
 	}
 	attrs := []attribute.KeyValue{attribute.String("rpc.method", method)}
-	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
-		attrs = append(attrs, attribute.String("api.method", apiMethod))
-	}
 	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
