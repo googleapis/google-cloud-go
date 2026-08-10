@@ -608,7 +608,7 @@ func (m Sessions) getSessionOperation(ctx context.Context, operationName string,
 	return response, nil
 }
 
-func (m Sessions) update(ctx context.Context, name string, config *types.UpdateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {
+func (m Sessions) update(ctx context.Context, name string, config *types.UpdateAgentEngineSessionConfig) (*types.Session, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -623,7 +623,7 @@ func (m Sessions) update(ctx context.Context, name string, config *types.UpdateA
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.AgentEngineSessionOperation)
+	var response = new(types.Session)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
