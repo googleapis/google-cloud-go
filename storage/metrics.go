@@ -638,10 +638,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 		attribute.Int64("rpc.grpc.status_code", statusCode),
 		attribute.String("error.type", errorType),
 	}
-	if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
-		attemptAttrs = append(attemptAttrs, attribute.String("gcp.client.method", apiMethod))
-	}
-	cm.attempts.Add(ctx, 1, metric.WithAttributes(attemptAttrs...))
+	cm.attempts.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, attemptAttrs)...))
 
 	// Record standard error metric: gcp.storage.client.errors.
 	if err != nil && err != io.EOF {
@@ -1225,10 +1222,7 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 				attribute.String("status", statusStr),
 				attribute.String("error.type", errorType),
 			}
-			if apiMethod, ok := ctx.Value(apiMethodKey{}).(string); ok {
-				attrs = append(attrs, attribute.String("gcp.client.method", apiMethod))
-			}
-			opts := metric.WithAttributes(attrs...)
+			opts := metric.WithAttributes(injectAPIMethod(ctx, attrs)...)
 			cm.duration.Record(ctx, duration, opts)
 			cm.operations.Add(ctx, 1, opts)
 		})
