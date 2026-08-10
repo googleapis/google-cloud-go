@@ -1553,21 +1553,21 @@ type grpcMetricsStatsHandler struct {
 	dialTimes *sync.Map
 }
 
-type contextKeyRPCTag string
+type contextKeyRPCTag struct{}
 
 func (h *grpcMetricsStatsHandler) TagRPC(ctx context.Context, info *stats.RPCTagInfo) context.Context {
 	method := info.FullMethodName
 	if idx := strings.LastIndex(method, "/"); idx != -1 {
 		method = method[idx+1:]
 	}
-	return context.WithValue(ctx, contextKeyRPCTag("rpcMethod"), method)
+	return context.WithValue(ctx, contextKeyRPCTag{}, method)
 }
 func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStats) {
 	if h.metrics == nil {
 		return
 	}
 	method := ""
-	if v := ctx.Value(contextKeyRPCTag("rpcMethod")); v != nil {
+	if v := ctx.Value(contextKeyRPCTag{}); v != nil {
 		method = v.(string)
 	}
 	attrs := metric.WithAttributes(attribute.String("rpc.method", method))
@@ -1665,9 +1665,13 @@ func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credential
 	if c == nil || c.TokenProvider == nil {
 		return c
 	}
-	// Avoid double wrapping
-	if _, ok := c.TokenProvider.(*metricsTokenProvider); ok {
-		return c
+	if mtp, ok := c.TokenProvider.(*metricsTokenProvider); ok {
+		if m == nil || mtp.metrics == m {
+			return c
+		}
+		clone := *c
+		clone.TokenProvider = &metricsTokenProvider{base: mtp.base, metrics: m}
+		return &clone
 	}
 	clone := *c
 	clone.TokenProvider = &metricsTokenProvider{base: c.TokenProvider, metrics: m}
@@ -1690,13 +1694,23 @@ func wrapGoogleCredentials(c *google.Credentials, metrics *clientMetrics) *googl
 	if c == nil || c.TokenSource == nil {
 		return c
 	}
-	clone := &google.Credentials{
+	if mts, ok := c.TokenSource.(*metricsTokenSource); ok {
+		if metrics == nil || mts.metrics == metrics {
+			return c
+		}
+		return &google.Credentials{
+			ProjectID:              c.ProjectID,
+			TokenSource:            &metricsTokenSource{base: mts.base, metrics: metrics},
+			JSON:                   c.JSON,
+			UniverseDomainProvider: c.UniverseDomainProvider,
+		}
+	}
+	return &google.Credentials{
 		ProjectID:              c.ProjectID,
 		TokenSource:            &metricsTokenSource{base: c.TokenSource, metrics: metrics},
 		JSON:                   c.JSON,
 		UniverseDomainProvider: c.UniverseDomainProvider,
 	}
-	return clone
 }
 
 func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {

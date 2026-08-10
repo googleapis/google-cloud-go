@@ -1035,6 +1035,10 @@ func TestWrapGoogleCredentials(t *testing.T) {
 	if _, ok := wrapped.TokenSource.(*metricsTokenSource); !ok {
 		t.Errorf("expected TokenSource to be *metricsTokenSource")
 	}
+	wrapped2 := wrapGoogleCredentials(wrapped, m)
+	if wrapped2 != wrapped {
+		t.Errorf("expected original wrapped credentials on double wrap")
+	}
 }
 
 type mockTokenSource struct{}
