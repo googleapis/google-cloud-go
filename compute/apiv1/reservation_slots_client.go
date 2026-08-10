@@ -28,6 +28,7 @@ import (
 
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"github.com/googleapis/gax-go/v2/callctx"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -41,9 +42,10 @@ var newReservationSlotsClientHook clientHook
 
 // ReservationSlotsCallOptions contains the retry settings for each method of ReservationSlotsClient.
 type ReservationSlotsCallOptions struct {
-	Get    []gax.CallOption
-	List   []gax.CallOption
-	Update []gax.CallOption
+	Get        []gax.CallOption
+	GetVersion []gax.CallOption
+	List       []gax.CallOption
+	Update     []gax.CallOption
 }
 
 func defaultReservationSlotsRESTCallOptions() *ReservationSlotsCallOptions {
@@ -59,6 +61,9 @@ func defaultReservationSlotsRESTCallOptions() *ReservationSlotsCallOptions {
 					http.StatusGatewayTimeout,
 					http.StatusServiceUnavailable)
 			}),
+		},
+		GetVersion: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		List: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
@@ -78,17 +83,18 @@ func defaultReservationSlotsRESTCallOptions() *ReservationSlotsCallOptions {
 	}
 }
 
-// internalReservationSlotsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalReservationSlotsClient is an interface that defines the methods available from Compute Engine API.
 type internalReservationSlotsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	Get(context.Context, *computepb.GetReservationSlotRequest, ...gax.CallOption) (*computepb.ReservationSlotsGetResponse, error)
+	GetVersion(context.Context, *computepb.GetVersionReservationSlotRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListReservationSlotsRequest, ...gax.CallOption) *ReservationSlotIterator
 	Update(context.Context, *computepb.UpdateReservationSlotRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// ReservationSlotsClient is a client for interacting with Google Compute Engine API.
+// ReservationSlotsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ReservationSlots API.
@@ -102,7 +108,7 @@ type ReservationSlotsClient struct {
 
 // Wrapper methods routed to the internal client.
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *ReservationSlotsClient) Close() error {
 	return c.internalClient.Close()
@@ -126,6 +132,11 @@ func (c *ReservationSlotsClient) Connection() *grpc.ClientConn {
 // Get retrieves information about the specified reservation slot.
 func (c *ReservationSlotsClient) Get(ctx context.Context, req *computepb.GetReservationSlotRequest, opts ...gax.CallOption) (*computepb.ReservationSlotsGetResponse, error) {
 	return c.internalClient.Get(ctx, req, opts...)
+}
+
+// GetVersion allows customers to get SBOM versions of a reservation slot.
+func (c *ReservationSlotsClient) GetVersion(ctx context.Context, req *computepb.GetVersionReservationSlotRequest, opts ...gax.CallOption) (*Operation, error) {
+	return c.internalClient.GetVersion(ctx, req, opts...)
 }
 
 // List retrieves a list of reservation slots under a single reservation.
@@ -163,6 +174,16 @@ type reservationSlotsRESTClient struct {
 // The ReservationSlots API.
 func NewReservationSlotsRESTClient(ctx context.Context, opts ...option.ClientOption) (*ReservationSlotsClient, error) {
 	clientOpts := append(defaultReservationSlotsRESTClientOptions(), opts...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		clientOpts = append(clientOpts, internaloption.WithTelemetryAttributes(map[string]string{
+			"gcp.client.service":  "compute",
+			"gcp.client.version":  getVersionClient(),
+			"gcp.client.repo":     "googleapis/google-cloud-go",
+			"gcp.client.artifact": "cloud.google.com/go/compute/apiv1",
+			"gcp.client.language": "go",
+			"url.domain":          "compute.googleapis.com",
+		}))
+	}
 	httpClient, endpoint, err := httptransport.NewClient(ctx, clientOpts...)
 	if err != nil {
 		return nil, err
@@ -176,6 +197,24 @@ func NewReservationSlotsRESTClient(ctx context.Context, opts ...option.ClientOpt
 		logger:      internaloption.GetLogger(opts),
 	}
 	c.setGoogleClientInfo()
+
+	if gax.IsFeatureEnabled("METRICS") {
+		metrics := gax.NewClientMetrics(
+			gax.WithTelemetryLogger(c.logger),
+			gax.WithTelemetryAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientMetrics(metrics))
+		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
+		callOpts.Update = append(callOpts.Update, gax.WithClientMetrics(metrics))
+	}
 
 	o := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -213,7 +252,7 @@ func (c *reservationSlotsRESTClient) setGoogleClientInfo(keyval ...string) {
 	}
 }
 
-// Close closes the connection to the API service. The user should invoke this when
+// Close closes the connection to the API service. **Always** call Close() when
 // the client is no longer required.
 func (c *reservationSlotsRESTClient) Close() error {
 	// Replace httpClient with nil to force cleanup.
@@ -245,6 +284,13 @@ func (c *reservationSlotsRESTClient) Get(ctx context.Context, req *computepb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ReservationSlots/Get")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/{parent_name=reservations/*/reservationBlocks/*/reservationSubBlocks/*}/reservationSlots/{reservation_slot}")
+	}
 	opts = append((*c.CallOptions).Get[0:len((*c.CallOptions).Get):len((*c.CallOptions).Get)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.ReservationSlotsGetResponse{}
@@ -276,10 +322,84 @@ func (c *reservationSlotsRESTClient) Get(ctx context.Context, req *computepb.Get
 	return resp, nil
 }
 
+// GetVersion allows customers to get SBOM versions of a reservation slot.
+func (c *reservationSlotsRESTClient) GetVersion(ctx context.Context, req *computepb.GetVersionReservationSlotRequest, opts ...gax.CallOption) (*Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetReservationSlotsGetVersionRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/v1/projects/%v/zones/%v/%v/reservationSlots/%v/getVersion", req.GetProject(), req.GetZone(), req.GetParentName(), req.GetReservationSlot())
+
+	params := url.Values{}
+	if req != nil && req.RequestId != nil {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "parent_name", url.QueryEscape(req.GetParentName()), "reservation_slot", url.QueryEscape(req.GetReservationSlot()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ReservationSlots/GetVersion")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/{parent_name=reservations/*/reservationBlocks/*/reservationSubBlocks/*}/reservationSlots/{reservation_slot}/getVersion")
+	}
+	opts = append((*c.CallOptions).GetVersion[0:len((*c.CallOptions).GetVersion):len((*c.CallOptions).GetVersion)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "GetVersion")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	op := &Operation{
+		&zoneOperationsHandle{
+			c:       c.operationClient,
+			proto:   resp,
+			project: req.GetProject(),
+			zone:    req.GetZone(),
+		},
+	}
+	return op, nil
+}
+
 // List retrieves a list of reservation slots under a single reservation.
 func (c *reservationSlotsRESTClient) List(ctx context.Context, req *computepb.ListReservationSlotsRequest, opts ...gax.CallOption) *ReservationSlotIterator {
 	it := &ReservationSlotIterator{}
-	req = proto.Clone(req).(*computepb.ListReservationSlotsRequest)
+	req = proto.CloneOf(req)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.ReservationSlot, string, error) {
 		resp := &computepb.ReservationSlotsListResponse{}
@@ -390,6 +510,13 @@ func (c *reservationSlotsRESTClient) Update(ctx context.Context, req *computepb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com/projects/%v/zones/%v", req.GetProject(), req.GetZone()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1.ReservationSlots/Update")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/v1/projects/{project}/zones/{zone}/{parent_name=reservations/*/reservationBlocks/*/reservationSubBlocks/*}/reservationSlots/{reservation_slot}")
+	}
 	opts = append((*c.CallOptions).Update[0:len((*c.CallOptions).Update):len((*c.CallOptions).Update)], opts...)
 	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
 	resp := &computepb.Operation{}
