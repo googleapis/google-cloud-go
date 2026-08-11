@@ -22,6 +22,8 @@ import (
 	"time"
 
 	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 // newStubStreamFactory returns a streamFactory that hands out fresh
@@ -415,6 +417,170 @@ func TestCheckoutSession_ParkedWaiter_DeadlineExceeded(t *testing.T) {
 	if qlen != 0 {
 		t.Errorf("waiter queue length = %d, want 0 (ghost waiter left after ctx cancel)", qlen)
 	}
+}
+
+// waitUntilParked blocks until at least one caller is enqueued on the
+// pool's waiter queue, or fails the test after a generous timeout. Direct
+// evidence of the waiter path so create-failure wake tests don't rely on
+// timing to infer that the caller parked.
+func waitUntilParked(t testing.TB, p *SessionPoolImpl) {
+	t.Helper()
+	deadline := time.NewTimer(2 * time.Second)
+	defer deadline.Stop()
+	tick := time.NewTicker(time.Millisecond)
+	defer tick.Stop()
+	for {
+		if p.waitersCount.Load() > 0 {
+			return
+		}
+		select {
+		case <-deadline.C:
+			t.Fatal("caller never parked on the waiter queue")
+		case <-tick.C:
+		}
+	}
+}
+
+// newDyingStreamFactory returns a streamFactory whose every stream dies in
+// Starting: the stream's first Recv yields dieErr, so the session's
+// readLoop drives handleClose before an OpenSessionResponse ever arrives —
+// exactly what happens when the vRPC OpenSession API is not served and the
+// server returns an error on the stream. closeAll closes every stream and
+// refuses new ones (mirrors newStubStreamFactory) so the pool's
+// replace-on-death re-drive loop stops once teardown begins.
+func newDyingStreamFactory(dieErr error) (factory func(context.Context) (Stream, error), closeAll func()) {
+	var mu sync.Mutex
+	var streams []*fakeStream
+	var closed bool
+	factory = func(_ context.Context) (Stream, error) {
+		mu.Lock()
+		defer mu.Unlock()
+		if closed {
+			return nil, errors.New("newDyingStreamFactory: closed")
+		}
+		s := newFakeStream()
+		// Pre-load the terminal error so readLoop's first Recv returns it.
+		// recv is buffered, so this never blocks the factory.
+		s.recv <- recvOp{err: dieErr}
+		streams = append(streams, s)
+		return s, nil
+	}
+	closeAll = func() {
+		mu.Lock()
+		defer mu.Unlock()
+		closed = true
+		for _, s := range streams {
+			s.Close()
+		}
+	}
+	return factory, closeAll
+}
+
+// newDyingPool builds a pool whose every session dies in Starting with
+// dieErr. Cleanup mirrors newTestPool: bridge poolCtx cancellation to
+// closeStreams and close streams before Close so no readLoop leaks.
+func newDyingPool(t testing.TB, min, max int, dieErr error) *SessionPoolImpl {
+	t.Helper()
+	factory, closeStreams := newDyingStreamFactory(dieErr)
+	p := NewSessionPoolImpl(
+		uint64(1),
+		"dying-pool",
+		factory,
+		&spb.OpenSessionRequest{ProtocolVersion: 1},
+		nil,
+		SessionTypeTable, true,
+	)
+	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: int32(min), MaxSessionCount: int32(max),
+	})
+	go func() {
+		<-p.poolCtx.Done()
+		closeStreams()
+	}()
+	t.Cleanup(func() {
+		closeStreams()
+		_ = p.Close()
+	})
+	return p
+}
+
+// TestConsecutiveFailures_StartingDeathsReDriveUntilBreakerTrips is the
+// regression test for the deadline-less CheckoutSession hang. Every
+// session dies in Starting (vRPC OpenSession not served → Unimplemented),
+// so no session ever activates. The fix is that each never-activated close
+// re-drives creation, letting the consecutive-failure counter climb past
+// the MinSessionCount cohort to ConsecutiveSessionFailureThreshold; the
+// breaker then trips and wakes the parked caller with ErrConsecutiveFailures
+// carrying the underlying Unimplemented code. Before the fix the counter
+// froze at the cold-start cohort, the breaker was unreachable, and a caller
+// on context.Background() parked forever.
+func TestConsecutiveFailures_StartingDeathsReDriveUntilBreakerTrips(t *testing.T) {
+	dieErr := status.Error(codes.Unimplemented, "OpenSession API not served")
+	p := newDyingPool(t, 1, 5, dieErr)
+	// Threshold 3 exceeds the MinSessionCount(1) cold-start cohort, so the
+	// breaker is reachable ONLY because each starting-death re-drives
+	// creation. This is the exact gap the fix closes.
+	p.consecutiveFailureThreshold.Store(3)
+
+	done := make(chan error, 1)
+	go func() {
+		// context.Background(): no deadline can rescue this caller — only
+		// the breaker trip does. CheckoutSession parks AND kicks the first
+		// Tick, seeding the cohort that dies and re-drives.
+		_, err := p.CheckoutSession(context.Background())
+		done <- err
+	}()
+
+	select {
+	case err := <-done:
+		if !errors.Is(err, ErrConsecutiveFailures) {
+			t.Fatalf("CheckoutSession err = %v, want ErrConsecutiveFailures", err)
+		}
+		if got := status.Code(err); got != codes.Unimplemented {
+			t.Fatalf("status.Code(err) = %v, want Unimplemented (underlying cause must propagate through the trip)", got)
+		}
+	case <-time.After(10 * time.Second):
+		t.Fatal("CheckoutSession never returned — starting-deaths did not re-drive creation to the breaker (deadline-less hang regressed)")
+	}
+}
+
+// TestConsecutiveFailures_SingleStartingCloseDoesNotWakeWaiters pins the
+// corrected semantics against the reverted first-failure behavior: a single
+// never-activated close increments the counter but must NOT wake parked
+// waiters. Only the breaker trip (X consecutive failures) may fail them.
+func TestConsecutiveFailures_SingleStartingCloseDoesNotWakeWaiters(t *testing.T) {
+	p := newTestPool(t, 0, 1)
+	// High threshold so one abnormal close can't trip the breaker.
+	p.consecutiveFailureThreshold.Store(100)
+	// Freeze scaling so onClose's replace-on-death re-drive can't spawn a
+	// phantom createSession that muddies the assertion.
+	p.mu.Lock()
+	p.scalingInProgress = true
+	p.mu.Unlock()
+
+	w := &waiter{ready: make(chan struct{})}
+	p.waitersMu.Lock()
+	w.elem = p.waiters.PushBack(w)
+	p.waitersMu.Unlock()
+	p.waitersCount.Add(1)
+
+	// A single session dies in Starting.
+	sh := injectStartingSession(t, p, "s1")
+	p.onClose(sh, nil)
+
+	select {
+	case <-w.ready:
+		t.Fatal("waiter woken by a single starting-close; only the breaker trip may wake parked waiters")
+	case <-time.After(100 * time.Millisecond):
+		// Still parked — correct.
+	}
+	if got := p.consecutiveFailures.Load(); got != 1 {
+		t.Fatalf("counter = %d, want 1 (single abnormal close increments but does not trip)", got)
+	}
+
+	// Drain the waiter so cleanup's Close doesn't race a live parker.
+	p.drainWaitersWithErr(ErrPoolClosed)
+	<-w.ready
 }
 
 // TestRecordPickDecision_RingWrap verifies the O(1) circular-buffer

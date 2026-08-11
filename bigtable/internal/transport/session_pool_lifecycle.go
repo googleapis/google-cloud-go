@@ -340,6 +340,25 @@ func (p *SessionPoolImpl) onClose(sh *SessionHandle, err error) {
 		p.mu.Unlock()
 		p.bumpStartingClose(sh.session)
 		p.noteAbnormalCloseIfAny(sh)
+		// Re-drive creation after a session died before ever reaching
+		// Ready. This is the load-bearing fix for the deadline-less
+		// CheckoutSession hang: a session that dies in Starting fires
+		// neither onClosing's replace-on-death kick (it early-returns for
+		// starting handles) nor any other of the sizer's event-driven wake
+		// sites, so without this kick a cold-start cohort that all fails in
+		// Starting stalls — the consecutive-failure counter freezes below
+		// ConsecutiveSessionFailureThreshold (a MinSessionCount cohort is
+		// smaller than the threshold), the breaker never trips, and a caller
+		// parked on a deadline-less context waits forever. Kicking here lets
+		// the pool keep working toward its floor: each re-driven cohort
+		// fails again, the counter climbs to the threshold, and the breaker
+		// trips and drains waiters with ErrConsecutiveFailures carrying the
+		// underlying cause (e.g. Unimplemented). Paced by the throttler's
+		// failure penalty so this is not a tight retry loop. Gate mirrors
+		// onClosing; spawnTickOnce re-checks p.closed under p.mu.
+		if p.sl.ReadyCount() < p.sizer.MaxSessions() {
+			p.spawnTickOnce(p.poolCtx)
+		}
 		return
 	}
 	p.mu.Unlock()
