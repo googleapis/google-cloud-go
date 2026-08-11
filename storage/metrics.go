@@ -1544,6 +1544,7 @@ type dialDoneContextKey struct{}
 type grpcMetricsStatsHandler struct {
 	metrics   *clientMetrics
 	dialTimes *sync.Map
+	host      string
 }
 
 type contextKeyRPCTag struct{}
@@ -1566,6 +1567,7 @@ func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStat
 	attrs := metric.WithAttributes(
 		attribute.String("rpc.system.name", "grpc"),
 		attribute.String("rpc.method", method),
+		attribute.String("server.address", h.host),
 	)
 
 	switch st := s.(type) {
@@ -1637,6 +1639,7 @@ func grpcNetworkMetricsDialOptions(host string, metrics *clientMetrics) []option
 	sh := &grpcMetricsStatsHandler{
 		metrics:   metrics,
 		dialTimes: &dialTimes,
+		host:      host,
 	}
 
 	return []option.ClientOption{
@@ -1732,13 +1735,14 @@ func injectHTTPClientMetrics(creds *auth.Credentials, tc storageClient) {
 	}
 }
 
-func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string, systemName string) {
+func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string, systemName string, target string) {
 	if cm == nil || cm.stallDuration == nil {
 		return
 	}
 	attrs := []attribute.KeyValue{
 		attribute.String("rpc.system.name", systemName),
 		attribute.String("rpc.method", method),
+		attribute.String("server.address", target),
 	}
 	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
