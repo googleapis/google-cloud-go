@@ -371,7 +371,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		stallDuration, err = meter.Float64Histogram(
 			"gcp.storage.client.stall.duration",
-			metric.WithDescription("Measure time delta where a connection yields 0 bytes of progress."),
+			metric.WithDescription("Duration a connection was stalled waiting for the first byte before being aborted."),
 			metric.WithUnit("s"),
 		)
 		if err != nil {
