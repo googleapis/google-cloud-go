@@ -87,7 +87,7 @@ func defaultRegionTargetHttpProxiesRESTCallOptions() *RegionTargetHttpProxiesCal
 	}
 }
 
-// internalRegionTargetHttpProxiesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionTargetHttpProxiesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionTargetHttpProxiesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -99,7 +99,7 @@ type internalRegionTargetHttpProxiesClient interface {
 	SetUrlMap(context.Context, *computepb.SetUrlMapRegionTargetHttpProxyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionTargetHttpProxiesClient is a client for interacting with Google Compute Engine API.
+// RegionTargetHttpProxiesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionTargetHttpProxies API.

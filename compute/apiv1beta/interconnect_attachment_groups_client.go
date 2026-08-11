@@ -121,7 +121,7 @@ func defaultInterconnectAttachmentGroupsRESTCallOptions() *InterconnectAttachmen
 	}
 }
 
-// internalInterconnectAttachmentGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInterconnectAttachmentGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalInterconnectAttachmentGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -137,7 +137,7 @@ type internalInterconnectAttachmentGroupsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInterconnectAttachmentGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// InterconnectAttachmentGroupsClient is a client for interacting with Google Compute Engine API.
+// InterconnectAttachmentGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InterconnectAttachmentGroups API.

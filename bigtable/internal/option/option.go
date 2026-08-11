@@ -129,6 +129,28 @@ func DefaultClientOptions(endpoint, mtlsEndpoint, scope, userAgent string) ([]op
 	return o, nil
 }
 
+// DirectAccessOptions returns the option set that opts a gRPC dial in to
+// Bigtable DirectAccess (DirectPath + DirectPathXds + ALTS-bound tokens).
+//
+// All four options must be applied together. Omitting
+// AllowNonDefaultServiceAccount causes api/transport's DirectPath
+// compatibility check (isTokenSourceDirectPathCompatible in
+// google.golang.org/api/transport/grpc/dial.go) to require the ADC
+// token's legacy oauth2.google.tokenSource / oauth2.google.serviceAccount
+// extras. The newer cloud.google.com/go/auth library — now the default
+// ADC path — does not populate those extras, so the check fails and the
+// dial silently falls back to CFE+TLS instead of DirectPath. This helper
+// keeps the classic client, the DirectAccess probe, and the session
+// client on one option set so they cannot drift.
+func DirectAccessOptions() []option.ClientOption {
+	return []option.ClientOption{
+		internaloption.EnableDirectPath(true),
+		internaloption.EnableDirectPathXds(),
+		internaloption.AllowHardBoundTokens("ALTS"),
+		internaloption.AllowNonDefaultServiceAccount(true),
+	}
+}
+
 // ClientInterceptorOptions returns client options to use for the client's gRPC
 // connection, using the given streaming and unary RPC interceptors.
 //
@@ -260,7 +282,7 @@ type DynamicChannelPoolConfig struct {
 func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 	return DynamicChannelPoolConfig{
 		Enabled:                          false,
-		MinConns:                         10,
+		MinConns:                         4,
 		MaxConns:                         200,
 		AvgLoadHighThreshold:             50,
 		AvgLoadLowThreshold:              5,

@@ -58,7 +58,7 @@ func defaultImageViewsRESTCallOptions() *ImageViewsCallOptions {
 	}
 }
 
-// internalImageViewsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalImageViewsClient is an interface that defines the methods available from Compute Engine API.
 type internalImageViewsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -66,7 +66,7 @@ type internalImageViewsClient interface {
 	Get(context.Context, *computepb.GetImageViewRequest, ...gax.CallOption) (*computepb.ImageView, error)
 }
 
-// ImageViewsClient is a client for interacting with Google Compute Engine API.
+// ImageViewsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ImageViews API.

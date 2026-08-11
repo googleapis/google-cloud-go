@@ -221,15 +221,18 @@ type Space_SpaceThreadingState int32
 const (
 	// Reserved.
 	Space_SPACE_THREADING_STATE_UNSPECIFIED Space_SpaceThreadingState = 0
-	// Named spaces that support message threads. When users respond to a
-	// message, they can reply in-thread, which keeps their response in the
-	// context of the original message.
+	// Spaces that support message threads. When users respond to a message,
+	// they can reply in-thread, which keeps their response in the context of
+	// the original message.
 	Space_THREADED_MESSAGES Space_SpaceThreadingState = 2
 	// Named spaces where the conversation is organized by topic. Topics and
 	// their replies are grouped together.
 	Space_GROUPED_MESSAGES Space_SpaceThreadingState = 3
-	// Direct messages (DMs) between two people and group conversations between
-	// 3 or more people.
+	// Spaces that don't support message threading. This space threading state
+	// is only used for special cases including:
+	//
+	// * Continuous meeting chat where threading is intentionally turned off.
+	// * Legacy group conversations that were created prior to 2022.
 	Space_UNTHREADED_MESSAGES Space_SpaceThreadingState = 4
 )
 
@@ -1438,9 +1441,6 @@ type SearchSpacesRequest struct {
 	// Requires either the `chat.admin.spaces.readonly` or `chat.admin.spaces`
 	// [OAuth 2.0
 	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes).
-	//
-	// This method currently only supports admin access, thus only `true` is
-	// accepted for this field.
 	UseAdminAccess bool `protobuf:"varint,1,opt,name=use_admin_access,json=useAdminAccess,proto3" json:"use_admin_access,omitempty"`
 	// The maximum number of spaces to return. The service may return fewer than
 	// this value.
@@ -1459,7 +1459,8 @@ type SearchSpacesRequest struct {
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Required. A search query.
 	//
-	// You can search by using the following parameters:
+	// You can search by using the following parameters when `useAdminAccess`
+	// is set to `true`:
 	//
 	// - `create_time`
 	// - `customer`
@@ -1469,18 +1470,27 @@ type SearchSpacesRequest struct {
 	// - `space_history_state`
 	// - `space_type`
 	//
+	// When `useAdminAccess` is set to `false`:
+	//
+	// - `display_name`
+	// - `external_user_allowed`
+	// - `space_type`
+	//
 	// `create_time` and `last_active_time` accept a timestamp in
 	// [RFC-3339](https://www.rfc-editor.org/rfc/rfc3339) format and the supported
 	// comparison operators are: `=`, `<`, `>`, `<=`, `>=`.
 	//
-	// `customer` is required and is used to indicate which customer
-	// to fetch spaces from. `customers/my_customer` is the only supported value.
+	// `customer` is required when `useAdminAccess` is set to `true`, and is
+	// used to indicate which customer to fetch spaces from.
+	// `customers/my_customer` is the only supported value.
 	//
 	// `display_name` only accepts the `HAS` (`:`) operator. The text to
 	// match is first tokenized into tokens and each token is prefix-matched
 	// case-insensitively and independently as a substring anywhere in the space's
 	// `display_name`. For example, `Fun Eve` matches `Fun event` or `The
-	// evening was fun`, but not `notFun event` or `even`.
+	// evening was fun`, but not `notFun event` or `even`. When `useAdminAccess`
+	// is set to `false`, `display_name` is required to retrieve meaningful
+	// results. Otherwise, the default behavior is to return an empty response.
 	//
 	// `external_user_allowed` accepts either `true` or `false`.
 	//
@@ -1503,7 +1513,8 @@ type SearchSpacesRequest struct {
 	// < "2022-01-01T00:00:00+00:00" AND last_active_time >
 	// "2023-01-01T00:00:00+00:00"`.
 	//
-	// The following example queries are valid:
+	// The following example queries are valid when `useAdminAccess` is set to
+	// `true`:
 	//
 	// ```
 	// customer = "customers/my_customer" AND space_type = "SPACE"
@@ -1525,6 +1536,21 @@ type SearchSpacesRequest struct {
 	// "2020-01-01T00:00:00+00:00") AND (external_user_allowed = "true") AND
 	// (space_history_state = "HISTORY_ON" OR space_history_state = "HISTORY_OFF")
 	// ```
+	//
+	// The following example queries are valid when `useAdminAccess` is set to
+	// `false`:
+	//
+	// ```
+	// display_name:"Hello World" AND space_type = "SPACE"
+	//
+	// (display_name:"Hello" OR display_name:"Fun") AND space_type = "SPACE"
+	//
+	// (external_user_allowed = "true" AND space_type = "SPACE") // Returns an
+	// empty response.
+	//
+	// (external_user_allowed = "true" AND display_name:"Hello" AND space_type =
+	// "SPACE")
+	// ```
 	Query string `protobuf:"bytes,4,opt,name=query,proto3" json:"query,omitempty"`
 	// Optional. How the list of spaces is ordered.
 	//
@@ -1536,13 +1562,17 @@ type SearchSpacesRequest struct {
 	// any topic of this space.
 	// - `create_time` — Denotes the time of the space creation.
 	//
+	// When `useAdminAccess` is `false`, only `create_time` and `relevance` are
+	// supported for ordering. Only `DESC` is supported for these fields in
+	// non-admin searches.
+	//
 	// Valid ordering operation values are:
 	//
 	// - `ASC` for ascending. Default value.
 	//
 	// - `DESC` for descending.
 	//
-	// The supported syntax are:
+	// The supported syntax are when `useAdminAccess` is set to `true`:
 	//
 	// - `membership_count.joined_direct_human_user_count DESC`
 	// - `membership_count.joined_direct_human_user_count ASC`
@@ -1550,6 +1580,11 @@ type SearchSpacesRequest struct {
 	// - `last_active_time ASC`
 	// - `create_time DESC`
 	// - `create_time ASC`
+	//
+	// When `useAdminAccess` is set to `false`:
+	//
+	// - `create_time DESC`
+	// - `relevance DESC`
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1623,14 +1658,21 @@ func (x *SearchSpacesRequest) GetOrderBy() string {
 // Response with a list of spaces corresponding to the search spaces request.
 type SearchSpacesResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// A page of the requested spaces.
+	// Deprecated: Please use the new `results` field instead.
+	// A page of the requested spaces. This field will be populated only when
+	// `useAdminAccess` is set to `true` and deprecated in favor of the new
+	// `results` field.
+	//
+	// Deprecated: Marked as deprecated in google/chat/v1/space.proto.
 	Spaces []*Space `protobuf:"bytes,1,rep,name=spaces,proto3" json:"spaces,omitempty"`
 	// A token that can be used to retrieve the next page. If this field is empty,
 	// there are no subsequent pages.
 	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
 	// The total number of spaces that match the query, across all pages. If the
 	// result is over 10,000 spaces, this value is an estimate.
-	TotalSize     int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	TotalSize int32 `protobuf:"varint,3,opt,name=total_size,json=totalSize,proto3" json:"total_size,omitempty"`
+	// Output only. The list of search results that matched the query.
+	Results       []*SearchSpacesResponse_SearchSpaceResult `protobuf:"bytes,4,rep,name=results,proto3" json:"results,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1665,6 +1707,7 @@ func (*SearchSpacesResponse) Descriptor() ([]byte, []int) {
 	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{10}
 }
 
+// Deprecated: Marked as deprecated in google/chat/v1/space.proto.
 func (x *SearchSpacesResponse) GetSpaces() []*Space {
 	if x != nil {
 		return x.Spaces
@@ -1684,6 +1727,13 @@ func (x *SearchSpacesResponse) GetTotalSize() int32 {
 		return x.TotalSize
 	}
 	return 0
+}
+
+func (x *SearchSpacesResponse) GetResults() []*SearchSpacesResponse_SearchSpaceResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
 }
 
 // Request for deleting a space.
@@ -2412,6 +2462,52 @@ func (x *Space_PermissionSetting) GetMembersAllowed() bool {
 	return false
 }
 
+// A single result item from a space search.
+type SearchSpacesResponse_SearchSpaceResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The matched space.
+	Space         *Space `protobuf:"bytes,1,opt,name=space,proto3" json:"space,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchSpacesResponse_SearchSpaceResult) Reset() {
+	*x = SearchSpacesResponse_SearchSpaceResult{}
+	mi := &file_google_chat_v1_space_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchSpacesResponse_SearchSpaceResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchSpacesResponse_SearchSpaceResult) ProtoMessage() {}
+
+func (x *SearchSpacesResponse_SearchSpaceResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_space_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchSpacesResponse_SearchSpaceResult.ProtoReflect.Descriptor instead.
+func (*SearchSpacesResponse_SearchSpaceResult) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_space_proto_rawDescGZIP(), []int{10, 0}
+}
+
+func (x *SearchSpacesResponse_SearchSpaceResult) GetSpace() *Space {
+	if x != nil {
+		return x.Space
+	}
+	return nil
+}
+
 var File_google_chat_v1_space_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_space_proto_rawDesc = "" +
@@ -2553,12 +2649,15 @@ const file_google_chat_v1_space_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x19\n" +
 	"\x05query\x18\x04 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\x8c\x01\n" +
-	"\x14SearchSpacesResponse\x12-\n" +
-	"\x06spaces\x18\x01 \x03(\v2\x15.google.chat.v1.SpaceR\x06spaces\x12&\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xae\x02\n" +
+	"\x14SearchSpacesResponse\x121\n" +
+	"\x06spaces\x18\x01 \x03(\v2\x15.google.chat.v1.SpaceB\x02\x18\x01R\x06spaces\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12\x1d\n" +
 	"\n" +
-	"total_size\x18\x03 \x01(\x05R\ttotalSize\"z\n" +
+	"total_size\x18\x03 \x01(\x05R\ttotalSize\x12U\n" +
+	"\aresults\x18\x04 \x03(\v26.google.chat.v1.SearchSpacesResponse.SearchSpaceResultB\x03\xe0A\x03R\aresults\x1aE\n" +
+	"\x11SearchSpaceResult\x120\n" +
+	"\x05space\x18\x01 \x01(\v2\x15.google.chat.v1.SpaceB\x03\xe0A\x03R\x05space\"z\n" +
 	"\x12DeleteSpaceRequest\x125\n" +
 	"\x04name\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
 	"\x19chat.googleapis.com/SpaceR\x04name\x12-\n" +
@@ -2588,81 +2687,84 @@ func file_google_chat_v1_space_proto_rawDescGZIP() []byte {
 }
 
 var file_google_chat_v1_space_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_chat_v1_space_proto_msgTypes = make([]protoimpl.MessageInfo, 22)
+var file_google_chat_v1_space_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_google_chat_v1_space_proto_goTypes = []any{
-	(SpaceView)(0),                          // 0: google.chat.v1.SpaceView
-	(Space_Type)(0),                         // 1: google.chat.v1.Space.Type
-	(Space_SpaceType)(0),                    // 2: google.chat.v1.Space.SpaceType
-	(Space_SpaceThreadingState)(0),          // 3: google.chat.v1.Space.SpaceThreadingState
-	(Space_PredefinedPermissionSettings)(0), // 4: google.chat.v1.Space.PredefinedPermissionSettings
-	(Space_AccessSettings_AccessState)(0),   // 5: google.chat.v1.Space.AccessSettings.AccessState
-	(*Space)(nil),                           // 6: google.chat.v1.Space
-	(*CreateSpaceRequest)(nil),              // 7: google.chat.v1.CreateSpaceRequest
-	(*ListSpacesRequest)(nil),               // 8: google.chat.v1.ListSpacesRequest
-	(*ListSpacesResponse)(nil),              // 9: google.chat.v1.ListSpacesResponse
-	(*GetSpaceRequest)(nil),                 // 10: google.chat.v1.GetSpaceRequest
-	(*FindDirectMessageRequest)(nil),        // 11: google.chat.v1.FindDirectMessageRequest
-	(*FindGroupChatsRequest)(nil),           // 12: google.chat.v1.FindGroupChatsRequest
-	(*FindGroupChatsResponse)(nil),          // 13: google.chat.v1.FindGroupChatsResponse
-	(*UpdateSpaceRequest)(nil),              // 14: google.chat.v1.UpdateSpaceRequest
-	(*SearchSpacesRequest)(nil),             // 15: google.chat.v1.SearchSpacesRequest
-	(*SearchSpacesResponse)(nil),            // 16: google.chat.v1.SearchSpacesResponse
-	(*DeleteSpaceRequest)(nil),              // 17: google.chat.v1.DeleteSpaceRequest
-	(*CompleteImportSpaceRequest)(nil),      // 18: google.chat.v1.CompleteImportSpaceRequest
-	(*CompleteImportSpaceResponse)(nil),     // 19: google.chat.v1.CompleteImportSpaceResponse
-	(*Space_SpaceDetails)(nil),              // 20: google.chat.v1.Space.SpaceDetails
-	(*Space_MembershipCount)(nil),           // 21: google.chat.v1.Space.MembershipCount
-	(*Space_AccessSettings)(nil),            // 22: google.chat.v1.Space.AccessSettings
-	(*Space_AccessPermissionSettings)(nil),  // 23: google.chat.v1.Space.AccessPermissionSettings
-	(*Space_AccessPermissionSetting)(nil),   // 24: google.chat.v1.Space.AccessPermissionSetting
-	(*Space_Principal)(nil),                 // 25: google.chat.v1.Space.Principal
-	(*Space_PermissionSettings)(nil),        // 26: google.chat.v1.Space.PermissionSettings
-	(*Space_PermissionSetting)(nil),         // 27: google.chat.v1.Space.PermissionSetting
-	(HistoryState)(0),                       // 28: google.chat.v1.HistoryState
-	(*timestamppb.Timestamp)(nil),           // 29: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),           // 30: google.protobuf.FieldMask
-	(*Audience)(nil),                        // 31: google.chat.v1.Audience
+	(SpaceView)(0),                                 // 0: google.chat.v1.SpaceView
+	(Space_Type)(0),                                // 1: google.chat.v1.Space.Type
+	(Space_SpaceType)(0),                           // 2: google.chat.v1.Space.SpaceType
+	(Space_SpaceThreadingState)(0),                 // 3: google.chat.v1.Space.SpaceThreadingState
+	(Space_PredefinedPermissionSettings)(0),        // 4: google.chat.v1.Space.PredefinedPermissionSettings
+	(Space_AccessSettings_AccessState)(0),          // 5: google.chat.v1.Space.AccessSettings.AccessState
+	(*Space)(nil),                                  // 6: google.chat.v1.Space
+	(*CreateSpaceRequest)(nil),                     // 7: google.chat.v1.CreateSpaceRequest
+	(*ListSpacesRequest)(nil),                      // 8: google.chat.v1.ListSpacesRequest
+	(*ListSpacesResponse)(nil),                     // 9: google.chat.v1.ListSpacesResponse
+	(*GetSpaceRequest)(nil),                        // 10: google.chat.v1.GetSpaceRequest
+	(*FindDirectMessageRequest)(nil),               // 11: google.chat.v1.FindDirectMessageRequest
+	(*FindGroupChatsRequest)(nil),                  // 12: google.chat.v1.FindGroupChatsRequest
+	(*FindGroupChatsResponse)(nil),                 // 13: google.chat.v1.FindGroupChatsResponse
+	(*UpdateSpaceRequest)(nil),                     // 14: google.chat.v1.UpdateSpaceRequest
+	(*SearchSpacesRequest)(nil),                    // 15: google.chat.v1.SearchSpacesRequest
+	(*SearchSpacesResponse)(nil),                   // 16: google.chat.v1.SearchSpacesResponse
+	(*DeleteSpaceRequest)(nil),                     // 17: google.chat.v1.DeleteSpaceRequest
+	(*CompleteImportSpaceRequest)(nil),             // 18: google.chat.v1.CompleteImportSpaceRequest
+	(*CompleteImportSpaceResponse)(nil),            // 19: google.chat.v1.CompleteImportSpaceResponse
+	(*Space_SpaceDetails)(nil),                     // 20: google.chat.v1.Space.SpaceDetails
+	(*Space_MembershipCount)(nil),                  // 21: google.chat.v1.Space.MembershipCount
+	(*Space_AccessSettings)(nil),                   // 22: google.chat.v1.Space.AccessSettings
+	(*Space_AccessPermissionSettings)(nil),         // 23: google.chat.v1.Space.AccessPermissionSettings
+	(*Space_AccessPermissionSetting)(nil),          // 24: google.chat.v1.Space.AccessPermissionSetting
+	(*Space_Principal)(nil),                        // 25: google.chat.v1.Space.Principal
+	(*Space_PermissionSettings)(nil),               // 26: google.chat.v1.Space.PermissionSettings
+	(*Space_PermissionSetting)(nil),                // 27: google.chat.v1.Space.PermissionSetting
+	(*SearchSpacesResponse_SearchSpaceResult)(nil), // 28: google.chat.v1.SearchSpacesResponse.SearchSpaceResult
+	(HistoryState)(0),                              // 29: google.chat.v1.HistoryState
+	(*timestamppb.Timestamp)(nil),                  // 30: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                  // 31: google.protobuf.FieldMask
+	(*Audience)(nil),                               // 32: google.chat.v1.Audience
 }
 var file_google_chat_v1_space_proto_depIdxs = []int32{
 	1,  // 0: google.chat.v1.Space.type:type_name -> google.chat.v1.Space.Type
 	2,  // 1: google.chat.v1.Space.space_type:type_name -> google.chat.v1.Space.SpaceType
 	3,  // 2: google.chat.v1.Space.space_threading_state:type_name -> google.chat.v1.Space.SpaceThreadingState
 	20, // 3: google.chat.v1.Space.space_details:type_name -> google.chat.v1.Space.SpaceDetails
-	28, // 4: google.chat.v1.Space.space_history_state:type_name -> google.chat.v1.HistoryState
-	29, // 5: google.chat.v1.Space.create_time:type_name -> google.protobuf.Timestamp
-	29, // 6: google.chat.v1.Space.last_active_time:type_name -> google.protobuf.Timestamp
+	29, // 4: google.chat.v1.Space.space_history_state:type_name -> google.chat.v1.HistoryState
+	30, // 5: google.chat.v1.Space.create_time:type_name -> google.protobuf.Timestamp
+	30, // 6: google.chat.v1.Space.last_active_time:type_name -> google.protobuf.Timestamp
 	21, // 7: google.chat.v1.Space.membership_count:type_name -> google.chat.v1.Space.MembershipCount
 	22, // 8: google.chat.v1.Space.access_settings:type_name -> google.chat.v1.Space.AccessSettings
 	4,  // 9: google.chat.v1.Space.predefined_permission_settings:type_name -> google.chat.v1.Space.PredefinedPermissionSettings
 	26, // 10: google.chat.v1.Space.permission_settings:type_name -> google.chat.v1.Space.PermissionSettings
-	29, // 11: google.chat.v1.Space.import_mode_expire_time:type_name -> google.protobuf.Timestamp
+	30, // 11: google.chat.v1.Space.import_mode_expire_time:type_name -> google.protobuf.Timestamp
 	6,  // 12: google.chat.v1.CreateSpaceRequest.space:type_name -> google.chat.v1.Space
 	6,  // 13: google.chat.v1.ListSpacesResponse.spaces:type_name -> google.chat.v1.Space
 	0,  // 14: google.chat.v1.FindGroupChatsRequest.space_view:type_name -> google.chat.v1.SpaceView
 	6,  // 15: google.chat.v1.FindGroupChatsResponse.spaces:type_name -> google.chat.v1.Space
 	6,  // 16: google.chat.v1.UpdateSpaceRequest.space:type_name -> google.chat.v1.Space
-	30, // 17: google.chat.v1.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	31, // 17: google.chat.v1.UpdateSpaceRequest.update_mask:type_name -> google.protobuf.FieldMask
 	6,  // 18: google.chat.v1.SearchSpacesResponse.spaces:type_name -> google.chat.v1.Space
-	6,  // 19: google.chat.v1.CompleteImportSpaceResponse.space:type_name -> google.chat.v1.Space
-	5,  // 20: google.chat.v1.Space.AccessSettings.access_state:type_name -> google.chat.v1.Space.AccessSettings.AccessState
-	23, // 21: google.chat.v1.Space.AccessSettings.access_permission_settings:type_name -> google.chat.v1.Space.AccessPermissionSettings
-	24, // 22: google.chat.v1.Space.AccessPermissionSettings.discover_space_setting:type_name -> google.chat.v1.Space.AccessPermissionSetting
-	24, // 23: google.chat.v1.Space.AccessPermissionSettings.join_space_setting:type_name -> google.chat.v1.Space.AccessPermissionSetting
-	25, // 24: google.chat.v1.Space.AccessPermissionSetting.principals:type_name -> google.chat.v1.Space.Principal
-	31, // 25: google.chat.v1.Space.Principal.audience:type_name -> google.chat.v1.Audience
-	27, // 26: google.chat.v1.Space.PermissionSettings.manage_members_and_groups:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // 27: google.chat.v1.Space.PermissionSettings.modify_space_details:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // 28: google.chat.v1.Space.PermissionSettings.toggle_history:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // 29: google.chat.v1.Space.PermissionSettings.use_at_mention_all:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // 30: google.chat.v1.Space.PermissionSettings.manage_apps:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // 31: google.chat.v1.Space.PermissionSettings.manage_webhooks:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // 32: google.chat.v1.Space.PermissionSettings.post_messages:type_name -> google.chat.v1.Space.PermissionSetting
-	27, // 33: google.chat.v1.Space.PermissionSettings.reply_messages:type_name -> google.chat.v1.Space.PermissionSetting
-	34, // [34:34] is the sub-list for method output_type
-	34, // [34:34] is the sub-list for method input_type
-	34, // [34:34] is the sub-list for extension type_name
-	34, // [34:34] is the sub-list for extension extendee
-	0,  // [0:34] is the sub-list for field type_name
+	28, // 19: google.chat.v1.SearchSpacesResponse.results:type_name -> google.chat.v1.SearchSpacesResponse.SearchSpaceResult
+	6,  // 20: google.chat.v1.CompleteImportSpaceResponse.space:type_name -> google.chat.v1.Space
+	5,  // 21: google.chat.v1.Space.AccessSettings.access_state:type_name -> google.chat.v1.Space.AccessSettings.AccessState
+	23, // 22: google.chat.v1.Space.AccessSettings.access_permission_settings:type_name -> google.chat.v1.Space.AccessPermissionSettings
+	24, // 23: google.chat.v1.Space.AccessPermissionSettings.discover_space_setting:type_name -> google.chat.v1.Space.AccessPermissionSetting
+	24, // 24: google.chat.v1.Space.AccessPermissionSettings.join_space_setting:type_name -> google.chat.v1.Space.AccessPermissionSetting
+	25, // 25: google.chat.v1.Space.AccessPermissionSetting.principals:type_name -> google.chat.v1.Space.Principal
+	32, // 26: google.chat.v1.Space.Principal.audience:type_name -> google.chat.v1.Audience
+	27, // 27: google.chat.v1.Space.PermissionSettings.manage_members_and_groups:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 28: google.chat.v1.Space.PermissionSettings.modify_space_details:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 29: google.chat.v1.Space.PermissionSettings.toggle_history:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 30: google.chat.v1.Space.PermissionSettings.use_at_mention_all:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 31: google.chat.v1.Space.PermissionSettings.manage_apps:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 32: google.chat.v1.Space.PermissionSettings.manage_webhooks:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 33: google.chat.v1.Space.PermissionSettings.post_messages:type_name -> google.chat.v1.Space.PermissionSetting
+	27, // 34: google.chat.v1.Space.PermissionSettings.reply_messages:type_name -> google.chat.v1.Space.PermissionSetting
+	6,  // 35: google.chat.v1.SearchSpacesResponse.SearchSpaceResult.space:type_name -> google.chat.v1.Space
+	36, // [36:36] is the sub-list for method output_type
+	36, // [36:36] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_google_chat_v1_space_proto_init() }
@@ -2687,7 +2789,7 @@ func file_google_chat_v1_space_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_chat_v1_space_proto_rawDesc), len(file_google_chat_v1_space_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   22,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

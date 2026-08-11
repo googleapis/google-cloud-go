@@ -79,7 +79,7 @@ func defaultPreviewFeaturesRESTCallOptions() *PreviewFeaturesCallOptions {
 	}
 }
 
-// internalPreviewFeaturesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalPreviewFeaturesClient is an interface that defines the methods available from Compute Engine API.
 type internalPreviewFeaturesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -89,7 +89,7 @@ type internalPreviewFeaturesClient interface {
 	Update(context.Context, *computepb.UpdatePreviewFeatureRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// PreviewFeaturesClient is a client for interacting with Google Compute Engine API.
+// PreviewFeaturesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The PreviewFeatures API.

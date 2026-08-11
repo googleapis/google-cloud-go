@@ -16,12 +16,9 @@ package session
 
 import (
 	"context"
-	"encoding/base64"
 	"fmt"
 	"net/url"
-	"os"
 	"sort"
-	"strconv"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -33,7 +30,6 @@ import (
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 	otelmetric "go.opentelemetry.io/otel/metric"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -46,7 +42,7 @@ import (
 // first poll to return. Session pools intentionally IGNORE
 // option.WithGRPCConnectionPool(N) — pool shape is server-driven
 // end-to-end.
-const defaultSessionChannelPoolSize = 4
+const defaultSessionChannelPoolSize = 10
 
 // Standard gRPC routing headers — aliased to the shared exports in
 // internal/transport so the session package and the top-level bigtable
@@ -61,11 +57,6 @@ const (
 // non-backwards-compatible change to the request/response shape or the
 // vRPC descriptor set.
 const sessionProtocolVersion = 1
-
-// featureFlagsHeaderKey mirrors the bigtable package constant of the
-// same name — duplicated because internal/session can't import
-// bigtable (import cycle).
-const featureFlagsHeaderKey = "bigtable-features"
 
 // ChannelPool is the narrow surface sessionClient needs from the
 // managed channel pool it owns. Satisfied by
@@ -91,11 +82,16 @@ type Config struct {
 	// GetClientConfiguration polls — instance-scoped headers.
 	ConfigMD metadata.MD
 
-	// MetricsEnabled / DisableRetryInfo mirror the SessionManager
-	// booleans of the same name; both propagate into FeatureFlags on
-	// every OpenSessionRequest.
-	MetricsEnabled   bool
-	DisableRetryInfo bool
+	// MetricsEnabled mirrors the SessionManager boolean of the same
+	// name; propagates into FeatureFlags on every OpenSessionRequest.
+	MetricsEnabled bool
+
+	// FeatureFlagsProto is the pre-built FeatureFlags proto stamped
+	// onto every OpenSessionRequest.Flags. Required — callers MUST
+	// populate this with the same proto they marshaled into
+	// FeatureFlagsMD so header and envelope are byte-identical (the
+	// server rejects OpenSession with INVALID_ARGUMENT on mismatch).
+	FeatureFlagsProto *btpb.FeatureFlags
 
 	// SessionLoadListener is invoked whenever the server-driven
 	// ClientConfigurationManager reports a new session-load ratio. The
@@ -160,17 +156,54 @@ func (p permission) display() string {
 // resource. Struct keys let the map dedup on both axes without string
 // concatenation.
 type poolKey struct {
-	resource string
-	perm     permission
+	resourceName string
+	perm         permission
 }
 
 // less orders poolKeys for stable snapshot rendering (resource first,
 // then permission).
 func (k poolKey) less(other poolKey) bool {
-	if k.resource != other.resource {
-		return k.resource < other.resource
+	if k.resourceName != other.resourceName {
+		return k.resourceName < other.resourceName
 	}
 	return k.perm < other.perm
+}
+
+// displayName renders the human-readable pool identity that is stamped
+// as the OTel `session_name` metric label (via WithSessionPoolName)
+// and rendered in sessionz. Format: "<resource-id>-<PERM>".
+//
+// Resource-id is the caller-supplied short name with the internal
+// type-prefix stripped:
+//
+//	table:<id>    → "<id>-<PERM>"            e.g. "my-table-READ"
+//	av:<t>:<v>    → "<t>/<v>-<PERM>"         e.g. "my-table/my-view-READ"
+//	mv:<v>        → "<v>-<PERM>"             e.g. "my-view-READ"
+//
+// For authorized views the table qualifier is preserved as "<table>/<view>"
+// (converted from the "av:" pool-key encoding "av:<table>:<view>") so
+// two AVs with the same view id on different tables produce distinct
+// `session_name` timeseries and distinct sessionz rows — otherwise they
+// would silently aggregate on the label.
+//
+// (Resource, permission) is already unique per pool, so the numeric
+// pool id is intentionally left out of the display name. The pool id
+// remains on SessionPoolImpl (as poolID) and gets baked into per-session
+// log names via createSession — `session_name` label cardinality stays
+// bounded by (resource × permission).
+func (k poolKey) displayName() string {
+	r := k.resourceName
+	switch {
+	case strings.HasPrefix(r, "table:"):
+		r = strings.TrimPrefix(r, "table:")
+	case strings.HasPrefix(r, "mv:"):
+		r = strings.TrimPrefix(r, "mv:")
+	case strings.HasPrefix(r, "av:"):
+		// "av:<table>:<view>" → "<table>/<view>" so the label
+		// disambiguates AVs with the same view id on different tables.
+		r = strings.Replace(strings.TrimPrefix(r, "av:"), ":", "/", 1)
+	}
+	return r + "-" + k.perm.display()
 }
 
 // sessionClient is the internal implementation of the Client
@@ -206,6 +239,13 @@ type sessionClient struct {
 	// panel. Immutable after construction — no atomic needed.
 	enableDebug bool
 
+	// featureFlagsProto is the FeatureFlags proto stamped on every
+	// OpenSessionRequest.Flags. Built once at NewClient time so it
+	// stays byte-identical with the bigtable-features header — the
+	// server rejects OpenSession with INVALID_ARGUMENT when the two
+	// disagree on session-mode flags.
+	featureFlagsProto *btpb.FeatureFlags
+
 	sessionPoolsMu sync.Mutex
 	sessionPools   map[poolKey]*managedSessionPool
 	nextPoolID     atomic.Uint64
@@ -232,6 +272,7 @@ func NewClient(
 	ctx context.Context,
 	project, instance, appProfile string,
 	metricsProvider metrics.MetricsProvider,
+	featureFlagsProto *btpb.FeatureFlags,
 	opts ...option.ClientOption,
 ) (Client, error) {
 	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
@@ -239,10 +280,10 @@ func NewClient(
 		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)
 	}
 
-	// Feature-flag metadata carried on every Prime + GetClientConfiguration
-	// invocation. Mirrors bigtable.createFeatureFlagsMD(true, false, true) —
-	// duplicated to avoid an import cycle back into the bigtable package.
-	directAccessMD := buildFeatureFlagsMD(factory.Enabled, false /* disableRetryInfo */, true /* enableDirectAccess */)
+	// featureFlagsProto comes pre-built from the classic client so
+	// header and envelope both derive from the same proto reference.
+	// Marshal once here for the bigtable-features header.
+	directAccessMD := btransport.MarshalFeatureFlagsMD(featureFlagsProto)
 
 	fullInstance := fmt.Sprintf("projects/%s/instances/%s", project, instance)
 
@@ -271,10 +312,14 @@ func NewClient(
 		}
 		return btransport.NewBigtableConn(grpcConn), nil
 	}
-	daDialOpts := append(append([]option.ClientOption{}, opts...),
-		internaloption.EnableDirectPath(true),
-		internaloption.EnableDirectPathXds(),
-		internaloption.AllowHardBoundTokens("ALTS"))
+	// DirectAccess opt-set is centralized in btopt (shared with the
+	// classic client and the DirectAccess probe) so the three call
+	// sites cannot drift on which options are applied to a DirectPath
+	// dial. See btopt.DirectAccessOptions for the rationale on each
+	// individual option (in particular AllowNonDefaultServiceAccount,
+	// without which the dial silently falls back to CFE+TLS under the
+	// newer cloud.google.com/go/auth ADC path).
+	daDialOpts := append(append([]option.ClientOption{}, opts...), btopt.DirectAccessOptions()...)
 	daDial := func() (*btransport.BigtableConn, error) {
 		grpcConn, dialErr := gtransport.Dial(ctx, daDialOpts...)
 		if dialErr != nil {
@@ -313,14 +358,14 @@ func NewClient(
 	backgroundCtx, cancel := context.WithCancel(context.Background())
 
 	sc := newSessionClientFromParts(pool, stub, factory, Config{
-		Project:          project,
-		Instance:         instance,
-		AppProfile:       appProfile,
-		FeatureFlagsMD:   directAccessMD,
-		ConfigMD:         configMD,
-		MetricsEnabled:   factory.Enabled,
-		DisableRetryInfo: false,
-		BackgroundCtx:    backgroundCtx,
+		Project:           project,
+		Instance:          instance,
+		AppProfile:        appProfile,
+		FeatureFlagsMD:    directAccessMD,
+		FeatureFlagsProto: featureFlagsProto,
+		ConfigMD:          configMD,
+		MetricsEnabled:    factory.Enabled,
+		BackgroundCtx:     backgroundCtx,
 		// EnableDebug intentionally left at zero (false): NewClient has
 		// no external caller upstream today, so exposing a positional
 		// bool on the constructor would ship a dead knob. When the
@@ -341,12 +386,13 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 		_ = btransport.InitializeSessionMetrics(metricsFactory.OtelMeterProvider)
 	}
 	sc := &sessionClient{
-		cfg:            cfg,
-		channelPool:    channelPool,
-		stub:           stub,
-		metricsFactory: metricsFactory,
-		enableDebug:    cfg.EnableDebug,
-		sessionPools:   make(map[poolKey]*managedSessionPool),
+		cfg:               cfg,
+		channelPool:       channelPool,
+		stub:              stub,
+		metricsFactory:    metricsFactory,
+		enableDebug:       cfg.EnableDebug,
+		featureFlagsProto: cfg.FeatureFlagsProto,
+		sessionPools:      make(map[poolKey]*managedSessionPool),
 	}
 	// stub == nil only happens on the test-only newSessionClientFromParts
 	// path (unit tests wiring a fake ChannelPool without a real gRPC stub).
@@ -365,39 +411,6 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 		}
 	}
 	return sc
-}
-
-// buildFeatureFlagsMD mirrors bigtable.createFeatureFlagsMD. Duplicated
-// (rather than exported+imported) to keep the internal/session package
-// free of a back-reference to the bigtable package.
-func buildFeatureFlagsMD(clientSideMetricsEnabled, disableRetryInfo, enableDirectAccess bool) metadata.MD {
-	// CBT_FORCE_SESSION tri-state — Google-internal only, gated
-	// server-side. See bigtable.createFeatureFlagsMD for the semantic
-	// (kept in sync intentionally; internal/session can't import
-	// bigtable due to the import-cycle boundary).
-	sessionsCompatible, sessionsRequired := true, false
-	if v, ok := os.LookupEnv("CBT_FORCE_SESSION"); ok {
-		if b, err := strconv.ParseBool(v); err == nil {
-			sessionsCompatible, sessionsRequired = b, b
-		}
-	}
-	ff := btpb.FeatureFlags{
-		RoutingCookie:            true,
-		ReverseScans:             true,
-		LastScannedRowResponses:  true,
-		ClientSideMetricsEnabled: clientSideMetricsEnabled,
-		RetryInfo:                !disableRetryInfo,
-		TrafficDirectorEnabled:   enableDirectAccess,
-		DirectAccessRequested:    enableDirectAccess,
-		SessionsCompatible:       sessionsCompatible,
-		SessionsRequired:         sessionsRequired,
-		PeerInfo:                 true,
-	}
-	val := ""
-	if b, err := proto.Marshal(&ff); err == nil {
-		val = base64.URLEncoding.EncodeToString(b)
-	}
-	return metadata.Pairs(featureFlagsHeaderKey, val)
 }
 
 func (sc *sessionClient) MeterProvider() otelmetric.MeterProvider {
@@ -429,13 +442,17 @@ func (sc *sessionClient) OpenTable(tableID string) TableAPI {
 	fullName := sc.fullTableName(tableID)
 	streamFactory := func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenTable(ctx) }
 	resource := "table:" + tableID
+	readKey := poolKey{resource, permissionRead}
+	writeKey := poolKey{resource, permissionWrite}
 	openRead := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ},
-		poolKey{resource, permissionRead})
+		readKey)
 	openWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_WRITE},
-		poolKey{resource, permissionWrite})
-	return newSessionTable(tableID, openRead, openWrite, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
+		writeKey)
+	closeRead := sc.buildLazyReleaser(readKey)
+	closeWrite := sc.buildLazyReleaser(writeKey)
+	return newSessionTable(tableID, openRead, openWrite, closeRead, closeWrite, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
 }
 
 // OpenAuthorizedView returns a TableAPI for an authorized view.
@@ -443,13 +460,17 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 	fullName := sc.fullAuthorizedViewName(table, view)
 	streamFactory := func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenAuthorizedView(ctx) }
 	resource := fmt.Sprintf("av:%s:%s", table, view)
+	readKey := poolKey{resource, permissionRead}
+	writeKey := poolKey{resource, permissionWrite}
 	openRead := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ},
-		poolKey{resource, permissionRead})
+		readKey)
 	openWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_WRITE},
-		poolKey{resource, permissionWrite})
-	return newSessionTable(table, openRead, openWrite, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
+		writeKey)
+	closeRead := sc.buildLazyReleaser(readKey)
+	closeWrite := sc.buildLazyReleaser(writeKey)
+	return newSessionTable(table, openRead, openWrite, closeRead, closeWrite, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
 }
 
 // OpenMaterializedView returns a read-only TableAPI for a
@@ -457,6 +478,7 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 // cleanly via the nil openWrite passed to newSessionTable.
 func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 	fullName := sc.fullMaterializedViewName(view)
+	readKey := poolKey{"mv:" + view, permissionRead}
 	openRead := sc.buildLazyOpener(fullName, btransport.MATERIALIZED_VIEW_SESSION,
 		func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenMaterializedView(ctx) },
 		&btpb.OpenMaterializedViewRequest{
@@ -464,8 +486,9 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 			AppProfileId:         sc.cfg.AppProfile,
 			Permission:           btpb.OpenMaterializedViewRequest_PERMISSION_READ,
 		},
-		poolKey{"mv:" + view, permissionRead})
-	return newSessionTable("", openRead, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
+		readKey)
+	closeRead := sc.buildLazyReleaser(readKey)
+	return newSessionTable("", openRead, nil, closeRead, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
 }
 
 // Close tears down in a phased order that keeps late callbacks from
@@ -555,6 +578,60 @@ func (sc *sessionClient) buildLazyOpener(
 	}
 }
 
+// buildLazyReleaser returns a closure that releases the pool entry
+// for the given key from sessionPools + closes the underlying pool.
+// Returned closure is idempotent (second call finds entry absent and
+// no-ops) and nil-safe when key is the zero value (the caller can
+// pass nil for resources without a write side — e.g. materialized
+// views — mirroring buildLazyOpener's payload==nil convention).
+//
+// Symmetric with buildLazyOpener so sessionTable can drive real
+// per-resource teardown from its Close() without needing back-refs
+// or knowing about poolKey / sessionPools internals.
+func (sc *sessionClient) buildLazyReleaser(key poolKey) func() error {
+	return func() error {
+		return sc.releaseSessionPool(key)
+	}
+}
+
+// releaseSessionPool removes key from sessionPools and closes the
+// underlying pool. No-op when:
+//   - the client has already Closed (sessionPools == nil), so any late
+//     release from a cache handle draining on the way out doesn't
+//     racily double-close a pool that Client.Close is already
+//     tearing down.
+//   - the entry is absent (already released — makes second calls safe).
+//
+// Assumes the caller (currently bigtable.Client via session.TableCache)
+// guarantees at-most-one sessionTable per resource at any moment. That
+// invariant means no co-owner can be relying on the pool we're closing.
+// If session.Client is ever exposed to callers that bypass that cache,
+// this must gain a refcount.
+//
+// Teardown runs OUTSIDE sessionPoolsMu so a graceful pool drain (which
+// can block on in-flight vRPCs) doesn't deadlock any snapshotter
+// waiting on the lock. Matches the snapshot-under-lock / teardown-
+// outside pattern in Client.Close.
+func (sc *sessionClient) releaseSessionPool(key poolKey) error {
+	sc.sessionPoolsMu.Lock()
+	if sc.sessionPools == nil {
+		sc.sessionPoolsMu.Unlock()
+		return nil
+	}
+	mp, ok := sc.sessionPools[key]
+	if !ok {
+		sc.sessionPoolsMu.Unlock()
+		return nil
+	}
+	delete(sc.sessionPools, key)
+	sc.sessionPoolsMu.Unlock()
+
+	if mp.unregister != nil {
+		mp.unregister()
+	}
+	return mp.pool.Close()
+}
+
 // createSessionPoolForPayload marshals the resource-typed OpenXxxRequest
 // into the transport-level OpenSessionRequest envelope, builds routing
 // metadata via the descriptor's MetadataFn, and delegates to
@@ -621,16 +698,16 @@ func (sc *sessionClient) getOrCreateSessionPool(
 		return mp.pool
 	}
 	id := sc.nextPoolID.Add(1)
-	poolName := fmt.Sprintf("%sPool-%d", sessionType.ProtoName(), id)
-	if label := key.perm.display(); label != "" {
-		poolName += " [" + label + "]"
-	}
-	// Pool bounds start at 0; NewSessionPoolImpl falls back to
-	// defaultPoolConfig() and ClientConfigurationManager overrides on
-	// first UpdateConfig with server-driven values.
+	// poolName is stamped as the `session_name` OTel metric label and
+	// surfaces in sessionz — "<resource-id>-<PERM>" (see poolKey.displayName).
+	// Numeric pool id lives on SessionPoolImpl.poolID for the sessionz
+	// ↔ channelz reverse link and per-session log names; we don't need
+	// it in the human-readable label because (resource, permission)
+	// already uniquely identifies the pool.
+	poolName := key.displayName()
 	pool := btransport.NewSessionPoolImpl(
 		id,
-		poolName, 0, 0, streamFactory, openSessionRequest, md, sessionType,
+		poolName, streamFactory, openSessionRequest, md, sessionType,
 		sc.enableDebug,
 	)
 	mp := &managedSessionPool{pool: pool}
@@ -661,36 +738,13 @@ func (sc *sessionClient) getOrCreateSessionPool(
 	return pool
 }
 
-// featureFlags builds the OpenSessionRequest.Flags proto from
-// sessionClient config. SessionsCompatible / SessionsRequired MUST
-// match the values in bigtable-features metadata header (built by
-// buildFeatureFlagsMD) — the server rejects OpenSession with
-// INVALID_ARGUMENT when the proto and header disagree on session-mode
-// flags. See bigtable.createFeatureFlagsMD for the tri-state semantic.
-//
-// TODO(sushanb): CBT_FORCE_SESSION is re-read here on every pool open
-// but buildFeatureFlagsMD reads it once at NewClient. If the
-// env flips mid-process the header + proto disagree and the server
-// rejects. Resolve once at construction and stash on Config.
+// featureFlags returns the FeatureFlags proto stamped onto every
+// OpenSessionRequest.Flags. Constructed once at NewClient time from
+// the same input as the bigtable-features gRPC header so the two are
+// byte-identical — the server rejects OpenSession with INVALID_ARGUMENT
+// when they disagree on session-mode flags.
 func (sc *sessionClient) featureFlags() *btpb.FeatureFlags {
-	sessionsCompatible, sessionsRequired := true, false
-	if v, ok := os.LookupEnv("CBT_FORCE_SESSION"); ok {
-		if b, err := strconv.ParseBool(v); err == nil {
-			sessionsCompatible, sessionsRequired = b, b
-		}
-	}
-	return &btpb.FeatureFlags{
-		RoutingCookie:            true,
-		ReverseScans:             true,
-		LastScannedRowResponses:  true,
-		ClientSideMetricsEnabled: sc.cfg.MetricsEnabled,
-		RetryInfo:                !sc.cfg.DisableRetryInfo,
-		TrafficDirectorEnabled:   true,
-		DirectAccessRequested:    true,
-		SessionsCompatible:       sessionsCompatible,
-		SessionsRequired:         sessionsRequired,
-		PeerInfo:                 true,
-	}
+	return sc.featureFlagsProto
 }
 
 // perResourceMetadata builds the per-vRPC context metadata: the pair

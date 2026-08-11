@@ -212,7 +212,7 @@ type SearchPartnerLinksRequest struct {
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
 	// The maximum number of partner links to return. The service may return
 	// fewer than this value.
-	// If unspecified, at most 10 partner links will be returned.
+	// If unspecified, at most 50 partner links will be returned.
 	// The maximum value is 100; values above 100 will be coerced to 100.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// A page token, received from a previous `SearchPartnerLinks` call.
@@ -241,6 +241,13 @@ type SearchPartnerLinksRequest struct {
 	// - `owning_account.account_id`
 	// - `partner_account.account_type`
 	// - `partner_account.account_id`
+	// - `feature_set`
+	//
+	// For partner links with the
+	// [FEATURE_SET_AD_EVENT_MANAGEMENT][google.ads.datamanager.v1.FeatureSet.FEATURE_SET_AD_EVENT_MANAGEMENT]
+	// feature set, the following fields are also supported:
+	//
+	// - `partner_customer_account.account_id`
 	//
 	// Example:
 	// `owning_account.account_type = "GOOGLE_ADS" AND partner_account.account_id

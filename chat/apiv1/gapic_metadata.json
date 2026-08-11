@@ -200,6 +200,11 @@
                 "PositionSection"
               ]
             },
+            "SearchMessages": {
+              "methods": [
+                "SearchMessages"
+              ]
+            },
             "SearchSpaces": {
               "methods": [
                 "SearchSpaces"
@@ -443,6 +448,11 @@
             "PositionSection": {
               "methods": [
                 "PositionSection"
+              ]
+            },
+            "SearchMessages": {
+              "methods": [
+                "SearchMessages"
               ]
             },
             "SearchSpaces": {

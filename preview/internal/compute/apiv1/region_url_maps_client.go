@@ -95,7 +95,7 @@ func defaultRegionUrlMapsRESTCallOptions() *RegionUrlMapsCallOptions {
 	}
 }
 
-// internalRegionUrlMapsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionUrlMapsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionUrlMapsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,7 +109,7 @@ type internalRegionUrlMapsClient interface {
 	Validate(context.Context, *computepb.ValidateRegionUrlMapRequest, ...gax.CallOption) (*computepb.UrlMapsValidateResponse, error)
 }
 
-// RegionUrlMapsClient is a client for interacting with Google Compute Engine API.
+// RegionUrlMapsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionUrlMaps API.

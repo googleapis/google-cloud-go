@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/support/apiv2",
-    "version": "1.12.0"
+    "version": "1.13.0"
   },
   "snippets": [
     {
@@ -707,6 +707,51 @@
           "fullName": "google.cloud.support.v2.SupportEventSubscriptionClient",
           "shortName": "SupportEventSubscriptionClient"
         },
+        "fullName": "google.cloud.support.v2.SupportEventSubscriptionClient.ExpungeSupportEventSubscription",
+        "method": {
+          "fullName": "google.cloud.support.v2.SupportEventSubscriptionService.ExpungeSupportEventSubscription",
+          "service": {
+            "fullName": "google.cloud.support.v2.SupportEventSubscriptionService",
+            "shortName": "SupportEventSubscriptionService"
+          },
+          "shortName": "ExpungeSupportEventSubscription"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "supportpb.ExpungeSupportEventSubscriptionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "ExpungeSupportEventSubscription"
+      },
+      "description": "ExpungeSupportEventSubscription expunges a support event subscription.\n\nEXAMPLES: \n\ncURL: \n\n```shell\nsupport_event_subscription=\"organizations/123456789/supportEventSubscriptions/abcdef123456\"\ncurl \\\n--request POST \\\n--header \"Authorization: Bearer $(gcloud auth print-access-token)\" \\\n\"https: //cloudsupport.googleapis.com/v2/$support_event_subscription: expunge\"\n```\n\nPython: \n\n```python\nimport googleapiclient.discovery\n\napi_version = \"v2\"\nsupportApiService = googleapiclient.discovery.build(\nserviceName=\"cloudsupport\",\nversion=api_version,\ndiscoveryServiceUrl=f\"https: //cloudsupport.googleapis.com/$discovery/rest?version={api_version}\",\n)\n\nrequest = supportApiService.supportEventSubscriptions().expunge(\nname=\"organizations/123456789/supportEventSubscriptions/abcdef123456\"\n)\nprint(request.execute())\n```",
+      "file": "SupportEventSubscriptionClient/ExpungeSupportEventSubscription/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudsupport_v2_generated_SupportEventSubscriptionService_ExpungeSupportEventSubscription_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudsupport ExpungeSupportEventSubscription Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.support.v2.SupportEventSubscriptionClient",
+          "shortName": "SupportEventSubscriptionClient"
+        },
         "fullName": "google.cloud.support.v2.SupportEventSubscriptionClient.GetSupportEventSubscription",
         "method": {
           "fullName": "google.cloud.support.v2.SupportEventSubscriptionService.GetSupportEventSubscription",
@@ -779,7 +824,7 @@
         "resultType": "SupportEventSubscriptionIterator",
         "shortName": "ListSupportEventSubscriptions"
       },
-      "description": "ListSupportEventSubscriptions lists support event subscriptions.",
+      "description": "ListSupportEventSubscriptions lists support event subscriptions for an organization.",
       "file": "SupportEventSubscriptionClient/ListSupportEventSubscriptions/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

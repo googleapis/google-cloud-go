@@ -117,7 +117,7 @@ func defaultInstanceGroupsRESTCallOptions() *InstanceGroupsCallOptions {
 	}
 }
 
-// internalInstanceGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInstanceGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalInstanceGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -134,7 +134,7 @@ type internalInstanceGroupsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsInstanceGroupRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// InstanceGroupsClient is a client for interacting with Google Compute Engine API.
+// InstanceGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The InstanceGroups API.

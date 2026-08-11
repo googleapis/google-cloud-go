@@ -23,6 +23,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
+	btransport "cloud.google.com/go/bigtable/internal/transport"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/protobuf/proto"
@@ -73,6 +74,12 @@ func newTestClient(t *testing.T, pool ChannelPool, cfg Config) *sessionClient {
 	if cfg.AppProfile == "" {
 		cfg.AppProfile = "test-profile"
 	}
+	if cfg.FeatureFlagsProto == nil {
+		cfg.FeatureFlagsProto = btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+			ClientSideMetricsEnabled: cfg.MetricsEnabled,
+			EnableDirectAccess:       true,
+		})
+	}
 	return newSessionClientFromParts(pool, nil, newTestFactory(t), cfg)
 }
 
@@ -81,9 +88,9 @@ func newTestClient(t *testing.T, pool ChannelPool, cfg Config) *sessionClient {
 // FeatureFlags struct — mirrors what the server does on the wire.
 func decodeFeatureFlags(t *testing.T, md metadata.MD) *btpb.FeatureFlags {
 	t.Helper()
-	vals := md.Get(featureFlagsHeaderKey)
+	vals := md.Get(btransport.FeatureFlagsHeader)
 	if len(vals) != 1 {
-		t.Fatalf("md[%q] = %v, want exactly one value", featureFlagsHeaderKey, vals)
+		t.Fatalf("md[%q] = %v, want exactly one value", btransport.FeatureFlagsHeader, vals)
 	}
 	raw, err := base64.URLEncoding.DecodeString(vals[0])
 	if err != nil {
@@ -101,39 +108,42 @@ func decodeFeatureFlags(t *testing.T, md metadata.MD) *btpb.FeatureFlags {
 // server-visible flag needs to move, break this test on purpose so
 // reviewers notice.
 func TestBuildFeatureFlagsMD_AlwaysOnBits(t *testing.T) {
-	md := buildFeatureFlagsMD(false, false, false)
+	md := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{}))
 	ff := decodeFeatureFlags(t, md)
 	if !ff.RoutingCookie || !ff.ReverseScans || !ff.LastScannedRowResponses || !ff.SessionsCompatible || !ff.PeerInfo {
 		t.Errorf("always-on flags missing: %+v", ff)
 	}
 }
 
-// TestBuildFeatureFlagsMD_ReflectsToggles walks the three toggle inputs
-// and asserts each maps to the right proto field, including RetryInfo's
-// inversion (input=disableRetryInfo, wire=RetryInfo).
+// TestBuildFeatureFlagsMD_ReflectsToggles walks the caller-driven
+// inputs and asserts each maps to the right proto field. RetryInfo
+// is not in the input set — it's unconditionally true on the wire.
 func TestBuildFeatureFlagsMD_ReflectsToggles(t *testing.T) {
 	tests := []struct {
-		name             string
-		metricsEnabled   bool
-		disableRetryInfo bool
-		directAccess     bool
-		wantMetrics      bool
-		wantRetryInfo    bool
-		wantDirect       bool
+		name           string
+		metricsEnabled bool
+		directAccess   bool
+		wantMetrics    bool
+		wantDirect     bool
 	}{
-		{"all-off", false, false, false, false, true /* !disable */, false},
-		{"all-on", true, true, true, true, false /* !disable */, true},
-		{"metrics-only", true, false, false, true, true, false},
-		{"direct-only", false, false, true, false, true, true},
+		{"all-off", false, false, false, false},
+		{"all-on", true, true, true, true},
+		{"metrics-only", true, false, true, false},
+		{"direct-only", false, true, false, true},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			ff := decodeFeatureFlags(t, buildFeatureFlagsMD(tc.metricsEnabled, tc.disableRetryInfo, tc.directAccess))
+			ff := decodeFeatureFlags(t, btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+				ClientSideMetricsEnabled: tc.metricsEnabled,
+				EnableDirectAccess:       tc.directAccess,
+			})))
 			if ff.ClientSideMetricsEnabled != tc.wantMetrics {
 				t.Errorf("ClientSideMetricsEnabled = %v, want %v", ff.ClientSideMetricsEnabled, tc.wantMetrics)
 			}
-			if ff.RetryInfo != tc.wantRetryInfo {
-				t.Errorf("RetryInfo = %v, want %v (input disableRetryInfo=%v)", ff.RetryInfo, tc.wantRetryInfo, tc.disableRetryInfo)
+			// RetryInfo is unconditionally true — this client always
+			// honors server-attached retry hints.
+			if !ff.RetryInfo {
+				t.Errorf("RetryInfo = false, want true (unconditional)")
 			}
 			if ff.DirectAccessRequested != tc.wantDirect {
 				t.Errorf("DirectAccessRequested = %v, want %v", ff.DirectAccessRequested, tc.wantDirect)
@@ -170,7 +180,10 @@ func TestSessionClient_NameFormatters(t *testing.T) {
 // metadata: resource-prefix + request-params (with URL-escaped values +
 // app_profile_id) + merged FeatureFlagsMD.
 func TestSessionClient_PerResourceMetadata(t *testing.T) {
-	ffMD := buildFeatureFlagsMD(true, false, true)
+	ffMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+		ClientSideMetricsEnabled: true,
+		EnableDirectAccess:       true,
+	}))
 	sc := newTestClient(t, nil, Config{
 		Project: "p", Instance: "i", AppProfile: "profile with spaces",
 		FeatureFlagsMD: ffMD,
@@ -192,26 +205,26 @@ func TestSessionClient_PerResourceMetadata(t *testing.T) {
 	if params[0] != wantParam {
 		t.Errorf("%s = %q, want %q", requestParamsHeader, params[0], wantParam)
 	}
-	if len(md.Get(featureFlagsHeaderKey)) != 1 {
+	if len(md.Get(btransport.FeatureFlagsHeader)) != 1 {
 		t.Errorf("feature-flags header missing from perResourceMetadata output: %v", md)
 	}
 }
 
 // TestSessionClient_FeatureFlags asserts featureFlags() (used to build
-// each OpenSessionRequest.Flags) reflects the config booleans, with
-// RetryInfo inverted from DisableRetryInfo.
+// each OpenSessionRequest.Flags) reflects the config booleans and
+// always ships RetryInfo=true (single source of truth in
+// NewFeatureFlagsProto).
 func TestSessionClient_FeatureFlags(t *testing.T) {
-	sc := newTestClient(t, nil, Config{MetricsEnabled: true, DisableRetryInfo: true})
+	sc := newTestClient(t, nil, Config{MetricsEnabled: true})
 	defer sc.Close()
 
 	ff := sc.featureFlags()
 	if !ff.ClientSideMetricsEnabled {
 		t.Error("ClientSideMetricsEnabled = false, want true (MetricsEnabled=true)")
 	}
-	if ff.RetryInfo {
-		t.Error("RetryInfo = true, want false (DisableRetryInfo=true)")
+	if !ff.RetryInfo {
+		t.Error("RetryInfo = false, want true (unconditional)")
 	}
-	// Always-on bits — same invariant list as buildFeatureFlagsMD.
 	if !ff.RoutingCookie || !ff.ReverseScans || !ff.LastScannedRowResponses ||
 		!ff.SessionsCompatible || !ff.PeerInfo || !ff.TrafficDirectorEnabled || !ff.DirectAccessRequested {
 		t.Errorf("always-on bits missing: %+v", ff)
@@ -414,5 +427,109 @@ func TestSessionClient_DebugAccessors(t *testing.T) {
 	}
 	if snaps := sc.LoadBalancingSnapshots(); len(snaps) != 0 {
 		t.Errorf("LoadBalancingSnapshots() on fresh client = %v, want empty", snaps)
+	}
+}
+
+// TestPoolKey_DisplayName pins the "<resource-id>-<PERM>" contract for
+// the session_name OTel metric label + sessionz UI. If this test
+// changes, coordinate with dashboard owners — session_name is a public
+// metric label.
+func TestPoolKey_DisplayName(t *testing.T) {
+	tests := []struct {
+		name string
+		key  poolKey
+		want string
+	}{
+		{"table read", poolKey{"table:my-table", permissionRead}, "my-table-READ"},
+		{"table write", poolKey{"table:my-table", permissionWrite}, "my-table-WRITE"},
+		{"authorized view read", poolKey{"av:my-table:my-view", permissionRead}, "my-table/my-view-READ"},
+		{"authorized view write", poolKey{"av:my-table:my-view", permissionWrite}, "my-table/my-view-WRITE"},
+		{"authorized view — same view id, different tables must not collide",
+			poolKey{"av:other-table:my-view", permissionRead}, "other-table/my-view-READ"},
+		{"materialized view read", poolKey{"mv:my-mat-view", permissionRead}, "my-mat-view-READ"},
+		{"table id with dashes and dots", poolKey{"table:tbl-1.foo", permissionRead}, "tbl-1.foo-READ"},
+		// Unknown prefix falls through to the raw resource string so
+		// operators still get a legible label even if a future resource
+		// kind hasn't been wired into displayResource yet.
+		{"unknown prefix falls through", poolKey{"future-kind:xyz", permissionRead}, "future-kind:xyz-READ"},
+		// Malformed inputs: pin current fallback behavior so nobody
+		// silently changes to a panic. In practice these can't be
+		// produced by any of the Open* call sites; the assertions are
+		// defensive-programming contracts on displayResource.
+		{"empty resource", poolKey{"", permissionRead}, "-READ"},
+		{"empty table id after prefix", poolKey{"table:", permissionRead}, "-READ"},
+		{"empty view id after av prefix", poolKey{"av:t:", permissionRead}, "t/-READ"},
+		{"empty view id after mv prefix", poolKey{"mv:", permissionRead}, "-READ"},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := tc.key.displayName(); got != tc.want {
+				t.Errorf("displayName() = %q, want %q", got, tc.want)
+			}
+		})
+	}
+}
+
+// --- releaseSessionPool ------------------------------------------------------
+
+// TestReleaseSessionPool_AfterClientClose_NoOp: once Close nils out
+// sessionPools, any late release from a cache handle draining on the
+// way out must be a benign no-op rather than a nil-map panic.
+func TestReleaseSessionPool_AfterClientClose_NoOp(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	sc.sessionPools = nil // simulate Close having snapshotted+nil'd
+	if err := sc.releaseSessionPool(poolKey{"table:foo", permissionRead}); err != nil {
+		t.Errorf("releaseSessionPool on nil map = %v, want nil (post-Close no-op)", err)
+	}
+}
+
+// TestReleaseSessionPool_MissingKeyNoOp: releasing a key that isn't in
+// the map returns nil and leaves other entries untouched. This is what
+// makes double-release safe (winner deletes; loser sees absent).
+func TestReleaseSessionPool_MissingKeyNoOp(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	present := poolKey{"table:present", permissionRead}
+	sc.sessionPools[present] = &managedSessionPool{} // sentinel, not touched
+	if err := sc.releaseSessionPool(poolKey{"table:absent", permissionRead}); err != nil {
+		t.Errorf("releaseSessionPool on absent key = %v, want nil", err)
+	}
+	if _, still := sc.sessionPools[present]; !still {
+		t.Error("releaseSessionPool on absent key deleted a different entry")
+	}
+}
+
+// TestReleaseSessionPool_RemovesEntryAndInvokesUnregister covers the
+// happy path with a real (unstarted) SessionPoolImpl. The pool never
+// dialed a stream so Close returns cleanly; we assert the map entry
+// is gone AND the config-listener unregister thunk fired.
+func TestReleaseSessionPool_RemovesEntryAndInvokesUnregister(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	key := poolKey{"table:foo", permissionRead}
+	pool := btransport.NewSessionPoolImpl(
+		1, "test-pool",
+		func(ctx context.Context) (btransport.Stream, error) { return nil, errors.New("test never dials") },
+		&btpb.OpenSessionRequest{}, nil,
+		btransport.SessionTypeTable, false,
+	)
+	var unregistered int
+	sc.sessionPools[key] = &managedSessionPool{
+		pool:       pool,
+		unregister: func() { unregistered++ },
+	}
+	if err := sc.releaseSessionPool(key); err != nil {
+		t.Fatalf("releaseSessionPool = %v, want nil", err)
+	}
+	if _, still := sc.sessionPools[key]; still {
+		t.Error("sessionPools still holds the released key")
+	}
+	if unregistered != 1 {
+		t.Errorf("unregister fired %d times, want 1", unregistered)
+	}
+	// Second release is a clean no-op (winner deleted, loser sees absent).
+	if err := sc.releaseSessionPool(key); err != nil {
+		t.Errorf("second releaseSessionPool = %v, want nil", err)
+	}
+	if unregistered != 1 {
+		t.Errorf("unregister fired %d times after second release, want still 1", unregistered)
 	}
 }

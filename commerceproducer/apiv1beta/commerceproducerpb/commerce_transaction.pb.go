@@ -416,6 +416,189 @@ func (x *GetPrivateOfferRequest) GetView() PrivateOfferView {
 	return PrivateOfferView_PRIVATE_OFFER_VIEW_UNSPECIFIED
 }
 
+// Message for resolving an amended offer.
+type ResolveAmendmentTargetRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Parent value for ResolveAmendmentTargetRequest
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The customer's billing account targeted by the offer. This is the
+	// billing account for which the new private offer will be created on. Format:
+	// billingAccounts/{billing_account}.
+	TargetBillingAccount string `protobuf:"bytes,2,opt,name=target_billing_account,json=targetBillingAccount,proto3" json:"target_billing_account,omitempty"`
+	// Required. The base standard offer that the private offer will be based on.
+	// Format:
+	// projects/{project}/locations/{location}/services/{service}/standardOffers/{standard_offer}.
+	BaseStandardOffer string `protobuf:"bytes,3,opt,name=base_standard_offer,json=baseStandardOffer,proto3" json:"base_standard_offer,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *ResolveAmendmentTargetRequest) Reset() {
+	*x = ResolveAmendmentTargetRequest{}
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolveAmendmentTargetRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolveAmendmentTargetRequest) ProtoMessage() {}
+
+func (x *ResolveAmendmentTargetRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolveAmendmentTargetRequest.ProtoReflect.Descriptor instead.
+func (*ResolveAmendmentTargetRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *ResolveAmendmentTargetRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ResolveAmendmentTargetRequest) GetTargetBillingAccount() string {
+	if x != nil {
+		return x.TargetBillingAccount
+	}
+	return ""
+}
+
+func (x *ResolveAmendmentTargetRequest) GetBaseStandardOffer() string {
+	if x != nil {
+		return x.BaseStandardOffer
+	}
+	return ""
+}
+
+// Message in response to ResolveAmendmentTarget.
+type ResolveAmendmentTargetResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The amendment requirements for the new private offer.
+	//
+	// If this oneof is empty, the client should create a brand new offer.
+	//
+	// Types that are valid to be assigned to AmendmentRequirement:
+	//
+	//	*ResolveAmendmentTargetResponse_RequiredPrivateOffer
+	//	*ResolveAmendmentTargetResponse_RequiredStandardOffer
+	//	*ResolveAmendmentTargetResponse_OptionalOffers_
+	AmendmentRequirement isResolveAmendmentTargetResponse_AmendmentRequirement `protobuf_oneof:"amendment_requirement"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
+}
+
+func (x *ResolveAmendmentTargetResponse) Reset() {
+	*x = ResolveAmendmentTargetResponse{}
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[4]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolveAmendmentTargetResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolveAmendmentTargetResponse) ProtoMessage() {}
+
+func (x *ResolveAmendmentTargetResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[4]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolveAmendmentTargetResponse.ProtoReflect.Descriptor instead.
+func (*ResolveAmendmentTargetResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{4}
+}
+
+func (x *ResolveAmendmentTargetResponse) GetAmendmentRequirement() isResolveAmendmentTargetResponse_AmendmentRequirement {
+	if x != nil {
+		return x.AmendmentRequirement
+	}
+	return nil
+}
+
+func (x *ResolveAmendmentTargetResponse) GetRequiredPrivateOffer() string {
+	if x != nil {
+		if x, ok := x.AmendmentRequirement.(*ResolveAmendmentTargetResponse_RequiredPrivateOffer); ok {
+			return x.RequiredPrivateOffer
+		}
+	}
+	return ""
+}
+
+func (x *ResolveAmendmentTargetResponse) GetRequiredStandardOffer() string {
+	if x != nil {
+		if x, ok := x.AmendmentRequirement.(*ResolveAmendmentTargetResponse_RequiredStandardOffer); ok {
+			return x.RequiredStandardOffer
+		}
+	}
+	return ""
+}
+
+func (x *ResolveAmendmentTargetResponse) GetOptionalOffers() *ResolveAmendmentTargetResponse_OptionalOffers {
+	if x != nil {
+		if x, ok := x.AmendmentRequirement.(*ResolveAmendmentTargetResponse_OptionalOffers_); ok {
+			return x.OptionalOffers
+		}
+	}
+	return nil
+}
+
+type isResolveAmendmentTargetResponse_AmendmentRequirement interface {
+	isResolveAmendmentTargetResponse_AmendmentRequirement()
+}
+
+type ResolveAmendmentTargetResponse_RequiredPrivateOffer struct {
+	// The resource name of an existing private offer that MUST be amended.
+	//
+	// If this is set, the new private offer the client creates must populate
+	// the `single_product_offer.amended_private_offer` field with this value.
+	RequiredPrivateOffer string `protobuf:"bytes,1,opt,name=required_private_offer,json=requiredPrivateOffer,proto3,oneof"`
+}
+
+type ResolveAmendmentTargetResponse_RequiredStandardOffer struct {
+	// The resource name of an existing standard offer that MUST be amended.
+	//
+	// If this is set, the new private offer the client creates must populate
+	// the `single_product_offer.amended_standard_offer` field with this value.
+	RequiredStandardOffer string `protobuf:"bytes,2,opt,name=required_standard_offer,json=requiredStandardOffer,proto3,oneof"`
+}
+
+type ResolveAmendmentTargetResponse_OptionalOffers_ struct {
+	// A list of existing offers that may optionally be amended.
+	OptionalOffers *ResolveAmendmentTargetResponse_OptionalOffers `protobuf:"bytes,3,opt,name=optional_offers,json=optionalOffers,proto3,oneof"`
+}
+
+func (*ResolveAmendmentTargetResponse_RequiredPrivateOffer) isResolveAmendmentTargetResponse_AmendmentRequirement() {
+}
+
+func (*ResolveAmendmentTargetResponse_RequiredStandardOffer) isResolveAmendmentTargetResponse_AmendmentRequirement() {
+}
+
+func (*ResolveAmendmentTargetResponse_OptionalOffers_) isResolveAmendmentTargetResponse_AmendmentRequirement() {
+}
+
 // Message for creating a PrivateOffer
 type CreatePrivateOfferRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -429,7 +612,7 @@ type CreatePrivateOfferRequest struct {
 
 func (x *CreatePrivateOfferRequest) Reset() {
 	*x = CreatePrivateOfferRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[3]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -441,7 +624,7 @@ func (x *CreatePrivateOfferRequest) String() string {
 func (*CreatePrivateOfferRequest) ProtoMessage() {}
 
 func (x *CreatePrivateOfferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[3]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -454,7 +637,7 @@ func (x *CreatePrivateOfferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePrivateOfferRequest.ProtoReflect.Descriptor instead.
 func (*CreatePrivateOfferRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{3}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *CreatePrivateOfferRequest) GetParent() string {
@@ -488,7 +671,7 @@ type UpdatePrivateOfferRequest struct {
 
 func (x *UpdatePrivateOfferRequest) Reset() {
 	*x = UpdatePrivateOfferRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[4]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -500,7 +683,7 @@ func (x *UpdatePrivateOfferRequest) String() string {
 func (*UpdatePrivateOfferRequest) ProtoMessage() {}
 
 func (x *UpdatePrivateOfferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[4]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -513,7 +696,7 @@ func (x *UpdatePrivateOfferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePrivateOfferRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePrivateOfferRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{4}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *UpdatePrivateOfferRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -543,7 +726,7 @@ type PublishPrivateOfferRequest struct {
 
 func (x *PublishPrivateOfferRequest) Reset() {
 	*x = PublishPrivateOfferRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[5]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -555,7 +738,7 @@ func (x *PublishPrivateOfferRequest) String() string {
 func (*PublishPrivateOfferRequest) ProtoMessage() {}
 
 func (x *PublishPrivateOfferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[5]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -568,7 +751,7 @@ func (x *PublishPrivateOfferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PublishPrivateOfferRequest.ProtoReflect.Descriptor instead.
 func (*PublishPrivateOfferRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{5}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *PublishPrivateOfferRequest) GetName() string {
@@ -599,7 +782,7 @@ type CancelPrivateOfferRequest struct {
 
 func (x *CancelPrivateOfferRequest) Reset() {
 	*x = CancelPrivateOfferRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[6]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -611,7 +794,7 @@ func (x *CancelPrivateOfferRequest) String() string {
 func (*CancelPrivateOfferRequest) ProtoMessage() {}
 
 func (x *CancelPrivateOfferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[6]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -624,7 +807,7 @@ func (x *CancelPrivateOfferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CancelPrivateOfferRequest.ProtoReflect.Descriptor instead.
 func (*CancelPrivateOfferRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *CancelPrivateOfferRequest) GetName() string {
@@ -655,7 +838,7 @@ type DeletePrivateOfferRequest struct {
 
 func (x *DeletePrivateOfferRequest) Reset() {
 	*x = DeletePrivateOfferRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[7]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -667,7 +850,7 @@ func (x *DeletePrivateOfferRequest) String() string {
 func (*DeletePrivateOfferRequest) ProtoMessage() {}
 
 func (x *DeletePrivateOfferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[7]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -680,7 +863,7 @@ func (x *DeletePrivateOfferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePrivateOfferRequest.ProtoReflect.Descriptor instead.
 func (*DeletePrivateOfferRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *DeletePrivateOfferRequest) GetName() string {
@@ -718,7 +901,7 @@ type ListPrivateOfferDocumentsRequest struct {
 
 func (x *ListPrivateOfferDocumentsRequest) Reset() {
 	*x = ListPrivateOfferDocumentsRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[8]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -730,7 +913,7 @@ func (x *ListPrivateOfferDocumentsRequest) String() string {
 func (*ListPrivateOfferDocumentsRequest) ProtoMessage() {}
 
 func (x *ListPrivateOfferDocumentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[8]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -743,7 +926,7 @@ func (x *ListPrivateOfferDocumentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPrivateOfferDocumentsRequest.ProtoReflect.Descriptor instead.
 func (*ListPrivateOfferDocumentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListPrivateOfferDocumentsRequest) GetParent() string {
@@ -781,7 +964,7 @@ type ListPrivateOfferDocumentsResponse struct {
 
 func (x *ListPrivateOfferDocumentsResponse) Reset() {
 	*x = ListPrivateOfferDocumentsResponse{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[9]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -793,7 +976,7 @@ func (x *ListPrivateOfferDocumentsResponse) String() string {
 func (*ListPrivateOfferDocumentsResponse) ProtoMessage() {}
 
 func (x *ListPrivateOfferDocumentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[9]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -806,7 +989,7 @@ func (x *ListPrivateOfferDocumentsResponse) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ListPrivateOfferDocumentsResponse.ProtoReflect.Descriptor instead.
 func (*ListPrivateOfferDocumentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListPrivateOfferDocumentsResponse) GetPrivateOfferDocuments() []*PrivateOfferDocument {
@@ -834,7 +1017,7 @@ type GetPrivateOfferDocumentRequest struct {
 
 func (x *GetPrivateOfferDocumentRequest) Reset() {
 	*x = GetPrivateOfferDocumentRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[10]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -846,7 +1029,7 @@ func (x *GetPrivateOfferDocumentRequest) String() string {
 func (*GetPrivateOfferDocumentRequest) ProtoMessage() {}
 
 func (x *GetPrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[10]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -859,7 +1042,7 @@ func (x *GetPrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPrivateOfferDocumentRequest.ProtoReflect.Descriptor instead.
 func (*GetPrivateOfferDocumentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetPrivateOfferDocumentRequest) GetName() string {
@@ -882,7 +1065,7 @@ type CreatePrivateOfferDocumentRequest struct {
 
 func (x *CreatePrivateOfferDocumentRequest) Reset() {
 	*x = CreatePrivateOfferDocumentRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[11]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -894,7 +1077,7 @@ func (x *CreatePrivateOfferDocumentRequest) String() string {
 func (*CreatePrivateOfferDocumentRequest) ProtoMessage() {}
 
 func (x *CreatePrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[11]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -907,7 +1090,7 @@ func (x *CreatePrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use CreatePrivateOfferDocumentRequest.ProtoReflect.Descriptor instead.
 func (*CreatePrivateOfferDocumentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CreatePrivateOfferDocumentRequest) GetParent() string {
@@ -941,7 +1124,7 @@ type UpdatePrivateOfferDocumentRequest struct {
 
 func (x *UpdatePrivateOfferDocumentRequest) Reset() {
 	*x = UpdatePrivateOfferDocumentRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[12]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -953,7 +1136,7 @@ func (x *UpdatePrivateOfferDocumentRequest) String() string {
 func (*UpdatePrivateOfferDocumentRequest) ProtoMessage() {}
 
 func (x *UpdatePrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[12]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -966,7 +1149,7 @@ func (x *UpdatePrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use UpdatePrivateOfferDocumentRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePrivateOfferDocumentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *UpdatePrivateOfferDocumentRequest) GetPrivateOfferDocument() *PrivateOfferDocument {
@@ -994,7 +1177,7 @@ type DeletePrivateOfferDocumentRequest struct {
 
 func (x *DeletePrivateOfferDocumentRequest) Reset() {
 	*x = DeletePrivateOfferDocumentRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[13]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1006,7 +1189,7 @@ func (x *DeletePrivateOfferDocumentRequest) String() string {
 func (*DeletePrivateOfferDocumentRequest) ProtoMessage() {}
 
 func (x *DeletePrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[13]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1019,7 +1202,7 @@ func (x *DeletePrivateOfferDocumentRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use DeletePrivateOfferDocumentRequest.ProtoReflect.Descriptor instead.
 func (*DeletePrivateOfferDocumentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *DeletePrivateOfferDocumentRequest) GetName() string {
@@ -1046,7 +1229,7 @@ type ListServicesRequest struct {
 
 func (x *ListServicesRequest) Reset() {
 	*x = ListServicesRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[14]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1058,7 +1241,7 @@ func (x *ListServicesRequest) String() string {
 func (*ListServicesRequest) ProtoMessage() {}
 
 func (x *ListServicesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[14]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1071,7 +1254,7 @@ func (x *ListServicesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListServicesRequest.ProtoReflect.Descriptor instead.
 func (*ListServicesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListServicesRequest) GetParent() string {
@@ -1109,7 +1292,7 @@ type ListServicesResponse struct {
 
 func (x *ListServicesResponse) Reset() {
 	*x = ListServicesResponse{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[15]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1121,7 +1304,7 @@ func (x *ListServicesResponse) String() string {
 func (*ListServicesResponse) ProtoMessage() {}
 
 func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[15]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1134,7 +1317,7 @@ func (x *ListServicesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListServicesResponse.ProtoReflect.Descriptor instead.
 func (*ListServicesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListServicesResponse) GetServices() []*Service {
@@ -1165,7 +1348,7 @@ type GetServiceRequest struct {
 
 func (x *GetServiceRequest) Reset() {
 	*x = GetServiceRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[16]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1177,7 +1360,7 @@ func (x *GetServiceRequest) String() string {
 func (*GetServiceRequest) ProtoMessage() {}
 
 func (x *GetServiceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[16]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1190,7 +1373,7 @@ func (x *GetServiceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetServiceRequest.ProtoReflect.Descriptor instead.
 func (*GetServiceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetServiceRequest) GetName() string {
@@ -1244,7 +1427,7 @@ type ListStandardOffersRequest struct {
 
 func (x *ListStandardOffersRequest) Reset() {
 	*x = ListStandardOffersRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[17]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1256,7 +1439,7 @@ func (x *ListStandardOffersRequest) String() string {
 func (*ListStandardOffersRequest) ProtoMessage() {}
 
 func (x *ListStandardOffersRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[17]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1269,7 +1452,7 @@ func (x *ListStandardOffersRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListStandardOffersRequest.ProtoReflect.Descriptor instead.
 func (*ListStandardOffersRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListStandardOffersRequest) GetParent() string {
@@ -1321,7 +1504,7 @@ type ListStandardOffersResponse struct {
 
 func (x *ListStandardOffersResponse) Reset() {
 	*x = ListStandardOffersResponse{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[18]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1333,7 +1516,7 @@ func (x *ListStandardOffersResponse) String() string {
 func (*ListStandardOffersResponse) ProtoMessage() {}
 
 func (x *ListStandardOffersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[18]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1346,7 +1529,7 @@ func (x *ListStandardOffersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListStandardOffersResponse.ProtoReflect.Descriptor instead.
 func (*ListStandardOffersResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *ListStandardOffersResponse) GetStandardOffers() []*StandardOffer {
@@ -1377,7 +1560,7 @@ type GetStandardOfferRequest struct {
 
 func (x *GetStandardOfferRequest) Reset() {
 	*x = GetStandardOfferRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[19]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1389,7 +1572,7 @@ func (x *GetStandardOfferRequest) String() string {
 func (*GetStandardOfferRequest) ProtoMessage() {}
 
 func (x *GetStandardOfferRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[19]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1402,7 +1585,7 @@ func (x *GetStandardOfferRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetStandardOfferRequest.ProtoReflect.Descriptor instead.
 func (*GetStandardOfferRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *GetStandardOfferRequest) GetName() string {
@@ -1440,7 +1623,7 @@ type ListSkusRequest struct {
 
 func (x *ListSkusRequest) Reset() {
 	*x = ListSkusRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[20]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1452,7 +1635,7 @@ func (x *ListSkusRequest) String() string {
 func (*ListSkusRequest) ProtoMessage() {}
 
 func (x *ListSkusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[20]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1465,7 +1648,7 @@ func (x *ListSkusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSkusRequest.ProtoReflect.Descriptor instead.
 func (*ListSkusRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListSkusRequest) GetParent() string {
@@ -1503,7 +1686,7 @@ type ListSkusResponse struct {
 
 func (x *ListSkusResponse) Reset() {
 	*x = ListSkusResponse{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[21]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1515,7 +1698,7 @@ func (x *ListSkusResponse) String() string {
 func (*ListSkusResponse) ProtoMessage() {}
 
 func (x *ListSkusResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[21]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1528,7 +1711,7 @@ func (x *ListSkusResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSkusResponse.ProtoReflect.Descriptor instead.
 func (*ListSkusResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListSkusResponse) GetSkus() []*Sku {
@@ -1556,7 +1739,7 @@ type GetSkuRequest struct {
 
 func (x *GetSkuRequest) Reset() {
 	*x = GetSkuRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[22]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1568,7 +1751,7 @@ func (x *GetSkuRequest) String() string {
 func (*GetSkuRequest) ProtoMessage() {}
 
 func (x *GetSkuRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[22]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1581,7 +1764,7 @@ func (x *GetSkuRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSkuRequest.ProtoReflect.Descriptor instead.
 func (*GetSkuRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetSkuRequest) GetName() string {
@@ -1602,7 +1785,7 @@ type GetSkuGroupRequest struct {
 
 func (x *GetSkuGroupRequest) Reset() {
 	*x = GetSkuGroupRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[23]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1614,7 +1797,7 @@ func (x *GetSkuGroupRequest) String() string {
 func (*GetSkuGroupRequest) ProtoMessage() {}
 
 func (x *GetSkuGroupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[23]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1627,7 +1810,7 @@ func (x *GetSkuGroupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetSkuGroupRequest.ProtoReflect.Descriptor instead.
 func (*GetSkuGroupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *GetSkuGroupRequest) GetName() string {
@@ -1658,7 +1841,7 @@ type ListSkuGroupsRequest struct {
 
 func (x *ListSkuGroupsRequest) Reset() {
 	*x = ListSkuGroupsRequest{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[24]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1670,7 +1853,7 @@ func (x *ListSkuGroupsRequest) String() string {
 func (*ListSkuGroupsRequest) ProtoMessage() {}
 
 func (x *ListSkuGroupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[24]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1683,7 +1866,7 @@ func (x *ListSkuGroupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSkuGroupsRequest.ProtoReflect.Descriptor instead.
 func (*ListSkuGroupsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *ListSkuGroupsRequest) GetParent() string {
@@ -1721,7 +1904,7 @@ type ListSkuGroupsResponse struct {
 
 func (x *ListSkuGroupsResponse) Reset() {
 	*x = ListSkuGroupsResponse{}
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[25]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1733,7 +1916,7 @@ func (x *ListSkuGroupsResponse) String() string {
 func (*ListSkuGroupsResponse) ProtoMessage() {}
 
 func (x *ListSkuGroupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[25]
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1746,7 +1929,7 @@ func (x *ListSkuGroupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListSkuGroupsResponse.ProtoReflect.Descriptor instead.
 func (*ListSkuGroupsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *ListSkuGroupsResponse) GetSkuGroups() []*SkuGroup {
@@ -1761,6 +1944,57 @@ func (x *ListSkuGroupsResponse) GetNextPageToken() string {
 		return x.NextPageToken
 	}
 	return ""
+}
+
+// A wrapper message containing offers that can optionally be amended.
+type ResolveAmendmentTargetResponse_OptionalOffers struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of existing private offers that are eligible to be amended.
+	//
+	// When creating a new private offer, the client may choose to populate the
+	// `single_product_offer.amended_private_offer` field with one of these
+	// resource names. Alternatively, the client may leave the field unset to
+	// create a brand new offer.
+	PrivateOffers []string `protobuf:"bytes,1,rep,name=private_offers,json=privateOffers,proto3" json:"private_offers,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResolveAmendmentTargetResponse_OptionalOffers) Reset() {
+	*x = ResolveAmendmentTargetResponse_OptionalOffers{}
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolveAmendmentTargetResponse_OptionalOffers) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolveAmendmentTargetResponse_OptionalOffers) ProtoMessage() {}
+
+func (x *ResolveAmendmentTargetResponse_OptionalOffers) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolveAmendmentTargetResponse_OptionalOffers.ProtoReflect.Descriptor instead.
+func (*ResolveAmendmentTargetResponse_OptionalOffers) Descriptor() ([]byte, []int) {
+	return file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescGZIP(), []int{4, 0}
+}
+
+func (x *ResolveAmendmentTargetResponse_OptionalOffers) GetPrivateOffers() []string {
+	if x != nil {
+		return x.PrivateOffers
+	}
+	return nil
 }
 
 var File_google_cloud_commerceproducer_v1beta_commerce_transaction_proto protoreflect.FileDescriptor
@@ -1781,7 +2015,23 @@ const file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDe
 	"\x16GetPrivateOfferRequest\x12H\n" +
 	"\x04name\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\n" +
 	",commerceproducer.googleapis.com/PrivateOfferR\x04name\x12O\n" +
-	"\x04view\x18\x02 \x01(\x0e26.google.cloud.commerceproducer.v1beta.PrivateOfferViewB\x03\xe0A\x01R\x04view\"\xc7\x01\n" +
+	"\x04view\x18\x02 \x01(\x0e26.google.cloud.commerceproducer.v1beta.PrivateOfferViewB\x03\xe0A\x01R\x04view\"\xbe\x02\n" +
+	"\x1dResolveAmendmentTargetRequest\x12L\n" +
+	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12h\n" +
+	"\x16target_billing_account\x18\x02 \x01(\tB2\xe0A\x02\xfaA,\n" +
+	"*cloudbilling.googleapis.com/BillingAccountR\x14targetBillingAccount\x12e\n" +
+	"\x13base_standard_offer\x18\x03 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"-commerceproducer.googleapis.com/StandardOfferR\x11baseStandardOffer\"\xfe\x03\n" +
+	"\x1eResolveAmendmentTargetResponse\x12i\n" +
+	"\x16required_private_offer\x18\x01 \x01(\tB1\xfaA.\n" +
+	",commerceproducer.googleapis.com/PrivateOfferH\x00R\x14requiredPrivateOffer\x12l\n" +
+	"\x17required_standard_offer\x18\x02 \x01(\tB2\xfaA/\n" +
+	"-commerceproducer.googleapis.com/StandardOfferH\x00R\x15requiredStandardOffer\x12~\n" +
+	"\x0foptional_offers\x18\x03 \x01(\v2S.google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetResponse.OptionalOffersH\x00R\x0eoptionalOffers\x1aj\n" +
+	"\x0eOptionalOffers\x12X\n" +
+	"\x0eprivate_offers\x18\x01 \x03(\tB1\xfaA.\n" +
+	",commerceproducer.googleapis.com/PrivateOfferR\rprivateOffersB\x17\n" +
+	"\x15amendment_requirement\"\xc7\x01\n" +
 	"\x19CreatePrivateOfferRequest\x12L\n" +
 	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,commerceproducer.googleapis.com/PrivateOfferR\x06parent\x12\\\n" +
 	"\rprivate_offer\x18\x03 \x01(\v22.google.cloud.commerceproducer.v1beta.PrivateOfferB\x03\xe0A\x02R\fprivateOffer\"\xbb\x01\n" +
@@ -1882,13 +2132,14 @@ const file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDe
 	"\vServiceView\x12\x1c\n" +
 	"\x18SERVICE_VIEW_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12SERVICE_VIEW_BASIC\x10\x01\x12\x15\n" +
-	"\x11SERVICE_VIEW_FULL\x10\x022\xc4#\n" +
+	"\x11SERVICE_VIEW_FULL\x10\x022\xf5%\n" +
 	"\x13CommerceTransaction\x12\xc8\x01\n" +
 	"\fListServices\x129.google.cloud.commerceproducer.v1beta.ListServicesRequest\x1a:.google.cloud.commerceproducer.v1beta.ListServicesResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1beta/{parent=projects/*/locations/*}/services\x12\xb5\x01\n" +
 	"\n" +
 	"GetService\x127.google.cloud.commerceproducer.v1beta.GetServiceRequest\x1a-.google.cloud.commerceproducer.v1beta.Service\"?\xdaA\x04name\x82\xd3\xe4\x93\x022\x120/v1beta/{name=projects/*/locations/*/services/*}\x12\xdc\x01\n" +
 	"\x11ListPrivateOffers\x12>.google.cloud.commerceproducer.v1beta.ListPrivateOffersRequest\x1a?.google.cloud.commerceproducer.v1beta.ListPrivateOffersResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1beta/{parent=projects/*/locations/*}/privateOffers\x12\xc9\x01\n" +
-	"\x0fGetPrivateOffer\x12<.google.cloud.commerceproducer.v1beta.GetPrivateOfferRequest\x1a2.google.cloud.commerceproducer.v1beta.PrivateOffer\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1beta/{name=projects/*/locations/*/privateOffers/*}\x12\xd7\x01\n" +
+	"\x0fGetPrivateOffer\x12<.google.cloud.commerceproducer.v1beta.GetPrivateOfferRequest\x1a2.google.cloud.commerceproducer.v1beta.PrivateOffer\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1beta/{name=projects/*/locations/*/privateOffers/*}\x12\xae\x02\n" +
+	"\x16ResolveAmendmentTarget\x12C.google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetRequest\x1aD.google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetResponse\"\x88\x01\xdaA1parent,target_billing_account,base_standard_offer\x82\xd3\xe4\x93\x02N\x12L/v1beta/{parent=projects/*/locations/*}/privateOffers:resolveAmendmentTarget\x12\xd7\x01\n" +
 	"\x12CreatePrivateOffer\x12?.google.cloud.commerceproducer.v1beta.CreatePrivateOfferRequest\x1a2.google.cloud.commerceproducer.v1beta.PrivateOffer\"L\x82\xd3\xe4\x93\x02F:\rprivate_offer\"5/v1beta/{parent=projects/*/locations/*}/privateOffers\x12\x81\x02\n" +
 	"\x12UpdatePrivateOffer\x12?.google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest\x1a2.google.cloud.commerceproducer.v1beta.PrivateOffer\"v\xdaA\x19private_offer,update_mask\x82\xd3\xe4\x93\x02T:\rprivate_offer2C/v1beta/{private_offer.name=projects/*/locations/*/privateOffers/*}\x12\xdc\x01\n" +
 	"\x13PublishPrivateOffer\x12@.google.cloud.commerceproducer.v1beta.PublishPrivateOfferRequest\x1a2.google.cloud.commerceproducer.v1beta.PrivateOffer\"O\xdaA\x04name\x82\xd3\xe4\x93\x02B:\x01*\"=/v1beta/{name=projects/*/locations/*/privateOffers/*}:publish\x12\xd9\x01\n" +
@@ -1904,8 +2155,8 @@ const file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDe
 	"\x06GetSku\x123.google.cloud.commerceproducer.v1beta.GetSkuRequest\x1a).google.cloud.commerceproducer.v1beta.Sku\"F\xdaA\x04name\x82\xd3\xe4\x93\x029\x127/v1beta/{name=projects/*/locations/*/services/*/skus/*}\x12\xc3\x01\n" +
 	"\bListSkus\x125.google.cloud.commerceproducer.v1beta.ListSkusRequest\x1a6.google.cloud.commerceproducer.v1beta.ListSkusResponse\"H\xdaA\x06parent\x82\xd3\xe4\x93\x029\x127/v1beta/{parent=projects/*/locations/*/services/*}/skus\x12\xb9\x01\n" +
 	"\vGetSkuGroup\x128.google.cloud.commerceproducer.v1beta.GetSkuGroupRequest\x1a..google.cloud.commerceproducer.v1beta.SkuGroup\"@\xdaA\x04name\x82\xd3\xe4\x93\x023\x121/v1beta/{name=projects/*/locations/*/skuGroups/*}\x12\xcc\x01\n" +
-	"\rListSkuGroups\x12:.google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest\x1a;.google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1beta/{parent=projects/*/locations/*}/skuGroups\x1aS\xcaA\x1fcommerceproducer.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xed\x01\n" +
-	"(com.google.cloud.commerceproducer.v1betaB\x18CommerceTransactionProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
+	"\rListSkuGroups\x12:.google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest\x1a;.google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1beta/{parent=projects/*/locations/*}/skuGroups\x1aS\xcaA\x1fcommerceproducer.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x94\x02\n" +
+	"(com.google.cloud.commerceproducer.v1betaB\x18CommerceTransactionProtoP\x01ZTcloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb;commerceproducerpb\xaa\x02$Google.Cloud.CommerceProducer.V1Beta\xca\x02$Google\\Cloud\\CommerceProducer\\V1beta\xea\x02'Google::Cloud::CommerceProducer::V1betab\x06proto3"
 
 var (
 	file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDescOnce sync.Once
@@ -1920,107 +2171,113 @@ func file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDes
 }
 
 var file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes = make([]protoimpl.MessageInfo, 26)
+var file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_goTypes = []any{
-	(PrivateOfferView)(0),                     // 0: google.cloud.commerceproducer.v1beta.PrivateOfferView
-	(StandardOfferView)(0),                    // 1: google.cloud.commerceproducer.v1beta.StandardOfferView
-	(ServiceView)(0),                          // 2: google.cloud.commerceproducer.v1beta.ServiceView
-	(*ListPrivateOffersRequest)(nil),          // 3: google.cloud.commerceproducer.v1beta.ListPrivateOffersRequest
-	(*ListPrivateOffersResponse)(nil),         // 4: google.cloud.commerceproducer.v1beta.ListPrivateOffersResponse
-	(*GetPrivateOfferRequest)(nil),            // 5: google.cloud.commerceproducer.v1beta.GetPrivateOfferRequest
-	(*CreatePrivateOfferRequest)(nil),         // 6: google.cloud.commerceproducer.v1beta.CreatePrivateOfferRequest
-	(*UpdatePrivateOfferRequest)(nil),         // 7: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest
-	(*PublishPrivateOfferRequest)(nil),        // 8: google.cloud.commerceproducer.v1beta.PublishPrivateOfferRequest
-	(*CancelPrivateOfferRequest)(nil),         // 9: google.cloud.commerceproducer.v1beta.CancelPrivateOfferRequest
-	(*DeletePrivateOfferRequest)(nil),         // 10: google.cloud.commerceproducer.v1beta.DeletePrivateOfferRequest
-	(*ListPrivateOfferDocumentsRequest)(nil),  // 11: google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsRequest
-	(*ListPrivateOfferDocumentsResponse)(nil), // 12: google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsResponse
-	(*GetPrivateOfferDocumentRequest)(nil),    // 13: google.cloud.commerceproducer.v1beta.GetPrivateOfferDocumentRequest
-	(*CreatePrivateOfferDocumentRequest)(nil), // 14: google.cloud.commerceproducer.v1beta.CreatePrivateOfferDocumentRequest
-	(*UpdatePrivateOfferDocumentRequest)(nil), // 15: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest
-	(*DeletePrivateOfferDocumentRequest)(nil), // 16: google.cloud.commerceproducer.v1beta.DeletePrivateOfferDocumentRequest
-	(*ListServicesRequest)(nil),               // 17: google.cloud.commerceproducer.v1beta.ListServicesRequest
-	(*ListServicesResponse)(nil),              // 18: google.cloud.commerceproducer.v1beta.ListServicesResponse
-	(*GetServiceRequest)(nil),                 // 19: google.cloud.commerceproducer.v1beta.GetServiceRequest
-	(*ListStandardOffersRequest)(nil),         // 20: google.cloud.commerceproducer.v1beta.ListStandardOffersRequest
-	(*ListStandardOffersResponse)(nil),        // 21: google.cloud.commerceproducer.v1beta.ListStandardOffersResponse
-	(*GetStandardOfferRequest)(nil),           // 22: google.cloud.commerceproducer.v1beta.GetStandardOfferRequest
-	(*ListSkusRequest)(nil),                   // 23: google.cloud.commerceproducer.v1beta.ListSkusRequest
-	(*ListSkusResponse)(nil),                  // 24: google.cloud.commerceproducer.v1beta.ListSkusResponse
-	(*GetSkuRequest)(nil),                     // 25: google.cloud.commerceproducer.v1beta.GetSkuRequest
-	(*GetSkuGroupRequest)(nil),                // 26: google.cloud.commerceproducer.v1beta.GetSkuGroupRequest
-	(*ListSkuGroupsRequest)(nil),              // 27: google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest
-	(*ListSkuGroupsResponse)(nil),             // 28: google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse
-	(*PrivateOffer)(nil),                      // 29: google.cloud.commerceproducer.v1beta.PrivateOffer
-	(*fieldmaskpb.FieldMask)(nil),             // 30: google.protobuf.FieldMask
-	(*PrivateOfferDocument)(nil),              // 31: google.cloud.commerceproducer.v1beta.PrivateOfferDocument
-	(*Service)(nil),                           // 32: google.cloud.commerceproducer.v1beta.Service
-	(*StandardOffer)(nil),                     // 33: google.cloud.commerceproducer.v1beta.StandardOffer
-	(*Sku)(nil),                               // 34: google.cloud.commerceproducer.v1beta.Sku
-	(*SkuGroup)(nil),                          // 35: google.cloud.commerceproducer.v1beta.SkuGroup
-	(*emptypb.Empty)(nil),                     // 36: google.protobuf.Empty
+	(PrivateOfferView)(0),                                 // 0: google.cloud.commerceproducer.v1beta.PrivateOfferView
+	(StandardOfferView)(0),                                // 1: google.cloud.commerceproducer.v1beta.StandardOfferView
+	(ServiceView)(0),                                      // 2: google.cloud.commerceproducer.v1beta.ServiceView
+	(*ListPrivateOffersRequest)(nil),                      // 3: google.cloud.commerceproducer.v1beta.ListPrivateOffersRequest
+	(*ListPrivateOffersResponse)(nil),                     // 4: google.cloud.commerceproducer.v1beta.ListPrivateOffersResponse
+	(*GetPrivateOfferRequest)(nil),                        // 5: google.cloud.commerceproducer.v1beta.GetPrivateOfferRequest
+	(*ResolveAmendmentTargetRequest)(nil),                 // 6: google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetRequest
+	(*ResolveAmendmentTargetResponse)(nil),                // 7: google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetResponse
+	(*CreatePrivateOfferRequest)(nil),                     // 8: google.cloud.commerceproducer.v1beta.CreatePrivateOfferRequest
+	(*UpdatePrivateOfferRequest)(nil),                     // 9: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest
+	(*PublishPrivateOfferRequest)(nil),                    // 10: google.cloud.commerceproducer.v1beta.PublishPrivateOfferRequest
+	(*CancelPrivateOfferRequest)(nil),                     // 11: google.cloud.commerceproducer.v1beta.CancelPrivateOfferRequest
+	(*DeletePrivateOfferRequest)(nil),                     // 12: google.cloud.commerceproducer.v1beta.DeletePrivateOfferRequest
+	(*ListPrivateOfferDocumentsRequest)(nil),              // 13: google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsRequest
+	(*ListPrivateOfferDocumentsResponse)(nil),             // 14: google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsResponse
+	(*GetPrivateOfferDocumentRequest)(nil),                // 15: google.cloud.commerceproducer.v1beta.GetPrivateOfferDocumentRequest
+	(*CreatePrivateOfferDocumentRequest)(nil),             // 16: google.cloud.commerceproducer.v1beta.CreatePrivateOfferDocumentRequest
+	(*UpdatePrivateOfferDocumentRequest)(nil),             // 17: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest
+	(*DeletePrivateOfferDocumentRequest)(nil),             // 18: google.cloud.commerceproducer.v1beta.DeletePrivateOfferDocumentRequest
+	(*ListServicesRequest)(nil),                           // 19: google.cloud.commerceproducer.v1beta.ListServicesRequest
+	(*ListServicesResponse)(nil),                          // 20: google.cloud.commerceproducer.v1beta.ListServicesResponse
+	(*GetServiceRequest)(nil),                             // 21: google.cloud.commerceproducer.v1beta.GetServiceRequest
+	(*ListStandardOffersRequest)(nil),                     // 22: google.cloud.commerceproducer.v1beta.ListStandardOffersRequest
+	(*ListStandardOffersResponse)(nil),                    // 23: google.cloud.commerceproducer.v1beta.ListStandardOffersResponse
+	(*GetStandardOfferRequest)(nil),                       // 24: google.cloud.commerceproducer.v1beta.GetStandardOfferRequest
+	(*ListSkusRequest)(nil),                               // 25: google.cloud.commerceproducer.v1beta.ListSkusRequest
+	(*ListSkusResponse)(nil),                              // 26: google.cloud.commerceproducer.v1beta.ListSkusResponse
+	(*GetSkuRequest)(nil),                                 // 27: google.cloud.commerceproducer.v1beta.GetSkuRequest
+	(*GetSkuGroupRequest)(nil),                            // 28: google.cloud.commerceproducer.v1beta.GetSkuGroupRequest
+	(*ListSkuGroupsRequest)(nil),                          // 29: google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest
+	(*ListSkuGroupsResponse)(nil),                         // 30: google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse
+	(*ResolveAmendmentTargetResponse_OptionalOffers)(nil), // 31: google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetResponse.OptionalOffers
+	(*PrivateOffer)(nil),                                  // 32: google.cloud.commerceproducer.v1beta.PrivateOffer
+	(*fieldmaskpb.FieldMask)(nil),                         // 33: google.protobuf.FieldMask
+	(*PrivateOfferDocument)(nil),                          // 34: google.cloud.commerceproducer.v1beta.PrivateOfferDocument
+	(*Service)(nil),                                       // 35: google.cloud.commerceproducer.v1beta.Service
+	(*StandardOffer)(nil),                                 // 36: google.cloud.commerceproducer.v1beta.StandardOffer
+	(*Sku)(nil),                                           // 37: google.cloud.commerceproducer.v1beta.Sku
+	(*SkuGroup)(nil),                                      // 38: google.cloud.commerceproducer.v1beta.SkuGroup
+	(*emptypb.Empty)(nil),                                 // 39: google.protobuf.Empty
 }
 var file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_depIdxs = []int32{
-	29, // 0: google.cloud.commerceproducer.v1beta.ListPrivateOffersResponse.private_offers:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	32, // 0: google.cloud.commerceproducer.v1beta.ListPrivateOffersResponse.private_offers:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer
 	0,  // 1: google.cloud.commerceproducer.v1beta.GetPrivateOfferRequest.view:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferView
-	29, // 2: google.cloud.commerceproducer.v1beta.CreatePrivateOfferRequest.private_offer:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer
-	30, // 3: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest.update_mask:type_name -> google.protobuf.FieldMask
-	29, // 4: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest.private_offer:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer
-	31, // 5: google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsResponse.private_offer_documents:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
-	31, // 6: google.cloud.commerceproducer.v1beta.CreatePrivateOfferDocumentRequest.private_offer_document:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
-	31, // 7: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest.private_offer_document:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
-	30, // 8: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	32, // 9: google.cloud.commerceproducer.v1beta.ListServicesResponse.services:type_name -> google.cloud.commerceproducer.v1beta.Service
-	2,  // 10: google.cloud.commerceproducer.v1beta.GetServiceRequest.view:type_name -> google.cloud.commerceproducer.v1beta.ServiceView
-	33, // 11: google.cloud.commerceproducer.v1beta.ListStandardOffersResponse.standard_offers:type_name -> google.cloud.commerceproducer.v1beta.StandardOffer
-	1,  // 12: google.cloud.commerceproducer.v1beta.GetStandardOfferRequest.view:type_name -> google.cloud.commerceproducer.v1beta.StandardOfferView
-	34, // 13: google.cloud.commerceproducer.v1beta.ListSkusResponse.skus:type_name -> google.cloud.commerceproducer.v1beta.Sku
-	35, // 14: google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse.sku_groups:type_name -> google.cloud.commerceproducer.v1beta.SkuGroup
-	17, // 15: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListServices:input_type -> google.cloud.commerceproducer.v1beta.ListServicesRequest
-	19, // 16: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetService:input_type -> google.cloud.commerceproducer.v1beta.GetServiceRequest
-	3,  // 17: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOffers:input_type -> google.cloud.commerceproducer.v1beta.ListPrivateOffersRequest
-	5,  // 18: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.GetPrivateOfferRequest
-	6,  // 19: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.CreatePrivateOfferRequest
-	7,  // 20: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest
-	8,  // 21: google.cloud.commerceproducer.v1beta.CommerceTransaction.PublishPrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.PublishPrivateOfferRequest
-	9,  // 22: google.cloud.commerceproducer.v1beta.CommerceTransaction.CancelPrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.CancelPrivateOfferRequest
-	10, // 23: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.DeletePrivateOfferRequest
-	11, // 24: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOfferDocuments:input_type -> google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsRequest
-	13, // 25: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.GetPrivateOfferDocumentRequest
-	14, // 26: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.CreatePrivateOfferDocumentRequest
-	15, // 27: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest
-	16, // 28: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.DeletePrivateOfferDocumentRequest
-	20, // 29: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListStandardOffers:input_type -> google.cloud.commerceproducer.v1beta.ListStandardOffersRequest
-	22, // 30: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetStandardOffer:input_type -> google.cloud.commerceproducer.v1beta.GetStandardOfferRequest
-	25, // 31: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSku:input_type -> google.cloud.commerceproducer.v1beta.GetSkuRequest
-	23, // 32: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkus:input_type -> google.cloud.commerceproducer.v1beta.ListSkusRequest
-	26, // 33: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSkuGroup:input_type -> google.cloud.commerceproducer.v1beta.GetSkuGroupRequest
-	27, // 34: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkuGroups:input_type -> google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest
-	18, // 35: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListServices:output_type -> google.cloud.commerceproducer.v1beta.ListServicesResponse
-	32, // 36: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetService:output_type -> google.cloud.commerceproducer.v1beta.Service
-	4,  // 37: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOffers:output_type -> google.cloud.commerceproducer.v1beta.ListPrivateOffersResponse
-	29, // 38: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
-	29, // 39: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
-	29, // 40: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
-	29, // 41: google.cloud.commerceproducer.v1beta.CommerceTransaction.PublishPrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
-	29, // 42: google.cloud.commerceproducer.v1beta.CommerceTransaction.CancelPrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
-	36, // 43: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOffer:output_type -> google.protobuf.Empty
-	12, // 44: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOfferDocuments:output_type -> google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsResponse
-	31, // 45: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOfferDocument:output_type -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
-	31, // 46: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOfferDocument:output_type -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
-	31, // 47: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOfferDocument:output_type -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
-	36, // 48: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOfferDocument:output_type -> google.protobuf.Empty
-	21, // 49: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListStandardOffers:output_type -> google.cloud.commerceproducer.v1beta.ListStandardOffersResponse
-	33, // 50: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetStandardOffer:output_type -> google.cloud.commerceproducer.v1beta.StandardOffer
-	34, // 51: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSku:output_type -> google.cloud.commerceproducer.v1beta.Sku
-	24, // 52: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkus:output_type -> google.cloud.commerceproducer.v1beta.ListSkusResponse
-	35, // 53: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSkuGroup:output_type -> google.cloud.commerceproducer.v1beta.SkuGroup
-	28, // 54: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkuGroups:output_type -> google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse
-	35, // [35:55] is the sub-list for method output_type
-	15, // [15:35] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	31, // 2: google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetResponse.optional_offers:type_name -> google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetResponse.OptionalOffers
+	32, // 3: google.cloud.commerceproducer.v1beta.CreatePrivateOfferRequest.private_offer:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	33, // 4: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest.update_mask:type_name -> google.protobuf.FieldMask
+	32, // 5: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest.private_offer:type_name -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	34, // 6: google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsResponse.private_offer_documents:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
+	34, // 7: google.cloud.commerceproducer.v1beta.CreatePrivateOfferDocumentRequest.private_offer_document:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
+	34, // 8: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest.private_offer_document:type_name -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
+	33, // 9: google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	35, // 10: google.cloud.commerceproducer.v1beta.ListServicesResponse.services:type_name -> google.cloud.commerceproducer.v1beta.Service
+	2,  // 11: google.cloud.commerceproducer.v1beta.GetServiceRequest.view:type_name -> google.cloud.commerceproducer.v1beta.ServiceView
+	36, // 12: google.cloud.commerceproducer.v1beta.ListStandardOffersResponse.standard_offers:type_name -> google.cloud.commerceproducer.v1beta.StandardOffer
+	1,  // 13: google.cloud.commerceproducer.v1beta.GetStandardOfferRequest.view:type_name -> google.cloud.commerceproducer.v1beta.StandardOfferView
+	37, // 14: google.cloud.commerceproducer.v1beta.ListSkusResponse.skus:type_name -> google.cloud.commerceproducer.v1beta.Sku
+	38, // 15: google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse.sku_groups:type_name -> google.cloud.commerceproducer.v1beta.SkuGroup
+	19, // 16: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListServices:input_type -> google.cloud.commerceproducer.v1beta.ListServicesRequest
+	21, // 17: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetService:input_type -> google.cloud.commerceproducer.v1beta.GetServiceRequest
+	3,  // 18: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOffers:input_type -> google.cloud.commerceproducer.v1beta.ListPrivateOffersRequest
+	5,  // 19: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.GetPrivateOfferRequest
+	6,  // 20: google.cloud.commerceproducer.v1beta.CommerceTransaction.ResolveAmendmentTarget:input_type -> google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetRequest
+	8,  // 21: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.CreatePrivateOfferRequest
+	9,  // 22: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.UpdatePrivateOfferRequest
+	10, // 23: google.cloud.commerceproducer.v1beta.CommerceTransaction.PublishPrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.PublishPrivateOfferRequest
+	11, // 24: google.cloud.commerceproducer.v1beta.CommerceTransaction.CancelPrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.CancelPrivateOfferRequest
+	12, // 25: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOffer:input_type -> google.cloud.commerceproducer.v1beta.DeletePrivateOfferRequest
+	13, // 26: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOfferDocuments:input_type -> google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsRequest
+	15, // 27: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.GetPrivateOfferDocumentRequest
+	16, // 28: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.CreatePrivateOfferDocumentRequest
+	17, // 29: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.UpdatePrivateOfferDocumentRequest
+	18, // 30: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOfferDocument:input_type -> google.cloud.commerceproducer.v1beta.DeletePrivateOfferDocumentRequest
+	22, // 31: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListStandardOffers:input_type -> google.cloud.commerceproducer.v1beta.ListStandardOffersRequest
+	24, // 32: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetStandardOffer:input_type -> google.cloud.commerceproducer.v1beta.GetStandardOfferRequest
+	27, // 33: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSku:input_type -> google.cloud.commerceproducer.v1beta.GetSkuRequest
+	25, // 34: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkus:input_type -> google.cloud.commerceproducer.v1beta.ListSkusRequest
+	28, // 35: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSkuGroup:input_type -> google.cloud.commerceproducer.v1beta.GetSkuGroupRequest
+	29, // 36: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkuGroups:input_type -> google.cloud.commerceproducer.v1beta.ListSkuGroupsRequest
+	20, // 37: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListServices:output_type -> google.cloud.commerceproducer.v1beta.ListServicesResponse
+	35, // 38: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetService:output_type -> google.cloud.commerceproducer.v1beta.Service
+	4,  // 39: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOffers:output_type -> google.cloud.commerceproducer.v1beta.ListPrivateOffersResponse
+	32, // 40: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	7,  // 41: google.cloud.commerceproducer.v1beta.CommerceTransaction.ResolveAmendmentTarget:output_type -> google.cloud.commerceproducer.v1beta.ResolveAmendmentTargetResponse
+	32, // 42: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	32, // 43: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	32, // 44: google.cloud.commerceproducer.v1beta.CommerceTransaction.PublishPrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	32, // 45: google.cloud.commerceproducer.v1beta.CommerceTransaction.CancelPrivateOffer:output_type -> google.cloud.commerceproducer.v1beta.PrivateOffer
+	39, // 46: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOffer:output_type -> google.protobuf.Empty
+	14, // 47: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListPrivateOfferDocuments:output_type -> google.cloud.commerceproducer.v1beta.ListPrivateOfferDocumentsResponse
+	34, // 48: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetPrivateOfferDocument:output_type -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
+	34, // 49: google.cloud.commerceproducer.v1beta.CommerceTransaction.CreatePrivateOfferDocument:output_type -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
+	34, // 50: google.cloud.commerceproducer.v1beta.CommerceTransaction.UpdatePrivateOfferDocument:output_type -> google.cloud.commerceproducer.v1beta.PrivateOfferDocument
+	39, // 51: google.cloud.commerceproducer.v1beta.CommerceTransaction.DeletePrivateOfferDocument:output_type -> google.protobuf.Empty
+	23, // 52: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListStandardOffers:output_type -> google.cloud.commerceproducer.v1beta.ListStandardOffersResponse
+	36, // 53: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetStandardOffer:output_type -> google.cloud.commerceproducer.v1beta.StandardOffer
+	37, // 54: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSku:output_type -> google.cloud.commerceproducer.v1beta.Sku
+	26, // 55: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkus:output_type -> google.cloud.commerceproducer.v1beta.ListSkusResponse
+	38, // 56: google.cloud.commerceproducer.v1beta.CommerceTransaction.GetSkuGroup:output_type -> google.cloud.commerceproducer.v1beta.SkuGroup
+	30, // 57: google.cloud.commerceproducer.v1beta.CommerceTransaction.ListSkuGroups:output_type -> google.cloud.commerceproducer.v1beta.ListSkuGroupsResponse
+	37, // [37:58] is the sub-list for method output_type
+	16, // [16:37] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_init() }
@@ -2033,13 +2290,18 @@ func file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_init()
 	file_google_cloud_commerceproducer_v1beta_sku_proto_init()
 	file_google_cloud_commerceproducer_v1beta_sku_group_proto_init()
 	file_google_cloud_commerceproducer_v1beta_standard_offer_proto_init()
+	file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_msgTypes[4].OneofWrappers = []any{
+		(*ResolveAmendmentTargetResponse_RequiredPrivateOffer)(nil),
+		(*ResolveAmendmentTargetResponse_RequiredStandardOffer)(nil),
+		(*ResolveAmendmentTargetResponse_OptionalOffers_)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDesc), len(file_google_cloud_commerceproducer_v1beta_commerce_transaction_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   26,
+			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

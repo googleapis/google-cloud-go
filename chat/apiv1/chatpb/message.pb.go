@@ -255,9 +255,9 @@ const (
 	// Requires [app authentication]
 	// (https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
 	CreateMessageNotificationOptions_NOTIFICATION_TYPE_FORCE_NOTIFY CreateMessageNotificationOptions_NotificationType = 2
-	// Silence the notification as if the recipients have [Chat Do Not
-	// Disturb](https://support.google.com/chat/answer/9093489) enabled or
-	// have muted the space.
+	// Do not notify recipients, and do not mark the message as unread.
+	// This behaves similarly to the user muting the conversation or enabling
+	// [Chat Do Not Disturb](https://support.google.com/chat/answer/9093489).
 	//
 	// Requires [app authentication]
 	// (https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
@@ -303,6 +303,62 @@ func (x CreateMessageNotificationOptions_NotificationType) Number() protoreflect
 // Deprecated: Use CreateMessageNotificationOptions_NotificationType.Descriptor instead.
 func (CreateMessageNotificationOptions_NotificationType) EnumDescriptor() ([]byte, []int) {
 	return file_google_chat_v1_message_proto_rawDescGZIP(), []int{12, 0}
+}
+
+// The kinds of view that are supported for partial search results.
+type SearchMessagesRequest_SearchMessagesView int32
+
+const (
+	// The default / unset value.
+	// The API will default to the BASIC view.
+	SearchMessagesRequest_SEARCH_MESSAGES_VIEW_UNSPECIFIED SearchMessagesRequest_SearchMessagesView = 0
+	// Includes only the matched messages in the results, but no additional
+	// metadata. This is the default value.
+	SearchMessagesRequest_SEARCH_MESSAGES_VIEW_BASIC SearchMessagesRequest_SearchMessagesView = 1
+	// Includes everything in the results: the matched messages and additional
+	// metadata.
+	SearchMessagesRequest_SEARCH_MESSAGES_VIEW_FULL SearchMessagesRequest_SearchMessagesView = 2
+)
+
+// Enum value maps for SearchMessagesRequest_SearchMessagesView.
+var (
+	SearchMessagesRequest_SearchMessagesView_name = map[int32]string{
+		0: "SEARCH_MESSAGES_VIEW_UNSPECIFIED",
+		1: "SEARCH_MESSAGES_VIEW_BASIC",
+		2: "SEARCH_MESSAGES_VIEW_FULL",
+	}
+	SearchMessagesRequest_SearchMessagesView_value = map[string]int32{
+		"SEARCH_MESSAGES_VIEW_UNSPECIFIED": 0,
+		"SEARCH_MESSAGES_VIEW_BASIC":       1,
+		"SEARCH_MESSAGES_VIEW_FULL":        2,
+	}
+)
+
+func (x SearchMessagesRequest_SearchMessagesView) Enum() *SearchMessagesRequest_SearchMessagesView {
+	p := new(SearchMessagesRequest_SearchMessagesView)
+	*p = x
+	return p
+}
+
+func (x SearchMessagesRequest_SearchMessagesView) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SearchMessagesRequest_SearchMessagesView) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_chat_v1_message_proto_enumTypes[4].Descriptor()
+}
+
+func (SearchMessagesRequest_SearchMessagesView) Type() protoreflect.EnumType {
+	return &file_google_chat_v1_message_proto_enumTypes[4]
+}
+
+func (x SearchMessagesRequest_SearchMessagesView) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SearchMessagesRequest_SearchMessagesView.Descriptor instead.
+func (SearchMessagesRequest_SearchMessagesView) EnumDescriptor() ([]byte, []int) {
+	return file_google_chat_v1_message_proto_rawDescGZIP(), []int{18, 0}
 }
 
 // A message in a Google Chat space.
@@ -360,8 +416,8 @@ type Message struct {
 	//
 	// * [Markup
 	// syntax](https://developers.google.com/workspace/chat/format-messages)
-	// for bold, italic, strikethrough, monospace, monospace block, and bulleted
-	// list.
+	// for bold, italic, strikethrough, monospace, monospace block, bulleted
+	// list, and block quote.
 	//
 	// * [User
 	// mentions](https://developers.google.com/workspace/chat/format-messages#messages-@mention)
@@ -428,8 +484,8 @@ type Message struct {
 	SlashCommand *SlashCommand `protobuf:"bytes,17,opt,name=slash_command,json=slashCommand,proto3" json:"slash_command,omitempty"`
 	// Optional. User-uploaded attachment.
 	Attachment []*Attachment `protobuf:"bytes,18,rep,name=attachment,proto3" json:"attachment,omitempty"`
-	// Output only. A URL in `spaces.messages.text` that matches a link preview
-	// pattern. For more information, see [Preview
+	// Output only. A URL in the Chat message `text` field that matches a link
+	// preview pattern. For more information, see [Preview
 	// links](https://developers.google.com/workspace/chat/preview-links).
 	MatchedUrl *MatchedUrl `protobuf:"bytes,20,opt,name=matched_url,json=matchedUrl,proto3" json:"matched_url,omitempty"`
 	// Output only. When `true`, the message is a response in a reply thread. When
@@ -2022,6 +2078,384 @@ func (x *CardWithId) GetCard() *v1.Card {
 	return nil
 }
 
+// Request message for searching messages.
+type SearchMessagesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The resource name of the space to search within.
+	//
+	// To search across all spaces the user has access to, set this field to
+	// `spaces/-`. Using any other value for `parent` results in an
+	// `INVALID_ARGUMENT` error.
+	//
+	// To limit the search to one or more spaces, use `space.name` or
+	// `space.display_name` in the `filter`.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. A search query.
+	//
+	// The query can specify one or more search keywords, which are used to filter
+	// the results,
+	//
+	// You can also filter the results using the following message fields:
+	//
+	//   - `create_time`: Accepts a timestamp in
+	//     [RFC-3339](https://www.rfc-editor.org/rfc/rfc3339) format and the
+	//     supported comparison operators are: `<` and `>=`.
+	//   - `sender.name`: The resource name of the sender (`users/{user}`). Only
+	//     supports `=`. You can use the e-mail as an alias for `{user}`. For
+	//     example, `users/example@gmail.com`, where `example@gmail.com` is the
+	//     e-mail of the Google Chat user.
+	//   - `space.name`: The resource name of the space where the message is posted.
+	//     (`spaces/{space}`). Only supports `=`. If this filter is not set, the
+	//     search is performed across all direct messages and spaces the user has
+	//     access to as a space member.
+	//   - `space.display_name`: Supports the operator `:` (has) and filters spaces
+	//     based on a partial match of their display name. Results are limited to
+	//     the top five space matches. For example, `space.display_name:Project`
+	//     searches for messages in the top five spaces that contain the word
+	//     "Project" in their display names.
+	//   - `attachment`: Supports the operator `:*` (has any) to check for the
+	//     presence of attachments. If `attachment:*` is specified, only messages
+	//     that have at least one attachment are returned.
+	//   - `annotations.user_mentions.user.name`: The resource name of the mentioned
+	//     user (`users/{user}`). Only supports `:` (has). For example:
+	//     `annotations.user_mentions.user.name:"users/1234567890"` returns only
+	//     messages that contain a mention to the specified user. Alternatively, the
+	//     alias `me` can be used to filter for messages that mention the caller
+	//     user, for example: `annotations.user_mentions.user.name:users/me`. You
+	//     can also use the e-mail as an alias for `{user}`, for example,
+	//     `users/example@gmail.com`.
+	//
+	// For advanced filtering, the following functions are also available:
+	//
+	//   - `has_link()`: Returns only messages that have at least one hyperlink in
+	//     the message text.
+	//   - `is_unread()`: Filters out messages that have been read by the calling
+	//     user.
+	//
+	// Using the `space.display_name` filter requires that the calling credentials
+	// include one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	// - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	// - `https://www.googleapis.com/auth/chat.spaces`
+	//
+	// Using the `is_unread()` filter requires that the calling credentials
+	// include one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	// - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
+	// - `https://www.googleapis.com/auth/chat.users.readstate`
+	//
+	// Across different fields, only `AND` operators are supported. A valid
+	// example is `sender.name = "users/1234567890" AND is_unread()`. The word
+	// `AND` is optional and is implied if omitted. For example, `sender.name =
+	// "users/1234567890" is_unread()` is valid and is equivalent to the previous
+	// example. An invalid example is `sender.name = "users/1234567890" OR
+	// is_unread()` because `OR` is not supported between different fields.
+	//
+	// Among the same field:
+	//
+	//   - `create_time` supports only `AND`, and can only be used to represent
+	//     an interval, such as `create_time >= "2022-01-01T00:00:00+00:00" AND
+	//     create_time < "2023-01-01T00:00:00+00:00"`.
+	//   - `sender.name` supports only the `OR` operator, for example:
+	//     `sender.name = "users/1234567890" OR sender.name = "users/0987654321"`.
+	//   - `space.name` supports only the `OR` operator, for example:
+	//     `space.name = "spaces/ABCDEFGH" OR space.name = "spaces/QWERTYUI"`.
+	//   - `space.display_name` supports the operators `AND` and `OR`, but not a
+	//     mix of both. For example:
+	//     `space.display_name:Project AND space.display_name:Tasks` returns
+	//     messages that are in spaces with display names containing both `Project`
+	//     and `Tasks`, whereas
+	//     `space.display_name:Project OR space.display_name:Tasks` returns messages
+	//     that are in spaces with display names containing either `Project` or
+	//     `Tasks` or both.
+	//   - `annotations.user_mentions.user.name` supports the operators `AND` and
+	//     `OR`, but not a mix of both. For example:
+	//     `annotations.user_mentions.user.name:"users/1234567890" AND
+	//     annotations.user_mentions.user.name:"users/0987654321"` returns only
+	//     messages that mentions both users, whereas
+	//     `annotations.user_mentions.user.name:"users/1234567890" OR
+	//     annotations.user_mentions.user.name:"users/0987654321"` returns messages
+	//     that mention either user or both.
+	//
+	// Parentheses are required to disambiguate operator precedence when combining
+	// `AND` and `OR` operators in the same query. For example:
+	// `(sender.name="users/me" OR sender.name="users/123456") AND is_unread()`.
+	// Otherwise, parentheses are optional.
+	//
+	// The following example queries are valid:
+	//
+	// ```
+	// "Pending reports" AND create_time >= "2023-01-01T00:00:00Z"
+	//
+	// sender.name = "users/example@gmail.com"
+	//
+	// annotations.user_mentions.user.name:"users/0987654321"
+	//
+	// attachment:* AND space.name = "spaces/ABCDEFGH"
+	//
+	// tasks AND is_unread() AND sender.name = "users/1234567890"
+	//
+	// "things to do" "urgent"
+	//
+	// (sender.name = "users/1234567890")
+	// AND (create_time < "2023-05-01T00:00:00Z")
+	//
+	// tasks AND space.name = "spaces/ABCDEFGH" AND has_link()
+	//
+	// "project one" is_unread()
+	//
+	// space.display_name:Project tasks
+	// ```
+	//
+	// The maximum query length is 1,000 characters.
+	//
+	// Invalid queries are rejected by the server with an `INVALID_ARGUMENT`
+	// error.
+	Filter string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. The maximum number of results to return. The service may return
+	// fewer than this value.
+	//
+	// If unspecified, at most 25 are returned.
+	//
+	// The maximum value is 100. If you use a value more than 100, it's
+	// automatically changed to 100.
+	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A token, received from the previous search messages call. Provide
+	// this parameter to retrieve the subsequent page.
+	//
+	// When paginating, all other parameters provided should match the call that
+	// provided the page token. Passing different values to the other parameters
+	// might lead to unexpected results.
+	PageToken string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. How the results list is ordered.
+	//
+	// Supported attributes to order by are:
+	//
+	//   - `create_time`: Sorts the results by the time of the message creation.
+	//     Default value.
+	//   - `relevance`: Sorts the results by relevance.
+	//     [Developer Preview](https://developers.google.com/workspace/preview).
+	//
+	// The default ordering is `create_time desc`. Only a single order per query
+	// (`create_time` or `relevance`) is supported. Only descending order (`desc`)
+	// is supported, and it must be specified after the order attribute.
+	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	// Optional. Specifies what kind of search results view to return. The default
+	// is `SEARCH_MESSAGES_VIEW_BASIC`.
+	View          SearchMessagesRequest_SearchMessagesView `protobuf:"varint,7,opt,name=view,proto3,enum=google.chat.v1.SearchMessagesRequest_SearchMessagesView" json:"view,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchMessagesRequest) Reset() {
+	*x = SearchMessagesRequest{}
+	mi := &file_google_chat_v1_message_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchMessagesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchMessagesRequest) ProtoMessage() {}
+
+func (x *SearchMessagesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_message_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchMessagesRequest.ProtoReflect.Descriptor instead.
+func (*SearchMessagesRequest) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_message_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *SearchMessagesRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *SearchMessagesRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *SearchMessagesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *SearchMessagesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *SearchMessagesRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+func (x *SearchMessagesRequest) GetView() SearchMessagesRequest_SearchMessagesView {
+	if x != nil {
+		return x.View
+	}
+	return SearchMessagesRequest_SEARCH_MESSAGES_VIEW_UNSPECIFIED
+}
+
+// Response message for searching messages.
+type SearchMessagesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of search results that matched the query.
+	Results []*SearchMessageResult `protobuf:"bytes,1,rep,name=results,proto3" json:"results,omitempty"`
+	// A token that can be used to retrieve the next page. If this field is empty,
+	// there are no subsequent pages.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SearchMessagesResponse) Reset() {
+	*x = SearchMessagesResponse{}
+	mi := &file_google_chat_v1_message_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchMessagesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchMessagesResponse) ProtoMessage() {}
+
+func (x *SearchMessagesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_message_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchMessagesResponse.ProtoReflect.Descriptor instead.
+func (*SearchMessagesResponse) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_message_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *SearchMessagesResponse) GetResults() []*SearchMessageResult {
+	if x != nil {
+		return x.Results
+	}
+	return nil
+}
+
+func (x *SearchMessagesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+// A single result item from a message search.
+type SearchMessageResult struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The matched message.
+	Message *Message `protobuf:"bytes,1,opt,name=message,proto3" json:"message,omitempty"`
+	// Indicates if the matched message is read by the calling user.
+	//
+	// Only returned if the request view is `SEARCH_MESSAGES_VIEW_FULL` and the
+	// calling credentials include one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.readstate.readonly`
+	//   - `https://www.googleapis.com/auth/chat.users.readstate`
+	Read *bool `protobuf:"varint,3,opt,name=read,proto3,oneof" json:"read,omitempty"`
+	// The mute setting of the calling user for the space where the message is
+	// posted. The caller app can use this information to decide how to process
+	// the message depending on whether the space is muted for the user or not.
+	//
+	// Only returned if the request view is `SEARCH_MESSAGES_VIEW_FULL` and the
+	// calling credentials include the following [authorization
+	// scope](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.users.spacesettings`
+	SpaceMuteSetting SpaceNotificationSetting_MuteSetting `protobuf:"varint,4,opt,name=space_mute_setting,json=spaceMuteSetting,proto3,enum=google.chat.v1.SpaceNotificationSetting_MuteSetting" json:"space_mute_setting,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *SearchMessageResult) Reset() {
+	*x = SearchMessageResult{}
+	mi := &file_google_chat_v1_message_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SearchMessageResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SearchMessageResult) ProtoMessage() {}
+
+func (x *SearchMessageResult) ProtoReflect() protoreflect.Message {
+	mi := &file_google_chat_v1_message_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SearchMessageResult.ProtoReflect.Descriptor instead.
+func (*SearchMessageResult) Descriptor() ([]byte, []int) {
+	return file_google_chat_v1_message_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *SearchMessageResult) GetMessage() *Message {
+	if x != nil {
+		return x.Message
+	}
+	return nil
+}
+
+func (x *SearchMessageResult) GetRead() bool {
+	if x != nil && x.Read != nil {
+		return *x.Read
+	}
+	return false
+}
+
+func (x *SearchMessageResult) GetSpaceMuteSetting() SpaceNotificationSetting_MuteSetting {
+	if x != nil {
+		return x.SpaceMuteSetting
+	}
+	return SpaceNotificationSetting_MUTE_SETTING_UNSPECIFIED
+}
+
 // List of widget autocomplete results.
 type ActionResponse_SelectionItems struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2033,7 +2467,7 @@ type ActionResponse_SelectionItems struct {
 
 func (x *ActionResponse_SelectionItems) Reset() {
 	*x = ActionResponse_SelectionItems{}
-	mi := &file_google_chat_v1_message_proto_msgTypes[18]
+	mi := &file_google_chat_v1_message_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2045,7 +2479,7 @@ func (x *ActionResponse_SelectionItems) String() string {
 func (*ActionResponse_SelectionItems) ProtoMessage() {}
 
 func (x *ActionResponse_SelectionItems) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_message_proto_msgTypes[18]
+	mi := &file_google_chat_v1_message_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2087,7 +2521,7 @@ type ActionResponse_UpdatedWidget struct {
 
 func (x *ActionResponse_UpdatedWidget) Reset() {
 	*x = ActionResponse_UpdatedWidget{}
-	mi := &file_google_chat_v1_message_proto_msgTypes[19]
+	mi := &file_google_chat_v1_message_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2099,7 +2533,7 @@ func (x *ActionResponse_UpdatedWidget) String() string {
 func (*ActionResponse_UpdatedWidget) ProtoMessage() {}
 
 func (x *ActionResponse_UpdatedWidget) ProtoReflect() protoreflect.Message {
-	mi := &file_google_chat_v1_message_proto_msgTypes[19]
+	mi := &file_google_chat_v1_message_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2153,7 +2587,7 @@ var File_google_chat_v1_message_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\n" +
-	"\x1cgoogle/chat/v1/message.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/apps/card/v1/card.proto\x1a\"google/chat/v1/action_status.proto\x1a\x1fgoogle/chat/v1/annotation.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a%google/chat/v1/contextual_addon.proto\x1a&google/chat/v1/deletion_metadata.proto\x1a google/chat/v1/matched_url.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\"google/chat/v1/slash_command.proto\x1a\x1agoogle/chat/v1/space.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\r\n" +
+	"\x1cgoogle/chat/v1/message.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/apps/card/v1/card.proto\x1a\"google/chat/v1/action_status.proto\x1a\x1fgoogle/chat/v1/annotation.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a%google/chat/v1/contextual_addon.proto\x1a&google/chat/v1/deletion_metadata.proto\x1a google/chat/v1/matched_url.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\"google/chat/v1/slash_command.proto\x1a\x1agoogle/chat/v1/space.proto\x1a/google/chat/v1/space_notification_setting.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\r\n" +
 	"\aMessage\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x121\n" +
 	"\x06sender\x18\x02 \x01(\v2\x14.google.chat.v1.UserB\x03\xe0A\x03R\x06sender\x12C\n" +
@@ -2297,7 +2731,28 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\n" +
 	"CardWithId\x12\x17\n" +
 	"\acard_id\x18\x01 \x01(\tR\x06cardId\x12-\n" +
-	"\x04card\x18\x02 \x01(\v2\x19.google.apps.card.v1.CardR\x04cardB\xa5\x01\n" +
+	"\x04card\x18\x02 \x01(\v2\x19.google.apps.card.v1.CardR\x04card\"\xa3\x03\n" +
+	"\x15SearchMessagesRequest\x129\n" +
+	"\x06parent\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
+	"\x19chat.googleapis.com/SpaceR\x06parent\x12\x1b\n" +
+	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x02R\x06filter\x12 \n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12Q\n" +
+	"\x04view\x18\a \x01(\x0e28.google.chat.v1.SearchMessagesRequest.SearchMessagesViewB\x03\xe0A\x01R\x04view\"y\n" +
+	"\x12SearchMessagesView\x12$\n" +
+	" SEARCH_MESSAGES_VIEW_UNSPECIFIED\x10\x00\x12\x1e\n" +
+	"\x1aSEARCH_MESSAGES_VIEW_BASIC\x10\x01\x12\x1d\n" +
+	"\x19SEARCH_MESSAGES_VIEW_FULL\x10\x02\"\x7f\n" +
+	"\x16SearchMessagesResponse\x12=\n" +
+	"\aresults\x18\x01 \x03(\v2#.google.chat.v1.SearchMessageResultR\aresults\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xce\x01\n" +
+	"\x13SearchMessageResult\x121\n" +
+	"\amessage\x18\x01 \x01(\v2\x17.google.chat.v1.MessageR\amessage\x12\x17\n" +
+	"\x04read\x18\x03 \x01(\bH\x00R\x04read\x88\x01\x01\x12b\n" +
+	"\x12space_mute_setting\x18\x04 \x01(\x0e24.google.chat.v1.SpaceNotificationSetting.MuteSettingR\x10spaceMuteSettingB\a\n" +
+	"\x05_readB\xa5\x01\n" +
 	"\x12com.google.chat.v1B\fMessageProtoP\x01Z,cloud.google.com/go/chat/apiv1/chatpb;chatpb\xa2\x02\vDYNAPIProto\xaa\x02\x13Google.Apps.Chat.V1\xca\x02\x13Google\\Apps\\Chat\\V1\xea\x02\x16Google::Apps::Chat::V1b\x06proto3"
 
 var (
@@ -2312,97 +2767,106 @@ func file_google_chat_v1_message_proto_rawDescGZIP() []byte {
 	return file_google_chat_v1_message_proto_rawDescData
 }
 
-var file_google_chat_v1_message_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_chat_v1_message_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_google_chat_v1_message_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_chat_v1_message_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_google_chat_v1_message_proto_goTypes = []any{
 	(QuotedMessageMetadata_QuoteType)(0),                   // 0: google.chat.v1.QuotedMessageMetadata.QuoteType
 	(ActionResponse_ResponseType)(0),                       // 1: google.chat.v1.ActionResponse.ResponseType
 	(CreateMessageRequest_MessageReplyOption)(0),           // 2: google.chat.v1.CreateMessageRequest.MessageReplyOption
 	(CreateMessageNotificationOptions_NotificationType)(0), // 3: google.chat.v1.CreateMessageNotificationOptions.NotificationType
-	(*Message)(nil),                          // 4: google.chat.v1.Message
-	(*AttachedGif)(nil),                      // 5: google.chat.v1.AttachedGif
-	(*QuotedMessageMetadata)(nil),            // 6: google.chat.v1.QuotedMessageMetadata
-	(*QuotedMessageSnapshot)(nil),            // 7: google.chat.v1.QuotedMessageSnapshot
-	(*ForwardedMetadata)(nil),                // 8: google.chat.v1.ForwardedMetadata
-	(*Thread)(nil),                           // 9: google.chat.v1.Thread
-	(*ActionResponse)(nil),                   // 10: google.chat.v1.ActionResponse
-	(*AccessoryWidget)(nil),                  // 11: google.chat.v1.AccessoryWidget
-	(*GetMessageRequest)(nil),                // 12: google.chat.v1.GetMessageRequest
-	(*DeleteMessageRequest)(nil),             // 13: google.chat.v1.DeleteMessageRequest
-	(*UpdateMessageRequest)(nil),             // 14: google.chat.v1.UpdateMessageRequest
-	(*CreateMessageRequest)(nil),             // 15: google.chat.v1.CreateMessageRequest
-	(*CreateMessageNotificationOptions)(nil), // 16: google.chat.v1.CreateMessageNotificationOptions
-	(*ListMessagesRequest)(nil),              // 17: google.chat.v1.ListMessagesRequest
-	(*ListMessagesResponse)(nil),             // 18: google.chat.v1.ListMessagesResponse
-	(*DialogAction)(nil),                     // 19: google.chat.v1.DialogAction
-	(*Dialog)(nil),                           // 20: google.chat.v1.Dialog
-	(*CardWithId)(nil),                       // 21: google.chat.v1.CardWithId
-	(*ActionResponse_SelectionItems)(nil),    // 22: google.chat.v1.ActionResponse.SelectionItems
-	(*ActionResponse_UpdatedWidget)(nil),     // 23: google.chat.v1.ActionResponse.UpdatedWidget
-	(*User)(nil),                             // 24: google.chat.v1.User
-	(*timestamppb.Timestamp)(nil),            // 25: google.protobuf.Timestamp
-	(*ContextualAddOnMarkup_Card)(nil),       // 26: google.chat.v1.ContextualAddOnMarkup.Card
-	(*Annotation)(nil),                       // 27: google.chat.v1.Annotation
-	(*Space)(nil),                            // 28: google.chat.v1.Space
-	(*SlashCommand)(nil),                     // 29: google.chat.v1.SlashCommand
-	(*Attachment)(nil),                       // 30: google.chat.v1.Attachment
-	(*MatchedUrl)(nil),                       // 31: google.chat.v1.MatchedUrl
-	(*EmojiReactionSummary)(nil),             // 32: google.chat.v1.EmojiReactionSummary
-	(*DeletionMetadata)(nil),                 // 33: google.chat.v1.DeletionMetadata
-	(*v1.ButtonList)(nil),                    // 34: google.apps.card.v1.ButtonList
-	(*fieldmaskpb.FieldMask)(nil),            // 35: google.protobuf.FieldMask
-	(*ActionStatus)(nil),                     // 36: google.chat.v1.ActionStatus
-	(*v1.Card)(nil),                          // 37: google.apps.card.v1.Card
-	(*v1.SelectionInput_SelectionItem)(nil),  // 38: google.apps.card.v1.SelectionInput.SelectionItem
+	(SearchMessagesRequest_SearchMessagesView)(0),          // 4: google.chat.v1.SearchMessagesRequest.SearchMessagesView
+	(*Message)(nil),                           // 5: google.chat.v1.Message
+	(*AttachedGif)(nil),                       // 6: google.chat.v1.AttachedGif
+	(*QuotedMessageMetadata)(nil),             // 7: google.chat.v1.QuotedMessageMetadata
+	(*QuotedMessageSnapshot)(nil),             // 8: google.chat.v1.QuotedMessageSnapshot
+	(*ForwardedMetadata)(nil),                 // 9: google.chat.v1.ForwardedMetadata
+	(*Thread)(nil),                            // 10: google.chat.v1.Thread
+	(*ActionResponse)(nil),                    // 11: google.chat.v1.ActionResponse
+	(*AccessoryWidget)(nil),                   // 12: google.chat.v1.AccessoryWidget
+	(*GetMessageRequest)(nil),                 // 13: google.chat.v1.GetMessageRequest
+	(*DeleteMessageRequest)(nil),              // 14: google.chat.v1.DeleteMessageRequest
+	(*UpdateMessageRequest)(nil),              // 15: google.chat.v1.UpdateMessageRequest
+	(*CreateMessageRequest)(nil),              // 16: google.chat.v1.CreateMessageRequest
+	(*CreateMessageNotificationOptions)(nil),  // 17: google.chat.v1.CreateMessageNotificationOptions
+	(*ListMessagesRequest)(nil),               // 18: google.chat.v1.ListMessagesRequest
+	(*ListMessagesResponse)(nil),              // 19: google.chat.v1.ListMessagesResponse
+	(*DialogAction)(nil),                      // 20: google.chat.v1.DialogAction
+	(*Dialog)(nil),                            // 21: google.chat.v1.Dialog
+	(*CardWithId)(nil),                        // 22: google.chat.v1.CardWithId
+	(*SearchMessagesRequest)(nil),             // 23: google.chat.v1.SearchMessagesRequest
+	(*SearchMessagesResponse)(nil),            // 24: google.chat.v1.SearchMessagesResponse
+	(*SearchMessageResult)(nil),               // 25: google.chat.v1.SearchMessageResult
+	(*ActionResponse_SelectionItems)(nil),     // 26: google.chat.v1.ActionResponse.SelectionItems
+	(*ActionResponse_UpdatedWidget)(nil),      // 27: google.chat.v1.ActionResponse.UpdatedWidget
+	(*User)(nil),                              // 28: google.chat.v1.User
+	(*timestamppb.Timestamp)(nil),             // 29: google.protobuf.Timestamp
+	(*ContextualAddOnMarkup_Card)(nil),        // 30: google.chat.v1.ContextualAddOnMarkup.Card
+	(*Annotation)(nil),                        // 31: google.chat.v1.Annotation
+	(*Space)(nil),                             // 32: google.chat.v1.Space
+	(*SlashCommand)(nil),                      // 33: google.chat.v1.SlashCommand
+	(*Attachment)(nil),                        // 34: google.chat.v1.Attachment
+	(*MatchedUrl)(nil),                        // 35: google.chat.v1.MatchedUrl
+	(*EmojiReactionSummary)(nil),              // 36: google.chat.v1.EmojiReactionSummary
+	(*DeletionMetadata)(nil),                  // 37: google.chat.v1.DeletionMetadata
+	(*v1.ButtonList)(nil),                     // 38: google.apps.card.v1.ButtonList
+	(*fieldmaskpb.FieldMask)(nil),             // 39: google.protobuf.FieldMask
+	(*ActionStatus)(nil),                      // 40: google.chat.v1.ActionStatus
+	(*v1.Card)(nil),                           // 41: google.apps.card.v1.Card
+	(SpaceNotificationSetting_MuteSetting)(0), // 42: google.chat.v1.SpaceNotificationSetting.MuteSetting
+	(*v1.SelectionInput_SelectionItem)(nil),   // 43: google.apps.card.v1.SelectionInput.SelectionItem
 }
 var file_google_chat_v1_message_proto_depIdxs = []int32{
-	24, // 0: google.chat.v1.Message.sender:type_name -> google.chat.v1.User
-	25, // 1: google.chat.v1.Message.create_time:type_name -> google.protobuf.Timestamp
-	25, // 2: google.chat.v1.Message.last_update_time:type_name -> google.protobuf.Timestamp
-	25, // 3: google.chat.v1.Message.delete_time:type_name -> google.protobuf.Timestamp
-	26, // 4: google.chat.v1.Message.cards:type_name -> google.chat.v1.ContextualAddOnMarkup.Card
-	21, // 5: google.chat.v1.Message.cards_v2:type_name -> google.chat.v1.CardWithId
-	27, // 6: google.chat.v1.Message.annotations:type_name -> google.chat.v1.Annotation
-	9,  // 7: google.chat.v1.Message.thread:type_name -> google.chat.v1.Thread
-	28, // 8: google.chat.v1.Message.space:type_name -> google.chat.v1.Space
-	10, // 9: google.chat.v1.Message.action_response:type_name -> google.chat.v1.ActionResponse
-	29, // 10: google.chat.v1.Message.slash_command:type_name -> google.chat.v1.SlashCommand
-	30, // 11: google.chat.v1.Message.attachment:type_name -> google.chat.v1.Attachment
-	31, // 12: google.chat.v1.Message.matched_url:type_name -> google.chat.v1.MatchedUrl
-	32, // 13: google.chat.v1.Message.emoji_reaction_summaries:type_name -> google.chat.v1.EmojiReactionSummary
-	24, // 14: google.chat.v1.Message.private_message_viewer:type_name -> google.chat.v1.User
-	33, // 15: google.chat.v1.Message.deletion_metadata:type_name -> google.chat.v1.DeletionMetadata
-	6,  // 16: google.chat.v1.Message.quoted_message_metadata:type_name -> google.chat.v1.QuotedMessageMetadata
-	5,  // 17: google.chat.v1.Message.attached_gifs:type_name -> google.chat.v1.AttachedGif
-	11, // 18: google.chat.v1.Message.accessory_widgets:type_name -> google.chat.v1.AccessoryWidget
-	25, // 19: google.chat.v1.QuotedMessageMetadata.last_update_time:type_name -> google.protobuf.Timestamp
+	28, // 0: google.chat.v1.Message.sender:type_name -> google.chat.v1.User
+	29, // 1: google.chat.v1.Message.create_time:type_name -> google.protobuf.Timestamp
+	29, // 2: google.chat.v1.Message.last_update_time:type_name -> google.protobuf.Timestamp
+	29, // 3: google.chat.v1.Message.delete_time:type_name -> google.protobuf.Timestamp
+	30, // 4: google.chat.v1.Message.cards:type_name -> google.chat.v1.ContextualAddOnMarkup.Card
+	22, // 5: google.chat.v1.Message.cards_v2:type_name -> google.chat.v1.CardWithId
+	31, // 6: google.chat.v1.Message.annotations:type_name -> google.chat.v1.Annotation
+	10, // 7: google.chat.v1.Message.thread:type_name -> google.chat.v1.Thread
+	32, // 8: google.chat.v1.Message.space:type_name -> google.chat.v1.Space
+	11, // 9: google.chat.v1.Message.action_response:type_name -> google.chat.v1.ActionResponse
+	33, // 10: google.chat.v1.Message.slash_command:type_name -> google.chat.v1.SlashCommand
+	34, // 11: google.chat.v1.Message.attachment:type_name -> google.chat.v1.Attachment
+	35, // 12: google.chat.v1.Message.matched_url:type_name -> google.chat.v1.MatchedUrl
+	36, // 13: google.chat.v1.Message.emoji_reaction_summaries:type_name -> google.chat.v1.EmojiReactionSummary
+	28, // 14: google.chat.v1.Message.private_message_viewer:type_name -> google.chat.v1.User
+	37, // 15: google.chat.v1.Message.deletion_metadata:type_name -> google.chat.v1.DeletionMetadata
+	7,  // 16: google.chat.v1.Message.quoted_message_metadata:type_name -> google.chat.v1.QuotedMessageMetadata
+	6,  // 17: google.chat.v1.Message.attached_gifs:type_name -> google.chat.v1.AttachedGif
+	12, // 18: google.chat.v1.Message.accessory_widgets:type_name -> google.chat.v1.AccessoryWidget
+	29, // 19: google.chat.v1.QuotedMessageMetadata.last_update_time:type_name -> google.protobuf.Timestamp
 	0,  // 20: google.chat.v1.QuotedMessageMetadata.quote_type:type_name -> google.chat.v1.QuotedMessageMetadata.QuoteType
-	7,  // 21: google.chat.v1.QuotedMessageMetadata.quoted_message_snapshot:type_name -> google.chat.v1.QuotedMessageSnapshot
-	8,  // 22: google.chat.v1.QuotedMessageMetadata.forwarded_metadata:type_name -> google.chat.v1.ForwardedMetadata
-	27, // 23: google.chat.v1.QuotedMessageSnapshot.annotations:type_name -> google.chat.v1.Annotation
-	30, // 24: google.chat.v1.QuotedMessageSnapshot.attachments:type_name -> google.chat.v1.Attachment
+	8,  // 21: google.chat.v1.QuotedMessageMetadata.quoted_message_snapshot:type_name -> google.chat.v1.QuotedMessageSnapshot
+	9,  // 22: google.chat.v1.QuotedMessageMetadata.forwarded_metadata:type_name -> google.chat.v1.ForwardedMetadata
+	31, // 23: google.chat.v1.QuotedMessageSnapshot.annotations:type_name -> google.chat.v1.Annotation
+	34, // 24: google.chat.v1.QuotedMessageSnapshot.attachments:type_name -> google.chat.v1.Attachment
 	1,  // 25: google.chat.v1.ActionResponse.type:type_name -> google.chat.v1.ActionResponse.ResponseType
-	19, // 26: google.chat.v1.ActionResponse.dialog_action:type_name -> google.chat.v1.DialogAction
-	23, // 27: google.chat.v1.ActionResponse.updated_widget:type_name -> google.chat.v1.ActionResponse.UpdatedWidget
-	34, // 28: google.chat.v1.AccessoryWidget.button_list:type_name -> google.apps.card.v1.ButtonList
-	4,  // 29: google.chat.v1.UpdateMessageRequest.message:type_name -> google.chat.v1.Message
-	35, // 30: google.chat.v1.UpdateMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
-	4,  // 31: google.chat.v1.CreateMessageRequest.message:type_name -> google.chat.v1.Message
+	20, // 26: google.chat.v1.ActionResponse.dialog_action:type_name -> google.chat.v1.DialogAction
+	27, // 27: google.chat.v1.ActionResponse.updated_widget:type_name -> google.chat.v1.ActionResponse.UpdatedWidget
+	38, // 28: google.chat.v1.AccessoryWidget.button_list:type_name -> google.apps.card.v1.ButtonList
+	5,  // 29: google.chat.v1.UpdateMessageRequest.message:type_name -> google.chat.v1.Message
+	39, // 30: google.chat.v1.UpdateMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
+	5,  // 31: google.chat.v1.CreateMessageRequest.message:type_name -> google.chat.v1.Message
 	2,  // 32: google.chat.v1.CreateMessageRequest.message_reply_option:type_name -> google.chat.v1.CreateMessageRequest.MessageReplyOption
-	16, // 33: google.chat.v1.CreateMessageRequest.create_message_notification_options:type_name -> google.chat.v1.CreateMessageNotificationOptions
+	17, // 33: google.chat.v1.CreateMessageRequest.create_message_notification_options:type_name -> google.chat.v1.CreateMessageNotificationOptions
 	3,  // 34: google.chat.v1.CreateMessageNotificationOptions.notification_type:type_name -> google.chat.v1.CreateMessageNotificationOptions.NotificationType
-	4,  // 35: google.chat.v1.ListMessagesResponse.messages:type_name -> google.chat.v1.Message
-	20, // 36: google.chat.v1.DialogAction.dialog:type_name -> google.chat.v1.Dialog
-	36, // 37: google.chat.v1.DialogAction.action_status:type_name -> google.chat.v1.ActionStatus
-	37, // 38: google.chat.v1.Dialog.body:type_name -> google.apps.card.v1.Card
-	37, // 39: google.chat.v1.CardWithId.card:type_name -> google.apps.card.v1.Card
-	38, // 40: google.chat.v1.ActionResponse.SelectionItems.items:type_name -> google.apps.card.v1.SelectionInput.SelectionItem
-	22, // 41: google.chat.v1.ActionResponse.UpdatedWidget.suggestions:type_name -> google.chat.v1.ActionResponse.SelectionItems
-	42, // [42:42] is the sub-list for method output_type
-	42, // [42:42] is the sub-list for method input_type
-	42, // [42:42] is the sub-list for extension type_name
-	42, // [42:42] is the sub-list for extension extendee
-	0,  // [0:42] is the sub-list for field type_name
+	5,  // 35: google.chat.v1.ListMessagesResponse.messages:type_name -> google.chat.v1.Message
+	21, // 36: google.chat.v1.DialogAction.dialog:type_name -> google.chat.v1.Dialog
+	40, // 37: google.chat.v1.DialogAction.action_status:type_name -> google.chat.v1.ActionStatus
+	41, // 38: google.chat.v1.Dialog.body:type_name -> google.apps.card.v1.Card
+	41, // 39: google.chat.v1.CardWithId.card:type_name -> google.apps.card.v1.Card
+	4,  // 40: google.chat.v1.SearchMessagesRequest.view:type_name -> google.chat.v1.SearchMessagesRequest.SearchMessagesView
+	25, // 41: google.chat.v1.SearchMessagesResponse.results:type_name -> google.chat.v1.SearchMessageResult
+	5,  // 42: google.chat.v1.SearchMessageResult.message:type_name -> google.chat.v1.Message
+	42, // 43: google.chat.v1.SearchMessageResult.space_mute_setting:type_name -> google.chat.v1.SpaceNotificationSetting.MuteSetting
+	43, // 44: google.chat.v1.ActionResponse.SelectionItems.items:type_name -> google.apps.card.v1.SelectionInput.SelectionItem
+	26, // 45: google.chat.v1.ActionResponse.UpdatedWidget.suggestions:type_name -> google.chat.v1.ActionResponse.SelectionItems
+	46, // [46:46] is the sub-list for method output_type
+	46, // [46:46] is the sub-list for method input_type
+	46, // [46:46] is the sub-list for extension type_name
+	46, // [46:46] is the sub-list for extension extendee
+	0,  // [0:46] is the sub-list for field type_name
 }
 
 func init() { file_google_chat_v1_message_proto_init() }
@@ -2419,6 +2883,7 @@ func file_google_chat_v1_message_proto_init() {
 	file_google_chat_v1_reaction_proto_init()
 	file_google_chat_v1_slash_command_proto_init()
 	file_google_chat_v1_space_proto_init()
+	file_google_chat_v1_space_notification_setting_proto_init()
 	file_google_chat_v1_user_proto_init()
 	file_google_chat_v1_message_proto_msgTypes[7].OneofWrappers = []any{
 		(*AccessoryWidget_ButtonList)(nil),
@@ -2426,7 +2891,8 @@ func file_google_chat_v1_message_proto_init() {
 	file_google_chat_v1_message_proto_msgTypes[15].OneofWrappers = []any{
 		(*DialogAction_Dialog)(nil),
 	}
-	file_google_chat_v1_message_proto_msgTypes[19].OneofWrappers = []any{
+	file_google_chat_v1_message_proto_msgTypes[20].OneofWrappers = []any{}
+	file_google_chat_v1_message_proto_msgTypes[22].OneofWrappers = []any{
 		(*ActionResponse_UpdatedWidget_Suggestions)(nil),
 	}
 	type x struct{}
@@ -2434,8 +2900,8 @@ func file_google_chat_v1_message_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_chat_v1_message_proto_rawDesc), len(file_google_chat_v1_message_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   20,
+			NumEnums:      5,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

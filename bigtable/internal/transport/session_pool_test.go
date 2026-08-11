@@ -123,13 +123,36 @@ func newTestPool(t testing.TB, min, max int) *SessionPoolImpl {
 	p := NewSessionPoolImpl(
 		uint64(1),
 		"test-pool",
-		min,
-		max,
 		factory,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
 		SessionTypeTable, true,
 	)
+	// Configure min/max via the sizer directly instead of pool.UpdateConfig.
+	// pool.UpdateConfig fires spawnTickOnce as its last step; under the
+	// full-suite run that async Tick has time to (a) record a scaling
+	// event into p.m.scalingHistory (breaking TestRecordScaling_RingCaps'
+	// assertion that snap[0].Before starts at 3, not 4), and (b) spawn a
+	// createSession whose readLoop parks on fakeStream.Recv forever —
+	// fakeStream.Recv is a channel receive that does NOT observe ctx
+	// cancellation, so p.Close's Phase-5 spawns.Wait deadlocks past the
+	// 30s timeout in TestPoolClose_DrainsParkedWaitersWithSentinel.
+	// Tests that specifically exercise pool.UpdateConfig (e.g.
+	// TestConsecutiveFailures_UpdateConfigHonoredByTrip) still call it
+	// explicitly in-body; their cleanup's closeStreams-before-Close
+	// order unblocks any tick-spawned createSession.
+	p.sizer.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: int32(min), MaxSessionCount: int32(max),
+	})
+	// Bridge poolCtx cancellation to closeStreams so a test that calls
+	// p.Close() in-body (rather than relying on cleanup ordering) still
+	// unblocks any parked readLoops: Close's Phase-4 cancels poolCtx,
+	// which then wakes this goroutine, which closes every fakeStream and
+	// lets readLoop's Recv return so spawns.Wait can complete.
+	go func() {
+		<-p.poolCtx.Done()
+		closeStreams()
+	}()
 	// Close streams before closing the pool: the pool's Close waits for
 	// per-session teardown, which requires the readLoop goroutines to
 	// exit — and they won't while parked on fakeStream.Recv.
@@ -242,12 +265,14 @@ func TestSessionPool_Invoke_RecordsSlowCheckoutFailure(t *testing.T) {
 	p := NewSessionPoolImpl(
 		uint64(1),
 		"test-pool",
-		0, 1,
 		neverDialing,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
 		SessionTypeTable, true,
 	)
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 0, MaxSessionCount: 1,
+	})
 	defer p.Close()
 
 	// 50ms ctx budget vs the 10ms defaultSlowThreshold means the checkout
@@ -303,12 +328,14 @@ func TestCheckoutSession_ParkedWaiter_DeadlineExceeded(t *testing.T) {
 	p := NewSessionPoolImpl(
 		uint64(1),
 		"test-pool",
-		0, 1,
 		neverDialing,
 		&spb.OpenSessionRequest{ProtocolVersion: 1},
 		nil,
 		SessionTypeTable, true,
 	)
+	p.UpdateConfig(&spb.SessionClientConfiguration_SessionPoolConfiguration{
+		MinSessionCount: 0, MaxSessionCount: 1,
+	})
 	defer p.Close()
 
 	// Short deadline so the test doesn't loiter, long enough that the
@@ -447,7 +474,7 @@ func TestNewSessionPoolImpl_Identity(t *testing.T) {
 
 	p := NewSessionPoolImpl(
 		uint64(42),
-		"test-pool", 1, 10, factory, &spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable, true,
+		"test-pool", factory, &spb.OpenSessionRequest{ProtocolVersion: 1}, nil, SessionTypeTable, true,
 	)
 	if p.poolID != 42 {
 		t.Errorf("poolID = %d, want 42", p.poolID)
@@ -647,7 +674,10 @@ func TestUpdateConfig_SwapsPickerAndBounds(t *testing.T) {
 	if got := p.picker.Name(); got != "least-latency" {
 		t.Errorf("after PeakEwma swap, picker = %q, want least-latency", got)
 	}
-	// listenerFires counter bumps once per UpdateConfig.
+	// listenerFires counter bumps once per pool.UpdateConfig call.
+	// newTestPool now configures min/max via sizer.UpdateConfig directly
+	// (to avoid the async spawnTickOnce that produced flakes in the
+	// full-suite run), so only the two in-body UpdateConfig calls count.
 	if got := p.m.listenerFires.Load(); got != 2 {
 		t.Errorf("listenerFires = %d, want 2 (one per UpdateConfig)", got)
 	}

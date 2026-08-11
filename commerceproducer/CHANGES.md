@@ -1,5 +1,19 @@
 # Changelog
 
+## [0.4.0](https://github.com/googleapis/google-cloud-go/compare/commerceproducer/v0.3.0...commerceproducer/v0.4.0) (2026-08-07)
+
+
+### Features
+
+* Update API sources and regenerate ([#20326](https://github.com/googleapis/google-cloud-go/issues/20326)) ([a25826f](https://github.com/googleapis/google-cloud-go/commit/a25826f05527527005b7868284df86df4d46ce05))
+
+## [0.3.0](https://github.com/googleapis/google-cloud-go/compare/commerceproducer/v0.2.0...commerceproducer/v0.3.0) (2026-07-30)
+
+
+### Features
+
+* Update API sources and regenerate ([#20252](https://github.com/googleapis/google-cloud-go/issues/20252)) ([ac017a0](https://github.com/googleapis/google-cloud-go/commit/ac017a0d30ec2d42db35f7d3b5ea7fb20b4b860a))
+
 ## [0.2.0](https://github.com/googleapis/google-cloud-go/compare/commerceproducer/v0.1.0...commerceproducer/v0.2.0) (2026-07-23)
 
 

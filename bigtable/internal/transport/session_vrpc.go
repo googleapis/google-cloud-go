@@ -257,7 +257,7 @@ func (s *Session) awaitInvokeResult(ctx context.Context, rpc *vrpcImpl, desc VRp
 // under slotMu, handleVRPCResponse gates the id match BEFORE drainSlot,
 // so deliver can only ever put a matching-id response into resultChan.
 func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res vrpcResult) error {
-	result.TransportLatency = time.Since(result.SentAt)
+	wire := time.Since(result.SentAt)
 	ci := res.ClusterInfo()
 	result.ClusterInfo = ci
 	if ci != nil {
@@ -281,7 +281,9 @@ func (s *Session) processResult(desc VRpcDescriptor, result *InvokeResult, res v
 	result.Response = respMsg
 	result.Stats = res.resp.Stats
 	if res.resp.Stats != nil && res.resp.Stats.BackendLatency != nil {
-		s.recordLatency(res.resp.Stats.BackendLatency.AsDuration())
+		backend := res.resp.Stats.BackendLatency.AsDuration()
+		s.recordLatency(backend)
+		result.TransportLatency = wire - backend
 	}
 	return nil
 }

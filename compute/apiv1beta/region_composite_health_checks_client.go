@@ -118,7 +118,7 @@ func defaultRegionCompositeHealthChecksRESTCallOptions() *RegionCompositeHealthC
 	}
 }
 
-// internalRegionCompositeHealthChecksClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionCompositeHealthChecksClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionCompositeHealthChecksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,7 +133,7 @@ type internalRegionCompositeHealthChecksClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionCompositeHealthCheckRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionCompositeHealthChecksClient is a client for interacting with Google Compute Engine API.
+// RegionCompositeHealthChecksClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionCompositeHealthChecks API.

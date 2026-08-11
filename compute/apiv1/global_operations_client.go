@@ -96,7 +96,7 @@ func defaultGlobalOperationsRESTCallOptions() *GlobalOperationsCallOptions {
 	}
 }
 
-// internalGlobalOperationsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalOperationsClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalOperationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -108,7 +108,7 @@ type internalGlobalOperationsClient interface {
 	Wait(context.Context, *computepb.WaitGlobalOperationRequest, ...gax.CallOption) (*computepb.Operation, error)
 }
 
-// GlobalOperationsClient is a client for interacting with Google Compute Engine API.
+// GlobalOperationsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalOperations API.

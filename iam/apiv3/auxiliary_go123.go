@@ -27,6 +27,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *AccessPolicyIterator) All() iter.Seq2[*iampb.AccessPolicy, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *PolicyBindingIterator) All() iter.Seq2[*iampb.PolicyBinding, error] {
 	return iterator.RangeAdapter(it.Next)
 }

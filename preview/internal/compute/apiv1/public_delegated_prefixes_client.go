@@ -109,7 +109,7 @@ func defaultPublicDelegatedPrefixesRESTCallOptions() *PublicDelegatedPrefixesCal
 	}
 }
 
-// internalPublicDelegatedPrefixesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalPublicDelegatedPrefixesClient is an interface that defines the methods available from Compute Engine API.
 type internalPublicDelegatedPrefixesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -124,7 +124,7 @@ type internalPublicDelegatedPrefixesClient interface {
 	Withdraw(context.Context, *computepb.WithdrawPublicDelegatedPrefixeRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// PublicDelegatedPrefixesClient is a client for interacting with Google Compute Engine API.
+// PublicDelegatedPrefixesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The PublicDelegatedPrefixes API.

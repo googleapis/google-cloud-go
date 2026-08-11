@@ -237,7 +237,7 @@ func defaultRoutersRESTCallOptions() *RoutersCallOptions {
 	}
 }
 
-// internalRoutersClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRoutersClient is an interface that defines the methods available from Compute Engine API.
 type internalRoutersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -266,7 +266,7 @@ type internalRoutersClient interface {
 	UpdateRoutePolicy(context.Context, *computepb.UpdateRoutePolicyRouterRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RoutersClient is a client for interacting with Google Compute Engine API.
+// RoutersClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Routers API.

@@ -373,6 +373,9 @@ func TestHandleVRPCResponse_LateResponseAfterCtxDone_FlagsCancelledDrained(t *te
 		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("Invoke err = %v, want DeadlineExceeded", err)
 		}
+		if code := status.Code(err); code != codes.DeadlineExceeded {
+			t.Errorf("status.Code(err) = %v, want DeadlineExceeded", code)
+		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Invoke did not return within outer bound")
 	}
@@ -462,6 +465,9 @@ func TestInvoke_SecondInvokeAfterCtxDoneRejectedUncommitted(t *testing.T) {
 	case err := <-done1:
 		if !errors.Is(err, context.DeadlineExceeded) {
 			t.Fatalf("Invoke #1 err = %v, want DeadlineExceeded", err)
+		}
+		if code := status.Code(err); code != codes.DeadlineExceeded {
+			t.Errorf("Invoke #1 status.Code = %v, want DeadlineExceeded", code)
 		}
 	case <-time.After(2 * time.Second):
 		t.Fatal("Invoke #1 did not return within outer bound")

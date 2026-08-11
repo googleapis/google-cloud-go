@@ -117,7 +117,7 @@ func defaultInterconnectsRESTCallOptions() *InterconnectsCallOptions {
 	}
 }
 
-// internalInterconnectsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalInterconnectsClient is an interface that defines the methods available from Compute Engine API.
 type internalInterconnectsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -132,7 +132,7 @@ type internalInterconnectsClient interface {
 	SetLabels(context.Context, *computepb.SetLabelsInterconnectRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// InterconnectsClient is a client for interacting with Google Compute Engine API.
+// InterconnectsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Interconnects API.

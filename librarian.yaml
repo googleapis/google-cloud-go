@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.31.0
+version: v0.32.0
 repo: googleapis/google-cloud-go
 sources:
   discovery:
     commit: 1c6496fb0cf9fa04a35e24e8af871c58298ae37e
     sha256: c3cd1ca564a28485970bdf348cac9bcde65d45792a5c2df1c179654d3ad8b877
   googleapis:
-    commit: a15a5b7adf695d1b6b17359ff64bfb4a83d0750b
-    sha256: 81eaaf6868fac6e67798c0809125b8b4821dcdd8d84916852a4a33681f3c901b
+    commit: 57394718a71457aa37ab002352b22081976bdd91
+    sha256: 633d12eb239bf48648613a8e8f1e4b4875ae8116150fdee0ba4abc910ffb9777
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
@@ -105,7 +105,7 @@ libraries:
         go:
           proto_only: true
   - name: analytics
-    version: 0.36.0
+    version: 0.36.1
     apis:
       - path: google/analytics/admin/v1alpha
   - name: apigateway
@@ -196,7 +196,7 @@ libraries:
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.22.0
+    version: 0.23.0
     keep:
       - README.md
       - internal/version.go
@@ -248,7 +248,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.79.0
+    version: 1.79.1
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -385,7 +385,7 @@ libraries:
       - README.md
     skip_release: true
   - name: bigtable
-    version: 1.51.0
+    version: 1.52.0
     apis:
       - path: google/bigtable/v2
         go:
@@ -429,7 +429,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -502,12 +502,12 @@ libraries:
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: commerceproducer
-    version: 0.2.0
+    version: 0.4.0
     apis:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
   - name: compute
-    version: 1.65.0
+    version: 1.66.0
     preview:
       version: 1.66.0-preview.1
       apis:
@@ -552,7 +552,7 @@ libraries:
     apis:
       - path: google/cloud/contactcenterinsights/v1
   - name: container
-    version: 1.53.0
+    version: 1.53.1
     apis:
       - path: google/container/v1
   - name: containeranalysis
@@ -587,7 +587,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: dataform
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -600,7 +600,7 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/ads/datamanager/v1
         go:
@@ -669,7 +669,7 @@ libraries:
       - path: google/cloud/discoveryengine/v1beta
       - path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.36.0
+    version: 1.36.1
     apis:
       - path: google/privacy/dlp/v2
         go:
@@ -725,7 +725,7 @@ libraries:
     apis:
       - path: google/cloud/financialservices/v1
   - name: firestore
-    version: 1.24.0
+    version: 1.25.0
     apis:
       - path: google/firestore/v1
         go:
@@ -795,7 +795,7 @@ libraries:
       - path: google/cloud/hypercomputecluster/v1
       - path: google/cloud/hypercomputecluster/v1beta
   - name: iam
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/iam/v3
         go:
@@ -873,7 +873,7 @@ libraries:
     apis:
       - path: google/cloud/locationfinder/v1
   - name: logging
-    version: 1.19.0
+    version: 1.19.1
     apis:
       - path: google/logging/v2
         go:
@@ -909,7 +909,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.38.0
+    version: 1.39.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -922,6 +922,7 @@ libraries:
       - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
       - path: google/maps/isochrones/v1
+      - path: google/maps/navconnect/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
           no_snippets: true
@@ -998,7 +999,7 @@ libraries:
       - path: google/cloud/networksecurity/v1
       - path: google/cloud/networksecurity/v1beta1
   - name: networkservices
-    version: 1.4.0
+    version: 1.5.0
     apis:
       - path: google/cloud/networkservices/v1
   - name: notebooks
@@ -1308,7 +1309,7 @@ libraries:
           import_path: shopping/type
           proto_only: true
   - name: spanner
-    version: 1.93.0
+    version: 1.94.0
     apis:
       - path: google/spanner/v1
         go:
@@ -1377,7 +1378,7 @@ libraries:
     apis:
       - path: google/streetview/publish/v1
   - name: support
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta

@@ -667,9 +667,6 @@ func updateAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 
 type AgentEngines struct {
 	apiClient *genai.InternalAPIClient
-	Sessions  *Sessions
-	Sandboxes *Sandboxes
-	Memories  *Memories
 }
 
 func (m AgentEngines) create(ctx context.Context, config *types.CreateAgentEngineConfig) (*types.AgentEngineOperation, error) {

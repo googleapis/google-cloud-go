@@ -3,6 +3,13 @@
 
 
 
+## [1.79.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.79.0...bigquery/v1.79.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **bigquery:** Preserve SourceJob and QueryID when Storage API used ([#20314](https://github.com/googleapis/google-cloud-go/issues/20314)) ([8fc01f2](https://github.com/googleapis/google-cloud-go/commit/8fc01f282c4d4aafb8a82553645ba3aa5e8f2efc))
+
 ## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.78.0...bigquery/v1.79.0) (2026-07-13)
 
 

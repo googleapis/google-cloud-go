@@ -225,8 +225,7 @@ func updateAgentEngineSessionRequestParametersToVertex(fromObject map[string]any
 }
 
 type Sessions struct {
-	apiClient     *genai.InternalAPIClient
-	SessionEvents *SessionEvents
+	apiClient *genai.InternalAPIClient
 }
 
 func (m Sessions) create(ctx context.Context, name string, userId string, config *types.CreateAgentEngineSessionConfig) (*types.AgentEngineSessionOperation, error) {

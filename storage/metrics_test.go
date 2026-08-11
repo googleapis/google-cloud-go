@@ -358,6 +358,10 @@ func (m *mockClientStream) RecvMsg(msg interface{}) error {
 	return m.recvErr
 }
 
+func (m *mockClientStream) SendMsg(msg interface{}) error {
+	return nil
+}
+
 func (m *mockClientStream) Header() (metadata.MD, error) {
 	return metadata.Pairs("x-goog-gfe-service-time", "120"), nil
 }
@@ -432,13 +436,33 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		t.Errorf("expected nil error, got %v", err)
 	}
 
+	// Test Bidi-Streaming call (BidiWriteObject).
+	descBidi := &grpc.StreamDesc{
+		ServerStreams: true,
+		ClientStreams: true,
+	}
+	streamerBidi := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+		return &mockClientStream{recvErr: nil}, nil
+	}
+	clientStreamBidi, err := streamInt(ctx, descBidi, nil, "/google.storage.v2.Storage/BidiWriteObject", streamerBidi)
+	if err != nil {
+		t.Fatalf("streamInt: %v", err)
+	}
+
+	// 1st Bidi stream.
+	clientStreamBidi.SendMsg(nil)
+	clientStreamBidi.RecvMsg(nil)
+
+	// Terminate stream.
+	clientStreamBidi.(*wrappedClientStream).record(io.EOF)
+
 	// Collect metrics.
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
 		t.Fatalf("Collect: %v", err)
 	}
 
-	var unaryDp, streamDp, writeDp *metricdata.HistogramDataPoint[float64]
+	var unaryDp, streamDp, writeDp, bidiDp *metricdata.HistogramDataPoint[float64]
 
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
@@ -448,7 +472,7 @@ func TestGRPCMetricsRecording(t *testing.T) {
 					t.Fatalf("expected Histogram data, got %T", m.Data)
 				}
 				for _, dp := range hist.DataPoints {
-					dpCopy := dp // avoid reference capture of loop variable
+					dpCopy := dp
 					attrs := make(map[string]string)
 					for _, kv := range dp.Attributes.ToSlice() {
 						attrs[string(kv.Key)] = kv.Value.Emit()
@@ -459,6 +483,8 @@ func TestGRPCMetricsRecording(t *testing.T) {
 						streamDp = &dpCopy
 					} else if attrs["rpc.method"] == "WriteObject" {
 						writeDp = &dpCopy
+					} else if attrs["rpc.method"] == "BidiWriteObject" {
+						bidiDp = &dpCopy
 					}
 				}
 			}
@@ -542,6 +568,24 @@ func TestGRPCMetricsRecording(t *testing.T) {
 		}
 		if attrs["error.type"] != "OK" {
 			t.Errorf("expected error.type OK, got %q", attrs["error.type"])
+		}
+	}
+
+	if bidiDp == nil {
+		t.Errorf("streaming metric (BidiWriteObject) not recorded")
+	} else {
+		if bidiDp.Count != 1 {
+			t.Errorf("Bidi stream count: expected 1, got %d", bidiDp.Count)
+		}
+		attrs := make(map[string]string)
+		for _, kv := range bidiDp.Attributes.ToSlice() {
+			attrs[string(kv.Key)] = kv.Value.Emit()
+		}
+		if attrs["rpc.system.name"] != "grpc" {
+			t.Errorf("expected rpc.system.name grpc, got %q", attrs["rpc.system.name"])
+		}
+		if attrs["rpc.service"] != "google.storage.v2.Storage" {
+			t.Errorf("expected rpc.service, got %q", attrs["rpc.service"])
 		}
 	}
 }

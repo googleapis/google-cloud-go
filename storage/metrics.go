@@ -34,6 +34,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/storage/internal"
 	mexporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric"
+	"go.opentelemetry.io/contrib/detectors/gcp"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -117,7 +118,22 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 		mexporter.WithMetricDescriptorTypeFormatter(func(m metricdata.Metrics) string {
 			return formatMetricWithPrefix(m, customMetricPrefix)
 		}),
-		mexporter.WithCreateServiceTimeSeries(),
+		// The OTel GCP exporter drops any resource attributes that don't map to the
+		// target MonitoredResource (currently generic_node).
+		// We use WithFilteredResourceAttributes returning true to ensure that ANY
+		// resource attributes not in the MonitoredResource schema (like gcp.client.*,
+		// or gcp detector attributes not supported by generic_node) are preserved
+		// as metric labels instead of being dropped.
+		//
+		// TODO: When storage_client node is allowlisted in Monarch
+		// (google3/configs/monitoring/cloud_pulse_monarch/storage/storage_client.proto),
+		// we should uncomment the following options to export to the custom resource:
+		// mexporter.WithCreateServiceTimeSeries(),
+		// mexporter.WithMonitoredResourceDescription("storage.googleapis.com/Client", []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
+		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
+			// Keep all unmapped resource attributes as metric labels
+			return true
+		}),
 	)
 	if err != nil {
 		return nil, fmt.Errorf("storage: creating GCM exporter: %w", err)
@@ -153,6 +169,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		// Static common attributes are defined as Resource Attributes.
 		res, err := resource.New(ctx,
+			resource.WithDetectors(gcp.NewDetector()),
 			resource.WithAttributes(
 				attribute.String("gcp.client.version", internal.Version),
 				attribute.String("gcp.client.service", "storage"),
@@ -883,13 +900,46 @@ func (w *wrappedResponseBody) record(err error) {
 	}
 }
 
+func getLogicalMethod(method string) string {
+	if idx := strings.LastIndex(method, "/"); idx != -1 {
+		return method[idx+1:]
+	}
+	return method
+}
+
+func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, rpcAttrs metric.MeasurementOption) {
+	if cm.gfeHeaderMissing == nil {
+		return
+	}
+
+	headerVals := headerMD.Get("x-goog-gfe-service-time")
+	if len(headerVals) == 0 {
+		headerVals = trailerMD.Get("x-goog-gfe-service-time")
+	}
+	headerVal := ""
+	if len(headerVals) > 0 {
+		headerVal = headerVals[0]
+	}
+	if headerVal == "" {
+		errType := computeErrorType(err, false, int64(status.Code(err)))
+		missingAttrs := metric.WithAttributes(
+			attribute.String("rpc.method", logicalMethod),
+			attribute.String("rpc.system.name", "grpc"),
+			attribute.String("server.address", stripPort(target)),
+			attribute.String("error.type", errType),
+		)
+		cm.gfeHeaderMissing.Add(ctx, 1, missingAttrs)
+	} else if cm.gfeDuration != nil {
+		if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
+			cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
+		}
+	}
+}
+
 // metricsInterceptors returns gRPC client interceptors.
 func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.StreamClientInterceptor) {
 	unary := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		logicalMethod := method
-		if idx := strings.LastIndex(logicalMethod, "/"); idx != -1 {
-			logicalMethod = logicalMethod[idx+1:]
-		}
+		logicalMethod := getLogicalMethod(method)
 
 		target := ""
 		if cc != nil {
@@ -916,30 +966,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		startTime := time.Now()
 		err := invoker(ctx, method, req, reply, cc, opts...)
 
-		if cm.gfeHeaderMissing != nil {
-			headerVals := headerMD.Get("x-goog-gfe-service-time")
-			if len(headerVals) == 0 {
-				headerVals = trailerMD.Get("x-goog-gfe-service-time")
-			}
-			headerVal := ""
-			if len(headerVals) > 0 {
-				headerVal = headerVals[0]
-			}
-			if headerVal == "" {
-				errType := computeErrorType(err, false, int64(status.Code(err)))
-				missingAttrs := metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "grpc"),
-					attribute.String("server.address", stripPort(target)),
-					attribute.String("error.type", errType),
-				)
-				cm.gfeHeaderMissing.Add(ctx, 1, missingAttrs)
-			} else if cm.gfeDuration != nil {
-				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-					cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
-				}
-			}
-		}
+		cm.recordGFEMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, rpcAttrs)
 
 		duration := time.Since(startTime).Seconds()
 		cm.recordRPC(ctx, method, target, duration, err)
@@ -947,10 +974,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 	}
 
 	stream := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
-		logicalMethod := method
-		if idx := strings.LastIndex(logicalMethod, "/"); idx != -1 {
-			logicalMethod = logicalMethod[idx+1:]
-		}
+		logicalMethod := getLogicalMethod(method)
 
 		target := ""
 		if cc != nil {
@@ -1034,10 +1058,7 @@ func (w *wrappedClientStream) record(err error) {
 		duration := time.Since(w.startTime).Seconds()
 		w.metrics.recordRPC(w.ctx, w.method, w.target, duration, err)
 
-		logicalMethod := w.method
-		if idx := strings.LastIndex(logicalMethod, "/"); idx != -1 {
-			logicalMethod = logicalMethod[idx+1:]
-		}
+		logicalMethod := getLogicalMethod(w.method)
 
 		var rpcAttrs metric.MeasurementOption
 		if w.metrics.activeRequests != nil || w.metrics.gfeHeaderMissing != nil {
@@ -1052,32 +1073,9 @@ func (w *wrappedClientStream) record(err error) {
 			w.metrics.activeRequests.Add(w.ctx, -1, rpcAttrs)
 		}
 
-		if w.metrics.gfeHeaderMissing != nil {
-			headerMD, _ := w.ClientStream.Header()
-			trailerMD := w.ClientStream.Trailer()
-			headerVals := headerMD.Get("x-goog-gfe-service-time")
-			if len(headerVals) == 0 {
-				headerVals = trailerMD.Get("x-goog-gfe-service-time")
-			}
-			headerVal := ""
-			if len(headerVals) > 0 {
-				headerVal = headerVals[0]
-			}
-			if headerVal == "" {
-				errType := computeErrorType(err, false, int64(status.Code(err)))
-				missingAttrs := metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "grpc"),
-					attribute.String("server.address", stripPort(w.target)),
-					attribute.String("error.type", errType),
-				)
-				w.metrics.gfeHeaderMissing.Add(w.ctx, 1, missingAttrs)
-			} else if w.metrics.gfeDuration != nil {
-				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-					w.metrics.gfeDuration.Record(w.ctx, ms/1000.0, rpcAttrs)
-				}
-			}
-		}
+		headerMD, _ := w.ClientStream.Header()
+		trailerMD := w.ClientStream.Trailer()
+		w.metrics.recordGFEMetrics(w.ctx, headerMD, trailerMD, err, logicalMethod, w.target, rpcAttrs)
 	}
 }
 
@@ -1085,10 +1083,7 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 	if w.recordedTTFB.Load() {
 		return
 	}
-	methodName := w.method
-	if idx := strings.LastIndex(methodName, "/"); idx != -1 {
-		methodName = methodName[idx+1:]
-	}
+	methodName := getLogicalMethod(w.method)
 
 	// The first response from the server, whether it contains metadata,
 	// persisted size, or actual content, indicates TTFB.
@@ -1106,13 +1101,11 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 type metricsKey struct{}
 
 type metricsState struct {
-	method       string
-	startTime    time.Time
-	metrics      *clientMetrics
-	isHTTP       bool
-	ttfbRecorded atomic.Bool
-	ttfbStart    time.Time
-	record       func(error)
+	method    string
+	startTime time.Time
+	metrics   *clientMetrics
+	isHTTP    bool
+	record    func(error)
 }
 
 func contextWithMetricsState(ctx context.Context, state *metricsState) context.Context {
@@ -1146,7 +1139,6 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 		metrics:   cm,
 		isHTTP:    isHTTP,
 	}
-	state.ttfbStart = state.startTime
 
 	var recordOnce sync.Once
 	record := func(err error) {

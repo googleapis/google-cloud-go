@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/datamanager/apiv1",
-    "version": "1.3.0"
+    "version": "1.4.0"
   },
   "snippets": [
     {
@@ -148,6 +148,52 @@
         }
       ],
       "title": "datamanager IngestEvents Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
+        "fullName": "google.ads.datamanager.v1.IngestionClient.RemoveAllAudienceMembers",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.RemoveAllAudienceMembers",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "RemoveAllAudienceMembers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.RemoveAllAudienceMembersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.RemoveAllAudienceMembersResponse",
+        "shortName": "RemoveAllAudienceMembers"
+      },
+      "description": "RemoveAllAudienceMembers removes all audience members from the provided destinations.",
+      "file": "IngestionClient/RemoveAllAudienceMembers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_RemoveAllAudienceMembers_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datamanager RemoveAllAudienceMembers Sample"
     },
     {
       "clientMethod": {
