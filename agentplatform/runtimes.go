@@ -17,52 +17,23 @@
 package agentplatform
 
 import (
+	"archive/tar"
+	"bytes"
+	"compress/gzip"
 	"context"
 	"fmt"
+	"io"
+	"io/fs"
 	"net/http"
+	"os"
+	"path/filepath"
 	"reflect"
 
 	"cloud.google.com/go/agentplatform/types"
 	"google.golang.org/genai"
 )
 
-func agentEngineOperationFromVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
-	if fromName != nil {
-		genai.InternalSetValueByPath(toObject, []string{"name"}, fromName)
-	}
-
-	fromMetadata := genai.InternalGetValueByPath(fromObject, []string{"metadata"})
-	if fromMetadata != nil {
-		genai.InternalSetValueByPath(toObject, []string{"metadata"}, fromMetadata)
-	}
-
-	fromDone := genai.InternalGetValueByPath(fromObject, []string{"done"})
-	if fromDone != nil {
-		genai.InternalSetValueByPath(toObject, []string{"done"}, fromDone)
-	}
-
-	fromError := genai.InternalGetValueByPath(fromObject, []string{"error"})
-	if fromError != nil {
-		genai.InternalSetValueByPath(toObject, []string{"error"}, fromError)
-	}
-
-	fromResponse := genai.InternalGetValueByPath(fromObject, []string{"response"})
-	if fromResponse != nil {
-		fromResponse, err = reasoningEngineFromVertex(fromResponse.(map[string]any), toObject, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"response"}, fromResponse)
-	}
-
-	return toObject, nil
-}
-
-func createAgentEngineConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func createRuntimeConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromDisplayName := genai.InternalGetValueByPath(fromObject, []string{"displayName"})
@@ -93,6 +64,11 @@ func createAgentEngineConfigToVertex(fromObject map[string]any, parentObject map
 	fromPscInterfaceConfig := genai.InternalGetValueByPath(fromObject, []string{"pscInterfaceConfig"})
 	if fromPscInterfaceConfig != nil {
 		genai.InternalSetValueByPath(parentObject, []string{"pscInterfaceConfig"}, fromPscInterfaceConfig)
+	}
+
+	fromAgentGatewayConfig := genai.InternalGetValueByPath(fromObject, []string{"agentGatewayConfig"})
+	if fromAgentGatewayConfig != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"agentGatewayConfig"}, fromAgentGatewayConfig)
 	}
 
 	fromEncryptionSpec := genai.InternalGetValueByPath(fromObject, []string{"encryptionSpec"})
@@ -135,20 +111,15 @@ func createAgentEngineConfigToVertex(fromObject map[string]any, parentObject map
 		genai.InternalSetValueByPath(parentObject, []string{"pythonVersion"}, fromPythonVersion)
 	}
 
-	fromAgentGatewayConfig := genai.InternalGetValueByPath(fromObject, []string{"agentGatewayConfig"})
-	if fromAgentGatewayConfig != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"agentGatewayConfig"}, fromAgentGatewayConfig)
-	}
-
 	return toObject, nil
 }
 
-func createAgentEngineRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func createRuntimeRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		_, err = createAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = createRuntimeConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
@@ -157,7 +128,7 @@ func createAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 	return toObject, nil
 }
 
-func deleteAgentEngineRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func deleteRuntimeRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -173,7 +144,7 @@ func deleteAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 	return toObject, nil
 }
 
-func getAgentEngineOperationParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func getRuntimeOperationParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromOperationName := genai.InternalGetValueByPath(fromObject, []string{"operationName"})
@@ -184,7 +155,7 @@ func getAgentEngineOperationParametersToVertex(fromObject map[string]any, parent
 	return toObject, nil
 }
 
-func getAgentEngineRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func getRuntimeRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -195,7 +166,7 @@ func getAgentEngineRequestParametersToVertex(fromObject map[string]any, parentOb
 	return toObject, nil
 }
 
-func listAgentEngineConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func listRuntimeConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromPageSize := genai.InternalGetValueByPath(fromObject, []string{"pageSize"})
@@ -216,12 +187,12 @@ func listAgentEngineConfigToVertex(fromObject map[string]any, parentObject map[s
 	return toObject, nil
 }
 
-func listAgentEngineRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func listRuntimeRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		_, err = listAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = listRuntimeConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
@@ -230,7 +201,7 @@ func listAgentEngineRequestParametersToVertex(fromObject map[string]any, parentO
 	return toObject, nil
 }
 
-func queryAgentEngineConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func queryRuntimeConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromClassMethod := genai.InternalGetValueByPath(fromObject, []string{"classMethod"})
@@ -251,7 +222,7 @@ func queryAgentEngineConfigToVertex(fromObject map[string]any, parentObject map[
 	return toObject, nil
 }
 
-func queryAgentEngineRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func queryRuntimeRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -261,7 +232,7 @@ func queryAgentEngineRequestParametersToVertex(fromObject map[string]any, parent
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		_, err = queryAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = queryRuntimeConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
@@ -270,271 +241,7 @@ func queryAgentEngineRequestParametersToVertex(fromObject map[string]any, parent
 	return toObject, nil
 }
 
-func reasoningEngineContextSpecFromVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromMemoryBankConfig := genai.InternalGetValueByPath(fromObject, []string{"memoryBankConfig"})
-	if fromMemoryBankConfig != nil {
-		fromMemoryBankConfig, err = reasoningEngineContextSpecMemoryBankConfigFromVertex(fromMemoryBankConfig.(map[string]any), toObject, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"memoryBankConfig"}, fromMemoryBankConfig)
-	}
-
-	return toObject, nil
-}
-
-func reasoningEngineContextSpecMemoryBankConfigFromVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromCustomizationConfigs := genai.InternalGetValueByPath(fromObject, []string{"customizationConfigs"})
-	if fromCustomizationConfigs != nil {
-		genai.InternalSetValueByPath(toObject, []string{"customizationConfigs"}, fromCustomizationConfigs)
-	}
-
-	fromDisableMemoryRevisions := genai.InternalGetValueByPath(fromObject, []string{"disableMemoryRevisions"})
-	if fromDisableMemoryRevisions != nil {
-		genai.InternalSetValueByPath(toObject, []string{"disableMemoryRevisions"}, fromDisableMemoryRevisions)
-	}
-
-	fromGenerationConfig := genai.InternalGetValueByPath(fromObject, []string{"generationConfig"})
-	if fromGenerationConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"generationConfig"}, fromGenerationConfig)
-	}
-
-	fromSimilaritySearchConfig := genai.InternalGetValueByPath(fromObject, []string{"similaritySearchConfig"})
-	if fromSimilaritySearchConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"similaritySearchConfig"}, fromSimilaritySearchConfig)
-	}
-
-	fromTtlConfig := genai.InternalGetValueByPath(fromObject, []string{"ttlConfig"})
-	if fromTtlConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"ttlConfig"}, fromTtlConfig)
-	}
-
-	fromStructuredMemoryConfigs := genai.InternalGetValueByPath(fromObject, []string{"structuredMemoryConfigs"})
-	if fromStructuredMemoryConfigs != nil {
-		fromStructuredMemoryConfigs, err = genai.InternalApplyConverterToSliceWithRoot(fromStructuredMemoryConfigs.([]any), structuredMemoryConfigFromVertex, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"structuredMemoryConfigs"}, fromStructuredMemoryConfigs)
-	}
-
-	return toObject, nil
-}
-
-func reasoningEngineContextSpecMemoryBankConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromCustomizationConfigs := genai.InternalGetValueByPath(fromObject, []string{"customizationConfigs"})
-	if fromCustomizationConfigs != nil {
-		genai.InternalSetValueByPath(toObject, []string{"customizationConfigs"}, fromCustomizationConfigs)
-	}
-
-	fromDisableMemoryRevisions := genai.InternalGetValueByPath(fromObject, []string{"disableMemoryRevisions"})
-	if fromDisableMemoryRevisions != nil {
-		genai.InternalSetValueByPath(toObject, []string{"disableMemoryRevisions"}, fromDisableMemoryRevisions)
-	}
-
-	fromGenerationConfig := genai.InternalGetValueByPath(fromObject, []string{"generationConfig"})
-	if fromGenerationConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"generationConfig"}, fromGenerationConfig)
-	}
-
-	fromSimilaritySearchConfig := genai.InternalGetValueByPath(fromObject, []string{"similaritySearchConfig"})
-	if fromSimilaritySearchConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"similaritySearchConfig"}, fromSimilaritySearchConfig)
-	}
-
-	fromTtlConfig := genai.InternalGetValueByPath(fromObject, []string{"ttlConfig"})
-	if fromTtlConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"ttlConfig"}, fromTtlConfig)
-	}
-
-	fromStructuredMemoryConfigs := genai.InternalGetValueByPath(fromObject, []string{"structuredMemoryConfigs"})
-	if fromStructuredMemoryConfigs != nil {
-		fromStructuredMemoryConfigs, err = genai.InternalApplyConverterToSliceWithRoot(fromStructuredMemoryConfigs.([]any), structuredMemoryConfigToVertex, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"structuredMemoryConfigs"}, fromStructuredMemoryConfigs)
-	}
-
-	return toObject, nil
-}
-
-func reasoningEngineContextSpecToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromMemoryBankConfig := genai.InternalGetValueByPath(fromObject, []string{"memoryBankConfig"})
-	if fromMemoryBankConfig != nil {
-		fromMemoryBankConfig, err = reasoningEngineContextSpecMemoryBankConfigToVertex(fromMemoryBankConfig.(map[string]any), toObject, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"memoryBankConfig"}, fromMemoryBankConfig)
-	}
-
-	return toObject, nil
-}
-
-func reasoningEngineFromVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromEncryptionSpec := genai.InternalGetValueByPath(fromObject, []string{"encryptionSpec"})
-	if fromEncryptionSpec != nil {
-		genai.InternalSetValueByPath(toObject, []string{"encryptionSpec"}, fromEncryptionSpec)
-	}
-
-	fromContextSpec := genai.InternalGetValueByPath(fromObject, []string{"contextSpec"})
-	if fromContextSpec != nil {
-		fromContextSpec, err = reasoningEngineContextSpecFromVertex(fromContextSpec.(map[string]any), toObject, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"contextSpec"}, fromContextSpec)
-	}
-
-	fromCreateTime := genai.InternalGetValueByPath(fromObject, []string{"createTime"})
-	if fromCreateTime != nil {
-		genai.InternalSetValueByPath(toObject, []string{"createTime"}, fromCreateTime)
-	}
-
-	fromDescription := genai.InternalGetValueByPath(fromObject, []string{"description"})
-	if fromDescription != nil {
-		genai.InternalSetValueByPath(toObject, []string{"description"}, fromDescription)
-	}
-
-	fromDisplayName := genai.InternalGetValueByPath(fromObject, []string{"displayName"})
-	if fromDisplayName != nil {
-		genai.InternalSetValueByPath(toObject, []string{"displayName"}, fromDisplayName)
-	}
-
-	fromEtag := genai.InternalGetValueByPath(fromObject, []string{"etag"})
-	if fromEtag != nil {
-		genai.InternalSetValueByPath(toObject, []string{"etag"}, fromEtag)
-	}
-
-	fromLabels := genai.InternalGetValueByPath(fromObject, []string{"labels"})
-	if fromLabels != nil {
-		genai.InternalSetValueByPath(toObject, []string{"labels"}, fromLabels)
-	}
-
-	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
-	if fromName != nil {
-		genai.InternalSetValueByPath(toObject, []string{"name"}, fromName)
-	}
-
-	fromSpec := genai.InternalGetValueByPath(fromObject, []string{"spec"})
-	if fromSpec != nil {
-		genai.InternalSetValueByPath(toObject, []string{"spec"}, fromSpec)
-	}
-
-	fromUpdateTime := genai.InternalGetValueByPath(fromObject, []string{"updateTime"})
-	if fromUpdateTime != nil {
-		genai.InternalSetValueByPath(toObject, []string{"updateTime"}, fromUpdateTime)
-	}
-
-	fromTrafficConfig := genai.InternalGetValueByPath(fromObject, []string{"trafficConfig"})
-	if fromTrafficConfig != nil {
-		genai.InternalSetValueByPath(toObject, []string{"trafficConfig"}, fromTrafficConfig)
-	}
-
-	return toObject, nil
-}
-
-func structuredMemoryConfigFromVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromSchemaConfigs := genai.InternalGetValueByPath(fromObject, []string{"schemaConfigs"})
-	if fromSchemaConfigs != nil {
-		fromSchemaConfigs, err = genai.InternalApplyConverterToSliceWithRoot(fromSchemaConfigs.([]any), structuredMemorySchemaConfigFromVertex, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"schemaConfigs"}, fromSchemaConfigs)
-	}
-
-	fromScopeKeys := genai.InternalGetValueByPath(fromObject, []string{"scopeKeys"})
-	if fromScopeKeys != nil {
-		genai.InternalSetValueByPath(toObject, []string{"scopeKeys"}, fromScopeKeys)
-	}
-
-	return toObject, nil
-}
-
-func structuredMemoryConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromSchemaConfigs := genai.InternalGetValueByPath(fromObject, []string{"schemaConfigs"})
-	if fromSchemaConfigs != nil {
-		fromSchemaConfigs, err = genai.InternalApplyConverterToSliceWithRoot(fromSchemaConfigs.([]any), structuredMemorySchemaConfigToVertex, rootObject)
-		if err != nil {
-			return nil, err
-		}
-
-		genai.InternalSetValueByPath(toObject, []string{"schemaConfigs"}, fromSchemaConfigs)
-	}
-
-	fromScopeKeys := genai.InternalGetValueByPath(fromObject, []string{"scopeKeys"})
-	if fromScopeKeys != nil {
-		genai.InternalSetValueByPath(toObject, []string{"scopeKeys"}, fromScopeKeys)
-	}
-
-	return toObject, nil
-}
-
-func structuredMemorySchemaConfigFromVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromMemorySchema := genai.InternalGetValueByPath(fromObject, []string{"schema"})
-	if fromMemorySchema != nil {
-		genai.InternalSetValueByPath(toObject, []string{"memorySchema"}, fromMemorySchema)
-	}
-
-	fromId := genai.InternalGetValueByPath(fromObject, []string{"id"})
-	if fromId != nil {
-		genai.InternalSetValueByPath(toObject, []string{"id"}, fromId)
-	}
-
-	fromMemoryType := genai.InternalGetValueByPath(fromObject, []string{"memoryType"})
-	if fromMemoryType != nil {
-		genai.InternalSetValueByPath(toObject, []string{"memoryType"}, fromMemoryType)
-	}
-
-	return toObject, nil
-}
-
-func structuredMemorySchemaConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
-	toObject = make(map[string]any)
-
-	fromMemorySchema := genai.InternalGetValueByPath(fromObject, []string{"memorySchema"})
-	if fromMemorySchema != nil {
-		genai.InternalSetValueByPath(toObject, []string{"schema"}, fromMemorySchema)
-	}
-
-	fromId := genai.InternalGetValueByPath(fromObject, []string{"id"})
-	if fromId != nil {
-		genai.InternalSetValueByPath(toObject, []string{"id"}, fromId)
-	}
-
-	fromMemoryType := genai.InternalGetValueByPath(fromObject, []string{"memoryType"})
-	if fromMemoryType != nil {
-		genai.InternalSetValueByPath(toObject, []string{"memoryType"}, fromMemoryType)
-	}
-
-	return toObject, nil
-}
-
-func updateAgentEngineConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func updateRuntimeConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromDisplayName := genai.InternalGetValueByPath(fromObject, []string{"displayName"})
@@ -565,6 +272,11 @@ func updateAgentEngineConfigToVertex(fromObject map[string]any, parentObject map
 	fromPscInterfaceConfig := genai.InternalGetValueByPath(fromObject, []string{"pscInterfaceConfig"})
 	if fromPscInterfaceConfig != nil {
 		genai.InternalSetValueByPath(parentObject, []string{"pscInterfaceConfig"}, fromPscInterfaceConfig)
+	}
+
+	fromAgentGatewayConfig := genai.InternalGetValueByPath(fromObject, []string{"agentGatewayConfig"})
+	if fromAgentGatewayConfig != nil {
+		genai.InternalSetValueByPath(parentObject, []string{"agentGatewayConfig"}, fromAgentGatewayConfig)
 	}
 
 	fromEncryptionSpec := genai.InternalGetValueByPath(fromObject, []string{"encryptionSpec"})
@@ -607,11 +319,6 @@ func updateAgentEngineConfigToVertex(fromObject map[string]any, parentObject map
 		genai.InternalSetValueByPath(parentObject, []string{"pythonVersion"}, fromPythonVersion)
 	}
 
-	fromAgentGatewayConfig := genai.InternalGetValueByPath(fromObject, []string{"agentGatewayConfig"})
-	if fromAgentGatewayConfig != nil {
-		genai.InternalSetValueByPath(parentObject, []string{"agentGatewayConfig"}, fromAgentGatewayConfig)
-	}
-
 	fromUpdateMask := genai.InternalGetValueByPath(fromObject, []string{"updateMask"})
 	if fromUpdateMask != nil {
 		genai.InternalSetValueByPath(parentObject, []string{"_query", "updateMask"}, fromUpdateMask)
@@ -620,7 +327,7 @@ func updateAgentEngineConfigToVertex(fromObject map[string]any, parentObject map
 	return toObject, nil
 }
 
-func updateAgentEngineRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func updateRuntimeRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -630,7 +337,7 @@ func updateAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		_, err = updateAgentEngineConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = updateRuntimeConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
@@ -639,11 +346,11 @@ func updateAgentEngineRequestParametersToVertex(fromObject map[string]any, paren
 	return toObject, nil
 }
 
-type AgentEngines struct {
+type Runtimes struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m AgentEngines) create(ctx context.Context, config *types.CreateAgentEngineConfig) (*types.AgentEngineOperation, error) {
+func (m Runtimes) create(ctx context.Context, config *types.CreateRuntimeConfig) (*types.RuntimeOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"config": config}
@@ -658,13 +365,12 @@ func (m AgentEngines) create(ctx context.Context, config *types.CreateAgentEngin
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.AgentEngineOperation)
+	var response = new(types.RuntimeOperation)
 	var responseMap map[string]any
-	var fromConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = createAgentEngineRequestParametersToVertex
-		fromConverter = agentEngineOperationFromVertex
+		toConverter = createRuntimeRequestParametersToVertex
+
 	} else {
 
 		return nil, fmt.Errorf("method Create is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
@@ -702,12 +408,6 @@ func (m AgentEngines) create(ctx context.Context, config *types.CreateAgentEngin
 	if err != nil {
 		return nil, err
 	}
-	if fromConverter != nil {
-		responseMap, err = fromConverter(responseMap, nil, parameterMap)
-	}
-	if err != nil {
-		return nil, err
-	}
 	err = genai.InternalMapToStruct(responseMap, response)
 	if err != nil {
 		return nil, err
@@ -726,7 +426,7 @@ func (m AgentEngines) create(ctx context.Context, config *types.CreateAgentEngin
 	return response, nil
 }
 
-func (m AgentEngines) delete(ctx context.Context, name string, force *bool, config *types.DeleteAgentEngineConfig) (*types.DeleteAgentEngineOperation, error) {
+func (m Runtimes) delete(ctx context.Context, name string, force *bool, config *types.DeleteRuntimeConfig) (*types.DeleteRuntimeOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "force": force, "config": config}
@@ -741,11 +441,11 @@ func (m AgentEngines) delete(ctx context.Context, name string, force *bool, conf
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.DeleteAgentEngineOperation)
+	var response = new(types.DeleteRuntimeOperation)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = deleteAgentEngineRequestParametersToVertex
+		toConverter = deleteRuntimeRequestParametersToVertex
 
 	} else {
 
@@ -802,7 +502,7 @@ func (m AgentEngines) delete(ctx context.Context, name string, force *bool, conf
 	return response, nil
 }
 
-func (m AgentEngines) get(ctx context.Context, name string, config *types.GetAgentEngineConfig) (*types.ReasoningEngine, error) {
+func (m Runtimes) get(ctx context.Context, name string, config *types.GetRuntimeConfig) (*types.ReasoningEngine, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -819,11 +519,10 @@ func (m AgentEngines) get(ctx context.Context, name string, config *types.GetAge
 	}
 	var response = new(types.ReasoningEngine)
 	var responseMap map[string]any
-	var fromConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = getAgentEngineRequestParametersToVertex
-		fromConverter = reasoningEngineFromVertex
+		toConverter = getRuntimeRequestParametersToVertex
+
 	} else {
 
 		return nil, fmt.Errorf("method Get is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
@@ -861,12 +560,6 @@ func (m AgentEngines) get(ctx context.Context, name string, config *types.GetAge
 	if err != nil {
 		return nil, err
 	}
-	if fromConverter != nil {
-		responseMap, err = fromConverter(responseMap, nil, parameterMap)
-	}
-	if err != nil {
-		return nil, err
-	}
 	err = genai.InternalMapToStruct(responseMap, response)
 	if err != nil {
 		return nil, err
@@ -885,7 +578,7 @@ func (m AgentEngines) get(ctx context.Context, name string, config *types.GetAge
 	return response, nil
 }
 
-func (m AgentEngines) list(ctx context.Context, config *types.ListAgentEngineConfig) (*types.ListReasoningEnginesResponse, error) {
+func (m Runtimes) list(ctx context.Context, config *types.ListRuntimeConfig) (*types.ListReasoningEnginesResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"config": config}
@@ -904,7 +597,7 @@ func (m AgentEngines) list(ctx context.Context, config *types.ListAgentEngineCon
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = listAgentEngineRequestParametersToVertex
+		toConverter = listRuntimeRequestParametersToVertex
 
 	} else {
 
@@ -961,7 +654,7 @@ func (m AgentEngines) list(ctx context.Context, config *types.ListAgentEngineCon
 	return response, nil
 }
 
-func (m AgentEngines) getAgentOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineOperation, error) {
+func (m Runtimes) getAgentOperation(ctx context.Context, operationName string, config *types.GetRuntimeOperationConfig) (*types.RuntimeOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"operationName": operationName, "config": config}
@@ -976,13 +669,12 @@ func (m AgentEngines) getAgentOperation(ctx context.Context, operationName strin
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.AgentEngineOperation)
+	var response = new(types.RuntimeOperation)
 	var responseMap map[string]any
-	var fromConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = getAgentEngineOperationParametersToVertex
-		fromConverter = agentEngineOperationFromVertex
+		toConverter = getRuntimeOperationParametersToVertex
+
 	} else {
 
 		return nil, fmt.Errorf("method GetAgentOperation is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
@@ -1020,12 +712,6 @@ func (m AgentEngines) getAgentOperation(ctx context.Context, operationName strin
 	if err != nil {
 		return nil, err
 	}
-	if fromConverter != nil {
-		responseMap, err = fromConverter(responseMap, nil, parameterMap)
-	}
-	if err != nil {
-		return nil, err
-	}
 	err = genai.InternalMapToStruct(responseMap, response)
 	if err != nil {
 		return nil, err
@@ -1044,7 +730,7 @@ func (m AgentEngines) getAgentOperation(ctx context.Context, operationName strin
 	return response, nil
 }
 
-func (m AgentEngines) query(ctx context.Context, name string, config *types.QueryAgentEngineConfig) (*types.QueryReasoningEngineResponse, error) {
+func (m Runtimes) query(ctx context.Context, name string, config *types.QueryRuntimeConfig) (*types.QueryReasoningEngineResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -1063,7 +749,7 @@ func (m AgentEngines) query(ctx context.Context, name string, config *types.Quer
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = queryAgentEngineRequestParametersToVertex
+		toConverter = queryRuntimeRequestParametersToVertex
 
 	} else {
 
@@ -1120,7 +806,7 @@ func (m AgentEngines) query(ctx context.Context, name string, config *types.Quer
 	return response, nil
 }
 
-func (m AgentEngines) update(ctx context.Context, name string, config *types.UpdateAgentEngineConfig) (*types.AgentEngineOperation, error) {
+func (m Runtimes) update(ctx context.Context, name string, config *types.UpdateRuntimeConfig) (*types.RuntimeOperation, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -1135,13 +821,12 @@ func (m AgentEngines) update(ctx context.Context, name string, config *types.Upd
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.AgentEngineOperation)
+	var response = new(types.RuntimeOperation)
 	var responseMap map[string]any
-	var fromConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = updateAgentEngineRequestParametersToVertex
-		fromConverter = agentEngineOperationFromVertex
+		toConverter = updateRuntimeRequestParametersToVertex
+
 	} else {
 
 		return nil, fmt.Errorf("method Update is only supported in Gemini Enterprise Agent Platform mode, not in Gemini Developer API mode. You can choose to use Gemini Enterprise Agent Platform by setting ClientConfig.Backend to BackendEnterprise.")
@@ -1179,12 +864,6 @@ func (m AgentEngines) update(ctx context.Context, name string, config *types.Upd
 	if err != nil {
 		return nil, err
 	}
-	if fromConverter != nil {
-		responseMap, err = fromConverter(responseMap, nil, parameterMap)
-	}
-	if err != nil {
-		return nil, err
-	}
 	err = genai.InternalMapToStruct(responseMap, response)
 	if err != nil {
 		return nil, err
@@ -1203,43 +882,106 @@ func (m AgentEngines) update(ctx context.Context, name string, config *types.Upd
 	return response, nil
 }
 
-// Create creates an agent engine based on the provided configuration and returns the operation
-// object representing the creation process.
-func (m AgentEngines) Create(ctx context.Context, config *types.CreateAgentEngineConfig) (*types.AgentEngineOperation, error) {
+// archiveSourceDir reads a local source directory securely using os.OpenRoot
+// and returns an in-memory gzipped tarball (.tar.gz) as a byte slice.
+func archiveSourceDir(sourceDir string) ([]byte, error) {
+	// Root directory isolation and security boundary via os.OpenRoot
+	root, err := os.OpenRoot(sourceDir)
+	if err != nil {
+		return nil, fmt.Errorf("failed to open root directory %q: %w", sourceDir, err)
+	}
+	defer root.Close()
+
+	// In-memory 3-layer archiving pipeline
+	var buf bytes.Buffer
+	gw := gzip.NewWriter(&buf)
+	tw := tar.NewWriter(gw)
+
+	// File entry processing function for tar packaging
+	walkFn := func(path string, d fs.DirEntry, walkErr error) error {
+		if walkErr != nil {
+			return walkErr
+		}
+		if path == "." {
+			return nil
+		}
+		info, err := d.Info()
+		if err != nil {
+			return fmt.Errorf("failed to get file info for %q: %w", path, err)
+		}
+
+		// Symlink target resolution
+		var link string
+		if info.Mode()&os.ModeSymlink != 0 {
+			link, err = root.Readlink(path)
+			if err != nil {
+				return fmt.Errorf("failed to read symlink target for %q: %w", path, err)
+			}
+		}
+
+		header, err := tar.FileInfoHeader(info, link)
+		if err != nil {
+			return fmt.Errorf("failed to create tar header for %q: %w", path, err)
+		}
+		header.Name = filepath.ToSlash(path)
+		if err := tw.WriteHeader(header); err != nil {
+			return fmt.Errorf("failed to write tar header for %q: %w", path, err)
+		}
+		if info.Mode().IsRegular() {
+			file, err := root.Open(path)
+			if err != nil {
+				return fmt.Errorf("failed to open file securely %q: %w", path, err)
+			}
+			defer file.Close()
+			if _, err := io.Copy(tw, file); err != nil {
+				return fmt.Errorf("failed to copy file %q: %w", path, err)
+			}
+		}
+		return nil
+	}
+
+	// Recursive directory traversal under root security boundary
+	if err := fs.WalkDir(root.FS(), ".", walkFn); err != nil {
+		return nil, fmt.Errorf("error archiving directory: %w", err)
+	}
+
+	// Flush and close
+	if err := tw.Close(); err != nil {
+		return nil, err
+	}
+	if err := gw.Close(); err != nil {
+		return nil, err
+	}
+
+	// Archive byte slice return
+	return buf.Bytes(), nil
+}
+
+// Create deploys an Agent Runtime instance based on the provided configuration.
+// If local source packages are specified, it automatically archives and encodes
+// the directory before submitting the creation request.
+func (m Runtimes) Create(ctx context.Context, config *types.CreateRuntimeConfig) (*types.RuntimeOperation, error) {
+	// Local source code archival
+	if config != nil && len(config.SourcePackages) > 0 {
+		if len(config.SourcePackages) > 1 {
+			return nil, fmt.Errorf("multiple source packages are not supported, found %d", len(config.SourcePackages))
+		}
+		archive, err := archiveSourceDir(config.SourcePackages[0])
+		if err != nil {
+			return nil, fmt.Errorf("archive source directory: %w", err)
+		}
+		if config.Spec == nil {
+			config.Spec = &types.ReasoningEngineSpec{}
+		}
+		if config.Spec.SourceCodeSpec == nil {
+			config.Spec.SourceCodeSpec = &types.ReasoningEngineSpecSourceCodeSpec{}
+		}
+		if config.Spec.SourceCodeSpec.InlineSource == nil {
+			config.Spec.SourceCodeSpec.InlineSource = &types.ReasoningEngineSpecSourceCodeSpecInlineSource{}
+		}
+		config.Spec.SourceCodeSpec.InlineSource.SourceArchive = archive
+	}
+
+	// Backend API dispatch
 	return m.create(ctx, config)
-}
-
-// Delete deletes the agent engine with the specified name and returns the operation object
-// representing the deletion process.
-func (m AgentEngines) Delete(ctx context.Context, name string, force *bool, config *types.DeleteAgentEngineConfig) (*types.DeleteAgentEngineOperation, error) {
-	return m.delete(ctx, name, force, config)
-}
-
-// Get returns the agent engine with the specified name and returns the agent engine object
-// representing the get agent engine process.
-func (m AgentEngines) Get(ctx context.Context, name string, config *types.GetAgentEngineConfig) (*types.ReasoningEngine, error) {
-	return m.get(ctx, name, config)
-}
-
-// GetAgentOperation returns the operation object representing the get agent operation process.
-func (m AgentEngines) GetAgentOperation(ctx context.Context, operationName string, config *types.GetAgentEngineOperationConfig) (*types.AgentEngineOperation, error) {
-	return m.getAgentOperation(ctx, operationName, config)
-}
-
-// List lists the agent engines that match the provided configuration and returns the list of
-// agent engines and the operation object representing the listing process.
-func (m AgentEngines) List(ctx context.Context, config *types.ListAgentEngineConfig) (*types.ListReasoningEnginesResponse, error) {
-	return m.list(ctx, config)
-}
-
-// Query queries the agent engine with the specified name and returns the response object
-// representing the query agent engine process.
-func (m AgentEngines) Query(ctx context.Context, name string, config *types.QueryAgentEngineConfig) (*types.QueryReasoningEngineResponse, error) {
-	return m.query(ctx, name, config)
-}
-
-// Update updates the agent engine with the specified name and returns the operation object
-// representing the update process.
-func (m AgentEngines) Update(ctx context.Context, name string, config *types.UpdateAgentEngineConfig) (*types.AgentEngineOperation, error) {
-	return m.update(ctx, name, config)
 }
