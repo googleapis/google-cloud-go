@@ -35,11 +35,13 @@ import (
 	"cloud.google.com/go/internal/optional"
 	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2/callctx"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
+	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 )
 
@@ -70,6 +72,7 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 	config := newStorageConfig(o...)
 
 	var creds *auth.Credentials
+	var googleCreds *google.Credentials
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
 	// internal http client. However, in our case, "NewRangeReader" in reader.go needs to
@@ -91,6 +94,9 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		if err == nil {
 			creds = c
 			o = append(o, option.WithAuthCredentials(creds))
+		} else if gc, err := transport.Creds(ctx, o...); err == nil {
+			googleCreds = gc
+			o = append(o, option.WithCredentials(googleCreds))
 		}
 	} else {
 		var hostURL *url.URL
@@ -130,6 +136,8 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 		var project string
 		if creds != nil {
 			project, _ = creds.ProjectID(ctx)
+		} else if googleCreds != nil {
+			project = googleCreds.ProjectID
 		}
 		clientMetrics, metricsCleanup = initClientMetrics(ctx, project, &config)
 	}

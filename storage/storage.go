@@ -46,10 +46,12 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
+	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	raw "google.golang.org/api/storage/v1"
+	"google.golang.org/api/transport"
 	htransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/experimental/stats"
@@ -151,6 +153,7 @@ func (c Client) credsJSON() ([]byte, bool) {
 // package. You may also use options defined in this package, such as [WithJSONReads].
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	var creds *auth.Credentials
+	var googleCreds *google.Credentials
 
 	// In general, it is recommended to use raw.NewService instead of htransport.NewClient
 	// since raw.NewService configures the correct default endpoints when initializing the
@@ -175,6 +178,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		if err == nil {
 			creds = wrapAuthCredentials(c, nil)
 			opts = append(opts, option.WithAuthCredentials(creds))
+		} else if gc, err := transport.Creds(ctx, opts...); err == nil {
+			googleCreds = wrapGoogleCredentials(gc, nil)
+			opts = append(opts, option.WithCredentials(googleCreds))
 		}
 	} else {
 		var hostURL *url.URL
@@ -227,6 +233,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 	}
 
 	injectHTTPClientMetrics(creds, tc)
+	injectGoogleCredsMetrics(googleCreds, tc)
 
 	var tcWrapped storageClient = tc
 	if httpClient, ok := tc.(*httpStorageClient); ok && httpClient.metrics != nil {

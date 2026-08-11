@@ -632,20 +632,24 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 	if state != nil {
 		logicalMethod = state.method
 	}
-	attemptAttrs := []attribute.KeyValue{
+	attemptAttrs := make([]attribute.KeyValue, 0, 5)
+	attemptAttrs = append(attemptAttrs,
+		attribute.String("rpc.system.name", "grpc"),
 		attribute.String("rpc.method", logicalMethod),
 		attribute.Int64("rpc.grpc.status_code", statusCode),
 		attribute.String("error.type", errorType),
-	}
+	)
 	cm.attempts.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, attemptAttrs)...))
 
 	// Record standard error metric: gcp.storage.client.errors.
 	if err != nil && err != io.EOF {
-		errorAttrs := []attribute.KeyValue{
+		errorAttrs := make([]attribute.KeyValue, 0, 5)
+		errorAttrs = append(errorAttrs,
+			attribute.String("rpc.system.name", "grpc"),
 			attribute.String("rpc.method", logicalMethod),
 			attribute.String("error.type", errorType),
 			attribute.String("gcp.errors.domain", "storage.googleapis.com"),
-		}
+		)
 		cm.errors.Add(ctx, 1, metric.WithAttributes(injectAPIMethod(ctx, errorAttrs)...))
 	}
 
@@ -827,20 +831,24 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 
 	if rt.metrics != nil {
 		// Record attempt.
-		attemptAttrs := []attribute.KeyValue{
+		attemptAttrs := make([]attribute.KeyValue, 0, 4)
+		attemptAttrs = append(attemptAttrs,
+			attribute.String("rpc.system.name", "http"),
 			attribute.String("rpc.method", logicalMethod),
 			attribute.Int64("http.response.status_code", statusCode),
 			attribute.String("error.type", errorType),
-		}
+		)
 		rt.metrics.attempts.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), attemptAttrs)...))
 
 		// Record error if failed.
 		if err != nil || (resp != nil && resp.StatusCode >= 400) {
-			errorAttrs := []attribute.KeyValue{
+			errorAttrs := make([]attribute.KeyValue, 0, 4)
+			errorAttrs = append(errorAttrs,
+				attribute.String("rpc.system.name", "http"),
 				attribute.String("rpc.method", logicalMethod),
 				attribute.String("error.type", errorType),
 				attribute.String("gcp.errors.domain", "storage.googleapis.com"),
-			}
+			)
 			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), errorAttrs)...))
 		}
 
@@ -1731,6 +1739,17 @@ func injectHTTPClientMetrics(creds *auth.Credentials, tc storageClient) {
 	if mtp, ok := creds.TokenProvider.(*metricsTokenProvider); ok {
 		if hcTc, ok := tc.(*httpStorageClient); ok {
 			mtp.metrics = hcTc.metrics
+		}
+	}
+}
+
+func injectGoogleCredsMetrics(creds *google.Credentials, tc storageClient) {
+	if creds == nil {
+		return
+	}
+	if mts, ok := creds.TokenSource.(*metricsTokenSource); ok {
+		if hcTc, ok := tc.(*httpStorageClient); ok {
+			mts.metrics = hcTc.metrics
 		}
 	}
 }
