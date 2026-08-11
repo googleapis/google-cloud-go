@@ -339,7 +339,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	if isOtelDebugMetricsEnabled(config) {
 		networkBytesSent, err = meter.Int64Counter(
 			"gcp.storage.client.network.egress_bytes_count",
-			metric.WithDescription("Total physical compressed bytes sent over the wire socket (gRPC only)."),
+			metric.WithDescription("Total physical bytes sent over the wire socket (gRPC only)."),
 			metric.WithUnit("By"),
 		)
 		if err != nil {
@@ -348,7 +348,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		networkBytesReceived, err = meter.Int64Counter(
 			"gcp.storage.client.network.ingress_bytes_count",
-			metric.WithDescription("Total physical compressed bytes received over the wire socket (gRPC only)."),
+			metric.WithDescription("Total physical bytes received over the wire socket (gRPC only)."),
 			metric.WithUnit("By"),
 		)
 		if err != nil {
@@ -357,7 +357,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 		stallDuration, err = meter.Float64Histogram(
 			"gcp.storage.client.stall.duration",
-			metric.WithDescription("Measure time delta where a streaming connection yields 0 bytes of progress."),
+			metric.WithDescription("Measure time delta where a connection yields 0 bytes of progress."),
 			metric.WithUnit("s"),
 		)
 		if err != nil {
@@ -425,7 +425,6 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		if err != nil {
 			return nil, nil, err
 		}
-
 	}
 
 	cm := &clientMetrics{
@@ -1564,7 +1563,10 @@ func (h *grpcMetricsStatsHandler) HandleRPC(ctx context.Context, s stats.RPCStat
 	if v := ctx.Value(contextKeyRPCTag{}); v != nil {
 		method = v.(string)
 	}
-	attrs := metric.WithAttributes(attribute.String("rpc.method", method))
+	attrs := metric.WithAttributes(
+		attribute.String("rpc.system.name", "grpc"),
+		attribute.String("rpc.method", method),
+	)
 
 	switch st := s.(type) {
 	case *stats.InPayload:
@@ -1730,10 +1732,13 @@ func injectHTTPClientMetrics(creds *auth.Credentials, tc storageClient) {
 	}
 }
 
-func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string) {
+func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string, systemName string) {
 	if cm == nil || cm.stallDuration == nil {
 		return
 	}
-	attrs := []attribute.KeyValue{attribute.String("rpc.method", method)}
+	attrs := []attribute.KeyValue{
+		attribute.String("rpc.system.name", systemName),
+		attribute.String("rpc.method", method),
+	}
 	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }

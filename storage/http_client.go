@@ -1030,7 +1030,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			select {
 			case <-timer:
 				log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
-				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject")
+				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "http")
 				cancel()
 				<-done
 				if res != nil && res.Body != nil {
