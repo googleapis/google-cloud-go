@@ -1150,13 +1150,13 @@ type ListAgentEngineConfig struct {
 	Filter string `json:"filter,omitempty"`
 }
 
-// Response for listing agent engines.
+// Response for listing agent runtimes.
 type ListReasoningEnginesResponse struct {
 	// Optional. Used to retain the full HTTP response.
 	SDKHTTPResponse *genai_types.HTTPResponse `json:"sdkHttpResponse,omitempty"`
 
 	NextPageToken string `json:"nextPageToken,omitempty"`
-	// List of agent engines.
+	// List of agent runtimes.
 	ReasoningEngines []*ReasoningEngine `json:"reasoningEngines,omitempty"`
 }
 
@@ -1177,7 +1177,7 @@ type QueryAgentEngineConfig struct {
 	IncludeAllFields *bool `json:"includeAllFields,omitempty"`
 }
 
-// The response for querying an agent engine.
+// The response for querying an agent runtime.
 type QueryReasoningEngineResponse struct {
 	// Response provided by users in JSON object format.
 	Output any `json:"output,omitempty"`
@@ -1288,118 +1288,6 @@ type UpdateAgentEngineConfig struct {
 	UpdateMask string `json:"updateMask,omitempty"`
 }
 
-// Config for create memory bank.
-type CreateMemoryBankConfig struct {
-	// Optional. Used to override HTTP request options.
-	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
-}
-
-// A memory bank.
-type MemoryBank struct {
-	// Required. Represents the ID of the schema. Must be 1-63 characters, start with a
-	// lowercase letter, and consist of lowercase letters, numbers, and hyphens.
-	Name string `json:"name,omitempty"`
-}
-
-// Operation that has an memory bank as a response.
-type MemoryBankOperation struct {
-	// The server-assigned name, which is only unique within the same service that originally
-	// returns it. If you use the default HTTP mapping, the `name` should be a resource
-	// name ending with `operations/{unique_id}`.
-	Name string `json:"name,omitempty"`
-	// Optional. Service-specific metadata associated with the operation. It typically contains
-	// progress information and common metadata such as create time. Some services might
-	// not provide such metadata. Any method that returns a long-running operation should
-	// document the metadata type, if any.
-	Metadata map[string]any `json:"metadata,omitempty"`
-	// If the value is `false`, it means the operation is still in progress. If `true`,
-	// the operation is completed, and either `error` or `response` is available.
-	Done bool `json:"done,omitempty"`
-	// Optional. The error result of the operation in case of failure or cancellation.
-	Error map[string]any `json:"error,omitempty"`
-	// Optional. The created Memory Bank.
-	Response *MemoryBank `json:"response,omitempty"`
-}
-
-// Config for delete memory bank.
-type DeleteMemoryBankConfig struct {
-	// Optional. Used to override HTTP request options.
-	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
-}
-
-// Operation for deleting a memory bank.
-type DeleteMemoryBankOperation struct {
-	// The server-assigned name, which is only unique within the same service that originally
-	// returns it. If you use the default HTTP mapping, the `name` should be a resource
-	// name ending with `operations/{unique_id}`.
-	Name string `json:"name,omitempty"`
-	// Optional. Service-specific metadata associated with the operation. It typically contains
-	// progress information and common metadata such as create time. Some services might
-	// not provide such metadata. Any method that returns a long-running operation should
-	// document the metadata type, if any.
-	Metadata map[string]any `json:"metadata,omitempty"`
-	// If the value is `false`, it means the operation is still in progress. If `true`,
-	// the operation is completed, and either `error` or `response` is available.
-	Done bool `json:"done,omitempty"`
-	// Optional. The error result of the operation in case of failure or cancellation.
-	Error map[string]any `json:"error,omitempty"`
-}
-
-// The direct contents source event for ingesting events.
-type IngestionDirectContentsSourceEvent struct {
-	// Required. The content of the event.
-	Content *genai_types.Content `json:"content,omitempty"`
-	// Optional. A unique identifier for the event. If an event with the same event_id is
-	// ingested multiple times, it will be de-duplicated.
-	EventID string `json:"eventId,omitempty"`
-	// Optional. The time at which the event occurred. If provided, this timestamp will
-	// be used for ordering events within a stream. If not provided, the server-side ingestion
-	// time will be used.
-	EventTime time.Time `json:"eventTime,omitempty"`
-}
-
-func (i *IngestionDirectContentsSourceEvent) UnmarshalJSON(data []byte) error {
-	type Alias IngestionDirectContentsSourceEvent
-	aux := &struct {
-		EventTime *time.Time `json:"eventTime,omitempty"`
-		*Alias
-	}{
-		Alias: (*Alias)(i),
-	}
-
-	if err := json.Unmarshal(data, &aux); err != nil {
-		return err
-	}
-
-	if !reflect.ValueOf(aux.EventTime).IsZero() {
-		i.EventTime = time.Time(*aux.EventTime)
-	}
-
-	return nil
-}
-
-func (i *IngestionDirectContentsSourceEvent) MarshalJSON() ([]byte, error) {
-	type Alias IngestionDirectContentsSourceEvent
-	aux := &struct {
-		EventTime *time.Time `json:"eventTime,omitempty"`
-		*Alias
-	}{
-		Alias: (*Alias)(i),
-	}
-
-	if !reflect.ValueOf(i.EventTime).IsZero() {
-		aux.EventTime = (*time.Time)(&i.EventTime)
-	}
-
-	return json.Marshal(aux)
-}
-
-// The direct contents source for ingesting events.
-type IngestionDirectContentsSource struct {
-	// Required. The events to ingest.
-	Events []*IngestionDirectContentsSourceEvent `json:"events,omitempty"`
-}
-
 // The metadata values for memories.
 type MemoryMetadataValue struct {
 	// Represents a boolean value.
@@ -1449,105 +1337,8 @@ func (m *MemoryMetadataValue) MarshalJSON() ([]byte, error) {
 	return json.Marshal(aux)
 }
 
-// Config for ingesting events.
-type IngestEventsConfig struct {
-	// Optional. Used to override HTTP request options.
-	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
-	// Optional. Waits for the underlying memory generation operation to complete
-	// before returning. Defaults to false.
-	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
-	// Optional. Forces a flush of all pending events in the stream and triggers memory
-	// generation immediately bypassing any conditions configured in the `generation_trigger_config`.
-	ForceFlush *bool `json:"forceFlush,omitempty"`
-	// Optional. Labels to apply to the memory revision. For example, you can use this to
-	// label a revision with its data source.
-	RevisionLabels map[string]string `json:"revisionLabels,omitempty"`
-	// Optional. Input only. Timestamp of when the revision is considered expired. If not
-	// set, the memory revision will be kept until manually deleted.
-	RevisionExpireTime time.Time `json:"revisionExpireTime,omitempty"`
-	// Optional. Input only. The TTL for the revision. The expiration time is computed:
-	// now + TTL.
-	RevisionTTL time.Duration `json:"revisionTtl,omitempty"`
-	// Optional. Input only. If true, no revisions will be created for this request.
-	DisableMemoryRevisions *bool `json:"disableMemoryRevisions,omitempty"`
-	// Optional. User-provided metadata for the generated memories. This is not generated
-	// by Memory Bank.
-	Metadata map[string]*MemoryMetadataValue `json:"metadata,omitempty"`
-	// Optional. The strategy to use when applying metadata to existing memories.
-	MetadataMergeStrategy MemoryMetadataMergeStrategy `json:"metadataMergeStrategy,omitempty"`
-}
-
-func (i *IngestEventsConfig) UnmarshalJSON(data []byte) error {
-	type Alias IngestEventsConfig
-	aux := &struct {
-		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
-		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
-		*Alias
-	}{
-		Alias: (*Alias)(i),
-	}
-
-	if err := json.Unmarshal(data, &aux); err != nil {
-		return err
-	}
-
-	if !reflect.ValueOf(aux.RevisionExpireTime).IsZero() {
-		i.RevisionExpireTime = time.Time(*aux.RevisionExpireTime)
-	}
-
-	if !reflect.ValueOf(aux.RevisionTTL).IsZero() {
-		i.RevisionTTL = time.Duration(*aux.RevisionTTL)
-	}
-
-	return nil
-}
-
-func (i *IngestEventsConfig) MarshalJSON() ([]byte, error) {
-	type Alias IngestEventsConfig
-	aux := &struct {
-		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
-		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
-		*Alias
-	}{
-		Alias: (*Alias)(i),
-	}
-
-	if !reflect.ValueOf(i.RevisionExpireTime).IsZero() {
-		aux.RevisionExpireTime = (*time.Time)(&i.RevisionExpireTime)
-	}
-
-	if !reflect.ValueOf(i.RevisionTTL).IsZero() {
-		aux.RevisionTTL = (*genai_types.InternalDurationJSON)(&i.RevisionTTL)
-	}
-
-	return json.Marshal(aux)
-}
-
-// Operation that ingests events into a memory bank.
-type MemoryBankIngestEventsOperation struct {
-	// The server-assigned name, which is only unique within the same service that originally
-	// returns it. If you use the default HTTP mapping, the `name` should be a resource
-	// name ending with `operations/{unique_id}`.
-	Name string `json:"name,omitempty"`
-	// Optional. Service-specific metadata associated with the operation. It typically contains
-	// progress information and common metadata such as create time. Some services might
-	// not provide such metadata. Any method that returns a long-running operation should
-	// document the metadata type, if any.
-	Metadata map[string]any `json:"metadata,omitempty"`
-	// If the value is `false`, it means the operation is still in progress. If `true`,
-	// the operation is completed, and either `error` or `response` is available.
-	Done bool `json:"done,omitempty"`
-	// Optional. The error result of the operation in case of failure or cancellation.
-	Error map[string]any `json:"error,omitempty"`
-}
-
-type GetMemoryBankOperationConfig struct {
-	// Optional. Used to override HTTP request options.
-	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
-}
-
 // Config for creating a Memory.
-type MemoryConfig struct {
+type AgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. The display name of the memory.
@@ -1583,8 +1374,8 @@ type MemoryConfig struct {
 	MemoryID string `json:"memoryId,omitempty"`
 }
 
-func (m *MemoryConfig) UnmarshalJSON(data []byte) error {
-	type Alias MemoryConfig
+func (a *AgentEngineMemoryConfig) UnmarshalJSON(data []byte) error {
+	type Alias AgentEngineMemoryConfig
 	aux := &struct {
 		TTL                *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
 		ExpireTime         *time.Time                        `json:"expireTime,omitempty"`
@@ -1592,7 +1383,7 @@ func (m *MemoryConfig) UnmarshalJSON(data []byte) error {
 		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
 		*Alias
 	}{
-		Alias: (*Alias)(m),
+		Alias: (*Alias)(a),
 	}
 
 	if err := json.Unmarshal(data, &aux); err != nil {
@@ -1600,26 +1391,26 @@ func (m *MemoryConfig) UnmarshalJSON(data []byte) error {
 	}
 
 	if !reflect.ValueOf(aux.TTL).IsZero() {
-		m.TTL = time.Duration(*aux.TTL)
+		a.TTL = time.Duration(*aux.TTL)
 	}
 
 	if !reflect.ValueOf(aux.ExpireTime).IsZero() {
-		m.ExpireTime = time.Time(*aux.ExpireTime)
+		a.ExpireTime = time.Time(*aux.ExpireTime)
 	}
 
 	if !reflect.ValueOf(aux.RevisionExpireTime).IsZero() {
-		m.RevisionExpireTime = time.Time(*aux.RevisionExpireTime)
+		a.RevisionExpireTime = time.Time(*aux.RevisionExpireTime)
 	}
 
 	if !reflect.ValueOf(aux.RevisionTTL).IsZero() {
-		m.RevisionTTL = time.Duration(*aux.RevisionTTL)
+		a.RevisionTTL = time.Duration(*aux.RevisionTTL)
 	}
 
 	return nil
 }
 
-func (m *MemoryConfig) MarshalJSON() ([]byte, error) {
-	type Alias MemoryConfig
+func (a *AgentEngineMemoryConfig) MarshalJSON() ([]byte, error) {
+	type Alias AgentEngineMemoryConfig
 	aux := &struct {
 		TTL                *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
 		ExpireTime         *time.Time                        `json:"expireTime,omitempty"`
@@ -1627,23 +1418,23 @@ func (m *MemoryConfig) MarshalJSON() ([]byte, error) {
 		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
 		*Alias
 	}{
-		Alias: (*Alias)(m),
+		Alias: (*Alias)(a),
 	}
 
-	if !reflect.ValueOf(m.TTL).IsZero() {
-		aux.TTL = (*genai_types.InternalDurationJSON)(&m.TTL)
+	if !reflect.ValueOf(a.TTL).IsZero() {
+		aux.TTL = (*genai_types.InternalDurationJSON)(&a.TTL)
 	}
 
-	if !reflect.ValueOf(m.ExpireTime).IsZero() {
-		aux.ExpireTime = (*time.Time)(&m.ExpireTime)
+	if !reflect.ValueOf(a.ExpireTime).IsZero() {
+		aux.ExpireTime = (*time.Time)(&a.ExpireTime)
 	}
 
-	if !reflect.ValueOf(m.RevisionExpireTime).IsZero() {
-		aux.RevisionExpireTime = (*time.Time)(&m.RevisionExpireTime)
+	if !reflect.ValueOf(a.RevisionExpireTime).IsZero() {
+		aux.RevisionExpireTime = (*time.Time)(&a.RevisionExpireTime)
 	}
 
-	if !reflect.ValueOf(m.RevisionTTL).IsZero() {
-		aux.RevisionTTL = (*genai_types.InternalDurationJSON)(&m.RevisionTTL)
+	if !reflect.ValueOf(a.RevisionTTL).IsZero() {
+		aux.RevisionTTL = (*genai_types.InternalDurationJSON)(&a.RevisionTTL)
 	}
 
 	return json.Marshal(aux)
@@ -1793,8 +1584,8 @@ func (m *Memory) MarshalJSON() ([]byte, error) {
 	return json.Marshal(aux)
 }
 
-// Operation that has a memory as a response.
-type MemoryOperation struct {
+// Operation that has an agent engine memory as a response.
+type AgentEngineMemoryOperation struct {
 	// The server-assigned name, which is only unique within the same service that originally
 	// returns it. If you use the default HTTP mapping, the `name` should be a resource
 	// name ending with `operations/{unique_id}`.
@@ -1809,18 +1600,18 @@ type MemoryOperation struct {
 	Done bool `json:"done,omitempty"`
 	// Optional. The error result of the operation in case of failure or cancellation.
 	Error map[string]any `json:"error,omitempty"`
-	// Optional. The Memory.
+	// Optional. The Agent Engine Memory.
 	Response *Memory `json:"response,omitempty"`
 }
 
-// Config for deleting a Memory.
-type DeleteMemoryConfig struct {
+// Config for deleting an Agent Engine Memory.
+type DeleteAgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 }
 
-// Operation for deleting memories.
-type DeleteMemoryOperation struct {
+// Operation for deleting agent engines.
+type DeleteAgentEngineMemoryOperation struct {
 	// The server-assigned name, which is only unique within the same service that originally
 	// returns it. If you use the default HTTP mapping, the `name` should be a resource
 	// name ending with `operations/{unique_id}`.
@@ -1921,7 +1712,7 @@ type GenerateMemoriesRequestDirectMemoriesSource struct {
 }
 
 // Config for generating memories.
-type GenerateMemoriesConfig struct {
+type GenerateAgentEngineMemoriesConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. Whether to disable consolidation of memories.
@@ -1952,8 +1743,8 @@ type GenerateMemoriesConfig struct {
 	AllowedTopics []*MemoryTopicID `json:"allowedTopics,omitempty"`
 }
 
-func (g *GenerateMemoriesConfig) UnmarshalJSON(data []byte) error {
-	type Alias GenerateMemoriesConfig
+func (g *GenerateAgentEngineMemoriesConfig) UnmarshalJSON(data []byte) error {
+	type Alias GenerateAgentEngineMemoriesConfig
 	aux := &struct {
 		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
 		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
@@ -1977,8 +1768,8 @@ func (g *GenerateMemoriesConfig) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (g *GenerateMemoriesConfig) MarshalJSON() ([]byte, error) {
-	type Alias GenerateMemoriesConfig
+func (g *GenerateAgentEngineMemoriesConfig) MarshalJSON() ([]byte, error) {
+	type Alias GenerateAgentEngineMemoriesConfig
 	aux := &struct {
 		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
 		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
@@ -2018,8 +1809,8 @@ type GenerateMemoriesResponse struct {
 	GeneratedMemories []*GenerateMemoriesResponseGeneratedMemory `json:"generatedMemories,omitempty"`
 }
 
-// Operation that generates memories with a Memory Bank.
-type GenerateMemoriesOperation struct {
+// Operation that generates memories for an agent engine.
+type AgentEngineGenerateMemoriesOperation struct {
 	// The server-assigned name, which is only unique within the same service that originally
 	// returns it. If you use the default HTTP mapping, the `name` should be a resource
 	// name ending with `operations/{unique_id}`.
@@ -2038,14 +1829,161 @@ type GenerateMemoriesOperation struct {
 	Response *GenerateMemoriesResponse `json:"response,omitempty"`
 }
 
-// Config for getting a Memory.
-type GetMemoryConfig struct {
+// Config for getting an Agent Engine Memory.
+type GetAgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 }
 
-// Config for listing memories.
-type ListMemoriesConfig struct {
+// The direct contents source event for ingesting events.
+type IngestionDirectContentsSourceEvent struct {
+	// Required. The content of the event.
+	Content *genai_types.Content `json:"content,omitempty"`
+	// Optional. A unique identifier for the event. If an event with the same event_id is
+	// ingested multiple times, it will be de-duplicated.
+	EventID string `json:"eventId,omitempty"`
+	// Optional. The time at which the event occurred. If provided, this timestamp will
+	// be used for ordering events within a stream. If not provided, the server-side ingestion
+	// time will be used.
+	EventTime time.Time `json:"eventTime,omitempty"`
+}
+
+func (i *IngestionDirectContentsSourceEvent) UnmarshalJSON(data []byte) error {
+	type Alias IngestionDirectContentsSourceEvent
+	aux := &struct {
+		EventTime *time.Time `json:"eventTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(i),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.EventTime).IsZero() {
+		i.EventTime = time.Time(*aux.EventTime)
+	}
+
+	return nil
+}
+
+func (i *IngestionDirectContentsSourceEvent) MarshalJSON() ([]byte, error) {
+	type Alias IngestionDirectContentsSourceEvent
+	aux := &struct {
+		EventTime *time.Time `json:"eventTime,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(i),
+	}
+
+	if !reflect.ValueOf(i.EventTime).IsZero() {
+		aux.EventTime = (*time.Time)(&i.EventTime)
+	}
+
+	return json.Marshal(aux)
+}
+
+// The direct contents source for ingesting events.
+type IngestionDirectContentsSource struct {
+	// Required. The events to ingest.
+	Events []*IngestionDirectContentsSourceEvent `json:"events,omitempty"`
+}
+
+// Config for ingesting events.
+type IngestEventsConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. Waits for the underlying memory generation operation to complete
+	// before returning. Defaults to false.
+	WaitForCompletion *bool `json:"waitForCompletion,omitempty"`
+	// Optional. Forces a flush of all pending events in the stream and triggers memory
+	// generation immediately bypassing any conditions configured in the `generation_trigger_config`.
+	ForceFlush *bool `json:"forceFlush,omitempty"`
+	// Optional. Labels to apply to the memory revision. For example, you can use this to
+	// label a revision with its data source.
+	RevisionLabels map[string]string `json:"revisionLabels,omitempty"`
+	// Optional. Input only. Timestamp of when the revision is considered expired. If not
+	// set, the memory revision will be kept until manually deleted.
+	RevisionExpireTime time.Time `json:"revisionExpireTime,omitempty"`
+	// Optional. Input only. The TTL for the revision. The expiration time is computed:
+	// now + TTL.
+	RevisionTTL time.Duration `json:"revisionTtl,omitempty"`
+	// Optional. Input only. If true, no revisions will be created for this request.
+	DisableMemoryRevisions *bool `json:"disableMemoryRevisions,omitempty"`
+	// Optional. User-provided metadata for the generated memories. This is not generated
+	// by Memory Bank.
+	Metadata map[string]*MemoryMetadataValue `json:"metadata,omitempty"`
+	// Optional. The strategy to use when applying metadata to existing memories.
+	MetadataMergeStrategy MemoryMetadataMergeStrategy `json:"metadataMergeStrategy,omitempty"`
+}
+
+func (i *IngestEventsConfig) UnmarshalJSON(data []byte) error {
+	type Alias IngestEventsConfig
+	aux := &struct {
+		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
+		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(i),
+	}
+
+	if err := json.Unmarshal(data, &aux); err != nil {
+		return err
+	}
+
+	if !reflect.ValueOf(aux.RevisionExpireTime).IsZero() {
+		i.RevisionExpireTime = time.Time(*aux.RevisionExpireTime)
+	}
+
+	if !reflect.ValueOf(aux.RevisionTTL).IsZero() {
+		i.RevisionTTL = time.Duration(*aux.RevisionTTL)
+	}
+
+	return nil
+}
+
+func (i *IngestEventsConfig) MarshalJSON() ([]byte, error) {
+	type Alias IngestEventsConfig
+	aux := &struct {
+		RevisionExpireTime *time.Time                        `json:"revisionExpireTime,omitempty"`
+		RevisionTTL        *genai_types.InternalDurationJSON `json:"revisionTtl,omitempty"`
+		*Alias
+	}{
+		Alias: (*Alias)(i),
+	}
+
+	if !reflect.ValueOf(i.RevisionExpireTime).IsZero() {
+		aux.RevisionExpireTime = (*time.Time)(&i.RevisionExpireTime)
+	}
+
+	if !reflect.ValueOf(i.RevisionTTL).IsZero() {
+		aux.RevisionTTL = (*genai_types.InternalDurationJSON)(&i.RevisionTTL)
+	}
+
+	return json.Marshal(aux)
+}
+
+// Operation that ingests events into a memory bank.
+type MemoryBankIngestEventsOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+}
+
+// Config for listing agent engine memories.
+type ListAgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. PageSize specifies the maximum number of cached contents to return per
@@ -2069,13 +2007,13 @@ type ListMemoriesConfig struct {
 	OrderBy string `json:"orderBy,omitempty"`
 }
 
-// Response for listing memories.
-type ListMemoriesResponse struct {
+// Response for listing agent engine memories.
+type ListReasoningEnginesMemoriesResponse struct {
 	// Optional. Used to retain the full HTTP response.
 	SDKHTTPResponse *genai_types.HTTPResponse `json:"sdkHttpResponse,omitempty"`
 
 	NextPageToken string `json:"nextPageToken,omitempty"`
-	// List of memories.
+	// List of agent engine memories.
 	Memories []*Memory `json:"memories,omitempty"`
 }
 
@@ -2122,7 +2060,7 @@ type MemoryConjunctionFilter struct {
 }
 
 // Config for retrieving memories.
-type RetrieveMemoriesConfig struct {
+type RetrieveAgentEngineMemoriesConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. The standard list filter that will be applied to the retrieved
@@ -2195,7 +2133,7 @@ type RetrieveProfilesResponse struct {
 }
 
 // Config for rolling back a memory.
-type RollbackMemoryConfig struct {
+type RollbackAgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. Waits for the operation to complete before returning.
@@ -2203,7 +2141,7 @@ type RollbackMemoryConfig struct {
 }
 
 // Operation that rolls back a memory.
-type RollbackMemoryOperation struct {
+type AgentEngineRollbackMemoryOperation struct {
 	// The server-assigned name, which is only unique within the same service that originally
 	// returns it. If you use the default HTTP mapping, the `name` should be a resource
 	// name ending with `operations/{unique_id}`.
@@ -2220,8 +2158,8 @@ type RollbackMemoryOperation struct {
 	Error map[string]any `json:"error,omitempty"`
 }
 
-// Config for updating a memory.
-type UpdateMemoryConfig struct {
+// Config for updating agent engine memory.
+type UpdateAgentEngineMemoryConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. The display name of the memory.
@@ -2260,8 +2198,8 @@ type UpdateMemoryConfig struct {
 	UpdateMask string `json:"updateMask,omitempty"`
 }
 
-func (u *UpdateMemoryConfig) UnmarshalJSON(data []byte) error {
-	type Alias UpdateMemoryConfig
+func (u *UpdateAgentEngineMemoryConfig) UnmarshalJSON(data []byte) error {
+	type Alias UpdateAgentEngineMemoryConfig
 	aux := &struct {
 		TTL                *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
 		ExpireTime         *time.Time                        `json:"expireTime,omitempty"`
@@ -2295,8 +2233,8 @@ func (u *UpdateMemoryConfig) UnmarshalJSON(data []byte) error {
 	return nil
 }
 
-func (u *UpdateMemoryConfig) MarshalJSON() ([]byte, error) {
-	type Alias UpdateMemoryConfig
+func (u *UpdateAgentEngineMemoryConfig) MarshalJSON() ([]byte, error) {
+	type Alias UpdateAgentEngineMemoryConfig
 	aux := &struct {
 		TTL                *genai_types.InternalDurationJSON `json:"ttl,omitempty"`
 		ExpireTime         *time.Time                        `json:"expireTime,omitempty"`
@@ -2327,7 +2265,7 @@ func (u *UpdateMemoryConfig) MarshalJSON() ([]byte, error) {
 }
 
 // Config for purging memories.
-type PurgeMemoriesConfig struct {
+type PurgeAgentEngineMemoriesConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. Waits for the operation to complete before returning.
@@ -2340,8 +2278,8 @@ type PurgeMemoriesResponse struct {
 	PurgeCount int32 `json:"purgeCount,omitempty"`
 }
 
-// Operation that purges memories from a Memory Bank.
-type PurgeMemoriesOperation struct {
+// Operation that purges memories from an agent engine.
+type AgentEnginePurgeMemoriesOperation struct {
 	// The server-assigned name, which is only unique within the same service that originally
 	// returns it. If you use the default HTTP mapping, the `name` should be a resource
 	// name ending with `operations/{unique_id}`.
@@ -2360,8 +2298,8 @@ type PurgeMemoriesOperation struct {
 	Response *PurgeMemoriesResponse `json:"response,omitempty"`
 }
 
-// Config for getting a Memory Revision.
-type GetMemoryRevisionConfig struct {
+// Config for getting an Agent Engine Memory Revision.
+type GetAgentEngineMemoryRevisionConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 }
@@ -2446,8 +2384,8 @@ func (m *MemoryRevision) MarshalJSON() ([]byte, error) {
 	return json.Marshal(aux)
 }
 
-// Config for listing memory revisions.
-type ListMemoryRevisionsConfig struct {
+// Config for listing Agent Engine memory revisions.
+type ListAgentEngineMemoryRevisionsConfig struct {
 	// Optional. Used to override HTTP request options.
 	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
 	// Optional. PageSize specifies the maximum number of cached contents to return per
@@ -2463,14 +2401,305 @@ type ListMemoryRevisionsConfig struct {
 	Filter string `json:"filter,omitempty"`
 }
 
-// Response for listing memory revisions.
-type ListMemoryRevisionsResponse struct {
+// Response for listing agent engine memory revisions.
+type ListAgentEngineMemoryRevisionsResponse struct {
 	// Optional. Used to retain the full HTTP response.
 	SDKHTTPResponse *genai_types.HTTPResponse `json:"sdkHttpResponse,omitempty"`
 
 	NextPageToken string `json:"nextPageToken,omitempty"`
 	// List of memory revisions.
 	MemoryRevisions []*MemoryRevision `json:"memoryRevisions,omitempty"`
+}
+
+// Config for create agent runtime.
+type CreateRuntimeConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The user-defined name of the Agent Runtime.
+	// The display name can be up to 128 characters long and can comprise any
+	// UTF-8 characters.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. The description of the Agent Runtime.
+	Description string `json:"description,omitempty"`
+	// Optional. Configurations of the Agent Runtime.
+	Spec *ReasoningEngineSpec `json:"spec,omitempty"`
+	// Optional. The context spec to be used for the Agent Runtime.
+	ContextSpec *ReasoningEngineContextSpec `json:"contextSpec,omitempty"`
+	// Optional. The PSC interface config for PSC-I to be used for the
+	// Agent Runtime.
+	PscInterfaceConfig *PscInterfaceConfig `json:"pscInterfaceConfig,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
+	// Optional. The minimum number of instances to run for the Agent Runtime.
+	// Defaults to 1. Range: [0, 10].
+	MinInstances *int32 `json:"minInstances,omitempty"`
+	// Optional. The maximum number of instances to run for the Agent Runtime.
+	// Defaults to 100. Range: [1, 1000].
+	// If VPC-SC or PSC-I is enabled, the acceptable range is [1, 100].
+	MaxInstances *int32 `json:"maxInstances,omitempty"`
+	// Optional. The resource limits to be applied to the Agent Runtime.
+	// Required keys: 'cpu' and 'memory'.
+	// Supported values for 'cpu': '1', '2', '4', '6', '8'.
+	// Supported values for 'memory': '1Gi', '2Gi', ..., '32Gi'.
+	ResourceLimits map[string]string `json:"resourceLimits,omitempty"`
+	// Optional. The container concurrency to be used for the Agent Runtime.
+	// Recommended value: 2 * cpu + 1. Defaults to 9.
+	ContainerConcurrency *int32 `json:"containerConcurrency,omitempty"`
+	// Optional. Specifies the configuration for keep-alive probe.
+	// Contains configuration on a specified endpoint that a deployment host
+	// should use to keep the container alive based on the probe settings.
+	KeepAliveProbe *KeepAliveProbe `json:"keepAliveProbe,omitempty"`
+	// Optional. The encryption spec to be used for the Agent Runtime.
+	EncryptionSpec *genai_types.EncryptionSpec `json:"encryptionSpec,omitempty"`
+	// Optional. The labels to be used for the Agent Runtime.
+	Labels map[string]string `json:"labels,omitempty"`
+	// Optional. The class methods to be used for the Agent Runtime.
+	// If specified, they'll override the class methods that are autogenerated by
+	// default. By default, methods are generated by inspecting the agent object
+	// and generating a corresponding method for each method defined on the
+	// agent class.
+	ClassMethods []map[string]any `json:"classMethods,omitempty"`
+	// Optional. The user-provided paths to the source packages (if any).
+	// If specified, the files in the source packages will be packed into a
+	// a tarball file, uploaded to Agent Runtime's API, and deployed to the
+	// Agent Runtime.
+	// The following fields will be ignored:
+	//   - agent
+	//   - extra_packages
+	//   - staging_bucket
+	//   - requirements
+	// The following fields will be used to install and use the agent from the
+	// source packages:
+	//   - entrypoint_module (required)
+	//   - entrypoint_object (required)
+	//   - requirements_file (optional)
+	//   - class_methods (required)
+	SourcePackages []string `json:"sourcePackages,omitempty"`
+	// Optional. Specifies the configuration for fetching source code from a Git repository
+	// that is managed by Developer Connect. This includes the repository, revision, and
+	// directory to use.
+	DeveloperConnectSource *ReasoningEngineSpecSourceCodeSpecDeveloperConnectConfig `json:"developerConnectSource,omitempty"`
+	// Optional. The entrypoint module to be used for the Agent Runtime
+	// This field only used when source_packages is specified.
+	EntrypointModule string `json:"entrypointModule,omitempty"`
+	// Optional. The entrypoint object to be used for the Agent Runtime.
+	// This field only used when source_packages is specified.
+	EntrypointObject string `json:"entrypointObject,omitempty"`
+	// Optional. The user-provided path to the requirements file (if any).
+	// This field is only used when source_packages is specified.
+	// If not specified, agent runtime will find and use the `requirements.txt` in
+	// the source package.
+	RequirementsFile string `json:"requirementsFile,omitempty"`
+	// Optional. The agent framework to be used for the Agent Runtime.
+	// The OSS agent framework used to develop the agent.
+	// Currently supported values: "google-adk", "langchain", "langgraph",
+	// "ag2", "llama-index", "custom".
+	// If not specified:
+	//   - If `agent` is specified, the agent framework will be auto-detected.
+	//   - If `source_packages` is specified, the agent framework will
+	//     default to "custom".
+	AgentFramework string `json:"agentFramework,omitempty"`
+	// Optional. The Python version to be used for the Agent Runtime.
+	// If not specified, it will use the current Python version of the environment.
+	// Supported versions: "3.10", "3.11", "3.12", "3.13", "3.14".
+	PythonVersion string `json:"pythonVersion,omitempty"`
+	// Optional. The build options for the Agent Runtime.
+	// The following keys are supported:
+	//   - installation_scripts:
+	//     Optional. The paths to the installation scripts to be
+	//     executed in the Docker image.
+	//     The scripts must be located in the `installation_scripts`
+	//     subdirectory and the path must be added to `extra_packages`.
+	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+}
+
+// Operation that has an agent runtime as a response.
+type RuntimeOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+	// Optional. The created Agent Runtime.
+	Response *ReasoningEngine `json:"response,omitempty"`
+}
+
+// Config for deleting agent runtime.
+type DeleteRuntimeConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// Operation for deleting agent runtimes.
+type DeleteRuntimeOperation struct {
+	// The server-assigned name, which is only unique within the same service that originally
+	// returns it. If you use the default HTTP mapping, the `name` should be a resource
+	// name ending with `operations/{unique_id}`.
+	Name string `json:"name,omitempty"`
+	// Optional. Service-specific metadata associated with the operation. It typically contains
+	// progress information and common metadata such as create time. Some services might
+	// not provide such metadata. Any method that returns a long-running operation should
+	// document the metadata type, if any.
+	Metadata map[string]any `json:"metadata,omitempty"`
+	// If the value is `false`, it means the operation is still in progress. If `true`,
+	// the operation is completed, and either `error` or `response` is available.
+	Done bool `json:"done,omitempty"`
+	// Optional. The error result of the operation in case of failure or cancellation.
+	Error map[string]any `json:"error,omitempty"`
+}
+
+// Config for create agent runtime.
+type GetRuntimeConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// Config for listing agent runtimes.
+type ListRuntimeConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. PageSize specifies the maximum number of cached contents to return per
+	// API call. If zero, the server will use a default value.
+	PageSize int32 `json:"pageSize,omitempty"`
+	// Optional. PageToken represents a token used for pagination in API responses. It's
+	// an opaque string that should be passed to subsequent requests to retrieve the next
+	// page of results. An empty PageToken typically indicates that there are no further
+	// pages available.
+	PageToken string `json:"pageToken,omitempty"`
+	// Optional. An expression for filtering the results of the request.
+	// For field names both snake_case and camelCase are supported.
+	Filter string `json:"filter,omitempty"`
+}
+
+type GetRuntimeOperationConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+}
+
+// Config for querying agent runtimes.
+type QueryRuntimeConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The class method to call.
+	ClassMethod string `json:"classMethod,omitempty"`
+	// Optional. The input to the class method.
+	Input map[string]any `json:"input,omitempty"`
+
+	IncludeAllFields *bool `json:"includeAllFields,omitempty"`
+}
+
+// Config for updating agent runtime.
+type UpdateRuntimeConfig struct {
+	// Optional. Used to override HTTP request options.
+	HTTPOptions *genai_types.HTTPOptions `json:"httpOptions,omitempty"`
+	// Optional. The user-defined name of the Agent Runtime.
+	// The display name can be up to 128 characters long and can comprise any
+	// UTF-8 characters.
+	DisplayName string `json:"displayName,omitempty"`
+	// Optional. The description of the Agent Runtime.
+	Description string `json:"description,omitempty"`
+	// Optional. Configurations of the Agent Runtime.
+	Spec *ReasoningEngineSpec `json:"spec,omitempty"`
+	// Optional. The context spec to be used for the Agent Runtime.
+	ContextSpec *ReasoningEngineContextSpec `json:"contextSpec,omitempty"`
+	// Optional. The PSC interface config for PSC-I to be used for the
+	// Agent Runtime.
+	PscInterfaceConfig *PscInterfaceConfig `json:"pscInterfaceConfig,omitempty"`
+	// Optional. Agent Gateway configuration for a Reasoning Engine deployment.
+	AgentGatewayConfig *ReasoningEngineSpecDeploymentSpecAgentGatewayConfig `json:"agentGatewayConfig,omitempty"`
+	// Optional. The minimum number of instances to run for the Agent Runtime.
+	// Defaults to 1. Range: [0, 10].
+	MinInstances *int32 `json:"minInstances,omitempty"`
+	// Optional. The maximum number of instances to run for the Agent Runtime.
+	// Defaults to 100. Range: [1, 1000].
+	// If VPC-SC or PSC-I is enabled, the acceptable range is [1, 100].
+	MaxInstances *int32 `json:"maxInstances,omitempty"`
+	// Optional. The resource limits to be applied to the Agent Runtime.
+	// Required keys: 'cpu' and 'memory'.
+	// Supported values for 'cpu': '1', '2', '4', '6', '8'.
+	// Supported values for 'memory': '1Gi', '2Gi', ..., '32Gi'.
+	ResourceLimits map[string]string `json:"resourceLimits,omitempty"`
+	// Optional. The container concurrency to be used for the Agent Runtime.
+	// Recommended value: 2 * cpu + 1. Defaults to 9.
+	ContainerConcurrency *int32 `json:"containerConcurrency,omitempty"`
+	// Optional. Specifies the configuration for keep-alive probe.
+	// Contains configuration on a specified endpoint that a deployment host
+	// should use to keep the container alive based on the probe settings.
+	KeepAliveProbe *KeepAliveProbe `json:"keepAliveProbe,omitempty"`
+	// Optional. The encryption spec to be used for the Agent Runtime.
+	EncryptionSpec *genai_types.EncryptionSpec `json:"encryptionSpec,omitempty"`
+	// Optional. The labels to be used for the Agent Runtime.
+	Labels map[string]string `json:"labels,omitempty"`
+	// Optional. The class methods to be used for the Agent Runtime.
+	// If specified, they'll override the class methods that are autogenerated by
+	// default. By default, methods are generated by inspecting the agent object
+	// and generating a corresponding method for each method defined on the
+	// agent class.
+	ClassMethods []map[string]any `json:"classMethods,omitempty"`
+	// Optional. The user-provided paths to the source packages (if any).
+	// If specified, the files in the source packages will be packed into a
+	// a tarball file, uploaded to Agent Runtime's API, and deployed to the
+	// Agent Runtime.
+	// The following fields will be ignored:
+	//   - agent
+	//   - extra_packages
+	//   - staging_bucket
+	//   - requirements
+	// The following fields will be used to install and use the agent from the
+	// source packages:
+	//   - entrypoint_module (required)
+	//   - entrypoint_object (required)
+	//   - requirements_file (optional)
+	//   - class_methods (required)
+	SourcePackages []string `json:"sourcePackages,omitempty"`
+	// Optional. Specifies the configuration for fetching source code from a Git repository
+	// that is managed by Developer Connect. This includes the repository, revision, and
+	// directory to use.
+	DeveloperConnectSource *ReasoningEngineSpecSourceCodeSpecDeveloperConnectConfig `json:"developerConnectSource,omitempty"`
+	// Optional. The entrypoint module to be used for the Agent Runtime
+	// This field only used when source_packages is specified.
+	EntrypointModule string `json:"entrypointModule,omitempty"`
+	// Optional. The entrypoint object to be used for the Agent Runtime.
+	// This field only used when source_packages is specified.
+	EntrypointObject string `json:"entrypointObject,omitempty"`
+	// Optional. The user-provided path to the requirements file (if any).
+	// This field is only used when source_packages is specified.
+	// If not specified, agent runtime will find and use the `requirements.txt` in
+	// the source package.
+	RequirementsFile string `json:"requirementsFile,omitempty"`
+	// Optional. The agent framework to be used for the Agent Runtime.
+	// The OSS agent framework used to develop the agent.
+	// Currently supported values: "google-adk", "langchain", "langgraph",
+	// "ag2", "llama-index", "custom".
+	// If not specified:
+	//   - If `agent` is specified, the agent framework will be auto-detected.
+	//   - If `source_packages` is specified, the agent framework will
+	//     default to "custom".
+	AgentFramework string `json:"agentFramework,omitempty"`
+	// Optional. The Python version to be used for the Agent Runtime.
+	// If not specified, it will use the current Python version of the environment.
+	// Supported versions: "3.10", "3.11", "3.12", "3.13", "3.14".
+	PythonVersion string `json:"pythonVersion,omitempty"`
+	// Optional. The build options for the Agent Runtime.
+	// The following keys are supported:
+	//   - installation_scripts:
+	//     Optional. The paths to the installation scripts to be
+	//     executed in the Docker image.
+	//     The scripts must be located in the `installation_scripts`
+	//     subdirectory and the path must be added to `extra_packages`.
+	BuildOptions map[string][]string `json:"buildOptions,omitempty"`
+	// Optional. The update mask to apply. For the `FieldMask` definition, see
+	// https://protobuf.dev/reference/protobuf/google.protobuf/#field-mask.
+	UpdateMask string `json:"updateMask,omitempty"`
 }
 
 // The code execution environment with customized settings.
@@ -3991,7 +4220,7 @@ type listCustomModelDeployOptionsConfig struct {
 	FilterByUserQuota bool `json:"filterByUserQuota,omitempty"`
 }
 
-// Config for export_open_model.
+// Config for ``export_open_model``.
 type exportOpenModelConfig struct {
 	// Whether to block on the export long-running operation. When
 	// ``True`` (default), returns the destination URI on completion. When

@@ -49,8 +49,8 @@ func TestAgentEngineMemories(t *testing.T) {
 			},
 			MemoryType: types.MemoryTypeNaturalLanguageCollection,
 		}
-		response := createMemoryAndWait(tt, client, re, want)
-		got, err := client.MemoryBanks.Memories.Get(tt.Context(), response.Name, nil)
+		response := createAgentEngineMemoryAndWait(tt, client, re, want)
+		got, err := client.AgentEngines.Memories.Get(tt.Context(), response.Name, nil)
 		if err != nil {
 			tt.Fatalf("get() failed unexpectedly: %v", err)
 		}

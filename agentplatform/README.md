@@ -47,6 +47,36 @@ if _, err := client.AgentEngines.Create(ctx, &types.CreateAgentEngineConfig{}); 
 }
 ```
 
+### Create Runtime (Local Source Directory Deployment)
+
+```go
+op, err := client.Runtimes.Create(ctx, &types.CreateRuntimeConfig{
+	DisplayName:    "my-code-agent",
+	Description:    "Agent deployed from local source code",
+	SourcePackages: []string{"./my_agent"},
+})
+if err != nil {
+	log.Fatalf("failed to create runtime: %v", err)
+}
+```
+
+### Create Runtime (Declarative Spec Deployment)
+
+```go
+op, err := client.Runtimes.Create(ctx, &types.CreateRuntimeConfig{
+	DisplayName: "my-declarative-agent",
+	Description: "Declarative customer service assistant",
+	Spec: &types.ReasoningEngineSpec{
+		ClassMethods: []map[string]any{
+			{"name": "query", "description": "Answers user questions"},
+		},
+	},
+})
+if err != nil {
+	log.Fatalf("failed to create runtime: %v", err)
+}
+```
+
 ### Wait For Operation
 
 ```go

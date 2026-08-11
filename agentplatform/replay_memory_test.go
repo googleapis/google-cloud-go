@@ -21,51 +21,51 @@ import (
 	"google.golang.org/genai"
 )
 
-func TestReplays_MemoryBanks_Memory(t *testing.T) {
+func TestReplays_AgentEngine_Memory(t *testing.T) {
 	if *mode != replayMode {
 		t.Skipf("unsupported mode: %s", *mode)
 	}
 
-	t.Run("memories_private_create/test_private_create_memory", func(tt *testing.T) {
+	t.Run("ae_memories_private_create/test_private_create_memory", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Create the Memory
+		// Create the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584"
 		fact := "memory_fact"
 		scope := map[string]string{"user_id": "123"}
-		createOp, err := client.MemoryBanks.Memories.Create(tt.Context(), name, fact, scope, nil)
+		createOp, err := client.AgentEngines.Memories.Create(tt.Context(), name, fact, scope, nil)
 		if err != nil {
 			tt.Fatalf("create() failed unexpectedly: %v", err)
 		}
 
-		// Assert that the operation is of type MemoryOperation
+		// Assert that the operation is of type AgentEngineMemoryOperation
 		if createOp.Name == "" {
 			tt.Errorf("create(), want not empty, got empty, createOp: %v", createOp)
 		}
 	})
 
-	t.Run("memories_delete/test_delete_memory", func(tt *testing.T) {
+	t.Run("ae_memories_delete/test_delete_memory", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Delete the Memory
+		// Create the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/memories/5605466683931099136"
-		deleteOp, err := client.MemoryBanks.Memories.Delete(tt.Context(), name, nil)
+		deleteOp, err := client.AgentEngines.Memories.Delete(tt.Context(), name, nil)
 		if err != nil {
 			tt.Fatalf("delete() failed unexpectedly: %v", err)
 		}
 
-		// Assert that the operation is of type MemoryOperation
+		// Assert that the operation is of type AgentEngineMemoryOperation
 		if deleteOp.Name == "" {
 			tt.Errorf("delete(), want not empty, got empty, deleteOp: %v", deleteOp)
 		}
 	})
 
-	t.Run("memories_private_generate/test_private_generate_memory", func(tt *testing.T) {
+	t.Run("ae_memories_private_generate/test_private_generate_memory", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Generate the Memory
+		// Generate an AgentEngineMemory
 		agentEngineName := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584"
-		got, err := client.MemoryBanks.Memories.Generate(tt.Context(), agentEngineName,
+		got, err := client.AgentEngines.Memories.Generate(tt.Context(), agentEngineName,
 			&types.GenerateMemoriesRequestVertexSessionSource{
 				Session: "{PROJECT_AND_LOCATION_PATH}/reasoningEngines/2886612747586371584/sessions/6922431337672474624",
 			},
@@ -74,18 +74,18 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 			tt.Fatalf("generate() failed unexpectedly: %v", err)
 		}
 
-		// Assert that the operation is of type MemoryOperation
+		// Assert that the operation is of type AgentEngineMemoryOperation
 		if got.Name == "" {
 			tt.Error("generate(), want not empty, got empty")
 		}
 	})
 
-	t.Run("memories_get/test_get_memory", func(tt *testing.T) {
+	t.Run("ae_memories_get/test_get_memory", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Get the Memory
+		// Get the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/memories/3858070028511346688"
-		got, err := client.MemoryBanks.Memories.Get(tt.Context(), name, nil)
+		got, err := client.AgentEngines.Memories.Get(tt.Context(), name, nil)
 		if err != nil {
 			tt.Fatalf("get() failed unexpectedly: %v", err)
 		}
@@ -96,12 +96,12 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 		}
 	})
 
-	t.Run("memories_private_get_memory_operation/test_private_get_memory_operation", func(tt *testing.T) {
+	t.Run("ae_memories_private_get_memory_operation/test_private_get_memory_operation", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
 		// Get the AgentEngineMemoryOperation
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/memories/3858070028511346688/operations/1044963283964002304"
-		got, err := client.MemoryBanks.Memories.GetMemoryOperation(tt.Context(), name, nil)
+		got, err := client.AgentEngines.Memories.GetMemoryOperation(tt.Context(), name, nil)
 		if err != nil {
 			tt.Fatalf("getMemoryOperation() failed unexpectedly: %v", err)
 		}
@@ -112,12 +112,12 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 		}
 	})
 
-	t.Run("memories_private_get_generate_memories_operation/test_private_get_generate_memories_operation", func(tt *testing.T) {
+	t.Run("ae_memories_private_get_generate_memories_operation/test_private_get_generate_memories_operation", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
 		// Get the GenerateMemoriesOperation
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/operations/5669315676343369728"
-		got, err := client.MemoryBanks.Memories.GetGenerateMemoriesOperation(tt.Context(), name, nil)
+		got, err := client.AgentEngines.Memories.GetGenerateMemoriesOperation(tt.Context(), name, nil)
 		if err != nil {
 			tt.Fatalf("getGenerateMemoriesOperation() failed unexpectedly: %v", err)
 		}
@@ -128,12 +128,12 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 		}
 	})
 
-	t.Run("memories_private_list/test_private_list_memory", func(tt *testing.T) {
+	t.Run("ae_memories_private_list/test_private_list_memory", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// List the Memories
+		// List the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584"
-		got, err := client.MemoryBanks.Memories.List(tt.Context(), name, nil)
+		got, err := client.AgentEngines.Memories.List(tt.Context(), name, nil)
 		if err != nil {
 			tt.Fatalf("list() failed unexpectedly: %v", err)
 		}
@@ -144,12 +144,12 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 		}
 	})
 
-	t.Run("memories_private_retrieve/test_private_retrieve", func(tt *testing.T) {
+	t.Run("ae_memories_private_retrieve/test_private_retrieve", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Retrieve the Memory
+		// Retrieve the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584"
-		got, err := client.MemoryBanks.Memories.Retrieve(tt.Context(), name,
+		got, err := client.AgentEngines.Memories.Retrieve(tt.Context(), name,
 			map[string]string{"user_id": "123"}, nil, nil, nil)
 		if err != nil {
 			tt.Fatalf("retrieve() failed unexpectedly: %v", err)
@@ -161,12 +161,12 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 		}
 	})
 
-	t.Run("memories_private_rollback/test_private_rollback", func(tt *testing.T) {
+	t.Run("ae_memories_private_rollback/test_private_rollback", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Rollback the Memory
+		// Rollback the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/memories/3858070028511346688"
-		got, err := client.MemoryBanks.Memories.Rollback(tt.Context(), name, "3001207491565453312", nil)
+		got, err := client.AgentEngines.Memories.Rollback(tt.Context(), name, "3001207491565453312", nil)
 		if err != nil {
 			tt.Fatalf("rollback() failed unexpectedly: %v", err)
 		}
@@ -177,12 +177,12 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 		}
 	})
 
-	t.Run("memories_private_update/test_private_update_memory", func(tt *testing.T) {
+	t.Run("ae_memories_private_update/test_private_update_memory", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Update the Memory
+		// Update the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/2886612747586371584/memories/3858070028511346688"
-		got, err := client.MemoryBanks.Memories.Update(tt.Context(), name, genai.Ptr("memory_fact_updated"),
+		got, err := client.AgentEngines.Memories.Update(tt.Context(), name, genai.Ptr("memory_fact_updated"),
 			&map[string]string{"user_id": "123"}, nil)
 		if err != nil {
 			tt.Fatalf("update() failed unexpectedly: %v", err)
@@ -194,12 +194,12 @@ func TestReplays_MemoryBanks_Memory(t *testing.T) {
 		}
 	})
 
-	t.Run("memories_private_purge/test_private_purge", func(tt *testing.T) {
+	t.Run("ae_memories_private_purge/test_private_purge", func(tt *testing.T) {
 		client, _ := newTestClientWithReplay(tt, tt.Name())
 
-		// Purge the Memory
+		// Purge the AgentEngineMemory
 		name := "projects/964831358985/locations/us-central1/reasoningEngines/6086402690647064576"
-		got, err := client.MemoryBanks.Memories.Purge(tt.Context(), name, genai.Ptr("scope.user_id=123"),
+		got, err := client.AgentEngines.Memories.Purge(tt.Context(), name, genai.Ptr("scope.user_id=123"),
 			nil, genai.Ptr(false), nil)
 		if err != nil {
 			tt.Fatalf("purge() failed unexpectedly: %v", err)
