@@ -306,12 +306,22 @@ func dispatch[Args any, R any, Resp interface {
 func (t *sessionTable) Close() error {
 	t.closed.Store(true)
 	var errs []error
-	if t.closeRead != nil {
+	// Only release a pool this sessionTable actually opened. A sessionTable
+	// discarded by TableCache.GetOrOpen's concurrent-miss race (the loser of
+	// two racing opens for the same resource) never dispatches, so its
+	// lazyPools stay unopened. Releasing unconditionally would run
+	// releaseSessionPool on the shared, resource-keyed pool the *winning*
+	// sessionTable owns (readKey/writeKey are derived from the resource and
+	// identical across every sessionTable for it), closing it out from under
+	// the winner — which then serves ErrPoolClosed for the rest of the run.
+	// opened() is monotonic false->true and serialized against open() by
+	// lazyPool.mu, so gating here never skips a release the true owner needs.
+	if t.closeRead != nil && t.readPool.opened() {
 		if err := t.closeRead(); err != nil {
 			errs = append(errs, err)
 		}
 	}
-	if t.closeWrite != nil {
+	if t.closeWrite != nil && t.writePool.opened() {
 		if err := t.closeWrite(); err != nil {
 			errs = append(errs, err)
 		}

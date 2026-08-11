@@ -127,6 +127,15 @@ type Config struct {
 type managedSessionPool struct {
 	pool       *btransport.SessionPoolImpl
 	unregister func()
+	// refs counts the live sessionTables that have opened this pool.
+	// getOrCreateSessionPool does +1 (on both create and cache-hit);
+	// releaseSessionPool does -1 and tears the pool down only at zero.
+	// Guarded by sessionPoolsMu. This keeps a pool alive when two
+	// sessionTables transiently share it — e.g. a TTL-sweep eviction
+	// handing the still-mapped pool to a fresh handle during the
+	// delete-then-close window — so the departing owner can't close it
+	// out from under the arriving one.
+	refs int
 }
 
 // permission is the read/write axis of a pool's identity. Kept as a
@@ -623,6 +632,13 @@ func (sc *sessionClient) releaseSessionPool(key poolKey) error {
 		sc.sessionPoolsMu.Unlock()
 		return nil
 	}
+	mp.refs--
+	if mp.refs > 0 {
+		// Another live sessionTable still holds this pool (transient
+		// sharing across an evict/reopen). Drop our reference only.
+		sc.sessionPoolsMu.Unlock()
+		return nil
+	}
 	delete(sc.sessionPools, key)
 	sc.sessionPoolsMu.Unlock()
 
@@ -694,6 +710,7 @@ func (sc *sessionClient) getOrCreateSessionPool(
 		return nil
 	}
 	if mp, ok := sc.sessionPools[key]; ok {
+		mp.refs++
 		sc.sessionPoolsMu.Unlock()
 		return mp.pool
 	}
@@ -710,7 +727,7 @@ func (sc *sessionClient) getOrCreateSessionPool(
 		poolName, streamFactory, openSessionRequest, md, sessionType,
 		sc.enableDebug,
 	)
-	mp := &managedSessionPool{pool: pool}
+	mp := &managedSessionPool{pool: pool, refs: 1}
 	sc.sessionPools[key] = mp
 	configManager := sc.configManager
 	backgroundCtx := sc.cfg.BackgroundCtx
