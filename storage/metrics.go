@@ -138,8 +138,22 @@ func newMetricsGCMExporter(ctx context.Context, projectID string) (sdkmetric.Exp
 		// mexporter.WithCreateServiceTimeSeries(),
 		// mexporter.WithMonitoredResourceDescription("storage.googleapis.com/Client", []string{"project_id", "location", "cloud_platform", "host_id", "instance_id", "api"}),
 		mexporter.WithFilteredResourceAttributes(func(kv attribute.KeyValue) bool {
-			// Keep all unmapped resource attributes as metric labels
-			return true
+			key := string(kv.Key)
+			// Keep our custom gcp.client.* attributes as labels
+			if strings.HasPrefix(key, "gcp.client.") {
+				return true
+			}
+			// Keep attributes that can later be mapped to the storage.googleapis.com/Client
+			// MonitoredResource schema in Monarch.
+			switch key {
+			case "cloud.platform",
+				"cloud.region",
+				"cloud.availability_zone",
+				"host.id":
+				return true
+			}
+			// Drop the rest to avoid hitting the Cloud Monitoring label limit.
+			return false
 		}),
 	)
 	if err != nil {
