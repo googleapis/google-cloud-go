@@ -83,8 +83,8 @@ func createRegionalHNSBucketForCache(ctx context.Context, t *testing.T, client *
 	return bktName
 }
 
-// 1. Create Rapid Cache: Creates a new Rapid Cache instance in a specified zone for a regional bucket.
-// Asserts that the LRO completes successfully and the cache state transitions to RUNNING.
+// TestIntegration_RapidCache_Create tests creating a new Rapid Cache instance in a specified zone for a regional bucket.
+// It asserts that the LRO completes successfully and the cache state transitions to running.
 func TestIntegration_RapidCache_Create(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -122,8 +122,8 @@ func TestIntegration_RapidCache_Create(t *testing.T) {
 	}
 }
 
-// 2. Create Rapid Cache - Invalid Config: Attempts to create a cache using invalid configuration parameters
-// (e.g., invalid zone or invalid TTL values). Verifies that an INVALID_ARGUMENT exception is thrown.
+// TestIntegration_RapidCache_CreateInvalidConfig tests creating a cache with invalid configuration parameters.
+// It verifies that an InvalidArgument exception is thrown when an invalid zone is specified.
 func TestIntegration_RapidCache_CreateInvalidConfig(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -152,8 +152,8 @@ func TestIntegration_RapidCache_CreateInvalidConfig(t *testing.T) {
 	}
 }
 
-// 3. Create Duplicate Rapid Cache: Attempts to create a second Rapid Cache instance in the same zone for the same bucket.
-// Verifies that the request fails with an ALREADY_EXISTS / FAILED_PRECONDITION error.
+// TestIntegration_RapidCache_CreateDuplicate tests creating a second Rapid Cache instance in the same zone for the same bucket.
+// It verifies that the request fails with an AlreadyExists or FailedPrecondition error.
 func TestIntegration_RapidCache_CreateDuplicate(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -181,7 +181,7 @@ func TestIntegration_RapidCache_CreateDuplicate(t *testing.T) {
 		t.Fatalf("CreateRapidCache (first) LRO: %v", err)
 	}
 
-	// Attempt duplicate create in the same zone
+	// Attempt duplicate create in the same zone.
 	_, err = cClient.CreateRapidCache(ctx, createReq)
 	if err == nil {
 		t.Fatalf("CreateRapidCache (duplicate): expected error, got nil")
@@ -191,8 +191,8 @@ func TestIntegration_RapidCache_CreateDuplicate(t *testing.T) {
 	}
 }
 
-// 4. Get Rapid Cache: Retrieves the metadata for an active Rapid Cache instance.
-// Asserts that the returned cache configuration matches the created config, and the state is RUNNING.
+// TestIntegration_RapidCache_Get tests retrieving metadata for an active Rapid Cache instance.
+// It asserts that the returned cache configuration matches the created configuration, and the state is running.
 func TestIntegration_RapidCache_Get(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -235,8 +235,8 @@ func TestIntegration_RapidCache_Get(t *testing.T) {
 	}
 }
 
-// 5. Get Non-existent Rapid Cache: Attempts to retrieve metadata for a non-existent cache ID or zone.
-// Verifies that a NOT_FOUND exception is thrown.
+// TestIntegration_RapidCache_GetNonExistent tests retrieving metadata for a non-existent cache ID or zone.
+// It verifies that a NotFound exception is thrown.
 func TestIntegration_RapidCache_GetNonExistent(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -259,8 +259,8 @@ func TestIntegration_RapidCache_GetNonExistent(t *testing.T) {
 	}
 }
 
-// 6. List Rapid Caches: Lists all Rapid Cache instances configured for a given bucket.
-// Asserts that the response includes all active caches and supports pagination if the count exceeds pageSize.
+// TestIntegration_RapidCache_List tests listing all Rapid Cache instances configured for a given bucket.
+// It asserts that the response includes all active caches and supports pagination if the count exceeds pageSize.
 func TestIntegration_RapidCache_List(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -272,7 +272,7 @@ func TestIntegration_RapidCache_List(t *testing.T) {
 	bucket := createRegionalHNSBucketForCache(ctx, t, client)
 	parent := fmt.Sprintf("projects/_/buckets/%s", bucket)
 
-	// Create cache
+	// Create cache instance.
 	op, err := cClient.CreateRapidCache(ctx, &controlpb.CreateRapidCacheRequest{
 		Parent: parent,
 		RapidCache: &controlpb.RapidCache{
@@ -321,8 +321,8 @@ func TestIntegration_RapidCache_List(t *testing.T) {
 	}
 }
 
-// 7. Update Rapid Cache: Updates configuration settings (such as TTL) on an existing cache.
-// Verifies that the LRO completes successfully and subsequent GetRapidCache calls reflect updated settings.
+// TestIntegration_RapidCache_Update tests updating configuration settings on an existing Rapid Cache instance.
+// It verifies that the LRO completes successfully and subsequent GetRapidCache calls reflect updated settings.
 func TestIntegration_RapidCache_Update(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -379,14 +379,14 @@ func TestIntegration_RapidCache_Update(t *testing.T) {
 	}
 }
 
-// 8. Disable Rapid Cache: Initiates the disablement of an active Rapid Cache.
+// TestIntegration_RapidCache_Disable tests initiating the disablement of an active Rapid Cache.
 func TestIntegration_RapidCache_Disable(t *testing.T) {
 	// Note: DisableRapidCache RPC is not yet exposed in storage_control.proto.
 	// As noted in go/rcu-in-sdk (Storage Control Blockers), DisableRapidCache is pending in backend protos.
 	t.Skip("DisableRapidCache API is not yet available in storage_control.proto (tracked in go/rcu-in-sdk)")
 }
 
-// 9. Disable Non-existent Cache: Attempts to disable a cache that does not exist.
+// TestIntegration_RapidCache_DisableNonExistent tests attempting to disable a cache that does not exist.
 func TestIntegration_RapidCache_DisableNonExistent(t *testing.T) {
 	t.Skip("DisableRapidCache API is not yet available in storage_control.proto (tracked in go/rcu-in-sdk)")
 }
