@@ -27,6 +27,7 @@ import (
 
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/trace"
 )
 
 // Interface internalWriter wraps low-level implementations which may vary
@@ -247,6 +248,14 @@ type Writer struct {
 
 	// bytesWritten is the cumulative bytes written for request size metric.
 	bytesWritten int64
+
+	chunkCount    int64
+	lastProgress  int64
+	lastChunkTime time.Time
+	curChunkSpan  trace.Span
+	initSpanDone  bool
+	baseCtx       context.Context
+	ctxHolder     *atomic.Value
 }
 
 func (w *Writer) wrapWriteError(n int, err error) (int, error) {
@@ -433,6 +442,10 @@ func (w *Writer) Close() error {
 func (w *Writer) markClosed(err error) error {
 	w.mu.Lock()
 	w.closed = true
+	if w.curChunkSpan != nil {
+		w.curChunkSpan.End()
+		w.curChunkSpan = nil
+	}
 	if w.err == nil && err != nil {
 		w.err = err
 	}
@@ -448,7 +461,11 @@ func (w *Writer) markClosed(err error) error {
 			state.record(closingErr)
 		}
 	}
-	endSpan(w.ctx, closingErr)
+	endSpanCtx := w.ctx
+	if w.baseCtx != nil {
+		endSpanCtx = w.baseCtx
+	}
+	endSpan(endSpanCtx, closingErr)
 	return closingErr
 }
 
@@ -465,6 +482,8 @@ func (w *Writer) openWriter() (err error) {
 	isIdempotent = isIdempotent || w.Append && w.o.gen > 0
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
 	recordWriterTraceAttributes(w.ctx, w)
+	baseCtx := w.ctx
+	w.baseCtx = baseCtx
 	params := &openWriterParams{
 		ctx:                  w.ctx,
 		chunkSize:            w.ChunkSize,
@@ -482,7 +501,29 @@ func (w *Writer) openWriter() (err error) {
 		donec:                w.donec,
 		setError:             w.error,
 		progress:             w.progress,
-		setObj:               func(o *ObjectAttrs) { w.obj = o },
+		onChunkRequest: func() {
+			w.mu.Lock()
+			defer w.mu.Unlock()
+			if !isOTelTracingDevEnabled() || w.ChunkSize <= 0 {
+				return
+			}
+			now := time.Now()
+			if w.curChunkSpan != nil {
+				w.curChunkSpan.End(trace.WithTimestamp(now))
+				w.curChunkSpan = nil
+			}
+			w.initSpanDone = true
+
+			w.chunkCount++
+			chunkNum := w.chunkCount
+			offset := w.lastProgress
+			chunkCtx, span := startChunkSpan(baseCtx, "Storage.UploadChunk", offset, int64(w.ChunkSize), withChunkNumber(chunkNum), trace.WithTimestamp(now))
+			w.curChunkSpan = span
+			if w.ctxHolder != nil {
+				w.ctxHolder.Store(chunkCtx)
+			}
+		},
+		setObj: func(o *ObjectAttrs) { w.obj = o },
 		setSize: func(n int64) {
 			if w.obj != nil {
 				w.obj.Size = n
@@ -494,12 +535,23 @@ func (w *Writer) openWriter() (err error) {
 	if err := w.ctx.Err(); err != nil {
 		return err // short-circuit
 	}
+	_, isHTTP := w.o.c.tc.(*httpStorageClient)
+	if isHTTP && isOTelTracingDevEnabled() && w.ChunkSize > 0 {
+		dynCtx, holder := newDynamicSpanContext(withFirstChunkCallback(baseCtx, params.onChunkRequest))
+		w.ctxHolder = holder
+		params.ctx = dynCtx
+
+		initCtx, initSpan := startResumableInitSpan(baseCtx, "")
+		w.curChunkSpan = initSpan
+		w.ctxHolder.Store(initCtx)
+	}
 	w.iw, err = w.o.c.tc.OpenWriter(params, opts...)
 	if err != nil {
 		return err
 	}
 	w.ctx = params.ctx
 	w.opened = true
+	w.lastChunkTime = time.Now()
 	go w.monitorCancel()
 
 	return nil
@@ -560,6 +612,19 @@ func (w *Writer) validateWriteAttrs() error {
 // progress is a convenience wrapper that reports write progress to the Writer
 // ProgressFunc if it is set.
 func (w *Writer) progress(p int64) {
+	w.mu.Lock()
+	last := w.lastProgress
+	now := time.Now()
+	if isOTelTracingDevEnabled() && w.ChunkSize > 0 && p > last {
+		if w.curChunkSpan != nil {
+			w.curChunkSpan.End(trace.WithTimestamp(now))
+			w.curChunkSpan = nil
+		}
+		w.lastProgress = p
+		w.lastChunkTime = now
+		w.initSpanDone = true
+	}
+	w.mu.Unlock()
 	if w.ProgressFunc != nil {
 		w.ProgressFunc(p)
 	}

@@ -584,3 +584,67 @@ func TestRecordReaderTraceAttributes(t *testing.T) {
 		})
 	}
 }
+
+func TestStartChunkSpanWithChunkNumber(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	chunkCtx, _ := startChunkSpan(ctx, "Storage.UploadChunk", 262144, 262144, withChunkNumber(2))
+	endSpan(chunkCtx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+	if got, want := gotSpan.Name, "cloud.google.com/go/storage.Storage.UploadChunk"; got != want {
+		t.Errorf("got span name %q, want %q", got, want)
+	}
+
+	wantAttrs := map[string]interface{}{
+		"upload.chunk_number":      int64(2),
+		"gcp.storage.chunk.offset": int64(262144),
+		"gcp.storage.chunk.size":   int64(262144),
+	}
+	for k, wantVal := range wantAttrs {
+		found := false
+		for _, a := range gotSpan.Attributes {
+			if string(a.Key) == k {
+				found = true
+				if got := a.Value.AsInt64(); got != wantVal.(int64) {
+					t.Errorf("key %q: got %v, want %v", k, got, wantVal)
+				}
+			}
+		}
+		if !found {
+			t.Errorf("attribute %q not found on span", k)
+		}
+	}
+}
+
+func TestWriterMarkClosedEndsChunkSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	w := &Writer{
+		ctx:       ctx,
+		ChunkSize: 256 * 1024,
+	}
+	_, span := startSpan(ctx, "Storage.UploadChunk")
+	w.curChunkSpan = span
+
+	if err := w.markClosed(nil); err != nil {
+		t.Fatalf("w.markClosed: %v", err)
+	}
+	if w.curChunkSpan != nil {
+		t.Errorf("expected w.curChunkSpan to be nil after markClosed, got %v", w.curChunkSpan)
+	}
+}

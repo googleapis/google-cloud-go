@@ -213,6 +213,11 @@ type trackingTransport struct {
 }
 
 func (t *trackingTransport) RoundTrip(req *http.Request) (*http.Response, error) {
+	if req.URL != nil && req.URL.Query().Get("upload_id") != "" {
+		if cb, ok := req.Context().Value(firstChunkCallbackKey{}).(func()); ok && cb != nil {
+			cb()
+		}
+	}
 	baseRT := t.base
 	if baseRT == nil {
 		baseRT = http.DefaultTransport
