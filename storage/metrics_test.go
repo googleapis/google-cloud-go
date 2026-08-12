@@ -25,6 +25,7 @@ import (
 	"testing"
 	"time"
 
+	"cloud.google.com/go/auth"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 
 	"go.opentelemetry.io/otel/attribute"
@@ -34,6 +35,7 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/stats"
 	"google.golang.org/grpc/status"
 )
 
@@ -222,6 +224,7 @@ func TestComputeURLTemplate(t *testing.T) {
 
 func TestHTTPMetricsRecording(t *testing.T) {
 	ctx := context.Background()
+	ctx = context.WithValue(ctx, apiMethodKey{}, "storage.Object.Read")
 	mr := sdkmetric.NewManualReader()
 
 	// Create a resource with static attributes so that we can test resource propagation.
@@ -328,6 +331,9 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 				if attrMap["error.type"] != "OK" {
 					t.Errorf("expected error.type OK, got %q", attrMap["error.type"])
+				}
+				if attrMap["gcp.client.method"] != "storage.Object.Read" {
+					t.Errorf("expected gcp.client.method storage.Object.Read, got %q", attrMap["gcp.client.method"])
 				}
 			}
 
@@ -750,7 +756,7 @@ func TestStandardMetricsRecording(t *testing.T) {
 		for _, dp := range hist.DataPoints {
 			for _, kv := range dp.Attributes.ToSlice() {
 				if kv.Key == "rpc.method" {
-					methods[kv.Value.AsString()] = true
+					methods[kv.Value.Emit()] = true
 				}
 			}
 		}
@@ -855,4 +861,157 @@ func TestComputeErrorType(t *testing.T) {
 			t.Errorf("computeErrorType(%v, %v, %v) = %v, want %v", tc.err, tc.isHTTP, tc.statusCode, got, tc.want)
 		}
 	}
+}
+
+func TestGRPCMetricsStatsHandler(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	h := &grpcMetricsStatsHandler{metrics: cm}
+
+	// Mock TagRPC
+	info := &stats.RPCTagInfo{FullMethodName: "/google.storage.v2.Storage/ReadObject"}
+	ctx = h.TagRPC(ctx, info)
+
+	// Mock InPayload
+	h.HandleRPC(ctx, &stats.InPayload{WireLength: 1024})
+	// Mock OutPayload
+	h.HandleRPC(ctx, &stats.OutPayload{WireLength: 512})
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+
+	var ingress, egress int64
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == "gcp.storage.client.network.ingress_bytes_count" {
+				sum := m.Data.(metricdata.Sum[int64])
+				ingress = sum.DataPoints[0].Value
+				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
+					t.Errorf("expected rpc.method ReadObject")
+				}
+			}
+			if m.Name == "gcp.storage.client.network.egress_bytes_count" {
+				sum := m.Data.(metricdata.Sum[int64])
+				egress = sum.DataPoints[0].Value
+				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
+					t.Errorf("expected rpc.method ReadObject")
+				}
+			}
+		}
+	}
+
+	if ingress != 1024 {
+		t.Errorf("expected ingress 1024, got %v", ingress)
+	}
+	if egress != 512 {
+		t.Errorf("expected egress 512, got %v", egress)
+	}
+}
+
+func getAttr(dp metricdata.DataPoint[int64], key string) string {
+	for _, kv := range dp.Attributes.ToSlice() {
+		if string(kv.Key) == key {
+			return kv.Value.Emit()
+		}
+	}
+	return ""
+}
+
+func getHistAttr(dp metricdata.HistogramDataPoint[float64], key string) string {
+	for _, kv := range dp.Attributes.ToSlice() {
+		if string(kv.Key) == key {
+			return kv.Value.Emit()
+		}
+	}
+	return ""
+}
+
+func TestRecordCredentialRefreshDuration(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	cm.recordCredentialRefreshDuration(ctx, 500*time.Millisecond, nil)
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+
+	found := false
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == "gcp.storage.client.auth.credential_refresh.duration" {
+				found = true
+				hist := m.Data.(metricdata.Histogram[float64])
+				dp := hist.DataPoints[0]
+				if dp.Sum != 0.5 {
+					t.Errorf("expected sum 0.5, got %v", dp.Sum)
+				}
+				if getHistAttr(dp, "error.type") != "OK" {
+					t.Errorf("expected error.type OK, got %v", getHistAttr(dp, "error.type"))
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("metric not found")
+	}
+}
+
+func TestWrapAuthCredentials(t *testing.T) {
+	if wrapAuthCredentials(nil, nil) != nil {
+		t.Errorf("expected nil when c is nil")
+	}
+	c := &auth.Credentials{}
+	if wrapAuthCredentials(c, nil) != c {
+		t.Errorf("expected original credentials when TokenProvider is nil")
+	}
+	c.TokenProvider = &mockTokenProvider{}
+	m := &clientMetrics{}
+	wrapped := wrapAuthCredentials(c, m)
+	if wrapped == c {
+		t.Errorf("expected a new copy of credentials, got original")
+	}
+	if _, ok := wrapped.TokenProvider.(*metricsTokenProvider); !ok {
+		t.Errorf("expected TokenProvider to be *metricsTokenProvider")
+	}
+	wrapped2 := wrapAuthCredentials(wrapped, m)
+	if wrapped2 != wrapped {
+		t.Errorf("expected original wrapped credentials on double wrap")
+	}
+}
+
+type mockTokenProvider struct{}
+
+func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
+	return &auth.Token{}, nil
 }
