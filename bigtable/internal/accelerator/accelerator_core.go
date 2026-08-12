@@ -30,7 +30,6 @@ import (
 	"context"
 	"io"
 	"strings"
-	"sync"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal"
@@ -144,14 +143,6 @@ type Channel struct {
 	sc            session.Client
 	scopePrefix   string
 	sessionTables *session.TableCache
-	// handleFastPath mirrors sessionTables for the RPC hot path: a bare
-	// sync.Map.Load skips the closure allocation, resource-name parse, and
-	// sessionTables.mu acquire that GetOrOpen would otherwise cost every RPC.
-	// Staleness is safe because *TableHandle.ReadRow/MutateRow self-heal via
-	// TableCache's internal dispatch() when the underlying entry is evicted,
-	// so a pointer left behind here after a TTL sweep still routes to the live
-	// successor on next use.
-	handleFastPath sync.Map // map[string]session.TableAPI
 	// openGroup collapses the cold-start burst: N concurrent first-touch RPCs
 	// for the same resource funnel through ONE sessionTables.GetOrOpen call.
 	// Without this, all N callers reach GetOrOpen's miss path and N-1 hit its
@@ -211,23 +202,12 @@ func NewChannel(
 // share one warm handle; the cache's sweeper evicts idle handles (releasing
 // their pools) on TTL.
 func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
-	// Fast path — a bare atomic Load. No mutex, no closure allocation, no
-	// resource-name parse. Under steady state every RPC after the first for a
-	// given resource hits here.
-	if v, ok := c.handleFastPath.Load(res.Name); ok {
-		return v.(session.TableAPI), nil
-	}
-
-	// Slow path — collapsed via singleflight so N concurrent first-touch RPCs
-	// for the same resource funnel through ONE sessionTables.GetOrOpen call.
-	// See the openGroup field comment for the failure mode this guards against.
+	// N concurrent first-touch RPCs for the same resource funnel through ONE
+	// sessionTables.GetOrOpen call. See the openGroup field comment for the
+	// failure mode this guards against. Post-burst, singleflight releases the
+	// key and subsequent RPCs re-enter — sessionTables.GetOrOpen serves them
+	// as fast-path cache hits.
 	v, err, _ := c.openGroup.Do(res.Name, func() (any, error) {
-		// Second cache check inside the singleflight — a prior burst's winner
-		// may have published between our fast-path miss and our arrival here.
-		if v, ok := c.handleFastPath.Load(res.Name); ok {
-			return v, nil
-		}
-
 		var open func() session.TableAPI
 		switch res.Kind {
 		case adapters.ResourceTable:
@@ -262,11 +242,7 @@ func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
 		if tbl == nil {
 			return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
 		}
-		// Publish for future fast-path lookups. Only the singleflight winner
-		// reaches this point per resource per cold-start burst, so LoadOrStore
-		// here is defensive — a plain Store would also be correct.
-		actual, _ := c.handleFastPath.LoadOrStore(res.Name, tbl)
-		return actual, nil
+		return tbl, nil
 	})
 	if err != nil {
 		return nil, err
@@ -356,16 +332,6 @@ func (c *Channel) Close() error {
 	if c.sc == nil {
 		return nil
 	}
-	// Drop fast-path references before sessionTables.Close so a concurrent
-	// openHandle racing Close either sees the empty map and takes the slow
-	// path (which observes the closed cache and returns Unavailable) or has
-	// already snapshotted a stale handle whose next RPC surfaces the
-	// closed-pool error. Either outcome is honest; a lingering map entry
-	// after Close would just keep the doomed handle reachable from Channel.
-	c.handleFastPath.Range(func(k, _ any) bool {
-		c.handleFastPath.Delete(k)
-		return true
-	})
 	c.sessionTables.Close()
 	return c.sc.Close()
 }

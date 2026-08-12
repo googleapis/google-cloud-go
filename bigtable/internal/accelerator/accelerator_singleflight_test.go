@@ -152,8 +152,8 @@ func TestOpenHandle_SingleFlightCollapsesColdStartBurst(t *testing.T) {
 		t.Fatalf("sc.OpenTable was invoked %d times; want 1 (singleflight should collapse the burst; without it, %d concurrent misses each call sc.OpenTable and %d-1 losers tear down the shared pool at the session layer)", got, N, N)
 	}
 
-	// Follow-up: subsequent openHandle calls should hit the fast path — no
-	// new sc.OpenTable invocation.
+	// Follow-up: a subsequent openHandle for the same resource is a
+	// sessionTables.GetOrOpen fast-path hit — sc.OpenTable stays at 1.
 	tbl, err := channel.openHandle(res)
 	if err != nil {
 		t.Fatalf("follow-up openHandle: %v", err)
@@ -162,6 +162,6 @@ func TestOpenHandle_SingleFlightCollapsesColdStartBurst(t *testing.T) {
 		t.Fatal("follow-up openHandle: returned nil handle")
 	}
 	if got := sc.openTableCalls.Load(); got != 1 {
-		t.Fatalf("after fast-path openHandle, sc.OpenTable count = %d; want still 1 (fast path should not touch sc)", got)
+		t.Fatalf("after follow-up openHandle, sc.OpenTable count = %d; want still 1 (post-burst re-entry should hit sessionTables cache, not re-open)", got)
 	}
 }
