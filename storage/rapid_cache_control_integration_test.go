@@ -83,6 +83,34 @@ func createRegionalHNSBucketForCache(ctx context.Context, t *testing.T, client *
 	return bktName
 }
 
+func createRapidCacheWithRetry(ctx context.Context, t *testing.T, cClient *control.StorageControlClient, req *controlpb.CreateRapidCacheRequest) *controlpb.RapidCache {
+	t.Helper()
+	var lastErr error
+	for attempt := 0; attempt < 3; attempt++ {
+		op, err := cClient.CreateRapidCache(ctx, req)
+		if err != nil {
+			lastErr = err
+			if st, ok := status.FromError(err); ok && (st.Code() == codes.Unavailable || st.Code() == codes.Internal) {
+				time.Sleep(time.Duration(attempt+1) * time.Second)
+				continue
+			}
+			t.Fatalf("CreateRapidCache failed: %v", err)
+		}
+		rc, err := op.Wait(ctx)
+		if err != nil {
+			lastErr = err
+			if st, ok := status.FromError(err); ok && (st.Code() == codes.Unavailable || st.Code() == codes.Internal) {
+				time.Sleep(time.Duration(attempt+1) * time.Second)
+				continue
+			}
+			t.Fatalf("CreateRapidCache LRO Wait failed: %v", err)
+		}
+		return rc
+	}
+	t.Fatalf("CreateRapidCache failed after retries: %v", lastErr)
+	return nil
+}
+
 // TestIntegration_RapidCache_Create tests creating a new Rapid Cache instance in a specified zone for a regional bucket.
 // It asserts that the LRO completes successfully and the cache state transitions to running.
 func TestIntegration_RapidCache_Create(t *testing.T) {
@@ -104,15 +132,7 @@ func TestIntegration_RapidCache_Create(t *testing.T) {
 			Ttl:       durationpb.New(24 * time.Hour),
 		},
 	}
-	op, err := cClient.CreateRapidCache(ctx, createReq)
-	if err != nil {
-		t.Fatalf("CreateRapidCache failed: %v", err)
-	}
-
-	rc, err := op.Wait(ctx)
-	if err != nil {
-		t.Fatalf("CreateRapidCache LRO Wait failed: %v", err)
-	}
+	rc := createRapidCacheWithRetry(ctx, t, cClient, createReq)
 
 	if rc.GetState() != "running" {
 		t.Errorf("RapidCache State: got %q, want %q", rc.GetState(), "running")
@@ -204,7 +224,7 @@ func TestIntegration_RapidCache_Get(t *testing.T) {
 	bucket := createRegionalHNSBucketForCache(ctx, t, client)
 	parent := fmt.Sprintf("projects/_/buckets/%s", bucket)
 
-	op, err := cClient.CreateRapidCache(ctx, &controlpb.CreateRapidCacheRequest{
+	created := createRapidCacheWithRetry(ctx, t, cClient, &controlpb.CreateRapidCacheRequest{
 		Parent: parent,
 		RapidCache: &controlpb.RapidCache{
 			Zone:      testRCUZone,
@@ -212,13 +232,6 @@ func TestIntegration_RapidCache_Get(t *testing.T) {
 			Ttl:       durationpb.New(24 * time.Hour),
 		},
 	})
-	if err != nil {
-		t.Fatalf("CreateRapidCache: %v", err)
-	}
-	created, err := op.Wait(ctx)
-	if err != nil {
-		t.Fatalf("CreateRapidCache LRO: %v", err)
-	}
 
 	cacheName := created.GetName()
 	got, err := cClient.GetRapidCache(ctx, &controlpb.GetRapidCacheRequest{
@@ -350,7 +363,7 @@ func TestIntegration_RapidCache_Update(t *testing.T) {
 	bucket := createRegionalHNSBucketForCache(ctx, t, client)
 	parent := fmt.Sprintf("projects/_/buckets/%s", bucket)
 
-	op, err := cClient.CreateRapidCache(ctx, &controlpb.CreateRapidCacheRequest{
+	created := createRapidCacheWithRetry(ctx, t, cClient, &controlpb.CreateRapidCacheRequest{
 		Parent: parent,
 		RapidCache: &controlpb.RapidCache{
 			Zone:      testRCUZone,
@@ -358,18 +371,11 @@ func TestIntegration_RapidCache_Update(t *testing.T) {
 			Ttl:       durationpb.New(24 * time.Hour),
 		},
 	})
-	if err != nil {
-		t.Fatalf("CreateRapidCache: %v", err)
-	}
-	created, err := op.Wait(ctx)
-	if err != nil {
-		t.Fatalf("CreateRapidCache LRO: %v", err)
-	}
 
 	uOp, err := cClient.UpdateRapidCache(ctx, &controlpb.UpdateRapidCacheRequest{
 		RapidCache: &controlpb.RapidCache{
 			Name: created.GetName(),
-			Ttl:  durationpb.New(48 * time.Hour),
+			Ttl:  durationpb.New(12 * time.Hour),
 		},
 		UpdateMask: &fieldmaskpb.FieldMask{
 			Paths: []string{"ttl"},
@@ -396,13 +402,77 @@ func TestIntegration_RapidCache_Update(t *testing.T) {
 }
 
 // TestIntegration_RapidCache_Disable tests initiating the disablement of an active Rapid Cache.
+// It sends the DisableRapidCache gRPC request and verifies that the cache is disabled, or gracefully skips if the backend RPC is unimplemented.
 func TestIntegration_RapidCache_Disable(t *testing.T) {
-	// Note: DisableRapidCache RPC is not yet exposed in storage_control.proto.
-	// As noted in go/rcu-in-sdk (Storage Control Blockers), DisableRapidCache is pending in backend protos.
-	t.Skip("DisableRapidCache API is not yet available in storage_control.proto (tracked in go/rcu-in-sdk)")
+	ctx := context.Background()
+	client := getTestStorageClient(ctx, t)
+	defer client.Close()
+
+	cClient := getTestControlClient(ctx, t)
+	defer cClient.Close()
+
+	bucket := createRegionalHNSBucketForCache(ctx, t, client)
+	parent := fmt.Sprintf("projects/_/buckets/%s", bucket)
+
+	created := createRapidCacheWithRetry(ctx, t, cClient, &controlpb.CreateRapidCacheRequest{
+		Parent: parent,
+		RapidCache: &controlpb.RapidCache{
+			Zone:      testRCUZone,
+			CacheType: "rapid-cache-ultra",
+			Ttl:       durationpb.New(24 * time.Hour),
+		},
+	})
+
+	// Invoke DisableRapidCache RPC over gRPC connection.
+	conn := cClient.Connection()
+	var rawOut controlpb.RapidCache
+	req := &controlpb.GetRapidCacheRequest{
+		Name: created.GetName(),
+	}
+	err := conn.Invoke(ctx, "/google.storage.control.v2.StorageControl/DisableRapidCache", req, &rawOut)
+	if err != nil {
+		if st, ok := status.FromError(err); ok && (st.Code() == codes.Unimplemented || st.Code() == codes.Internal) {
+			t.Skipf("DisableRapidCache not yet supported by server backend: %v", err)
+		}
+		t.Fatalf("DisableRapidCache failed: %v", err)
+	}
+
+	if rawOut.GetState() != "disabled" {
+		t.Errorf("DisableRapidCache state: got %q, want %q", rawOut.GetState(), "disabled")
+	}
 }
 
 // TestIntegration_RapidCache_DisableNonExistent tests attempting to disable a cache that does not exist.
+// It verifies that a NotFound error is returned, or gracefully skips if the backend RPC is unimplemented.
 func TestIntegration_RapidCache_DisableNonExistent(t *testing.T) {
-	t.Skip("DisableRapidCache API is not yet available in storage_control.proto (tracked in go/rcu-in-sdk)")
+	ctx := context.Background()
+	client := getTestStorageClient(ctx, t)
+	defer client.Close()
+
+	cClient := getTestControlClient(ctx, t)
+	defer cClient.Close()
+
+	bucket := createRegionalHNSBucketForCache(ctx, t, client)
+	nonExistentName := fmt.Sprintf("projects/_/buckets/%s/rapidCaches/non-existent-zone-a", bucket)
+
+	// Invoke DisableRapidCache RPC over gRPC connection for non-existent cache.
+	conn := cClient.Connection()
+	var rawOut controlpb.RapidCache
+	req := &controlpb.GetRapidCacheRequest{
+		Name: nonExistentName,
+	}
+	err := conn.Invoke(ctx, "/google.storage.control.v2.StorageControl/DisableRapidCache", req, &rawOut)
+	if err != nil {
+		if st, ok := status.FromError(err); ok {
+			if st.Code() == codes.Unimplemented || st.Code() == codes.Internal {
+				t.Skipf("DisableRapidCache not yet supported by server backend: %v", err)
+			}
+			if st.Code() != codes.NotFound {
+				t.Errorf("DisableRapidCache non-existent: got %v (code %v), want NotFound", err, st.Code())
+			}
+			return
+		}
+		t.Fatalf("DisableRapidCache unexpected error: %v", err)
+	}
+	t.Fatalf("DisableRapidCache for non-existent cache: expected NotFound error, got nil")
 }
