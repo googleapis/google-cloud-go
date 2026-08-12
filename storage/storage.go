@@ -179,7 +179,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			creds = wrapAuthCredentials(c, nil)
 			opts = append(opts, option.WithAuthCredentials(creds))
 		} else if gc, err := transport.Creds(ctx, opts...); err == nil {
-			googleCreds = wrapGoogleCredentials(gc, nil)
+			googleCreds = gc
 			opts = append(opts, option.WithCredentials(googleCreds))
 		}
 	} else {

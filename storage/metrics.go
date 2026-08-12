@@ -1682,6 +1682,11 @@ func (p *metricsTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return tok, err
 }
 
+// wrapAuthCredentials wraps an auth.Credentials object to track credential refresh durations.
+// Note: We deliberately do not wrap legacy golang.org/x/oauth2/google.Credentials because
+// it embeds unexported fields (e.g. universeDomain and its internal Mutex). Wrapping or copying
+// it would either trigger go vet lock-copying errors or silently drop those unexported fields,
+// which breaks Universe Domain resolution for legacy users.
 func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credentials {
 	if c == nil || c.TokenProvider == nil {
 		return c
@@ -1709,29 +1714,6 @@ func (s *metricsTokenSource) Token() (*oauth2.Token, error) {
 	tok, err := s.base.Token()
 	s.metrics.recordCredentialRefreshDuration(context.Background(), time.Since(start), err)
 	return tok, err
-}
-
-func wrapGoogleCredentials(c *google.Credentials, metrics *clientMetrics) *google.Credentials {
-	if c == nil || c.TokenSource == nil {
-		return c
-	}
-	if mts, ok := c.TokenSource.(*metricsTokenSource); ok {
-		if metrics == nil || mts.metrics == metrics {
-			return c
-		}
-		return &google.Credentials{
-			ProjectID:              c.ProjectID,
-			TokenSource:            &metricsTokenSource{base: mts.base, metrics: metrics},
-			JSON:                   c.JSON,
-			UniverseDomainProvider: c.UniverseDomainProvider,
-		}
-	}
-	return &google.Credentials{
-		ProjectID:              c.ProjectID,
-		TokenSource:            &metricsTokenSource{base: c.TokenSource, metrics: metrics},
-		JSON:                   c.JSON,
-		UniverseDomainProvider: c.UniverseDomainProvider,
-	}
 }
 
 func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {

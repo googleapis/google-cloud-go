@@ -28,7 +28,6 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 
 	"go.opentelemetry.io/otel/attribute"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -1016,29 +1015,6 @@ type mockTokenProvider struct{}
 
 func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return &auth.Token{}, nil
-}
-
-func TestWrapGoogleCredentials(t *testing.T) {
-	if wrapGoogleCredentials(nil, nil) != nil {
-		t.Errorf("expected nil when c is nil")
-	}
-	c := &google.Credentials{}
-	if wrapGoogleCredentials(c, nil) != c {
-		t.Errorf("expected original credentials when TokenSource is nil")
-	}
-	c.TokenSource = &mockTokenSource{}
-	m := &clientMetrics{}
-	wrapped := wrapGoogleCredentials(c, m)
-	if wrapped == c {
-		t.Errorf("expected a new copy of credentials, got original")
-	}
-	if _, ok := wrapped.TokenSource.(*metricsTokenSource); !ok {
-		t.Errorf("expected TokenSource to be *metricsTokenSource")
-	}
-	wrapped2 := wrapGoogleCredentials(wrapped, m)
-	if wrapped2 != wrapped {
-		t.Errorf("expected original wrapped credentials on double wrap")
-	}
 }
 
 type mockTokenSource struct{}

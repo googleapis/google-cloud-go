@@ -241,7 +241,6 @@ func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfi
 			authCreds = wrapAuthCredentials(authCreds, clientMetrics)
 			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
 		} else if googleCreds != nil {
-			googleCreds = wrapGoogleCredentials(googleCreds, clientMetrics)
 			s.clientOption = append(s.clientOption, option.WithCredentials(googleCreds))
 		}
 	}
