@@ -130,7 +130,7 @@ func defaultAnalyticsRESTCallOptions() *AnalyticsCallOptions {
 	}
 }
 
-// internalAnalyticsClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+// internalAnalyticsClient is an interface that defines the methods available from AI Commerce Search API.
 type internalAnalyticsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -141,7 +141,7 @@ type internalAnalyticsClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// AnalyticsClient is a client for interacting with Vertex AI Search for commerce API.
+// AnalyticsClient is a client for interacting with AI Commerce Search API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for managing & accessing retail search business metric.
@@ -206,7 +206,7 @@ func (c *AnalyticsClient) ListOperations(ctx context.Context, req *longrunningpb
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// analyticsGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// analyticsGRPCClient is a client for interacting with AI Commerce Search API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type analyticsGRPCClient struct {

@@ -194,6 +194,11 @@
               "methods": [
                 "UpdateRapidCache"
               ]
+            },
+            "ViewObjectFullContext": {
+              "methods": [
+                "ViewObjectFullContext"
+              ]
             }
           }
         },
@@ -383,6 +388,11 @@
             "UpdateRapidCache": {
               "methods": [
                 "UpdateRapidCache"
+              ]
+            },
+            "ViewObjectFullContext": {
+              "methods": [
+                "ViewObjectFullContext"
               ]
             }
           }
