@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -179,4 +180,58 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// withChunkNumber sets the 1-indexed chunk number attribute on the span.
+func withChunkNumber(n int64) trace.SpanStartOption {
+	return trace.WithAttributes(attribute.Int64("gcp.storage.chunk.number", n))
+}
+
+// startChunkSpan starts a span for a chunk upload with offset and size attributes.
+func startChunkSpan(ctx context.Context, name string, offset int64, size int64, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, trace.SpanFromContext(ctx)
+	}
+	attrs := []attribute.KeyValue{
+		attribute.Int64("gcp.storage.payload.offset", offset),
+		attribute.Int64("gcp.storage.payload.size", size),
+	}
+	opts = append(opts, trace.WithAttributes(attrs...))
+	return startSpan(ctx, name, opts...)
+}
+
+func startResumableInitSpan(ctx context.Context) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, trace.SpanFromContext(ctx)
+	}
+	return startSpan(ctx, "Storage.ResumableSessionInit")
+}
+
+// dynamicSpanContext wraps a context.Context and delegates Value lookups to an active span context
+// stored in an atomic.Value. This allows dynamically updating the active OTel parent span for long-lived
+// background client calls (such as HTTP resumable upload loops).
+type dynamicSpanContext struct {
+	context.Context
+	holder *atomic.Value
+}
+
+func (d *dynamicSpanContext) Value(key any) any {
+	if cur, ok := d.holder.Load().(context.Context); ok && cur != nil {
+		if val := cur.Value(key); val != nil {
+			return val
+		}
+	}
+	return d.Context.Value(key)
+}
+
+func newDynamicSpanContext(ctx context.Context) (context.Context, *atomic.Value) {
+	holder := &atomic.Value{}
+	holder.Store(ctx)
+	return &dynamicSpanContext{Context: ctx, holder: holder}, holder
+}
+
+type firstChunkCallbackKey struct{}
+
+func withFirstChunkCallback(ctx context.Context, cb func()) context.Context {
+	return context.WithValue(ctx, firstChunkCallbackKey{}, cb)
 }
