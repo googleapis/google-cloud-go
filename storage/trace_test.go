@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -701,5 +702,50 @@ func TestChecksumSpanDevTracingDisabled(t *testing.T) {
 	spans := te.Spans()
 	if len(spans) > 0 {
 		t.Fatalf("expected 0 ended spans because ParentSpan should still be active, but got %d ended spans: %v", len(spans), spans[0].Name)
+	}
+}
+
+func TestMetadataRetryBackoffTracing(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	// Test metadata operation (e.g. Bucket.Attrs or ObjectsListCall) experiencing 2 retries.
+	spanName := "Bucket.Attrs"
+	ctx, _ = startSpan(ctx, spanName)
+	recordRetryBackoffEvent(ctx, 1, time.Now().Add(-100*time.Millisecond))
+	recordRetryBackoffEvent(ctx, 2, time.Now().Add(-200*time.Millisecond))
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 3 {
+		t.Fatalf("expected 3 spans (1 parent metadata span + 2 RetryBackoff child spans), got %d", len(spans))
+	}
+
+	var parentSpan tracetest.SpanStub
+	var backoffCount int
+	for _, s := range spans {
+		if strings.HasSuffix(s.Name, "RetryBackoff") {
+			backoffCount++
+		} else if strings.HasSuffix(s.Name, spanName) {
+			parentSpan = s
+		}
+	}
+	if backoffCount != 2 {
+		t.Errorf("expected 2 RetryBackoff child spans, got %d", backoffCount)
+	}
+	if parentSpan.Name == "" {
+		t.Fatalf("failed to find parent metadata span %q", spanName)
+	}
+	if len(parentSpan.Events) != 2 {
+		t.Fatalf("expected 2 storage.retry.backoff events on metadata span, got %d", len(parentSpan.Events))
+	}
+	for i, ev := range parentSpan.Events {
+		if ev.Name != "storage.retry.backoff" {
+			t.Errorf("event %d: got name %q, want %q", i, ev.Name, "storage.retry.backoff")
+		}
 	}
 }

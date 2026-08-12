@@ -4115,3 +4115,55 @@ func TestOTelReaderAndWriterAttributesEmulated(t *testing.T) {
 		}
 	})
 }
+
+func TestOTelRetryBackoffTracingEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		te := testutil.NewOpenTelemetryTestExporter()
+		t.Cleanup(func() {
+			te.Unregister(ctx)
+		})
+		t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+		// Create bucket using emulator client.
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{
+			Name: bucket,
+		}, nil)
+		if err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+
+		// Setup retry test for Bucket.Attrs (storage.buckets.get).
+		instructions := map[string][]string{
+			"storage.buckets.get": {"return-503", "return-503"},
+		}
+		testID := createRetryTest(t, client, instructions)
+		ctxRetry := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		vc := &Client{tc: client}
+		if _, err := vc.Bucket(bucket).Attrs(ctxRetry); err != nil {
+			t.Fatalf("vc.Bucket.Attrs: %v", err)
+		}
+
+		// Verify exported spans.
+		spans := te.Spans()
+		var parentSpan tracetest.SpanStub
+		var retryBackoffCount int
+		for _, s := range spans {
+			if strings.HasSuffix(s.Name, "RetryBackoff") {
+				retryBackoffCount++
+			} else if strings.HasSuffix(s.Name, "Bucket.Attrs") {
+				parentSpan = s
+			}
+		}
+
+		if parentSpan.Name == "" {
+			t.Fatalf("Bucket.Attrs parent span not found in %d spans", len(spans))
+		}
+		if retryBackoffCount != 2 {
+			t.Errorf("expected 2 RetryBackoff child spans, got %d", retryBackoffCount)
+		}
+		if len(parentSpan.Events) != 2 {
+			t.Errorf("expected 2 storage.retry.backoff trace events on parent span, got %d", len(parentSpan.Events))
+		}
+	})
+}

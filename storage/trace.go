@@ -22,6 +22,7 @@ import (
 	"os"
 	"strings"
 	"sync/atomic"
+	"time"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -313,4 +314,32 @@ func startChecksumSpan(ctx context.Context, checksumType string) (context.Contex
 		trace.WithAttributes(attribute.String("gcp.storage.checksum.type", checksumType)),
 	}
 	return startSpan(ctx, "Storage.CalculateChecksum", opts...)
+}
+
+// recordRetryBackoffEvent creates a T5 RetryBackoff child span and adds a
+// storage.retry.backoff span event to the active span in ctx.
+func recordRetryBackoffEvent(ctx context.Context, attempt int, startTime time.Time) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	endTime := time.Now()
+	if startTime.IsZero() {
+		startTime = endTime
+	}
+	backoff := endTime.Sub(startTime)
+	attrs := []attribute.KeyValue{
+		attribute.Int("attempt", attempt),
+		attribute.String("backoff", backoff.String()),
+	}
+	span.AddEvent("storage.retry.backoff", trace.WithAttributes(attrs...))
+
+	// Create a child span for the backoff duration so it appears as a visual
+	// block in Trace Explorer waterfall charts.
+	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(startTime))
+	backoffSpan.SetAttributes(attrs...)
+	backoffSpan.End(trace.WithTimestamp(endTime))
 }
