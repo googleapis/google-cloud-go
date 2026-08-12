@@ -375,7 +375,7 @@ func TestIntegration_RapidCache_Update(t *testing.T) {
 	uOp, err := cClient.UpdateRapidCache(ctx, &controlpb.UpdateRapidCacheRequest{
 		RapidCache: &controlpb.RapidCache{
 			Name: created.GetName(),
-			Ttl:  durationpb.New(12 * time.Hour),
+			Ttl:  durationpb.New(48 * time.Hour),
 		},
 		UpdateMask: &fieldmaskpb.FieldMask{
 			Paths: []string{"ttl"},
