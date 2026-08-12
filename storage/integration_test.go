@@ -449,7 +449,7 @@ var readCases = []readCase{
 }
 
 func TestIntegration_MultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloader"
@@ -516,7 +516,7 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 // Test many concurrent reads on the same MultiRangeDownloader to try to detect
 // potential deadlocks.
 func TestIntegration_MRDManyReads(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloaderManyReads"
@@ -568,7 +568,7 @@ func TestIntegration_MRDManyReads(t *testing.T) {
 // TestIntegration_MRDCallbackReturnsDataLength tests if the callback returns the correct data
 // read length or not.
 func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1000)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MRDCallback"
@@ -614,7 +614,7 @@ func TestIntegration_MRDCallbackReturnsDataLength(t *testing.T) {
 	})
 }
 func TestIntegration_MRDWithReadHandle(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		const (
 			dataSize       = 1000
 			offset         = 0
@@ -716,7 +716,7 @@ func TestIntegration_MRDWithReadHandle(t *testing.T) {
 }
 
 func TestIntegration_MRDScaleUpConnections(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1<<10)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "MultiRangeDownloaderConcurrentReads"
@@ -812,7 +812,7 @@ func TestIntegration_MRDScaleUpConnections(t *testing.T) {
 }
 
 func TestIntegration_MRDStreamFailureSurvival(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 1<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "mrd-survival"
@@ -908,7 +908,7 @@ func TestIntegration_MRDStreamFailureSurvival(t *testing.T) {
 // TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader tests for potential deadlocks
 // or race conditions when multiple goroutines call Add() concurrently on the same MRD multiple times.
 func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		// Use a 10MB object to allow for many non-overlapping range requests.
 		content := make([]byte, 10<<20)
 		rand.New(rand.NewSource(0)).Read(content)
@@ -1007,7 +1007,7 @@ func TestIntegration_ReadSameFileConcurrentlyUsingMultiRangeDownloader(t *testin
 }
 
 func TestIntegration_MRDNoNewStreamsAfterPermanentError(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "mrdnonretry"
@@ -1068,7 +1068,7 @@ func TestIntegration_MRDNoNewStreamsAfterPermanentError(t *testing.T) {
 }
 
 func TestIntegration_MRDWithNonRetriableError(t *testing.T) {
-	multiTransportTest(skipAllButZonal(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
+	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
 		content := make([]byte, 5<<20)
 		rand.New(rand.NewSource(0)).Read(content)
 		objName := "mrdnonretry"
@@ -4415,7 +4415,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 // Writer test for appendable uploads with and without finalization,
 // also validating Flush() at various offsets.
 func TestIntegration_WriterAppend(t *testing.T) {
-	ctx := skipAllButZonal(context.Background(), "ZB test")
+	ctx := skipAllButRapid(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
@@ -4595,7 +4595,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 // Writer test for append takeover of unfinalized object, including
 // calls to Flush() on takeover.
 func TestIntegration_WriterAppendTakeover(t *testing.T) {
-	ctx := skipAllButZonal(context.Background(), "ZB test")
+	ctx := skipAllButRapid(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
@@ -4856,7 +4856,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 }
 
 func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
-	ctx := skipAllButZonal(context.Background(), "ZB test")
+	ctx := skipAllButRapid(context.Background(), "ZB test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
