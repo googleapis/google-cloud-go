@@ -115,7 +115,7 @@ var (
 	zonalBucketName       string
 	rcuBucketName         string
 	rcuBucketCreateFailed bool
-	testRCULocation       = "us-central1"
+	testRCULocation       = testZonalLocation
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -9047,11 +9047,13 @@ func cleanupBuckets() error {
 	}
 	defer client.Close()
 	for _, b := range []string{bucketName, grpcBucketName, zonalBucketName, rcuBucketName} {
-		if b == "" || b == os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET") {
+		if b == "" || b == os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET") || (b == rcuBucketName && rcuBucketCreateFailed) {
 			continue
 		}
 		if err := killBucket(ctx, client, b); err != nil {
-			return err
+			if !errors.Is(err, ErrBucketNotExist) && !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) {
+				return err
+			}
 		}
 	}
 

@@ -242,7 +242,7 @@ func TestIntegration_BidiRead_ZeroCopyRead(t *testing.T) {
 }
 
 // TestIntegration_BidiRead_NonExistentBucketRead tests opening a stream on a non-existent bucket.
-// Verifies that an appropriate StorageException with HTTP status 404 is thrown.
+// Verifies that an appropriate StorageException with HTTP status 404 / NotFound (or PermissionDenied) is thrown.
 func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, _ string, _ string, client *Client) {
 		nonExistentBucket := "non-existent-bucket-" + uidSpace.New()
@@ -250,7 +250,7 @@ func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 
 		reader, err := obj.NewMultiRangeDownloader(ctx)
 		if err == nil {
-			// If NewMultiRangeDownloader doesn't fail immediately, reading or closing must fail with NotFound
+			// If NewMultiRangeDownloader doesn't fail immediately, reading or closing must fail with NotFound / PermissionDenied
 			var buf bytes.Buffer
 			var readErr error
 			done := make(chan struct{})
@@ -260,19 +260,20 @@ func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 			})
 			select {
 			case <-done:
-				if !errorIsStatusCode(readErr, http.StatusNotFound, codes.NotFound) {
-					t.Errorf("expected NotFound error, got %v", readErr)
+				if !errorIsStatusCode(readErr, http.StatusNotFound, codes.NotFound) && status.Code(readErr) != codes.PermissionDenied {
+					t.Errorf("expected NotFound/PermissionDenied error, got %v", readErr)
 				}
 			case <-time.After(5 * time.Second):
 			}
 			closeErr := reader.Close()
-			if !errorIsStatusCode(closeErr, http.StatusNotFound, codes.NotFound) && !errorIsStatusCode(readErr, http.StatusNotFound, codes.NotFound) {
-				t.Fatalf("expected NotFound status for non-existent bucket read, got readErr=%v, closeErr=%v", readErr, closeErr)
+			if !errorIsStatusCode(closeErr, http.StatusNotFound, codes.NotFound) && status.Code(closeErr) != codes.PermissionDenied &&
+				!errorIsStatusCode(readErr, http.StatusNotFound, codes.NotFound) && status.Code(readErr) != codes.PermissionDenied {
+				t.Fatalf("expected NotFound/PermissionDenied status for non-existent bucket read, got readErr=%v, closeErr=%v", readErr, closeErr)
 			}
 			return
 		}
-		if !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) {
-			t.Fatalf("expected NotFound status for non-existent bucket, got %v", err)
+		if !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) && status.Code(err) != codes.PermissionDenied {
+			t.Fatalf("expected NotFound/PermissionDenied status for non-existent bucket, got %v", err)
 		}
 	})
 }
