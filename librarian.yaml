@@ -1493,6 +1493,11 @@ libraries:
       - path: google/cloud/workflows/executions/v1
       - path: google/cloud/workflows/executions/v1beta
       - path: google/cloud/workflows/v1beta
+  - name: workloadidentity
+    version: 0.0.0
+    apis:
+      - path: google/cloud/workloadidentity/v1
+    copyright_year: "2026"
   - name: workloadmanager
     version: 1.1.0
     apis:
