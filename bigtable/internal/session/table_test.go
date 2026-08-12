@@ -489,24 +489,59 @@ func TestSessionTable_ReadAndWritePoolsDoNotShareSessions(t *testing.T) {
 // --- Close teardown ---------------------------------------------------------
 
 // TestSessionTable_Close_CallsBothReleasers verifies Close fires the
-// closeRead and closeWrite release closures exactly once each.
+// closeRead and closeWrite release closures exactly once each, once both
+// pools have actually been opened (Close gates each releaser on the
+// corresponding lazyPool.opened()).
 func TestSessionTable_Close_CallsBothReleasers(t *testing.T) {
 	var reads, writes int
 	tbl := newSessionTable(
 		"t",
-		func() (Invoker, error) { return nil, nil },
-		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
 		func() error { reads++; return nil },
 		func() error { writes++; return nil },
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
 	)
+	// Open both pools so the ownership gate lets their releasers run.
+	if _, err := tbl.readPool.get(); err != nil {
+		t.Fatalf("readPool.get: %v", err)
+	}
+	if _, err := tbl.writePool.get(); err != nil {
+		t.Fatalf("writePool.get: %v", err)
+	}
 	if err := tbl.Close(); err != nil {
 		t.Fatalf("Close: %v", err)
 	}
 	if reads != 1 || writes != 1 {
 		t.Errorf("release call counts = (read=%d write=%d), want (1,1)", reads, writes)
+	}
+}
+
+// TestSessionTable_Close_UnopenedPoolsSkipReleasers is the flip side:
+// a sessionTable whose pools were never opened — e.g. the loser of a
+// concurrent TableCache.GetOrOpen miss race, which never dispatches —
+// must NOT run its releasers on Close. Releasing would tear down the
+// shared, resource-keyed pool the winning sessionTable owns.
+func TestSessionTable_Close_UnopenedPoolsSkipReleasers(t *testing.T) {
+	var reads, writes int
+	tbl := newSessionTable(
+		"t",
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
+		func() error { reads++; return nil },
+		func() error { writes++; return nil },
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
+		nil, nil,
+	)
+	// No get() calls — both pools stay unopened.
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close: %v", err)
+	}
+	if reads != 0 || writes != 0 {
+		t.Errorf("release call counts = (read=%d write=%d), want (0,0) — unopened pools must not release", reads, writes)
 	}
 }
 
@@ -517,7 +552,7 @@ func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
 	var reads int
 	tbl := newSessionTable(
 		"",
-		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
 		nil,
 		func() error { reads++; return nil },
 		nil,
@@ -525,6 +560,9 @@ func TestSessionTable_Close_NilWriteReleaserOK(t *testing.T) {
 		nil,
 		nil, nil,
 	)
+	if _, err := tbl.readPool.get(); err != nil {
+		t.Fatalf("readPool.get: %v", err)
+	}
 	if err := tbl.Close(); err != nil {
 		t.Fatalf("Close: %v", err)
 	}
@@ -541,14 +579,20 @@ func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 	writeErr := status.Error(codes.Internal, "write pool teardown failed")
 	tbl := newSessionTable(
 		"t",
-		func() (Invoker, error) { return nil, nil },
-		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
 		func() error { return readErr },
 		func() error { return writeErr },
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
 		nil, nil,
 	)
+	if _, err := tbl.readPool.get(); err != nil {
+		t.Fatalf("readPool.get: %v", err)
+	}
+	if _, err := tbl.writePool.get(); err != nil {
+		t.Fatalf("writePool.get: %v", err)
+	}
 	err := tbl.Close()
 	if err == nil {
 		t.Fatal("Close returned nil, want joined errors")
@@ -558,17 +602,18 @@ func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 	}
 }
 
-// TestSessionTable_Close_ReleasersIdempotent verifies a second Close
-// call still runs the release closures (they're idempotent at the
-// sessionClient layer — second releaseSessionPool call finds the
-// entry absent and no-ops). The point is that sessionTable.Close
-// itself does not gate on a once — the underlying release is where
-// idempotency lives.
-func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {
+// TestSessionTable_Close_Idempotent verifies sessionTable.Close is
+// once-guarded: a second Close is a no-op and does NOT re-run the
+// release closures. This matters now that each releaser decrements a
+// refcount on the shared, resource-keyed pool — a second release with
+// no matching open would corrupt that refcount (see
+// TestSessionTable_Close_SecondCloseDoesNotReleaseSuccessorPool for the
+// concrete hazard).
+func TestSessionTable_Close_Idempotent(t *testing.T) {
 	var reads int
 	tbl := newSessionTable(
 		"t",
-		func() (Invoker, error) { return nil, nil },
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
 		nil,
 		func() error { reads++; return nil },
 		nil,
@@ -576,52 +621,54 @@ func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {
 		nil,
 		nil, nil,
 	)
+	if _, err := tbl.readPool.get(); err != nil {
+		t.Fatalf("readPool.get: %v", err)
+	}
 	if err := tbl.Close(); err != nil {
 		t.Fatalf("Close #1: %v", err)
 	}
 	if err := tbl.Close(); err != nil {
 		t.Fatalf("Close #2: %v", err)
 	}
-	if reads != 2 {
-		t.Errorf("closeRead called %d times across two Close calls, want 2 (release is caller-idempotent, not sessionTable-once-guarded)", reads)
+	if reads != 1 {
+		t.Errorf("closeRead called %d times across two Close calls, want 1 (Close is once-guarded)", reads)
 	}
 }
 
 // TestSessionTable_Close_RacingLazyOpen_NoLeak proves the guardOpen
-// wrapper cleans up a fresh pool that the underlying opener inserted
-// AFTER Close's releaser already no-op'd on an empty map. Reproduces
-// PR #20264 review comment (high): openRead's slow path straddles
-// Close, releaser sees no entry, opener finishes and inserts → leak.
+// wrapper cleans up a fresh pool that the underlying opener produced
+// AFTER Close ran. Reproduces PR #20264 review comment (high): openRead's
+// slow path straddles Close, the opener finishes and returns a pool that
+// would otherwise leak.
 //
 // Interleaving:
-//  1. Goroutine A calls readPool.get() → guardOpen check passes
-//     (closed=false) → openRead blocks on unblockOpen chan.
-//  2. Main calls tbl.Close() → sets closed=true → invokes closeRead
-//     which increments releaseCalls; simulated "map lookup misses"
-//     because openRead hasn't inserted yet (fake release no-ops but
-//     the counter records the attempt).
-//  3. Main unblocks openRead. openRead returns "inserted a pool".
-//  4. guardOpen's post-check sees closed=true → calls release AGAIN
-//     to clean up its own insert. releaseCalls == 2.
+//  1. Goroutine A calls readPool.get() → holds lazyPool.mu → guardOpen
+//     early check passes (closed=false) → openRead blocks on unblockOpen.
+//  2. Main calls tbl.Close() → sets closed=true, then reads
+//     readPool.opened(). The lock-free openedFlag is still false (the
+//     open hasn't completed), so Close skips its own releaser AND does
+//     not stall on lazyPool.mu (which A still holds). releaseCalls stays 0.
+//  3. Main unblocks openRead. openRead returns a pool.
+//  4. guardOpen's post-check sees closed=true → calls release once to
+//     clean up the pool it just produced. releaseCalls == 1. Because the
+//     open returned an error, get() never sets openedFlag, so the earlier
+//     Close was right to skip — no double release.
 //  5. Return ErrClientClosed to the caller.
 //
-// Without the fix: releaseCalls == 1 (Close-side only), openRead
-// returned a fake pool that no one owns → leak.
+// The lock-free openedFlag is load-bearing here: a mu-guarded opened()
+// would have Close block on lazyPool.mu until step 3, deadlocking the
+// test (and stalling Close behind an in-flight dial in production).
 func TestSessionTable_Close_RacingLazyOpen_NoLeak(t *testing.T) {
 	unblockOpen := make(chan struct{})
 	openStarted := make(chan struct{})
 	var releaseCalls atomic.Int32
-	// Sentinel invoker returned by the fake openRead — proves the opener
-	// actually completed and returned a "pool" that would leak absent the
-	// post-check.
-	fakeInv := (Invoker)(nil)
 
 	tbl := newSessionTable(
 		"t",
 		func() (Invoker, error) {
 			close(openStarted)
 			<-unblockOpen
-			return fakeInv, nil
+			return &fakeInvoker{}, nil
 		},
 		nil,
 		func() error { releaseCalls.Add(1); return nil },
@@ -655,8 +702,11 @@ func TestSessionTable_Close_RacingLazyOpen_NoLeak(t *testing.T) {
 	if gotInvoker != nil {
 		t.Errorf("readPool.get() returned non-nil invoker %v, want nil", gotInvoker)
 	}
-	if got := releaseCalls.Load(); got != 2 {
-		t.Errorf("release called %d times, want 2 (once by Close, once by guardOpen post-check cleanup)", got)
+	if got := releaseCalls.Load(); got != 1 {
+		t.Errorf("release called %d times, want 1 (guardOpen post-check cleanup only; Close skipped because the pool never finished opening)", got)
+	}
+	if tbl.readPool.opened() {
+		t.Error("readPool.opened() = true after a Close-straddled open that errored; want false")
 	}
 }
 
@@ -690,7 +740,7 @@ func TestSessionTable_Close_BeforeLazyOpen_EarlyBail(t *testing.T) {
 	if openCalled.Load() != 0 {
 		t.Errorf("openRead was called %d times after Close, want 0 (early bail should short-circuit)", openCalled.Load())
 	}
-	if releaseCalls.Load() != 1 {
-		t.Errorf("release called %d times, want 1 (Close's own release only; guardOpen never entered inner)", releaseCalls.Load())
+	if releaseCalls.Load() != 0 {
+		t.Errorf("release called %d times, want 0 (pool never opened, so Close's ownership gate skips it and guardOpen never enters its inner path)", releaseCalls.Load())
 	}
 }

@@ -17,6 +17,7 @@ package session
 import (
 	"context"
 	"sync"
+	"sync/atomic"
 
 	btransport "cloud.google.com/go/bigtable/internal/transport"
 )
@@ -50,6 +51,14 @@ type lazyPool struct {
 	mu   sync.Mutex
 	pool Invoker
 	open func() (Invoker, error)
+	// openedFlag mirrors "pool != nil" but is readable WITHOUT mu.
+	// get() holds mu for the whole open() (a dial that can block for
+	// seconds), so a mu-guarded opened() would make any concurrent
+	// reader — notably sessionTable.Close's ownership gate — stall
+	// behind, or deadlock against, an in-flight open. Set to true only
+	// on a successful open, under mu, so the lock-free load is
+	// monotonic false->true and never observes a half-open pool.
+	openedFlag atomic.Bool
 }
 
 // get returns the underlying pool, opening it on first call.
@@ -68,17 +77,18 @@ func (l *lazyPool) get() (Invoker, error) {
 		return nil, err
 	}
 	l.pool = p
+	l.openedFlag.Store(true)
 	return p, nil
 }
 
-// opened reports whether the pool has been opened yet — for tests
-// and for the sessionz debug UI which wants to render "read pool:
-// not yet opened" vs a live pool.
+// opened reports whether the pool has been opened yet — for tests, for
+// the sessionz debug UI ("read pool: not yet opened" vs a live pool),
+// and for sessionTable.Close's ownership gate. Reads openedFlag
+// lock-free so a caller racing an in-flight open() (which holds mu for
+// the whole dial) neither stalls nor deadlocks on mu.
 func (l *lazyPool) opened() bool {
 	if l == nil {
 		return false
 	}
-	l.mu.Lock()
-	defer l.mu.Unlock()
-	return l.pool != nil
+	return l.openedFlag.Load()
 }

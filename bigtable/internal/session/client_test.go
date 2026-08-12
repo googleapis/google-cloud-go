@@ -515,6 +515,7 @@ func TestReleaseSessionPool_RemovesEntryAndInvokesUnregister(t *testing.T) {
 	sc.sessionPools[key] = &managedSessionPool{
 		pool:       pool,
 		unregister: func() { unregistered++ },
+		refs:       1, // sole owner; the one release below drops it to 0
 	}
 	if err := sc.releaseSessionPool(key); err != nil {
 		t.Fatalf("releaseSessionPool = %v, want nil", err)
@@ -531,5 +532,137 @@ func TestReleaseSessionPool_RemovesEntryAndInvokesUnregister(t *testing.T) {
 	}
 	if unregistered != 1 {
 		t.Errorf("unregister fired %d times after second release, want still 1", unregistered)
+	}
+}
+
+// TestGetOrCreateSessionPool_RefcountsSharedPool exercises the refcount
+// that keeps a pool alive while two sessionTables transiently share it
+// (the TTL-sweep evict/reopen window). A cache hit does +1; each release
+// does -1; the pool is torn down only when the LAST reference drops.
+func TestGetOrCreateSessionPool_RefcountsSharedPool(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	key := poolKey{"table:foo", permissionRead}
+	pool := btransport.NewSessionPoolImpl(
+		1, "test-pool",
+		func(ctx context.Context) (btransport.Stream, error) { return nil, errors.New("test never dials") },
+		&btpb.OpenSessionRequest{}, nil,
+		btransport.SessionTypeTable, false,
+	)
+	var unregistered int
+	// First owner already holds a reference.
+	sc.sessionPools[key] = &managedSessionPool{
+		pool:       pool,
+		unregister: func() { unregistered++ },
+		refs:       1,
+	}
+
+	// Second owner opens the same key: the cache-hit branch bumps refs to
+	// 2 and hands back the SAME pool rather than minting a new one.
+	if got := sc.getOrCreateSessionPool(key, nil, nil, nil, btransport.SessionTypeTable); got != pool {
+		t.Fatalf("getOrCreateSessionPool cache hit returned a different pool, want the existing one")
+	}
+	if got := sc.sessionPools[key].refs; got != 2 {
+		t.Fatalf("refs after second open = %d, want 2", got)
+	}
+
+	// First release drops to 1 — pool stays mapped and is NOT torn down.
+	if err := sc.releaseSessionPool(key); err != nil {
+		t.Fatalf("releaseSessionPool #1: %v", err)
+	}
+	mp, ok := sc.sessionPools[key]
+	if !ok {
+		t.Fatal("pool removed after first release, want still present (refs=1)")
+	}
+	if mp.refs != 1 {
+		t.Errorf("refs after first release = %d, want 1", mp.refs)
+	}
+	if unregistered != 0 {
+		t.Errorf("unregister fired %d times after first release, want 0 (still referenced)", unregistered)
+	}
+
+	// Second (last) release drops to 0 — pool removed, unregister fires.
+	if err := sc.releaseSessionPool(key); err != nil {
+		t.Fatalf("releaseSessionPool #2: %v", err)
+	}
+	if _, ok := sc.sessionPools[key]; ok {
+		t.Error("pool still mapped after last release, want removed")
+	}
+	if unregistered != 1 {
+		t.Errorf("unregister fired %d times after last release, want 1", unregistered)
+	}
+}
+
+// TestSessionTable_Close_SecondCloseDoesNotReleaseSuccessorPool is the
+// integration guard for the Close idempotency fix, driving the REAL
+// sessionClient refcount. A stale sessionTable that already released its
+// pool must not, on a second Close, decrement the refcount of a DIFFERENT
+// pool freshly minted under the same key.
+//
+// Timeline:
+//  1. tbl opens its read pool (refs=1) and Closes once → refs 1->0,
+//     pool-1 removed.
+//  2. A fresh owner mints a successor pool under the SAME key (refs=1).
+//  3. tbl.Close() runs AGAIN. opened() is still true (monotonic), so
+//     without the once-guard closeRead would fire and drop the successor's
+//     refs to 0, closing it out from under its live owner. The guard
+//     makes the second Close a no-op, so the successor survives.
+func TestSessionTable_Close_SecondCloseDoesNotReleaseSuccessorPool(t *testing.T) {
+	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	key := poolKey{"table:foo", permissionRead}
+	newPool := func(name string) *btransport.SessionPoolImpl {
+		return btransport.NewSessionPoolImpl(
+			1, name,
+			func(ctx context.Context) (btransport.Stream, error) { return nil, errors.New("test never dials") },
+			&btpb.OpenSessionRequest{}, nil,
+			btransport.SessionTypeTable, false,
+		)
+	}
+
+	// tbl's pool, with tbl as the sole (refs=1) owner.
+	sc.sessionPools[key] = &managedSessionPool{pool: newPool("pool-1"), refs: 1}
+
+	var closeReads int
+	tbl := newSessionTable(
+		"foo",
+		func() (Invoker, error) { return &fakeInvoker{}, nil },
+		nil,
+		func() error { closeReads++; return sc.releaseSessionPool(key) },
+		nil,
+		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
+		nil,
+		nil, nil,
+	)
+	if _, err := tbl.readPool.get(); err != nil { // mark the pool opened
+		t.Fatalf("readPool.get: %v", err)
+	}
+
+	// First Close releases tbl's pool: refs 1->0, removed.
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close #1: %v", err)
+	}
+	if _, ok := sc.sessionPools[key]; ok {
+		t.Fatal("pool-1 still mapped after first Close, want removed")
+	}
+
+	// A fresh owner mints a successor pool under the same key.
+	successor := newPool("pool-2")
+	sc.sessionPools[key] = &managedSessionPool{pool: successor, refs: 1}
+
+	// Second Close MUST be a no-op — it must not touch the successor.
+	if err := tbl.Close(); err != nil {
+		t.Fatalf("Close #2: %v", err)
+	}
+	if closeReads != 1 {
+		t.Errorf("closeRead ran %d times, want 1 (second Close is once-guarded)", closeReads)
+	}
+	mp, ok := sc.sessionPools[key]
+	if !ok {
+		t.Fatal("successor pool was removed by the stale second Close, want still present")
+	}
+	if mp.pool != successor {
+		t.Error("mapped pool is not the successor after the second Close")
+	}
+	if mp.refs != 1 {
+		t.Errorf("successor refs = %d, want 1 (untouched by the stale Close)", mp.refs)
 	}
 }

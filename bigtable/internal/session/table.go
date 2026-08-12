@@ -73,11 +73,14 @@ type sessionTable struct {
 	// write side of the openRead/openWrite pair.
 	closeRead  func() error
 	closeWrite func() error
-	// closed is set by Close() BEFORE the releasers run, and re-checked
+	// closed serves two roles for Close(). (1) It is the once-guard:
+	// Close swaps it false->true and a second Close returns early, so the
+	// per-pool refcount releasers run at most once. (2) It is re-checked
 	// inside the lazy-open wrapper (guardOpen) around openRead/openWrite
 	// so an opener whose slow path straddles Close cleans up its own
 	// insert instead of leaking a fresh pool that the releaser missed.
-	// See guardOpen for the interleaving rules.
+	// The swap happens BEFORE the releasers run so the guardOpen re-check
+	// observes it. See guardOpen for the interleaving rules.
 	closed atomic.Bool
 }
 
@@ -118,14 +121,17 @@ func newSessionTable(
 // against t.closed. Interleaving cases:
 //
 //   - Close ran first: early check trips, opener never runs. No leak.
-//   - Close runs while opener's slow path holds sessionPoolsMu: post-check
+//   - Close runs while opener's slow path is still dialing: post-check
 //     trips after opener returns; guardOpen invokes release itself to tear
-//     down the pool the opener just inserted. releaseSessionPool is
-//     idempotent, so Close's parallel call to release harmlessly no-ops.
-//   - Close runs after guardOpen returns: normal path — Close's releaser
-//     finds the pool in sessionPools and closes it. In-flight Invoke on
-//     the returned pool may fail with a "pool closed" error; the client
-//     was concurrently being torn down, so that's expected.
+//     down the pool the opener just inserted, then returns an error. Because
+//     get() only sets lazyPool.openedFlag on a SUCCESSFUL open, the flag
+//     stays false, so Close's own opened()-gated releaser skips this pool —
+//     exactly one release runs, keeping the pool refcount balanced.
+//   - Close runs after guardOpen returns: normal path — the open succeeded
+//     and set openedFlag, so Close's releaser finds the pool in sessionPools
+//     and closes it. In-flight Invoke on the returned pool may fail with a
+//     "pool closed" error; the client was concurrently being torn down, so
+//     that's expected.
 //
 // A nil opener passes through as nil so the MV write side (no write pool)
 // stays a lazyPool-with-nil-open ("no session support"), not a
@@ -282,17 +288,21 @@ func dispatch[Args any, R any, Resp interface {
 }
 
 // Close releases this sessionTable's underlying read + write session
-// pools from the sessionClient's per-resource keyed map. Both release
-// closures are idempotent (second call finds the map entry absent
-// and no-ops) so double-close from the cache sweeper + explicit
-// caller is safe.
+// pools from the sessionClient's per-resource keyed map.
 //
-// Ordering matters: closed is Store'd BEFORE the releasers run so an
-// opener whose slow path is straddling this Close (already past its
-// early check, still dialing) sees closed=true on its post-insert
-// re-check inside guardOpen and cleans up its own insert. See guardOpen.
-// Otherwise the releaser would no-op on the empty map and the
-// post-insert would leak a fresh pool.
+// Idempotent: the closed.Swap guard makes a second Close a no-op. This
+// matters because each releaser now decrements a refcount on the shared,
+// resource-keyed pool; a second Close would decrement again with no
+// matching open, and if a fresh pool had since been minted under the same
+// key it would strand that pool by dropping its refcount to zero. The
+// guard also serves the cache sweeper + explicit caller double-close path.
+//
+// Ordering matters: closed is set BEFORE the releasers run so an opener
+// whose slow path is straddling this Close (already past its early check,
+// still dialing) sees closed=true on its post-insert re-check inside
+// guardOpen and cleans up its own insert. See guardOpen. Otherwise the
+// releaser would no-op on the empty map and the post-insert would leak a
+// fresh pool.
 //
 // Safety of per-handle pool teardown also rests on a caller-side
 // invariant: bigtable.Client's session.TableCache guarantees at-most-one
@@ -304,7 +314,9 @@ func dispatch[Args any, R any, Resp interface {
 // Returns the joined read + write teardown errors (nil for the
 // materialized-view case where closeWrite is nil).
 func (t *sessionTable) Close() error {
-	t.closed.Store(true)
+	if t.closed.Swap(true) {
+		return nil
+	}
 	var errs []error
 	// Only release a pool this sessionTable actually opened. A sessionTable
 	// discarded by TableCache.GetOrOpen's concurrent-miss race (the loser of
