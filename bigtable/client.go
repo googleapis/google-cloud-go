@@ -78,6 +78,24 @@ type Client struct {
 	// calls Close() on the returned handle. See
 	// internal/session/table_cache.go.
 	sessionTables *session.TableCache
+
+	// sessionRelease decrements this Client's reference in the
+	// process-wide shared-session cache. Non-nil iff sessionImpl was
+	// obtained via acquireSharedSession (which is the case for every
+	// non-preDialed, non-DisableSession Client built through
+	// NewClientWithConfig). Close invokes it in place of
+	// sessionImpl.Close so the underlying session.Client only tears
+	// down when the LAST bigtable.Client holding it releases. See
+	// shared_session.go for the intern cache.
+	sessionRelease func() error
+	// sessionListenerUnregister detaches this Client's Diverter from
+	// the shared session's SessionLoad listener list. Non-nil iff we
+	// registered one at construction (i.e. iff sessionImpl is
+	// non-nil). Close invokes it BEFORE sessionRelease so a late
+	// config-poll firing during teardown cannot deliver a
+	// SessionLoad update to a Diverter whose owning Client is on the
+	// way out.
+	sessionListenerUnregister func()
 }
 
 // ClientConfig has configurations for the client.
@@ -298,22 +316,54 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	// resolver target (fails with "passthrough: received empty target
 	// in Build()"), breaking every emulator-based test.
 	preDialed := false
+	var resolvedEndpoint string
 	if uResolver, resErr := internaloption.NewUnsafeResolver(o...); resErr == nil {
 		preDialed = uResolver.ResolvedGRPCConnIsCustom()
+		// Endpoint captures option.WithEndpoint and (indirectly)
+		// option.WithUniverseDomain via the resolver's endpoint
+		// computation. Feeds into the shared-session cache key so two
+		// Clients targeting different endpoints — even with the same
+		// (project, instance, appProfile) — get distinct sessions.
+		// A resolve error just leaves the field empty; the key still
+		// dedups on the other axes and any two calls with unresolved
+		// endpoints treat each other as endpoint-equivalent.
+		resolvedEndpoint, _ = uResolver.ResolvedGRPCEndpoint()
 	}
 	// Skip session-client construction when either (a) caller pre-dialed
 	// a custom conn (session.NewClient can't dial through it) or (b)
 	// caller opted out via ClientConfig.DisableSession. In both cases
 	// sessionImpl + sessionTables stay nil; every downstream caller
 	// (open.go's getOrCreateSession*, Client.Close) already nil-guards
-	// on that state.
+	// on that state. Neither path touches the shared-session cache so
+	// callers who opt out pay no cache-lookup cost and cannot conflict
+	// with a shared session another Client is holding.
 	if !preDialed && !config.DisableSession {
-		// Pass the fully-merged option list (o), not the raw caller
-		// opts. gtransport.Dial needs the DefaultClientOptions merged
-		// in (endpoint, scopes, user-agent, interceptors) — passing
-		// bare opts leaves the resolver target empty and the dial
-		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, o...)
+		// Two NewClient callers with matching (project, instance,
+		// appProfile, endpoint) share ONE underlying session.Client —
+		// one channel pool, one ConfigurationManager poll goroutine,
+		// one per-resource session-pool set. See shared_session.go for
+		// the intern cache and the incompatible-options guardrail.
+		key := sharedKey{
+			project:    project,
+			instance:   instance,
+			appProfile: config.AppProfile,
+			endpoint:   resolvedEndpoint,
+		}
+		fp := sessionFingerprint{
+			metricsProviderKind:      metricsProviderKind(metricsProvider),
+			clientSideMetricsEnabled: metricsTracerFactory.Enabled,
+			enableDirectAccess:       isDirectAccessEnabled(config),
+		}
+		build := func() (session.Client, error) {
+			// Pass the fully-merged option list (o), not the raw
+			// caller opts. gtransport.Dial needs the
+			// DefaultClientOptions merged in (endpoint, scopes,
+			// user-agent, interceptors) — passing bare opts leaves
+			// the resolver target empty and the dial aborts with
+			// "passthrough: received empty target in Build()".
+			return session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, o...)
+		}
+		sc, release, sessionErr := acquireSharedSession(key, fp, build)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool
@@ -323,8 +373,15 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 			_ = mPool.Close()
 			return nil, fmt.Errorf("bigtable: session.NewClient: %w", sessionErr)
 		}
-		sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
+		// Register THIS Client's Diverter with the shared session's
+		// config manager. Multiple bigtable.Clients sharing one
+		// session each fan out their own listener so a server-driven
+		// SessionLoad update propagates to every Client's Diverter
+		// independently. The unregister thunk is stored so Close can
+		// detach the listener before we release our refcount.
+		c.sessionListenerUnregister = sc.AddSessionLoadListener(c.diverter.SetSessionLoad)
 		c.sessionImpl = sc
+		c.sessionRelease = release
 
 		// Per-resource TableAPI cache with TTL-on-idle eviction. The
 		// cache is opener-agnostic — each getOrCreateSession* helper
@@ -332,6 +389,9 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// qualified resource name as the cache key. Only constructed
 		// when the session backend is actually wired — a sweeper
 		// goroutine over an always-empty map would be dead weight.
+		// This cache stays per-Client even under session sharing —
+		// each bigtable.Client vends its own TableAPI handles that
+		// route through the shared session's pools underneath.
 		c.sessionTables = session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */)
 	}
 
@@ -349,13 +409,29 @@ func (c *Client) Close() error {
 	// on hand-built Clients that skipped session-backend wiring; the
 	// cache's own Close() nil-checks for that.
 	c.sessionTables.Close()
-	// Then the session backend — its bookkeeping (session pools,
-	// ConfigurationManager poller) winds down before we drop the
-	// shared gRPC channels. Any error is aggregated with the classic
+	// Then the session backend. Under process-wide session sharing
+	// (see shared_session.go) sessionRelease decrements THIS Client's
+	// refcount on the shared entry; the underlying session.Client is
+	// only torn down when the LAST Client using it releases. Detach
+	// this Client's Diverter listener BEFORE releasing so a late
+	// config-poll firing between unregister and release cannot
+	// deliver a SessionLoad update to a Diverter whose owning Client
+	// is on the way out. Any error is aggregated with the classic
 	// pool's Close error.
 	var sessionErr error
 	if c.sessionImpl != nil {
-		sessionErr = c.sessionImpl.Close()
+		if c.sessionListenerUnregister != nil {
+			c.sessionListenerUnregister()
+		}
+		if c.sessionRelease != nil {
+			sessionErr = c.sessionRelease()
+		} else {
+			// Defensive: no shared-cache path wired the release
+			// closure. Fall back to closing the session directly so
+			// hand-built Clients that stashed a sessionImpl outside
+			// NewClientWithConfig still tear it down.
+			sessionErr = c.sessionImpl.Close()
+		}
 	}
 	if err := c.mPool.Close(); err != nil {
 		if sessionErr != nil {
