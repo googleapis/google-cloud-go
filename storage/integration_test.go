@@ -234,7 +234,11 @@ func initIntegrationTest() func() error {
 			cleanup = cleanupBuckets
 		}
 		ctx := context.Background()
-		client, err := newTestClient(ctx)
+		var initOpts []option.ClientOption
+		if ep := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_ENDPOINT"); ep != "" {
+			initOpts = append(initOpts, option.WithEndpoint(ep))
+		}
+		client, err := newTestClient(ctx, initOpts...)
 		if err != nil {
 			log.Fatalf("NewClient: %v", err)
 		}
@@ -258,10 +262,18 @@ func initIntegrationTest() func() error {
 		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
 		}
+		zonalLoc := testZonalLocation
+		zonalZone := testZonalZone
+		if loc := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_LOCATION"); loc != "" {
+			zonalLoc = loc
+		}
+		if z := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_ZONE"); z != "" {
+			zonalZone = z
+		}
 		if err := client.Bucket(zonalBucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{
-			Location: testZonalLocation,
+			Location: zonalLoc,
 			CustomPlacementConfig: &CustomPlacementConfig{
-				DataLocations: []string{testZonalZone},
+				DataLocations: []string{zonalZone},
 			},
 			StorageClass: "RAPID",
 			HierarchicalNamespace: &HierarchicalNamespace{
@@ -271,18 +283,25 @@ func initIntegrationTest() func() error {
 				Enabled: true,
 			},
 		}); err != nil {
-			log.Fatalf("creating zonal bucket %q: %v", zonalBucketName, err)
+			log.Printf("creating zonal bucket %q failed: %v", zonalBucketName, err)
 		}
 		if rcuBkt := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET"); rcuBkt != "" {
 			rcuBucketName = rcuBkt
 		} else {
 			rcuLoc := testRCULocation
+			rcuZone := testZonalZone
 			if loc := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_LOCATION"); loc != "" {
 				rcuLoc = loc
+			}
+			if z := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_ZONE"); z != "" {
+				rcuZone = z
 			}
 			if err := client.Bucket(rcuBucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{
 				Location:     rcuLoc,
 				StorageClass: "RAPID",
+				CustomPlacementConfig: &CustomPlacementConfig{
+					DataLocations: []string{rcuZone},
+				},
 				HierarchicalNamespace: &HierarchicalNamespace{
 					Enabled: true,
 				},
