@@ -79,23 +79,13 @@ import (
 
 type skipTransportTestKey string
 
-var (
-	testPrefix     = "go-integration-test"
-	grpcTestPrefix = "golang-grpc-test"
-)
-
-func init() {
-	if p := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_BUCKET_PREFIX"); p != "" {
-		testPrefix = p
-		grpcTestPrefix = p + "-grpc"
-	}
-}
-
 const (
+	testPrefix     = "go-integration-test"
 	replayFilename = "storage.replay"
 	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
+	grpcTestPrefix         = "golang-grpc-test"
 	testUniverseDomain     = "TEST_UNIVERSE_DOMAIN"
 	testUniverseProject    = "TEST_UNIVERSE_PROJECT_ID"
 	testUniverseLocation   = "TEST_UNIVERSE_LOCATION"
