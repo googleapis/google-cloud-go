@@ -3929,7 +3929,7 @@ type listCustomModelDeployOptionsConfig struct {
 	FilterByUserQuota bool `json:"filterByUserQuota,omitempty"`
 }
 
-// Config for “export_open_model“.
+// Config for export_open_model.
 type exportOpenModelConfig struct {
 	// Whether to block on the export long-running operation. When
 	// ``True`` (default), returns the destination URI on completion. When
