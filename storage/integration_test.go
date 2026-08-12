@@ -255,18 +255,10 @@ func initIntegrationTest() func() error {
 		if err := client.Bucket(grpcBucketName).Create(ctx, testutil.ProjID(), nil); err != nil {
 			log.Fatalf("creating bucket %q: %v", grpcBucketName, err)
 		}
-		zonalLoc := testZonalLocation
-		zonalZone := testZonalZone
-		if loc := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_LOCATION"); loc != "" {
-			zonalLoc = loc
-		}
-		if z := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_ZONE"); z != "" {
-			zonalZone = z
-		}
 		if err := client.Bucket(zonalBucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{
-			Location: zonalLoc,
+			Location: testZonalLocation,
 			CustomPlacementConfig: &CustomPlacementConfig{
-				DataLocations: []string{zonalZone},
+				DataLocations: []string{testZonalZone},
 			},
 			StorageClass: "RAPID",
 			HierarchicalNamespace: &HierarchicalNamespace{
@@ -282,19 +274,11 @@ func initIntegrationTest() func() error {
 		if rcuBkt := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET"); rcuBkt != "" {
 			rcuBucketName = rcuBkt
 		} else {
-			rcuLoc := testRCULocation
-			rcuZone := testRCUZone
-			if loc := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_LOCATION"); loc != "" {
-				rcuLoc = loc
-			}
-			if z := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_ZONE"); z != "" {
-				rcuZone = z
-			}
 			if err := client.Bucket(rcuBucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{
-				Location:     rcuLoc,
+				Location:     testRCULocation,
 				StorageClass: "RAPID",
 				CustomPlacementConfig: &CustomPlacementConfig{
-					DataLocations: []string{rcuZone},
+					DataLocations: []string{testRCUZone},
 				},
 				HierarchicalNamespace: &HierarchicalNamespace{
 					Enabled: true,
