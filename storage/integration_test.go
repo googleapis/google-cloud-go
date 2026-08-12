@@ -103,6 +103,9 @@ const (
 	// Location and Zone for zonal buckets tests
 	testZonalLocation = "us-west4"
 	testZonalZone     = "us-west4-a"
+	// Location and Zone for RCU buckets tests
+	testRCULocation = "us-central1"
+	testRCUZone     = "us-central1-a"
 )
 
 var (
@@ -115,7 +118,6 @@ var (
 	zonalBucketName       string
 	rcuBucketName         string
 	rcuBucketCreateFailed bool
-	testRCULocation       = testZonalLocation
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -289,7 +291,7 @@ func initIntegrationTest() func() error {
 			rcuBucketName = rcuBkt
 		} else {
 			rcuLoc := testRCULocation
-			rcuZone := testZonalZone
+			rcuZone := testRCUZone
 			if loc := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_LOCATION"); loc != "" {
 				rcuLoc = loc
 			}
