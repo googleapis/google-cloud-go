@@ -1703,7 +1703,6 @@ func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credential
 	return &clone
 }
 
-
 func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {
 	if cm == nil || cm.credentialRefreshDuration == nil {
 		return
@@ -1715,8 +1714,6 @@ func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, du
 	attrs := []attribute.KeyValue{attribute.String("error.type", errorType)}
 	cm.credentialRefreshDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
-
-
 
 func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string, systemName string, target string) {
 	if cm == nil || cm.stallDuration == nil {
