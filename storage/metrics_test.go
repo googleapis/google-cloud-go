@@ -27,7 +27,7 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
-	"golang.org/x/oauth2"
+
 
 	"go.opentelemetry.io/otel/attribute"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
@@ -1017,8 +1017,4 @@ func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return &auth.Token{}, nil
 }
 
-type mockTokenSource struct{}
 
-func (m *mockTokenSource) Token() (*oauth2.Token, error) {
-	return &oauth2.Token{}, nil
-}

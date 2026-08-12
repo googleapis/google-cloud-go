@@ -41,8 +41,7 @@ import (
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
-	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
+
 	"google.golang.org/api/googleapi"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -1704,17 +1703,6 @@ func wrapAuthCredentials(c *auth.Credentials, m *clientMetrics) *auth.Credential
 	return &clone
 }
 
-type metricsTokenSource struct {
-	base    oauth2.TokenSource
-	metrics *clientMetrics
-}
-
-func (s *metricsTokenSource) Token() (*oauth2.Token, error) {
-	start := time.Now()
-	tok, err := s.base.Token()
-	s.metrics.recordCredentialRefreshDuration(context.Background(), time.Since(start), err)
-	return tok, err
-}
 
 func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, duration time.Duration, err error) {
 	if cm == nil || cm.credentialRefreshDuration == nil {
@@ -1728,27 +1716,7 @@ func (cm *clientMetrics) recordCredentialRefreshDuration(ctx context.Context, du
 	cm.credentialRefreshDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
 }
 
-func injectHTTPClientMetrics(creds *auth.Credentials, tc storageClient) {
-	if creds == nil {
-		return
-	}
-	if mtp, ok := creds.TokenProvider.(*metricsTokenProvider); ok {
-		if hcTc, ok := tc.(*httpStorageClient); ok {
-			mtp.metrics = hcTc.metrics
-		}
-	}
-}
 
-func injectGoogleCredsMetrics(creds *google.Credentials, tc storageClient) {
-	if creds == nil {
-		return
-	}
-	if mts, ok := creds.TokenSource.(*metricsTokenSource); ok {
-		if hcTc, ok := tc.(*httpStorageClient); ok {
-			mts.metrics = hcTc.metrics
-		}
-	}
-}
 
 func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.Duration, method string, systemName string, target string) {
 	if cm == nil || cm.stallDuration == nil {

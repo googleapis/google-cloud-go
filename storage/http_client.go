@@ -124,12 +124,6 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 	}
 	s.clientOption = o
 
-	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
-	hc, ep, err := htransport.NewClient(ctx, s.clientOption...)
-	if err != nil {
-		return nil, fmt.Errorf("dialing: %w", err)
-	}
-
 	var clientMetrics *clientMetrics
 	var metricsCleanup func()
 	if isOtelMetricsEnabled(&config) {
@@ -147,6 +141,17 @@ func newHTTPStorageClient(ctx context.Context, opts ...storageOption) (client st
 				metricsCleanup()
 			}
 		}()
+	}
+
+	if clientMetrics != nil && creds != nil {
+		creds = wrapAuthCredentials(creds, clientMetrics)
+		s.clientOption = append(s.clientOption, option.WithAuthCredentials(creds))
+	}
+
+	// htransport selects the correct endpoint among WithEndpoint (user override), WithDefaultEndpointTemplate, and WithDefaultMTLSEndpoint.
+	hc, ep, err := htransport.NewClient(ctx, s.clientOption...)
+	if err != nil {
+		return nil, fmt.Errorf("dialing: %w", err)
 	}
 
 	// Clone the http.Client to avoid modifying the original one if it was provided by the user.

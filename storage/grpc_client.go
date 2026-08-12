@@ -31,7 +31,7 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
-	"golang.org/x/oauth2/google"
+
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
@@ -223,7 +223,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 
 func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfig, s *settings) (*clientMetrics, func()) {
 	var project string
-	var googleCreds *google.Credentials
 	var authCreds *auth.Credentials
 
 	credsOpts := append([]option.ClientOption{option.WithScopes(gapic.DefaultAuthScopes()...)}, s.clientOption...)
@@ -232,7 +231,6 @@ func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfi
 		project, _ = authCreds.ProjectID(ctx)
 	} else if c, err := transport.Creds(ctx, credsOpts...); err == nil {
 		project = c.ProjectID
-		googleCreds = c
 	}
 
 	clientMetrics, metricsCleanup := initClientMetrics(ctx, project, config)
@@ -240,8 +238,6 @@ func initGRPCMetricsAndWrapCredentials(ctx context.Context, config *storageConfi
 		if authCreds != nil {
 			authCreds = wrapAuthCredentials(authCreds, clientMetrics)
 			s.clientOption = append(s.clientOption, option.WithAuthCredentials(authCreds))
-		} else if googleCreds != nil {
-			s.clientOption = append(s.clientOption, option.WithCredentials(googleCreds))
 		}
 	}
 	return clientMetrics, metricsCleanup
