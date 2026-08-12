@@ -103,8 +103,8 @@ type TableHandle struct {
 	// on the next observation.
 	//
 	// Store races are safe: two concurrent dispatches that both call
-	// resolveSuccessor race into GetOrOpen, which is at-most-one-per-key
-	// (loser closes its local api and returns the winner's handle), so
+	// resolveSuccessor race into GetOrOpen, which is single-flight per
+	// key (one loads, the other blocks and observes the same handle), so
 	// both racers see the same `next` — the Store is idempotent. A
 	// divergent-`next` race (successor itself gets evicted between one
 	// dispatch's resolveSuccessor and another's Store) writes a stale
@@ -258,6 +258,15 @@ type TableCache struct {
 
 	mu      sync.Mutex
 	entries map[string]*TableHandle
+	// loading tracks the in-flight openFn call per key so GetOrOpen is
+	// single-flight: the first miss for a key installs a loadState and
+	// runs openFn; concurrent callers for the same key block on the
+	// loadState's ready channel and re-check the map once it closes,
+	// finding the winner's handle instead of each dialing their own
+	// pool. This is the LoadingCache single-load contract — no losers,
+	// so a storm of post-eviction RPCs mints exactly one successor pool
+	// rather than N-1 throwaways.
+	loading map[string]*loadState
 	// closed is flipped by Close() under mu. GetOrOpen's slow path
 	// re-checks it before inserting the freshly-opened handle so a
 	// slow-path insert straddling Close() can't orphan a live
@@ -274,6 +283,14 @@ type TableCache struct {
 	now func() time.Time
 }
 
+// loadState is the single-flight token for one in-flight openFn call.
+// The loader installs it in TableCache.loading under mu, runs openFn
+// outside the lock, then deletes it and closes ready. Waiters for the
+// same key block on ready and retry the cache lookup.
+type loadState struct {
+	ready chan struct{}
+}
+
 // NewTableCache constructs a cache and starts its background sweeper.
 // Production callers pass nil for now (→ time.Now); tests inject a
 // controllable clock.
@@ -285,6 +302,7 @@ func NewTableCache(ttl, sweepInterval time.Duration, now func() time.Time) *Tabl
 		ttl:           ttl,
 		sweepInterval: sweepInterval,
 		entries:       make(map[string]*TableHandle),
+		loading:       make(map[string]*loadState),
 		stop:          make(chan struct{}),
 		now:           now,
 	}
@@ -294,59 +312,80 @@ func NewTableCache(ttl, sweepInterval time.Duration, now func() time.Time) *Tabl
 }
 
 // GetOrOpen returns the cached handle for key, opening a fresh one
-// via openFn on cache miss. Returns nil when openFn returns nil.
+// via openFn on cache miss. Returns nil when openFn returns nil or the
+// cache is closed.
 //
-// openFn is invoked OUTSIDE the cache mutex — safe for callers whose
-// open path may itself take locks (avoids lock inversion). If two
-// callers race to open the same key concurrently, both may invoke
-// their openFn; the loser's api gets Close()d and the winner's is
-// returned to both callers.
+// Single-flight: at most one openFn runs per key at a time. The first
+// caller to miss becomes the loader — it installs a loadState, runs
+// openFn OUTSIDE the cache mutex (safe for open paths that take their
+// own locks — avoids lock inversion), then installs the handle. Any
+// concurrent caller for the same key finds the loadState and blocks on
+// its ready channel, then loops to re-check the map — it never dials a
+// throwaway pool. This mirrors Guava LoadingCache's atomic single-load
+// contract, so a post-eviction RPC storm mints exactly one successor
+// pool rather than N and discarding N-1.
 func (c *TableCache) GetOrOpen(key string, openFn func() TableAPI) TableAPI {
 	if c == nil {
 		return nil
 	}
 
-	// Fast path — cache hit.
-	c.mu.Lock()
-	if h, ok := c.entries[key]; ok {
+	for {
+		c.mu.Lock()
+		// Fast path — cache hit.
+		if h, ok := c.entries[key]; ok {
+			c.mu.Unlock()
+			h.touch()
+			return h
+		}
+		if c.closed {
+			c.mu.Unlock()
+			return nil
+		}
+		// Another caller is already loading this key. Release the lock,
+		// wait for it to finish, then loop to re-check: it either
+		// installed a handle (fast-path hit next iteration) or failed
+		// (openFn returned nil / cache closed), in which case we become
+		// the next loader.
+		if ls, ok := c.loading[key]; ok {
+			c.mu.Unlock()
+			<-ls.ready
+			continue
+		}
+		// Become the loader for this key.
+		ls := &loadState{ready: make(chan struct{})}
+		c.loading[key] = ls
 		c.mu.Unlock()
-		h.touch()
+
+		api := openFn()
+
+		c.mu.Lock()
+		delete(c.loading, key)
+		close(ls.ready)
+		if api == nil {
+			c.mu.Unlock()
+			return nil
+		}
+		if c.closed {
+			// Close() ran between the slow-path openFn and our re-lock.
+			// If we inserted this handle now, nothing would ever call
+			// its Close (sweeper stopped, Close() already snapshotted an
+			// empty map, cache-Close is stopOnce-guarded). Release the
+			// freshly-opened api ourselves and return nil so the caller
+			// falls back to classic (TableShim treats nil session-side
+			// as classic-only).
+			c.mu.Unlock()
+			_ = api.Close()
+			return nil
+		}
+		// Single-flight guarantees no concurrent loader installed a
+		// handle for this key while we held the loading slot, so this is
+		// always a fresh install.
+		h := &TableHandle{api: api, openFn: openFn, key: key, cache: c}
+		h.lastAccessNano.Store(c.now().UnixNano())
+		c.entries[key] = h
+		c.mu.Unlock()
 		return h
 	}
-	c.mu.Unlock()
-
-	// Slow path — miss. Open outside the mutex; another goroutine may
-	// win the race and insert first, in which case we discard our api
-	// and return theirs.
-	api := openFn()
-	if api == nil {
-		return nil
-	}
-
-	c.mu.Lock()
-	if c.closed {
-		// Close() ran between the slow-path openFn and our re-lock.
-		// If we inserted this handle now, nothing would ever call
-		// its Close (sweeper stopped, Close() already snapshotted an
-		// empty map, cache-Close is stopOnce-guarded). Release the
-		// freshly-opened api ourselves and return nil so the caller
-		// falls back to classic (TableShim treats nil session-side
-		// as classic-only).
-		c.mu.Unlock()
-		_ = api.Close()
-		return nil
-	}
-	if h, ok := c.entries[key]; ok {
-		c.mu.Unlock()
-		_ = api.Close() // duplicate opened concurrently; release its resources
-		h.touch()
-		return h
-	}
-	h := &TableHandle{api: api, openFn: openFn, key: key, cache: c}
-	h.lastAccessNano.Store(c.now().UnixNano())
-	c.entries[key] = h
-	c.mu.Unlock()
-	return h
 }
 
 // removeEntry deletes key from the map iff the current entry is

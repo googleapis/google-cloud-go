@@ -241,7 +241,7 @@ func TestSessionClient_BuildLazyOpener_NilPayloadReturnsNil(t *testing.T) {
 	sc := newTestClient(t, nil, Config{})
 	defer sc.Close()
 
-	got := sc.buildLazyOpener("projects/p/instances/i/materializedViews/v", nil, nil, nil, poolKey{"mv:v", permissionWrite})
+	got := sc.buildLazyOpener("projects/p/instances/i/materializedViews/v", nil, nil, nil, poolKey{resourceName: "mv:v", perm: permissionWrite}, &poolCloser{})
 	if got != nil {
 		t.Errorf("buildLazyOpener(payload=nil) = non-nil, want nil (MV write side)")
 	}
@@ -440,26 +440,26 @@ func TestPoolKey_DisplayName(t *testing.T) {
 		key  poolKey
 		want string
 	}{
-		{"table read", poolKey{"table:my-table", permissionRead}, "my-table-READ"},
-		{"table write", poolKey{"table:my-table", permissionWrite}, "my-table-WRITE"},
-		{"authorized view read", poolKey{"av:my-table:my-view", permissionRead}, "my-table/my-view-READ"},
-		{"authorized view write", poolKey{"av:my-table:my-view", permissionWrite}, "my-table/my-view-WRITE"},
+		{"table read", poolKey{resourceName: "table:my-table", perm: permissionRead}, "my-table-READ"},
+		{"table write", poolKey{resourceName: "table:my-table", perm: permissionWrite}, "my-table-WRITE"},
+		{"authorized view read", poolKey{resourceName: "av:my-table:my-view", perm: permissionRead}, "my-table/my-view-READ"},
+		{"authorized view write", poolKey{resourceName: "av:my-table:my-view", perm: permissionWrite}, "my-table/my-view-WRITE"},
 		{"authorized view — same view id, different tables must not collide",
-			poolKey{"av:other-table:my-view", permissionRead}, "other-table/my-view-READ"},
-		{"materialized view read", poolKey{"mv:my-mat-view", permissionRead}, "my-mat-view-READ"},
-		{"table id with dashes and dots", poolKey{"table:tbl-1.foo", permissionRead}, "tbl-1.foo-READ"},
+			poolKey{resourceName: "av:other-table:my-view", perm: permissionRead}, "other-table/my-view-READ"},
+		{"materialized view read", poolKey{resourceName: "mv:my-mat-view", perm: permissionRead}, "my-mat-view-READ"},
+		{"table id with dashes and dots", poolKey{resourceName: "table:tbl-1.foo", perm: permissionRead}, "tbl-1.foo-READ"},
 		// Unknown prefix falls through to the raw resource string so
 		// operators still get a legible label even if a future resource
 		// kind hasn't been wired into displayResource yet.
-		{"unknown prefix falls through", poolKey{"future-kind:xyz", permissionRead}, "future-kind:xyz-READ"},
+		{"unknown prefix falls through", poolKey{resourceName: "future-kind:xyz", perm: permissionRead}, "future-kind:xyz-READ"},
 		// Malformed inputs: pin current fallback behavior so nobody
 		// silently changes to a panic. In practice these can't be
 		// produced by any of the Open* call sites; the assertions are
 		// defensive-programming contracts on displayResource.
-		{"empty resource", poolKey{"", permissionRead}, "-READ"},
-		{"empty table id after prefix", poolKey{"table:", permissionRead}, "-READ"},
-		{"empty view id after av prefix", poolKey{"av:t:", permissionRead}, "t/-READ"},
-		{"empty view id after mv prefix", poolKey{"mv:", permissionRead}, "-READ"},
+		{"empty resource", poolKey{resourceName: "", perm: permissionRead}, "-READ"},
+		{"empty table id after prefix", poolKey{resourceName: "table:", perm: permissionRead}, "-READ"},
+		{"empty view id after av prefix", poolKey{resourceName: "av:t:", perm: permissionRead}, "t/-READ"},
+		{"empty view id after mv prefix", poolKey{resourceName: "mv:", perm: permissionRead}, "-READ"},
 	}
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
@@ -470,64 +470,69 @@ func TestPoolKey_DisplayName(t *testing.T) {
 	}
 }
 
-// --- releaseSessionPool ------------------------------------------------------
+// --- releasePoolByID ---------------------------------------------------------
 
-// TestReleaseSessionPool_AfterClientClose_NoOp: once Close nils out
-// sessionPools, any late release from a cache handle draining on the
-// way out must be a benign no-op rather than a nil-map panic.
-func TestReleaseSessionPool_AfterClientClose_NoOp(t *testing.T) {
+// TestReleasePoolByID_AfterClientClose_NoOp: once Close nils out
+// sessionPools, any late release from a poolCloser draining on the way
+// out must be a benign no-op rather than a nil-map panic.
+func TestReleasePoolByID_AfterClientClose_NoOp(t *testing.T) {
 	sc := newTestClient(t, &fakeChannelPool{}, Config{})
+	release := sc.releasePoolByID(1)
 	sc.sessionPools = nil // simulate Close having snapshotted+nil'd
-	if err := sc.releaseSessionPool(poolKey{"table:foo", permissionRead}); err != nil {
-		t.Errorf("releaseSessionPool on nil map = %v, want nil (post-Close no-op)", err)
+	if err := release(); err != nil {
+		t.Errorf("releasePoolByID on nil map = %v, want nil (post-Close no-op)", err)
 	}
 }
 
-// TestReleaseSessionPool_MissingKeyNoOp: releasing a key that isn't in
-// the map returns nil and leaves other entries untouched. This is what
-// makes double-release safe (winner deletes; loser sees absent).
-func TestReleaseSessionPool_MissingKeyNoOp(t *testing.T) {
+// TestReleasePoolByID_MissingIDNoOp: releasing an id that isn't in the
+// map returns nil and leaves other entries untouched. This is what makes
+// double-release safe (winner deletes; loser sees absent).
+func TestReleasePoolByID_MissingIDNoOp(t *testing.T) {
 	sc := newTestClient(t, &fakeChannelPool{}, Config{})
-	present := poolKey{"table:present", permissionRead}
-	sc.sessionPools[present] = &managedSessionPool{} // sentinel, not touched
-	if err := sc.releaseSessionPool(poolKey{"table:absent", permissionRead}); err != nil {
-		t.Errorf("releaseSessionPool on absent key = %v, want nil", err)
+	const presentID = 7
+	sc.sessionPools[presentID] = &managedSessionPool{id: presentID} // sentinel, not touched
+	if err := sc.releasePoolByID(99)(); err != nil {
+		t.Errorf("releasePoolByID on absent id = %v, want nil", err)
 	}
-	if _, still := sc.sessionPools[present]; !still {
-		t.Error("releaseSessionPool on absent key deleted a different entry")
+	if _, still := sc.sessionPools[presentID]; !still {
+		t.Error("releasePoolByID on absent id deleted a different entry")
 	}
 }
 
-// TestReleaseSessionPool_RemovesEntryAndInvokesUnregister covers the
-// happy path with a real (unstarted) SessionPoolImpl. The pool never
-// dialed a stream so Close returns cleanly; we assert the map entry
-// is gone AND the config-listener unregister thunk fired.
-func TestReleaseSessionPool_RemovesEntryAndInvokesUnregister(t *testing.T) {
+// TestReleasePoolByID_RemovesEntryAndInvokesUnregister covers the happy
+// path with a real (unstarted) SessionPoolImpl. The pool never dialed a
+// stream so Close returns cleanly; we assert the map entry is gone AND
+// the config-listener unregister thunk fired, and that the returned
+// closer is idempotent.
+func TestReleasePoolByID_RemovesEntryAndInvokesUnregister(t *testing.T) {
 	sc := newTestClient(t, &fakeChannelPool{}, Config{})
-	key := poolKey{"table:foo", permissionRead}
+	const id = 3
 	pool := btransport.NewSessionPoolImpl(
-		1, "test-pool",
+		id, "test-pool",
 		func(ctx context.Context) (btransport.Stream, error) { return nil, errors.New("test never dials") },
 		&btpb.OpenSessionRequest{}, nil,
 		btransport.SessionTypeTable, false,
 	)
 	var unregistered int
-	sc.sessionPools[key] = &managedSessionPool{
+	sc.sessionPools[id] = &managedSessionPool{
+		id:         id,
+		key:        poolKey{resourceName: "table:foo", perm: permissionRead},
 		pool:       pool,
 		unregister: func() { unregistered++ },
 	}
-	if err := sc.releaseSessionPool(key); err != nil {
-		t.Fatalf("releaseSessionPool = %v, want nil", err)
+	release := sc.releasePoolByID(id)
+	if err := release(); err != nil {
+		t.Fatalf("releasePoolByID = %v, want nil", err)
 	}
-	if _, still := sc.sessionPools[key]; still {
-		t.Error("sessionPools still holds the released key")
+	if _, still := sc.sessionPools[id]; still {
+		t.Error("sessionPools still holds the released id")
 	}
 	if unregistered != 1 {
 		t.Errorf("unregister fired %d times, want 1", unregistered)
 	}
 	// Second release is a clean no-op (winner deleted, loser sees absent).
-	if err := sc.releaseSessionPool(key); err != nil {
-		t.Errorf("second releaseSessionPool = %v, want nil", err)
+	if err := release(); err != nil {
+		t.Errorf("second releasePoolByID = %v, want nil", err)
 	}
 	if unregistered != 1 {
 		t.Errorf("unregister fired %d times after second release, want still 1", unregistered)
