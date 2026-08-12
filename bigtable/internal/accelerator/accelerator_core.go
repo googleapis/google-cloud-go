@@ -30,6 +30,7 @@ import (
 	"context"
 	"io"
 	"strings"
+	"sync"
 
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/bigtable/internal"
@@ -38,6 +39,7 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"golang.org/x/sync/singleflight"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -142,6 +144,26 @@ type Channel struct {
 	sc            session.Client
 	scopePrefix   string
 	sessionTables *session.TableCache
+	// handleFastPath mirrors sessionTables for the RPC hot path: a bare
+	// sync.Map.Load skips the closure allocation, resource-name parse, and
+	// sessionTables.mu acquire that GetOrOpen would otherwise cost every RPC.
+	// Staleness is safe because *TableHandle.ReadRow/MutateRow self-heal via
+	// TableCache's internal dispatch() when the underlying entry is evicted,
+	// so a pointer left behind here after a TTL sweep still routes to the live
+	// successor on next use.
+	handleFastPath sync.Map // map[string]session.TableAPI
+	// openGroup collapses the cold-start burst: N concurrent first-touch RPCs
+	// for the same resource funnel through ONE sessionTables.GetOrOpen call.
+	// Without this, all N callers reach GetOrOpen's miss path and N-1 hit its
+	// loser branch that Close()s the never-dispatched sessionTable — which
+	// under a shared-key session pool tears down the pool the winner already
+	// memoized and serves ErrPoolClosed on every subsequent RPC through that
+	// handle. This is the pattern the per-RPC accelerator caller shape can
+	// trigger that a top-level client.OpenTable caller shape cannot, since
+	// client.OpenTable warms the cache once at construction. See
+	// bigtable/internal/session/pr20366_repro_test.go for the underlying
+	// session-layer race.
+	openGroup singleflight.Group
 }
 
 // NewChannel constructs an Channel scoped to
@@ -189,41 +211,67 @@ func NewChannel(
 // share one warm handle; the cache's sweeper evicts idle handles (releasing
 // their pools) on TTL.
 func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
-	var open func() session.TableAPI
-	switch res.Kind {
-	case adapters.ResourceTable:
-		tableID, err := c.parseTableName(res.Name)
-		if err != nil {
-			return nil, err
-		}
-		open = func() session.TableAPI { return c.sc.OpenTable(tableID) }
-	case adapters.ResourceAuthorizedView:
-		tableID, viewID, err := c.parseAuthorizedViewName(res.Name)
-		if err != nil {
-			return nil, err
-		}
-		open = func() session.TableAPI { return c.sc.OpenAuthorizedView(tableID, viewID) }
-	case adapters.ResourceMaterializedView:
-		viewID, err := c.parseMaterializedViewName(res.Name)
-		if err != nil {
-			return nil, err
-		}
-		open = func() session.TableAPI { return c.sc.OpenMaterializedView(viewID) }
-	default:
-		// Kind is set by the adapter from the populated V2 name field, so an
-		// unrecognized kind is an internal invariant violation, not bad input.
-		return nil, status.Errorf(codes.Internal, "accelerator: unknown resource kind %v", res.Kind)
+	// Fast path — a bare atomic Load. No mutex, no closure allocation, no
+	// resource-name parse. Under steady state every RPC after the first for a
+	// given resource hits here.
+	if v, ok := c.handleFastPath.Load(res.Name); ok {
+		return v.(session.TableAPI), nil
 	}
 
-	// Key on the full V2 name (the identity Cloud Bigtable uses on the wire),
-	// so table / authorized-view / materialized-view keys never collide. A nil
-	// handle means the cache has been Closed (Channel.Close), so the channel is
-	// no longer usable.
-	tbl := c.sessionTables.GetOrOpen(res.Name, open)
-	if tbl == nil {
-		return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+	// Slow path — collapsed via singleflight so N concurrent first-touch RPCs
+	// for the same resource funnel through ONE sessionTables.GetOrOpen call.
+	// See the openGroup field comment for the failure mode this guards against.
+	v, err, _ := c.openGroup.Do(res.Name, func() (any, error) {
+		// Second cache check inside the singleflight — a prior burst's winner
+		// may have published between our fast-path miss and our arrival here.
+		if v, ok := c.handleFastPath.Load(res.Name); ok {
+			return v, nil
+		}
+
+		var open func() session.TableAPI
+		switch res.Kind {
+		case adapters.ResourceTable:
+			tableID, err := c.parseTableName(res.Name)
+			if err != nil {
+				return nil, err
+			}
+			open = func() session.TableAPI { return c.sc.OpenTable(tableID) }
+		case adapters.ResourceAuthorizedView:
+			tableID, viewID, err := c.parseAuthorizedViewName(res.Name)
+			if err != nil {
+				return nil, err
+			}
+			open = func() session.TableAPI { return c.sc.OpenAuthorizedView(tableID, viewID) }
+		case adapters.ResourceMaterializedView:
+			viewID, err := c.parseMaterializedViewName(res.Name)
+			if err != nil {
+				return nil, err
+			}
+			open = func() session.TableAPI { return c.sc.OpenMaterializedView(viewID) }
+		default:
+			// Kind is set by the adapter from the populated V2 name field, so an
+			// unrecognized kind is an internal invariant violation, not bad input.
+			return nil, status.Errorf(codes.Internal, "accelerator: unknown resource kind %v", res.Kind)
+		}
+
+		// Key on the full V2 name (the identity Cloud Bigtable uses on the wire),
+		// so table / authorized-view / materialized-view keys never collide. A nil
+		// handle means the cache has been Closed (Channel.Close), so the channel is
+		// no longer usable.
+		tbl := c.sessionTables.GetOrOpen(res.Name, open)
+		if tbl == nil {
+			return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+		}
+		// Publish for future fast-path lookups. Only the singleflight winner
+		// reaches this point per resource per cold-start burst, so LoadOrStore
+		// here is defensive — a plain Store would also be correct.
+		actual, _ := c.handleFastPath.LoadOrStore(res.Name, tbl)
+		return actual, nil
+	})
+	if err != nil {
+		return nil, err
 	}
-	return tbl, nil
+	return v.(session.TableAPI), nil
 }
 
 // Invoke implements grpc.ClientConnInterface for unary V2 RPCs.
@@ -308,6 +356,16 @@ func (c *Channel) Close() error {
 	if c.sc == nil {
 		return nil
 	}
+	// Drop fast-path references before sessionTables.Close so a concurrent
+	// openHandle racing Close either sees the empty map and takes the slow
+	// path (which observes the closed cache and returns Unavailable) or has
+	// already snapshotted a stale handle whose next RPC surfaces the
+	// closed-pool error. Either outcome is honest; a lingering map entry
+	// after Close would just keep the doomed handle reachable from Channel.
+	c.handleFastPath.Range(func(k, _ any) bool {
+		c.handleFastPath.Delete(k)
+		return true
+	})
 	c.sessionTables.Close()
 	return c.sc.Close()
 }
