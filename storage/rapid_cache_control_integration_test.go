@@ -272,26 +272,39 @@ func TestIntegration_RapidCache_List(t *testing.T) {
 	bucket := createRegionalHNSBucketForCache(ctx, t, client)
 	parent := fmt.Sprintf("projects/_/buckets/%s", bucket)
 
-	// Create cache instance.
-	op, err := cClient.CreateRapidCache(ctx, &controlpb.CreateRapidCacheRequest{
-		Parent: parent,
-		RapidCache: &controlpb.RapidCache{
-			Zone:      testRCUZone,
-			CacheType: "rapid-cache-ultra",
-			Ttl:       durationpb.New(24 * time.Hour),
-		},
-	})
-	if err != nil {
-		t.Fatalf("CreateRapidCache: %v", err)
-	}
-	created, err := op.Wait(ctx)
-	if err != nil {
-		t.Fatalf("CreateRapidCache LRO: %v", err)
+	candidateZones := []string{testRCUZone, "us-central1-f", "us-central1-b"}
+	var createdCaches []*controlpb.RapidCache
+
+	for _, z := range candidateZones {
+		tCtx, cancel := context.WithTimeout(ctx, 15*time.Second)
+		op, err := cClient.CreateRapidCache(tCtx, &controlpb.CreateRapidCacheRequest{
+			Parent: parent,
+			RapidCache: &controlpb.RapidCache{
+				Zone:      z,
+				CacheType: "rapid-cache-ultra",
+				Ttl:       durationpb.New(24 * time.Hour),
+			},
+		})
+		if err != nil {
+			cancel()
+			continue
+		}
+		rc, err := op.Wait(tCtx)
+		cancel()
+		if err != nil {
+			continue
+		}
+		createdCaches = append(createdCaches, rc)
 	}
 
+	if len(createdCaches) == 0 {
+		t.Fatalf("failed to create any RapidCache instances for list test")
+	}
+
+	// Use PageSize: 1 to verify pagination across pages.
 	it := cClient.ListRapidCaches(ctx, &controlpb.ListRapidCachesRequest{
 		Parent:   parent,
-		PageSize: 10,
+		PageSize: 1,
 	})
 
 	var found []*controlpb.RapidCache
@@ -306,18 +319,21 @@ func TestIntegration_RapidCache_List(t *testing.T) {
 		found = append(found, item)
 	}
 
-	if len(found) == 0 {
-		t.Fatalf("ListRapidCaches returned 0 caches, expected at least 1")
+	if len(found) < len(createdCaches) {
+		t.Fatalf("ListRapidCaches returned %d caches, expected at least %d", len(found), len(createdCaches))
 	}
-	matched := false
-	for _, f := range found {
-		if f.GetName() == created.GetName() {
-			matched = true
-			break
+
+	for _, created := range createdCaches {
+		matched := false
+		for _, f := range found {
+			if f.GetName() == created.GetName() {
+				matched = true
+				break
+			}
 		}
-	}
-	if !matched {
-		t.Errorf("ListRapidCaches did not contain created cache %q", created.GetName())
+		if !matched {
+			t.Errorf("ListRapidCaches did not contain created cache %q", created.GetName())
+		}
 	}
 }
 
