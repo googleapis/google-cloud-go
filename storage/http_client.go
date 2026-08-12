@@ -1053,7 +1053,7 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(ctx, res, params, reopen)
 }
 
 func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
@@ -1077,7 +1077,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 	if err != nil {
 		return nil, err
 	}
-	return parseReadResponse(res, params, reopen)
+	return parseReadResponse(ctx, res, params, reopen)
 }
 
 // httpInternalWriter writes data for an HTTP upload. For single-shot uploads,
@@ -1499,6 +1499,7 @@ func (c *httpStorageClient) DeleteNotification(ctx context.Context, bucket strin
 }
 
 type httpReader struct {
+	ctx      context.Context
 	body     io.ReadCloser
 	seen     int64
 	reopen   func(seen int64) (*http.Response, error)
@@ -1524,9 +1525,20 @@ func (r *httpReader) Read(p []byte) (int, error) {
 			// everybody defers Close on the assumption that it doesn't return
 			// anything worth looking at.
 			if r.checkCRC {
+				var chkCtx context.Context
+				if r.ctx != nil {
+					chkCtx, _ = startChecksumSpan(r.ctx, "CRC32C")
+				}
+				var crcErr error
 				if r.gotCRC != r.wantCRC {
-					return n, fmt.Errorf("storage: bad CRC on read: got %d, want %d",
+					crcErr = fmt.Errorf("storage: bad CRC on read: got %d, want %d",
 						r.gotCRC, r.wantCRC)
+				}
+				if chkCtx != nil {
+					endSpan(chkCtx, crcErr)
+				}
+				if crcErr != nil {
+					return n, crcErr
 				}
 			}
 			return n, err
@@ -1651,7 +1663,7 @@ func readerReopen(ctx context.Context, header http.Header, params *newRangeReade
 	}
 }
 
-func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error)) (r *Reader, err error) {
+func parseReadResponse(ctx context.Context, res *http.Response, params *newRangeReaderParams, reopen func(int64) (*http.Response, error)) (r *Reader, err error) {
 	defer func() {
 		if err != nil {
 			res.Body.Close()
@@ -1756,6 +1768,7 @@ func parseReadResponse(res *http.Response, params *newRangeReaderParams, reopen 
 		remain:         remain,
 		checkCRC:       checkCRC,
 		reader: &httpReader{
+			ctx:      ctx,
 			reopen:   reopen,
 			body:     body,
 			wantCRC:  crc,
