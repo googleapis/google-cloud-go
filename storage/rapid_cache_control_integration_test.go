@@ -153,7 +153,7 @@ func TestIntegration_RapidCache_CreateInvalidConfig(t *testing.T) {
 }
 
 // TestIntegration_RapidCache_CreateDuplicate tests creating a second Rapid Cache instance in the same zone for the same bucket.
-// It verifies that the request fails with an AlreadyExists or FailedPrecondition error.
+// It verifies that the request fails with an AlreadyExists error.
 func TestIntegration_RapidCache_CreateDuplicate(t *testing.T) {
 	ctx := context.Background()
 	client := getTestStorageClient(ctx, t)
@@ -186,8 +186,8 @@ func TestIntegration_RapidCache_CreateDuplicate(t *testing.T) {
 	if err == nil {
 		t.Fatalf("CreateRapidCache (duplicate): expected error, got nil")
 	}
-	if st, ok := status.FromError(err); !ok || (st.Code() != codes.AlreadyExists && st.Code() != codes.FailedPrecondition) {
-		t.Errorf("CreateRapidCache duplicate: got code %v (%v), want AlreadyExists or FailedPrecondition", st.Code(), err)
+	if st, ok := status.FromError(err); !ok || st.Code() != codes.AlreadyExists {
+		t.Errorf("CreateRapidCache duplicate: got code %v (%v), want AlreadyExists", st.Code(), err)
 	}
 }
 
