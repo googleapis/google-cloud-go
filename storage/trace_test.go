@@ -648,3 +648,58 @@ func TestWriterMarkClosedEndsChunkSpan(t *testing.T) {
 		t.Errorf("expected w.curChunkSpan to be nil after markClosed, got %v", w.curChunkSpan)
 	}
 }
+
+func TestStartChecksumSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	chkCtx, _ := startChecksumSpan(ctx, "CRC32C")
+	endSpan(chkCtx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+	if got, want := gotSpan.Name, "cloud.google.com/go/storage.Storage.CalculateChecksum"; got != want {
+		t.Errorf("got span name %q, want %q", got, want)
+	}
+	foundChecksumType := false
+	for _, a := range gotSpan.Attributes {
+		if string(a.Key) == "gcp.storage.checksum.type" {
+			foundChecksumType = true
+			if got, want := a.Value.AsString(), "CRC32C"; got != want {
+				t.Errorf("checksum type = %q, want %q", got, want)
+			}
+		}
+	}
+	if !foundChecksumType {
+		t.Errorf("gcp.storage.checksum.type attribute not found on span")
+	}
+}
+
+func TestChecksumSpanDevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+
+	// Start a parent span
+	ctx, _ = tracer().Start(ctx, "ParentSpan")
+
+	// Call startChecksumSpan and endSpan with the returned context
+	chkCtx, _ := startChecksumSpan(ctx, "CRC32C")
+	span := trace.SpanFromContext(chkCtx)
+	span.End()
+
+	spans := te.Spans()
+	if len(spans) > 0 {
+		t.Fatalf("expected 0 ended spans because ParentSpan should still be active, but got %d ended spans: %v", len(spans), spans[0].Name)
+	}
+}

@@ -1106,7 +1106,14 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 
 						var bufChecksum *uint32
 						if !s.disableAutoChecksum {
+							var chkCtx context.Context
+							if len(r.buf) > 0 {
+								chkCtx, _ = startChecksumSpan(ctx, "CRC32C")
+							}
 							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
+							if chkCtx != nil {
+								endSpan(chkCtx, nil)
+							}
 						}
 						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
 							sendCRC32C:          s.sendCRC32C,
@@ -1278,7 +1285,14 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 
 						var bufChecksum *uint32
 						if !s.disableAutoChecksum {
+							var chkCtx context.Context
+							if len(r.buf) > 0 {
+								chkCtx, _ = startChecksumSpan(chunkCtx, "CRC32C")
+							}
 							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
+							if chkCtx != nil {
+								endSpan(chkCtx, nil)
+							}
 						}
 						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
 							sendCRC32C:          s.sendCRC32C,

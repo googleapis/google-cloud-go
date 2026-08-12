@@ -1085,6 +1085,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 // the checksum returned by the server.
 type httpInternalWriter struct {
 	*io.PipeWriter
+	ctx                context.Context
 	chunkSize          int
 	checksumDisabled   bool
 	fullObjectChecksum uint32
@@ -1095,13 +1096,19 @@ type httpInternalWriter struct {
 
 // validateChecksum validates the computed checksum against the server-provided checksum.
 func (hiw *httpInternalWriter) validateChecksumFromServer() error {
-	serverChecksum, ok := <-hiw.serverChecksumChan
-	// Do not check for channel closure as error is already set on the writer
-	// if serverChecksumChan is closed without checksum
-	if ok && hiw.fullObjectChecksum != serverChecksum {
-		return fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
+	var chkCtx context.Context
+	if hiw.ctx != nil {
+		chkCtx, _ = startChecksumSpan(hiw.ctx, "CRC32C")
 	}
-	return nil
+	serverChecksum, ok := <-hiw.serverChecksumChan
+	var err error
+	if ok && hiw.fullObjectChecksum != serverChecksum {
+		err = fmt.Errorf("storage: object checksum mismatch: computed %q, server %q; the bucket may contain corrupted object", encodeUint32(hiw.fullObjectChecksum), encodeUint32(serverChecksum))
+	}
+	if chkCtx != nil {
+		endSpan(chkCtx, err)
+	}
+	return err
 }
 
 func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
@@ -1241,6 +1248,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}()
 	return &httpInternalWriter{
 		PipeWriter:         pw,
+		ctx:                params.ctx,
 		chunkSize:          params.chunkSize,
 		serverChecksumChan: serverChecksumChan,
 		checksumDisabled:   checksumDisabled,
