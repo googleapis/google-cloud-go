@@ -187,6 +187,7 @@
   "webrisk": "1.17.0",
   "websecurityscanner": "1.12.0",
   "workflows": "1.20.0",
+  "workloadidentity": "0.0.0",
   "workloadmanager": "1.1.0",
   "workstations": "1.8.0"
 }

@@ -2547,6 +2547,16 @@
         }
       ]
     },
+    "workloadidentity": {
+      "component": "workloadidentity",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.workloadidentity.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "workloadmanager": {
       "component": "workloadmanager",
       "extra-files": [
