@@ -79,13 +79,23 @@ import (
 
 type skipTransportTestKey string
 
-const (
+var (
 	testPrefix     = "go-integration-test"
+	grpcTestPrefix = "golang-grpc-test"
+)
+
+func init() {
+	if p := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_BUCKET_PREFIX"); p != "" {
+		testPrefix = p
+		grpcTestPrefix = p + "-grpc"
+	}
+}
+
+const (
 	replayFilename = "storage.replay"
 	// TODO(jba): move to testutil, factor out from firestore/integration_test.go.
 	envFirestoreProjID     = "GCLOUD_TESTS_GOLANG_FIRESTORE_PROJECT_ID"
 	envFirestorePrivateKey = "GCLOUD_TESTS_GOLANG_FIRESTORE_KEY"
-	grpcTestPrefix         = "golang-grpc-test"
 	testUniverseDomain     = "TEST_UNIVERSE_DOMAIN"
 	testUniverseProject    = "TEST_UNIVERSE_PROJECT_ID"
 	testUniverseLocation   = "TEST_UNIVERSE_LOCATION"
@@ -98,11 +108,14 @@ const (
 var (
 	record = flag.Bool("record", false, "record RPCs")
 
-	uidSpace        *uid.Space
-	uidSpaceObjects *uid.Space
-	bucketName      string
-	grpcBucketName  string
-	zonalBucketName string
+	uidSpace              *uid.Space
+	uidSpaceObjects       *uid.Space
+	bucketName            string
+	grpcBucketName        string
+	zonalBucketName       string
+	rcuBucketName         string
+	rcuBucketCreateFailed bool
+	testRCULocation       = "us-central1"
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -231,7 +244,11 @@ func initIntegrationTest() func() error {
 		defer client.Close()
 		// Create storage control client; in some cases this is needed for test
 		// setup and cleanup.
-		controlClient, err = control.NewStorageControlClient(ctx)
+		var controlOpts []option.ClientOption
+		if ep := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_CONTROL_ENDPOINT"); ep != "" {
+			controlOpts = append(controlOpts, option.WithEndpoint(ep))
+		}
+		controlClient, err = control.NewStorageControlClient(ctx, controlOpts...)
 		if err != nil {
 			log.Fatalf("NewStorageControlClient: %v", err)
 		}
@@ -256,6 +273,27 @@ func initIntegrationTest() func() error {
 		}); err != nil {
 			log.Fatalf("creating zonal bucket %q: %v", zonalBucketName, err)
 		}
+		if rcuBkt := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET"); rcuBkt != "" {
+			rcuBucketName = rcuBkt
+		} else {
+			rcuLoc := testRCULocation
+			if loc := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_LOCATION"); loc != "" {
+				rcuLoc = loc
+			}
+			if err := client.Bucket(rcuBucketName).Create(ctx, testutil.ProjID(), &BucketAttrs{
+				Location:     rcuLoc,
+				StorageClass: "RAPID",
+				HierarchicalNamespace: &HierarchicalNamespace{
+					Enabled: true,
+				},
+				UniformBucketLevelAccess: UniformBucketLevelAccess{
+					Enabled: true,
+				},
+			}); err != nil {
+				log.Printf("creating RCU bucket %q failed (may not be supported in this environment): %v", rcuBucketName, err)
+				rcuBucketCreateFailed = true
+			}
+		}
 		return cleanup
 	}
 }
@@ -266,6 +304,7 @@ func initUIDsAndRand(t time.Time) {
 	uidSpaceObjects = uid.NewSpace("obj", &uid.Options{Time: t})
 	grpcBucketName = grpcTestPrefix + uidSpace.New()
 	zonalBucketName = grpcTestPrefix + uidSpace.New()
+	rcuBucketName = grpcTestPrefix + uidSpace.New()
 	// Use our own random source, to avoid other parts of the program taking
 	// random numbers from the global source and putting record and replay
 	// out of sync.
@@ -279,6 +318,9 @@ func initUIDsAndRand(t time.Time) {
 func testConfig(ctx context.Context, t *testing.T, opts ...option.ClientOption) *Client {
 	if testing.Short() && !replaying {
 		t.Skip("Integration tests skipped in short mode")
+	}
+	if ep := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_ENDPOINT"); ep != "" {
+		opts = append(opts, option.WithEndpoint(ep))
 	}
 	client, err := newTestClient(ctx, opts...)
 	if err != nil {
@@ -296,6 +338,9 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 	if testing.Short() {
 		t.Skip("Integration tests skipped in short mode")
 	}
+	if ep := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_GRPC_ENDPOINT"); ep != "" {
+		opts = append(opts, option.WithEndpoint(ep))
+	}
 
 	gc, err := NewGRPCClient(ctx, opts...)
 	if err != nil {
@@ -309,12 +354,14 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	withJSON := append(slices.Clone(opts), WithJSONReads())
 	withZonal := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
+	withRCU := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
 		// TODO: remove jsonReads when support for XML reads is dropped
 		"jsonReads":   testConfig(ctx, t, withJSON...),
 		"zonalBucket": testConfigGRPC(ctx, t, withZonal...),
+		"rcuBucket":   testConfigGRPC(ctx, t, withRCU...),
 	}
 }
 
@@ -343,6 +390,12 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				prefix = grpcTestPrefix
 			} else if transport == "zonalBucket" {
 				bucket = zonalBucketName
+				prefix = grpcTestPrefix
+			} else if transport == "rcuBucket" {
+				if rcuBucketName == "" || rcuBucketCreateFailed {
+					t.Skip("RCU bucket not available in this environment")
+				}
+				bucket = rcuBucketName
 				prefix = grpcTestPrefix
 			}
 
@@ -8993,7 +9046,10 @@ func cleanupBuckets() error {
 		return nil // Don't cleanup if we're not configured correctly.
 	}
 	defer client.Close()
-	for _, b := range []string{bucketName, grpcBucketName, zonalBucketName} {
+	for _, b := range []string{bucketName, grpcBucketName, zonalBucketName, rcuBucketName} {
+		if b == "" || b == os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET") {
+			continue
+		}
 		if err := killBucket(ctx, client, b); err != nil {
 			return err
 		}
@@ -9260,6 +9316,7 @@ func retryOnTransient400and403(err error) bool {
 
 func skipGRPC(reason string) context.Context {
 	ctx := context.WithValue(context.Background(), skipTransportTestKey("zonalBucket"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 }
 
@@ -9272,6 +9329,7 @@ func skipHTTP(reason string) context.Context {
 // downloads.
 func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("zonalBucket"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
@@ -9279,10 +9337,29 @@ func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
 func skipAllButZonal(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
 	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+}
+
+// Only run test against rapid storage class buckets (zonal and regional rapid). Use for appendable object and bidi read tests.
+func skipAllButRapid(ctx context.Context, reason string) context.Context {
+	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
 func skipZonalBucket(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("zonalBucket"), reason)
+}
+
+func skipRCUBucket(ctx context.Context, reason string) context.Context {
+	return context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
+}
+
+func skipAllButRCU(ctx context.Context, reason string) context.Context {
+	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("zonalBucket"), reason)
 }
 
