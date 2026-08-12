@@ -103,11 +103,12 @@ var (
 
 	uidSpace              *uid.Space
 	uidSpaceObjects       *uid.Space
-	bucketName            string
-	grpcBucketName        string
-	zonalBucketName       string
-	rcuBucketName         string
-	rcuBucketCreateFailed bool
+	bucketName              string
+	grpcBucketName          string
+	zonalBucketName         string
+	zonalBucketCreateFailed bool
+	rcuBucketName           string
+	rcuBucketCreateFailed   bool
 	// Use our own random number generator to isolate the sequence of random numbers from
 	// other packages. This makes it possible to use HTTP replay and draw the same sequence
 	// of numbers as during recording.
@@ -275,7 +276,8 @@ func initIntegrationTest() func() error {
 				Enabled: true,
 			},
 		}); err != nil {
-			log.Printf("creating zonal bucket %q failed: %v", zonalBucketName, err)
+			log.Printf("creating zonal bucket %q failed (may not be supported in this environment): %v", zonalBucketName, err)
+			zonalBucketCreateFailed = true
 		}
 		if rcuBkt := os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET"); rcuBkt != "" {
 			rcuBucketName = rcuBkt
@@ -400,6 +402,9 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				bucket = grpcBucketName
 				prefix = grpcTestPrefix
 			} else if transport == "zonalBucket" {
+				if zonalBucketName == "" || zonalBucketCreateFailed {
+					t.Skip("zonal bucket not available in this environment")
+				}
 				bucket = zonalBucketName
 				prefix = grpcTestPrefix
 			} else if transport == "rcuBucket" {
