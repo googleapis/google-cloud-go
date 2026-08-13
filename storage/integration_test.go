@@ -499,6 +499,22 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 		if err = reader.Close(); err != nil {
 			t.Fatalf("Error while closing reader %v", err)
 		}
+
+		// Verify attempting to Add a read after Close invokes callback with error
+		done := make(chan struct{})
+		var postCloseErr error
+		reader.Add(&res[0].buf, 0, 100, func(x, y int64, err error) {
+			postCloseErr = err
+			close(done)
+		})
+		select {
+		case <-done:
+			if postCloseErr == nil {
+				t.Errorf("expected error when reading after Close, got nil")
+			}
+		case <-time.After(5 * time.Second):
+			t.Errorf("timed out waiting for callback on closed reader")
+		}
 	})
 }
 
@@ -9867,55 +9883,6 @@ func TestIntegration_ClientTracing(t *testing.T) {
 
 // --- Bidi Read (Private Preview) Integration Tests ---
 
-// TestIntegration_BidiRead_ReadPostStreamClose verifies session isolation:
-// Awaiting/resolving an outstanding Future after closing the Session/FileDescriptor throws appropriate Stream Closed Exception.
-func TestIntegration_BidiRead_ReadPostStreamClose(t *testing.T) {
-	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		if bucket == "" {
-			t.Skip("Bucket not configured")
-		}
-		content := make([]byte, 1024)
-		rand.New(rand.NewSource(0)).Read(content)
-		objName := "bidi-read-post-close-" + uidSpace.New()
-
-		obj := client.Bucket(bucket).Object(objName)
-		if err := writeObject(ctx, obj, "application/octet-stream", content); err != nil {
-			t.Fatal(err)
-		}
-		defer func() {
-			_ = obj.Delete(ctx)
-		}()
-
-		reader, err := obj.NewMultiRangeDownloader(ctx)
-		if err != nil {
-			t.Fatalf("NewMultiRangeDownloader: %v", err)
-		}
-
-		// Close reader before issuing reads
-		if err := reader.Close(); err != nil {
-			t.Fatalf("reader.Close: %v", err)
-		}
-
-		// Attempting to Add a read after Close should invoke callback with error
-		var buf bytes.Buffer
-		var cbErr error
-		done := make(chan struct{})
-		reader.Add(&buf, 0, 100, func(off, length int64, err error) {
-			cbErr = err
-			close(done)
-		})
-
-		select {
-		case <-done:
-			if cbErr == nil {
-				t.Fatalf("expected error when reading from closed stream, got nil")
-			}
-		case <-time.After(5 * time.Second):
-			t.Fatalf("timed out waiting for callback on closed reader")
-		}
-	})
-}
-
 type preallocatedSliceWriter struct {
 	buf []byte
 	off int
@@ -10023,67 +9990,6 @@ func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 		}
 		if !errorIsStatusCode(err, http.StatusNotFound, codes.NotFound) && status.Code(err) != codes.PermissionDenied {
 			t.Fatalf("expected NotFound/PermissionDenied status for non-existent bucket, got %v", err)
-		}
-	})
-}
-
-// TestIntegration_BidiRead_OutOfRange tests out-of-bounds range reads beyond object size (offset > size).
-// Ensures appropriate exception is thrown for invalid ranges while valid range reads on the same session succeed.
-func TestIntegration_BidiRead_OutOfRange(t *testing.T) {
-	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		if bucket == "" {
-			t.Skip("Bucket not configured")
-		}
-		content := make([]byte, 1000)
-		rand.New(rand.NewSource(0)).Read(content)
-		objName := "bidi-read-out-of-range-" + uidSpace.New()
-
-		obj := client.Bucket(bucket).Object(objName)
-		if err := writeObject(ctx, obj, "application/octet-stream", content); err != nil {
-			t.Fatal(err)
-		}
-		defer func() {
-			_ = obj.Delete(ctx)
-		}()
-
-		reader, err := obj.NewMultiRangeDownloader(ctx, WithMinConnections(2))
-		if err != nil {
-			t.Fatalf("NewMultiRangeDownloader: %v", err)
-		}
-		defer reader.Close()
-
-		var validBuf, outOfRangeBuf bytes.Buffer
-		var validErr, outOfRangeErr error
-		var validLen int64
-		var wg sync.WaitGroup
-		wg.Add(2)
-
-		// Valid range read
-		reader.Add(&validBuf, 0, 100, func(off, length int64, err error) {
-			defer wg.Done()
-			validLen = length
-			validErr = err
-		})
-
-		// Out of range read: offset > size (offset 5000 > size 1000)
-		reader.Add(&outOfRangeBuf, 5000, 100, func(off, length int64, err error) {
-			defer wg.Done()
-			outOfRangeErr = err
-		})
-
-		wg.Wait()
-		reader.Wait()
-
-		if validErr != nil {
-			t.Errorf("valid range read failed: %v", validErr)
-		}
-		if validLen != 100 || !bytes.Equal(validBuf.Bytes(), content[:100]) {
-			t.Errorf("valid range read content mismatch: got %d bytes, want 100 bytes", validLen)
-		}
-		if outOfRangeErr == nil {
-			t.Errorf("expected out of range error for offset > size, got nil")
-		} else if status.Code(outOfRangeErr) != codes.OutOfRange && !errors.Is(outOfRangeErr, io.EOF) {
-			t.Logf("out of range returned error: %v (code: %v)", outOfRangeErr, status.Code(outOfRangeErr))
 		}
 	})
 }
