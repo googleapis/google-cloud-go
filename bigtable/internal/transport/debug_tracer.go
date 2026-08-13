@@ -166,6 +166,16 @@ const (
 	// Client configuration polling.
 	tagClientConfigPollFailed     = "client_config_poll_failed"
 	tagClientConfigPollCtxExpired = "client_config_poll_ctx_expired"
+
+	// Outlier downweight — paired transition tags from the built-in
+	// LatencyOutlierScorer. Fires on transition only (score change from
+	// last tick), so `rate(outlier_afe_penalized_latency)` reflects
+	// "how often an AFE entered penalty" and dashboards can compute
+	// currently-penalized as sum(penalized) - sum(recovered). The
+	// `_latency` suffix leaves room for future error-rate or retry-
+	// storm variants without renaming.
+	tagOutlierAfePenalizedLatency = "outlier_afe_penalized_latency"
+	tagOutlierAfeRecoveredLatency = "outlier_afe_recovered_latency"
 )
 
 var (

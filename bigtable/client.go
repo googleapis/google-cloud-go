@@ -70,6 +70,10 @@ type Client struct {
 	// so an idle client pays only for one channel pool and one
 	// config-poll goroutine.
 	sessionImpl session.Client
+	// tcpStats is populated when ClientConfig.EnableDebug is true. Nil
+	// otherwise. Client.TCPStats() returns this directly; callers hand
+	// it to bigtable/debugview.Handler for the tcpz page.
+	tcpStats *TCPStats
 	// sessionTables caches per-resource session.TableAPI handles so
 	// repeat Open* calls return the same handle (and by extension the
 	// same underlying session pools). session.Client does not cache;
@@ -124,6 +128,43 @@ type ClientConfig struct {
 	// idle session pool matter. Default (false) keeps the current
 	// behavior: session client is always constructed.
 	DisableSession bool
+
+	// EnableDebug opts the client into the /debug/{sessionz,afez,loadz,
+	// channelz,configz,tcpz,debugtagsz} pages served by
+	// bigtable/debugview.Handler.
+	//
+	// When true, NewClientWithConfig auto-constructs the internal
+	// TCPStats collector and attaches its dial option so per-connection
+	// TCP_INFO scraping is available via Client.TCPStats(). The session-,
+	// channel-, and config-debug providers are unconditionally reachable
+	// via Client.SessionDebug / ChannelDebug / ConfigDebug regardless of
+	// this flag; EnableDebug is purely about opting into the extra
+	// dial-time interception TCPStats needs.
+	//
+	// Zero cost when false — no TCPStats allocation, no dial hook.
+	EnableDebug bool
+
+	// OutlierScorerFactory plugs an outlier-detection scorer into every
+	// session pool this Client creates. Nil (the default) leaves each
+	// pool on NoopScorer — the picker's cost function is untouched and
+	// no outlier downweight happens. Non-nil is invoked once per pool
+	// during construction with the pool's own AFE snapshot source; the
+	// returned OutlierScorer is installed via SetOutlierScorer BEFORE
+	// Pool.Start, so any LifecycleScorer implementation (e.g. the
+	// built-in LatencyOutlierScorer) is given the pool's ctx.
+	//
+	// Convenience: LatencyOutlierFactory returns a factory that builds
+	// the built-in LatencyOutlierScorer with a given config. Example:
+	//
+	//   cfg := bigtable.ClientConfig{
+	//       EnableDebug:          true, // for /debug/outlierz
+	//       OutlierScorerFactory: bigtable.LatencyOutlierFactory(bigtable.DefaultLatencyOutlierConfig()),
+	//   }
+	//
+	// Only latency-based pickers (LeastLatencyAfePicker) consult the
+	// score; other pickers ignore it. Zero cost with NoopScorer — one
+	// interface call per candidate per pick, returning the constant 1.0.
+	OutlierScorerFactory OutlierScorerFactory
 }
 
 // MetricsProvider is a wrapper for the built-in metrics meter provider.
@@ -194,6 +235,17 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	directAccessOptions := btopt.DirectAccessOptions()
 
 	o = append(o, opts...)
+	// When EnableDebug is set, construct the TCPStats collector and
+	// append its dial option so every subsequent gRPC dial (both the
+	// classic channel pool and, via option propagation, the session
+	// channel pool) registers with the collector. Stashed on Client
+	// so callers can retrieve it via Client.TCPStats() and hand it to
+	// bigtable/debugview.Handler.
+	var tcpStats *TCPStats
+	if config.EnableDebug {
+		tcpStats = NewTCPStats()
+		o = append(o, tcpStats.ClientOption())
+	}
 	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, internaloption.EnableJwtWithScope())
 
@@ -265,6 +317,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		featureFlagsMD:          directAccessMD,
 		mPool:                   mPool,
 		diverter:                btransport.NewDiverter(0.0),
+		tcpStats:                tcpStats,
 	}
 
 	// Session data-plane backend construction has two guardrails so it
@@ -313,7 +366,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// in (endpoint, scopes, user-agent, interceptors) — passing
 		// bare opts leaves the resolver target empty and the dial
 		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, o...)
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, config.EnableDebug, config.OutlierScorerFactory, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool

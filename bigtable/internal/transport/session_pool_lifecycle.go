@@ -490,6 +490,15 @@ func (p *SessionPoolImpl) Start(ctx context.Context) {
 		p.startAfePruneLoop(ctx)
 		p.startSweepStuckSessionsLoop(ctx)
 		p.startSlowMetricsLoop(ctx)
+		// Bring up the outlier scorer's background loop (if any). Scorers
+		// that don't need background work (NoopScorer, hard-coded score
+		// maps) don't implement LifecycleScorer and are skipped here.
+		p.mu.Lock()
+		scorer := p.scorer
+		p.mu.Unlock()
+		if ls, ok := scorer.(LifecycleScorer); ok {
+			ls.Start(ctx)
+		}
 	})
 }
 

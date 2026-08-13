@@ -51,6 +51,16 @@ func (sc *sessionClient) ConfigDebug() btransport.ConfigDebugProvider {
 	return configDebugProviderImpl{mgr: sc.configManager}
 }
 
+// OutlierDebug returns the per-pool outlier-scorer debug provider. Nil
+// when the client was constructed with EnableDebug false (no snapshot
+// state collected).
+func (sc *sessionClient) OutlierDebug() btransport.OutlierDebugProvider {
+	if !sc.enableDebug {
+		return nil
+	}
+	return outlierDebugProviderImpl{sc: sc}
+}
+
 // sessionDebugProviderImpl is the concrete SessionDebugProvider returned
 // by *sessionClient.SessionDebug. Kept unexported — consumers hold the
 // interface. Diverter() returns an empty snapshot; only bigtable.Client
@@ -124,4 +134,16 @@ type configDebugProviderImpl struct {
 
 func (p configDebugProviderImpl) Snapshot() btransport.ConfigSnapshot {
 	return p.mgr.Snapshot()
+}
+
+// outlierDebugProviderImpl is the concrete OutlierDebugProvider
+// returned by *sessionClient.OutlierDebug. Snapshot iterates the pools
+// in stable key order and lets each pool produce its own scorer
+// snapshot.
+type outlierDebugProviderImpl struct {
+	sc *sessionClient
+}
+
+func (p outlierDebugProviderImpl) Snapshot() []btransport.OutlierPoolSnapshot {
+	return p.sc.OutlierDebugSnapshots()
 }
