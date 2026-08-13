@@ -487,6 +487,11 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 				t.Errorf("Error in read range offset %v, limit %v, got: %v bytes; want: %v bytes",
 					k.offset, k.limit, len(k.buf.Bytes()), len(want))
 			}
+			gotCRC := crc32.Checksum(k.buf.Bytes(), crc32cTable)
+			wantCRC := crc32.Checksum(want, crc32cTable)
+			if gotCRC != wantCRC {
+				t.Errorf("range offset %v limit %v CRC32C mismatch: got %d, want %d", k.offset, k.limit, gotCRC, wantCRC)
+			}
 			if k.err != nil {
 				t.Errorf("read range %v to %v : %v", k.offset, k.limit, k.err)
 			}
@@ -9861,92 +9866,6 @@ func TestIntegration_ClientTracing(t *testing.T) {
 }
 
 // --- Bidi Read (Private Preview) Integration Tests ---
-
-// TestIntegration_BidiRead_MultipleRangedRead tests reading an Object across multiple
-// concurrent range read futures. Validates bytes, total transferred length, and CRC32C checksum integrity.
-func TestIntegration_BidiRead_MultipleRangedRead(t *testing.T) {
-	multiTransportTest(skipAllButRapid(context.Background(), "Bidi Read API test"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		if bucket == "" {
-			t.Skip("Bucket not configured")
-		}
-		content := make([]byte, 4<<20) // 4MB
-		rand.New(rand.NewSource(0)).Read(content)
-		objName := "bidi-read-multi-range-" + uidSpace.New()
-
-		obj := client.Bucket(bucket).Object(objName)
-		if err := writeObject(ctx, obj, "application/octet-stream", content); err != nil {
-			t.Fatal(err)
-		}
-		defer func() {
-			_ = obj.Delete(ctx)
-		}()
-
-		reader, err := obj.NewMultiRangeDownloader(ctx)
-		if err != nil {
-			t.Fatalf("NewMultiRangeDownloader: %v", err)
-		}
-		defer reader.Close()
-
-		type rangeTest struct {
-			offset int64
-			length int64
-			buf    bytes.Buffer
-			gotOff int64
-			gotLen int64
-			err    error
-		}
-
-		ranges := []*rangeTest{
-			{offset: 0, length: 1024},                      // first 1KB
-			{offset: 1024, length: 2048},                   // next 2KB
-			{offset: 1 << 20, length: 512 << 10},           // middle 512KB
-			{offset: -1024, length: 0},                     // last 1KB (negative offset)
-			{offset: 0, length: 0},                         // entire object
-			{offset: 2 << 20, length: int64(len(content))}, // from 2MB to end (length larger than remaining)
-		}
-
-		var wg sync.WaitGroup
-		for _, rt := range ranges {
-			wg.Add(1)
-			r := rt
-			reader.Add(&r.buf, r.offset, r.length, func(off, length int64, err error) {
-				defer wg.Done()
-				r.gotOff = off
-				r.gotLen = length
-				r.err = err
-			})
-		}
-		wg.Wait()
-		reader.Wait()
-
-		for i, rt := range ranges {
-			if rt.err != nil {
-				t.Errorf("range %d (offset=%d, length=%d) failed: %v", i, rt.offset, rt.length, rt.err)
-				continue
-			}
-			expectedOffset := rt.offset
-			if expectedOffset < 0 {
-				expectedOffset += int64(len(content))
-			}
-			expectedData := content[expectedOffset:]
-			if rt.length > 0 && int(expectedOffset+rt.length) <= len(content) {
-				expectedData = content[expectedOffset : expectedOffset+rt.length]
-			}
-			if rt.gotLen != int64(len(expectedData)) {
-				t.Errorf("range %d: got length %d, want %d", i, rt.gotLen, len(expectedData))
-			}
-			if !bytes.Equal(rt.buf.Bytes(), expectedData) {
-				t.Errorf("range %d data mismatch: got %d bytes, want %d bytes", i, rt.buf.Len(), len(expectedData))
-			}
-			// Verify CRC32C checksum integrity
-			gotCRC := crc32.Checksum(rt.buf.Bytes(), crc32cTable)
-			wantCRC := crc32.Checksum(expectedData, crc32cTable)
-			if gotCRC != wantCRC {
-				t.Errorf("range %d CRC32C mismatch: got %d, want %d", i, gotCRC, wantCRC)
-			}
-		}
-	})
-}
 
 // TestIntegration_BidiRead_ReadPostStreamClose verifies session isolation:
 // Awaiting/resolving an outstanding Future after closing the Session/FileDescriptor throws appropriate Stream Closed Exception.
