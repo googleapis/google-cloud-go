@@ -538,3 +538,64 @@ func TestReleasePoolByID_RemovesEntryAndInvokesUnregister(t *testing.T) {
 		t.Errorf("unregister fired %d times after second release, want still 1", unregistered)
 	}
 }
+
+// --- single ownership --------------------------------------------------------
+
+// TestCreateSessionPool_SingleOwnership_SameKeyDistinctPools pins the
+// heart of the fix: two Open* calls that resolve the SAME poolKey each
+// get their OWN pool, registered under a distinct id — createSessionPool
+// NEVER dedups on key. Releasing one pool's id-scoped closer tears down
+// only that pool and leaves the sibling registered and open, so a
+// discarded-loser or evicted-then-reopened handle can no longer close a
+// pool a live sibling is still using.
+func TestCreateSessionPool_SingleOwnership_SameKeyDistinctPools(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel) // stops the pools' background loops on test exit
+	sc := newTestClient(t, &fakeChannelPool{}, Config{BackgroundCtx: ctx})
+
+	key := poolKey{resourceName: "table:foo", perm: permissionRead}
+	neverDial := func(context.Context) (btransport.Stream, error) {
+		return nil, errors.New("test never dials")
+	}
+	newPool := func() (*btransport.SessionPoolImpl, func() error) {
+		return sc.createSessionPool(key, neverDial, &btpb.OpenSessionRequest{}, nil, btransport.SessionTypeTable)
+	}
+
+	poolA, releaseA := newPool()
+	poolB, releaseB := newPool()
+
+	if poolA == nil || poolB == nil {
+		t.Fatalf("createSessionPool returned nil pool: A=%v B=%v", poolA, poolB)
+	}
+	if poolA == poolB {
+		t.Fatal("same poolKey returned the SAME pool instance — createSessionPool deduped on key (regressed to shared-pool ownership)")
+	}
+	if got := len(sc.sessionPools); got != 2 {
+		t.Fatalf("sessionPools has %d entries, want 2 (both siblings registered under distinct ids)", got)
+	}
+
+	// Releasing A removes ONLY A; B stays registered and points at the
+	// same live pool it created. This is the assertion the old shared-key
+	// releaseSessionPool could not satisfy.
+	if err := releaseA(); err != nil {
+		t.Fatalf("releaseA: %v", err)
+	}
+	if got := len(sc.sessionPools); got != 1 {
+		t.Fatalf("after releaseA, sessionPools has %d entries, want 1 (sibling survives)", got)
+	}
+	var survivor *managedSessionPool
+	for _, mp := range sc.sessionPools {
+		survivor = mp
+	}
+	if survivor == nil || survivor.pool != poolB {
+		t.Fatalf("releaseA tore down the sibling: survivor=%v, want B's pool", survivor)
+	}
+
+	// B's closer is independent and still fires cleanly.
+	if err := releaseB(); err != nil {
+		t.Fatalf("releaseB: %v", err)
+	}
+	if got := len(sc.sessionPools); got != 0 {
+		t.Errorf("after releaseB, sessionPools has %d entries, want 0", got)
+	}
+}

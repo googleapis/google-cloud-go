@@ -16,6 +16,7 @@ package session
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"sort"
@@ -141,12 +142,10 @@ type managedSessionPool struct {
 // runs it exactly once. Close() before set() (opener never ran — the
 // resource was never touched) or after a prior Close() is a no-op.
 //
-// This is the single-ownership core of the Java-shape refactor: each
-// sessionTable closes exactly the pool its OWN opener created, by
-// captured identity, never a shared-key sibling's pool. It replaces the
-// old key-based releaseSessionPool, which could close a pool a live
-// sibling sessionTable was still memoizing — the shared-pool
-// close-forever bug this refactor fixes.
+// This gives each sessionTable single ownership of its pool: a table
+// closes exactly the pool its OWN opener created, by captured identity,
+// never a sibling's pool that happens to share a poolKey. That prevents
+// closing a pool a live sibling sessionTable is still memoizing.
 type poolCloser struct {
 	mu      sync.Mutex
 	release func() error
@@ -653,9 +652,10 @@ func (sc *sessionClient) buildLazyOpener(
 		// Hand the pool's teardown to the owner. If the sessionTable was
 		// closed while we were dialing, set() tears the fresh pool down
 		// immediately (it would otherwise leak, since owner.Close already
-		// fired against an empty owner) and we surface client-closed.
-		if closed, _ := owner.set(release); closed {
-			return nil, ErrClientClosed
+		// fired against an empty owner) and we surface client-closed —
+		// joining any teardown error so a failed drain isn't swallowed.
+		if closed, err := owner.set(release); closed {
+			return nil, errors.Join(ErrClientClosed, err)
 		}
 		return pool, nil
 	}

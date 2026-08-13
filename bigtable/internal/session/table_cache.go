@@ -263,9 +263,8 @@ type TableCache struct {
 	// runs openFn; concurrent callers for the same key block on the
 	// loadState's ready channel and re-check the map once it closes,
 	// finding the winner's handle instead of each dialing their own
-	// pool. This is the LoadingCache single-load contract — no losers,
-	// so a storm of post-eviction RPCs mints exactly one successor pool
-	// rather than N-1 throwaways.
+	// pool. With no losers, a storm of post-eviction RPCs mints exactly
+	// one successor pool rather than N-1 throwaways.
 	loading map[string]*loadState
 	// closed is flipped by Close() under mu. GetOrOpen's slow path
 	// re-checks it before inserting the freshly-opened handle so a
@@ -321,9 +320,8 @@ func NewTableCache(ttl, sweepInterval time.Duration, now func() time.Time) *Tabl
 // own locks — avoids lock inversion), then installs the handle. Any
 // concurrent caller for the same key finds the loadState and blocks on
 // its ready channel, then loops to re-check the map — it never dials a
-// throwaway pool. This mirrors Guava LoadingCache's atomic single-load
-// contract, so a post-eviction RPC storm mints exactly one successor
-// pool rather than N and discarding N-1.
+// throwaway pool. A post-eviction RPC storm therefore mints exactly one
+// successor pool rather than dialing N and discarding N-1.
 func (c *TableCache) GetOrOpen(key string, openFn func() TableAPI) TableAPI {
 	if c == nil {
 		return nil
@@ -356,11 +354,24 @@ func (c *TableCache) GetOrOpen(key string, openFn func() TableAPI) TableAPI {
 		c.loading[key] = ls
 		c.mu.Unlock()
 
+		// Clear the loading slot and wake waiters in a defer so a panic in
+		// openFn (deep in buildLazyOpener → createSessionPoolForPayload →
+		// pool construction) can't leave the slot wedged forever — that
+		// would block every subsequent GetOrOpen(key), and since every RPC
+		// routes through here, wedge the process on that resource. The
+		// loader path always returns in this iteration, so the defer fires
+		// exactly once. Waiters re-check entries after ready closes, so the
+		// handle (happy path) is already installed by the time they wake.
+		defer func() {
+			c.mu.Lock()
+			delete(c.loading, key)
+			c.mu.Unlock()
+			close(ls.ready)
+		}()
+
 		api := openFn()
 
 		c.mu.Lock()
-		delete(c.loading, key)
-		close(ls.ready)
 		if api == nil {
 			c.mu.Unlock()
 			return nil

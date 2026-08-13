@@ -601,3 +601,47 @@ func TestTableHandle_EvictionStormConvergesOnSingleInstalled(t *testing.T) {
 		t.Errorf("closes = %d, want %d (opens=%d, one installed live)", closesLoaded, wantCloses, opensLoaded)
 	}
 }
+
+// TestTableCache_LoaderPanic_DoesNotWedgeKey proves the loader's defer
+// clears the loading slot and wakes waiters even when openFn panics deep
+// in pool construction. Without the defer the slot stays populated with
+// an unclosed ready channel, so every later GetOrOpen(key) blocks on it
+// forever — and since every RPC routes through GetOrOpen, the resource
+// wedges until process restart.
+func TestTableCache_LoaderPanic_DoesNotWedgeKey(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	c := NewTableCache(1*time.Hour, 1*time.Hour, clock.now)
+	t.Cleanup(c.Close)
+
+	// First load panics inside openFn (stands in for a nil deref /
+	// malformed proto anywhere in the buildLazyOpener chain).
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Fatal("expected openFn panic to propagate out of GetOrOpen")
+			}
+		}()
+		c.GetOrOpen("tbl:t", func() TableAPI { panic("boom in pool construction") })
+	}()
+
+	// The loading slot must be cleared, otherwise the next caller deadlocks.
+	c.mu.Lock()
+	nLoading := len(c.loading)
+	c.mu.Unlock()
+	if nLoading != 0 {
+		t.Fatalf("loading map has %d entries after panic, want 0 (leaked slot wedges future GetOrOpen)", nLoading)
+	}
+
+	// A subsequent open for the same key must succeed rather than block
+	// on the dead loadState's ready channel.
+	done := make(chan TableAPI, 1)
+	go func() { done <- c.GetOrOpen("tbl:t", openNoop("tbl:t")) }()
+	select {
+	case got := <-done:
+		if got == nil {
+			t.Fatal("GetOrOpen after panic returned nil, want a live handle")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("GetOrOpen after panic deadlocked — loader slot was not cleaned up")
+	}
+}
