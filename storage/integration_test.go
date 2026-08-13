@@ -10071,3 +10071,102 @@ func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
 		}
 	})
 }
+
+func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
+	ctx := context.Background()
+	if rcuBucketName == "" || rcuBucketCreateFailed {
+		t.Skip("RCU bucket not available in this environment")
+	}
+
+	h := testHelper{t}
+	grpcClient := testConfigGRPC(ctx, t, experimental.WithZonalBucketAPIs())
+	defer grpcClient.Close()
+
+	httpClient := testConfig(ctx, t)
+	defer httpClient.Close()
+
+	jsonClient := testConfig(ctx, t, WithJSONReads())
+	defer jsonClient.Close()
+
+	objName := "rcu-http-json-test-" + uidSpaceObjects.New()
+	content := []byte("Hello, RCU reads via HTTP and JSON endpoints!")
+
+	// 1. Write object via gRPC client with Zonal/RCU APIs
+	w := grpcClient.Bucket(rcuBucketName).Object(objName).NewWriter(ctx)
+	if _, err := w.Write(content); err != nil {
+		t.Fatalf("grpcClient.Write: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("grpcClient.Close: %v", err)
+	}
+	defer h.mustDeleteObject(grpcClient.Bucket(rcuBucketName).Object(objName))
+
+	// 2. Read whole object via HTTP client (XML API reads)
+	t.Run("HTTP_XML_Read", func(t *testing.T) {
+		r, err := httpClient.Bucket(rcuBucketName).Object(objName).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("httpClient.NewReader: %v", err)
+		}
+		defer r.Close()
+
+		got, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("httpClient.ReadAll: %v", err)
+		}
+		if !bytes.Equal(got, content) {
+			t.Errorf("httpClient got %q, want %q", got, content)
+		}
+	})
+
+	// 3. Read whole object via JSON reads client
+	t.Run("JSON_Read", func(t *testing.T) {
+		r, err := jsonClient.Bucket(rcuBucketName).Object(objName).NewReader(ctx)
+		if err != nil {
+			t.Fatalf("jsonClient.NewReader: %v", err)
+		}
+		defer r.Close()
+
+		got, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("jsonClient.ReadAll: %v", err)
+		}
+		if !bytes.Equal(got, content) {
+			t.Errorf("jsonClient got %q, want %q", got, content)
+		}
+	})
+
+	// 4. Range read via HTTP client
+	t.Run("HTTP_XML_RangeRead", func(t *testing.T) {
+		r, err := httpClient.Bucket(rcuBucketName).Object(objName).NewRangeReader(ctx, 7, 3)
+		if err != nil {
+			t.Fatalf("httpClient.NewRangeReader: %v", err)
+		}
+		defer r.Close()
+
+		got, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("httpClient.RangeReadAll: %v", err)
+		}
+		if want := "RCU"; string(got) != want {
+			t.Errorf("httpClient range got %q, want %q", got, want)
+		}
+	})
+
+	// 5. Range read via JSON client
+	t.Run("JSON_RangeRead", func(t *testing.T) {
+		r, err := jsonClient.Bucket(rcuBucketName).Object(objName).NewRangeReader(ctx, 7, 3)
+		if err != nil {
+			t.Fatalf("jsonClient.NewRangeReader: %v", err)
+		}
+		defer r.Close()
+
+		got, err := io.ReadAll(r)
+		if err != nil {
+			t.Fatalf("jsonClient.RangeReadAll: %v", err)
+		}
+		if want := "RCU"; string(got) != want {
+			t.Errorf("jsonClient range got %q, want %q", got, want)
+		}
+	})
+}
+
