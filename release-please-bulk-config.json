@@ -1041,6 +1041,16 @@
     "firestore": {
       "component": "firestore"
     },
+    "ftp": {
+      "component": "ftp",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.ftp.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "functions": {
       "component": "functions",
       "extra-files": [

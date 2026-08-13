@@ -748,6 +748,11 @@ libraries:
     keep:
       - README.md
     skip_release: true
+  - name: ftp
+    version: 0.0.0
+    apis:
+      - path: google/cloud/ftp/v1
+    copyright_year: "2026"
   - name: functions
     version: 1.25.0
     apis:
