@@ -85,6 +85,7 @@
   "filestore": "1.16.0",
   "financialservices": "1.1.0",
   "firestore": "1.25.0",
+  "ftp": "0.0.0",
   "functions": "1.25.0",
   "geminidataanalytics": "1.4.0",
   "gkebackup": "1.14.0",

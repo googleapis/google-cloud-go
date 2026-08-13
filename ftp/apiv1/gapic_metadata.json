@@ -1,0 +1,108 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.ftp.v1",
+  "libraryPackage": "cloud.google.com/go/ftp/apiv1",
+  "services": {
+    "CloudFtp": {
+      "clients": {
+        "rest": {
+          "libraryClient": "CloudFtpClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateServer": {
+              "methods": [
+                "CreateServer"
+              ]
+            },
+            "CreateUser": {
+              "methods": [
+                "CreateUser"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DeleteServer": {
+              "methods": [
+                "DeleteServer"
+              ]
+            },
+            "DeleteUser": {
+              "methods": [
+                "DeleteUser"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "GetServer": {
+              "methods": [
+                "GetServer"
+              ]
+            },
+            "GetUser": {
+              "methods": [
+                "GetUser"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "ListServers": {
+              "methods": [
+                "ListServers"
+              ]
+            },
+            "ListUsers": {
+              "methods": [
+                "ListUsers"
+              ]
+            },
+            "StartServer": {
+              "methods": [
+                "StartServer"
+              ]
+            },
+            "StopServer": {
+              "methods": [
+                "StopServer"
+              ]
+            },
+            "UpdateServer": {
+              "methods": [
+                "UpdateServer"
+              ]
+            },
+            "UpdateUser": {
+              "methods": [
+                "UpdateUser"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}
