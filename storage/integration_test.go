@@ -93,7 +93,7 @@ const (
 	// Location and Zone for zonal buckets tests
 	testZonalLocation = "us-west4"
 	testZonalZone     = "us-west4-a"
-	// Location and Zone for RCU buckets tests
+	// Location and zone for RCU bucket tests.
 	testRCULocation = "us-central1"
 	testRCUZone     = "us-central1-a"
 )
@@ -353,12 +353,14 @@ func initTransportClients(ctx context.Context, t *testing.T, opts ...option.Clie
 	withZonal := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
 	withRCU := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
 	return map[string]*Client{
-		"http": testConfig(ctx, t, opts...),
-		"grpc": testConfigGRPC(ctx, t, opts...),
+		"http":          testConfig(ctx, t, opts...),
+		"grpc":          testConfigGRPC(ctx, t, opts...),
 		// TODO: remove jsonReads when support for XML reads is dropped
-		"jsonReads":   testConfig(ctx, t, withJSON...),
-		"zonalBucket": testConfigGRPC(ctx, t, withZonal...),
-		"rcuBucket":   testConfigGRPC(ctx, t, withRCU...),
+		"jsonReads":     testConfig(ctx, t, withJSON...),
+		"zonalBucket":   testConfigGRPC(ctx, t, withZonal...),
+		"rcuBucket":     testConfigGRPC(ctx, t, withRCU...),
+		"rcuBucketHTTP": testConfig(ctx, t, opts...),
+		"rcuBucketJSON": testConfig(ctx, t, withJSON...),
 	}
 }
 
@@ -391,7 +393,7 @@ func multiTransportTest(ctx context.Context, t *testing.T,
 				}
 				bucket = zonalBucketName
 				prefix = grpcTestPrefix
-			} else if transport == "rcuBucket" {
+			} else if transport == "rcuBucket" || transport == "rcuBucketHTTP" || transport == "rcuBucketJSON" {
 				if rcuBucketName == "" || rcuBucketCreateFailed {
 					t.Skip("RCU bucket not available in this environment")
 				}
@@ -500,7 +502,7 @@ func TestIntegration_MultiRangeDownloader(t *testing.T) {
 			t.Fatalf("Error while closing reader %v", err)
 		}
 
-		// Verify attempting to Add a read after Close invokes callback with error
+		// Verify attempting to Add a read after Close invokes callback with error.
 		done := make(chan struct{})
 		var postCloseErr error
 		reader.Add(&res[0].buf, 0, 100, func(x, y int64, err error) {
@@ -9352,7 +9354,9 @@ func skipGRPC(reason string) context.Context {
 
 func skipHTTP(reason string) context.Context {
 	ctx := context.WithValue(context.Background(), skipTransportTestKey("http"), reason)
-	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucketHTTP"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("rcuBucketJSON"), reason)
 }
 
 // Skips JSON and gRPC Bidi reads. Use to reduce test matrix in tests which don't do
@@ -9360,6 +9364,8 @@ func skipHTTP(reason string) context.Context {
 func skipExtraReadAPIs(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("zonalBucket"), reason)
 	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucketHTTP"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucketJSON"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
@@ -9368,6 +9374,8 @@ func skipAllButZonal(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
 	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
 	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucketHTTP"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucketJSON"), reason)
 	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
 }
 
@@ -9375,7 +9383,9 @@ func skipAllButZonal(ctx context.Context, reason string) context.Context {
 func skipAllButRapid(ctx context.Context, reason string) context.Context {
 	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
 	ctx = context.WithValue(ctx, skipTransportTestKey("grpc"), reason)
-	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucketHTTP"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("rcuBucketJSON"), reason)
 }
 
 func skipZonalBucket(ctx context.Context, reason string) context.Context {
@@ -9383,7 +9393,9 @@ func skipZonalBucket(ctx context.Context, reason string) context.Context {
 }
 
 func skipRCUBucket(ctx context.Context, reason string) context.Context {
-	return context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucket"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("rcuBucketHTTP"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("rcuBucketJSON"), reason)
 }
 
 func skipAllButRCU(ctx context.Context, reason string) context.Context {
@@ -9394,11 +9406,13 @@ func skipAllButRCU(ctx context.Context, reason string) context.Context {
 }
 
 func skipXMLReads(ctx context.Context, reason string) context.Context {
-	return context.WithValue(ctx, skipTransportTestKey("http"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("http"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("rcuBucketHTTP"), reason)
 }
 
 func skipJSONReads(ctx context.Context, reason string) context.Context {
-	return context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+	ctx = context.WithValue(ctx, skipTransportTestKey("jsonReads"), reason)
+	return context.WithValue(ctx, skipTransportTestKey("rcuBucketJSON"), reason)
 }
 
 // Extract the error code if it's a googleapi.Error
@@ -9929,7 +9943,7 @@ func TestIntegration_BidiRead_ZeroCopyRead(t *testing.T) {
 		}
 		defer reader.Close()
 
-		// Allocate fixed buffers for zero-copy read destinations
+		// Allocate fixed buffers for zero-copy read destinations.
 		buf1 := make([]byte, 1024)
 		buf2 := make([]byte, 2048)
 		sw1 := &preallocatedSliceWriter{buf: buf1}
@@ -9973,7 +9987,7 @@ func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 
 		reader, err := obj.NewMultiRangeDownloader(ctx)
 		if err == nil {
-			// If NewMultiRangeDownloader doesn't fail immediately, reading or closing must fail with NotFound / PermissionDenied
+			// If NewMultiRangeDownloader does not fail immediately, reading or closing must fail with NotFound or PermissionDenied.
 			var buf bytes.Buffer
 			var readErr error
 			done := make(chan struct{})
@@ -10001,7 +10015,6 @@ func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 	})
 }
 
-
 // TestIntegration_RCU_SingleShotWriteAndIngestOnRead tests writing an object using Single-Shot Regional Write
 // and reading it back to validate ingest-on-read uptiering and ranged reads on RCU (Regional Rapid) buckets.
 func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
@@ -10015,7 +10028,7 @@ func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
 
 		obj := client.Bucket(bucket).Object(objName)
 
-		// 1. Single-shot write
+		// Write the object via single-shot write.
 		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
 		if _, err := w.Write(content); err != nil {
 			t.Fatalf("single-shot write failed: %v", err)
@@ -10027,7 +10040,7 @@ func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
 			_ = obj.Delete(ctx)
 		}()
 
-		// 2. Perform initial read (triggering ingest-on-read)
+		// Perform initial read to trigger ingest-on-read.
 		r, err := obj.NewReader(ctx)
 		if err != nil {
 			t.Fatalf("NewReader failed: %v", err)
@@ -10041,7 +10054,7 @@ func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
 			t.Fatalf("read back content mismatch: got %d bytes, want %d bytes", len(readBack), len(content))
 		}
 
-		// 3. Perform MRD Bidi Read on the uptiered object
+		// Perform MultiRangeDownloader read on the uptiered object.
 		mrd, err := obj.NewMultiRangeDownloader(ctx)
 		if err != nil {
 			t.Fatalf("NewMultiRangeDownloader on RCU object failed: %v", err)
@@ -10072,6 +10085,7 @@ func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
 	})
 }
 
+// TestIntegration_RCU_HTTPAndJSONReads tests standard full-object and range reads over HTTP/XML and JSON endpoints against an RCU bucket.
 func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 	ctx := context.Background()
 	if rcuBucketName == "" || rcuBucketCreateFailed {
@@ -10091,7 +10105,7 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 	objName := "rcu-http-json-test-" + uidSpaceObjects.New()
 	content := []byte("Hello, RCU reads via HTTP and JSON endpoints!")
 
-	// 1. Write object via gRPC client with Zonal/RCU APIs
+	// Write an object via the gRPC client with Zonal and RCU APIs enabled.
 	w := grpcClient.Bucket(rcuBucketName).Object(objName).NewWriter(ctx)
 	if _, err := w.Write(content); err != nil {
 		t.Fatalf("grpcClient.Write: %v", err)
@@ -10101,7 +10115,7 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 	}
 	defer h.mustDeleteObject(grpcClient.Bucket(rcuBucketName).Object(objName))
 
-	// 2. Read whole object via HTTP client (XML API reads)
+	// Read whole object via the HTTP client (XML API).
 	t.Run("HTTP_XML_Read", func(t *testing.T) {
 		r, err := httpClient.Bucket(rcuBucketName).Object(objName).NewReader(ctx)
 		if err != nil {
@@ -10118,7 +10132,7 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 		}
 	})
 
-	// 3. Read whole object via JSON reads client
+	// Read whole object via the JSON client.
 	t.Run("JSON_Read", func(t *testing.T) {
 		r, err := jsonClient.Bucket(rcuBucketName).Object(objName).NewReader(ctx)
 		if err != nil {
@@ -10135,7 +10149,7 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 		}
 	})
 
-	// 4. Range read via HTTP client
+	// Perform a range read via the HTTP client.
 	t.Run("HTTP_XML_RangeRead", func(t *testing.T) {
 		r, err := httpClient.Bucket(rcuBucketName).Object(objName).NewRangeReader(ctx, 7, 3)
 		if err != nil {
@@ -10152,7 +10166,7 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 		}
 	})
 
-	// 5. Range read via JSON client
+	// Perform a range read via the JSON client.
 	t.Run("JSON_RangeRead", func(t *testing.T) {
 		r, err := jsonClient.Bucket(rcuBucketName).Object(objName).NewRangeReader(ctx, 7, 3)
 		if err != nil {
