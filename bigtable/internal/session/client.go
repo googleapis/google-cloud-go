@@ -16,6 +16,7 @@ package session
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/url"
 	"sort"
@@ -123,14 +124,69 @@ type Config struct {
 }
 
 // managedSessionPool bundles a pool with its config-listener unregister
-// thunk so the listener can be detached before pool teardown.
+// thunk so the listener can be detached before pool teardown. id and key
+// are carried only for the observational index (sessionz snapshots,
+// stable ordering, config-listener fanout) — the pool's lifetime is
+// owned by the poolCloser handed back to the sessionTable that created
+// it, NOT by its presence in this map.
 type managedSessionPool struct {
+	id         uint64
+	key        poolKey
 	pool       *btransport.SessionPoolImpl
 	unregister func()
 }
 
+// poolCloser owns the teardown of the single pool instance created by
+// one buildLazyOpener invocation. The opener calls set() with an
+// identity-scoped release thunk once the pool is constructed; Close()
+// runs it exactly once. Close() before set() (opener never ran — the
+// resource was never touched) or after a prior Close() is a no-op.
+//
+// This gives each sessionTable single ownership of its pool: a table
+// closes exactly the pool its OWN opener created, by captured identity,
+// never a sibling's pool that happens to share a poolKey. That prevents
+// closing a pool a live sibling sessionTable is still memoizing.
+type poolCloser struct {
+	mu      sync.Mutex
+	release func() error
+	done    bool
+}
+
+// set records the identity-scoped release thunk for the pool the opener
+// just created. If Close() already ran (the sessionTable was torn down
+// while the opener was mid-flight), set tears the just-created pool down
+// immediately so it doesn't leak, and reports that the owner is closed.
+func (c *poolCloser) set(release func() error) (closed bool, err error) {
+	c.mu.Lock()
+	if c.done {
+		c.mu.Unlock()
+		return true, release()
+	}
+	c.release = release
+	c.mu.Unlock()
+	return false, nil
+}
+
+// Close runs the captured release thunk exactly once. No-op when the
+// opener never ran (release nil) or Close already fired.
+func (c *poolCloser) Close() error {
+	c.mu.Lock()
+	if c.done {
+		c.mu.Unlock()
+		return nil
+	}
+	c.done = true
+	release := c.release
+	c.release = nil
+	c.mu.Unlock()
+	if release == nil {
+		return nil
+	}
+	return release()
+}
+
 // permission is the read/write axis of a pool's identity. Kept as a
-// typed enum (not a string suffix on the map key) so getOrCreateSessionPool
+// typed enum (not a string suffix on the map key) so createSessionPool
 // doesn't have to reverse-parse the key to label the pool.
 type permission int
 
@@ -150,11 +206,18 @@ func (p permission) display() string {
 	return ""
 }
 
-// poolKey identifies one pool inside sessionClient.pools. Resource is
-// the caller-supplied short name ("table:foo", "av:t:v", "mv:v");
-// permission separates the read pool from the write pool for the same
-// resource. Struct keys let the map dedup on both axes without string
-// concatenation.
+// poolKey names a pool for display + ordering only. Resource is the
+// caller-supplied short name ("table:foo", "av:t:v", "mv:v"); permission
+// separates the read pool from the write pool for the same resource.
+//
+// poolKey is deliberately NOT the ownership key: pools are owned by the
+// poolCloser handed to the creating sessionTable and indexed in
+// sessionClient.sessionPools by a monotonic uint64 id. Two live
+// sessionTables for the same resource therefore each own a private pool
+// that happens to share a poolKey — which is exactly the property that
+// fixes the shared-pool close-forever bug. The key survives only to label
+// the OTel `session_name` metric (displayName) and to order snapshots
+// (less).
 type poolKey struct {
 	resourceName string
 	perm         permission
@@ -186,11 +249,13 @@ func (k poolKey) less(other poolKey) bool {
 // `session_name` timeseries and distinct sessionz rows — otherwise they
 // would silently aggregate on the label.
 //
-// (Resource, permission) is already unique per pool, so the numeric
-// pool id is intentionally left out of the display name. The pool id
-// remains on SessionPoolImpl (as poolID) and gets baked into per-session
-// log names via createSession — `session_name` label cardinality stays
-// bounded by (resource × permission).
+// The numeric pool id is intentionally left out of the display name so
+// `session_name` label cardinality stays bounded by (resource ×
+// permission) even though several short-lived pools may share a
+// (resource, permission) across successive Open* calls. Those pools
+// aggregate onto one `session_name` timeseries by design; the numeric id
+// still lives on SessionPoolImpl (as poolID) for the sessionz ↔ channelz
+// reverse link and per-session log names.
 func (k poolKey) displayName() string {
 	r := k.resourceName
 	switch {
@@ -246,8 +311,15 @@ type sessionClient struct {
 	// disagree on session-mode flags.
 	featureFlagsProto *btpb.FeatureFlags
 
+	// sessionPools is an observational index of live pools keyed by a
+	// monotonic id (nextPoolID). It backs sessionz/PoolSnapshots, the
+	// config-listener fanout, and Client.Close's close-all — NOT
+	// ownership: each pool's lifetime is owned by the poolCloser handed
+	// to the sessionTable that created it (see poolCloser). Entries are
+	// added by createSessionPool and removed by the id-scoped releaser it
+	// returns.
 	sessionPoolsMu sync.Mutex
-	sessionPools   map[poolKey]*managedSessionPool
+	sessionPools   map[uint64]*managedSessionPool
 	nextPoolID     atomic.Uint64
 }
 
@@ -392,7 +464,7 @@ func newSessionClientFromParts(channelPool ChannelPool, stub btpb.BigtableClient
 		metricsFactory:    metricsFactory,
 		enableDebug:       cfg.EnableDebug,
 		featureFlagsProto: cfg.FeatureFlagsProto,
-		sessionPools:      make(map[poolKey]*managedSessionPool),
+		sessionPools:      make(map[uint64]*managedSessionPool),
 	}
 	// stub == nil only happens on the test-only newSessionClientFromParts
 	// path (unit tests wiring a fake ChannelPool without a real gRPC stub).
@@ -442,17 +514,15 @@ func (sc *sessionClient) OpenTable(tableID string) TableAPI {
 	fullName := sc.fullTableName(tableID)
 	streamFactory := func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenTable(ctx) }
 	resource := "table:" + tableID
-	readKey := poolKey{resource, permissionRead}
-	writeKey := poolKey{resource, permissionWrite}
+	readOwner := &poolCloser{}
+	writeOwner := &poolCloser{}
 	openRead := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_READ},
-		readKey)
+		poolKey{resource, permissionRead}, readOwner)
 	openWrite := sc.buildLazyOpener(fullName, btransport.TABLE_SESSION, streamFactory,
 		&btpb.OpenTableRequest{TableName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenTableRequest_PERMISSION_WRITE},
-		writeKey)
-	closeRead := sc.buildLazyReleaser(readKey)
-	closeWrite := sc.buildLazyReleaser(writeKey)
-	return newSessionTable(tableID, openRead, openWrite, closeRead, closeWrite, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
+		poolKey{resource, permissionWrite}, writeOwner)
+	return newSessionTable(tableID, openRead, openWrite, readOwner.Close, writeOwner.Close, btransport.READ_ROW, btransport.MUTATE_ROW, sc.perResourceMetadata(fullName, "table_name", fullName), sc.metricsFactory)
 }
 
 // OpenAuthorizedView returns a TableAPI for an authorized view.
@@ -460,17 +530,15 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 	fullName := sc.fullAuthorizedViewName(table, view)
 	streamFactory := func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenAuthorizedView(ctx) }
 	resource := fmt.Sprintf("av:%s:%s", table, view)
-	readKey := poolKey{resource, permissionRead}
-	writeKey := poolKey{resource, permissionWrite}
+	readOwner := &poolCloser{}
+	writeOwner := &poolCloser{}
 	openRead := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_READ},
-		readKey)
+		poolKey{resource, permissionRead}, readOwner)
 	openWrite := sc.buildLazyOpener(fullName, btransport.AUTHORIZED_VIEW_SESSION, streamFactory,
 		&btpb.OpenAuthorizedViewRequest{AuthorizedViewName: fullName, AppProfileId: sc.cfg.AppProfile, Permission: btpb.OpenAuthorizedViewRequest_PERMISSION_WRITE},
-		writeKey)
-	closeRead := sc.buildLazyReleaser(readKey)
-	closeWrite := sc.buildLazyReleaser(writeKey)
-	return newSessionTable(table, openRead, openWrite, closeRead, closeWrite, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
+		poolKey{resource, permissionWrite}, writeOwner)
+	return newSessionTable(table, openRead, openWrite, readOwner.Close, writeOwner.Close, btransport.READ_ROW_AUTH_VIEW, btransport.MUTATE_ROW_AUTH_VIEW, sc.perResourceMetadata(fullName, "authorized_view_name", fullName), sc.metricsFactory)
 }
 
 // OpenMaterializedView returns a read-only TableAPI for a
@@ -478,7 +546,7 @@ func (sc *sessionClient) OpenAuthorizedView(table, view string) TableAPI {
 // cleanly via the nil openWrite passed to newSessionTable.
 func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 	fullName := sc.fullMaterializedViewName(view)
-	readKey := poolKey{"mv:" + view, permissionRead}
+	readOwner := &poolCloser{}
 	openRead := sc.buildLazyOpener(fullName, btransport.MATERIALIZED_VIEW_SESSION,
 		func(ctx context.Context) (btransport.Stream, error) { return sc.stub.OpenMaterializedView(ctx) },
 		&btpb.OpenMaterializedViewRequest{
@@ -486,9 +554,8 @@ func (sc *sessionClient) OpenMaterializedView(view string) TableAPI {
 			AppProfileId:         sc.cfg.AppProfile,
 			Permission:           btpb.OpenMaterializedViewRequest_PERMISSION_READ,
 		},
-		readKey)
-	closeRead := sc.buildLazyReleaser(readKey)
-	return newSessionTable("", openRead, nil, closeRead, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
+		poolKey{"mv:" + view, permissionRead}, readOwner)
+	return newSessionTable("", openRead, nil, readOwner.Close, nil, btransport.READ_ROW_MAT_VIEW, nil, sc.perResourceMetadata(fullName, "materialized_view_name", fullName), sc.metricsFactory)
 }
 
 // Close tears down in a phased order that keeps late callbacks from
@@ -512,7 +579,7 @@ func (sc *sessionClient) Close() error {
 	// through the teardown.
 	sc.sessionPoolsMu.Lock()
 	pools := sc.sessionPools
-	sc.sessionPools = nil // refuse subsequent Opens; getOrCreateSessionPool nil-checks
+	sc.sessionPools = nil // refuse subsequent Opens; createSessionPool nil-checks
 	mgr := sc.configManager
 	chp := sc.channelPool
 	managed := sc.managedChannelPool
@@ -547,108 +614,71 @@ func (sc *sessionClient) Close() error {
 	return err
 }
 
-// buildLazyOpener returns a closure that, on first invocation,
-// creates (or reuses via the keyed cache) the pool for the given
-// payload/key. Returns nil when payload is nil (materialized-view
+// buildLazyOpener returns a closure that, on first invocation, creates a
+// fresh pool for the given payload/key and hands its identity-scoped
+// closer to owner. Returns nil when payload is nil (materialized-view
 // write side).
+//
+// Each invocation mints its OWN pool (no keyed dedup) and records the
+// teardown thunk on owner via set(). owner.Close — wired as the
+// sessionTable's closeRead/closeWrite — then closes exactly that pool,
+// by identity. This is the single-ownership contract: a sibling
+// sessionTable sharing the same poolKey holds a different owner and a
+// different pool, so its teardown can never close ours.
 func (sc *sessionClient) buildLazyOpener(
 	resourceName string,
 	sessionDesc *btransport.SessionDescriptor,
 	streamFactory func(ctx context.Context) (btransport.Stream, error),
 	payload proto.Message,
 	key poolKey,
+	owner *poolCloser,
 ) func() (Invoker, error) {
 	if payload == nil {
 		return nil
 	}
 	return func() (Invoker, error) {
-		pool, err := sc.createSessionPoolForPayload(resourceName, sessionDesc, streamFactory, payload, key)
+		pool, release, err := sc.createSessionPoolForPayload(resourceName, sessionDesc, streamFactory, payload, key)
 		if err != nil {
 			return nil, err
 		}
 		if pool == nil {
-			// getOrCreateSessionPool returns nil ONLY when Close() has already
+			// createSessionPool returns nil ONLY when Close() has already
 			// snapshotted the pool set. Surface a distinct sentinel so
 			// callers can tell "client closed" apart from "resource has
 			// no write pool" (ErrWriteNotSupported) or "bookkeeping
 			// drift" (errReadPoolNil).
 			return nil, ErrClientClosed
 		}
+		// Hand the pool's teardown to the owner. If the sessionTable was
+		// closed while we were dialing, set() tears the fresh pool down
+		// immediately (it would otherwise leak, since owner.Close already
+		// fired against an empty owner) and we surface client-closed —
+		// joining any teardown error so a failed drain isn't swallowed.
+		if closed, err := owner.set(release); closed {
+			return nil, errors.Join(ErrClientClosed, err)
+		}
 		return pool, nil
 	}
-}
-
-// buildLazyReleaser returns a closure that releases the pool entry
-// for the given key from sessionPools + closes the underlying pool.
-// Returned closure is idempotent (second call finds entry absent and
-// no-ops) and nil-safe when key is the zero value (the caller can
-// pass nil for resources without a write side — e.g. materialized
-// views — mirroring buildLazyOpener's payload==nil convention).
-//
-// Symmetric with buildLazyOpener so sessionTable can drive real
-// per-resource teardown from its Close() without needing back-refs
-// or knowing about poolKey / sessionPools internals.
-func (sc *sessionClient) buildLazyReleaser(key poolKey) func() error {
-	return func() error {
-		return sc.releaseSessionPool(key)
-	}
-}
-
-// releaseSessionPool removes key from sessionPools and closes the
-// underlying pool. No-op when:
-//   - the client has already Closed (sessionPools == nil), so any late
-//     release from a cache handle draining on the way out doesn't
-//     racily double-close a pool that Client.Close is already
-//     tearing down.
-//   - the entry is absent (already released — makes second calls safe).
-//
-// Assumes the caller (currently bigtable.Client via session.TableCache)
-// guarantees at-most-one sessionTable per resource at any moment. That
-// invariant means no co-owner can be relying on the pool we're closing.
-// If session.Client is ever exposed to callers that bypass that cache,
-// this must gain a refcount.
-//
-// Teardown runs OUTSIDE sessionPoolsMu so a graceful pool drain (which
-// can block on in-flight vRPCs) doesn't deadlock any snapshotter
-// waiting on the lock. Matches the snapshot-under-lock / teardown-
-// outside pattern in Client.Close.
-func (sc *sessionClient) releaseSessionPool(key poolKey) error {
-	sc.sessionPoolsMu.Lock()
-	if sc.sessionPools == nil {
-		sc.sessionPoolsMu.Unlock()
-		return nil
-	}
-	mp, ok := sc.sessionPools[key]
-	if !ok {
-		sc.sessionPoolsMu.Unlock()
-		return nil
-	}
-	delete(sc.sessionPools, key)
-	sc.sessionPoolsMu.Unlock()
-
-	if mp.unregister != nil {
-		mp.unregister()
-	}
-	return mp.pool.Close()
 }
 
 // createSessionPoolForPayload marshals the resource-typed OpenXxxRequest
 // into the transport-level OpenSessionRequest envelope, builds routing
 // metadata via the descriptor's MetadataFn, and delegates to
-// getOrCreateSessionPool for cache-hit-or-construct.
+// createSessionPool. Returns the pool plus its identity-scoped release
+// thunk (nil pool+release when Close already snapshotted the pool set).
 func (sc *sessionClient) createSessionPoolForPayload(
 	resourceName string,
 	sessionDesc *btransport.SessionDescriptor,
 	streamFactory func(ctx context.Context) (btransport.Stream, error),
 	payload proto.Message,
 	key poolKey,
-) (*btransport.SessionPoolImpl, error) {
+) (*btransport.SessionPoolImpl, func() error, error) {
 	if payload == nil {
-		return nil, nil
+		return nil, nil, nil
 	}
 	payloadBytes, err := proto.Marshal(payload)
 	if err != nil {
-		return nil, fmt.Errorf("proto.Marshal session payload: %w", err)
+		return nil, nil, fmt.Errorf("proto.Marshal session payload: %w", err)
 	}
 	handshake := &btpb.OpenSessionRequest{
 		ProtocolVersion: sessionProtocolVersion,
@@ -673,59 +703,61 @@ func (sc *sessionClient) createSessionPoolForPayload(
 		requestParamsHeader, paramsVal,
 	), sc.cfg.FeatureFlagsMD)
 
-	return sc.getOrCreateSessionPool(key, streamFactory, handshake, md, sessionDesc.Type), nil
+	pool, release := sc.createSessionPool(key, streamFactory, handshake, md, sessionDesc.Type)
+	return pool, release, nil
 }
 
-// getOrCreateSessionPool ports SessionManager.GetOrCreateSessionPool:
-// dedups on key, mints a display name, constructs the pool, wires
-// the config listener + background loops.
-func (sc *sessionClient) getOrCreateSessionPool(
+// createSessionPool constructs a fresh pool, registers it in the
+// observational index under a monotonic id, wires the config listener +
+// background loops, and returns the pool along with an id-scoped release
+// thunk that removes it from the index and closes it.
+//
+// Unlike the old getOrCreateSessionPool this NEVER dedups on key: every
+// Open* call that reaches its opener gets its own pool. Ownership is
+// carried by the returned closer (captured on a poolCloser by
+// buildLazyOpener), so a TableCache loser discarding its handle, or an
+// evicted-then-reopened handle, only ever closes the pool IT created —
+// never a live sibling's. Returns (nil, nil) when Close() has already
+// snapshotted+nil'd the pool set.
+func (sc *sessionClient) createSessionPool(
 	key poolKey,
 	streamFactory func(ctx context.Context) (btransport.Stream, error),
 	openSessionRequest *btpb.OpenSessionRequest,
 	md metadata.MD,
 	sessionType btransport.SessionType,
-) *btransport.SessionPoolImpl {
+) (*btransport.SessionPoolImpl, func() error) {
 	sc.sessionPoolsMu.Lock()
 	// Close() sets pools=nil to refuse subsequent Opens; a nil map here
 	// means teardown has already snapshotted the pool set.
 	if sc.sessionPools == nil {
 		sc.sessionPoolsMu.Unlock()
-		return nil
-	}
-	if mp, ok := sc.sessionPools[key]; ok {
-		sc.sessionPoolsMu.Unlock()
-		return mp.pool
+		return nil, nil
 	}
 	id := sc.nextPoolID.Add(1)
 	// poolName is stamped as the `session_name` OTel metric label and
 	// surfaces in sessionz — "<resource-id>-<PERM>" (see poolKey.displayName).
-	// Numeric pool id lives on SessionPoolImpl.poolID for the sessionz
-	// ↔ channelz reverse link and per-session log names; we don't need
-	// it in the human-readable label because (resource, permission)
-	// already uniquely identifies the pool.
+	// Several pools may share a name across successive Open* calls; the
+	// numeric id (on SessionPoolImpl.poolID and this index) disambiguates
+	// them for the sessionz ↔ channelz reverse link and per-session log
+	// names while `session_name` cardinality stays bounded.
 	poolName := key.displayName()
 	pool := btransport.NewSessionPoolImpl(
 		id,
 		poolName, streamFactory, openSessionRequest, md, sessionType,
 		sc.enableDebug,
 	)
-	mp := &managedSessionPool{pool: pool}
-	sc.sessionPools[key] = mp
+	mp := &managedSessionPool{id: id, key: key, pool: pool}
+	sc.sessionPools[id] = mp
 	configManager := sc.configManager
 	backgroundCtx := sc.cfg.BackgroundCtx
 	sc.sessionPoolsMu.Unlock()
-	// TODO(sushanb): publish-before-Start race — a concurrent second Open
-	// on the same key sees mp in the map before pool.Start(backgroundCtx)
-	// runs below and can Invoke on an unstarted pool. Fix in follow-up by
-	// gating each managedSessionPool with a sync.Once + <-ready channel.
 
 	if configManager != nil {
 		unregister := configManager.AddSessionPoolListener(func(config *btpb.SessionClientConfiguration_SessionPoolConfiguration) {
 			pool.UpdateConfig(config)
 		})
 		sc.sessionPoolsMu.Lock()
-		if cur, stillThere := sc.sessionPools[key]; stillThere && cur == mp {
+		if cur, stillThere := sc.sessionPools[id]; stillThere && cur == mp {
 			mp.unregister = unregister
 			sc.sessionPoolsMu.Unlock()
 		} else {
@@ -735,7 +767,42 @@ func (sc *sessionClient) getOrCreateSessionPool(
 	}
 
 	pool.Start(backgroundCtx)
-	return pool
+	return pool, sc.releasePoolByID(id)
+}
+
+// releasePoolByID returns the identity-scoped teardown thunk for the
+// pool registered under id. The thunk removes the pool from the
+// observational index and closes it, and is a no-op when:
+//   - the client has already Closed (sessionPools == nil), so a late
+//     release draining out of a TableCache handle doesn't double-close a
+//     pool Client.Close is already tearing down; or
+//   - the id is absent (already released — makes the poolCloser's
+//     single-shot Close doubly safe).
+//
+// Teardown runs OUTSIDE sessionPoolsMu so a graceful pool drain (which
+// can block on in-flight vRPCs) doesn't deadlock a snapshotter waiting
+// on the lock — the snapshot-under-lock / teardown-outside pattern also
+// used by Client.Close.
+func (sc *sessionClient) releasePoolByID(id uint64) func() error {
+	return func() error {
+		sc.sessionPoolsMu.Lock()
+		if sc.sessionPools == nil {
+			sc.sessionPoolsMu.Unlock()
+			return nil
+		}
+		mp, ok := sc.sessionPools[id]
+		if !ok {
+			sc.sessionPoolsMu.Unlock()
+			return nil
+		}
+		delete(sc.sessionPools, id)
+		sc.sessionPoolsMu.Unlock()
+
+		if mp.unregister != nil {
+			mp.unregister()
+		}
+		return mp.pool.Close()
+	}
 }
 
 // featureFlags returns the FeatureFlags proto stamped onto every
@@ -811,26 +878,34 @@ func (sc *sessionClient) LoadBalancingSnapshots() []btransport.LoadBalancingSnap
 	return out
 }
 
-// poolEntry is the internal (key, pool) tuple used by snapshot methods
-// so they can sort by poolKey without duplicating the collection loop.
+// poolEntry is the internal (id, key, pool) tuple used by snapshot
+// methods so they can sort by poolKey without duplicating the collection
+// loop. id breaks ties when two live pools share a poolKey (successive
+// Open* calls for the same resource) so ordering stays stable.
 type poolEntry struct {
+	id   uint64
 	key  poolKey
 	pool *btransport.SessionPoolImpl
 }
 
 // orderedPoolEntries snapshots the pools map under lock and returns
-// its non-nil entries sorted by poolKey.
+// its non-nil entries sorted by poolKey, then id.
 func (sc *sessionClient) orderedPoolEntries() []poolEntry {
 	sc.sessionPoolsMu.Lock()
 	entries := make([]poolEntry, 0, len(sc.sessionPools))
-	for k, mp := range sc.sessionPools {
+	for _, mp := range sc.sessionPools {
 		if mp == nil || mp.pool == nil {
 			continue
 		}
-		entries = append(entries, poolEntry{key: k, pool: mp.pool})
+		entries = append(entries, poolEntry{id: mp.id, key: mp.key, pool: mp.pool})
 	}
 	sc.sessionPoolsMu.Unlock()
-	sort.Slice(entries, func(i, j int) bool { return entries[i].key.less(entries[j].key) })
+	sort.Slice(entries, func(i, j int) bool {
+		if entries[i].key != entries[j].key {
+			return entries[i].key.less(entries[j].key)
+		}
+		return entries[i].id < entries[j].id
+	})
 	return entries
 }
 
