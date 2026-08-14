@@ -10015,10 +10015,10 @@ func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 	})
 }
 
-// TestIntegration_RCU_SingleShotWriteAndIngestOnRead tests writing an object using Single-Shot Regional Write
-// and reading it back to validate ingest-on-read uptiering and ranged reads on RCU (Regional Rapid) buckets.
-func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
-	ctx := skipAllButRapid(context.Background(), "RCU Single-Shot Write & Ingest on Read")
+// TestIntegration_Rapid_SingleShotWriteAndIngestOnRead tests writing an object using Single-Shot Regional Write
+// and reading it back to validate ingest-on-read uptiering and ranged reads on Rapid (Zonal and RCU) buckets.
+func TestIntegration_Rapid_SingleShotWriteAndIngestOnRead(t *testing.T) {
+	ctx := skipAllButRapid(context.Background(), "Rapid Single-Shot Write & Ingest on Read")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		content := make([]byte, 2<<20) // 2MB
