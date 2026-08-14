@@ -155,7 +155,7 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 	// request; the daemon itself is scoped to (project, instance, appProfile).
 	fullTableName := fmt.Sprintf("projects/%s/instances/%s/tables/%s", project, instance, tableName)
 
-	channel, err := NewChannel(ctx, project, instance, appProfile, channelOpts...)
+	channel, err := NewChannel(ctx, project, instance, appProfile, "", channelOpts...)
 	if err != nil {
 		t.Fatalf("NewChannel: %v", err)
 	}
