@@ -1354,7 +1354,7 @@ libraries:
       - path: google/cloud/sql/v1beta4
     copyright_year: "2026"
   - name: storage
-    version: 1.64.0
+    version: 1.65.0
     apis:
       - path: google/storage/v2
         go:
