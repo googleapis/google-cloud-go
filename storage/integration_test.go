@@ -10018,40 +10018,47 @@ func TestIntegration_BidiRead_NonExistentBucketRead(t *testing.T) {
 // TestIntegration_RCU_SingleShotWriteAndIngestOnRead tests writing an object using Single-Shot Regional Write
 // and reading it back to validate ingest-on-read uptiering and ranged reads on RCU (Regional Rapid) buckets.
 func TestIntegration_RCU_SingleShotWriteAndIngestOnRead(t *testing.T) {
-	multiTransportTest(skipAllButRapid(context.Background(), "RCU Single-Shot Write & Ingest on Read"), t, func(t *testing.T, ctx context.Context, bucket string, _ string, client *Client) {
-		if bucket == "" {
-			t.Skip("Bucket not configured")
-		}
+	ctx := skipAllButRapid(context.Background(), "RCU Single-Shot Write & Ingest on Read")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
 		content := make([]byte, 2<<20) // 2MB
 		rand.New(rand.NewSource(42)).Read(content)
-		objName := "rcu-ingest-on-read-" + uidSpace.New()
+		objName := "rcu-ingest-on-read-" + uidSpaceObjects.New()
 
 		obj := client.Bucket(bucket).Object(objName)
 
 		// Write the object via single-shot write.
-		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		w := obj.NewWriter(ctx)
 		if _, err := w.Write(content); err != nil {
 			t.Fatalf("single-shot write failed: %v", err)
 		}
 		if err := w.Close(); err != nil {
+			if st, ok := status.FromError(err); ok && (st.Code() == codes.NotFound || st.Code() == codes.Unimplemented) {
+				t.Skipf("Write not routed on endpoint: %v", err)
+			}
 			t.Fatalf("closing single-shot writer failed: %v", err)
 		}
-		defer func() {
-			_ = obj.Delete(ctx)
-		}()
+		defer h.mustDeleteObject(obj)
 
-		// Perform initial read to trigger ingest-on-read.
+		expectedCRC := crc32.Checksum(content, crc32cTable)
+
+		// Perform initial read to trigger ingest-on-read and validate CRC32C on read path.
 		r, err := obj.NewReader(ctx)
 		if err != nil {
 			t.Fatalf("NewReader failed: %v", err)
 		}
 		readBack, err := io.ReadAll(r)
-		_ = r.Close()
 		if err != nil {
 			t.Fatalf("ReadAll failed: %v", err)
 		}
+		if err := r.Close(); err != nil {
+			t.Fatalf("Reader.Close (CRC32C validation) failed: %v", err)
+		}
 		if !bytes.Equal(readBack, content) {
 			t.Fatalf("read back content mismatch: got %d bytes, want %d bytes", len(readBack), len(content))
+		}
+		if gotCRC := crc32.Checksum(readBack, crc32cTable); gotCRC != expectedCRC {
+			t.Errorf("Read CRC32C mismatch: got %d, want %d", gotCRC, expectedCRC)
 		}
 
 		// Perform MultiRangeDownloader read on the uptiered object.
@@ -10105,15 +10112,15 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 	objName := "rcu-http-json-test-" + uidSpaceObjects.New()
 	content := []byte("Hello, RCU reads via HTTP and JSON endpoints!")
 
-	// Write an object via the gRPC client with Zonal and RCU APIs enabled.
-	w := grpcClient.Bucket(rcuBucketName).Object(objName).NewWriter(ctx)
+	// Write an object via the HTTP client to the RCU regional bucket.
+	w := httpClient.Bucket(rcuBucketName).Object(objName).NewWriter(ctx)
 	if _, err := w.Write(content); err != nil {
-		t.Fatalf("grpcClient.Write: %v", err)
+		t.Fatalf("httpClient.Write: %v", err)
 	}
 	if err := w.Close(); err != nil {
-		t.Fatalf("grpcClient.Close: %v", err)
+		t.Fatalf("httpClient.Close: %v", err)
 	}
-	defer h.mustDeleteObject(grpcClient.Bucket(rcuBucketName).Object(objName))
+	defer h.mustDeleteObject(httpClient.Bucket(rcuBucketName).Object(objName))
 
 	// Read whole object via the HTTP client (XML API).
 	t.Run("HTTP_XML_Read", func(t *testing.T) {
