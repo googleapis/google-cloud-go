@@ -516,8 +516,15 @@ func TestIntegration_RapidCache_GetStorageLayout(t *testing.T) {
 		t.Fatalf("GetStorageLayout returned nil layout")
 	}
 
+	t.Logf("StorageLayout retrieved: Location=%s, LocationType=%s, HNS=%+v, RapidCacheInfo=%+v",
+		layout.GetLocation(), layout.GetLocationType(), layout.GetHierarchicalNamespace(), layout.GetRapidCacheInfo())
+
 	if hns := layout.GetHierarchicalNamespace(); hns == nil || !hns.GetEnabled() {
 		t.Errorf("Expected HNS to be enabled for created bucket, got %+v", hns)
+	}
+
+	if rcInfo := layout.GetRapidCacheInfo(); rcInfo == nil || rcInfo.GetCacheType() != "rapid-cache-ultra" {
+		t.Errorf("Expected RapidCacheInfo with CacheType %q, got %+v", "rapid-cache-ultra", rcInfo)
 	}
 }
 
