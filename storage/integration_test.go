@@ -10191,19 +10191,19 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 	})
 }
 
-// TestIntegration_RCU_AppendableWrite_ReadUnfinalized_AppendMoreAndRead tests writing an appendable object,
-// reading the unfinalized data and validating its CRC32C checksum, appending additional data, and verifying the cumulative read and checksum.
-func TestIntegration_RCU_AppendableWrite_ReadUnfinalized_AppendMoreAndRead(t *testing.T) {
-	ctx := skipAllButRapid(context.Background(), "RCU appendable unfinalized read test")
+// TestIntegration_Rapid_AppendableWrite_ReadUnfinalized_AppendMoreAndRead tests writing an appendable object,
+// reading the unfinalized data and validating its CRC32C checksum, appending additional data, and verifying the cumulative read and checksum across Rapid (Zonal and RCU) buckets.
+func TestIntegration_Rapid_AppendableWrite_ReadUnfinalized_AppendMoreAndRead(t *testing.T) {
+	ctx := skipAllButRapid(context.Background(), "Rapid appendable unfinalized read test")
 	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		bkt := client.Bucket(bucket)
 
-		objName := "rcu-append-unfinalized-" + uidSpaceObjects.New()
+		objName := "rapid-append-unfinalized-" + uidSpaceObjects.New()
 		obj := bkt.Object(objName)
 		defer h.mustDeleteObject(obj)
 
-		chunk1 := []byte("Initial unfinalized chunk payload for RCU appendable testing.")
+		chunk1 := []byte("Initial unfinalized chunk payload for Rapid appendable testing.")
 		chunk2 := []byte(" Second appended chunk extending the object payload.")
 		combined := append(chunk1, chunk2...)
 
@@ -10281,6 +10281,7 @@ func TestIntegration_RCU_AppendableWrite_ReadUnfinalized_AppendMoreAndRead(t *te
 		})
 	})
 }
+
 
 
 
