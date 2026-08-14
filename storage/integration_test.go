@@ -10184,3 +10184,96 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 	})
 }
 
+// TestIntegration_RCU_AppendableWrite_ReadUnfinalized_AppendMoreAndRead tests writing an appendable object,
+// reading the unfinalized data and validating its CRC32C checksum, appending additional data, and verifying the cumulative read and checksum.
+func TestIntegration_RCU_AppendableWrite_ReadUnfinalized_AppendMoreAndRead(t *testing.T) {
+	ctx := skipAllButRapid(context.Background(), "RCU appendable unfinalized read test")
+	multiTransportTest(ctx, t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
+		h := testHelper{t}
+		bkt := client.Bucket(bucket)
+
+		objName := "rcu-append-unfinalized-" + uidSpaceObjects.New()
+		obj := bkt.Object(objName)
+		defer h.mustDeleteObject(obj)
+
+		chunk1 := []byte("Initial unfinalized chunk payload for RCU appendable testing.")
+		chunk2 := []byte(" Second appended chunk extending the object payload.")
+		combined := append(chunk1, chunk2...)
+
+		expectedCRC1 := crc32.Checksum(chunk1, crc32cTable)
+		expectedCRC2 := crc32.Checksum(combined, crc32cTable)
+
+		// Step 1: Write first chunk without finalizing the object.
+		w1 := obj.NewWriter(ctx)
+		w1.Append = true
+		w1.FinalizeOnClose = false
+		if _, err := w1.Write(chunk1); err != nil {
+			t.Fatalf("w1.Write chunk1 failed: %v", err)
+		}
+		if err := w1.Close(); err != nil {
+			if st, ok := status.FromError(err); ok && (st.Code() == codes.NotFound || st.Code() == codes.Unimplemented) {
+				t.Skipf("Appendable writes (BidiWriteObject) require colocation or are not routed on this endpoint: %v", err)
+			}
+			t.Fatalf("w1.Close failed: %v", err)
+		}
+
+		gen := w1.Attrs().Generation
+
+		// Step 2: Read the unfinalized object and validate CRC32C.
+		t.Run("Read_Unfinalized_Chunk1", func(t *testing.T) {
+			r1, err := obj.Generation(gen).NewReader(ctx)
+			if err != nil {
+				t.Fatalf("obj.NewReader on unfinalized chunk1 failed: %v", err)
+			}
+			defer r1.Close()
+
+			got1, err := io.ReadAll(r1)
+			if err != nil {
+				t.Fatalf("ReadAll on unfinalized chunk1 failed: %v", err)
+			}
+			if !bytes.Equal(got1, chunk1) {
+				t.Errorf("Unfinalized chunk1 content mismatch: got %q, want %q", string(got1), string(chunk1))
+			}
+			if gotCRC := crc32.Checksum(got1, crc32cTable); gotCRC != expectedCRC1 {
+				t.Errorf("Unfinalized chunk1 CRC32C mismatch: got %d, want %d", gotCRC, expectedCRC1)
+			}
+		})
+
+		// Step 3: Append second chunk and finalize the object.
+		w2 := obj.Generation(gen).NewWriter(ctx)
+		w2.Append = true
+		w2.FinalizeOnClose = true
+		if _, err := w2.Write(chunk2); err != nil {
+			t.Fatalf("w2.Write chunk2 failed: %v", err)
+		}
+		if err := w2.Close(); err != nil {
+			if st, ok := status.FromError(err); ok && (st.Code() == codes.NotFound || st.Code() == codes.Unimplemented) {
+				t.Skipf("Appendable writes (BidiWriteObject) require colocation or are not routed on this endpoint: %v", err)
+			}
+			t.Fatalf("w2.Close failed: %v", err)
+		}
+
+		// Step 4: Read the finalized object and validate cumulative CRC32C.
+		t.Run("Read_Finalized_Combined", func(t *testing.T) {
+			r2, err := obj.NewReader(ctx)
+			if err != nil {
+				t.Fatalf("obj.NewReader on finalized object failed: %v", err)
+			}
+			defer r2.Close()
+
+			got2, err := io.ReadAll(r2)
+			if err != nil {
+				t.Fatalf("ReadAll on finalized object failed: %v", err)
+			}
+			if !bytes.Equal(got2, combined) {
+				t.Errorf("Finalized combined content mismatch: got %q, want %q", string(got2), string(combined))
+			}
+			if gotCRC := crc32.Checksum(got2, crc32cTable); gotCRC != expectedCRC2 {
+				t.Errorf("Finalized combined CRC32C mismatch: got %d, want %d", gotCRC, expectedCRC2)
+			}
+		})
+	})
+}
+
+
+
