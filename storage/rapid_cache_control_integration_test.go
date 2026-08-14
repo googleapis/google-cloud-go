@@ -481,19 +481,27 @@ func TestIntegration_RapidCache_DisableNonExistent(t *testing.T) {
 // It verifies that GetStorageLayout returns the expected hierarchical namespace and Rapid Cache layout configuration.
 func TestIntegration_RapidCache_GetStorageLayout(t *testing.T) {
 	ctx := context.Background()
+	client := getTestStorageClient(ctx, t)
+	defer client.Close()
+
 	cClient := getTestControlClient(ctx, t)
 	defer cClient.Close()
 
-	bucketName := rcuBucketName
-	if bucketName == "" {
-		bucketName = os.Getenv("GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET")
+	bucket := createRegionalHNSBucketForCache(ctx, t, client)
+	parent := fmt.Sprintf("projects/_/buckets/%s", bucket)
+
+	createReq := &controlpb.CreateRapidCacheRequest{
+		Parent: parent,
+		RapidCache: &controlpb.RapidCache{
+			Zone:      testRCUZone,
+			CacheType: "rapid-cache-ultra",
+			Ttl:       durationpb.New(24 * time.Hour),
+		},
 	}
-	if bucketName == "" {
-		t.Skip("RCU test bucket not configured via GCLOUD_TESTS_GOLANG_STORAGE_RCU_BUCKET")
-	}
+	_ = createRapidCacheWithRetry(ctx, t, cClient, createReq)
 
 	req := &controlpb.GetStorageLayoutRequest{
-		Name: fmt.Sprintf("projects/_/buckets/%s/storageLayout", bucketName),
+		Name: fmt.Sprintf("projects/_/buckets/%s/storageLayout", bucket),
 	}
 
 	layout, err := cClient.GetStorageLayout(ctx, req)
@@ -508,8 +516,8 @@ func TestIntegration_RapidCache_GetStorageLayout(t *testing.T) {
 		t.Fatalf("GetStorageLayout returned nil layout")
 	}
 
-	if hns := layout.GetHierarchicalNamespace(); hns != nil && !hns.GetEnabled() {
-		t.Errorf("Expected HNS to be enabled for RCU bucket, got disabled")
+	if hns := layout.GetHierarchicalNamespace(); hns == nil || !hns.GetEnabled() {
+		t.Errorf("Expected HNS to be enabled for created bucket, got %+v", hns)
 	}
 }
 
