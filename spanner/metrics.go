@@ -18,7 +18,6 @@ package spanner
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"hash/fnv"
 	"log"
@@ -52,6 +51,7 @@ const (
 	grpcGcpMetricMeterName  = "grpc-gcp-go"
 
 	nativeMetricsPrefix = "spanner.googleapis.com/internal/client/"
+	clientMetricsPrefix = "spanner/client/"
 
 	// Monitored resource labels
 	monitoredResLabelKeyProject        = "project_id"
@@ -257,6 +257,52 @@ type metricInfo struct {
 	recordedPerAttempt bool
 }
 
+// ClientMetricsMeterProviderOptions returns OpenTelemetry SDK meter-provider
+// options for Spanner client metrics. The views rename gRPC instruments into
+// the spanner/client/ namespace and apply the same attribute filtering and
+// aggregation used by the native Cloud Monitoring export.
+//
+// Pass these options to [go.opentelemetry.io/otel/sdk/metric.NewMeterProvider]
+// before the resulting provider is assigned to
+// [ClientConfig.ClientMetricsProvider]. Use a meter provider dedicated to
+// Spanner client metrics because the views match gRPC instrument names shared
+// by other gRPC clients.
+func ClientMetricsMeterProviderOptions() []sdkmetric.Option {
+	var views []sdkmetric.View
+	for _, name := range grpcMetricsToEnable {
+		views = append(views, sdkmetric.NewView(
+			sdkmetric.Instrument{Name: name},
+			sdkmetric.Stream{
+				Name:        clientMetricsPrefix + strings.ReplaceAll(name, ".", "/"),
+				Aggregation: sdkmetric.AggregationSum{},
+				AttributeFilter: func(kv attribute.KeyValue) bool {
+					if kv.Key == "grpc.method" || kv.Key == "grpc.target" {
+						return true
+					}
+					return allowedMetricLabels[string(kv.Key)]
+				},
+			},
+		))
+	}
+	return []sdkmetric.Option{sdkmetric.WithView(views...)}
+}
+
+type builtinMetricInstruments struct {
+	operationLatencies metric.Float64Histogram
+	attemptLatencies   metric.Float64Histogram
+	gfeLatencies       metric.Float64Histogram
+	afeLatencies       metric.Float64Histogram
+	gfeErrorCount      metric.Int64Counter
+	afeErrorCount      metric.Int64Counter
+	operationCount     metric.Int64Counter
+	attemptCount       metric.Int64Counter
+}
+
+type builtinMetricsSink struct {
+	builtinMetricInstruments
+	includeClientAttributes bool
+}
+
 // builtinMetricsTracerFactory is responsible for creating and managing metrics tracers.
 type builtinMetricsTracerFactory struct {
 	enabled                   bool // Indicates if metrics tracing is enabled.
@@ -271,20 +317,12 @@ type builtinMetricsTracerFactory struct {
 	// clientAttributes are attributes specific to a client instance that do not change across different function calls on the client.
 	clientAttributes []attribute.KeyValue
 
-	// Metrics instruments
-	operationLatencies metric.Float64Histogram // Histogram for operation latencies.
-	attemptLatencies   metric.Float64Histogram // Histogram for attempt latencies.
-	gfeLatencies       metric.Float64Histogram // Latency between Google's network receiving an RPC and reading back the first byte of the response
-	afeLatencies       metric.Float64Histogram // Latency between Spanner API Frontend receiving an RPC and starting to write back the response.
-	gfeErrorCount      metric.Int64Counter     // Counter for the number of requests that failed to reach the Google network.
-	afeErrorCount      metric.Int64Counter     // Counter for the number of requests that failed to reach the Spanner API Frontend.
-	operationCount     metric.Int64Counter     // Counter for the number of operations.
-	attemptCount       metric.Int64Counter     // Counter for the number of attempts.
+	sinks []builtinMetricsSink
 
 	meterProvider metric.MeterProvider
 }
 
-func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider metric.MeterProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider, clientMetricsProvider metric.MeterProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
 		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
@@ -312,35 +350,23 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 	tracerFactory.isAFEBuiltInMetricEnabled = isAFEBuiltInMetricEnabled
 	tracerFactory.isDirectPathEnabled = false
 	tracerFactory.enabled = false
-	var meterProvider *sdkmetric.MeterProvider
+	if isSpannerEmulatorEnabled() {
+		return tracerFactory, nil
+	}
+
+	var grpcMeterProviders []metric.MeterProvider
 	if metricsProvider == nil {
 		// Create default meter provider
 		mpOptions, exporter, err := builtInMeterProviderOptions(project, compression, tracerFactory.clientAttributes, opts...)
 		if err != nil {
 			return tracerFactory, err
 		}
-		meterProvider = sdkmetric.NewMeterProvider(mpOptions...)
+		meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
 		tracerFactory.meterProvider = meterProvider
-
-		if isEnableGRPCBuiltInMetrics {
-			mo := opentelemetry.MetricsOptions{
-				MeterProvider:  meterProvider,
-				Metrics:        stats.NewMetrics(grpcMetricsToEnable...),
-				OptionalLabels: grpcOptionalLabels,
-			}
-
-			// Configure gRPC dial options to enable gRPC metrics collection and static method call option.
-			// The static method call option ensures consistent method names in metrics by preventing gRPC from
-			// automatically adding service prefixes to method names. This helps maintain consistent metric
-			// naming across different gRPC calls.
-			tracerFactory.clientOpts = []option.ClientOption{
-				option.WithGRPCDialOption(
-					opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})),
-				option.WithGRPCDialOption(
-					grpc.WithDefaultCallOptions(grpc.StaticMethodCallOption{})),
-			}
+		if err := tracerFactory.addMetricsSink(meterProvider, nativeMetricsPrefix, false); err != nil {
+			return tracerFactory, err
 		}
-		tracerFactory.enabled = true
+		grpcMeterProviders = append(grpcMeterProviders, meterProvider)
 		tracerFactory.shutdown = func(ctx context.Context) {
 			exporter.stop()
 			meterProvider.Shutdown(ctx)
@@ -348,16 +374,58 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
-			return tracerFactory, nil
+			// Native Cloud Monitoring export is disabled.
 		default:
-			return tracerFactory, errors.New("unknown MetricsProvider type")
+			tracerFactory.meterProvider = metricsProvider
+			if err := tracerFactory.addMetricsSink(metricsProvider, nativeMetricsPrefix, false); err != nil {
+				return tracerFactory, err
+			}
+			grpcMeterProviders = append(grpcMeterProviders, metricsProvider)
 		}
 	}
 
-	// Create meter and instruments
-	meter := meterProvider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
-	err = tracerFactory.createInstruments(meter)
-	return tracerFactory, err
+	if clientMetricsProvider != nil {
+		switch clientMetricsProvider.(type) {
+		case noop.MeterProvider:
+			// A no-op provider is equivalent to leaving ClientMetricsProvider nil.
+		default:
+			if err := tracerFactory.addMetricsSink(clientMetricsProvider, clientMetricsPrefix, true); err != nil {
+				return tracerFactory, err
+			}
+			grpcMeterProviders = append(grpcMeterProviders, clientMetricsProvider)
+		}
+	}
+
+	if isEnableGRPCBuiltInMetrics && len(grpcMeterProviders) > 0 {
+		for _, provider := range grpcMeterProviders {
+			mo := opentelemetry.MetricsOptions{
+				MeterProvider:  provider,
+				Metrics:        stats.NewMetrics(grpcMetricsToEnable...),
+				OptionalLabels: grpcOptionalLabels,
+			}
+			tracerFactory.clientOpts = append(tracerFactory.clientOpts, option.WithGRPCDialOption(
+				opentelemetry.DialOption(opentelemetry.Options{MetricsOptions: mo})))
+		}
+		// Static method names keep gRPC metric attributes consistent across calls.
+		tracerFactory.clientOpts = append(tracerFactory.clientOpts, option.WithGRPCDialOption(
+			grpc.WithDefaultCallOptions(grpc.StaticMethodCallOption{})))
+	}
+
+	tracerFactory.enabled = len(tracerFactory.sinks) > 0
+	return tracerFactory, nil
+}
+
+func (tf *builtinMetricsTracerFactory) addMetricsSink(provider metric.MeterProvider, prefix string, includeClientAttributes bool) error {
+	meter := provider.Meter(builtInMetricsMeterName, metric.WithInstrumentationVersion(internal.Version))
+	instruments, err := createBuiltinMetricInstruments(meter, prefix)
+	if err != nil {
+		return err
+	}
+	tf.sinks = append(tf.sinks, builtinMetricsSink{
+		builtinMetricInstruments: instruments,
+		includeClientAttributes:  includeClientAttributes,
+	})
+	return nil
 }
 
 func builtInMeterProviderOptions(project, compression string, clientAttributes []attribute.KeyValue, opts ...option.ClientOption) ([]sdkmetric.Option, *monitoringExporter, error) {
@@ -421,86 +489,87 @@ func builtInMeterProviderOptions(project, compression string, clientAttributes [
 	), sdkmetric.WithView(views...)}, defaultExporter, nil
 }
 
-func (tf *builtinMetricsTracerFactory) createInstruments(meter metric.Meter) error {
+func createBuiltinMetricInstruments(meter metric.Meter, prefix string) (builtinMetricInstruments, error) {
+	var instruments builtinMetricInstruments
 	var err error
 
 	// Create operation_latencies
-	tf.operationLatencies, err = meter.Float64Histogram(
-		nativeMetricsPrefix+metricNameOperationLatencies,
+	instruments.operationLatencies, err = meter.Float64Histogram(
+		prefix+metricNameOperationLatencies,
 		metric.WithDescription("Total time until final operation success or failure, including retries and backoff."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		return err
+		return instruments, err
 	}
 
 	// Create attempt_latencies
-	tf.attemptLatencies, err = meter.Float64Histogram(
-		nativeMetricsPrefix+metricNameAttemptLatencies,
+	instruments.attemptLatencies, err = meter.Float64Histogram(
+		prefix+metricNameAttemptLatencies,
 		metric.WithDescription("Client observed latency per RPC attempt."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		return err
+		return instruments, err
 	}
 
-	tf.gfeLatencies, err = meter.Float64Histogram(
-		nativeMetricsPrefix+metricNameGFELatencies,
+	instruments.gfeLatencies, err = meter.Float64Histogram(
+		prefix+metricNameGFELatencies,
 		metric.WithDescription("Latency between Google's network receiving an RPC and reading back the first byte of the response."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		return err
+		return instruments, err
 	}
 
-	tf.afeLatencies, err = meter.Float64Histogram(
-		nativeMetricsPrefix+metricNameAFELatencies,
+	instruments.afeLatencies, err = meter.Float64Histogram(
+		prefix+metricNameAFELatencies,
 		metric.WithDescription("Latency between Spanner API Frontend receiving an RPC and starting to write back the response."),
 		metric.WithUnit(metricUnitMS),
 		metric.WithExplicitBucketBoundaries(bucketBounds...),
 	)
 	if err != nil {
-		return err
+		return instruments, err
 	}
 
 	// Create operation_count
-	tf.operationCount, err = meter.Int64Counter(
-		nativeMetricsPrefix+metricNameOperationCount,
+	instruments.operationCount, err = meter.Int64Counter(
+		prefix+metricNameOperationCount,
 		metric.WithDescription("The count of database operations."),
 		metric.WithUnit(metricUnitCount),
 	)
 	if err != nil {
-		return err
+		return instruments, err
 	}
 
 	// Create attempt_count
-	tf.attemptCount, err = meter.Int64Counter(
-		nativeMetricsPrefix+metricNameAttemptCount,
+	instruments.attemptCount, err = meter.Int64Counter(
+		prefix+metricNameAttemptCount,
 		metric.WithDescription("The number of attempts made for the operation, including the initial attempt."),
 		metric.WithUnit(metricUnitCount),
 	)
 	if err != nil {
-		return err
+		return instruments, err
 	}
 
-	tf.gfeErrorCount, err = meter.Int64Counter(
-		nativeMetricsPrefix+metricNameGFEConnectivityErrorCount,
+	instruments.gfeErrorCount, err = meter.Int64Counter(
+		prefix+metricNameGFEConnectivityErrorCount,
 		metric.WithDescription("Number of requests that failed to reach the Google network."),
 		metric.WithUnit(metricUnitCount),
 	)
 	if err != nil {
-		return err
+		return instruments, err
 	}
 
-	tf.afeErrorCount, err = meter.Int64Counter(
-		nativeMetricsPrefix+metricNameAFEConnectivityErrorCount,
+	instruments.afeErrorCount, err = meter.Int64Counter(
+		prefix+metricNameAFEConnectivityErrorCount,
 		metric.WithDescription("Number of requests that failed to reach the Spanner API Frontend."),
 		metric.WithUnit(metricUnitCount),
 	)
-	return err
+	return instruments, err
 }
 
 // builtinMetricsTracer is created one per operation.
@@ -513,15 +582,7 @@ type builtinMetricsTracer struct {
 	// clientAttributes are attributes specific to a client instance that do not change across different operations on the client.
 	clientAttributes []attribute.KeyValue
 
-	// Metrics instruments
-	instrumentOperationLatencies metric.Float64Histogram // Histogram for operation latencies.
-	instrumentAttemptLatencies   metric.Float64Histogram // Histogram for attempt latencies.
-	instrumentGFELatencies       metric.Float64Histogram // Histogram for GFE latencies.
-	instrumentAFELatencies       metric.Float64Histogram // Histogram for AFE latencies.
-	instrumentGFEErrorCount      metric.Int64Counter     // Counter for GFE connectivity errors.
-	instrumentAFEErrorCount      metric.Int64Counter     // Counter for AFE connectivity errors.
-	instrumentOperationCount     metric.Int64Counter     // Counter for the number of operations.
-	instrumentAttemptCount       metric.Int64Counter     // Counter for the number of attempts.
+	sinks []builtinMetricsSink
 
 	method string // The method being traced.
 
@@ -610,21 +671,12 @@ func (tf *builtinMetricsTracerFactory) createBuiltinMetricsTracer(ctx context.Co
 		clientAttributes:          tf.clientAttributes,
 		isAFEBuiltInMetricEnabled: tf.isAFEBuiltInMetricEnabled,
 
-		instrumentOperationLatencies: tf.operationLatencies,
-		instrumentAttemptLatencies:   tf.attemptLatencies,
-		instrumentOperationCount:     tf.operationCount,
-		instrumentAttemptCount:       tf.attemptCount,
-		instrumentGFELatencies:       tf.gfeLatencies,
-		instrumentAFELatencies:       tf.afeLatencies,
-		instrumentGFEErrorCount:      tf.gfeErrorCount,
-		instrumentAFEErrorCount:      tf.afeErrorCount,
+		sinks: tf.sinks,
 	}
 }
 
-// toOtelMetricAttrs:
-// - converts metric attributes values captured throughout the operation / attempt
-// to OpenTelemetry attributes format,
-// - combines these with common client attributes and returns
+// toOtelMetricAttrs converts per-operation and per-attempt metric attributes
+// to OpenTelemetry attribute values.
 func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribute.KeyValue, error) {
 	if mt.currOp == nil || mt.currOp.currAttempt == nil {
 		return nil, fmt.Errorf("unable to create attributes list for unknown metric: %v", metricName)
@@ -648,13 +700,27 @@ func (mt *builtinMetricsTracer) toOtelMetricAttrs(metricName string) ([]attribut
 	}, nil
 }
 
+func (mt *builtinMetricsTracer) attributesForSink(metricName string, sink builtinMetricsSink) ([]attribute.KeyValue, error) {
+	attrs, err := mt.toOtelMetricAttrs(metricName)
+	if err != nil {
+		return nil, err
+	}
+	if sink.includeClientAttributes {
+		attrs = append(attrs, mt.clientAttributes...)
+	}
+	return attrs, nil
+}
+
 func (t *builtinMetricsTracer) recordGFELatency(latency time.Duration) {
-	if t.builtInEnabled {
-		attrs, err := t.toOtelMetricAttrs(metricNameGFELatencies)
+	if !t.builtInEnabled {
+		return
+	}
+	for _, sink := range t.sinks {
+		attrs, err := t.attributesForSink(metricNameGFELatencies, sink)
 		if err != nil {
-			return
+			continue
 		}
-		t.instrumentGFELatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
+		sink.gfeLatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
 	}
 }
 
@@ -662,30 +728,36 @@ func (t *builtinMetricsTracer) recordAFELatency(latency time.Duration) {
 	if !t.isAFEBuiltInMetricEnabled {
 		return
 	}
-	attrs, err := t.toOtelMetricAttrs(metricNameAFELatencies)
-	if err != nil {
-		return
+	for _, sink := range t.sinks {
+		attrs, err := t.attributesForSink(metricNameAFELatencies, sink)
+		if err != nil {
+			continue
+		}
+		sink.afeLatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
 	}
-	t.instrumentAFELatencies.Record(t.ctx, float64(latency.Milliseconds()), metric.WithAttributes(attrs...))
 }
 
 func (t *builtinMetricsTracer) recordGFEError() {
-	attrs, err := t.toOtelMetricAttrs(metricNameGFEConnectivityErrorCount)
-	if err != nil {
-		return
+	for _, sink := range t.sinks {
+		attrs, err := t.attributesForSink(metricNameGFEConnectivityErrorCount, sink)
+		if err != nil {
+			continue
+		}
+		sink.gfeErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 	}
-	t.instrumentGFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 }
 
 func (t *builtinMetricsTracer) recordAFEError() {
 	if !t.isAFEBuiltInMetricEnabled {
 		return
 	}
-	attrs, err := t.toOtelMetricAttrs(metricNameAFEConnectivityErrorCount)
-	if err != nil {
-		return
+	for _, sink := range t.sinks {
+		attrs, err := t.attributesForSink(metricNameAFEConnectivityErrorCount, sink)
+		if err != nil {
+			continue
+		}
+		sink.afeErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 	}
-	t.instrumentAFEErrorCount.Add(t.ctx, 1, metric.WithAttributes(attrs...))
 }
 
 // Convert error to grpc status error
@@ -732,11 +804,13 @@ func recordAttemptCompletion(mt *builtinMetricsTracer) {
 	elapsedTime := convertToMs(time.Since(mt.currOp.currAttempt.startTime))
 
 	// Record attempt_latencies
-	attemptLatAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptLatencies)
-	if err != nil {
-		return
+	for _, sink := range mt.sinks {
+		attemptLatAttrs, err := mt.attributesForSink(metricNameAttemptLatencies, sink)
+		if err != nil {
+			continue
+		}
+		sink.attemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 	}
-	mt.instrumentAttemptLatencies.Record(mt.ctx, elapsedTime, metric.WithAttributes(attemptLatAttrs...))
 }
 
 // recordOperationCompletion records as many operation specific metrics as it can
@@ -750,26 +824,22 @@ func recordOperationCompletion(mt *builtinMetricsTracer) {
 	// Calculate elapsed time
 	elapsedTimeMs := convertToMs(time.Since(mt.currOp.startTime))
 
-	// Record operation_count
-	opCntAttrs, err := mt.toOtelMetricAttrs(metricNameOperationCount)
-	if err != nil {
-		return
-	}
-	mt.instrumentOperationCount.Add(mt.ctx, 1, metric.WithAttributes(opCntAttrs...))
+	for _, sink := range mt.sinks {
+		opCntAttrs, err := mt.attributesForSink(metricNameOperationCount, sink)
+		if err == nil {
+			sink.operationCount.Add(mt.ctx, 1, metric.WithAttributes(opCntAttrs...))
+		}
 
-	// Record operation_latencies
-	opLatAttrs, err := mt.toOtelMetricAttrs(metricNameOperationLatencies)
-	if err != nil {
-		return
-	}
-	mt.instrumentOperationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
+		opLatAttrs, err := mt.attributesForSink(metricNameOperationLatencies, sink)
+		if err == nil {
+			sink.operationLatencies.Record(mt.ctx, elapsedTimeMs, metric.WithAttributes(opLatAttrs...))
+		}
 
-	// Record attempt_count
-	attemptCntAttrs, err := mt.toOtelMetricAttrs(metricNameAttemptCount)
-	if err != nil {
-		return
+		attemptCntAttrs, err := mt.attributesForSink(metricNameAttemptCount, sink)
+		if err == nil {
+			sink.attemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributes(attemptCntAttrs...))
+		}
 	}
-	mt.instrumentAttemptCount.Add(mt.ctx, mt.currOp.attemptCount, metric.WithAttributes(attemptCntAttrs...))
 }
 
 func convertToMs(d time.Duration) float64 {
