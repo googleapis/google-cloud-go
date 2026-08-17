@@ -1758,7 +1758,7 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 			return clientStream, err
 		})
 
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -1949,7 +1949,7 @@ func TestReadObjectWrongChunkChecksumEmulated(t *testing.T) {
 				var clientOpts []option.ClientOption
 				clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
 				if bidiReads {
-					clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+					clientOpts = append(clientOpts, WithGRPCBidiReads())
 				}
 
 				client, err := NewGRPCClient(ctx, clientOpts...)
@@ -2092,7 +2092,7 @@ func TestReadObjectWrongChecksumWholeObjectSizeEmulated(t *testing.T) {
 					var clientOpts []option.ClientOption
 					clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
 					if bidiReads {
-						clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+						clientOpts = append(clientOpts, WithGRPCBidiReads())
 					}
 
 					client, err := NewGRPCClient(ctx, clientOpts...)
@@ -2176,7 +2176,7 @@ func TestReadObjectWrongChecksumUnfinalizedWholeObjectSizeEmulated(t *testing.T)
 			return clientStream, err
 		})
 
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -2234,7 +2234,7 @@ func TestMRDWrongChunkChecksumEmulated(t *testing.T) {
 					return clientStream, err
 				})
 
-			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 			if err != nil {
 				t.Fatalf("NewGRPCClient: %v", err)
 			}
@@ -3702,7 +3702,7 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 	ctx := context.Background()
 	var bp testBufferPool
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), experimental.WithZonalBucketAPIs())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), WithGRPCBidiReads(), WithAppendableUploads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
