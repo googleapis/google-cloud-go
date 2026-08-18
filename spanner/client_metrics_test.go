@@ -18,10 +18,13 @@ package spanner
 
 import (
 	"context"
+	"errors"
 	"testing"
 	"time"
 
 	"go.opentelemetry.io/otel/attribute"
+	otelmetric "go.opentelemetry.io/otel/metric"
+	"go.opentelemetry.io/otel/metric/noop"
 	"go.opentelemetry.io/otel/sdk/metric"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/api/option"
@@ -429,4 +432,45 @@ func TestClientMetricsOptionsDoNotRenameEEFMetrics(t *testing.T) {
 	if _, ok := findTestMetric(rm, clientMetricsPrefix+"eef/fallback/count"); ok {
 		t.Fatal("EEF metric renamed into caller-owned client namespace")
 	}
+}
+
+type failingInstrumentMeter struct {
+	noop.Meter
+}
+
+func (failingInstrumentMeter) Float64Histogram(string, ...otelmetric.Float64HistogramOption) (otelmetric.Float64Histogram, error) {
+	return nil, errors.New("instrument creation failed")
+}
+
+type failingInstrumentMeterProvider struct {
+	noop.MeterProvider
+}
+
+func (failingInstrumentMeterProvider) Meter(string, ...otelmetric.MeterOption) otelmetric.Meter {
+	return failingInstrumentMeter{}
+}
+
+func TestNewBuiltinMetricsTracerFactoryReleasesNativeProviderOnClientSinkError(t *testing.T) {
+	installTestMonitoringExporter(t)
+	factory, err := newBuiltinMetricsTracerFactory(
+		context.Background(),
+		"projects/p/instances/i/databases/d",
+		"identity",
+		true,
+		false,
+		nil,
+		failingInstrumentMeterProvider{},
+	)
+	if err == nil {
+		t.Fatal("newBuiltinMetricsTracerFactory() succeeded with a failing client metrics provider")
+	}
+	native, ok := factory.meterProvider.(*metric.MeterProvider)
+	if !ok {
+		t.Fatalf("native meter provider type = %T, want *metric.MeterProvider", factory.meterProvider)
+	}
+	if err := native.ForceFlush(context.Background()); !errors.Is(err, metric.ErrReaderShutdown) {
+		t.Fatalf("native meter provider ForceFlush() error = %v, want %v after constructor failure", err, metric.ErrReaderShutdown)
+	}
+	// The failed constructor already released what it owned; a later shutdown must be a no-op.
+	factory.shutdown(context.Background())
 }

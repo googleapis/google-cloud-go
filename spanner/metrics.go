@@ -322,7 +322,7 @@ type builtinMetricsTracerFactory struct {
 	meterProvider metric.MeterProvider
 }
 
-func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider, clientMetricsProvider metric.MeterProvider, opts ...option.ClientOption) (*builtinMetricsTracerFactory, error) {
+func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression string, isAFEBuiltInMetricEnabled, isEnableGRPCBuiltInMetrics bool, metricsProvider, clientMetricsProvider metric.MeterProvider, opts ...option.ClientOption) (tracerFactory *builtinMetricsTracerFactory, err error) {
 	clientUID, err := generateClientUID()
 	if err != nil {
 		log.Printf("built-in metrics: generateClientUID failed: %v. Using empty string in the %v metric atteribute", err, metricLabelKeyClientUID)
@@ -332,7 +332,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 		return nil, err
 	}
 
-	tracerFactory := &builtinMetricsTracerFactory{
+	tracerFactory = &builtinMetricsTracerFactory{
 		enabled: false,
 		clientAttributes: []attribute.KeyValue{
 			attribute.String(monitoredResLabelKeyProject, project),
@@ -347,6 +347,15 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 		},
 		shutdown: func(ctx context.Context) {},
 	}
+	// Release the native meter provider and exporter created below if a later
+	// step fails. Only resources owned by this factory are stopped; a
+	// caller-owned ClientMetricsProvider is never shut down here.
+	defer func() {
+		if err != nil {
+			tracerFactory.shutdown(ctx)
+			tracerFactory.shutdown = func(context.Context) {}
+		}
+	}()
 	tracerFactory.isAFEBuiltInMetricEnabled = isAFEBuiltInMetricEnabled
 	tracerFactory.isDirectPathEnabled = false
 	tracerFactory.enabled = false
@@ -363,21 +372,21 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 		}
 		meterProvider := sdkmetric.NewMeterProvider(mpOptions...)
 		tracerFactory.meterProvider = meterProvider
-		if err := tracerFactory.addMetricsSink(meterProvider, nativeMetricsPrefix, false); err != nil {
-			return tracerFactory, err
-		}
-		grpcMeterProviders = append(grpcMeterProviders, meterProvider)
 		tracerFactory.shutdown = func(ctx context.Context) {
 			exporter.stop()
 			meterProvider.Shutdown(ctx)
 		}
+		if err = tracerFactory.addMetricsSink(meterProvider, nativeMetricsPrefix, false); err != nil {
+			return tracerFactory, err
+		}
+		grpcMeterProviders = append(grpcMeterProviders, meterProvider)
 	} else {
 		switch metricsProvider.(type) {
 		case noop.MeterProvider:
 			// Native Cloud Monitoring export is disabled.
 		default:
 			tracerFactory.meterProvider = metricsProvider
-			if err := tracerFactory.addMetricsSink(metricsProvider, nativeMetricsPrefix, false); err != nil {
+			if err = tracerFactory.addMetricsSink(metricsProvider, nativeMetricsPrefix, false); err != nil {
 				return tracerFactory, err
 			}
 			grpcMeterProviders = append(grpcMeterProviders, metricsProvider)
@@ -389,7 +398,7 @@ func newBuiltinMetricsTracerFactory(ctx context.Context, dbpath, compression str
 		case noop.MeterProvider:
 			// A no-op provider is equivalent to leaving ClientMetricsProvider nil.
 		default:
-			if err := tracerFactory.addMetricsSink(clientMetricsProvider, clientMetricsPrefix, true); err != nil {
+			if err = tracerFactory.addMetricsSink(clientMetricsProvider, clientMetricsPrefix, true); err != nil {
 				return tracerFactory, err
 			}
 			grpcMeterProviders = append(grpcMeterProviders, clientMetricsProvider)
