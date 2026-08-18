@@ -5,7 +5,7 @@ This sample demonstrates how an application developer can use [`vtprotobuf`](htt
 ## Why Use `vtprotobuf`?
 
 By default, the Go Spanner client uses the standard `google.golang.org/protobuf` runtime, which relies on reflection-based deserialization. For high-QPS streaming reads (`ExecuteStreamingSql`) returning large result sets, `vtprotobuf` generates unrolled, reflection-free parsers that provide:
-- **~2.5x faster** protobuf unmarshaling.
+- **~2.6x faster** protobuf unmarshaling (~445 MB/s vs ~164 MB/s).
 - **Lower CPU overhead** and reduced memory pressure.
 
 ## How It Works
@@ -49,7 +49,7 @@ Everything else (queries, mutations, transactions, row decoding) uses the standa
 
 ---
 
-## Build & Test Instructions
+## Build & Benchmark Instructions
 
 ### 1. Generate the `vtproto` bindings
 Run the generator script to vendor dependencies and generate the `vtprotobuf` methods:
@@ -57,9 +57,22 @@ Run the generator script to vendor dependencies and generate the `vtprotobuf` me
 ./generate.sh
 ```
 
-### 2. Run the application or tests
-Because `vendor/` exists, standard Go commands (`go run`, `go test`, `go build`) automatically use the vendored packages:
+### 2. Run the automated tests
 ```bash
-go run main.go
 go test -v ./...
+```
+
+### 3. Run the benchmarks
+Run the built-in benchmarks to compare standard protobuf vs `vtprotobuf`:
+```bash
+go test -bench=. -benchmem
+```
+
+#### Benchmark Results:
+```text
+BenchmarkUnmarshal_PartialResultSet/Standard_proto.Unmarshal-8    2451   469804 ns/op   163.60 MB/s
+BenchmarkUnmarshal_PartialResultSet/VTProtobuf_UnmarshalVT-8     6062   172513 ns/op   445.54 MB/s (2.7x faster)
+
+BenchmarkSpannerClient_EndToEnd/Standard_Protobuf-8               210   5523292 ns/op
+BenchmarkSpannerClient_EndToEnd/VTProtobuf_Codec-8                217   5252172 ns/op
 ```

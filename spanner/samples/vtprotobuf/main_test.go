@@ -16,6 +16,7 @@ package main
 
 import (
 	"context"
+	"fmt"
 	"net"
 	"testing"
 	"time"
@@ -23,10 +24,12 @@ import (
 	"cloud.google.com/go/spanner"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal/testutil"
+	vtgrpc "github.com/planetscale/vtprotobuf/codec/grpc"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/protobuf/proto"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -148,3 +151,250 @@ func TestVTProtobufSpannerClient(t *testing.T) {
 		t.Fatalf("Expected 1 row, got %d", count)
 	}
 }
+
+type spyCodec struct {
+	vtgrpc.Codec
+	unmarshalCalls int
+	marshalCalls   int
+}
+
+func (s *spyCodec) Unmarshal(data []byte, v any) error {
+	s.unmarshalCalls++
+	return s.Codec.Unmarshal(data, v)
+}
+
+func (s *spyCodec) Marshal(v any) ([]byte, error) {
+	s.marshalCalls++
+	return s.Codec.Marshal(v)
+}
+
+func TestVTProtobufCodecIsActuallyCalled(t *testing.T) {
+	ctx := context.Background()
+
+	mockServer := testutil.NewInMemSpannerServer()
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		t.Fatalf("Failed to listen: %v", err)
+	}
+	defer lis.Close()
+
+	grpcServer := grpc.NewServer()
+	sppb.RegisterSpannerServer(grpcServer, mockServer)
+	go grpcServer.Serve(lis)
+	defer grpcServer.Stop()
+
+	sql := "SELECT 1 AS num"
+	mockServer.PutStatementResult(sql, &testutil.StatementResult{
+		Type: testutil.StatementResultResultSet,
+		ResultSet: &sppb.ResultSet{
+			Metadata: &sppb.ResultSetMetadata{
+				RowType: &sppb.StructType{
+					Fields: []*sppb.StructType_Field{
+						{Name: "num", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
+					},
+				},
+			},
+			Rows: []*structpb.ListValue{
+				{Values: []*structpb.Value{structpb.NewStringValue("1")}},
+			},
+		},
+	})
+
+	spy := &spyCodec{}
+	client, err := spanner.NewClient(
+		ctx,
+		"projects/test-project/instances/test-instance/databases/test-db",
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodec(spy))),
+		option.WithoutAuthentication(),
+	)
+	if err != nil {
+		t.Fatalf("Failed to create client: %v", err)
+	}
+	defer client.Close()
+
+	iter := client.Single().Query(ctx, spanner.Statement{SQL: sql})
+	defer iter.Stop()
+
+	for {
+		_, err := iter.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			t.Fatalf("Query failed: %v", err)
+		}
+	}
+
+	t.Logf("Spy Codec Calls: Unmarshal=%d, Marshal=%d", spy.unmarshalCalls, spy.marshalCalls)
+	if spy.unmarshalCalls == 0 {
+		t.Fatalf("Expected vtprotobuf codec Unmarshal to be called at least once, but it was called 0 times!")
+	}
+	if spy.marshalCalls == 0 {
+		t.Fatalf("Expected vtprotobuf codec Marshal to be called at least once, but it was called 0 times!")
+	}
+}
+
+func helperCreateBenchmarkData(numRows int) (*sppb.ResultSetMetadata, []*structpb.ListValue, *sppb.PartialResultSet) {
+	rowType := &sppb.StructType{
+		Fields: []*sppb.StructType_Field{
+			{Name: "id", Type: &sppb.Type{Code: sppb.TypeCode_STRING}},
+			{Name: "amount", Type: &sppb.Type{Code: sppb.TypeCode_FLOAT64}},
+			{Name: "active", Type: &sppb.Type{Code: sppb.TypeCode_BOOL}},
+			{Name: "description", Type: &sppb.Type{Code: sppb.TypeCode_STRING}},
+		},
+	}
+	metadata := &sppb.ResultSetMetadata{RowType: rowType}
+
+	mockRows := make([]*structpb.ListValue, 0, numRows)
+	values := make([]*structpb.Value, 0, numRows*4)
+
+	for r := 0; r < numRows; r++ {
+		v0 := structpb.NewStringValue(fmt.Sprintf("user_id_%d", r))
+		v1 := structpb.NewNumberValue(float64(r * 10))
+		v2 := structpb.NewBoolValue(r%2 == 0)
+		v3 := structpb.NewStringValue(fmt.Sprintf("sample_payload_data_string_for_user_row_%d", r))
+
+		mockRows = append(mockRows, &structpb.ListValue{
+			Values: []*structpb.Value{v0, v1, v2, v3},
+		})
+		values = append(values, v0, v1, v2, v3)
+	}
+
+	pr := &sppb.PartialResultSet{
+		Metadata:    metadata,
+		Values:      values,
+		ResumeToken: []byte("sample_resume_token"),
+	}
+
+	return metadata, mockRows, pr
+}
+
+// BenchmarkSpannerClient_EndToEnd benchmarks full query execution and row decoding
+// comparing standard protobuf vs vtprotobuf.
+func BenchmarkSpannerClient_EndToEnd(b *testing.B) {
+	ctx := context.Background()
+	numRows := 1000
+	metadata, mockRows, _ := helperCreateBenchmarkData(numRows)
+
+	mockServer := testutil.NewInMemSpannerServer()
+	lis, err := net.Listen("tcp", "127.0.0.1:0")
+	if err != nil {
+		b.Fatalf("Failed to listen: %v", err)
+	}
+	defer lis.Close()
+
+	grpcServer := grpc.NewServer()
+	sppb.RegisterSpannerServer(grpcServer, mockServer)
+	go grpcServer.Serve(lis)
+	defer grpcServer.Stop()
+
+	sql := "SELECT * FROM large_table"
+	mockServer.PutStatementResult(sql, &testutil.StatementResult{
+		Type: testutil.StatementResultResultSet,
+		ResultSet: &sppb.ResultSet{
+			Metadata: metadata,
+			Rows:     mockRows,
+		},
+	})
+
+	baseOpts := []option.ClientOption{
+		option.WithEndpoint(lis.Addr().String()),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithoutAuthentication(),
+	}
+
+	// 1. Standard Client
+	clientStd, err := spanner.NewClient(ctx, "projects/p/instances/i/databases/d", baseOpts...)
+	if err != nil {
+		b.Fatalf("Failed to create std client: %v", err)
+	}
+	defer clientStd.Close()
+
+	// 2. VTProtobuf Client
+	clientVT, err := NewHighThroughputSpannerClient(ctx, "projects/p/instances/i/databases/d", baseOpts...)
+	if err != nil {
+		b.Fatalf("Failed to create vt client: %v", err)
+	}
+	defer clientVT.Close()
+
+	b.Run("Standard_Protobuf", func(b *testing.B) {
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			iter := clientStd.Single().Query(ctx, spanner.Statement{SQL: sql})
+			for {
+				row, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					b.Fatal(err)
+				}
+				var id, desc string
+				var amount float64
+				var active bool
+				if err := row.Columns(&id, &amount, &active, &desc); err != nil {
+					b.Fatal(err)
+				}
+			}
+			iter.Stop()
+		}
+	})
+
+	b.Run("VTProtobuf_Codec", func(b *testing.B) {
+		b.ReportAllocs()
+		for i := 0; i < b.N; i++ {
+			iter := clientVT.Single().Query(ctx, spanner.Statement{SQL: sql})
+			for {
+				row, err := iter.Next()
+				if err == iterator.Done {
+					break
+				}
+				if err != nil {
+					b.Fatal(err)
+				}
+				var id, desc string
+				var amount float64
+				var active bool
+				if err := row.Columns(&id, &amount, &active, &desc); err != nil {
+					b.Fatal(err)
+				}
+			}
+			iter.Stop()
+		}
+	})
+}
+
+// BenchmarkUnmarshal_PartialResultSet benchmarks low-level protobuf deserialization
+// comparing standard proto.Unmarshal vs vtprotobuf UnmarshalVT on Spanner result sets.
+func BenchmarkUnmarshal_PartialResultSet(b *testing.B) {
+	_, _, pr := helperCreateBenchmarkData(1000)
+	rawBytes, err := proto.Marshal(pr)
+	if err != nil {
+		b.Fatal(err)
+	}
+
+	b.Run("Standard_proto.Unmarshal", func(b *testing.B) {
+		b.ReportAllocs()
+		b.SetBytes(int64(len(rawBytes)))
+		for i := 0; i < b.N; i++ {
+			var target sppb.PartialResultSet
+			if err := proto.Unmarshal(rawBytes, &target); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
+
+	b.Run("VTProtobuf_UnmarshalVT", func(b *testing.B) {
+		b.ReportAllocs()
+		b.SetBytes(int64(len(rawBytes)))
+		for i := 0; i < b.N; i++ {
+			var target sppb.PartialResultSet
+			if err := target.UnmarshalVT(rawBytes); err != nil {
+				b.Fatal(err)
+			}
+		}
+	})
+}
+
