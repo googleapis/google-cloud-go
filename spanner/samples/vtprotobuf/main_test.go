@@ -35,11 +35,25 @@ import (
 func TestVTProtobufSpannerClient(t *testing.T) {
 	ctx := context.Background()
 
-	// 1. Verify that the generated spannerpb structs implement UnmarshalVT
+	// 1. Verify that the generated spannerpb structs implement UnmarshalVT and memory pooling
 	var pr sppb.PartialResultSet
 	if _, ok := any(&pr).(interface{ UnmarshalVT([]byte) error }); !ok {
 		t.Fatalf("Expected *spannerpb.PartialResultSet to implement UnmarshalVT, but it does not")
 	}
+	if _, ok := any(&pr).(interface{ ResetVT() }); !ok {
+		t.Fatalf("Expected *spannerpb.PartialResultSet to implement ResetVT, but it does not")
+	}
+	if _, ok := any(&pr).(interface{ ReturnToVTPool() }); !ok {
+		t.Fatalf("Expected *spannerpb.PartialResultSet to implement ReturnToVTPool, but it does not")
+	}
+
+	// Test acquiring from pool, resetting, and returning to pool
+	pooledPR := sppb.PartialResultSetFromVTPool()
+	if pooledPR == nil {
+		t.Fatalf("Expected non-nil PartialResultSet from VTPool")
+	}
+	pooledPR.ResumeToken = []byte("test_token")
+	pooledPR.ReturnToVTPool()
 
 	// 2. Set up the in-memory Spanner mock server
 	mockServer := testutil.NewInMemSpannerServer()

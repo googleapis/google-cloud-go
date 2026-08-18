@@ -29,7 +29,7 @@ rm -rf vendor
 go mod tidy
 go mod vendor
 
-echo "==> 3. Generating vtprotobuf methods for Cloud Spanner..."
+echo "==> 3. Generating vtprotobuf methods with memory pooling for Cloud Spanner..."
 TMP_PROTO_DIR="$(mktemp -d)"
 trap 'rm -rf "${TMP_PROTO_DIR}"' EXIT
 
@@ -39,6 +39,7 @@ protoc \
   -I"${TMP_PROTO_DIR}/googleapis" \
   --go-vtproto_out=vendor \
   --go-vtproto_opt=features=marshal+unmarshal+size+pool \
+  --go-vtproto_opt=pool=cloud.google.com/go/spanner/apiv1/spannerpb.* \
   "${TMP_PROTO_DIR}/googleapis/google/spanner/v1/"*.proto
 
 echo "==> Successfully generated vtprotobuf code into vendor/cloud.google.com/go/spanner/apiv1/spannerpb!"
