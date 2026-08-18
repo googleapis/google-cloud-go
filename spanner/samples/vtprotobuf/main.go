@@ -24,20 +24,43 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
-	vtgrpc "github.com/planetscale/vtprotobuf/codec/grpc"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/protobuf/proto"
 )
 
+// VTProtoCodec wraps vtprotobuf with a safe fallback to standard google.golang.org/protobuf.
+type VTProtoCodec struct{}
+
+func (VTProtoCodec) Name() string { return "proto" }
+
+func (VTProtoCodec) Marshal(v any) ([]byte, error) {
+	if vt, ok := v.(interface{ MarshalVT() ([]byte, error) }); ok {
+		return vt.MarshalVT()
+	}
+	if pm, ok := v.(proto.Message); ok {
+		return proto.Marshal(pm)
+	}
+	return nil, fmt.Errorf("%T is not a proto.Message or vtproto", v)
+}
+
+func (VTProtoCodec) Unmarshal(data []byte, v any) error {
+	if vt, ok := v.(interface{ UnmarshalVT([]byte) error }); ok {
+		return vt.UnmarshalVT(data)
+	}
+	if pm, ok := v.(proto.Message); ok {
+		return proto.Unmarshal(data, pm)
+	}
+	return fmt.Errorf("%T is not a proto.Message or vtproto", v)
+}
+
 // NewHighThroughputSpannerClient creates a standard Spanner client configured
-// with the high-performance vtprotobuf gRPC codec.
+// with the high-performance vtprotobuf gRPC codec with safe fallback.
 func NewHighThroughputSpannerClient(ctx context.Context, database string, opts ...option.ClientOption) (*spanner.Client, error) {
-	// The ONLY configuration required to opt into vtprotobuf is passing
-	// grpc.ForceCodec(vtgrpc.Codec{}) as a default gRPC call option:
 	vtprotoOpt := option.WithGRPCDialOption(
 		grpc.WithDefaultCallOptions(
-			grpc.ForceCodec(vtgrpc.Codec{}),
+			grpc.ForceCodec(VTProtoCodec{}),
 		),
 	)
 
