@@ -24,48 +24,43 @@ import (
 	"time"
 
 	"cloud.google.com/go/spanner"
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	vtgrpc "github.com/planetscale/vtprotobuf/codec/grpc"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
-	"google.golang.org/protobuf/proto"
 )
 
-// VTProtoCodec wraps vtprotobuf with a safe fallback to standard google.golang.org/protobuf.
-type VTProtoCodec struct{}
+// VTPartialResultSetPool adapts vtprotobuf's generated pool to spanner.PartialResultSetPool.
+type VTPartialResultSetPool struct{}
 
-func (VTProtoCodec) Name() string { return "proto" }
-
-func (VTProtoCodec) Marshal(v any) ([]byte, error) {
-	if vt, ok := v.(interface{ MarshalVT() ([]byte, error) }); ok {
-		return vt.MarshalVT()
-	}
-	if pm, ok := v.(proto.Message); ok {
-		return proto.Marshal(pm)
-	}
-	return nil, fmt.Errorf("%T is not a proto.Message or vtproto", v)
+func (p VTPartialResultSetPool) Get() *sppb.PartialResultSet {
+	return sppb.PartialResultSetFromVTPool()
 }
 
-func (VTProtoCodec) Unmarshal(data []byte, v any) error {
-	if vt, ok := v.(interface{ UnmarshalVT([]byte) error }); ok {
-		return vt.UnmarshalVT(data)
+func (p VTPartialResultSetPool) Put(m *sppb.PartialResultSet) {
+	if m != nil {
+		m.ReturnToVTPool()
 	}
-	if pm, ok := v.(proto.Message); ok {
-		return proto.Unmarshal(data, pm)
-	}
-	return fmt.Errorf("%T is not a proto.Message or vtproto", v)
 }
 
 // NewHighThroughputSpannerClient creates a standard Spanner client configured
-// with the high-performance vtprotobuf gRPC codec with safe fallback.
+// with the high-performance vtprotobuf gRPC codec and memory pooler.
 func NewHighThroughputSpannerClient(ctx context.Context, database string, opts ...option.ClientOption) (*spanner.Client, error) {
 	vtprotoOpt := option.WithGRPCDialOption(
 		grpc.WithDefaultCallOptions(
-			grpc.ForceCodec(VTProtoCodec{}),
+			grpc.ForceCodec(vtgrpc.Codec{}),
 		),
 	)
 
 	allOpts := append([]option.ClientOption{vtprotoOpt}, opts...)
-	return spanner.NewClient(ctx, database, allOpts...)
+	return spanner.NewClientWithConfig(ctx, database,
+		spanner.ClientConfig{
+			SessionPoolConfig:    spanner.DefaultSessionPoolConfig,
+			PartialResultSetPool: VTPartialResultSetPool{},
+		},
+		allOpts...,
+	)
 }
 
 func main() {

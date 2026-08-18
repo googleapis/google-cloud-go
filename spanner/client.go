@@ -136,6 +136,7 @@ type Client struct {
 	enableAutoTagging      bool
 	autoTaggingPackages    []string
 	autoTaggingTracerLimit int
+	prsPool                PartialResultSetPool
 }
 
 // DatabaseName returns the full name of a database, e.g.,
@@ -284,6 +285,16 @@ const (
 	// OMNI represents a Spanner Omni instance.
 	OMNI InstanceType = "OMNI"
 )
+
+// PartialResultSetPool provides allocation and recycling of PartialResultSet instances
+// during streaming reads and queries.
+type PartialResultSetPool interface {
+	// Get returns a PartialResultSet instance ready for receiving wire data.
+	Get() *sppb.PartialResultSet
+
+	// Put returns a PartialResultSet instance to the pool after it has been fully processed.
+	Put(*sppb.PartialResultSet)
+}
 
 // ClientConfig has configurations for the client.
 type ClientConfig struct {
@@ -440,6 +451,11 @@ type ClientConfig struct {
 
 	// AutoTaggingTracerLimit specifies depth limit for stack-trace walking.
 	AutoTaggingTracerLimit int
+
+	// PartialResultSetPool optionally configures a custom memory pool for allocating
+	// and recycling PartialResultSet instances during streaming reads and queries.
+	// If nil, standard heap allocations are used without recycling.
+	PartialResultSetPool PartialResultSetPool
 }
 
 // GetInstanceType returns the instance type.
@@ -910,6 +926,7 @@ Multiplexed session enabled: true
 		enableAutoTagging:      config.EnableAutoTagging,
 		autoTaggingPackages:    config.AutoTaggingPackages,
 		autoTaggingTracerLimit: config.AutoTaggingTracerLimit,
+		prsPool:                config.PartialResultSetPool,
 	}
 	return c, nil
 }
@@ -1137,6 +1154,7 @@ func (c *Client) Single() *ReadOnlyTransaction {
 		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
 	}
 
+	t.txReadOnly.prsPool = c.prsPool
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -1169,6 +1187,7 @@ func (c *Client) ReadOnlyTransaction() *ReadOnlyTransaction {
 		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
 	}
 
+	t.txReadOnly.prsPool = c.prsPool
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -1245,6 +1264,7 @@ func (c *Client) BatchReadOnlyTransaction(ctx context.Context, tb TimestampBound
 		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
 	}
 
+	t.txReadOnly.prsPool = c.prsPool
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t, nil
@@ -1286,6 +1306,7 @@ func (c *Client) BatchReadOnlyTransactionFromID(tid BatchReadOnlyTransactionID) 
 		t.cachedRequestTag = getCallStackTag(c.autoTaggingPackages, c.autoTaggingTracerLimit)
 	}
 
+	t.txReadOnly.prsPool = c.prsPool
 	t.ct = c.ct
 	t.otConfig = c.otConfig
 	return t
@@ -1384,6 +1405,7 @@ func (c *Client) rwTransaction(ctx context.Context, f func(context.Context, *Rea
 			t.txOpts = c.txo.merge(options)
 			t.txReadOnly.clientContext = mergeClientContext(c.clientContext, t.txOpts.ClientContext)
 
+			t.txReadOnly.prsPool = c.prsPool
 			t.ct = c.ct
 			t.otConfig = c.otConfig
 		}

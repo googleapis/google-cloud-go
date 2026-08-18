@@ -93,6 +93,7 @@ func stream(
 		reqIDProvider,
 		true,
 		false,
+		nil,
 	)
 }
 
@@ -111,12 +112,13 @@ func streamWithTransactionCallbacks(
 	reqIDProvider requestIDHeaderProvider,
 	retryResourceExhausted bool,
 	allowRetryResourceExhaustedWithoutDelay bool,
+	pool PartialResultSetPool,
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
 	return &RowIterator{
 		meterTracerFactory:   meterTracerFactory,
-		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, reqIDProvider, retryResourceExhausted, allowRetryResourceExhaustedWithoutDelay),
+		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, reqIDProvider, retryResourceExhausted, allowRetryResourceExhaustedWithoutDelay, pool),
 		rowd:                 &partialResultSetDecoder{},
 		setTransactionID:     setTransactionID,
 		updatePrecommitToken: updatePrecommitToken,
@@ -124,6 +126,7 @@ func streamWithTransactionCallbacks(
 		setTimestamp:         setTimestamp,
 		release:              release,
 		cancel:               cancel,
+		pool:                 pool,
 	}
 }
 
@@ -167,6 +170,8 @@ type RowIterator struct {
 	err                  error
 	rows                 []*Row
 	sawStats             bool
+	currPRS              *sppb.PartialResultSet
+	pool                 PartialResultSetPool
 }
 
 // this is for safety from future changes to RowIterator making sure that it implements rowIterator interface.
@@ -202,6 +207,10 @@ func (r *RowIterator) Next() (*Row, error) {
 
 	for len(r.rows) == 0 && r.streamd.next(&mt) {
 		prs := r.streamd.get()
+		if r.pool != nil && r.currPRS != nil {
+			r.pool.Put(r.currPRS)
+		}
+		r.currPRS = prs
 		if r.setTransactionID != nil {
 			// this is when Read/Query is executed using ReadWriteTransaction
 			// and server returned the first stream response.
@@ -222,7 +231,9 @@ func (r *RowIterator) Next() (*Row, error) {
 		}
 		if prs.Stats != nil {
 			r.sawStats = true
-			r.QueryPlan = prs.Stats.QueryPlan
+			if prs.Stats.QueryPlan != nil {
+				r.QueryPlan = proto.Clone(prs.Stats.QueryPlan).(*sppb.QueryPlan)
+			}
 			r.QueryStats = protostruct.DecodeToMap(prs.Stats.QueryStats)
 			if prs.Stats.RowCount != nil {
 				rc, err := extractRowCount(prs.Stats)
@@ -303,6 +314,10 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 // Stop terminates the iteration. It should be called after you finish using the
 // iterator.
 func (r *RowIterator) Stop() {
+	if r.pool != nil && r.currPRS != nil {
+		r.pool.Put(r.currPRS)
+		r.currPRS = nil
+	}
 	if r.streamd != nil {
 		if r.err != nil && r.err != iterator.Done {
 			defer trace.EndSpan(r.streamd.ctx, r.err)
@@ -387,7 +402,16 @@ func (q *partialResultQueue) pop() *sppb.PartialResultSet {
 }
 
 // clear empties partialResultQueue.
-func (q *partialResultQueue) clear() {
+func (q *partialResultQueue) clear(pool PartialResultSetPool) {
+	if pool != nil {
+		for i := 0; i < q.n; i++ {
+			idx := (q.first + i) % cap(q.q)
+			if q.q[idx] != nil {
+				pool.Put(q.q[idx])
+				q.q[idx] = nil
+			}
+		}
+	}
 	*q = partialResultQueue{}
 }
 
@@ -482,12 +506,14 @@ type resumableStreamDecoder struct {
 	// retryAttempt is is incremented whenever a retry happens, and it is
 	// reset whenever a new reqIDInjector is created afresh.
 	retryAttempt uint32
+
+	pool PartialResultSetPool
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
 // Parameter rpc should be a function that creates a new stream beginning at the
 // restartToken if non-nil.
-func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), reqIDProvider requestIDHeaderProvider, retryResourceExhausted bool, allowRetryResourceExhaustedWithoutDelay bool) *resumableStreamDecoder {
+func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.Logger, rpc func(ct context.Context, restartToken []byte, opts ...gax.CallOption) (streamingReceiver, error), reqIDProvider requestIDHeaderProvider, retryResourceExhausted bool, allowRetryResourceExhaustedWithoutDelay bool, pool PartialResultSetPool) *resumableStreamDecoder {
 	return &resumableStreamDecoder{
 		ctx:                                     ctx,
 		cancel:                                  cancel,
@@ -498,6 +524,7 @@ func newResumableStreamDecoder(ctx context.Context, cancel func(), logger *log.L
 		reqIDProvider:                           reqIDProvider,
 		retryResourceExhausted:                  retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay: allowRetryResourceExhaustedWithoutDelay,
+		pool:                                    pool,
 	}
 }
 
@@ -691,7 +718,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 		case aborted:
 			// Discard all pending items because none of them should be yield
 			// to caller.
-			d.q.clear()
+			d.q.clear(d.pool)
 			return false
 		case finished:
 			// If query has finished, check if there are still buffered messages.
@@ -715,7 +742,21 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 // tryRecv attempts to receive a PartialResultSet from gRPC stream.
 func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer) {
 	var res *sppb.PartialResultSet
-	res, d.err = d.stream.Recv()
+	if d.pool != nil {
+		if mr, ok := d.stream.(interface{ RecvMsg(any) error }); ok {
+			item := d.pool.Get()
+			d.err = mr.RecvMsg(item)
+			if d.err != nil {
+				d.pool.Put(item)
+			} else {
+				res = item
+			}
+		} else {
+			res, d.err = d.stream.Recv()
+		}
+	} else {
+		res, d.err = d.stream.Recv()
+	}
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
@@ -771,7 +812,7 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 	// Clear error and retry the stream.
 	d.err = nil
 	// Discard all queue items (none have resume tokens).
-	d.q.clear()
+	d.q.clear(d.pool)
 	d.stream = nil
 	d.changeState(unConnected)
 	return
@@ -833,20 +874,24 @@ func errChunkedEmptyRow() error {
 // rows that have been completed as a result.
 func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.ResultSetMetadata, error) {
 	var rows []*Row
+	var metadata *sppb.ResultSetMetadata
 	if r.Metadata != nil {
 		// Metadata should only be returned in the first result.
-		if p.row.fields == nil {
-			p.row.fields = r.Metadata.RowType.Fields
+		// Clone metadata so field type and transaction references remain valid
+		// even if PartialResultSet instances are recycled back into a memory pool.
+		metadata = proto.Clone(r.Metadata).(*sppb.ResultSetMetadata)
+		if p.row.fields == nil && metadata.RowType != nil {
+			p.row.fields = metadata.RowType.Fields
 		}
-		if p.tx == nil && r.Metadata.Transaction != nil {
-			p.tx = r.Metadata.Transaction
+		if p.tx == nil && metadata.Transaction != nil {
+			p.tx = metadata.Transaction
 			if p.tx.ReadTimestamp != nil {
 				p.ts = time.Unix(p.tx.ReadTimestamp.Seconds, int64(p.tx.ReadTimestamp.Nanos))
 			}
 		}
 	}
 	if len(r.Values) == 0 {
-		return nil, r.Metadata, nil
+		return nil, metadata, nil
 	}
 	if p.chunked {
 		p.chunked = false
@@ -859,7 +904,7 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.R
 		// If p is chunked, then we should always try to merge p.last with
 		// r.first.
 		if p.row.vals[last], err = p.merge(p.row.vals[last], r.Values[0]); err != nil {
-			return nil, r.Metadata, err
+			return nil, metadata, err
 		}
 		r.Values = r.Values[1:]
 		// Merge is done, try to yield a complete Row.
@@ -881,7 +926,7 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.R
 		// also chunked.
 		p.chunked = true
 	}
-	return rows, r.Metadata, nil
+	return rows, metadata, nil
 }
 
 // isMergeable returns if a protobuf Value can be potentially merged with other
