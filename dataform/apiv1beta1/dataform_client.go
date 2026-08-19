@@ -82,6 +82,11 @@ type CallOptions struct {
 	DeleteWorkspace                    []gax.CallOption
 	InstallNpmPackages                 []gax.CallOption
 	PullGitCommits                     []gax.CallOption
+	SyncWorkspaceRefs                  []gax.CallOption
+	FetchWorkspaceBranches             []gax.CallOption
+	DeleteBranch                       []gax.CallOption
+	CheckoutWorkspaceBranch            []gax.CallOption
+	FetchCurrentWorkspaceBranch        []gax.CallOption
 	PushGitCommits                     []gax.CallOption
 	FetchFileGitStatuses               []gax.CallOption
 	FetchGitAheadBehind                []gax.CallOption
@@ -181,6 +186,11 @@ func defaultCallOptions() *CallOptions {
 		DeleteWorkspace:                    []gax.CallOption{},
 		InstallNpmPackages:                 []gax.CallOption{},
 		PullGitCommits:                     []gax.CallOption{},
+		SyncWorkspaceRefs:                  []gax.CallOption{},
+		FetchWorkspaceBranches:             []gax.CallOption{},
+		DeleteBranch:                       []gax.CallOption{},
+		CheckoutWorkspaceBranch:            []gax.CallOption{},
+		FetchCurrentWorkspaceBranch:        []gax.CallOption{},
 		PushGitCommits:                     []gax.CallOption{},
 		FetchFileGitStatuses:               []gax.CallOption{},
 		FetchGitAheadBehind:                []gax.CallOption{},
@@ -266,6 +276,11 @@ func defaultRESTCallOptions() *CallOptions {
 		DeleteWorkspace:                    []gax.CallOption{},
 		InstallNpmPackages:                 []gax.CallOption{},
 		PullGitCommits:                     []gax.CallOption{},
+		SyncWorkspaceRefs:                  []gax.CallOption{},
+		FetchWorkspaceBranches:             []gax.CallOption{},
+		DeleteBranch:                       []gax.CallOption{},
+		CheckoutWorkspaceBranch:            []gax.CallOption{},
+		FetchCurrentWorkspaceBranch:        []gax.CallOption{},
 		PushGitCommits:                     []gax.CallOption{},
 		FetchFileGitStatuses:               []gax.CallOption{},
 		FetchGitAheadBehind:                []gax.CallOption{},
@@ -359,6 +374,11 @@ type internalClient interface {
 	DeleteWorkspace(context.Context, *dataformpb.DeleteWorkspaceRequest, ...gax.CallOption) error
 	InstallNpmPackages(context.Context, *dataformpb.InstallNpmPackagesRequest, ...gax.CallOption) (*dataformpb.InstallNpmPackagesResponse, error)
 	PullGitCommits(context.Context, *dataformpb.PullGitCommitsRequest, ...gax.CallOption) (*dataformpb.PullGitCommitsResponse, error)
+	SyncWorkspaceRefs(context.Context, *dataformpb.SyncWorkspaceRefsRequest, ...gax.CallOption) (*dataformpb.SyncWorkspaceRefsResponse, error)
+	FetchWorkspaceBranches(context.Context, *dataformpb.FetchWorkspaceBranchesRequest, ...gax.CallOption) *BranchMetadataIterator
+	DeleteBranch(context.Context, *dataformpb.DeleteBranchRequest, ...gax.CallOption) (*dataformpb.DeleteBranchResponse, error)
+	CheckoutWorkspaceBranch(context.Context, *dataformpb.CheckoutWorkspaceBranchRequest, ...gax.CallOption) error
+	FetchCurrentWorkspaceBranch(context.Context, *dataformpb.FetchCurrentWorkspaceBranchRequest, ...gax.CallOption) (*dataformpb.FetchCurrentWorkspaceBranchResponse, error)
 	PushGitCommits(context.Context, *dataformpb.PushGitCommitsRequest, ...gax.CallOption) (*dataformpb.PushGitCommitsResponse, error)
 	FetchFileGitStatuses(context.Context, *dataformpb.FetchFileGitStatusesRequest, ...gax.CallOption) (*dataformpb.FetchFileGitStatusesResponse, error)
 	FetchGitAheadBehind(context.Context, *dataformpb.FetchGitAheadBehindRequest, ...gax.CallOption) (*dataformpb.FetchGitAheadBehindResponse, error)
@@ -663,6 +683,31 @@ func (c *Client) InstallNpmPackages(ctx context.Context, req *dataformpb.Install
 // PullGitCommits pulls Git commits from the Repository’s remote into a Workspace.
 func (c *Client) PullGitCommits(ctx context.Context, req *dataformpb.PullGitCommitsRequest, opts ...gax.CallOption) (*dataformpb.PullGitCommitsResponse, error) {
 	return c.internalClient.PullGitCommits(ctx, req, opts...)
+}
+
+// SyncWorkspaceRefs syncs the refs of a Workspace.
+func (c *Client) SyncWorkspaceRefs(ctx context.Context, req *dataformpb.SyncWorkspaceRefsRequest, opts ...gax.CallOption) (*dataformpb.SyncWorkspaceRefsResponse, error) {
+	return c.internalClient.SyncWorkspaceRefs(ctx, req, opts...)
+}
+
+// FetchWorkspaceBranches fetches branches in a Workspace.
+func (c *Client) FetchWorkspaceBranches(ctx context.Context, req *dataformpb.FetchWorkspaceBranchesRequest, opts ...gax.CallOption) *BranchMetadataIterator {
+	return c.internalClient.FetchWorkspaceBranches(ctx, req, opts...)
+}
+
+// DeleteBranch deletes a branch in a Workspace.
+func (c *Client) DeleteBranch(ctx context.Context, req *dataformpb.DeleteBranchRequest, opts ...gax.CallOption) (*dataformpb.DeleteBranchResponse, error) {
+	return c.internalClient.DeleteBranch(ctx, req, opts...)
+}
+
+// CheckoutWorkspaceBranch checkout a branch in a Workspace.
+func (c *Client) CheckoutWorkspaceBranch(ctx context.Context, req *dataformpb.CheckoutWorkspaceBranchRequest, opts ...gax.CallOption) error {
+	return c.internalClient.CheckoutWorkspaceBranch(ctx, req, opts...)
+}
+
+// FetchCurrentWorkspaceBranch fetches the current branch of a Workspace.
+func (c *Client) FetchCurrentWorkspaceBranch(ctx context.Context, req *dataformpb.FetchCurrentWorkspaceBranchRequest, opts ...gax.CallOption) (*dataformpb.FetchCurrentWorkspaceBranchResponse, error) {
+	return c.internalClient.FetchCurrentWorkspaceBranch(ctx, req, opts...)
 }
 
 // PushGitCommits pushes Git commits from a Workspace to the Repository’s remote.
@@ -1051,6 +1096,11 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DeleteWorkspace = append(client.CallOptions.DeleteWorkspace, gax.WithClientMetrics(metrics))
 		client.CallOptions.InstallNpmPackages = append(client.CallOptions.InstallNpmPackages, gax.WithClientMetrics(metrics))
 		client.CallOptions.PullGitCommits = append(client.CallOptions.PullGitCommits, gax.WithClientMetrics(metrics))
+		client.CallOptions.SyncWorkspaceRefs = append(client.CallOptions.SyncWorkspaceRefs, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchWorkspaceBranches = append(client.CallOptions.FetchWorkspaceBranches, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteBranch = append(client.CallOptions.DeleteBranch, gax.WithClientMetrics(metrics))
+		client.CallOptions.CheckoutWorkspaceBranch = append(client.CallOptions.CheckoutWorkspaceBranch, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchCurrentWorkspaceBranch = append(client.CallOptions.FetchCurrentWorkspaceBranch, gax.WithClientMetrics(metrics))
 		client.CallOptions.PushGitCommits = append(client.CallOptions.PushGitCommits, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchFileGitStatuses = append(client.CallOptions.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchGitAheadBehind = append(client.CallOptions.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
@@ -1238,6 +1288,11 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.DeleteWorkspace = append(callOpts.DeleteWorkspace, gax.WithClientMetrics(metrics))
 		callOpts.InstallNpmPackages = append(callOpts.InstallNpmPackages, gax.WithClientMetrics(metrics))
 		callOpts.PullGitCommits = append(callOpts.PullGitCommits, gax.WithClientMetrics(metrics))
+		callOpts.SyncWorkspaceRefs = append(callOpts.SyncWorkspaceRefs, gax.WithClientMetrics(metrics))
+		callOpts.FetchWorkspaceBranches = append(callOpts.FetchWorkspaceBranches, gax.WithClientMetrics(metrics))
+		callOpts.DeleteBranch = append(callOpts.DeleteBranch, gax.WithClientMetrics(metrics))
+		callOpts.CheckoutWorkspaceBranch = append(callOpts.CheckoutWorkspaceBranch, gax.WithClientMetrics(metrics))
+		callOpts.FetchCurrentWorkspaceBranch = append(callOpts.FetchCurrentWorkspaceBranch, gax.WithClientMetrics(metrics))
 		callOpts.PushGitCommits = append(callOpts.PushGitCommits, gax.WithClientMetrics(metrics))
 		callOpts.FetchFileGitStatuses = append(callOpts.FetchFileGitStatuses, gax.WithClientMetrics(metrics))
 		callOpts.FetchGitAheadBehind = append(callOpts.FetchGitAheadBehind, gax.WithClientMetrics(metrics))
@@ -2373,6 +2428,150 @@ func (c *gRPCClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.client.PullGitCommits, req, settings.GRPC, c.logger, "PullGitCommits")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) SyncWorkspaceRefs(ctx context.Context, req *dataformpb.SyncWorkspaceRefsRequest, opts ...gax.CallOption) (*dataformpb.SyncWorkspaceRefsResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/SyncWorkspaceRefs")
+	}
+	opts = append((*c.CallOptions).SyncWorkspaceRefs[0:len((*c.CallOptions).SyncWorkspaceRefs):len((*c.CallOptions).SyncWorkspaceRefs)], opts...)
+	var resp *dataformpb.SyncWorkspaceRefsResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.SyncWorkspaceRefs, req, settings.GRPC, c.logger, "SyncWorkspaceRefs")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) FetchWorkspaceBranches(ctx context.Context, req *dataformpb.FetchWorkspaceBranchesRequest, opts ...gax.CallOption) *BranchMetadataIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/FetchWorkspaceBranches")
+	}
+	opts = append((*c.CallOptions).FetchWorkspaceBranches[0:len((*c.CallOptions).FetchWorkspaceBranches):len((*c.CallOptions).FetchWorkspaceBranches)], opts...)
+	it := &BranchMetadataIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.BranchMetadata, string, error) {
+		resp := &dataformpb.FetchWorkspaceBranchesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchWorkspaceBranches, req, settings.GRPC, c.logger, "FetchWorkspaceBranches")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetBranches(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) DeleteBranch(ctx context.Context, req *dataformpb.DeleteBranchRequest, opts ...gax.CallOption) (*dataformpb.DeleteBranchResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteBranch")
+	}
+	opts = append((*c.CallOptions).DeleteBranch[0:len((*c.CallOptions).DeleteBranch):len((*c.CallOptions).DeleteBranch)], opts...)
+	var resp *dataformpb.DeleteBranchResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.DeleteBranch, req, settings.GRPC, c.logger, "DeleteBranch")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) CheckoutWorkspaceBranch(ctx context.Context, req *dataformpb.CheckoutWorkspaceBranchRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/CheckoutWorkspaceBranch")
+	}
+	opts = append((*c.CallOptions).CheckoutWorkspaceBranch[0:len((*c.CallOptions).CheckoutWorkspaceBranch):len((*c.CallOptions).CheckoutWorkspaceBranch)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.CheckoutWorkspaceBranch, req, settings.GRPC, c.logger, "CheckoutWorkspaceBranch")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) FetchCurrentWorkspaceBranch(ctx context.Context, req *dataformpb.FetchCurrentWorkspaceBranchRequest, opts ...gax.CallOption) (*dataformpb.FetchCurrentWorkspaceBranchResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/FetchCurrentWorkspaceBranch")
+	}
+	opts = append((*c.CallOptions).FetchCurrentWorkspaceBranch[0:len((*c.CallOptions).FetchCurrentWorkspaceBranch):len((*c.CallOptions).FetchCurrentWorkspaceBranch)], opts...)
+	var resp *dataformpb.FetchCurrentWorkspaceBranchResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.FetchCurrentWorkspaceBranch, req, settings.GRPC, c.logger, "FetchCurrentWorkspaceBranch")
 		return err
 	}, opts...)
 	if err != nil {
@@ -5966,6 +6165,318 @@ func (c *restClient) PullGitCommits(ctx context.Context, req *dataformpb.PullGit
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "PullGitCommits")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// SyncWorkspaceRefs syncs the refs of a Workspace.
+func (c *restClient) SyncWorkspaceRefs(ctx context.Context, req *dataformpb.SyncWorkspaceRefsRequest, opts ...gax.CallOption) (*dataformpb.SyncWorkspaceRefsResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:syncWorkspaceRefs", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/SyncWorkspaceRefs")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/repositories/*/workspaces/*}:syncWorkspaceRefs")
+	}
+	opts = append((*c.CallOptions).SyncWorkspaceRefs[0:len((*c.CallOptions).SyncWorkspaceRefs):len((*c.CallOptions).SyncWorkspaceRefs)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.SyncWorkspaceRefsResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SyncWorkspaceRefs")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// FetchWorkspaceBranches fetches branches in a Workspace.
+func (c *restClient) FetchWorkspaceBranches(ctx context.Context, req *dataformpb.FetchWorkspaceBranchesRequest, opts ...gax.CallOption) *BranchMetadataIterator {
+	it := &BranchMetadataIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*dataformpb.BranchMetadata, string, error) {
+		resp := &dataformpb.FetchWorkspaceBranchesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1beta1/%v:fetchBranches", req.GetName())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != 0 {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchWorkspaceBranches")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetBranches(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// DeleteBranch deletes a branch in a Workspace.
+func (c *restClient) DeleteBranch(ctx context.Context, req *dataformpb.DeleteBranchRequest, opts ...gax.CallOption) (*dataformpb.DeleteBranchResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:deleteBranch", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/DeleteBranch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/repositories/*/workspaces/*}:deleteBranch")
+	}
+	opts = append((*c.CallOptions).DeleteBranch[0:len((*c.CallOptions).DeleteBranch):len((*c.CallOptions).DeleteBranch)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.DeleteBranchResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "DeleteBranch")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CheckoutWorkspaceBranch checkout a branch in a Workspace.
+func (c *restClient) CheckoutWorkspaceBranch(ctx context.Context, req *dataformpb.CheckoutWorkspaceBranchRequest, opts ...gax.CallOption) error {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:checkout", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/CheckoutWorkspaceBranch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/repositories/*/workspaces/*}:checkout")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CheckoutWorkspaceBranch")
+		return err
+	}, opts...)
+}
+
+// FetchCurrentWorkspaceBranch fetches the current branch of a Workspace.
+func (c *restClient) FetchCurrentWorkspaceBranch(ctx context.Context, req *dataformpb.FetchCurrentWorkspaceBranchRequest, opts ...gax.CallOption) (*dataformpb.FetchCurrentWorkspaceBranchResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta1/%v:fetchCurrentBranch", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataform.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataform.v1beta1.Dataform/FetchCurrentWorkspaceBranch")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{name=projects/*/locations/*/repositories/*/workspaces/*}:fetchCurrentBranch")
+	}
+	opts = append((*c.CallOptions).FetchCurrentWorkspaceBranch[0:len((*c.CallOptions).FetchCurrentWorkspaceBranch):len((*c.CallOptions).FetchCurrentWorkspaceBranch)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &dataformpb.FetchCurrentWorkspaceBranchResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchCurrentWorkspaceBranch")
 		if err != nil {
 			return err
 		}

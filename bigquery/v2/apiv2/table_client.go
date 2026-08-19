@@ -292,11 +292,15 @@ func (c *TableClient) Connection() *grpc.ClientConn {
 // GetTable gets the specified table resource by table ID.
 // This method does not return the data in the table, it only returns the
 // table resource, which describes the structure of this table.
+//
+// IAM PermissionsRequires the bigquery.tables.get permission on the table.
 func (c *TableClient) GetTable(ctx context.Context, req *bigquerypb.GetTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.GetTable(ctx, req, opts...)
 }
 
 // InsertTable creates a new, empty table in the dataset.
+//
+// IAM PermissionsRequires the bigquery.tables.create permission on the dataset.
 func (c *TableClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.InsertTable(ctx, req, opts...)
 }
@@ -305,6 +309,12 @@ func (c *TableClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTab
 // entire table resource, whereas the patch method only replaces fields that
 // are provided in the submitted table resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.tables.update
+//
+//	bigquery.tables.get
 func (c *TableClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.PatchTable(ctx, req, opts...)
 }
@@ -312,18 +322,24 @@ func (c *TableClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPa
 // UpdateTable updates information in an existing table. The update method replaces the
 // entire Table resource, whereas the patch method only replaces fields that
 // are provided in the submitted Table resource.
+//
+// IAM PermissionsRequires the bigquery.tables.update permission on the table.
 func (c *TableClient) UpdateTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	return c.internalClient.UpdateTable(ctx, req, opts...)
 }
 
 // DeleteTable deletes the table specified by tableId from the dataset.
 // If the table contains data, all the data will be deleted.
+//
+// IAM PermissionsRequires the bigquery.tables.delete permission on the table.
 func (c *TableClient) DeleteTable(ctx context.Context, req *bigquerypb.DeleteTableRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteTable(ctx, req, opts...)
 }
 
 // ListTables lists all tables in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.tables.list permission on the dataset.
 func (c *TableClient) ListTables(ctx context.Context, req *bigquerypb.ListTablesRequest, opts ...gax.CallOption) *ListFormatTableIterator {
 	return c.internalClient.ListTables(ctx, req, opts...)
 }
@@ -715,6 +731,8 @@ func (c *tableGRPCClient) ListTables(ctx context.Context, req *bigquerypb.ListTa
 // GetTable gets the specified table resource by table ID.
 // This method does not return the data in the table, it only returns the
 // table resource, which describes the structure of this table.
+//
+// IAM PermissionsRequires the bigquery.tables.get permission on the table.
 func (c *tableRESTClient) GetTable(ctx context.Context, req *bigquerypb.GetTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -777,6 +795,8 @@ func (c *tableRESTClient) GetTable(ctx context.Context, req *bigquerypb.GetTable
 }
 
 // InsertTable creates a new, empty table in the dataset.
+//
+// IAM PermissionsRequires the bigquery.tables.create permission on the dataset.
 func (c *tableRESTClient) InsertTable(ctx context.Context, req *bigquerypb.InsertTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTable()
@@ -839,6 +859,12 @@ func (c *tableRESTClient) InsertTable(ctx context.Context, req *bigquerypb.Inser
 // entire table resource, whereas the patch method only replaces fields that
 // are provided in the submitted table resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.tables.update
+//
+//	bigquery.tables.get
 func (c *tableRESTClient) PatchTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTable()
@@ -907,6 +933,8 @@ func (c *tableRESTClient) PatchTable(ctx context.Context, req *bigquerypb.Update
 // UpdateTable updates information in an existing table. The update method replaces the
 // entire Table resource, whereas the patch method only replaces fields that
 // are provided in the submitted Table resource.
+//
+// IAM PermissionsRequires the bigquery.tables.update permission on the table.
 func (c *tableRESTClient) UpdateTable(ctx context.Context, req *bigquerypb.UpdateOrPatchTableRequest, opts ...gax.CallOption) (*bigquerypb.Table, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetTable()
@@ -974,6 +1002,8 @@ func (c *tableRESTClient) UpdateTable(ctx context.Context, req *bigquerypb.Updat
 
 // DeleteTable deletes the table specified by tableId from the dataset.
 // If the table contains data, all the data will be deleted.
+//
+// IAM PermissionsRequires the bigquery.tables.delete permission on the table.
 func (c *tableRESTClient) DeleteTable(ctx context.Context, req *bigquerypb.DeleteTableRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1012,6 +1042,8 @@ func (c *tableRESTClient) DeleteTable(ctx context.Context, req *bigquerypb.Delet
 
 // ListTables lists all tables in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.tables.list permission on the dataset.
 func (c *tableRESTClient) ListTables(ctx context.Context, req *bigquerypb.ListTablesRequest, opts ...gax.CallOption) *ListFormatTableIterator {
 	it := &ListFormatTableIterator{}
 	req = proto.CloneOf(req)

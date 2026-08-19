@@ -451,20 +451,20 @@ type TableFieldSchema struct {
 	PolicyTags *TableFieldSchema_PolicyTagList `protobuf:"bytes,9,opt,name=policy_tags,json=policyTags,proto3" json:"policy_tags,omitempty"`
 	// Optional. Specifies the data governance tags on this field. This field
 	// works with other column-level security fields as follows:
-	//   - Precedence: If a data governance tag is attached to a column, it takes
-	//     precedence over the policy tag attached to the column.
-	//     However, if a data policy is attached to a column, it takes precedence
-	//     over the data governance tag.
 	//
-	// - Patching behavior (how this field behaves during a `Table.patch` schema
-	// update):
-	//   - Unset: If the `data_governance_tags_info` field is omitted
-	//     from the update request, the existing tags on the column are preserved.
-	//   - Empty Field: To clear data governance tags from a column, send the
-	//     `data_governance_tags_info` field as an empty object. This will remove
-	//     all tags from the column.
-	//   - Updating tags: To replace existing tag, send the field with the
-	//     new tag.
+	//   - **Precedence**: If a data governance tag is attached to a column, it
+	//     takes precedence over the policy tag attached to the column. However,
+	//     if a data policy is attached to a column, it takes precedence over the
+	//     data governance tag.
+	//   - **Patching behavior**: Describes how this field behaves during a
+	//     `Table.patch` schema update:
+	//   - **Unset**: If the `data_governance_tags_info` field is omitted from
+	//     the update request, the existing tags on the column are preserved.
+	//   - **Empty Field**: To clear data governance tags from a column, send
+	//     the `data_governance_tags_info` field as an empty object. This
+	//     removes all tags from the column.
+	//   - **Updating tags**: To replace an existing tag, send the field with
+	//     the new tag.
 	DataGovernanceTagsInfo *TableFieldSchema_DataGovernanceTagsInfo `protobuf:"bytes,30,opt,name=data_governance_tags_info,json=dataGovernanceTagsInfo,proto3" json:"data_governance_tags_info,omitempty"`
 	// Optional. Data policies attached to this field, used for field-level access
 	// control.
@@ -775,14 +775,14 @@ type TableFieldSchema_DataGovernanceTagsInfo struct {
 	// Optional. The data governance tags added to this field are used for
 	// field-level access control. Only one data governance tag is currently
 	// supported on a field. Tag keys are globally unique. Tag key is expected
-	// to be in the namespaced format, for example "123456789012/pii" where
-	// 123456789012 is the ID of the parent organization or project resource for
+	// to be in the namespaced format, for example "parent-id/pii" where
+	// parent-id is the ID of the parent organization or project resource for
 	// this tag key. Tag value is expected to be the short name, for example
 	// "sensitive". See [Tag
 	// definitions](https://cloud.google.com/iam/docs/tags-access-control#definitions)
 	// for more details. For example:
 	//
-	//	"123456789012/pii": "sensitive",
+	//	"parent-id/pii": "sensitive",
 	//	"myProject/cost_center": "sales"
 	DataGovernanceTags map[string]string `protobuf:"bytes,1,rep,name=data_governance_tags,json=dataGovernanceTags,proto3" json:"data_governance_tags,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields      protoimpl.UnknownFields
@@ -876,8 +876,8 @@ func (x *TableFieldSchema_FieldElementType) GetType() string {
 // Definition of the expression used to generate the field.
 type TableFieldSchema_GeneratedExpressionInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. The generation expression (e.g. AI.EMBED(...)) used to
-	// generated the field.
+	// Optional. The generation expression (e.g. AI.EMBED(...)) used to generate
+	// the field.
 	GenerationExpression *string `protobuf:"bytes,1,opt,name=generation_expression,json=generationExpression,proto3,oneof" json:"generation_expression,omitempty"`
 	// Optional. Whether the column generation is done asynchronously.
 	Asynchronous *bool `protobuf:"varint,2,opt,name=asynchronous,proto3,oneof" json:"asynchronous,omitempty"`
@@ -945,8 +945,7 @@ type TableFieldSchema_GeneratedColumn struct {
 	// Optional. Dictates when system generated values are used to populate the
 	// field.
 	GeneratedMode *TableFieldSchema_GeneratedColumn_GeneratedMode `protobuf:"varint,1,opt,name=generated_mode,json=generatedMode,proto3,enum=google.cloud.bigquery.v2.TableFieldSchema_GeneratedColumn_GeneratedMode,oneof" json:"generated_mode,omitempty"`
-	// Captures the metadata for the generated column. Could be either an
-	// identity column or a generated column.
+	// Captures the metadata for the generated column.
 	//
 	// Types that are valid to be assigned to Definition:
 	//

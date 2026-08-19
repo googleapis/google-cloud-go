@@ -348,6 +348,10 @@ const (
 	Routine_Argument_FIXED_TYPE Routine_Argument_ArgumentKind = 1
 	// The argument is any type, including struct or array, but not a table.
 	Routine_Argument_ANY_TYPE Routine_Argument_ArgumentKind = 2
+	// The argument is a table with fully specified column names and types.
+	Routine_Argument_FIXED_TABLE Routine_Argument_ArgumentKind = 3
+	// The argument is any table type.
+	Routine_Argument_ANY_TABLE Routine_Argument_ArgumentKind = 4
 )
 
 // Enum value maps for Routine_Argument_ArgumentKind.
@@ -356,11 +360,15 @@ var (
 		0: "ARGUMENT_KIND_UNSPECIFIED",
 		1: "FIXED_TYPE",
 		2: "ANY_TYPE",
+		3: "FIXED_TABLE",
+		4: "ANY_TABLE",
 	}
 	Routine_Argument_ArgumentKind_value = map[string]int32{
 		"ARGUMENT_KIND_UNSPECIFIED": 0,
 		"FIXED_TYPE":                1,
 		"ANY_TYPE":                  2,
+		"FIXED_TABLE":               3,
+		"ANY_TABLE":                 4,
 	}
 )
 
@@ -891,8 +899,10 @@ type ExternalRuntimeOptions struct {
 	MaxBatchingRows int64 `protobuf:"varint,4,opt,name=max_batching_rows,json=maxBatchingRows,proto3" json:"max_batching_rows,omitempty"`
 	// Optional. Language runtime version. Example: `python-3.11`.
 	RuntimeVersion string `protobuf:"bytes,5,opt,name=runtime_version,json=runtimeVersion,proto3" json:"runtime_version,omitempty"`
-	// Optional. Maximum number of requests that a Cloud Run instance can handle
-	// concurrently. If absent or if `0`, a default concurrency is used.
+	// Optional. Maximum number of requests that a Python UDF instance can handle
+	// concurrently. If absent or if `0`, the default concurrency value is used.
+	// For more information, see [Configure container limits for Python
+	// UDFs](https://cloud.google.com/bigquery/docs/user-defined-functions-python#configure-container-limits).
 	ContainerRequestConcurrency int64 `protobuf:"varint,6,opt,name=container_request_concurrency,json=containerRequestConcurrency,proto3" json:"container_request_concurrency,omitempty"`
 	unknownFields               protoimpl.UnknownFields
 	sizeCache                   protoimpl.SizeCache
@@ -1624,6 +1634,8 @@ type Routine_Argument struct {
 	Mode Routine_Argument_Mode `protobuf:"varint,3,opt,name=mode,proto3,enum=google.cloud.bigquery.v2.Routine_Argument_Mode" json:"mode,omitempty"`
 	// Set if argument_kind == FIXED_TYPE.
 	DataType *StandardSqlDataType `protobuf:"bytes,4,opt,name=data_type,json=dataType,proto3" json:"data_type,omitempty"`
+	// Optional. Set if argument_kind == FIXED_TABLE.
+	TableType *StandardSqlTableType `protobuf:"bytes,7,opt,name=table_type,json=tableType,proto3" json:"table_type,omitempty"`
 	// Optional. Whether the argument is an aggregate function parameter.
 	// Must be Unset for routine types other than AGGREGATE_FUNCTION.
 	// For AGGREGATE_FUNCTION, if set to false, it is equivalent to adding "NOT
@@ -1688,6 +1700,13 @@ func (x *Routine_Argument) GetMode() Routine_Argument_Mode {
 func (x *Routine_Argument) GetDataType() *StandardSqlDataType {
 	if x != nil {
 		return x.DataType
+	}
+	return nil
+}
+
+func (x *Routine_Argument) GetTableType() *StandardSqlTableType {
+	if x != nil {
+		return x.TableType
 	}
 	return nil
 }
@@ -1785,7 +1804,7 @@ var File_google_cloud_bigquery_v2_routine_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	"\n" +
-	"&google/cloud/bigquery/v2/routine.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/bigquery/v2/error.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xdd\x16\n" +
+	"&google/cloud/bigquery/v2/routine.proto\x12\x18google.cloud.bigquery.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a$google/cloud/bigquery/v2/error.proto\x1a0google/cloud/bigquery/v2/routine_reference.proto\x1a+google/cloud/bigquery/v2/standard_sql.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\"\xd1\x17\n" +
 	"\aRoutine\x12\x17\n" +
 	"\x04etag\x18\x01 \x01(\tB\x03\xe0A\x03R\x04etag\x12\\\n" +
 	"\x11routine_reference\x18\x02 \x01(\v2*.google.cloud.bigquery.v2.RoutineReferenceB\x03\xe0A\x02R\x10routineReference\x12U\n" +
@@ -1810,18 +1829,22 @@ const file_google_cloud_bigquery_v2_routine_proto_rawDesc = "" +
 	"\x14data_governance_type\x18\x11 \x01(\x0e24.google.cloud.bigquery.v2.Routine.DataGovernanceTypeB\x03\xe0A\x01R\x12dataGovernanceType\x12S\n" +
 	"\x0epython_options\x18\x14 \x01(\v2'.google.cloud.bigquery.v2.PythonOptionsB\x03\xe0A\x01R\rpythonOptions\x12o\n" +
 	"\x18external_runtime_options\x18\x15 \x01(\v20.google.cloud.bigquery.v2.ExternalRuntimeOptionsB\x03\xe0A\x01R\x16externalRuntimeOptions\x12T\n" +
-	"\fbuild_status\x18\x16 \x01(\v2,.google.cloud.bigquery.v2.RoutineBuildStatusB\x03\xe0A\x03R\vbuildStatus\x1a\xe2\x03\n" +
+	"\fbuild_status\x18\x16 \x01(\v2,.google.cloud.bigquery.v2.RoutineBuildStatusB\x03\xe0A\x03R\vbuildStatus\x1a\xd6\x04\n" +
 	"\bArgument\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x01R\x04name\x12a\n" +
 	"\rargument_kind\x18\x02 \x01(\x0e27.google.cloud.bigquery.v2.Routine.Argument.ArgumentKindB\x03\xe0A\x01R\fargumentKind\x12C\n" +
 	"\x04mode\x18\x03 \x01(\x0e2/.google.cloud.bigquery.v2.Routine.Argument.ModeR\x04mode\x12J\n" +
-	"\tdata_type\x18\x04 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeR\bdataType\x12B\n" +
-	"\fis_aggregate\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\visAggregate\"K\n" +
+	"\tdata_type\x18\x04 \x01(\v2-.google.cloud.bigquery.v2.StandardSqlDataTypeR\bdataType\x12R\n" +
+	"\n" +
+	"table_type\x18\a \x01(\v2..google.cloud.bigquery.v2.StandardSqlTableTypeB\x03\xe0A\x01R\ttableType\x12B\n" +
+	"\fis_aggregate\x18\x06 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\visAggregate\"k\n" +
 	"\fArgumentKind\x12\x1d\n" +
 	"\x19ARGUMENT_KIND_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
 	"FIXED_TYPE\x10\x01\x12\f\n" +
-	"\bANY_TYPE\x10\x02\"8\n" +
+	"\bANY_TYPE\x10\x02\x12\x0f\n" +
+	"\vFIXED_TABLE\x10\x03\x12\r\n" +
+	"\tANY_TABLE\x10\x04\"8\n" +
 	"\x04Mode\x12\x14\n" +
 	"\x10MODE_UNSPECIFIED\x10\x00\x12\x06\n" +
 	"\x02IN\x10\x01\x12\a\n" +
@@ -2035,23 +2058,24 @@ var file_google_cloud_bigquery_v2_routine_proto_depIdxs = []int32{
 	5,  // 24: google.cloud.bigquery.v2.Routine.Argument.argument_kind:type_name -> google.cloud.bigquery.v2.Routine.Argument.ArgumentKind
 	6,  // 25: google.cloud.bigquery.v2.Routine.Argument.mode:type_name -> google.cloud.bigquery.v2.Routine.Argument.Mode
 	24, // 26: google.cloud.bigquery.v2.Routine.Argument.data_type:type_name -> google.cloud.bigquery.v2.StandardSqlDataType
-	26, // 27: google.cloud.bigquery.v2.Routine.Argument.is_aggregate:type_name -> google.protobuf.BoolValue
-	21, // 28: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.user_defined_context:type_name -> google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.UserDefinedContextEntry
-	13, // 29: google.cloud.bigquery.v2.RoutineService.GetRoutine:input_type -> google.cloud.bigquery.v2.GetRoutineRequest
-	14, // 30: google.cloud.bigquery.v2.RoutineService.InsertRoutine:input_type -> google.cloud.bigquery.v2.InsertRoutineRequest
-	15, // 31: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:input_type -> google.cloud.bigquery.v2.UpdateRoutineRequest
-	16, // 32: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:input_type -> google.cloud.bigquery.v2.DeleteRoutineRequest
-	17, // 33: google.cloud.bigquery.v2.RoutineService.ListRoutines:input_type -> google.cloud.bigquery.v2.ListRoutinesRequest
-	8,  // 34: google.cloud.bigquery.v2.RoutineService.GetRoutine:output_type -> google.cloud.bigquery.v2.Routine
-	8,  // 35: google.cloud.bigquery.v2.RoutineService.InsertRoutine:output_type -> google.cloud.bigquery.v2.Routine
-	8,  // 36: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:output_type -> google.cloud.bigquery.v2.Routine
-	31, // 37: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:output_type -> google.protobuf.Empty
-	18, // 38: google.cloud.bigquery.v2.RoutineService.ListRoutines:output_type -> google.cloud.bigquery.v2.ListRoutinesResponse
-	34, // [34:39] is the sub-list for method output_type
-	29, // [29:34] is the sub-list for method input_type
-	29, // [29:29] is the sub-list for extension type_name
-	29, // [29:29] is the sub-list for extension extendee
-	0,  // [0:29] is the sub-list for field type_name
+	25, // 27: google.cloud.bigquery.v2.Routine.Argument.table_type:type_name -> google.cloud.bigquery.v2.StandardSqlTableType
+	26, // 28: google.cloud.bigquery.v2.Routine.Argument.is_aggregate:type_name -> google.protobuf.BoolValue
+	21, // 29: google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.user_defined_context:type_name -> google.cloud.bigquery.v2.Routine.RemoteFunctionOptions.UserDefinedContextEntry
+	13, // 30: google.cloud.bigquery.v2.RoutineService.GetRoutine:input_type -> google.cloud.bigquery.v2.GetRoutineRequest
+	14, // 31: google.cloud.bigquery.v2.RoutineService.InsertRoutine:input_type -> google.cloud.bigquery.v2.InsertRoutineRequest
+	15, // 32: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:input_type -> google.cloud.bigquery.v2.UpdateRoutineRequest
+	16, // 33: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:input_type -> google.cloud.bigquery.v2.DeleteRoutineRequest
+	17, // 34: google.cloud.bigquery.v2.RoutineService.ListRoutines:input_type -> google.cloud.bigquery.v2.ListRoutinesRequest
+	8,  // 35: google.cloud.bigquery.v2.RoutineService.GetRoutine:output_type -> google.cloud.bigquery.v2.Routine
+	8,  // 36: google.cloud.bigquery.v2.RoutineService.InsertRoutine:output_type -> google.cloud.bigquery.v2.Routine
+	8,  // 37: google.cloud.bigquery.v2.RoutineService.UpdateRoutine:output_type -> google.cloud.bigquery.v2.Routine
+	31, // 38: google.cloud.bigquery.v2.RoutineService.DeleteRoutine:output_type -> google.protobuf.Empty
+	18, // 39: google.cloud.bigquery.v2.RoutineService.ListRoutines:output_type -> google.cloud.bigquery.v2.ListRoutinesResponse
+	35, // [35:40] is the sub-list for method output_type
+	30, // [30:35] is the sub-list for method input_type
+	30, // [30:30] is the sub-list for extension type_name
+	30, // [30:30] is the sub-list for extension extendee
+	0,  // [0:30] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_v2_routine_proto_init() }
