@@ -496,7 +496,10 @@ func (p *SessionPoolImpl) Start(ctx context.Context) {
 // startSlowMetricsLoop runs recordTimeSeries + sampleActiveUptimes
 // every slowMetricsInterval until ctx cancels. Decoupled from Tick so
 // Tick's per-second cadence doesn't drag ~60× extra OTel histogram
-// writes onto sessionUptime.
+// writes onto sessionUptime. Each fire is wrapped in the same
+// recover shape as tickOnce — a panic in either recorder (e.g. a
+// nil map deref during teardown races) must not tear the whole
+// process down.
 func (p *SessionPoolImpl) startSlowMetricsLoop(ctx context.Context) {
 	go func() {
 		ticker := time.NewTicker(slowMetricsInterval)
@@ -506,11 +509,25 @@ func (p *SessionPoolImpl) startSlowMetricsLoop(ctx context.Context) {
 			case <-ctx.Done():
 				return
 			case <-ticker.C:
-				p.recordTimeSeries()
-				p.sampleActiveUptimes(ctx)
+				p.recordSlowMetricsOnce(ctx)
 			}
 		}
 	}()
+}
+
+// recordSlowMetricsOnce runs one slow-metrics recorder cycle with
+// panic recovery. Split out from startSlowMetricsLoop so the
+// recover() sits in its own frame — the deferred recover in the
+// enclosing goroutine would only fire once, killing the loop after a
+// single panic; a per-tick frame keeps the loop alive.
+func (p *SessionPoolImpl) recordSlowMetricsOnce(ctx context.Context) {
+	defer func() {
+		if r := recover(); r != nil {
+			btopt.Debugf(nil, "POOL %s slow-metrics panic recovered: %v\n%s", p.poolName, r, debug.Stack())
+		}
+	}()
+	p.recordTimeSeries()
+	p.sampleActiveUptimes(ctx)
 }
 
 // tickOnce runs one Tick with panic recovery + a debounce gate. The
