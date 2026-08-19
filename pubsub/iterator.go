@@ -46,14 +46,8 @@ import (
 const gracePeriod = 5 * time.Second
 
 // ackIDBatchSize is the maximum number of ACK IDs to send in a single Ack/Modack RPC.
-// The backend imposes a maximum request size limit of 524288 bytes (512 KiB) per
-// acknowledge / modifyAckDeadline request. ACK IDs have a maximum size of 164
-// bytes, thus we cannot send more than 524288/176 ~= 2979 ACK IDs in an Ack/ModAc
-
-// Accounting for some overhead, we should thus only send a maximum of 2500 ACK
-// IDs at a time.
-// This is a var such that it can be modified for tests.
-const ackIDBatchSize int = 2500
+// This is aligned with Java's value: https://github.com/googleapis/google-cloud-java/blob/7604971c3ed8a419fd01e4800f4a3199a6fc15f1/java-pubsub/google-cloud-pubsub/src/main/java/com/google/cloud/pubsub/v1/StreamingSubscriberConnection.java#L88
+const ackIDBatchSize int = 1000
 
 // These are vars so tests can change them.
 var (
