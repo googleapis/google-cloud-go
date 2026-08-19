@@ -873,6 +873,16 @@
         }
       ]
     },
+    "developers": {
+      "component": "developers",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/knowledge/apiv1/snippet_metadata.google.developers.knowledge.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "devicestreaming": {
       "component": "devicestreaming",
       "extra-files": [
