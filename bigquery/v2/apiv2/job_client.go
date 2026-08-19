@@ -318,6 +318,10 @@ func (c *JobClient) Connection() *grpc.ClientConn {
 // CancelJob requests that a job be cancelled. This call will return immediately, and
 // the client will need to poll for the job status to see if the cancel
 // completed successfully. Cancelled jobs may still incur costs.
+//
+// IAM PermissionsRequires the bigquery.jobs.update permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *JobClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJobRequest, opts ...gax.CallOption) (*bigquerypb.JobCancelResponse, error) {
 	return c.internalClient.CancelJob(ctx, req, opts...)
 }
@@ -325,6 +329,10 @@ func (c *JobClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJobRequ
 // GetJob returns information about a specific job. Job information is available for
 // a six month period after creation. Requires that you’re the person who ran
 // the job, or have the Is Owner project role.
+//
+// IAM PermissionsRequires the bigquery.jobs.get permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *JobClient) GetJob(ctx context.Context, req *bigquerypb.GetJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	return c.internalClient.GetJob(ctx, req, opts...)
 }
@@ -341,12 +349,26 @@ func (c *JobClient) GetJob(ctx context.Context, req *bigquerypb.GetJobRequest, o
 //	configuration and a data stream together.  In this case, the Upload URI
 //	accepts the job configuration and the data as two distinct multipart MIME
 //	parts.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Additional permissions are required depending on the job type:
+//
+//	Load, Export, and Copy jobs: Generally require data-level
+//	permissions such as bigquery.tables.export or access to external
+//	storage.
+//
+//	Query jobs: Permissions are dependent on the SQL statement.
+//	Complex queries (DDL, DCL) may require additional permissions to
+//	create reservations, modify IAM policies, or update project settings.
 func (c *JobClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	return c.internalClient.InsertJob(ctx, req, opts...)
 }
 
 // DeleteJob requests the deletion of the metadata of a job. This call returns when the
 // job’s metadata is deleted.
+//
+// IAM PermissionsRequires the bigquery.jobs.delete permission on the job resource.
 func (c *JobClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteJob(ctx, req, opts...)
 }
@@ -356,17 +378,48 @@ func (c *JobClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequ
 // in reverse chronological order, by job creation time. Requires the Can View
 // project role, or the Is Owner project role if you set the allUsers
 // property.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method. Users are able
+// to list the jobs they created.
+//
+// Additional access is granted based on the following permissions:
+//
+//	Users with the bigquery.jobs.listAll permission can list all jobs with
+//	all metadata.
+//
+//	Users with the bigquery.jobs.list permission can list all jobs, but
+//	with redacted information for jobs they did not create.
 func (c *JobClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) *ListFormatJobIterator {
 	return c.internalClient.ListJobs(ctx, req, opts...)
 }
 
 // GetQueryResults rPC to get the results of a query job.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.jobs.get on the job.
+//
+//	bigquery.tables.getData on the destination table.
+//
+// If the user matches the creator of the job, the following IAM permission(s)
+// are required instead:
+//
+//	bigquery.jobs.create on the project.
+//
+//	bigquery.tables.getData on the destination table.
 func (c *JobClient) GetQueryResults(ctx context.Context, req *bigquerypb.GetQueryResultsRequest, opts ...gax.CallOption) (*bigquerypb.GetQueryResultsResponse, error) {
 	return c.internalClient.GetQueryResults(ctx, req, opts...)
 }
 
 // Query runs a BigQuery SQL query synchronously and returns query results if the
 // query completes within a specified timeout.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Data-level permissions are highly dependent on the SQL statement being
+// executed. While standard queries require data access (such as
+// bigquery.tables.getData), complex operations like DDL or DCL may require
+// permissions to manage reservations, IAM policies, or project settings.
 func (c *JobClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*bigquerypb.QueryResponse, error) {
 	return c.internalClient.Query(ctx, req, opts...)
 }
@@ -778,6 +831,10 @@ func (c *jobGRPCClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequ
 // CancelJob requests that a job be cancelled. This call will return immediately, and
 // the client will need to poll for the job status to see if the cancel
 // completed successfully. Cancelled jobs may still incur costs.
+//
+// IAM PermissionsRequires the bigquery.jobs.update permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *jobRESTClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJobRequest, opts ...gax.CallOption) (*bigquerypb.JobCancelResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -839,6 +896,10 @@ func (c *jobRESTClient) CancelJob(ctx context.Context, req *bigquerypb.CancelJob
 // GetJob returns information about a specific job. Job information is available for
 // a six month period after creation. Requires that you’re the person who ran
 // the job, or have the Is Owner project role.
+//
+// IAM PermissionsRequires the bigquery.jobs.get permission on the job resource.
+// If the user matches the creator of the job, the bigquery.jobs.create
+// permission on the project is required instead.
 func (c *jobRESTClient) GetJob(ctx context.Context, req *bigquerypb.GetJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -909,6 +970,18 @@ func (c *jobRESTClient) GetJob(ctx context.Context, req *bigquerypb.GetJobReques
 //	configuration and a data stream together.  In this case, the Upload URI
 //	accepts the job configuration and the data as two distinct multipart MIME
 //	parts.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Additional permissions are required depending on the job type:
+//
+//	Load, Export, and Copy jobs: Generally require data-level
+//	permissions such as bigquery.tables.export or access to external
+//	storage.
+//
+//	Query jobs: Permissions are dependent on the SQL statement.
+//	Complex queries (DDL, DCL) may require additional permissions to
+//	create reservations, modify IAM policies, or update project settings.
 func (c *jobRESTClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJobRequest, opts ...gax.CallOption) (*bigquerypb.Job, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetJob()
@@ -969,6 +1042,8 @@ func (c *jobRESTClient) InsertJob(ctx context.Context, req *bigquerypb.InsertJob
 
 // DeleteJob requests the deletion of the metadata of a job. This call returns when the
 // job’s metadata is deleted.
+//
+// IAM PermissionsRequires the bigquery.jobs.delete permission on the job resource.
 func (c *jobRESTClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJobRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1017,6 +1092,17 @@ func (c *jobRESTClient) DeleteJob(ctx context.Context, req *bigquerypb.DeleteJob
 // in reverse chronological order, by job creation time. Requires the Can View
 // project role, or the Is Owner project role if you set the allUsers
 // property.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method. Users are able
+// to list the jobs they created.
+//
+// Additional access is granted based on the following permissions:
+//
+//	Users with the bigquery.jobs.listAll permission can list all jobs with
+//	all metadata.
+//
+//	Users with the bigquery.jobs.list permission can list all jobs, but
+//	with redacted information for jobs they did not create.
 func (c *jobRESTClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRequest, opts ...gax.CallOption) *ListFormatJobIterator {
 	it := &ListFormatJobIterator{}
 	req = proto.CloneOf(req)
@@ -1124,6 +1210,19 @@ func (c *jobRESTClient) ListJobs(ctx context.Context, req *bigquerypb.ListJobsRe
 }
 
 // GetQueryResults rPC to get the results of a query job.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.jobs.get on the job.
+//
+//	bigquery.tables.getData on the destination table.
+//
+// If the user matches the creator of the job, the following IAM permission(s)
+// are required instead:
+//
+//	bigquery.jobs.create on the project.
+//
+//	bigquery.tables.getData on the destination table.
 func (c *jobRESTClient) GetQueryResults(ctx context.Context, req *bigquerypb.GetQueryResultsRequest, opts ...gax.CallOption) (*bigquerypb.GetQueryResultsResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1214,6 +1313,13 @@ func (c *jobRESTClient) GetQueryResults(ctx context.Context, req *bigquerypb.Get
 
 // Query runs a BigQuery SQL query synchronously and returns query results if the
 // query completes within a specified timeout.
+//
+// IAM PermissionsRequires the bigquery.jobs.create permission on the project resource.
+//
+// Data-level permissions are highly dependent on the SQL statement being
+// executed. While standard queries require data access (such as
+// bigquery.tables.getData), complex operations like DDL or DCL may require
+// permissions to manage reservations, IAM policies, or project settings.
 func (c *jobRESTClient) Query(ctx context.Context, req *bigquerypb.PostQueryRequest, opts ...gax.CallOption) (*bigquerypb.QueryResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetQueryRequest()
