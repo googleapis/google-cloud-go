@@ -1404,6 +1404,11 @@
         },
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/mapmanagement/apiv2/snippet_metadata.google.maps.mapmanagement.v2.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/navconnect/apiv1/snippet_metadata.google.maps.navconnect.v1.json",
           "type": "json"
         },
