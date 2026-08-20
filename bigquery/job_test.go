@@ -15,12 +15,16 @@
 package bigquery
 
 import (
+	"context"
+	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/option"
 )
 
 func TestCreateJobRef(t *testing.T) {
@@ -175,6 +179,53 @@ func Test_JobPerformanceInsights(t *testing.T) {
 			out := bqToPerformanceInsights(test.in)
 			if !reflect.DeepEqual(test.want, out) {
 				t.Error("out != want")
+			}
+		})
+	}
+}
+
+func TestWaitForQueryPollingRetriesDisabled(t *testing.T) {
+	for _, tc := range []struct {
+		name      string
+		opts      []option.ClientOption
+		wantCalls int
+		wantErr   bool
+	}{
+		{name: "default retries", wantCalls: 2},
+		{
+			name:      "disabled surfaces error",
+			opts:      []option.ClientOption{WithJobPollingRetriesDisabled()},
+			wantCalls: 1,
+			wantErr:   true,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			calls := 0
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				calls++
+				if calls == 1 {
+					w.WriteHeader(http.StatusForbidden)
+					w.Write([]byte(`{"error":{"code":403,"message":"quota","errors":[{"message":"quota","reason":"jobRateLimitExceeded"}]}}`))
+					return
+				}
+				w.Write([]byte(`{"jobComplete":true,"totalRows":"0"}`))
+			}))
+			defer ts.Close()
+
+			opts := append([]option.ClientOption{option.WithEndpoint(ts.URL), option.WithoutAuthentication()}, tc.opts...)
+			client, err := NewClient(context.Background(), "project-id", opts...)
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer client.Close()
+
+			job := &Job{c: client, projectID: "project-id", jobID: "job-id"}
+			_, _, err = job.waitForQuery(context.Background(), "project-id")
+			if (err != nil) != tc.wantErr {
+				t.Fatalf("waitForQuery() error = %v, wantErr %t", err, tc.wantErr)
+			}
+			if calls != tc.wantCalls {
+				t.Fatalf("poll calls = %d, want %d", calls, tc.wantCalls)
 			}
 		})
 	}
