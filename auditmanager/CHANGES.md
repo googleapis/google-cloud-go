@@ -1,5 +1,12 @@
 # Changes
 
+## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/auditmanager/v1.2.0...auditmanager/v1.3.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
 ## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/auditmanager/v1.1.0...auditmanager/v1.2.0) (2026-08-13)
 
 

@@ -90,7 +90,7 @@ libraries:
       - path: google/cloud/aiplatform/v1beta1
     skip_generate: true
   - name: alloydb
-    version: 1.28.0
+    version: 1.29.0
     apis:
       - path: google/cloud/alloydb/v1
       - path: google/cloud/alloydb/connectors/v1
@@ -192,11 +192,11 @@ libraries:
       - path: google/cloud/assuredworkloads/v1
       - path: google/cloud/assuredworkloads/v1beta1
   - name: auditmanager
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.23.1
+    version: 0.23.2
     keep:
       - README.md
       - internal/version.go
@@ -242,14 +242,14 @@ libraries:
       - path: google/cloud/beyondcorp/clientconnectorservices/v1
       - path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/cloud/biglake/v1
       - path: google/cloud/biglake/hive/v1
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.80.0
+    version: 1.81.0
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -430,7 +430,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -438,7 +438,7 @@ libraries:
     apis:
       - path: google/cloud/chronicle/v1
   - name: cloudbuild
-    version: 1.32.0
+    version: 1.33.0
     apis:
       - path: google/devtools/cloudbuild/v2
         go:
@@ -588,7 +588,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: dataform
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -652,13 +652,6 @@ libraries:
     version: 1.1.0
     apis:
       - path: google/cloud/developerconnect/v1
-  - name: developerknowledge
-    version: 0.0.0
-    apis:
-      - path: google/developers/knowledge/v1
-        go:
-          import_path: developerknowledge/apiv1
-    copyright_year: "2026"
   - name: devicestreaming
     version: 1.0.0
     apis:
@@ -922,21 +915,20 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.39.0
+    version: 1.40.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
-      - path: google/maps/mapmanagement/v2
-      - path: google/maps/routeoptimization/v1
+      - path: google/maps/addressvalidation/v1
+      - path: google/maps/areainsights/v1
       - path: google/maps/fleetengine/v1
         go:
           proto_package: maps.fleetengine.v1
       - path: google/maps/places/v1
-      - path: google/maps/areainsights/v1
+      - path: google/maps/routeoptimization/v1
       - path: google/maps/solar/v1
       - path: google/maps/isochrones/v1
       - path: google/maps/navconnect/v1
-      - path: google/maps/addressvalidation/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
           no_snippets: true
@@ -1236,7 +1228,7 @@ libraries:
     apis:
       - path: google/cloud/securesourcemanager/v1
   - name: security
-    version: 1.26.0
+    version: 1.27.0
     apis:
       - path: google/cloud/security/privateca/v1
       - path: google/cloud/security/publicca/v1
@@ -1392,7 +1384,7 @@ libraries:
     apis:
       - path: google/streetview/publish/v1
   - name: support
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta

@@ -2,6 +2,13 @@
 
 
 
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.39.0...maps/v1.40.0) (2026-08-20)
+
+
+### Features
+
+* **google/maps/mapmanagement/v2:** Onboard a new library ([#20402](https://github.com/googleapis/google-cloud-go/issues/20402)) ([f9efbe7](https://github.com/googleapis/google-cloud-go/commit/f9efbe71614d91124cded6c037134aa19ba6547f))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.38.0...maps/v1.39.0) (2026-07-30)
 
 
