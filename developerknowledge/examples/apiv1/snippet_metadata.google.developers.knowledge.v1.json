@@ -1,0 +1,199 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.developers.knowledge.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/developerknowledge/apiv1",
+    "version": "0.0.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient",
+          "shortName": "DeveloperKnowledgeClient"
+        },
+        "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient.AnswerQuery",
+        "method": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledge.AnswerQuery",
+          "service": {
+            "fullName": "google.developers.knowledge.v1.DeveloperKnowledge",
+            "shortName": "DeveloperKnowledge"
+          },
+          "shortName": "AnswerQuery"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerknowledgepb.AnswerQueryRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerknowledgepb.AnswerQueryResponse",
+        "shortName": "AnswerQuery"
+      },
+      "description": "AnswerQuery answers a query using grounded generation.",
+      "file": "DeveloperKnowledgeClient/AnswerQuery/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerknowledge_v1_generated_DeveloperKnowledge_AnswerQuery_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerknowledge AnswerQuery Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient",
+          "shortName": "DeveloperKnowledgeClient"
+        },
+        "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient.BatchGetDocuments",
+        "method": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledge.BatchGetDocuments",
+          "service": {
+            "fullName": "google.developers.knowledge.v1.DeveloperKnowledge",
+            "shortName": "DeveloperKnowledge"
+          },
+          "shortName": "BatchGetDocuments"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerknowledgepb.BatchGetDocumentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerknowledgepb.BatchGetDocumentsResponse",
+        "shortName": "BatchGetDocuments"
+      },
+      "description": "BatchGetDocuments retrieves multiple documents, each with its full Markdown content.",
+      "file": "DeveloperKnowledgeClient/BatchGetDocuments/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerknowledge_v1_generated_DeveloperKnowledge_BatchGetDocuments_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerknowledge BatchGetDocuments Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient",
+          "shortName": "DeveloperKnowledgeClient"
+        },
+        "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient.GetDocument",
+        "method": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledge.GetDocument",
+          "service": {
+            "fullName": "google.developers.knowledge.v1.DeveloperKnowledge",
+            "shortName": "DeveloperKnowledge"
+          },
+          "shortName": "GetDocument"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerknowledgepb.GetDocumentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*developerknowledgepb.Document",
+        "shortName": "GetDocument"
+      },
+      "description": "GetDocument retrieves a single document with its full Markdown content.",
+      "file": "DeveloperKnowledgeClient/GetDocument/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerknowledge_v1_generated_DeveloperKnowledge_GetDocument_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerknowledge GetDocument Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient",
+          "shortName": "DeveloperKnowledgeClient"
+        },
+        "fullName": "google.developers.knowledge.v1.DeveloperKnowledgeClient.SearchDocumentChunks",
+        "method": {
+          "fullName": "google.developers.knowledge.v1.DeveloperKnowledge.SearchDocumentChunks",
+          "service": {
+            "fullName": "google.developers.knowledge.v1.DeveloperKnowledge",
+            "shortName": "DeveloperKnowledge"
+          },
+          "shortName": "SearchDocumentChunks"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "developerknowledgepb.SearchDocumentChunksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DocumentChunkIterator",
+        "shortName": "SearchDocumentChunks"
+      },
+      "description": "SearchDocumentChunks searches for developer knowledge across Google's developer documentation.\nReturns [DocumentChunk][google.developers.knowledge.v1.DocumentChunk]s\nbased on the user's query. There may be many chunks from the same\n[Document][google.developers.knowledge.v1.Document]. To retrieve full\ndocuments, use\n[DeveloperKnowledge.GetDocument][google.developers.knowledge.v1.DeveloperKnowledge.GetDocument]\nor\n[DeveloperKnowledge.BatchGetDocuments][google.developers.knowledge.v1.DeveloperKnowledge.BatchGetDocuments]\nwith the\n[DocumentChunk.parent][google.developers.knowledge.v1.DocumentChunk.parent]\nreturned in the\n[SearchDocumentChunksResponse.results][google.developers.knowledge.v1.SearchDocumentChunksResponse.results].",
+      "file": "DeveloperKnowledgeClient/SearchDocumentChunks/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "developerknowledge_v1_generated_DeveloperKnowledge_SearchDocumentChunks_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "developerknowledge SearchDocumentChunks Sample"
+    }
+  ]
+}
