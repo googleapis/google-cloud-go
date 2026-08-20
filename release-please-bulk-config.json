@@ -401,6 +401,11 @@
         },
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/hive/apiv1/snippet_metadata.google.cloud.biglake.hive.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/hive/apiv1beta/snippet_metadata.google.cloud.biglake.hive.v1beta.json",
           "type": "json"
         }
