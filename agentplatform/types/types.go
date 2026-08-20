@@ -157,6 +157,8 @@ const (
 	DefaultContainerCategoryUnspecified DefaultContainerCategory = "DEFAULT_CONTAINER_CATEGORY_UNSPECIFIED"
 	// The default container image for Computer Use.
 	DefaultContainerCategoryComputerUse DefaultContainerCategory = "DEFAULT_CONTAINER_CATEGORY_COMPUTER_USE"
+	// The default container image for Shell Sandbox.
+	DefaultContainerCategoryShellSandbox DefaultContainerCategory = "DEFAULT_CONTAINER_CATEGORY_SHELL_SANDBOX"
 )
 
 // Input only. Action to take on the source SandboxEnvironment after the snapshot is
@@ -473,6 +475,8 @@ type ReasoningEngineSpecContainerSpec struct {
 	// Required. The Artifact Registry Docker image URI (e.g., us-central1-docker.pkg.dev/my-project/my-repo/my-image:tag)
 	// of the container image that is to be run on each worker replica.
 	ImageURI string `json:"imageUri,omitempty"`
+	// Optional. The port the container listens on. Defaults to 8080 if unset.
+	Port *int32 `json:"port,omitempty"`
 }
 
 // The specification of an agent engine.
@@ -2758,10 +2762,32 @@ type SandboxEnvironmentTemplateDefaultContainerEnvironment struct {
 	Resources *SandboxEnvironmentTemplateResourceRequirements `json:"resources,omitempty"`
 }
 
+// Configuration for peering a customer's private DNS zone so that sandbox egress can
+// resolve customer-internal domains via the customer VPC.
+type SandboxEnvironmentTemplateEgressControlConfigDnsPeeringConfig struct {
+	// Required. The DNS name suffix of the zone being peered to, e.g., "my-internal-domain.corp.".
+	// Must end with a dot.
+	Domain string `json:"domain,omitempty"`
+	// Required. The VPC network name in the target_project where the DNS zone specified
+	// by 'domain' is visible.
+	TargetNetwork string `json:"targetNetwork,omitempty"`
+	// Required. The project ID hosting the Cloud DNS managed zone that contains the 'domain'.
+	// The Vertex AI Service Agent requires the dns.peer role on this project.
+	TargetProject string `json:"targetProject,omitempty"`
+}
+
 // Configuration for egress control of sandbox instances.
 type SandboxEnvironmentTemplateEgressControlConfig struct {
 	// Optional. Whether to allow internet access.
 	InternetAccess *bool `json:"internetAccess,omitempty"`
+	// Optional. The customer VPC network that sandbox egress is routed into.
+	CustomerVpcNetwork string `json:"customerVpcNetwork,omitempty"`
+	// Optional. DNS peering configurations that allow sandbox egress to resolve customer-internal
+	// domains via the customer VPC.
+	DnsPeeringConfigs []*SandboxEnvironmentTemplateEgressControlConfigDnsPeeringConfig `json:"dnsPeeringConfigs,omitempty"`
+	// Optional. The name of the customer VPC NetworkAttachment used to draw a PSC interface
+	// IP into the customer VPC for sandbox egress.
+	NetworkAttachment string `json:"networkAttachment,omitempty"`
 }
 
 // Config for creating a Sandbox Template.
@@ -3929,7 +3955,7 @@ type listCustomModelDeployOptionsConfig struct {
 	FilterByUserQuota bool `json:"filterByUserQuota,omitempty"`
 }
 
-// Config for “export_open_model“.
+// Config for export_open_model.
 type exportOpenModelConfig struct {
 	// Whether to block on the export long-running operation. When
 	// ``True`` (default), returns the destination URI on completion. When
