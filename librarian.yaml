@@ -1110,7 +1110,7 @@ libraries:
       - README.md
       - internal/version.go
   - name: pubsub
-    version: 1.51.0
+    version: 1.51.1
     keep:
       - README.md
       - internal/version.go
