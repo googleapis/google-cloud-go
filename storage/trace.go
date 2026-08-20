@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/oauth2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -342,4 +343,41 @@ func recordRetryBackoffEvent(ctx context.Context, attempt int, startTime time.Ti
 	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(startTime))
 	backoffSpan.SetAttributes(attrs...)
 	backoffSpan.End(trace.WithTimestamp(endTime))
+}
+
+// startAuthRefreshSpan starts a T5 internal operation span for authentication token refreshes.
+func startAuthRefreshSpan(ctx context.Context) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, trace.SpanFromContext(ctx)
+	}
+	return startSpan(ctx, "Auth.RefreshAccessToken")
+}
+
+// TracedTokenSource wraps an oauth2.TokenSource to record T5 Auth.RefreshAccessToken
+// internal operation spans whenever an access token is fetched or refreshed.
+type TracedTokenSource struct {
+	base oauth2.TokenSource
+}
+
+// NewTracedTokenSource wraps an existing oauth2.TokenSource with OpenTelemetry T5 Auth tracing.
+func NewTracedTokenSource(base oauth2.TokenSource) oauth2.TokenSource {
+	if base == nil {
+		return nil
+	}
+	return &TracedTokenSource{base: base}
+}
+
+// Token fetches or refreshes an access token while recording a T5 Auth.RefreshAccessToken span.
+func (t *TracedTokenSource) Token() (*oauth2.Token, error) {
+	if !isOTelTracingDevEnabled() {
+		return t.base.Token()
+	}
+	_, span := startAuthRefreshSpan(context.Background())
+	defer span.End()
+
+	tok, err := t.base.Token()
+	if err != nil {
+		span.RecordError(err)
+	}
+	return tok, err
 }

@@ -30,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/sdk/instrumentation"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/oauth2"
 	"google.golang.org/api/googleapi"
 )
 
@@ -747,5 +748,41 @@ func TestMetadataRetryBackoffTracing(t *testing.T) {
 		if ev.Name != "storage.retry.backoff" {
 			t.Errorf("event %d: got name %q, want %q", i, ev.Name, "storage.retry.backoff")
 		}
+	}
+}
+
+type staticTokenSource struct {
+	token *oauth2.Token
+}
+
+func (s *staticTokenSource) Token() (*oauth2.Token, error) {
+	return s.token, nil
+}
+
+func TestTracedTokenSourceSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	rawTS := &staticTokenSource{token: &oauth2.Token{AccessToken: "fake-token"}}
+	tts := NewTracedTokenSource(rawTS)
+
+	tok, err := tts.Token()
+	if err != nil {
+		t.Fatalf("tts.Token: %v", err)
+	}
+	if tok.AccessToken != "fake-token" {
+		t.Fatalf("got access token %q, want %q", tok.AccessToken, "fake-token")
+	}
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	if got, want := spans[0].Name, "cloud.google.com/go/storage.Auth.RefreshAccessToken"; got != want {
+		t.Errorf("got span name %q, want %q", got, want)
 	}
 }
