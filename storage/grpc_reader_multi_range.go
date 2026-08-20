@@ -19,6 +19,7 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"hash/crc32"
 	"io"
 	"log"
 	"sync"
@@ -404,6 +405,10 @@ type rangeRequest struct {
 	readID       int64
 	bytesWritten int64
 	completed    bool
+
+	wantChunkCRC    uint32
+	gotChunkCRC     uint32
+	chunkCRCPresent bool
 }
 
 // Methods implementing internalMultiRangeDownloader
@@ -519,6 +524,9 @@ func (m *multiRangeDownloaderManager) getSpanCtx() context.Context {
 }
 
 func (m *multiRangeDownloaderManager) runCallback(origOffset, numBytes int64, err error, cb func(int64, int64, error)) {
+	if cb == nil {
+		return
+	}
 	m.callbackWg.Add(1)
 	go func() {
 		defer m.callbackWg.Done()
@@ -1063,7 +1071,19 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			continue
 		}
 
-		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, nil)
+		var updateCRC func(b []byte)
+		if !m.params.disableMRDReadChecksum &&
+			dataRange.GetChecksummedData() != nil &&
+			dataRange.GetChecksummedData().Crc32C != nil {
+			req.gotChunkCRC = 0
+			req.chunkCRCPresent = true
+			req.wantChunkCRC = *dataRange.GetChecksummedData().Crc32C
+			updateCRC = func(b []byte) {
+				req.gotChunkCRC = crc32.Update(req.gotChunkCRC, crc32cTable, b)
+			}
+		}
+
+		written, _, err := result.decoder.writeToAndUpdateCRC(req.output, readID, updateCRC)
 		req.bytesWritten += written
 		mrdStream.updateCapacity(m, 0, -written)
 		if err != nil {
@@ -1071,8 +1091,9 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			continue
 		}
 
-		if result.decoder.crcErrs != nil && result.decoder.crcErrs[readID] != nil {
-			m.failRange(mrdStream, req, result.decoder.crcErrs[readID])
+		err = m.checkAndResetChunkCRC(req)
+		if err != nil {
+			m.failRange(mrdStream, req, err)
 			continue
 		}
 
@@ -1086,6 +1107,27 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			m.runCallback(req.origOffset, req.bytesWritten, nil, req.callback)
 		}
 	}
+}
+
+func (m *multiRangeDownloaderManager) checkAndResetChunkCRC(req *rangeRequest) error {
+	if m.params.disableMRDReadChecksum || !req.chunkCRCPresent {
+		return nil
+	}
+	var chkCtx context.Context
+	if m.ctx != nil {
+		chkCtx, _ = startChecksumSpan(m.ctx, "CRC32C")
+	}
+	var err error
+	if req.gotChunkCRC != req.wantChunkCRC {
+		err = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", req.gotChunkCRC, req.wantChunkCRC)
+	}
+	if chkCtx != nil {
+		endSpan(chkCtx, err)
+	}
+	req.gotChunkCRC = 0
+	req.wantChunkCRC = 0
+	req.chunkCRCPresent = false
+	return err
 }
 
 // ensureSession is now only for reconnecting *after* the initial session is up.

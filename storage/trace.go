@@ -21,6 +21,8 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"sync/atomic"
+	"time"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -28,6 +30,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/oauth2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -179,4 +182,203 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// recordWriterTraceAttributes attaches descriptive upload mode and configuration attributes
+// to the Object.Writer span in ctx so observers can inspect the write type in Trace Explorer.
+func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
+	if !isOTelTracingDevEnabled() || w == nil {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+
+	writeMode := "resumable"
+	if w.EnableParallelUpload {
+		writeMode = "parallel_composite"
+	} else if strings.HasPrefix(w.ObjectAttrs.Name, "gcs-go-sdk-pu-tmp/") {
+		writeMode = "pcu_part_writer"
+	} else if w.Append {
+		writeMode = "appendable"
+	} else if w.ChunkSize == 0 {
+		writeMode = "oneshot"
+	}
+
+	attrs := []attribute.KeyValue{
+		attribute.String("storage.write.mode", writeMode),
+		attribute.Int("storage.write.chunk_size", w.ChunkSize),
+		attribute.Bool("storage.write.append", w.Append),
+		attribute.Bool("storage.write.parallel", w.EnableParallelUpload),
+		attribute.String("storage.object.name", w.ObjectAttrs.Name),
+	}
+	if w.EnableParallelUpload {
+		attrs = append(attrs,
+			attribute.Int("storage.write.pcu_part_size", w.ParallelUploadConfig.PartSize),
+			attribute.Int("storage.write.pcu_concurrency", w.ParallelUploadConfig.MaxConcurrency),
+		)
+	}
+	span.SetAttributes(attrs...)
+}
+
+// recordReaderTraceAttributes attaches descriptive read mode and range attributes
+// to the Object.Reader or Object.MultiRangeDownloader span in ctx.
+func recordReaderTraceAttributes(ctx context.Context, readMode string, offset, length int64, objectName string) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+
+	attrs := []attribute.KeyValue{
+		attribute.String("storage.read.mode", readMode),
+		attribute.String("storage.object.name", objectName),
+	}
+	if readMode == "range" {
+		attrs = append(attrs,
+			attribute.Int64("storage.read.offset", offset),
+			attribute.Int64("storage.read.length", length),
+		)
+	}
+	span.SetAttributes(attrs...)
+}
+
+// withChunkNumber sets the 1-indexed chunk number attribute on the span.
+func withChunkNumber(n int64) trace.SpanStartOption {
+	return trace.WithAttributes(attribute.Int64("upload.chunk_number", n))
+}
+
+// startChunkSpan starts a span for a chunk upload with offset and size attributes.
+func startChunkSpan(ctx context.Context, name string, offset int64, size int64, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, trace.SpanFromContext(ctx)
+	}
+	attrs := []attribute.KeyValue{
+		attribute.Int64("gcp.storage.chunk.offset", offset),
+		attribute.Int64("gcp.storage.chunk.size", size),
+	}
+	opts = append(opts, trace.WithAttributes(attrs...))
+	return startSpan(ctx, name, opts...)
+}
+
+func startResumableInitSpan(ctx context.Context, sessionURI string) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, trace.SpanFromContext(ctx)
+	}
+	opts := []trace.SpanStartOption{}
+	if sessionURI != "" {
+		opts = append(opts, trace.WithAttributes(
+			attribute.String("gcs.resumable_upload.session_uri", sessionURI),
+		))
+	}
+	return startSpan(ctx, "Storage.ResumableSessionInit", opts...)
+}
+
+// dynamicSpanContext wraps a context.Context and delegates Value lookups to an active span context
+// stored in an atomic.Value. This allows dynamically updating the active OTel parent span for long-lived
+// background client calls (such as HTTP resumable upload loops).
+type dynamicSpanContext struct {
+	context.Context
+	holder *atomic.Value
+}
+
+func (d *dynamicSpanContext) Value(key any) any {
+	if cur, ok := d.holder.Load().(context.Context); ok && cur != nil {
+		if val := cur.Value(key); val != nil {
+			return val
+		}
+	}
+	return d.Context.Value(key)
+}
+
+func newDynamicSpanContext(ctx context.Context) (context.Context, *atomic.Value) {
+	holder := &atomic.Value{}
+	holder.Store(ctx)
+	return &dynamicSpanContext{Context: ctx, holder: holder}, holder
+}
+
+type firstChunkCallbackKey struct{}
+
+func withFirstChunkCallback(ctx context.Context, cb func()) context.Context {
+	return context.WithValue(ctx, firstChunkCallbackKey{}, cb)
+}
+
+// startChecksumSpan starts a T5 internal operation span for computing or verifying data checksums.
+func startChecksumSpan(ctx context.Context, checksumType string) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		noopSpan := trace.SpanFromContext(nil)
+		return trace.ContextWithSpan(ctx, noopSpan), noopSpan
+	}
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(attribute.String("gcp.storage.checksum.type", checksumType)),
+	}
+	return startSpan(ctx, "Storage.CalculateChecksum", opts...)
+}
+
+// recordRetryBackoffEvent creates a T5 RetryBackoff child span and adds a
+// storage.retry.backoff span event to the active span in ctx.
+func recordRetryBackoffEvent(ctx context.Context, attempt int, startTime time.Time) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	endTime := time.Now()
+	if startTime.IsZero() {
+		startTime = endTime
+	}
+	backoff := endTime.Sub(startTime)
+	attrs := []attribute.KeyValue{
+		attribute.Int("attempt", attempt),
+		attribute.String("backoff", backoff.String()),
+	}
+	span.AddEvent("storage.retry.backoff", trace.WithAttributes(attrs...))
+
+	// Create a child span for the backoff duration so it appears as a visual
+	// block in Trace Explorer waterfall charts.
+	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(startTime))
+	backoffSpan.SetAttributes(attrs...)
+	backoffSpan.End(trace.WithTimestamp(endTime))
+}
+
+// startAuthRefreshSpan starts a T5 internal operation span for authentication token refreshes.
+func startAuthRefreshSpan(ctx context.Context) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, trace.SpanFromContext(ctx)
+	}
+	return startSpan(ctx, "Auth.RefreshAccessToken")
+}
+
+// TracedTokenSource wraps an oauth2.TokenSource to record T5 Auth.RefreshAccessToken
+// internal operation spans whenever an access token is fetched or refreshed.
+type TracedTokenSource struct {
+	base oauth2.TokenSource
+}
+
+// NewTracedTokenSource wraps an existing oauth2.TokenSource with OpenTelemetry T5 Auth tracing.
+func NewTracedTokenSource(base oauth2.TokenSource) oauth2.TokenSource {
+	if base == nil {
+		return nil
+	}
+	return &TracedTokenSource{base: base}
+}
+
+// Token fetches or refreshes an access token while recording a T5 Auth.RefreshAccessToken span.
+func (t *TracedTokenSource) Token() (*oauth2.Token, error) {
+	if !isOTelTracingDevEnabled() {
+		return t.base.Token()
+	}
+	_, span := startAuthRefreshSpan(context.Background())
+	defer span.End()
+
+	tok, err := t.base.Token()
+	if err != nil {
+		span.RecordError(err)
+	}
+	return tok, err
 }
