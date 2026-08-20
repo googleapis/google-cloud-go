@@ -919,16 +919,17 @@ libraries:
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
-      - path: google/maps/addressvalidation/v1
-      - path: google/maps/areainsights/v1
+      - path: google/maps/mapmanagement/v2
+      - path: google/maps/routeoptimization/v1
       - path: google/maps/fleetengine/v1
         go:
           proto_package: maps.fleetengine.v1
       - path: google/maps/places/v1
-      - path: google/maps/routeoptimization/v1
+      - path: google/maps/areainsights/v1
       - path: google/maps/solar/v1
       - path: google/maps/isochrones/v1
       - path: google/maps/navconnect/v1
+      - path: google/maps/addressvalidation/v1
       - path: google/maps/fleetengine/delivery/v1
         go:
           no_snippets: true
