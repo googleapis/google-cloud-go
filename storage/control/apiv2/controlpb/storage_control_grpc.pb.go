@@ -58,6 +58,7 @@ const (
 	StorageControl_ListAnywhereCaches_FullMethodName                   = "/google.storage.control.v2.StorageControl/ListAnywhereCaches"
 	StorageControl_CreateRapidCache_FullMethodName                     = "/google.storage.control.v2.StorageControl/CreateRapidCache"
 	StorageControl_UpdateRapidCache_FullMethodName                     = "/google.storage.control.v2.StorageControl/UpdateRapidCache"
+	StorageControl_DisableRapidCache_FullMethodName                    = "/google.storage.control.v2.StorageControl/DisableRapidCache"
 	StorageControl_GetRapidCache_FullMethodName                        = "/google.storage.control.v2.StorageControl/GetRapidCache"
 	StorageControl_ListRapidCaches_FullMethodName                      = "/google.storage.control.v2.StorageControl/ListRapidCaches"
 	StorageControl_GetProjectIntelligenceConfig_FullMethodName         = "/google.storage.control.v2.StorageControl/GetProjectIntelligenceConfig"
@@ -136,6 +137,8 @@ type StorageControlClient interface {
 	CreateRapidCache(ctx context.Context, in *CreateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a Rapid Cache instance.
 	UpdateRapidCache(ctx context.Context, in *UpdateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Disables a Rapid Cache instance.
+	DisableRapidCache(ctx context.Context, in *DisableRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a Rapid Cache instance.
 	GetRapidCache(ctx context.Context, in *GetRapidCacheRequest, opts ...grpc.CallOption) (*RapidCache, error)
 	// Lists Rapid Cache instances for a given bucket.
@@ -392,6 +395,15 @@ func (c *storageControlClient) UpdateRapidCache(ctx context.Context, in *UpdateR
 	return out, nil
 }
 
+func (c *storageControlClient) DisableRapidCache(ctx context.Context, in *DisableRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, StorageControl_DisableRapidCache_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageControlClient) GetRapidCache(ctx context.Context, in *GetRapidCacheRequest, opts ...grpc.CallOption) (*RapidCache, error) {
 	out := new(RapidCache)
 	err := c.cc.Invoke(ctx, StorageControl_GetRapidCache_FullMethodName, in, out, opts...)
@@ -604,6 +616,8 @@ type StorageControlServer interface {
 	CreateRapidCache(context.Context, *CreateRapidCacheRequest) (*longrunningpb.Operation, error)
 	// Updates a Rapid Cache instance.
 	UpdateRapidCache(context.Context, *UpdateRapidCacheRequest) (*longrunningpb.Operation, error)
+	// Disables a Rapid Cache instance.
+	DisableRapidCache(context.Context, *DisableRapidCacheRequest) (*longrunningpb.Operation, error)
 	// Gets a Rapid Cache instance.
 	GetRapidCache(context.Context, *GetRapidCacheRequest) (*RapidCache, error)
 	// Lists Rapid Cache instances for a given bucket.
@@ -729,6 +743,9 @@ func (UnimplementedStorageControlServer) CreateRapidCache(context.Context, *Crea
 }
 func (UnimplementedStorageControlServer) UpdateRapidCache(context.Context, *UpdateRapidCacheRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRapidCache not implemented")
+}
+func (UnimplementedStorageControlServer) DisableRapidCache(context.Context, *DisableRapidCacheRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisableRapidCache not implemented")
 }
 func (UnimplementedStorageControlServer) GetRapidCache(context.Context, *GetRapidCacheRequest) (*RapidCache, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRapidCache not implemented")
@@ -1171,6 +1188,24 @@ func _StorageControl_UpdateRapidCache_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageControl_DisableRapidCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DisableRapidCacheRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).DisableRapidCache(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_DisableRapidCache_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).DisableRapidCache(ctx, req.(*DisableRapidCacheRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageControl_GetRapidCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRapidCacheRequest)
 	if err := dec(in); err != nil {
@@ -1567,6 +1602,10 @@ var StorageControl_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "UpdateRapidCache",
 			Handler:    _StorageControl_UpdateRapidCache_Handler,
+		},
+		{
+			MethodName: "DisableRapidCache",
+			Handler:    _StorageControl_DisableRapidCache_Handler,
 		},
 		{
 			MethodName: "GetRapidCache",
