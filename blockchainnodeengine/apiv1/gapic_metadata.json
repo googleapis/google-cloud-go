@@ -1,0 +1,133 @@
+{
+  "schema": "1.0",
+  "comment": "This file maps proto services/RPCs to the corresponding library clients/methods.",
+  "language": "go",
+  "protoPackage": "google.cloud.blockchainnodeengine.v1",
+  "libraryPackage": "cloud.google.com/go/blockchainnodeengine/apiv1",
+  "services": {
+    "BlockchainNodeEngine": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBlockchainNode": {
+              "methods": [
+                "CreateBlockchainNode"
+              ]
+            },
+            "DeleteBlockchainNode": {
+              "methods": [
+                "DeleteBlockchainNode"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBlockchainNode": {
+              "methods": [
+                "GetBlockchainNode"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListBlockchainNodes": {
+              "methods": [
+                "ListBlockchainNodes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateBlockchainNode": {
+              "methods": [
+                "UpdateBlockchainNode"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "Client",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateBlockchainNode": {
+              "methods": [
+                "CreateBlockchainNode"
+              ]
+            },
+            "DeleteBlockchainNode": {
+              "methods": [
+                "DeleteBlockchainNode"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "GetBlockchainNode": {
+              "methods": [
+                "GetBlockchainNode"
+              ]
+            },
+            "GetLocation": {
+              "methods": [
+                "GetLocation"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ListBlockchainNodes": {
+              "methods": [
+                "ListBlockchainNodes"
+              ]
+            },
+            "ListLocations": {
+              "methods": [
+                "ListLocations"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateBlockchainNode": {
+              "methods": [
+                "UpdateBlockchainNode"
+              ]
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -35,6 +35,7 @@
   "bigquery": "1.81.0",
   "billing": "1.26.0",
   "binaryauthorization": "1.16.0",
+  "blockchainnodeengine": "0.0.0",
   "capacityplanner": "0.7.0",
   "certificatemanager": "1.15.0",
   "ces": "1.3.0",

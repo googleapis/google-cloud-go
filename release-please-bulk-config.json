@@ -452,6 +452,16 @@
         }
       ]
     },
+    "blockchainnodeengine": {
+      "component": "blockchainnodeengine",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.blockchainnodeengine.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "capacityplanner": {
       "component": "capacityplanner",
       "extra-files": [

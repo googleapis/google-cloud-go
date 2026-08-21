@@ -412,6 +412,11 @@ libraries:
     apis:
       - path: google/cloud/binaryauthorization/v1
       - path: google/cloud/binaryauthorization/v1beta1
+  - name: blockchainnodeengine
+    version: 0.0.0
+    apis:
+      - path: google/cloud/blockchainnodeengine/v1
+    copyright_year: "2026"
   - name: capacityplanner
     version: 0.7.0
     apis:
