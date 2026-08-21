@@ -113,7 +113,7 @@ func defaultMerchantCenterAccountLinkRESTCallOptions() *MerchantCenterAccountLin
 	}
 }
 
-// internalMerchantCenterAccountLinkClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+// internalMerchantCenterAccountLinkClient is an interface that defines the methods available from AI Commerce Search API.
 type internalMerchantCenterAccountLinkClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -126,7 +126,7 @@ type internalMerchantCenterAccountLinkClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// MerchantCenterAccountLinkClient is a client for interacting with Vertex AI Search for commerce API.
+// MerchantCenterAccountLinkClient is a client for interacting with AI Commerce Search API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Merchant Center Link service to link a Branch to a Merchant Center Account.
@@ -204,7 +204,7 @@ func (c *MerchantCenterAccountLinkClient) ListOperations(ctx context.Context, re
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// merchantCenterAccountLinkGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// merchantCenterAccountLinkGRPCClient is a client for interacting with AI Commerce Search API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type merchantCenterAccountLinkGRPCClient struct {

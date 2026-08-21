@@ -49,28 +49,37 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuditManagerClient interface {
-	// Enrolls the customer resource(folder/project/organization) to the audit
-	// manager service by creating the audit managers Service Agent in customers
-	// workload and granting required permissions to the Service Agent. Please
-	// note that if enrollment request is made on the already enrolled workload
-	// then enrollment is executed overriding the existing set of destinations.
+	// Adds your project, folder, or organization to Audit
+	// Manager. This method creates the Audit Manager service agent in your
+	// workload and grants required permissions to the service agent.
+	// If you make this request on a workload that's already enrolled,
+	// then this method overrides the existing set of destinations.
 	EnrollResource(ctx context.Context, in *EnrollResourceRequest, opts ...grpc.CallOption) (*Enrollment, error)
-	// Generates a demo report highlighting different responsibilities
-	// (Google/Customer/ shared) required to be fulfilled for the customer's
-	// workload to be compliant with the given standard.
+	// Generates an audit scope report for the given standard.
+	//
+	// The report includes the following:
+	//
+	//   - The technical attributes and constraints that Audit Manager uses to
+	//     verify your compliance with a framework.
+	//   - A list of Google Cloud services and resources that are within the
+	//     scope of the framework.
 	GenerateAuditScopeReport(ctx context.Context, in *GenerateAuditScopeReportRequest, opts ...grpc.CallOption) (*AuditScopeReport, error)
-	// Register the Audit Report generation requests and returns the OperationId
-	// using which the customer can track the report generation progress.
+	// Registers audit report generation requests. This method returns the
+	// operation identifier that you can use to track the report generation
+	// progress.
 	GenerateAuditReport(ctx context.Context, in *GenerateAuditReportRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
-	// Lists audit reports in the selected parent scope
+	// Lists the audit reports for the organization, folder, or project that you
+	// specify as the parent scope.
 	ListAuditReports(ctx context.Context, in *ListAuditReportsRequest, opts ...grpc.CallOption) (*ListAuditReportsResponse, error)
-	// Get the overall audit report
+	// Gets the full metadata and findings for an audit report.
 	GetAuditReport(ctx context.Context, in *GetAuditReportRequest, opts ...grpc.CallOption) (*AuditReport, error)
-	// Get a resource along with its enrollment status.
+	// Gets a resource and its enrollment status.
 	GetResourceEnrollmentStatus(ctx context.Context, in *GetResourceEnrollmentStatusRequest, opts ...grpc.CallOption) (*ResourceEnrollmentStatus, error)
-	// Fetches all resources under the parent along with their enrollment.
+	// Lists all the folders and projects in an organization or folder, along with
+	// their enrollments.
 	ListResourceEnrollmentStatuses(ctx context.Context, in *ListResourceEnrollmentStatusesRequest, opts ...grpc.CallOption) (*ListResourceEnrollmentStatusesResponse, error)
-	// Gets controls needed to be implemented to be compliant to a standard.
+	// Lists the controls that you must implement to become compliant to a
+	// regulatory standard.
 	ListControls(ctx context.Context, in *ListControlsRequest, opts ...grpc.CallOption) (*ListControlsResponse, error)
 }
 
@@ -158,28 +167,37 @@ func (c *auditManagerClient) ListControls(ctx context.Context, in *ListControlsR
 // All implementations should embed UnimplementedAuditManagerServer
 // for forward compatibility
 type AuditManagerServer interface {
-	// Enrolls the customer resource(folder/project/organization) to the audit
-	// manager service by creating the audit managers Service Agent in customers
-	// workload and granting required permissions to the Service Agent. Please
-	// note that if enrollment request is made on the already enrolled workload
-	// then enrollment is executed overriding the existing set of destinations.
+	// Adds your project, folder, or organization to Audit
+	// Manager. This method creates the Audit Manager service agent in your
+	// workload and grants required permissions to the service agent.
+	// If you make this request on a workload that's already enrolled,
+	// then this method overrides the existing set of destinations.
 	EnrollResource(context.Context, *EnrollResourceRequest) (*Enrollment, error)
-	// Generates a demo report highlighting different responsibilities
-	// (Google/Customer/ shared) required to be fulfilled for the customer's
-	// workload to be compliant with the given standard.
+	// Generates an audit scope report for the given standard.
+	//
+	// The report includes the following:
+	//
+	//   - The technical attributes and constraints that Audit Manager uses to
+	//     verify your compliance with a framework.
+	//   - A list of Google Cloud services and resources that are within the
+	//     scope of the framework.
 	GenerateAuditScopeReport(context.Context, *GenerateAuditScopeReportRequest) (*AuditScopeReport, error)
-	// Register the Audit Report generation requests and returns the OperationId
-	// using which the customer can track the report generation progress.
+	// Registers audit report generation requests. This method returns the
+	// operation identifier that you can use to track the report generation
+	// progress.
 	GenerateAuditReport(context.Context, *GenerateAuditReportRequest) (*longrunningpb.Operation, error)
-	// Lists audit reports in the selected parent scope
+	// Lists the audit reports for the organization, folder, or project that you
+	// specify as the parent scope.
 	ListAuditReports(context.Context, *ListAuditReportsRequest) (*ListAuditReportsResponse, error)
-	// Get the overall audit report
+	// Gets the full metadata and findings for an audit report.
 	GetAuditReport(context.Context, *GetAuditReportRequest) (*AuditReport, error)
-	// Get a resource along with its enrollment status.
+	// Gets a resource and its enrollment status.
 	GetResourceEnrollmentStatus(context.Context, *GetResourceEnrollmentStatusRequest) (*ResourceEnrollmentStatus, error)
-	// Fetches all resources under the parent along with their enrollment.
+	// Lists all the folders and projects in an organization or folder, along with
+	// their enrollments.
 	ListResourceEnrollmentStatuses(context.Context, *ListResourceEnrollmentStatusesRequest) (*ListResourceEnrollmentStatusesResponse, error)
-	// Gets controls needed to be implemented to be compliant to a standard.
+	// Lists the controls that you must implement to become compliant to a
+	// regulatory standard.
 	ListControls(context.Context, *ListControlsRequest) (*ListControlsResponse, error)
 }
 

@@ -28,6 +28,7 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
+	expr "google.golang.org/genproto/googleapis/type/expr"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -2465,7 +2466,19 @@ type Assignment struct {
 	//     for workload identity pool identities.
 	//   - The special value `unknown_or_deleted_user` represents principals which
 	//     cannot be read from the user info service, for example deleted users.
-	Principal     string `protobuf:"bytes,12,opt,name=principal,proto3" json:"principal,omitempty"`
+	Principal string `protobuf:"bytes,12,opt,name=principal,proto3" json:"principal,omitempty"`
+	// Optional. Specifies the priority precedence for this assignment. Used to
+	// resolve ambiguity when multiple assignments match a single job. Higher
+	// numerical values represent higher priority (e.g., 20 is higher than 10). If
+	// unspecified, it defaults to 0. Multiple assignments can share the same
+	// precedence, but it is recommended to use unique precedence values for
+	// assignments within the same assignee scope.
+	Precedence int64 `protobuf:"varint,13,opt,name=precedence,proto3" json:"precedence,omitempty"`
+	// Optional. Common Expression Language (CEL) condition that defines the
+	// matching criteria for this assignment.
+	// The condition must resolve to a boolean value.
+	// Supported variables will be added later.
+	Condition     *expr.Expr `protobuf:"bytes,14,opt,name=condition,proto3" json:"condition,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2548,6 +2561,20 @@ func (x *Assignment) GetPrincipal() string {
 		return x.Principal
 	}
 	return ""
+}
+
+func (x *Assignment) GetPrecedence() int64 {
+	if x != nil {
+		return x.Precedence
+	}
+	return 0
+}
+
+func (x *Assignment) GetCondition() *expr.Expr {
+	if x != nil {
+		return x.Condition
+	}
+	return nil
 }
 
 // The request for
@@ -3607,7 +3634,7 @@ var File_google_cloud_bigquery_reservation_v1_reservation_proto protoreflect.Fil
 
 const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/bigquery/reservation/v1/reservation.proto\x12$google.cloud.bigquery.reservation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xeb\x0f\n" +
+	"6google/cloud/bigquery/reservation/v1/reservation.proto\x12$google.cloud.bigquery.reservation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/expr.proto\"\xeb\x0f\n" +
 	"\vReservation\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
 	"\rslot_capacity\x18\x02 \x01(\x03B\x03\xe0A\x01R\fslotCapacity\x12/\n" +
@@ -3775,7 +3802,7 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x1fMergeCapacityCommitmentsRequest\x12R\n" +
 	"\x06parent\x18\x01 \x01(\tB:\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x126\n" +
 	"\x17capacity_commitment_ids\x18\x02 \x03(\tR\x15capacityCommitmentIds\x129\n" +
-	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x14capacityCommitmentId\"\x86\a\n" +
+	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x14capacityCommitmentId\"\xe1\a\n" +
 	"\n" +
 	"Assignment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
@@ -3785,7 +3812,11 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x19enable_gemini_in_bigquery\x18\n" +
 	" \x01(\bB\x05\xe0A\x01\x18\x01R\x16enableGeminiInBigquery\x12h\n" +
 	"\x11scheduling_policy\x18\v \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\x12!\n" +
-	"\tprincipal\x18\f \x01(\tB\x03\xe0A\x01R\tprincipal\"\xdc\x01\n" +
+	"\tprincipal\x18\f \x01(\tB\x03\xe0A\x01R\tprincipal\x12#\n" +
+	"\n" +
+	"precedence\x18\r \x01(\x03B\x03\xe0A\x01R\n" +
+	"precedence\x124\n" +
+	"\tcondition\x18\x0e \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\"\xdc\x01\n" +
 	"\aJobType\x12\x18\n" +
 	"\x14JOB_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bPIPELINE\x10\x01\x12\t\n" +
@@ -3985,12 +4016,13 @@ var file_google_cloud_bigquery_reservation_v1_reservation_proto_goTypes = []any{
 	(*timestamppb.Timestamp)(nil),            // 50: google.protobuf.Timestamp
 	(*status.Status)(nil),                    // 51: google.rpc.Status
 	(*fieldmaskpb.FieldMask)(nil),            // 52: google.protobuf.FieldMask
-	(*iampb.GetIamPolicyRequest)(nil),        // 53: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),        // 54: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),  // 55: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                    // 56: google.protobuf.Empty
-	(*iampb.Policy)(nil),                     // 57: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil), // 58: google.iam.v1.TestIamPermissionsResponse
+	(*expr.Expr)(nil),                        // 53: google.type.Expr
+	(*iampb.GetIamPolicyRequest)(nil),        // 54: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 55: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 56: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 57: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 58: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 59: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_bigquery_reservation_v1_reservation_proto_depIdxs = []int32{
 	47, // 0: google.cloud.bigquery.reservation.v1.Reservation.autoscale:type_name -> google.cloud.bigquery.reservation.v1.Reservation.Autoscale
@@ -4024,83 +4056,84 @@ var file_google_cloud_bigquery_reservation_v1_reservation_proto_depIdxs = []int3
 	5,  // 28: google.cloud.bigquery.reservation.v1.Assignment.job_type:type_name -> google.cloud.bigquery.reservation.v1.Assignment.JobType
 	6,  // 29: google.cloud.bigquery.reservation.v1.Assignment.state:type_name -> google.cloud.bigquery.reservation.v1.Assignment.State
 	8,  // 30: google.cloud.bigquery.reservation.v1.Assignment.scheduling_policy:type_name -> google.cloud.bigquery.reservation.v1.SchedulingPolicy
-	32, // 31: google.cloud.bigquery.reservation.v1.CreateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 32: google.cloud.bigquery.reservation.v1.ListAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 33: google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 34: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 35: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	52, // 36: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	50, // 37: google.cloud.bigquery.reservation.v1.BiReservation.update_time:type_name -> google.protobuf.Timestamp
-	43, // 38: google.cloud.bigquery.reservation.v1.BiReservation.preferred_tables:type_name -> google.cloud.bigquery.reservation.v1.TableReference
-	44, // 39: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.bi_reservation:type_name -> google.cloud.bigquery.reservation.v1.BiReservation
-	52, // 40: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	51, // 41: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.error:type_name -> google.rpc.Status
-	50, // 42: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_error_time:type_name -> google.protobuf.Timestamp
-	50, // 43: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_replication_time:type_name -> google.protobuf.Timestamp
-	50, // 44: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.soft_failover_start_time:type_name -> google.protobuf.Timestamp
-	11, // 45: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationRequest
-	12, // 46: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:input_type -> google.cloud.bigquery.reservation.v1.ListReservationsRequest
-	14, // 47: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:input_type -> google.cloud.bigquery.reservation.v1.GetReservationRequest
-	15, // 48: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationRequest
-	16, // 49: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateReservationRequest
-	17, // 50: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:input_type -> google.cloud.bigquery.reservation.v1.FailoverReservationRequest
-	23, // 51: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest
-	24, // 52: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsRequest
-	26, // 53: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.GetCapacityCommitmentRequest
-	27, // 54: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.DeleteCapacityCommitmentRequest
-	28, // 55: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest
-	29, // 56: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentRequest
-	31, // 57: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.MergeCapacityCommitmentsRequest
-	33, // 58: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:input_type -> google.cloud.bigquery.reservation.v1.CreateAssignmentRequest
-	34, // 59: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:input_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsRequest
-	36, // 60: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:input_type -> google.cloud.bigquery.reservation.v1.DeleteAssignmentRequest
-	37, // 61: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsRequest
-	38, // 62: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsRequest
-	41, // 63: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:input_type -> google.cloud.bigquery.reservation.v1.MoveAssignmentRequest
-	42, // 64: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:input_type -> google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest
-	45, // 65: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:input_type -> google.cloud.bigquery.reservation.v1.GetBiReservationRequest
-	46, // 66: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest
-	53, // 67: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	54, // 68: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	55, // 69: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	18, // 70: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationGroupRequest
-	19, // 71: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.GetReservationGroupRequest
-	22, // 72: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationGroupRequest
-	20, // 73: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:input_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsRequest
-	7,  // 74: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	13, // 75: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:output_type -> google.cloud.bigquery.reservation.v1.ListReservationsResponse
-	7,  // 76: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	56, // 77: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:output_type -> google.protobuf.Empty
-	7,  // 78: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	7,  // 79: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	10, // 80: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	25, // 81: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse
-	10, // 82: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	56, // 83: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:output_type -> google.protobuf.Empty
-	10, // 84: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	30, // 85: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse
-	10, // 86: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	32, // 87: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
-	35, // 88: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:output_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsResponse
-	56, // 89: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:output_type -> google.protobuf.Empty
-	39, // 90: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse
-	40, // 91: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse
-	32, // 92: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 93: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
-	44, // 94: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
-	44, // 95: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
-	57, // 96: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:output_type -> google.iam.v1.Policy
-	57, // 97: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:output_type -> google.iam.v1.Policy
-	58, // 98: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	9,  // 99: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
-	9,  // 100: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
-	56, // 101: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:output_type -> google.protobuf.Empty
-	21, // 102: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:output_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse
-	74, // [74:103] is the sub-list for method output_type
-	45, // [45:74] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	53, // 31: google.cloud.bigquery.reservation.v1.Assignment.condition:type_name -> google.type.Expr
+	32, // 32: google.cloud.bigquery.reservation.v1.CreateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	32, // 33: google.cloud.bigquery.reservation.v1.ListAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	32, // 34: google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	32, // 35: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	32, // 36: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	52, // 37: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	50, // 38: google.cloud.bigquery.reservation.v1.BiReservation.update_time:type_name -> google.protobuf.Timestamp
+	43, // 39: google.cloud.bigquery.reservation.v1.BiReservation.preferred_tables:type_name -> google.cloud.bigquery.reservation.v1.TableReference
+	44, // 40: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.bi_reservation:type_name -> google.cloud.bigquery.reservation.v1.BiReservation
+	52, // 41: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	51, // 42: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.error:type_name -> google.rpc.Status
+	50, // 43: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_error_time:type_name -> google.protobuf.Timestamp
+	50, // 44: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_replication_time:type_name -> google.protobuf.Timestamp
+	50, // 45: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.soft_failover_start_time:type_name -> google.protobuf.Timestamp
+	11, // 46: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationRequest
+	12, // 47: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:input_type -> google.cloud.bigquery.reservation.v1.ListReservationsRequest
+	14, // 48: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:input_type -> google.cloud.bigquery.reservation.v1.GetReservationRequest
+	15, // 49: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationRequest
+	16, // 50: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateReservationRequest
+	17, // 51: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:input_type -> google.cloud.bigquery.reservation.v1.FailoverReservationRequest
+	23, // 52: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest
+	24, // 53: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsRequest
+	26, // 54: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.GetCapacityCommitmentRequest
+	27, // 55: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.DeleteCapacityCommitmentRequest
+	28, // 56: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest
+	29, // 57: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentRequest
+	31, // 58: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.MergeCapacityCommitmentsRequest
+	33, // 59: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:input_type -> google.cloud.bigquery.reservation.v1.CreateAssignmentRequest
+	34, // 60: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:input_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsRequest
+	36, // 61: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:input_type -> google.cloud.bigquery.reservation.v1.DeleteAssignmentRequest
+	37, // 62: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsRequest
+	38, // 63: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsRequest
+	41, // 64: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:input_type -> google.cloud.bigquery.reservation.v1.MoveAssignmentRequest
+	42, // 65: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:input_type -> google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest
+	45, // 66: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:input_type -> google.cloud.bigquery.reservation.v1.GetBiReservationRequest
+	46, // 67: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest
+	54, // 68: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	55, // 69: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	56, // 70: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	18, // 71: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationGroupRequest
+	19, // 72: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.GetReservationGroupRequest
+	22, // 73: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationGroupRequest
+	20, // 74: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:input_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsRequest
+	7,  // 75: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	13, // 76: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:output_type -> google.cloud.bigquery.reservation.v1.ListReservationsResponse
+	7,  // 77: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	57, // 78: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:output_type -> google.protobuf.Empty
+	7,  // 79: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	7,  // 80: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	10, // 81: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	25, // 82: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse
+	10, // 83: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	57, // 84: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:output_type -> google.protobuf.Empty
+	10, // 85: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	30, // 86: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse
+	10, // 87: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	32, // 88: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
+	35, // 89: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:output_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsResponse
+	57, // 90: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:output_type -> google.protobuf.Empty
+	39, // 91: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse
+	40, // 92: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse
+	32, // 93: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
+	32, // 94: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
+	44, // 95: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
+	44, // 96: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
+	58, // 97: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:output_type -> google.iam.v1.Policy
+	58, // 98: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:output_type -> google.iam.v1.Policy
+	59, // 99: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	9,  // 100: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	9,  // 101: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	57, // 102: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:output_type -> google.protobuf.Empty
+	21, // 103: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:output_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse
+	75, // [75:104] is the sub-list for method output_type
+	46, // [46:75] is the sub-list for method input_type
+	46, // [46:46] is the sub-list for extension type_name
+	46, // [46:46] is the sub-list for extension extendee
+	0,  // [0:46] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_reservation_v1_reservation_proto_init() }

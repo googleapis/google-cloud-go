@@ -47,16 +47,36 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type RoutineServiceClient interface {
 	// Gets the specified routine resource by routine ID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.get` permission on the routine.
 	GetRoutine(ctx context.Context, in *GetRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
 	// Creates a new routine in the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.create` permission on the dataset.
 	InsertRoutine(ctx context.Context, in *InsertRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
 	// Updates information in an existing routine. The update method replaces the
 	// entire Routine resource.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.update` permission on the routine.
 	UpdateRoutine(ctx context.Context, in *UpdateRoutineRequest, opts ...grpc.CallOption) (*Routine, error)
 	// Deletes the routine specified by routineId from the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.delete` permission on the routine.
 	DeleteRoutine(ctx context.Context, in *DeleteRoutineRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all routines in the specified dataset. Requires the READER dataset
 	// role.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.list` permission on the dataset.
 	ListRoutines(ctx context.Context, in *ListRoutinesRequest, opts ...grpc.CallOption) (*ListRoutinesResponse, error)
 }
 
@@ -118,16 +138,36 @@ func (c *routineServiceClient) ListRoutines(ctx context.Context, in *ListRoutine
 // for forward compatibility
 type RoutineServiceServer interface {
 	// Gets the specified routine resource by routine ID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.get` permission on the routine.
 	GetRoutine(context.Context, *GetRoutineRequest) (*Routine, error)
 	// Creates a new routine in the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.create` permission on the dataset.
 	InsertRoutine(context.Context, *InsertRoutineRequest) (*Routine, error)
 	// Updates information in an existing routine. The update method replaces the
 	// entire Routine resource.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.update` permission on the routine.
 	UpdateRoutine(context.Context, *UpdateRoutineRequest) (*Routine, error)
 	// Deletes the routine specified by routineId from the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.delete` permission on the routine.
 	DeleteRoutine(context.Context, *DeleteRoutineRequest) (*emptypb.Empty, error)
 	// Lists all routines in the specified dataset. Requires the READER dataset
 	// role.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.routines.list` permission on the dataset.
 	ListRoutines(context.Context, *ListRoutinesRequest) (*ListRoutinesResponse, error)
 }
 

@@ -116,7 +116,7 @@ func defaultControlRESTCallOptions() *ControlCallOptions {
 	}
 }
 
-// internalControlClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+// internalControlClient is an interface that defines the methods available from AI Commerce Search API.
 type internalControlClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -130,7 +130,7 @@ type internalControlClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ControlClient is a client for interacting with Vertex AI Search for commerce API.
+// ControlClient is a client for interacting with AI Commerce Search API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for modifying Control.
@@ -212,7 +212,7 @@ func (c *ControlClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// controlGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// controlGRPCClient is a client for interacting with AI Commerce Search API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type controlGRPCClient struct {

@@ -83,7 +83,7 @@ func newTestTable(t *testing.T, readInv, writeInv Invoker) (*sessionTable, *sdkm
 		"test-table",
 		openRead,
 		openWrite,
-		nil, // closeRead — fake pools don't back real releaseSessionPool
+		nil, // closeRead — fake pools don't back a real poolCloser
 		nil, // closeWrite
 		&btransport.VRpcDescriptorImpl{MethodName: "test.ReadRow"},
 		&btransport.VRpcDescriptorImpl{MethodName: "test.MutateRow"},
@@ -324,8 +324,8 @@ func TestMutationsAreRetryable_SessionHelper(t *testing.T) {
 // TestSessionTableMutateRow_IdempotencyFlowsToRetry verifies the
 // end-to-end plumbing from mutationsAreRetryable(req.GetMutations()) →
 // RetryingOptions.Idempotent → shouldRetryDefault at table.go:119,176.
-// The retry interceptor is configured with MaxAttempts=3 in dispatch
-// (Java parity), so an idempotent TransportFailure runs the full budget
+// The retry interceptor is configured with MaxAttempts=3 in dispatch,
+// so an idempotent TransportFailure runs the full budget
 // while a non-idempotent one fails after exactly one attempt. A regression that
 // hard-wired Idempotent: true (or broke mutationsAreRetryable) would
 // silently allow double-apply on non-idempotent Apply.
@@ -341,7 +341,7 @@ func TestSessionTableMutateRow_IdempotencyFlowsToRetry(t *testing.T) {
 		{
 			name:           "explicit_timestamp_idempotent_retries_full_budget",
 			muts:           []*btpb.Mutation{mutationSetCell(1_000_000)},
-			wantAttemptCap: 3, // MaxAttempts in session/table.go dispatch (Java parity)
+			wantAttemptCap: 3, // MaxAttempts in session/table.go dispatch
 		},
 		{
 			name:           "server_time_non_idempotent_stops_at_one_attempt",
@@ -560,8 +560,8 @@ func TestSessionTable_Close_JoinsErrors(t *testing.T) {
 
 // TestSessionTable_Close_ReleasersIdempotent verifies a second Close
 // call still runs the release closures (they're idempotent at the
-// sessionClient layer — second releaseSessionPool call finds the
-// entry absent and no-ops). The point is that sessionTable.Close
+// sessionClient layer — the poolCloser behind each is single-shot, so a
+// second call no-ops). The point is that sessionTable.Close
 // itself does not gate on a once — the underlying release is where
 // idempotency lives.
 func TestSessionTable_Close_ReleasersIdempotent(t *testing.T) {

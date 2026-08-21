@@ -1,10 +1,10 @@
 {
   "agentplatform": "0.21.0",
   "bigtable": "1.52.0",
-  "pubsub": "1.51.0",
-  "pubsub/v2": "2.6.1",
+  "pubsub": "1.51.1",
+  "pubsub/v2": "2.6.2",
   "pubsublite": "1.10.0",
   "spanner": "1.94.0",
-  "storage": "1.64.0",
+  "storage": "1.65.0",
   "vertexai": "0.19.0"
 }

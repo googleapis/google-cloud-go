@@ -17,6 +17,8 @@
 // Package auditmanager is an auto-generated package for the
 // Audit Manager API.
 //
+// The Audit Manager API allows customers to manage compliance audits.
+//
 // # General documentation
 //
 // For information that is relevant for all client libraries please reference

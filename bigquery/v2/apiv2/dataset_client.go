@@ -318,11 +318,15 @@ func (c *DatasetClient) Connection() *grpc.ClientConn {
 }
 
 // GetDataset returns the dataset specified by datasetID.
+//
+// IAM PermissionsRequires the bigquery.datasets.get permission on the dataset.
 func (c *DatasetClient) GetDataset(ctx context.Context, req *bigquerypb.GetDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.GetDataset(ctx, req, opts...)
 }
 
 // InsertDataset creates a new empty dataset.
+//
+// IAM PermissionsRequires the bigquery.datasets.create permission on the project.
 func (c *DatasetClient) InsertDataset(ctx context.Context, req *bigquerypb.InsertDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.InsertDataset(ctx, req, opts...)
 }
@@ -331,6 +335,12 @@ func (c *DatasetClient) InsertDataset(ctx context.Context, req *bigquerypb.Inser
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.update on the dataset.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *DatasetClient) PatchDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.PatchDataset(ctx, req, opts...)
 }
@@ -338,6 +348,8 @@ func (c *DatasetClient) PatchDataset(ctx context.Context, req *bigquerypb.Update
 // UpdateDataset updates information in an existing dataset. The update method replaces the
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
+//
+// IAM PermissionsRequires the bigquery.datasets.update permission on the dataset.
 func (c *DatasetClient) UpdateDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.UpdateDataset(ctx, req, opts...)
 }
@@ -346,12 +358,18 @@ func (c *DatasetClient) UpdateDataset(ctx context.Context, req *bigquerypb.Updat
 // a dataset, you must delete all its tables, either manually or by specifying
 // deleteContents. Immediately after deletion, you can create another dataset
 // with the same name.
+//
+// IAM PermissionsRequires the bigquery.datasets.delete permission on the dataset.
 func (c *DatasetClient) DeleteDataset(ctx context.Context, req *bigquerypb.DeleteDatasetRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteDataset(ctx, req, opts...)
 }
 
 // ListDatasets lists all datasets in the specified project to which the user has been
 // granted the READER dataset role.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method.
+// Results are filtered to only include datasets on which the caller has the
+// bigquery.datasets.get permission.
 func (c *DatasetClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
 	return c.internalClient.ListDatasets(ctx, req, opts...)
 }
@@ -359,6 +377,12 @@ func (c *DatasetClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDa
 // UndeleteDataset undeletes a dataset which is within time travel window based on datasetId.
 // If a time is specified, the dataset version deleted at that time is
 // undeleted, else the last live version is undeleted.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.create on the project.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *DatasetClient) UndeleteDataset(ctx context.Context, req *bigquerypb.UndeleteDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	return c.internalClient.UndeleteDataset(ctx, req, opts...)
 }
@@ -772,6 +796,8 @@ func (c *datasetGRPCClient) UndeleteDataset(ctx context.Context, req *bigquerypb
 }
 
 // GetDataset returns the dataset specified by datasetID.
+//
+// IAM PermissionsRequires the bigquery.datasets.get permission on the dataset.
 func (c *datasetRESTClient) GetDataset(ctx context.Context, req *bigquerypb.GetDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -834,6 +860,8 @@ func (c *datasetRESTClient) GetDataset(ctx context.Context, req *bigquerypb.GetD
 }
 
 // InsertDataset creates a new empty dataset.
+//
+// IAM PermissionsRequires the bigquery.datasets.create permission on the project.
 func (c *datasetRESTClient) InsertDataset(ctx context.Context, req *bigquerypb.InsertDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
@@ -903,6 +931,12 @@ func (c *datasetRESTClient) InsertDataset(ctx context.Context, req *bigquerypb.I
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
 // This method supports RFC5789 patch semantics.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.update on the dataset.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *datasetRESTClient) PatchDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
@@ -974,6 +1008,8 @@ func (c *datasetRESTClient) PatchDataset(ctx context.Context, req *bigquerypb.Up
 // UpdateDataset updates information in an existing dataset. The update method replaces the
 // entire dataset resource, whereas the patch method only replaces fields that
 // are provided in the submitted dataset resource.
+//
+// IAM PermissionsRequires the bigquery.datasets.update permission on the dataset.
 func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *bigquerypb.UpdateOrPatchDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetDataset()
@@ -1046,6 +1082,8 @@ func (c *datasetRESTClient) UpdateDataset(ctx context.Context, req *bigquerypb.U
 // a dataset, you must delete all its tables, either manually or by specifying
 // deleteContents. Immediately after deletion, you can create another dataset
 // with the same name.
+//
+// IAM PermissionsRequires the bigquery.datasets.delete permission on the dataset.
 func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.DeleteDatasetRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1091,6 +1129,10 @@ func (c *datasetRESTClient) DeleteDataset(ctx context.Context, req *bigquerypb.D
 
 // ListDatasets lists all datasets in the specified project to which the user has been
 // granted the READER dataset role.
+//
+// IAM PermissionsRequires no specific IAM permission(s) to use this method.
+// Results are filtered to only include datasets on which the caller has the
+// bigquery.datasets.get permission.
 func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.ListDatasetsRequest, opts ...gax.CallOption) *ListFormatDatasetIterator {
 	it := &ListFormatDatasetIterator{}
 	req = proto.CloneOf(req)
@@ -1182,6 +1224,12 @@ func (c *datasetRESTClient) ListDatasets(ctx context.Context, req *bigquerypb.Li
 // UndeleteDataset undeletes a dataset which is within time travel window based on datasetId.
 // If a time is specified, the dataset version deleted at that time is
 // undeleted, else the last live version is undeleted.
+//
+// IAM PermissionsRequires the following IAM permission(s) to use this method:
+//
+//	bigquery.datasets.create on the project.
+//
+//	bigquery.datasets.get on the dataset.
 func (c *datasetRESTClient) UndeleteDataset(ctx context.Context, req *bigquerypb.UndeleteDatasetRequest, opts ...gax.CallOption) (*bigquerypb.Dataset, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

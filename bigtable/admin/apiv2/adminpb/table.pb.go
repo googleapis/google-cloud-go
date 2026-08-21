@@ -99,6 +99,8 @@ const (
 	Table_TIMESTAMP_GRANULARITY_UNSPECIFIED Table_TimestampGranularity = 0
 	// The table keeps data versioned at a granularity of 1ms.
 	Table_MILLIS Table_TimestampGranularity = 1
+	// The table keeps data versioned at a granularity of 1us.
+	Table_MICROS Table_TimestampGranularity = 2
 )
 
 // Enum value maps for Table_TimestampGranularity.
@@ -106,10 +108,12 @@ var (
 	Table_TimestampGranularity_name = map[int32]string{
 		0: "TIMESTAMP_GRANULARITY_UNSPECIFIED",
 		1: "MILLIS",
+		2: "MICROS",
 	}
 	Table_TimestampGranularity_value = map[string]int32{
 		"TIMESTAMP_GRANULARITY_UNSPECIFIED": 0,
 		"MILLIS":                            1,
+		"MICROS":                            2,
 	}
 )
 
@@ -2294,7 +2298,7 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"backupInfoB\r\n" +
 	"\vsource_info\"Z\n" +
 	"\x12ChangeStreamConfig\x12D\n" +
-	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fretentionPeriod\"\x9e\x0f\n" +
+	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fretentionPeriod\"\xaa\x0f\n" +
 	"\x05Table\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12^\n" +
 	"\x0ecluster_states\x18\x02 \x03(\v22.google.bigtable.admin.v2.Table.ClusterStatesEntryB\x03\xe0A\x03R\rclusterStates\x12\\\n" +
@@ -2326,11 +2330,13 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"\x05value\x18\x02 \x01(\v2,.google.bigtable.admin.v2.Table.ClusterStateR\x05value:\x028\x01\x1ai\n" +
 	"\x13ColumnFamiliesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12<\n" +
-	"\x05value\x18\x02 \x01(\v2&.google.bigtable.admin.v2.ColumnFamilyR\x05value:\x028\x01\"I\n" +
+	"\x05value\x18\x02 \x01(\v2&.google.bigtable.admin.v2.ColumnFamilyR\x05value:\x028\x01\"U\n" +
 	"\x14TimestampGranularity\x12%\n" +
 	"!TIMESTAMP_GRANULARITY_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
-	"\x06MILLIS\x10\x01\"q\n" +
+	"\x06MILLIS\x10\x01\x12\n" +
+	"\n" +
+	"\x06MICROS\x10\x02\"q\n" +
 	"\x04View\x12\x14\n" +
 	"\x10VIEW_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tNAME_ONLY\x10\x01\x12\x0f\n" +

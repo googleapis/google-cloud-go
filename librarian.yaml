@@ -12,15 +12,15 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.32.0
+version: v0.38.0
 repo: googleapis/google-cloud-go
 sources:
   discovery:
     commit: 1c6496fb0cf9fa04a35e24e8af871c58298ae37e
     sha256: c3cd1ca564a28485970bdf348cac9bcde65d45792a5c2df1c179654d3ad8b877
   googleapis:
-    commit: 57394718a71457aa37ab002352b22081976bdd91
-    sha256: 633d12eb239bf48648613a8e8f1e4b4875ae8116150fdee0ba4abc910ffb9777
+    commit: 8856eed71a9cb2b9829d2617ee57fe2d8871a691
+    sha256: 54104af35306b605a97f7d1b98b9b96f4a507cd18322b44d81f62eca17969b3a
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
@@ -90,7 +90,7 @@ libraries:
       - path: google/cloud/aiplatform/v1beta1
     skip_generate: true
   - name: alloydb
-    version: 1.28.0
+    version: 1.29.0
     apis:
       - path: google/cloud/alloydb/v1
       - path: google/cloud/alloydb/connectors/v1
@@ -192,11 +192,11 @@ libraries:
       - path: google/cloud/assuredworkloads/v1
       - path: google/cloud/assuredworkloads/v1beta1
   - name: auditmanager
-    version: 1.1.0
+    version: 1.3.0
     apis:
       - path: google/cloud/auditmanager/v1
   - name: auth
-    version: 0.23.0
+    version: 0.23.2
     keep:
       - README.md
       - internal/version.go
@@ -242,13 +242,14 @@ libraries:
       - path: google/cloud/beyondcorp/clientconnectorservices/v1
       - path: google/cloud/beyondcorp/clientgateways/v1
   - name: biglake
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/cloud/biglake/v1
+      - path: google/cloud/biglake/hive/v1
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.79.1
+    version: 1.81.0
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -429,7 +430,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -437,7 +438,7 @@ libraries:
     apis:
       - path: google/cloud/chronicle/v1
   - name: cloudbuild
-    version: 1.32.0
+    version: 1.33.0
     apis:
       - path: google/devtools/cloudbuild/v2
         go:
@@ -587,7 +588,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: dataform
-    version: 1.3.0
+    version: 1.4.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -748,6 +749,11 @@ libraries:
     keep:
       - README.md
     skip_release: true
+  - name: ftp
+    version: 0.1.0
+    apis:
+      - path: google/cloud/ftp/v1
+    copyright_year: "2026"
   - name: functions
     version: 1.25.0
     apis:
@@ -909,7 +915,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.39.0
+    version: 1.40.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -1013,7 +1019,7 @@ libraries:
     apis:
       - path: google/cloud/optimization/v1
   - name: oracledatabase
-    version: 1.4.0
+    version: 1.5.0
     apis:
       - path: google/cloud/oracledatabase/v1
   - name: orchestration
@@ -1096,7 +1102,7 @@ libraries:
       - README.md
       - internal/version.go
   - name: pubsub
-    version: 1.51.0
+    version: 1.51.1
     keep:
       - README.md
       - internal/version.go
@@ -1104,7 +1110,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.6.1
+    version: 2.6.2
     apis:
       - path: google/pubsub/v1
         go:
@@ -1130,7 +1136,7 @@ libraries:
     apis:
       - path: google/cloud/rapidmigrationassessment/v1
   - name: recaptchaenterprise
-    version: 2.26.0
+    version: 2.27.0
     apis:
       - path: google/cloud/recaptchaenterprise/v1
         go:
@@ -1177,7 +1183,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: retail
-    version: 1.32.0
+    version: 1.33.0
     apis:
       - path: google/cloud/retail/v2
       - path: google/cloud/retail/v2beta
@@ -1222,7 +1228,7 @@ libraries:
     apis:
       - path: google/cloud/securesourcemanager/v1
   - name: security
-    version: 1.26.0
+    version: 1.27.0
     apis:
       - path: google/cloud/security/privateca/v1
       - path: google/cloud/security/publicca/v1
@@ -1349,7 +1355,7 @@ libraries:
       - path: google/cloud/sql/v1beta4
     copyright_year: "2026"
   - name: storage
-    version: 1.64.0
+    version: 1.65.0
     apis:
       - path: google/storage/v2
         go:
@@ -1378,7 +1384,7 @@ libraries:
     apis:
       - path: google/streetview/publish/v1
   - name: support
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/cloud/support/v2
       - path: google/cloud/support/v2beta
@@ -1425,7 +1431,7 @@ libraries:
         go:
           proto_package: google.cloud.translation.v3
   - name: vectorsearch
-    version: 1.2.0
+    version: 1.3.0
     apis:
       - path: google/cloud/vectorsearch/v1
       - path: google/cloud/vectorsearch/v1beta
@@ -1493,6 +1499,11 @@ libraries:
       - path: google/cloud/workflows/executions/v1
       - path: google/cloud/workflows/executions/v1beta
       - path: google/cloud/workflows/v1beta
+  - name: workloadidentity
+    version: 0.1.0
+    apis:
+      - path: google/cloud/workloadidentity/v1
+    copyright_year: "2026"
   - name: workloadmanager
     version: 1.1.0
     apis:

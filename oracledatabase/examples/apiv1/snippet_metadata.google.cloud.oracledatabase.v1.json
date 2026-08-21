@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/oracledatabase/apiv1",
-    "version": "1.4.0"
+    "version": "1.5.0"
   },
   "snippets": [
     {
@@ -1296,6 +1296,52 @@
         }
       ],
       "title": "oracledatabase GetAutonomousDatabase Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.GetAutonomousDatabaseRefreshableClones",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.GetAutonomousDatabaseRefreshableClones",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "GetAutonomousDatabaseRefreshableClones"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*oracledatabasepb.AutonomousDatabaseRefreshableClones",
+        "shortName": "GetAutonomousDatabaseRefreshableClones"
+      },
+      "description": "GetAutonomousDatabaseRefreshableClones gets the refreshable clones for a given Autonomous Database.",
+      "file": "Client/GetAutonomousDatabaseRefreshableClones/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_GetAutonomousDatabaseRefreshableClones_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase GetAutonomousDatabaseRefreshableClones Sample"
     },
     {
       "clientMethod": {
@@ -3366,6 +3412,52 @@
         }
       ],
       "title": "oracledatabase ListPluggableDatabases Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.oracledatabase.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.oracledatabase.v1.Client.RefreshAutonomousDatabase",
+        "method": {
+          "fullName": "google.cloud.oracledatabase.v1.OracleDatabase.RefreshAutonomousDatabase",
+          "service": {
+            "fullName": "google.cloud.oracledatabase.v1.OracleDatabase",
+            "shortName": "OracleDatabase"
+          },
+          "shortName": "RefreshAutonomousDatabase"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "oracledatabasepb.RefreshAutonomousDatabaseRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RefreshAutonomousDatabaseOperation",
+        "shortName": "RefreshAutonomousDatabase"
+      },
+      "description": "RefreshAutonomousDatabase refreshes the refreshable clone of an Autonomous Database.",
+      "file": "Client/RefreshAutonomousDatabase/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "oracledatabase_v1_generated_OracleDatabase_RefreshAutonomousDatabase_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "oracledatabase RefreshAutonomousDatabase Sample"
     },
     {
       "clientMethod": {

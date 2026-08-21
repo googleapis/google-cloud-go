@@ -65,11 +65,14 @@ type sessionTable struct {
 	writeVRpcDesc  btransport.VRpcDescriptor
 	md             metadata.MD
 	metricsFactory *metrics.Factory
-	// closeRead / closeWrite release the per-resource pool entries on
-	// this sessionTable's Close(). Both are supplied by sessionClient
-	// via buildLazyReleaser and no-op cleanly when the pool was never
-	// opened or the client already tore itself down. closeWrite is nil
-	// for materialized views (read-only resources), mirroring the nil
+	// closeRead / closeWrite tear down the specific pools this
+	// sessionTable's openers created, on its Close(). Both are supplied by
+	// sessionClient as a per-owner poolCloser.Close (see client.go's
+	// poolCloser): they close exactly the pool the matching opener minted,
+	// by captured identity — never a sibling sessionTable's pool that
+	// happens to share a poolKey — and no-op cleanly when the pool was
+	// never opened or the client already tore itself down. closeWrite is
+	// nil for materialized views (read-only resources), mirroring the nil
 	// write side of the openRead/openWrite pair.
 	closeRead  func() error
 	closeWrite func() error
@@ -120,12 +123,14 @@ func newSessionTable(
 //   - Close ran first: early check trips, opener never runs. No leak.
 //   - Close runs while opener's slow path holds sessionPoolsMu: post-check
 //     trips after opener returns; guardOpen invokes release itself to tear
-//     down the pool the opener just inserted. releaseSessionPool is
-//     idempotent, so Close's parallel call to release harmlessly no-ops.
+//     down the pool the opener just inserted. The poolCloser behind
+//     release is single-shot, so Close's parallel call harmlessly no-ops
+//     (and the opener's own poolCloser.set already handles the case where
+//     Close fully preceded set, closing the fresh pool on the spot).
 //   - Close runs after guardOpen returns: normal path — Close's releaser
-//     finds the pool in sessionPools and closes it. In-flight Invoke on
-//     the returned pool may fail with a "pool closed" error; the client
-//     was concurrently being torn down, so that's expected.
+//     closes the pool the opener created. In-flight Invoke on the returned
+//     pool may fail with a "pool closed" error; the client was
+//     concurrently being torn down, so that's expected.
 //
 // A nil opener passes through as nil so the MV write side (no write pool)
 // stays a lazyPool-with-nil-open ("no session support"), not a
