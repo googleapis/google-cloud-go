@@ -350,3 +350,35 @@ func TestEndSpanEviction(t *testing.T) {
 		})
 	}
 }
+func TestRecordObjectTraceAttributes(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	spanName := "Object.Attrs"
+	ctx, _ = startSpan(ctx, spanName)
+	recordObjectTraceAttributes(ctx, "data/file.txt")
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+
+	found := false
+	for _, a := range gotSpan.Attributes {
+		if string(a.Key) == "storage.object.name" {
+			found = true
+			if got := a.Value.AsString(); got != "data/file.txt" {
+				t.Errorf("storage.object.name: got %v, want %v", got, "data/file.txt")
+			}
+		}
+	}
+	if !found {
+		t.Errorf("attribute storage.object.name not found on span")
+	}
+}
