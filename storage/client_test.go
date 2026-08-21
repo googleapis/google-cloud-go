@@ -34,12 +34,15 @@ import (
 	"time"
 
 	"cloud.google.com/go/iam/apiv1/iampb"
+	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/experimental"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"github.com/googleapis/gax-go/v2/callctx"
+	otcodes "go.opentelemetry.io/otel/codes"
+	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
@@ -4002,5 +4005,177 @@ func setBidiReads(t *testing.T, client storageClient) {
 		t.Cleanup(func() {
 			c.config.grpcBidiReads = false
 		})
+	}
+}
+
+func TestGRPCRetryReadSuccessNotCancelledEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	ctx := context.Background()
+
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	client := emulatorClients["grpc"]
+	if client == nil {
+		t.Skip("grpc emulator client not available")
+	}
+
+	project := "grpc-project"
+	bucket := fmt.Sprintf("grpc-read-cancel-bucket-%d", time.Now().Nanosecond())
+	objName := "test-read.txt"
+	data := []byte("Hello, verifying clean gRPC read completion without cancellation errors!")
+
+	// 1. Create bucket and upload object.
+	if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+		t.Fatalf("CreateBucket: %v", err)
+	}
+
+	vc := &Client{tc: client}
+	w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+	if _, err := w.Write(data); err != nil {
+		t.Fatalf("Write: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("w.Close: %v", err)
+	}
+
+	testCases := []struct {
+		name   string
+		isBidi bool
+	}{
+		{name: "Unidirectional", isBidi: false},
+		{name: "Bidirectional", isBidi: true},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+
+			if tc.isBidi {
+				setBidiReads(t, client)
+			}
+
+			// Instruct emulator to return 503 twice on storage.objects.get
+			instructions := map[string][]string{
+				"storage.objects.get": {"return-503", "return-503"},
+			}
+			testID := createRetryTest(t, client, instructions)
+			ctxRetry := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+			r, err := vc.Bucket(bucket).Object(objName).NewReader(ctxRetry)
+			if err != nil {
+				t.Fatalf("NewReader: %v", err)
+			}
+			got, err := io.ReadAll(r)
+			if err != nil {
+				t.Fatalf("ReadAll: %v", err)
+			}
+			if !bytes.Equal(got, data) {
+				t.Fatalf("got data %q, want %q", got, data)
+			}
+			if err := r.Close(); err != nil {
+				t.Fatalf("r.Close: %v", err)
+			}
+
+			spans := te.Spans()
+			var parentReaderSpan tracetest.SpanStub
+			var successfulTransportSpans int
+			var cancelledSpans int
+
+			for _, s := range spans {
+				if strings.HasSuffix(s.Name, "Object.Reader") {
+					parentReaderSpan = s
+				}
+				for _, attr := range s.Attributes {
+					if string(attr.Key) == "rpc.response.status_code" && attr.Value.AsString() == "CANCELLED" {
+						cancelledSpans++
+					}
+				}
+				if (strings.Contains(s.Name, "NewRangeReader") || strings.Contains(s.Name, "ReadObject")) && s.Status.Code != otcodes.Error {
+					successfulTransportSpans++
+				}
+			}
+
+			if parentReaderSpan.Name != "" && parentReaderSpan.Status.Code == otcodes.Error {
+				t.Errorf("Object.Reader parent span was marked with Error status: %v", parentReaderSpan.Status.Description)
+			}
+			if cancelledSpans > 0 {
+				t.Errorf("expected 0 CANCELLED spans on completed read, got %d", cancelledSpans)
+			}
+			if successfulTransportSpans == 0 {
+				t.Errorf("expected at least 1 successful transport span with Status.Code == OK")
+			}
+		})
+	}
+}
+
+func TestMRDRetryReadSuccessNotCancelledEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	ctx := context.Background()
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	client := emulatorClients["grpc"]
+	if client == nil {
+		t.Skip("grpc emulator client not available")
+	}
+	setBidiReads(t, client)
+
+	project := "grpc-project"
+	bucket := fmt.Sprintf("grpc-mrd-cancel-bucket-%d", time.Now().Nanosecond())
+	objName := "test-mrd.txt"
+	data := []byte("Multi-range downloader test data with multiple ranges to verify clean shutdown without cancellation.")
+
+	if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+		t.Fatalf("CreateBucket: %v", err)
+	}
+
+	vc := &Client{tc: client}
+	w := vc.Bucket(bucket).Object(objName).NewWriter(ctx)
+	if _, err := w.Write(data); err != nil {
+		t.Fatalf("Write: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("w.Close: %v", err)
+	}
+
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	instructions := map[string][]string{
+		"storage.objects.get": {"return-503", "return-503"},
+	}
+	testID := createRetryTest(t, client, instructions)
+	ctxRetry := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+	mrd, err := vc.Bucket(bucket).Object(objName).NewMultiRangeDownloader(ctxRetry)
+	if err != nil {
+		t.Fatalf("NewMultiRangeDownloader: %v", err)
+	}
+
+	var buf1, buf2 bytes.Buffer
+	mrd.Add(&buf1, 0, 10, nil)
+	mrd.Add(&buf2, 10, 20, nil)
+	mrd.Wait()
+	if err := mrd.Close(); err != nil {
+		t.Fatalf("mrd.Close: %v", err)
+	}
+
+	spans := te.Spans()
+	for _, s := range spans {
+		for _, attr := range s.Attributes {
+			if string(attr.Key) == "rpc.response.status_code" && attr.Value.AsString() == "CANCELLED" {
+				t.Errorf("span %q recorded CANCELLED status on clean MRD read completion", s.Name)
+			}
+		}
+		if strings.HasSuffix(s.Name, "Object.MultiRangeDownloader") && s.Status.Code == otcodes.Error {
+			t.Errorf("Object.MultiRangeDownloader parent span marked with Error status: %v", s.Status.Description)
+		}
 	}
 }
