@@ -27,7 +27,7 @@ func BenchmarkReceive_SingleKey(b *testing.B) {
 	wait := make(chan struct{}, b.N)
 	ps := scheduler.NewReceiveScheduler(recSchedulerWorkers)
 	go func() {
-		for i := 0; i < b.N; i++ {
+		for i := range b.N {
 			if err := ps.Add("some-key", fmt.Sprintf("item_%d", i), func(interface{}) {
 				wait <- struct{}{}
 			}); err != nil {
@@ -44,7 +44,7 @@ func BenchmarkReceive_Unkeyed(b *testing.B) {
 	wait := make(chan struct{}, b.N)
 	ps := scheduler.NewReceiveScheduler(recSchedulerWorkers)
 	go func() {
-		for i := 0; i < b.N; i++ {
+		for i := range b.N {
 			if err := ps.Add("", fmt.Sprintf("item_%d", i), func(interface{}) {
 				wait <- struct{}{}
 			}); err != nil {

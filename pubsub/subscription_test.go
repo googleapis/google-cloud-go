@@ -133,7 +133,7 @@ func TestListTopicSubscriptions(t *testing.T) {
 		mustCreateTopic(t, c, "t1"),
 	}
 	wants := make([][]string, 2)
-	for i := 0; i < 5; i++ {
+	for i := range 5 {
 		id := fmt.Sprintf("s%d", i)
 		sub, err := c.CreateSubscription(ctx, id, SubscriptionConfig{Topic: topics[i%2]})
 		if err != nil {
@@ -353,7 +353,7 @@ func testReceive(t *testing.T, synchronous, exactlyOnceDelivery bool) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		for i := 0; i < 256; i++ {
+		for i := range 256 {
 			srv.Publish(topic.name, []byte{byte(i)}, nil)
 		}
 		sub.ReceiveSettings.Synchronous = synchronous
