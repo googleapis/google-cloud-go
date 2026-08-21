@@ -41,6 +41,7 @@ type StartTxnHandler struct {
 
 // ExecuteAction that starts a read-write or read-only transaction.
 func (h *StartTxnHandler) ExecuteAction(ctx context.Context) error {
+	var err error
 	h.FlowContext.mu.Lock()
 	defer h.FlowContext.mu.Unlock()
 	if h.FlowContext.Database == "" {
@@ -52,13 +53,8 @@ func (h *StartTxnHandler) ExecuteAction(ctx context.Context) error {
 	metadata := &utility.TableMetadataHelper{}
 	metadata.InitFrom(h.Action)
 	h.FlowContext.tableMetadata = metadata
+	client := h.FlowContext.DbClient
 
-	// TODO(harsha) where do I close the client? defer client.Close()
-	client, err := spanner.NewClient(ctx, h.FlowContext.Database, h.Options...)
-	if err != nil {
-		return h.OutcomeSender.FinishWithError(err)
-	}
-	h.FlowContext.DbClient = client
 	if h.FlowContext.isTransactionActiveLocked() {
 		return h.OutcomeSender.FinishWithError(spanner.ToSpannerError(status.Error(codes.InvalidArgument, "already in a transaction")))
 	}
