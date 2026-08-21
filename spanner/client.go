@@ -974,6 +974,7 @@ func allClientOpts(numChannels int, compression string, enableDirectAccess bool,
 	clientDefaultOpts := []option.ClientOption{
 		option.WithGRPCConnectionPool(numChannels),
 		option.WithUserAgent(fmt.Sprintf("spanner-go/v%s", internal.Version)),
+		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.ForceCodecV2(vtSafeCodec{}))),
 		option.WithGRPCDialOption(grpc.WithChainUnaryInterceptor(addNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(addStreamNativeMetricsInterceptor()...)),
 		option.WithGRPCDialOption(grpc.WithKeepaliveParams(keepalive.ClientParameters{Time: 120 * time.Second})),
@@ -1010,7 +1011,7 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if !ok {
+		if !ok || mt == nil {
 			return invoker(ctx, method, req, reply, cc, opts...)
 		}
 
@@ -1049,16 +1050,16 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 		streamer grpc.Streamer,
 		opts ...grpc.CallOption,
 	) (grpc.ClientStream, error) {
-		s, err := streamer(ctx, desc, cc, method, opts...)
-		if err != nil {
-			return nil, err
-		}
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 		if ok && mt != nil {
 			mt.method = method
 			if strings.HasPrefix(cc.Target(), "google-c2p") {
 				mt.currOp.setDirectPathEnabled(true)
 			}
+		}
+		s, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			return nil, err
 		}
 		return s, nil
 	}
@@ -1590,12 +1591,12 @@ type BatchWriteResponseIterator struct {
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
+	mt := r.meterTracerFactory.newBuiltinMetricsTracer(r.ctx)
 	defer func() {
-		if mt.method != "" {
+		if mt != nil && mt.method != "" {
 			statusCode, _ := convertToGrpcStatusErr(r.err)
 			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+			recordOperationCompletion(mt)
 		}
 	}()
 	for {

@@ -92,13 +92,28 @@ import (
 // values that may be null. A NULL BYTES can be fetched into a *[]byte as nil.
 // It is an error to fetch a NULL value into any other type.
 type Row struct {
-	fields []*sppb.StructType_Field
-	vals   []*proto3.Value // keep decoded for now
+	fields  []*sppb.StructType_Field
+	vals    []*proto3.Value // keep decoded for now
+	release *rowLifetime
 }
 
 // String implements fmt.stringer.
 func (r *Row) String() string {
+	if rawVals := rawValsForRow(r); rawVals != nil {
+		vals, err := r.materializedValues()
+		if err != nil {
+			return fmt.Sprintf("{fields: %s, raw values: <decode error: %v>}", r.fields, err)
+		}
+		return fmt.Sprintf("{fields: %s, values: %s}", r.fields, vals)
+	}
 	return fmt.Sprintf("{fields: %s, values: %s}", r.fields, r.vals)
+}
+
+func (r *Row) valueCount() int {
+	if rawVals := rawValsForRow(r); rawVals != nil {
+		return len(rawVals)
+	}
+	return len(r.vals)
 }
 
 // errNamesValuesMismatch returns error for when columnNames count is not equal
@@ -150,7 +165,7 @@ func (r *Row) ColumnName(i int) string {
 func (r *Row) ColumnIndex(name string) (int, error) {
 	found := false
 	var index int
-	if len(r.vals) != len(r.fields) {
+	if r.valueCount() != len(r.fields) {
 		return 0, errFieldsMismatchVals(r)
 	}
 	for i, f := range r.fields {
@@ -190,8 +205,15 @@ func (r *Row) ColumnType(i int) *sppb.Type {
 
 // ColumnValue returns the Cloud Spanner Value of column i, or nil for invalid column.
 func (r *Row) ColumnValue(i int) *proto3.Value {
-	if i < 0 || i >= len(r.vals) {
+	if i < 0 || i >= r.valueCount() {
 		return nil
+	}
+	if rawVals := rawValsForRow(r); rawVals != nil {
+		value, err := materializeRawValue(rawVals[i])
+		if err != nil {
+			return nil
+		}
+		return value
 	}
 	return r.vals[i]
 }
@@ -199,7 +221,7 @@ func (r *Row) ColumnValue(i int) *proto3.Value {
 // errColIdxOutOfRange returns error for requested column index is out of the
 // range of the target Row's columns.
 func errColIdxOutOfRange(i int, r *Row) error {
-	return spannerErrorf(codes.OutOfRange, "column index %d out of range [0,%d)", i, len(r.vals))
+	return spannerErrorf(codes.OutOfRange, "column index %d out of range [0,%d)", i, r.valueCount())
 }
 
 // errDecodeColumn returns error for not being able to decode a indexed column.
@@ -218,7 +240,7 @@ func errDecodeColumn(i int, err error) error {
 // errFieldsMismatchVals returns error for field count isn't equal to value count in a Row.
 func errFieldsMismatchVals(r *Row) error {
 	return spannerErrorf(codes.FailedPrecondition, "row has different number of fields(%v) and values(%v)",
-		len(r.fields), len(r.vals))
+		len(r.fields), r.valueCount())
 }
 
 // errNilColType returns error for column type for column i being nil in the row.
@@ -230,7 +252,7 @@ func errNilColType(i int) error {
 // See the Row documentation for the list of acceptable argument types.
 // see Client.ReadWriteTransaction for an example.
 func (r *Row) Column(i int, ptr interface{}) error {
-	if len(r.vals) != len(r.fields) {
+	if r.valueCount() != len(r.fields) {
 		return errFieldsMismatchVals(r)
 	}
 	if i < 0 || i >= len(r.fields) {
@@ -239,7 +261,13 @@ func (r *Row) Column(i int, ptr interface{}) error {
 	if r.fields[i] == nil {
 		return errNilColType(i)
 	}
-	if err := decodeValue(r.vals[i], r.fields[i].Type, ptr); err != nil {
+	var err error
+	if rawVals := rawValsForRow(r); rawVals != nil {
+		err = decodeRawValue(rawVals[i], r.fields[i].Type, ptr)
+	} else {
+		err = decodeValue(r.vals[i], r.fields[i].Type, ptr)
+	}
+	if err != nil {
 		return errDecodeColumn(i, err)
 	}
 	return nil
@@ -280,7 +308,7 @@ func (r *Row) ColumnByName(name string, ptr interface{}) error {
 // errNumOfColValue returns error for providing wrong number of values to Columns.
 func errNumOfColValue(n int, r *Row) error {
 	return spannerErrorf(codes.InvalidArgument,
-		"Columns(): number of arguments (%d) does not match row size (%d)", n, len(r.vals))
+		"Columns(): number of arguments (%d) does not match row size (%d)", n, r.valueCount())
 }
 
 // Columns fetches all the columns in the row at once.
@@ -290,18 +318,29 @@ func errNumOfColValue(n int, r *Row) error {
 // equal to the number of columns. Pass nil to specify that a column should be
 // ignored.
 func (r *Row) Columns(ptrs ...interface{}) error {
-	if len(ptrs) != len(r.vals) {
+	valueCount := r.valueCount()
+	if len(ptrs) != valueCount {
 		return errNumOfColValue(len(ptrs), r)
 	}
-	if len(r.vals) != len(r.fields) {
+	if valueCount != len(r.fields) {
 		return errFieldsMismatchVals(r)
 	}
+	rawVals := rawValsForRow(r)
 	for i, p := range ptrs {
 		if p == nil {
 			continue
 		}
-		if err := r.Column(i, p); err != nil {
-			return err
+		if r.fields[i] == nil {
+			return errNilColType(i)
+		}
+		var err error
+		if rawVals != nil {
+			err = decodeRawValue(rawVals[i], r.fields[i].Type, p)
+		} else {
+			err = decodeValue(r.vals[i], r.fields[i].Type, p)
+		}
+		if err != nil {
+			return errDecodeColumn(i, err)
 		}
 	}
 	return nil
@@ -343,13 +382,17 @@ func (r *Row) ToStruct(p interface{}) error {
 	if t := reflect.TypeOf(p); t == nil || t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
 		return errToStructArgType(p)
 	}
-	if len(r.vals) != len(r.fields) {
+	if r.valueCount() != len(r.fields) {
 		return errFieldsMismatchVals(r)
+	}
+	vals, err := r.materializedValues()
+	if err != nil {
+		return err
 	}
 	// Call decodeStruct directly to decode the row as a typed proto.ListValue.
 	return decodeStruct(
 		&sppb.StructType{Fields: r.fields},
-		&proto3.ListValue{Values: r.vals},
+		&proto3.ListValue{Values: vals},
 		p,
 		false,
 	)
@@ -385,16 +428,36 @@ func (r *Row) ToStructLenient(p interface{}) error {
 	if t := reflect.TypeOf(p); t == nil || t.Kind() != reflect.Ptr || t.Elem().Kind() != reflect.Struct {
 		return errToStructArgType(p)
 	}
-	if len(r.vals) != len(r.fields) {
+	if r.valueCount() != len(r.fields) {
 		return errFieldsMismatchVals(r)
+	}
+	vals, err := r.materializedValues()
+	if err != nil {
+		return err
 	}
 	// Call decodeStruct directly to decode the row as a typed proto.ListValue.
 	return decodeStruct(
 		&sppb.StructType{Fields: r.fields},
-		&proto3.ListValue{Values: r.vals},
+		&proto3.ListValue{Values: vals},
 		p,
 		true,
 	)
+}
+
+func (r *Row) materializedValues() ([]*proto3.Value, error) {
+	rawVals := rawValsForRow(r)
+	if rawVals == nil {
+		return r.vals, nil
+	}
+	values := make([]*proto3.Value, len(rawVals))
+	for i, raw := range rawVals {
+		value, err := materializeRawValue(raw)
+		if err != nil {
+			return nil, err
+		}
+		values[i] = value
+	}
+	return values, nil
 }
 
 // SelectAll iterates all rows to the end. After iterating it closes the rows
