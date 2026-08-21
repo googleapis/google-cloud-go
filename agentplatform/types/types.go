@@ -2427,12 +2427,18 @@ type SandboxEnvironmentSpecCodeExecutionEnvironment struct {
 type SandboxEnvironmentSpecComputerUseEnvironment struct {
 }
 
+// The shell environment with customized settings.
+type SandboxEnvironmentSpecShellEnvironment struct {
+}
+
 // The specification of a sandbox environment.
 type SandboxEnvironmentSpec struct {
 	// Optional. The code execution environment.
 	CodeExecutionEnvironment *SandboxEnvironmentSpecCodeExecutionEnvironment `json:"codeExecutionEnvironment,omitempty"`
 	// Optional. The computer use environment.
 	ComputerUseEnvironment *SandboxEnvironmentSpecComputerUseEnvironment `json:"computerUseEnvironment,omitempty"`
+	// Optional. The shell environment.
+	ShellEnvironment *SandboxEnvironmentSpecShellEnvironment `json:"shellEnvironment,omitempty"`
 }
 
 // Config for creating a Sandbox.
@@ -3970,6 +3976,68 @@ type exportOpenModelConfig struct {
 	// accommodate large model weights. Ignored when
 	// ``wait_for_completion=False``.
 	TimeoutSeconds float32 `json:"timeoutSeconds,omitempty"`
+}
+
+// Config for “deploy_publisher_model“.
+// Superset of options that apply to Google open, partner and Hugging Face
+// publisher models. Only fields relevant to the target model are honored;
+// the backend rejects unsupported fields with a clear error.
+type deployPublisherModelConfig struct {
+	// Whether to block on the deployment long-running operation. When
+	// ``True`` (default), returns the ``DeployResponse`` (deployed endpoint
+	// and model resource names) on completion. When ``False``, returns the
+	// ``DeployModelOperation`` for the caller to poll.
+	WaitForCompletion bool `json:"waitForCompletion,omitempty"`
+	// Optional. Seconds between LRO polls when ``wait_for_completion=True``.
+	// Defaults to 30. Ignored when ``wait_for_completion=False``.
+	PollIntervalSeconds float32 `json:"pollIntervalSeconds,omitempty"`
+	// Optional. Total wall-clock seconds to wait for the deployment to complete
+	// when ``wait_for_completion=True``. Defaults to 2 hours, matching the
+	// Vertex AI Console one-click deployment timeout. Ignored when
+	// ``wait_for_completion=False``.
+	TimeoutSeconds float32 `json:"timeoutSeconds,omitempty"`
+	// Optional. Whether to accept the model's End User License Agreement.
+	AcceptEula bool `json:"acceptEula,omitempty"`
+	// Optional. Hugging Face access token for gated HF models. See
+	// https://huggingface.co/docs/hub/en/security-tokens.
+	HuggingFaceAccessToken string `json:"huggingFaceAccessToken,omitempty"`
+	// Optional. Machine type (e.g. ``'g2-standard-48'``). Leave unset for
+	// automatic resources.
+	MachineType string `json:"machineType,omitempty"`
+	// Optional. Minimum number of replicas.
+	MinReplicaCount int32 `json:"minReplicaCount,omitempty"`
+	// Optional. Maximum number of replicas.
+	MaxReplicaCount int32 `json:"maxReplicaCount,omitempty"`
+	// Optional. Accelerator type (e.g. ``'NVIDIA_L4'``).
+	AcceleratorType string `json:"acceleratorType,omitempty"`
+	// Optional. Number of accelerators per replica.
+	AcceleratorCount int32 `json:"acceleratorCount,omitempty"`
+	// Optional. Schedule on Spot VMs.
+	Spot bool `json:"spot,omitempty"`
+	// Optional. Set True to serve predictions via the shared endpoint DNS
+	// instead of the dedicated endpoint DNS (default).
+	DedicatedEndpointDisabled bool `json:"dedicatedEndpointDisabled,omitempty"`
+	// Optional. Use the fast-tryout deployment path (experimentation only, not
+	// production). Only supported for select models and machine types.
+	FastTryoutEnabled bool `json:"fastTryoutEnabled,omitempty"`
+	// Optional. Display name for the endpoint.
+	EndpointDisplayName string `json:"endpointDisplayName,omitempty"`
+	// Optional. Display name for the deployed model.
+	ModelDisplayName string `json:"modelDisplayName,omitempty"`
+	// Optional. Custom serving container image URI overriding the model's
+	// default container.
+	ServingContainerImageURI string `json:"servingContainerImageUri,omitempty"`
+	// Optional. Serving container ENTRYPOINT override.
+	ContainerCommand []string `json:"containerCommand,omitempty"`
+	// Optional. Serving container CMD override.
+	ContainerArgs []string `json:"containerArgs,omitempty"`
+	// Optional. Environment variables for the serving container.
+	ContainerVariables map[string]string `json:"containerVariables,omitempty"`
+	// Optional. Enable Private Service Connect for the endpoint.
+	EnablePrivateServiceConnect bool `json:"enablePrivateServiceConnect,omitempty"`
+	// Optional. Projects allowed to access the endpoint over Private Service
+	// Connect. Only honored when ``enable_private_service_connect`` is True.
+	PscProjectAllowList []string `json:"pscProjectAllowList,omitempty"`
 }
 
 // A verified deploy option for a model.
