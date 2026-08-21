@@ -3287,51 +3287,70 @@ func TestRetryDeadlineExceededEmulated(t *testing.T) {
 // WithReadStallTimeout.
 func TestRetryReadStallEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
 
-	// Initialize new storage.Client with ReadStallTimeout option. This cannot be initialized
-	// at the transportClient level so we must use NewClient for this test.
-	client, err := NewClient(ctx, experimental.WithReadStallTimeout(
-		&experimental.ReadStallTimeoutConfig{
-			TargetPercentile: 0.99,
-			Min:              10 * time.Millisecond,
-		}))
-	if err != nil {
-		t.Fatalf("storage.NewClient: %v", err)
-	}
+	for _, jsonReads := range []bool{false, true} {
+		name := "XML"
+		if jsonReads {
+			name = "JSON"
+		}
+		t.Run(name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
 
-	// Setup bucket and upload object.
-	project := "fake-project"
-	bucket := fmt.Sprintf("http-bucket-%d", time.Now().Nanosecond())
-	if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
-		t.Fatalf("client.Bucket.Create: %v", err)
-	}
+			opts := []option.ClientOption{
+				experimental.WithReadStallTimeout(
+					&experimental.ReadStallTimeoutConfig{
+						TargetPercentile: 0.99,
+						Min:              10 * time.Millisecond,
+					}),
+			}
+			if jsonReads {
+				opts = append(opts, WithJSONReads())
+			} else {
+				opts = append(opts, WithXMLReads())
+			}
 
-	name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
-	if err != nil {
-		t.Fatalf("createObject: %v", err)
-	}
+			// Initialize new storage.Client with ReadStallTimeout option. This cannot be initialized
+			// at the transportClient level so we must use NewClient for this test.
+			client, err := NewClient(ctx, opts...)
+			if err != nil {
+				t.Fatalf("storage.NewClient: %v", err)
+			}
+			defer client.Close()
 
-	// Plant stall at start for 10s.
-	// The ReadStallTimeout should cause the stalled request to be stopped and
-	// retried before hitting the 5s context deadline.
-	instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
-	testID := createRetryTest(t, client.tc, instructions)
+			// Setup bucket and upload object.
+			project := "fake-project"
+			bucket := fmt.Sprintf("http-bucket-%d-%t", time.Now().Nanosecond(), jsonReads)
+			if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+				t.Fatalf("client.Bucket.Create: %v", err)
+			}
 
-	ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
-	r, err := client.Bucket(bucket).Object(name).NewReader(ctx)
-	if err != nil {
-		t.Fatalf("NewReader: %v", err)
-	}
-	defer r.Close()
+			name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+			if err != nil {
+				t.Fatalf("createObject: %v", err)
+			}
 
-	buf := &bytes.Buffer{}
-	if _, err := io.Copy(buf, r); err != nil {
-		t.Fatalf("io.Copy: %v", err)
-	}
-	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
-		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+			// Plant stall at start for 10s.
+			// The ReadStallTimeout should cause the stalled request to be stopped and
+			// retried before hitting the 5s context deadline.
+			instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
+			testID := createRetryTest(t, client.tc, instructions)
+
+			ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+			r, err := client.Bucket(bucket).Object(name).NewReader(ctx)
+			if err != nil {
+				t.Fatalf("NewReader: %v", err)
+			}
+			defer r.Close()
+
+			buf := &bytes.Buffer{}
+			if _, err := io.Copy(buf, r); err != nil {
+				t.Fatalf("io.Copy: %v", err)
+			}
+			if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+				t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+			}
+		})
 	}
 }
 
