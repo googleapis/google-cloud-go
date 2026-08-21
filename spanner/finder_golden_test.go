@@ -24,6 +24,7 @@ import (
 	"strings"
 	"sync"
 	"testing"
+	"time"
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	locationpb "cloud.google.com/go/spanner/test/proto/locationpb"
@@ -100,6 +101,17 @@ func (c *finderGoldenEndpointCache) Close() error                              {
 func (c *finderGoldenEndpointCache) DefaultChannel() channelEndpoint {
 	return &finderGoldenEndpoint{address: "", cache: c}
 }
+
+func (*finderGoldenEndpointCache) isCoolingDown(string) bool              { return false }
+func (*finderGoldenEndpointCache) remainingCooldown(string) time.Duration { return 0 }
+func (*finderGoldenEndpointCache) recordFailure(string)                   {}
+func (*finderGoldenEndpointCache) selectionCost(uint64, bool, channelEndpoint, string) float64 {
+	return float64(endpointLatencyDefaultRTT) / 1e3
+}
+func (*finderGoldenEndpointCache) recordLatency(uint64, bool, string, time.Duration) {}
+func (*finderGoldenEndpointCache) recordError(uint64, bool, string)                  {}
+func (*finderGoldenEndpointCache) hasScore(uint64, bool, string) bool                { return false }
+func (*finderGoldenEndpointCache) pruneStaleRoutingState(time.Duration)              {}
 
 func (c *finderGoldenEndpointCache) Get(_ context.Context, address string) channelEndpoint {
 	c.mu.Lock()

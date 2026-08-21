@@ -184,11 +184,11 @@ func (c *keyRangeCache) setLifecycleManager(lifecycleManager *endpointLifecycleM
 }
 
 func (c *keyRangeCache) recordReplicaLatency(operationUID uint64, address string, latency time.Duration) {
-	endpointLatencyRegistryRecordLatency(operationUID, false, address, latency)
+	c.endpointCache.recordLatency(operationUID, false, address, latency)
 }
 
 func (c *keyRangeCache) recordReplicaError(operationUID uint64, address string) {
-	endpointLatencyRegistryRecordError(operationUID, false, address)
+	c.endpointCache.recordError(operationUID, false, address)
 }
 
 func routingOperationUID(hint *sppb.RoutingHint) uint64 {
@@ -334,10 +334,6 @@ func (c *keyRangeCache) addRanges(cacheUpdate *sppb.CacheUpdate) {
 }
 
 func (c *keyRangeCache) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
-	return c.fillRoutingHintWithCooldownTracker(ctx, preferLeader, mode, directedReadOptions, hint, nil)
-}
-
-func (c *keyRangeCache) fillRoutingHintWithCooldownTracker(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
 	if hint == nil || len(hint.GetKey()) == 0 {
 		return nil
 	}
@@ -361,7 +357,7 @@ func (c *keyRangeCache) fillRoutingHintWithCooldownTracker(ctx context.Context, 
 	hint.Key = append(hint.Key[:0], targetRange.startKey...)
 	hint.LimitKey = append(hint.LimitKey[:0], targetRange.limitKey...)
 
-	return targetGroup.fillRoutingHintWithCooldownTracker(ctx, c.endpointCache, cfg.lifecycleManager, cfg.deterministicRandom, preferLeader, directedReadOptions, hint, cooldowns)
+	return targetGroup.fillRoutingHint(ctx, c.endpointCache, cfg.lifecycleManager, cfg.deterministicRandom, preferLeader, directedReadOptions, hint)
 }
 
 func (c *keyRangeCache) clear() {
@@ -876,10 +872,6 @@ func (t *cachedTablet) matchesReplicaSelection(selection *sppb.DirectedReadOptio
 }
 
 func (t *cachedTablet) shouldSkip(hint *sppb.RoutingHint) bool {
-	return t.shouldSkipWithCooldownTracker(hint, nil)
-}
-
-func (t *cachedTablet) shouldSkipWithCooldownTracker(hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker) bool {
 	if hint == nil {
 		return true
 	}
@@ -897,13 +889,10 @@ func (t *cachedTablet) shouldSkipWithCooldownTracker(hint *sppb.RoutingHint, coo
 		})
 		return true
 	}
-	if isEndpointCoolingDown(cooldowns, t.serverAddress) {
-		return true
-	}
 	return false
 }
 
-func (t *cachedTablet) shouldSkipForRouting(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker, skippedTabletUIDs map[uint64]struct{}, pendingCreations map[string]struct{}, state *routeSelectionState) bool {
+func (t *cachedTablet) shouldSkipForRouting(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, skippedTabletUIDs map[uint64]struct{}, state *routeSelectionState) bool {
 	if hint == nil {
 		return true
 	}
@@ -918,7 +907,7 @@ func (t *cachedTablet) shouldSkipForRouting(endpointCache channelEndpointCache, 
 		t.addSkippedTablet(hint, skippedTabletUIDs)
 		return true
 	}
-	if isEndpointCoolingDown(cooldowns, t.serverAddress) {
+	if endpointCache != nil && endpointCache.isCoolingDown(t.serverAddress) {
 		if state != nil {
 			state.sawCoolingDownReplica = true
 		}
@@ -930,23 +919,7 @@ func (t *cachedTablet) shouldSkipForRouting(endpointCache channelEndpointCache, 
 
 	endpoint := t.getOrLoadEndpointIfPresent(endpointCache)
 	if endpoint == nil {
-		if state != nil {
-			state.hasUnavailableReplica = true
-		}
-		if pendingCreations != nil {
-			pendingCreations[t.serverAddress] = struct{}{}
-			if lifecycleManager != nil {
-				lifecycleManager.requestEndpointRecreation(t.serverAddress)
-			}
-			return true
-		}
-		if lifecycleManager != nil {
-			lifecycleManager.requestEndpointRecreation(t.serverAddress)
-		}
-		if t.maybeAddRecentTransientFailureSkip(lifecycleManager, hint, skippedTabletUIDs) {
-			return true
-		}
-		return true
+		return false
 	}
 	if endpoint.IsHealthy() {
 		return false
@@ -972,8 +945,8 @@ func (t *cachedTablet) shouldSkipForRouting(endpointCache channelEndpointCache, 
 	return true
 }
 
-func (t *cachedTablet) recordKnownTransientFailure(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker, skippedTabletUIDs map[uint64]struct{}) {
-	if hint == nil || t.skip || t.serverAddress == "" || isEndpointCoolingDown(cooldowns, t.serverAddress) {
+func (t *cachedTablet) recordKnownTransientFailure(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, hint *sppb.RoutingHint, skippedTabletUIDs map[uint64]struct{}) {
+	if hint == nil || t.skip || t.serverAddress == "" || (endpointCache != nil && endpointCache.isCoolingDown(t.serverAddress)) {
 		return
 	}
 
@@ -1010,11 +983,18 @@ func (t *cachedTablet) addSkippedTablet(hint *sppb.RoutingHint, skippedTabletUID
 	})
 }
 
-func (t *cachedTablet) pick(hint *sppb.RoutingHint) channelEndpoint {
+func (t *cachedTablet) pick(ctx context.Context, endpointCache channelEndpointCache, hint *sppb.RoutingHint) channelEndpoint {
 	if hint != nil {
 		hint.TabletUid = t.tabletUID
 	}
-	return t.loadEndpoint()
+	endpoint := t.loadEndpoint()
+	if endpoint == nil && endpointCache != nil && t.serverAddress != "" {
+		endpoint = endpointCache.Get(ctx, t.serverAddress)
+		if endpoint != nil {
+			t.storeEndpoint(endpoint)
+		}
+	}
+	return endpoint
 }
 
 func (g *cachedGroup) update(groupIn *sppb.Group) {
@@ -1076,56 +1056,25 @@ func (g *cachedGroup) leaderLocked() *cachedTablet {
 	return g.tablets[g.leaderIdx]
 }
 
-func (g *cachedGroup) fillRoutingHint(ctx context.Context, endpointCache channelEndpointCache, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
-	return g.fillRoutingHintWithCooldownTracker(ctx, endpointCache, nil, false, preferLeader, directedReadOptions, hint, nil)
-}
-
-func (g *cachedGroup) fillRoutingHintWithCooldownTracker(ctx context.Context, endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, deterministicRandom bool, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker) channelEndpoint {
-	pendingCreations := make(map[string]struct{})
-	selected, state := g.fillRoutingHintAttempt(endpointCache, lifecycleManager, deterministicRandom, preferLeader, directedReadOptions, hint, cooldowns, pendingCreations)
+func (g *cachedGroup) fillRoutingHint(ctx context.Context, endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, deterministicRandom bool, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
+	selected, state := g.fillRoutingHintAttempt(endpointCache, lifecycleManager, deterministicRandom, preferLeader, directedReadOptions, hint)
 	if selected != nil {
-		return selected.pick(hint)
+		return selected.pick(ctx, endpointCache, hint)
 	}
 	if state.allCoolingDown() {
 		g.mu.RLock()
 		selected = g.selectCoolingDownTabletLocked(endpointCache, deterministicRandom, preferLeader, directedReadOptions, hint)
 		if selected != nil {
-			g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, cooldowns, skippedTabletUIDsFromHint(hint))
+			g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, skippedTabletUIDsFromHint(hint))
 			g.mu.RUnlock()
-			return selected.pick(hint)
+			return selected.pick(ctx, endpointCache, hint)
 		}
 		g.mu.RUnlock()
 	}
-	if len(pendingCreations) == 0 || !shouldSynchronouslyWarmEndpoints(endpointCache) {
-		return nil
-	}
-	warmPendingEndpoints(ctx, endpointCache, pendingCreations)
-	selected, state = g.fillRoutingHintAttempt(endpointCache, lifecycleManager, deterministicRandom, preferLeader, directedReadOptions, hint, cooldowns, nil)
-	if selected == nil {
-		if !state.allCoolingDown() {
-			return nil
-		}
-		g.mu.RLock()
-		selected = g.selectCoolingDownTabletLocked(endpointCache, deterministicRandom, preferLeader, directedReadOptions, hint)
-		if selected == nil {
-			g.mu.RUnlock()
-			return nil
-		}
-		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, cooldowns, skippedTabletUIDsFromHint(hint))
-		g.mu.RUnlock()
-	}
-	return selected.pick(hint)
+	return nil
 }
 
-func shouldSynchronouslyWarmEndpoints(endpointCache channelEndpointCache) bool {
-	if endpointCache == nil {
-		return false
-	}
-	_, blocksOnGet := endpointCache.(*endpointClientCache)
-	return !blocksOnGet
-}
-
-func (g *cachedGroup) fillRoutingHintAttempt(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, deterministicRandom bool, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker, pendingCreations map[string]struct{}) (*cachedTablet, routeSelectionState) {
+func (g *cachedGroup) fillRoutingHintAttempt(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, deterministicRandom bool, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) (*cachedTablet, routeSelectionState) {
 	g.mu.RLock()
 	defer g.mu.RUnlock()
 
@@ -1137,49 +1086,46 @@ func (g *cachedGroup) fillRoutingHintAttempt(endpointCache channelEndpointCache,
 	var state routeSelectionState
 
 	if !preferLeader || routingOperationUID(hint) > 0 {
-		selected := g.selectScoreAwareTabletLocked(endpointCache, lifecycleManager, deterministicRandom, preferLeader, hasDirectedReadOptions, directedReadOptions, hint, cooldowns, skippedTabletUIDs, pendingCreations, &state)
+		selected := g.selectScoreAwareTabletLocked(endpointCache, lifecycleManager, deterministicRandom, preferLeader, hasDirectedReadOptions, directedReadOptions, hint, skippedTabletUIDs, &state)
 		if selected != nil {
-			g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, cooldowns, skippedTabletUIDs)
+			g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, skippedTabletUIDs)
 		}
 		return selected, state
 	}
 
 	leader := g.leaderLocked()
-	if !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkipForRouting(endpointCache, lifecycleManager, hint, cooldowns, skippedTabletUIDs, pendingCreations, &state) {
-		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, leader, directedReadOptions, hint, cooldowns, skippedTabletUIDs)
+	if !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkipForRouting(endpointCache, lifecycleManager, hint, skippedTabletUIDs, &state) {
+		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, leader, directedReadOptions, hint, skippedTabletUIDs)
 		return leader, state
 	}
 	for _, tablet := range g.tablets {
 		if !tablet.matches(directedReadOptions) {
 			continue
 		}
-		if tablet.shouldSkipForRouting(endpointCache, lifecycleManager, hint, cooldowns, skippedTabletUIDs, pendingCreations, &state) {
+		if tablet.shouldSkipForRouting(endpointCache, lifecycleManager, hint, skippedTabletUIDs, &state) {
 			continue
 		}
-		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, tablet, directedReadOptions, hint, cooldowns, skippedTabletUIDs)
+		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, tablet, directedReadOptions, hint, skippedTabletUIDs)
 		return tablet, state
 	}
 	return nil, state
 }
 
-func (g *cachedGroup) selectScoreAwareTabletLocked(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, deterministicRandom bool, preferLeader bool, hasDirectedReadOptions bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker, skippedTabletUIDs map[uint64]struct{}, pendingCreations map[string]struct{}, state *routeSelectionState) *cachedTablet {
+func (g *cachedGroup) selectScoreAwareTabletLocked(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, deterministicRandom bool, preferLeader bool, hasDirectedReadOptions bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, skippedTabletUIDs map[uint64]struct{}, state *routeSelectionState) *cachedTablet {
 	preferredLeader := g.localLeaderForScoreBiasLocked(hasDirectedReadOptions)
 	candidates := make([]eligibleReplica, 0, len(g.tablets))
 	for _, tablet := range g.tablets {
 		if !tablet.matches(directedReadOptions) {
 			continue
 		}
-		if tablet.shouldSkipForRouting(endpointCache, lifecycleManager, hint, cooldowns, skippedTabletUIDs, pendingCreations, state) {
+		if tablet.shouldSkipForRouting(endpointCache, lifecycleManager, hint, skippedTabletUIDs, state) {
 			continue
 		}
 		endpoint := tablet.loadEndpoint()
-		if endpoint == nil {
-			continue
-		}
 		candidates = append(candidates, eligibleReplica{
 			tablet:        tablet,
 			endpoint:      endpoint,
-			selectionCost: selectionCostForTablet(routingOperationUID(hint), preferLeader, endpoint, tablet, preferredLeader),
+			selectionCost: selectionCostForTablet(endpointCache, routingOperationUID(hint), preferLeader, endpoint, tablet, preferredLeader),
 		})
 	}
 	selected := selectEligibleReplica(candidates, deterministicRandom)
@@ -1204,7 +1150,7 @@ func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpoin
 		candidates = append(candidates, eligibleReplica{
 			tablet:        tablet,
 			endpoint:      endpoint,
-			selectionCost: selectionCostForTablet(routingOperationUID(hint), preferLeader, endpoint, tablet, preferredLeader),
+			selectionCost: selectionCostForTablet(endpointCache, routingOperationUID(hint), preferLeader, endpoint, tablet, preferredLeader),
 		})
 	}
 	selected := selectEligibleReplica(candidates, deterministicRandom)
@@ -1222,11 +1168,14 @@ func (g *cachedGroup) localLeaderForScoreBiasLocked(hasDirectedReadOptions bool)
 	return leader
 }
 
-func selectionCostForTablet(operationUID uint64, preferLeader bool, endpoint channelEndpoint, tablet *cachedTablet, preferredLeader *cachedTablet) float64 {
+func selectionCostForTablet(endpointCache channelEndpointCache, operationUID uint64, preferLeader bool, endpoint channelEndpoint, tablet *cachedTablet, preferredLeader *cachedTablet) float64 {
 	if tablet == nil {
 		return 0
 	}
-	cost := endpointLatencyRegistrySelectionCost(operationUID, preferLeader, endpoint, tablet.serverAddress)
+	cost := float64(endpointLatencyDefaultRTT) / 1e3
+	if endpoint != nil && endpointCache != nil {
+		cost = endpointCache.selectionCost(operationUID, preferLeader, endpoint, endpoint.Address())
+	}
 	if preferredLeader != nil && tablet == preferredLeader {
 		return cost * localLeaderSelectionCostBias
 	}
@@ -1259,21 +1208,12 @@ func selectEligibleReplica(candidates []eligibleReplica, alwaysSelectBest bool) 
 	return &candidates[selectedIndex]
 }
 
-func warmPendingEndpoints(ctx context.Context, endpointCache channelEndpointCache, pendingCreations map[string]struct{}) {
-	if endpointCache == nil || len(pendingCreations) == 0 {
-		return
-	}
-	for address := range pendingCreations {
-		endpointCache.Get(ctx, address)
-	}
-}
-
-func (g *cachedGroup) recordKnownTransientFailuresLocked(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, selected *cachedTablet, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker, skippedTabletUIDs map[uint64]struct{}) {
+func (g *cachedGroup) recordKnownTransientFailuresLocked(endpointCache channelEndpointCache, lifecycleManager *endpointLifecycleManager, selected *cachedTablet, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, skippedTabletUIDs map[uint64]struct{}) {
 	for _, tablet := range g.tablets {
 		if tablet == selected || !tablet.matches(directedReadOptions) {
 			continue
 		}
-		tablet.recordKnownTransientFailure(endpointCache, lifecycleManager, hint, cooldowns, skippedTabletUIDs)
+		tablet.recordKnownTransientFailure(endpointCache, lifecycleManager, hint, skippedTabletUIDs)
 	}
 }
 

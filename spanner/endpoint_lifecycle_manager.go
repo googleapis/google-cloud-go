@@ -43,7 +43,18 @@ const (
 type endpointLifecycleState struct {
 	lastRealTrafficAt            time.Time
 	consecutiveTransientFailures int
-	needsCreate                  bool
+}
+
+type lifecycleManagedEndpoint interface {
+	channelEndpoint
+	recordRealTrafficAt(time.Time)
+	resetLifecycleTransientFailures()
+	incrementLifecycleTransientFailures() int
+	lifecycleStateSnapshot() endpointLifecycleState
+}
+
+type endpointAddressProvider interface {
+	addresses() []string
 }
 
 type endpointLifecycleManager struct {
@@ -54,12 +65,11 @@ type endpointLifecycleManager struct {
 	now                    func() time.Time
 
 	mu                               sync.Mutex
-	endpoints                        map[string]*endpointLifecycleState
+	pendingRecreations               map[string]struct{}
 	transientFailureEvictedAddresses map[string]struct{}
 	shutdownOnce                     sync.Once
 	stopped                          bool
 
-	workCh chan struct{}
 	stopCh chan struct{}
 	doneCh chan struct{}
 
@@ -85,7 +95,7 @@ func newEndpointLifecycleManagerWithOptions(
 	now func() time.Time,
 ) *endpointLifecycleManager {
 	if endpointCache == nil {
-		endpointCache = newPassthroughChannelEndpointCache()
+		return nil
 	}
 	if probeInterval <= 0 {
 		probeInterval = defaultLifecycleProbeInterval
@@ -103,9 +113,8 @@ func newEndpointLifecycleManagerWithOptions(
 		probeInterval:                    probeInterval,
 		idleEvictionDuration:             idleEvictionDuration,
 		now:                              now,
-		endpoints:                        make(map[string]*endpointLifecycleState),
+		pendingRecreations:               make(map[string]struct{}),
 		transientFailureEvictedAddresses: make(map[string]struct{}),
-		workCh:                           make(chan struct{}, 1),
 		stopCh:                           make(chan struct{}),
 		doneCh:                           make(chan struct{}),
 		createWakeCh:                     make(chan struct{}, 1),
@@ -128,11 +137,9 @@ func (m *endpointLifecycleManager) run() {
 
 	for {
 		select {
-		case <-m.workCh:
-			m.signalCreator()
 		case <-probeTicker.C:
 			m.signalCreator()
-			m.probeManagedEndpoints()
+			m.probeCachedEndpoints()
 		case <-evictionTicker.C:
 			m.checkIdleEviction()
 		case <-m.stopCh:
@@ -141,47 +148,18 @@ func (m *endpointLifecycleManager) run() {
 	}
 }
 
-func (m *endpointLifecycleManager) signalWork() {
-	select {
-	case m.workCh <- struct{}{}:
-	default:
-	}
-}
-
 func (m *endpointLifecycleManager) recordRealTraffic(address string) {
 	if m == nil || address == "" || address == m.defaultEndpointAddress {
 		return
 	}
 
-	now := m.now()
-
-	m.mu.Lock()
-	if m.stopped {
-		m.mu.Unlock()
+	endpoint := m.endpointCache.GetIfPresent(address)
+	if managed := m.managedEndpoint(endpoint); managed != nil {
+		managed.recordRealTrafficAt(m.now())
 		return
 	}
-	state, ok := m.endpoints[address]
-	if !ok {
-		state = &endpointLifecycleState{
-			lastRealTrafficAt: now,
-			needsCreate:       true,
-		}
-		m.endpoints[address] = state
-		m.mu.Unlock()
-		m.signalWork()
-		return
-	}
-	state.lastRealTrafficAt = now
-	m.mu.Unlock()
 
-	if m.endpointCache.GetIfPresent(address) == nil {
-		m.mu.Lock()
-		if state = m.endpoints[address]; state != nil && !m.stopped {
-			state.needsCreate = true
-		}
-		m.mu.Unlock()
-		m.signalWork()
-	}
+	m.requestEndpointRecreation(address)
 }
 
 func (m *endpointLifecycleManager) requestEndpointRecreation(address string) {
@@ -189,24 +167,15 @@ func (m *endpointLifecycleManager) requestEndpointRecreation(address string) {
 		return
 	}
 
-	now := m.now()
-
 	m.mu.Lock()
 	if m.stopped {
 		m.mu.Unlock()
 		return
 	}
-	state, ok := m.endpoints[address]
-	if !ok {
-		state = &endpointLifecycleState{
-			lastRealTrafficAt: now,
-		}
-		m.endpoints[address] = state
-	}
-	state.needsCreate = true
+	m.pendingRecreations[address] = struct{}{}
 	m.mu.Unlock()
 
-	m.signalWork()
+	m.signalCreator()
 }
 
 func (m *endpointLifecycleManager) runCreator() {
@@ -262,20 +231,20 @@ func (m *endpointLifecycleManager) createEndpoint(address string) bool {
 	default:
 	}
 	if endpoint == nil {
-		m.mu.Lock()
-		if state := m.endpoints[address]; state != nil && !m.stopped {
-			state.needsCreate = true
-		}
-		m.mu.Unlock()
+		m.requestEndpointRecreation(address)
 		return true
 	}
 
+	managed := m.managedEndpoint(endpoint)
 	m.mu.Lock()
-	_, stillManaged := m.endpoints[address]
 	stopped := m.stopped
 	m.mu.Unlock()
-	if stopped || !stillManaged {
+	if stopped {
 		m.endpointCache.Evict(address)
+		return true
+	}
+	if managed != nil {
+		managed.recordRealTrafficAt(m.now())
 	}
 	return true
 }
@@ -288,49 +257,58 @@ func (m *endpointLifecycleManager) pendingCreationAddresses() []string {
 		return nil
 	}
 
-	addresses := make([]string, 0, len(m.endpoints))
-	for address, state := range m.endpoints {
-		if !state.needsCreate {
-			continue
-		}
-		state.needsCreate = false
+	addresses := make([]string, 0, len(m.pendingRecreations))
+	for address := range m.pendingRecreations {
+		delete(m.pendingRecreations, address)
 		addresses = append(addresses, address)
 	}
 	return addresses
 }
 
-func (m *endpointLifecycleManager) probeManagedEndpoints() {
+func (m *endpointLifecycleManager) probeCachedEndpoints() {
 	if m == nil {
 		return
 	}
 
-	for _, address := range m.managedAddresses() {
+	for _, address := range m.cachedAddresses() {
 		m.probe(address)
 	}
 }
 
-func (m *endpointLifecycleManager) managedAddresses() []string {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	if m.stopped {
+func (m *endpointLifecycleManager) cachedAddresses() []string {
+	if m == nil || m.endpointCache == nil {
 		return nil
 	}
-
-	addresses := make([]string, 0, len(m.endpoints))
-	for address := range m.endpoints {
-		addresses = append(addresses, address)
+	provider, ok := m.endpointCache.(endpointAddressProvider)
+	if !ok {
+		return nil
 	}
-	return addresses
+	return provider.addresses()
+}
+
+func (m *endpointLifecycleManager) managedEndpoint(endpoint channelEndpoint) lifecycleManagedEndpoint {
+	if endpoint == nil {
+		return nil
+	}
+	managed, ok := endpoint.(lifecycleManagedEndpoint)
+	if !ok {
+		return nil
+	}
+	return managed
 }
 
 func (m *endpointLifecycleManager) probe(address string) {
-	endpoint := m.endpointCache.GetIfPresent(address)
-	if endpoint == nil {
+	if address == "" || address == m.defaultEndpointAddress {
 		return
 	}
 
-	conn := endpoint.GetConn()
+	endpoint := m.endpointCache.GetIfPresent(address)
+	managed := m.managedEndpoint(endpoint)
+	if managed == nil {
+		return
+	}
+
+	conn := managed.GetConn()
 	if conn == nil {
 		return
 	}
@@ -343,41 +321,28 @@ func (m *endpointLifecycleManager) probe(address string) {
 	// a few minutes to transition out of Ready.
 	state := conn.GetState()
 
-	m.mu.Lock()
-	lifecycleState, ok := m.endpoints[address]
-	if !ok || m.stopped {
-		m.mu.Unlock()
-		return
-	}
-
 	switch state {
 	case connectivity.Ready:
-		lifecycleState.consecutiveTransientFailures = 0
+		managed.resetLifecycleTransientFailures()
+		m.mu.Lock()
 		delete(m.transientFailureEvictedAddresses, address)
 		m.mu.Unlock()
 		return
 	case connectivity.Idle:
-		lifecycleState.consecutiveTransientFailures = 0
-		m.mu.Unlock()
+		managed.resetLifecycleTransientFailures()
 		conn.Connect()
 		return
 	case connectivity.Connecting:
-		m.mu.Unlock()
 		return
 	case connectivity.TransientFailure:
-		lifecycleState.consecutiveTransientFailures++
-		evict := lifecycleState.consecutiveTransientFailures >= maxTransientFailureProbeCount
-		m.mu.Unlock()
-		if evict {
+		if managed.incrementLifecycleTransientFailures() >= maxTransientFailureProbeCount {
 			m.evictEndpoint(address, lifecycleEvictionReasonTransientFailure)
 		}
 		return
 	case connectivity.Shutdown:
-		m.mu.Unlock()
 		m.evictEndpoint(address, lifecycleEvictionReasonShutdown)
 		return
 	default:
-		m.mu.Unlock()
 		return
 	}
 }
@@ -389,21 +354,18 @@ func (m *endpointLifecycleManager) checkIdleEviction() {
 
 	now := m.now()
 	var toEvict []string
-
-	m.mu.Lock()
-	if m.stopped {
-		m.mu.Unlock()
-		return
-	}
-	for address, state := range m.endpoints {
-		if address == m.defaultEndpointAddress {
+	for _, address := range m.cachedAddresses() {
+		if address == "" || address == m.defaultEndpointAddress {
+			continue
+		}
+		state, ok := m.getEndpointState(address)
+		if !ok || state.lastRealTrafficAt.IsZero() {
 			continue
 		}
 		if now.Sub(state.lastRealTrafficAt) > m.idleEvictionDuration {
 			toEvict = append(toEvict, address)
 		}
 	}
-	m.mu.Unlock()
 
 	for _, address := range toEvict {
 		m.evictEndpoint(address, lifecycleEvictionReasonIdle)
@@ -420,11 +382,7 @@ func (m *endpointLifecycleManager) evictEndpoint(address string, reason lifecycl
 		m.mu.Unlock()
 		return
 	}
-	if _, ok := m.endpoints[address]; !ok {
-		m.mu.Unlock()
-		return
-	}
-	delete(m.endpoints, address)
+	delete(m.pendingRecreations, address)
 	if reason == lifecycleEvictionReasonTransientFailure {
 		m.transientFailureEvictedAddresses[address] = struct{}{}
 	} else {
@@ -436,10 +394,10 @@ func (m *endpointLifecycleManager) evictEndpoint(address string, reason lifecycl
 }
 
 func (m *endpointLifecycleManager) isManaged(address string) bool {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	_, ok := m.endpoints[address]
-	return ok
+	if m == nil || address == "" || address == m.defaultEndpointAddress {
+		return false
+	}
+	return m.endpointCache.GetIfPresent(address) != nil
 }
 
 func (m *endpointLifecycleManager) wasRecentlyEvictedTransientFailure(address string) bool {
@@ -450,20 +408,28 @@ func (m *endpointLifecycleManager) wasRecentlyEvictedTransientFailure(address st
 }
 
 func (m *endpointLifecycleManager) getEndpointState(address string) (endpointLifecycleState, bool) {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-
-	state, ok := m.endpoints[address]
-	if !ok {
+	if m == nil || address == "" || address == m.defaultEndpointAddress {
 		return endpointLifecycleState{}, false
 	}
-	return *state, true
+	managed := m.managedEndpoint(m.endpointCache.GetIfPresent(address))
+	if managed == nil {
+		return endpointLifecycleState{}, false
+	}
+	return managed.lifecycleStateSnapshot(), true
 }
 
 func (m *endpointLifecycleManager) managedEndpointCount() int {
-	m.mu.Lock()
-	defer m.mu.Unlock()
-	return len(m.endpoints)
+	if m == nil {
+		return 0
+	}
+	count := 0
+	for _, address := range m.cachedAddresses() {
+		if address == "" || address == m.defaultEndpointAddress {
+			continue
+		}
+		count++
+	}
+	return count
 }
 
 func (m *endpointLifecycleManager) shutdown() {
@@ -482,7 +448,7 @@ func (m *endpointLifecycleManager) shutdown() {
 		<-m.createDoneCh
 
 		m.mu.Lock()
-		m.endpoints = make(map[string]*endpointLifecycleState)
+		m.pendingRecreations = make(map[string]struct{})
 		m.transientFailureEvictedAddresses = make(map[string]struct{})
 		m.mu.Unlock()
 	})

@@ -22,53 +22,40 @@ import (
 	"time"
 )
 
-func TestEWMALatencyTrackerInitialization(t *testing.T) {
-	clock := newLifecycleTestClock(time.Unix(100, 0))
-	tracker := newEWMALatencyTrackerWithOptions(10*time.Second, clock.Now)
-	tracker.update(100 * time.Microsecond)
-	if got, want := tracker.scoreValue(), 100.0; got != want {
-		t.Fatalf("scoreValue() = %v, want %v", got, want)
+func TestEndpointScoreStateInitialization(t *testing.T) {
+	state := &endpointScoreState{}
+	state.update(100*time.Microsecond, time.Unix(100, 0))
+	if got, want := state.scoreMicros, 100.0; got != want {
+		t.Fatalf("scoreMicros = %v, want %v", got, want)
 	}
 }
 
-func TestEWMALatencyTrackerUninitializedScore(t *testing.T) {
-	tracker := newEWMALatencyTracker()
-	if got := tracker.scoreValue(); got != math.MaxFloat64 {
-		t.Fatalf("scoreValue() = %v, want MaxFloat64", got)
-	}
-}
-
-func TestEWMALatencyTrackerFixedAlpha(t *testing.T) {
-	clock := newLifecycleTestClock(time.Unix(100, 0))
-	tracker := newEWMALatencyTrackerWithAlpha(0.5, clock.Now)
-	tracker.update(100 * time.Microsecond)
-	tracker.update(200 * time.Microsecond)
-	tracker.update(300 * time.Microsecond)
-	if got, want := tracker.scoreValue(), 225.0; got != want {
-		t.Fatalf("scoreValue() = %v, want %v", got, want)
-	}
-}
-
-func TestEWMALatencyTrackerTimeBasedAlpha(t *testing.T) {
-	clock := newLifecycleTestClock(time.Unix(100, 0))
-	tracker := newEWMALatencyTrackerWithOptions(10*time.Second, clock.Now)
-	tracker.update(100 * time.Microsecond)
-	clock.Advance(10 * time.Second)
-	tracker.update(200 * time.Microsecond)
+func TestEndpointScoreStateTimeBasedAlpha(t *testing.T) {
+	state := &endpointScoreState{}
+	now := time.Unix(100, 0)
+	state.update(100*time.Microsecond, now)
+	state.update(200*time.Microsecond, now.Add(10*time.Second))
 
 	alpha := 1 - math.Exp(-1)
 	want := alpha*200 + (1-alpha)*100
-	if got := tracker.scoreValue(); math.Abs(got-want) > 0.001 {
-		t.Fatalf("scoreValue() = %v, want %v", got, want)
+	if got := state.scoreMicros; math.Abs(got-want) > 0.001 {
+		t.Fatalf("scoreMicros = %v, want %v", got, want)
 	}
 }
 
-func TestEWMALatencyTrackerRecordError(t *testing.T) {
+func TestEndpointScoreStateRecordErrorPenalty(t *testing.T) {
 	clock := newLifecycleTestClock(time.Unix(100, 0))
-	tracker := newEWMALatencyTrackerWithAlpha(0.5, clock.Now)
-	tracker.update(100 * time.Microsecond)
-	tracker.recordError(10 * time.Millisecond)
-	if got, want := tracker.scoreValue(), 5050.0; got != want {
-		t.Fatalf("scoreValue() = %v, want %v", got, want)
+	cfg := defaultEndpointRoutingConfig()
+	cfg.now = clock.Now
+	endpoint := &grpcChannelEndpoint{address: "server-a:443"}
+
+	endpoint.recordLatency(cfg, 7, false, 100*time.Microsecond)
+	endpoint.recordError(cfg, 7, false)
+
+	endpoint.stateMu.Lock()
+	got := endpoint.scores[endpointScoreKey{operationUID: 7, preferLeader: false}].scoreMicros
+	endpoint.stateMu.Unlock()
+	if got <= 100.0 {
+		t.Fatalf("expected error penalty to increase score, got %v", got)
 	}
 }
