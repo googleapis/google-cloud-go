@@ -18,13 +18,16 @@ import (
 	"context"
 	"errors"
 	"fmt"
+	"io"
 	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
@@ -49,6 +52,7 @@ func testDCPConfig(initial, min, max int) DynamicChannelPoolConfig {
 		DCPMaxChannels:                       max,
 		DCPMaxRPCPerChannel:                  1,
 		DCPMinRPCPerChannel:                  0.5,
+		DCPErrorPenaltyStep:                  1,
 		DCPScaleDownCheckInterval:            20 * time.Millisecond,
 		DCPScaleUpCooldown:                   time.Millisecond,
 		DCPDownscaleConsecutiveLowLoadChecks: 1,
@@ -393,7 +397,9 @@ func TestDynamicChannelPoolOTMetricsScalingCounterUsesChannelDeltaAndDirection(t
 	_, client, teardown := setupDCPMockedTestServerWithMeterProvider(t, cfg, mp)
 	defer teardown()
 	p := client.sc.dynamicPool
-	p.setPrimeSession(client.sm.multiplexedSession.id)
+	// This test drives scaleUp synchronously; seed priming without also waking the
+	// background worker and racing the explicit call.
+	p.primeSession.Store(client.sm.multiplexedSession.id)
 	p.getEntries()[0].unaryLoad.Store(3)
 	p.totalRPCLoad.Store(3)
 	p.scaleUp()
@@ -562,9 +568,10 @@ func (r *blockingMetricRegistration) Unregister() error {
 }
 
 type fakeDCPConnPool struct {
-	invokeErr   error
-	invokeCount int
-	closed      bool
+	invokeErr      error
+	invokeCount    int
+	newStreamCount int
+	closed         bool
 }
 
 func (f *fakeDCPConnPool) Conn() *grpc.ClientConn { return nil }
@@ -578,6 +585,7 @@ func (f *fakeDCPConnPool) Invoke(ctx context.Context, method string, args, reply
 	return f.invokeErr
 }
 func (f *fakeDCPConnPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+	f.newStreamCount++
 	return nil, f.invokeErr
 }
 
@@ -950,7 +958,9 @@ func TestDynamicChannelPoolScaleUpDialFailureDoesNotPublishEntry(t *testing.T) {
 	_, client, teardown := setupDCPMockedTestServer(t, testDCPConfig(1, 1, 2))
 	defer teardown()
 	p := client.sc.dynamicPool
-	p.setPrimeSession(client.sm.multiplexedSession.id)
+	// This test drives scaleUp synchronously; seed priming without also waking the
+	// background worker and racing the explicit call.
+	p.primeSession.Store(client.sm.multiplexedSession.id)
 	p.dial = func(context.Context) (gtransport.ConnPool, error) {
 		return nil, status.Error(codes.Unavailable, "dial failed")
 	}
@@ -985,6 +995,8 @@ func TestDefaultDynamicChannelPoolConfigValues(t *testing.T) {
 		DCPMaxChannels:                       10,
 		DCPMaxRPCPerChannel:                  25,
 		DCPMinRPCPerChannel:                  15,
+		DCPErrorPenaltyStep:                  5,
+		DCPErrorPenaltyDuration:              5 * time.Second,
 		DCPScaleDownCheckInterval:            3 * time.Minute,
 		DCPScaleUpCooldown:                   10 * time.Second,
 		DCPDownscaleConsecutiveLowLoadChecks: 3,
@@ -1022,4 +1034,605 @@ func TestDynamicChannelPoolConfigRejectsNegativeScaleDownInterval(t *testing.T) 
 	if err == nil {
 		t.Fatal("normalizeDCPConfig succeeded, want error")
 	}
+}
+
+func TestDCPApplyErrorPenaltyCodes(t *testing.T) {
+	apiErr, ok := apierror.FromError(status.Error(codes.Unavailable, "unavailable"))
+	if !ok {
+		t.Fatal("apierror.FromError() did not recognize Unavailable status")
+	}
+	tests := []struct {
+		name        string
+		err         error
+		duration    time.Duration
+		wantPenalty bool
+	}{
+		{name: "nil", duration: time.Second},
+		{name: "OK", err: status.Error(codes.OK, "ok"), duration: time.Second},
+		{name: "Unavailable", err: status.Error(codes.Unavailable, "unavailable"), duration: time.Second, wantPenalty: true},
+		{name: "ResourceExhausted", err: status.Error(codes.ResourceExhausted, "resource exhausted"), duration: time.Second, wantPenalty: true},
+		{name: "APIError Unavailable", err: apiErr, duration: time.Second, wantPenalty: true},
+		{name: "Internal", err: status.Error(codes.Internal, "internal"), duration: time.Second},
+		{name: "DeadlineExceeded", err: status.Error(codes.DeadlineExceeded, "deadline"), duration: time.Second},
+		{name: "Canceled", err: status.Error(codes.Canceled, "canceled"), duration: time.Second},
+		{name: "Aborted", err: status.Error(codes.Aborted, "aborted"), duration: time.Second},
+		{name: "EOF", err: io.EOF, duration: time.Second},
+		{name: "wrapped spanner error", err: fmt.Errorf("wrapped: %w", spannerErrorf(codes.Unavailable, "unavailable")), duration: time.Second, wantPenalty: true},
+		{name: "disabled", err: status.Error(codes.Unavailable, "unavailable"), duration: -time.Second},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			p := &dynamicChannelPool{penaltyMax: 25, cfg: DynamicChannelPoolConfig{
+				DCPErrorPenaltyStep:     5,
+				DCPErrorPenaltyDuration: test.duration,
+			}}
+			e := &dcpEntry{parent: p}
+			before := time.Now().UnixNano()
+			e.applyErrorPenalty(test.err)
+			expiry := e.penaltyExpiry.Load()
+			if test.wantPenalty {
+				if expiry <= before {
+					t.Fatalf("penalty expiry = %d, want after %d", expiry, before)
+				}
+				if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+					t.Fatalf("penalty load = %d, want %d", got, want)
+				}
+				return
+			}
+			if expiry != 0 {
+				t.Fatalf("penalty expiry = %d, want 0", expiry)
+			}
+			if got := e.penaltyLoad.Load(); got != 0 {
+				t.Fatalf("penalty load = %d, want 0", got)
+			}
+		})
+	}
+}
+
+func TestDCPApplyErrorPenaltyAccumulatesCapsAndRestarts(t *testing.T) {
+	p := &dynamicChannelPool{penaltyMax: 15, cfg: DynamicChannelPoolConfig{
+		DCPMaxRPCPerChannel:     15,
+		DCPErrorPenaltyStep:     5,
+		DCPErrorPenaltyDuration: time.Hour,
+	}}
+	e := &dcpEntry{parent: p}
+	errUnavailable := status.Error(codes.Unavailable, "unavailable")
+
+	e.applyErrorPenalty(errUnavailable)
+	if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+		t.Fatalf("penalty after one error = %d, want %d", got, want)
+	}
+	firstExpiry := e.penaltyExpiry.Load()
+	time.Sleep(time.Millisecond)
+	e.applyErrorPenalty(errUnavailable)
+	e.applyErrorPenalty(errUnavailable)
+	if got, want := e.penaltyLoad.Load(), int32(15); got != want {
+		t.Fatalf("penalty after three errors = %d, want %d", got, want)
+	}
+	if got := e.penaltyExpiry.Load(); got <= firstExpiry {
+		t.Fatalf("penalty expiry after later error = %d, want after %d", got, firstExpiry)
+	}
+	e.applyErrorPenalty(errUnavailable)
+	if got, want := e.penaltyLoad.Load(), int32(15); got != want {
+		t.Fatalf("penalty beyond cap = %d, want %d", got, want)
+	}
+
+	e.penaltyExpiry.Store(time.Now().Add(-time.Second).UnixNano())
+	e.applyErrorPenalty(errUnavailable)
+	if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+		t.Fatalf("penalty after expired window = %d, want fresh step %d", got, want)
+	}
+}
+
+func TestDCPErrorPenaltyAggregateAppliesCappedDeltas(t *testing.T) {
+	p := &dynamicChannelPool{penaltyMax: 12, cfg: DynamicChannelPoolConfig{
+		DCPMaxRPCPerChannel:     12,
+		DCPErrorPenaltyStep:     5,
+		DCPErrorPenaltyDuration: time.Hour,
+	}}
+	first := &dcpEntry{parent: p}
+	second := &dcpEntry{parent: p}
+	errUnavailable := status.Error(codes.Unavailable, "unavailable")
+
+	first.applyErrorPenalty(errUnavailable)
+	second.applyErrorPenalty(errUnavailable)
+	if got, want := p.totalPenaltyLoad.Load(), int32(10); got != want {
+		t.Fatalf("total penalty after two entries = %d, want %d", got, want)
+	}
+	first.applyErrorPenalty(errUnavailable)
+	first.applyErrorPenalty(errUnavailable)
+	first.applyErrorPenalty(errUnavailable)
+	if got, want := first.currentPenalty(), int32(12); got != want {
+		t.Fatalf("first entry penalty at cap = %d, want %d", got, want)
+	}
+	if got, want := p.totalPenaltyLoad.Load(), int32(17); got != want {
+		t.Fatalf("total penalty after capped increments = %d, want %d", got, want)
+	}
+}
+
+func TestDCPErrorPenaltyAggregateExpirySubtractsExactlyOnce(t *testing.T) {
+	p := &dynamicChannelPool{penaltyMax: 25, cfg: DynamicChannelPoolConfig{
+		DCPMaxRPCPerChannel:     25,
+		DCPErrorPenaltyStep:     5,
+		DCPErrorPenaltyDuration: time.Hour,
+	}}
+	e := &dcpEntry{parent: p}
+	e.applyErrorPenalty(status.Error(codes.Unavailable, "unavailable"))
+	e.penaltyExpiry.Store(time.Now().Add(-time.Second).UnixNano())
+
+	const readers = 100
+	start := make(chan struct{})
+	var wg sync.WaitGroup
+	wg.Add(readers)
+	for range readers {
+		go func() {
+			defer wg.Done()
+			<-start
+			if got := e.currentPenalty(); got != 0 {
+				t.Errorf("currentPenalty() after expiry = %d, want 0", got)
+			}
+		}()
+	}
+	close(start)
+	wg.Wait()
+
+	if got := p.totalPenaltyLoad.Load(); got != 0 {
+		t.Fatalf("total penalty after concurrent expiry = %d, want 0", got)
+	}
+}
+
+func TestDCPCurrentPenaltyAndPickLoadWindow(t *testing.T) {
+	p := &dynamicChannelPool{}
+	e := &dcpEntry{parent: p}
+	e.unaryLoad.Store(2)
+	e.streamLoad.Store(3)
+	e.penaltyLoad.Store(10)
+	e.penaltyExpiry.Store(time.Now().Add(time.Second).UnixNano())
+	p.totalPenaltyLoad.Store(10)
+
+	if got, want := e.currentPenalty(), int32(10); got != want {
+		t.Fatalf("currentPenalty() during window = %d, want %d", got, want)
+	}
+	if got, want := e.pickLoad(), int32(15); got != want {
+		t.Fatalf("pickLoad() during penalty = %d, want %d", got, want)
+	}
+	if got, want := e.rpcLoad(), int32(5); got != want {
+		t.Fatalf("rpcLoad() during penalty = %d, want %d", got, want)
+	}
+	if got, want := e.weightedLoad(), int32(5); got != want {
+		t.Fatalf("weightedLoad() during penalty = %d, want %d", got, want)
+	}
+
+	e.penaltyExpiry.Store(time.Now().Add(-time.Second).UnixNano())
+	if got, want := e.pickLoad(), int32(5); got != want {
+		t.Fatalf("pickLoad() after penalty = %d, want %d", got, want)
+	}
+	if got := e.penaltyExpiry.Load(); got != 0 {
+		t.Fatalf("expired penalty = %d, want CAS reset to 0", got)
+	}
+	if got := e.currentPenalty(); got != 0 {
+		t.Fatalf("currentPenalty() after lazy reset = %d, want 0", got)
+	}
+}
+
+func TestDCPCurrentPenaltyAfterNewWindow(t *testing.T) {
+	p := &dynamicChannelPool{penaltyMax: 25, cfg: DynamicChannelPoolConfig{
+		DCPMaxRPCPerChannel:     25,
+		DCPErrorPenaltyStep:     5,
+		DCPErrorPenaltyDuration: time.Second,
+	}}
+	e := &dcpEntry{parent: p}
+	e.penaltyLoad.Store(25)
+	e.penaltyExpiry.Store(time.Now().Add(-time.Second).UnixNano())
+	p.totalPenaltyLoad.Store(25)
+
+	e.applyErrorPenalty(status.Error(codes.Unavailable, "unavailable"))
+	if got, want := e.currentPenalty(), int32(5); got != want {
+		t.Fatalf("currentPenalty() after new window = %d, want %d", got, want)
+	}
+}
+
+func TestDynamicChannelPoolPowerOfTwoErrorPenalty(t *testing.T) {
+	p := &dynamicChannelPool{penaltyMax: 25, cfg: DynamicChannelPoolConfig{
+		DCPMaxRPCPerChannel:     25,
+		DCPErrorPenaltyStep:     5,
+		DCPErrorPenaltyDuration: time.Hour,
+	}}
+	healthy := &dcpEntry{id: 1, parent: p}
+	penalized := &dcpEntry{id: 2, parent: p}
+	healthy.unaryLoad.Store(8)
+	penalized.unaryLoad.Store(2)
+	penalized.applyErrorPenalty(status.Error(codes.Unavailable, "unavailable"))
+	entries := []*dcpEntry{healthy, penalized}
+	p.entries.Store(&entries)
+
+	const picks = 1000
+	penalizedPicks := 0
+	for range picks {
+		e, err := p.pickPowerOfTwo()
+		if err != nil {
+			t.Fatalf("pickPowerOfTwo() failed: %v", err)
+		}
+		if e == penalized {
+			penalizedPicks++
+		}
+	}
+	if penalizedPicks < 650 || penalizedPicks > 850 {
+		t.Fatalf("single-step entry picked %d/%d times, want mixed-pair wins (roughly 75%%)", penalizedPicks, picks)
+	}
+
+	healthy.unaryLoad.Store(0)
+	penalized.unaryLoad.Store(0)
+	penalized.penaltyLoad.Store(25)
+	penalized.penaltyExpiry.Store(time.Now().Add(time.Hour).UnixNano())
+	penalizedPicks = 0
+	for range picks {
+		e, err := p.pickPowerOfTwo()
+		if err != nil {
+			t.Fatalf("pickPowerOfTwo() at penalty cap failed: %v", err)
+		}
+		if e == penalized {
+			penalizedPicks++
+		}
+	}
+	if penalizedPicks < 175 || penalizedPicks > 325 {
+		t.Fatalf("max-penalty entry picked %d/%d times, want only same-entry draws (roughly 25%%)", penalizedPicks, picks)
+	}
+}
+
+func TestDynamicChannelPoolLeastLoadedErrorPenalty(t *testing.T) {
+	p := &dynamicChannelPool{}
+	penalized := &dcpEntry{id: 1, parent: p}
+	healthy := &dcpEntry{id: 2, parent: p}
+	penalized.penaltyLoad.Store(25)
+	penalized.penaltyExpiry.Store(time.Now().Add(time.Hour).UnixNano())
+	entries := []*dcpEntry{penalized, healthy}
+	p.entries.Store(&entries)
+
+	got, err := p.pickLeastLoaded()
+	if err != nil {
+		t.Fatalf("pickLeastLoaded() failed: %v", err)
+	}
+	if got != healthy {
+		t.Fatalf("pickLeastLoaded() = entry %d, want healthy entry %d", got.id, healthy.id)
+	}
+
+	healthy.penaltyLoad.Store(25)
+	healthy.penaltyExpiry.Store(time.Now().Add(time.Hour).UnixNano())
+	got, err = p.pickLeastLoaded()
+	if err != nil {
+		t.Fatalf("pickLeastLoaded() with all entries penalized failed: %v", err)
+	}
+	if got == nil {
+		t.Fatal("pickLeastLoaded() with all entries penalized returned nil")
+	}
+}
+
+func TestDynamicChannelPoolRoundRobinIgnoresErrorPenalty(t *testing.T) {
+	p := &dynamicChannelPool{}
+	penalized := &dcpEntry{id: 1, parent: p}
+	healthy := &dcpEntry{id: 2, parent: p}
+	penalized.penaltyLoad.Store(25)
+	penalized.penaltyExpiry.Store(time.Now().Add(time.Hour).UnixNano())
+	entries := []*dcpEntry{penalized, healthy}
+	p.entries.Store(&entries)
+
+	const picks = 1000
+	penalizedPicks := 0
+	for range picks {
+		e, err := p.pickRoundRobin()
+		if err != nil {
+			t.Fatalf("pickRoundRobin() failed: %v", err)
+		}
+		if e == penalized {
+			penalizedPicks++
+		}
+	}
+	if penalizedPicks < 450 || penalizedPicks > 550 {
+		t.Fatalf("penalized entry picked %d/%d times, want roughly even share", penalizedPicks, picks)
+	}
+}
+
+func TestDCPErrorPenaltyCallPaths(t *testing.T) {
+	penaltyConfig := DynamicChannelPoolConfig{
+		DCPMaxRPCPerChannel:     25,
+		DCPErrorPenaltyStep:     5,
+		DCPErrorPenaltyDuration: time.Hour,
+	}
+	newPenaltyPool := func() *dynamicChannelPool {
+		return &dynamicChannelPool{cfg: penaltyConfig, penaltyMax: 25}
+	}
+	errUnavailable := status.Error(codes.Unavailable, "unavailable")
+
+	t.Run("ConnPool Invoke", func(t *testing.T) {
+		pool := &fakeDCPConnPool{invokeErr: errUnavailable}
+		p := newPenaltyPool()
+		e := &dcpEntry{id: 1, pool: pool, parent: p}
+		entries := []*dcpEntry{e}
+		p.entries.Store(&entries)
+		if err := p.Invoke(context.Background(), "method", nil, nil); !errors.Is(err, errUnavailable) {
+			t.Fatalf("Invoke() error = %v, want %v", err, errUnavailable)
+		}
+		if pool.invokeCount != 1 {
+			t.Fatalf("underlying Invoke count = %d, want 1", pool.invokeCount)
+		}
+		if e.penaltyExpiry.Load() == 0 {
+			t.Fatal("Invoke() did not apply error penalty")
+		}
+		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+			t.Fatalf("Invoke() penalty = %d, want exactly one step %d", got, want)
+		}
+	})
+
+	t.Run("ConnPool tracked stream", func(t *testing.T) {
+		p := newPenaltyPool()
+		e := &dcpEntry{parent: p}
+		e.streamLoad.Store(1)
+		s := &dcpConnPoolTrackedStream{entry: e}
+		s.finish(errUnavailable)
+		expiry := e.penaltyExpiry.Load()
+		if expiry == 0 {
+			t.Fatal("tracked stream did not apply error penalty")
+		}
+		time.Sleep(time.Millisecond)
+		s.finish(errUnavailable)
+		if got := e.penaltyExpiry.Load(); got != expiry {
+			t.Fatalf("tracked stream applied penalty more than once: first %d, then %d", expiry, got)
+		}
+		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+			t.Fatalf("tracked stream penalty = %d, want exactly one step %d", got, want)
+		}
+	})
+
+	t.Run("ConnPool stream creation", func(t *testing.T) {
+		pool := &fakeDCPConnPool{invokeErr: errUnavailable}
+		p := newPenaltyPool()
+		e := &dcpEntry{id: 1, pool: pool, parent: p}
+		entries := []*dcpEntry{e}
+		p.entries.Store(&entries)
+		if _, err := p.NewStream(context.Background(), &grpc.StreamDesc{}, "method"); !errors.Is(err, errUnavailable) {
+			t.Fatalf("NewStream() error = %v, want %v", err, errUnavailable)
+		}
+		if pool.newStreamCount != 1 {
+			t.Fatalf("underlying NewStream count = %d, want 1", pool.newStreamCount)
+		}
+		if e.penaltyExpiry.Load() == 0 {
+			t.Fatal("NewStream() creation failure did not apply error penalty")
+		}
+		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+			t.Fatalf("NewStream() creation penalty = %d, want exactly one step %d", got, want)
+		}
+	})
+
+	t.Run("spannerClient unary", func(t *testing.T) {
+		p := newPenaltyPool()
+		e := &dcpEntry{parent: p}
+		delegate := &mockSpannerClient{executeSQLErr: errUnavailable}
+		client := &dcpSpannerClient{entry: e, delegate: delegate}
+		if _, err := client.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{}); !errors.Is(err, errUnavailable) {
+			t.Fatalf("ExecuteSql() error = %v, want %v", err, errUnavailable)
+		}
+		if delegate.executeSQLCount != 1 {
+			t.Fatalf("underlying ExecuteSql count = %d, want 1", delegate.executeSQLCount)
+		}
+		if e.penaltyExpiry.Load() == 0 {
+			t.Fatal("unary call did not apply error penalty")
+		}
+		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+			t.Fatalf("unary call penalty = %d, want exactly one step %d", got, want)
+		}
+	})
+
+	t.Run("spannerClient stream", func(t *testing.T) {
+		p := newPenaltyPool()
+		e := &dcpEntry{parent: p}
+		client := &dcpSpannerClient{entry: e}
+		ref := client.startStream(context.Background())
+		ref.done(errUnavailable)
+		expiry := e.penaltyExpiry.Load()
+		if expiry == 0 {
+			t.Fatal("stream call did not apply error penalty")
+		}
+		time.Sleep(time.Millisecond)
+		ref.done(errUnavailable)
+		if got := e.penaltyExpiry.Load(); got != expiry {
+			t.Fatalf("stream call applied penalty more than once: first %d, then %d", expiry, got)
+		}
+		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
+			t.Fatalf("stream call penalty = %d, want exactly one step %d", got, want)
+		}
+	})
+}
+
+func TestDCPErrorPenaltyAffectsScaleUp(t *testing.T) {
+	tests := []struct {
+		name       string
+		maxRPC     float64
+		loads      []int32
+		penalties  []int32
+		selected   int
+		wantSignal bool
+	}{
+		{name: "selected entry at cap", maxRPC: 25, loads: []int32{5}, penalties: []int32{25}, wantSignal: true},
+		{name: "selected entry at one step", maxRPC: 25, loads: []int32{5}, penalties: []int32{5}},
+		{name: "two entries at one step", maxRPC: 20, loads: []int32{10, 10}, penalties: []int32{5, 0}},
+		{name: "penalty-inclusive average at threshold", maxRPC: 20, loads: []int32{10, 10}, penalties: []int32{20, 0}, selected: 1},
+		{name: "penalty-inclusive average", maxRPC: 20, loads: []int32{10, 10}, penalties: []int32{25, 0}, selected: 1, wantSignal: true},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			p := &dynamicChannelPool{
+				cfg:           DynamicChannelPoolConfig{DCPMaxRPCPerChannel: test.maxRPC},
+				scaleUpSignal: make(chan struct{}, 1),
+			}
+			entries := make([]*dcpEntry, len(test.loads))
+			for i := range entries {
+				entries[i] = &dcpEntry{id: uint64(i + 1), parent: p}
+				entries[i].unaryLoad.Store(test.loads[i])
+				entries[i].penaltyLoad.Store(test.penalties[i])
+				if test.penalties[i] > 0 {
+					entries[i].penaltyExpiry.Store(time.Now().Add(time.Hour).UnixNano())
+				}
+			}
+			p.entries.Store(&entries)
+			for _, load := range test.loads {
+				p.totalRPCLoad.Add(load)
+			}
+			for _, penalty := range test.penalties {
+				p.totalPenaltyLoad.Add(penalty)
+			}
+			p.maybeSignalScaleUp(entries[test.selected])
+			select {
+			case <-p.scaleUpSignal:
+				if !test.wantSignal {
+					t.Fatal("maybeSignalScaleUp() signaled, want no signal")
+				}
+			default:
+				if test.wantSignal {
+					t.Fatal("maybeSignalScaleUp() did not signal")
+				}
+			}
+		})
+	}
+}
+
+func TestDCPErrorPenaltyIncludedInScaleUpSizing(t *testing.T) {
+	cfg := testDCPConfig(2, 1, 4)
+	cfg.DCPMaxRPCPerChannel = 25
+	cfg.DCPMinRPCPerChannel = 15
+	cfg.DCPErrorPenaltyStep = 5
+	cfg.DCPErrorPenaltyDuration = time.Hour
+	cfg.DCPScaleDownCheckInterval = time.Hour
+	cfg.DCPScaleUpCooldown = time.Hour
+	_, client, teardown := setupDCPMockedTestServer(t, cfg)
+	defer teardown()
+	p := client.sc.dynamicPool
+	waitForDCPScaleUpWorkerIdle(p)
+	entries := p.getEntries()
+	entries[0].unaryLoad.Store(10)
+	entries[1].unaryLoad.Store(10)
+	entries[0].penaltyLoad.Store(25)
+	entries[0].penaltyExpiry.Store(time.Now().Add(time.Hour).UnixNano())
+	p.totalPenaltyLoad.Store(25)
+
+	p.scaleUp()
+	if got, want := p.Num(), 3; got != want {
+		t.Fatalf("DCP channel count after penalty-inclusive scale-up = %d, want %d", got, want)
+	}
+}
+
+func TestDCPErrorPenaltyDoesNotAffectScaleDownOrDrain(t *testing.T) {
+	cfg := testDCPConfig(3, 2, 3)
+	cfg.DCPErrorPenaltyStep = 5
+	cfg.DCPErrorPenaltyDuration = time.Hour
+	cfg.DCPMaxRPCPerChannel = 10
+	cfg.DCPMinRPCPerChannel = 9
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	p := &dynamicChannelPool{
+		cfg:                 cfg,
+		ctx:                 ctx,
+		targetRPCPerChannel: 10,
+		penaltyMax:          10,
+		scaleUpSignal:       make(chan struct{}, 1),
+	}
+	penalized := &dcpEntry{id: 1, parent: p, pool: &fakeDCPConnPool{}}
+	middle := &dcpEntry{id: 2, parent: p, pool: &fakeDCPConnPool{}}
+	busy := &dcpEntry{id: 3, parent: p, pool: &fakeDCPConnPool{}}
+	now := time.Now().UnixNano()
+	penalized.createdAt.Store(now - 3)
+	middle.createdAt.Store(now - 2)
+	busy.createdAt.Store(now - 1)
+	middle.unaryLoad.Store(1)
+	busy.unaryLoad.Store(2)
+	errUnavailable := status.Error(codes.Unavailable, "unavailable")
+	for range 5 {
+		penalized.applyErrorPenalty(errUnavailable)
+	}
+	entries := []*dcpEntry{penalized, middle, busy}
+	p.entries.Store(&entries)
+
+	p.removeEntries(1)
+	got := p.getEntries()
+	if len(got) != 2 {
+		t.Fatalf("scale-down kept %d entries, want 2", len(got))
+	}
+	if got[0] != middle || got[1] != busy {
+		t.Fatalf("scale-down kept entries %v, want unpenalized entries 2 and 3", []uint64{got[0].id, got[1].id})
+	}
+	if got := p.totalPenaltyLoad.Load(); got != 0 {
+		t.Fatalf("total penalty after removing penalized entry = %d, want 0", got)
+	}
+	waitFor(t, func() error {
+		if got := penalized.state.Load(); got != dcpStateClosed {
+			return fmt.Errorf("penalized drained entry state = %d, want closed", got)
+		}
+		return nil
+	})
+}
+
+func TestDCPErrorPenaltyCapFollowsMaxRPCFromDefaultConfig(t *testing.T) {
+	cfg := DefaultDynamicChannelPoolConfig()
+	cfg.DCPEnabled = true
+	cfg.DCPMaxRPCPerChannel = 40
+	_, client, teardown := setupDCPMockedTestServer(t, cfg)
+	defer teardown()
+	p := client.sc.dynamicPool
+	if got, want := p.penaltyMax, int32(40); got != want {
+		t.Fatalf("penalty max = %d, want ceil(DCPMaxRPCPerChannel) %d", got, want)
+	}
+	e := p.getEntries()[0]
+	errUnavailable := status.Error(codes.Unavailable, "unavailable")
+	for range 10 {
+		e.applyErrorPenalty(errUnavailable)
+	}
+	if got, want := e.currentPenalty(), int32(40); got != want {
+		t.Fatalf("accumulated penalty = %d, want derived cap %d", got, want)
+	}
+}
+
+func TestDynamicChannelPoolErrorPenaltyConfigNormalization(t *testing.T) {
+	t.Run("zero uses defaults", func(t *testing.T) {
+		cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPMaxRPCPerChannel: 25.1})
+		if err != nil {
+			t.Fatalf("normalizeDCPConfig() failed: %v", err)
+		}
+		if got, want := cfg.DCPErrorPenaltyStep, int32(5); got != want {
+			t.Fatalf("DCPErrorPenaltyStep = %d, want %d", got, want)
+		}
+		if got, want := cfg.DCPErrorPenaltyDuration, 5*time.Second; got != want {
+			t.Fatalf("DCPErrorPenaltyDuration = %v, want %v", got, want)
+		}
+	})
+
+	t.Run("negative duration disables", func(t *testing.T) {
+		cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPErrorPenaltyDuration: -time.Second})
+		if err != nil {
+			t.Fatalf("normalizeDCPConfig() failed: %v", err)
+		}
+		if got, want := cfg.DCPErrorPenaltyDuration, -time.Second; got != want {
+			t.Fatalf("DCPErrorPenaltyDuration = %v, want %v", got, want)
+		}
+	})
+
+	t.Run("negative step rejected", func(t *testing.T) {
+		_, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPErrorPenaltyStep: -1})
+		if err == nil {
+			t.Fatal("normalizeDCPConfig() succeeded, want negative-step error")
+		}
+	})
+
+	t.Run("step above derived cap rejected", func(t *testing.T) {
+		_, err := normalizeDCPConfig(DynamicChannelPoolConfig{
+			DCPMaxRPCPerChannel: 5,
+			DCPMinRPCPerChannel: 1,
+			DCPErrorPenaltyStep: 6,
+		})
+		if err == nil {
+			t.Fatal("normalizeDCPConfig() succeeded, want step-above-derived-cap error")
+		}
+		if got, want := err.Error(), "DCPErrorPenaltyStep must be <= ceil(DCPMaxRPCPerChannel)"; got != want {
+			t.Fatalf("normalizeDCPConfig() error = %q, want %q", got, want)
+		}
+	})
 }

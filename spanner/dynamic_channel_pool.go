@@ -32,6 +32,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 )
 
 const (
@@ -49,8 +50,8 @@ type DynamicChannelSelectionStrategy int
 
 const (
 	// DCPPowerOfTwoLeastBusy compares two random active channels and returns the
-	// lower weighted-load channel. It falls back to a full scan if random picks
-	// only find draining entries.
+	// channel with lower picker load, including any active error penalty. It falls
+	// back to a full scan if random picks only find draining entries.
 	DCPPowerOfTwoLeastBusy DynamicChannelSelectionStrategy = iota
 	// DCPRoundRobin cycles through active channels and skips draining entries.
 	DCPRoundRobin
@@ -69,6 +70,18 @@ type DynamicChannelPoolConfig struct {
 	DCPMaxRPCPerChannel float64
 	// DCPMinRPCPerChannel is the low-load threshold used by scale-down checks.
 	DCPMinRPCPerChannel float64
+	// DCPErrorPenaltyStep is the picker load added for each qualifying error. Zero
+	// defaults to 5. One transient error therefore biases selection only slightly;
+	// repeated errors within the penalty window accumulate up to
+	// ceil(DCPMaxRPCPerChannel), so a persistently failing channel looks exactly as
+	// busy as a full one.
+	DCPErrorPenaltyStep int32
+	// DCPErrorPenaltyDuration controls the penalty window. Every qualifying error
+	// restarts the window, and the accumulated penalty expires to zero when it
+	// lapses. Zero defaults to 5 seconds; negative disables the penalty. Active
+	// penalty counts toward scale-up so lost capacity can be replaced, while
+	// scale-down and draining deliberately ignore it.
+	DCPErrorPenaltyDuration time.Duration
 
 	DCPScaleDownCheckInterval            time.Duration // DCPScaleDownCheckInterval controls periodic downscale evaluation.
 	DCPScaleUpCooldown                   time.Duration // DCPScaleUpCooldown prevents repeated scale-up bursts.
@@ -89,6 +102,8 @@ func DefaultDynamicChannelPoolConfig() DynamicChannelPoolConfig {
 		DCPMaxChannels:                       10,
 		DCPMaxRPCPerChannel:                  25,
 		DCPMinRPCPerChannel:                  15,
+		DCPErrorPenaltyStep:                  5,
+		DCPErrorPenaltyDuration:              5 * time.Second,
 		DCPScaleDownCheckInterval:            3 * time.Minute,
 		DCPScaleUpCooldown:                   10 * time.Second,
 		DCPDownscaleConsecutiveLowLoadChecks: 3,
@@ -122,6 +137,12 @@ func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig,
 	}
 	if cfg.DCPMinRPCPerChannel == 0 {
 		cfg.DCPMinRPCPerChannel = def.DCPMinRPCPerChannel
+	}
+	if cfg.DCPErrorPenaltyStep == 0 {
+		cfg.DCPErrorPenaltyStep = def.DCPErrorPenaltyStep
+	}
+	if cfg.DCPErrorPenaltyDuration == 0 {
+		cfg.DCPErrorPenaltyDuration = def.DCPErrorPenaltyDuration
 	}
 	if cfg.DCPScaleDownCheckInterval == 0 {
 		cfg.DCPScaleDownCheckInterval = def.DCPScaleDownCheckInterval
@@ -163,6 +184,10 @@ func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig,
 	// scale-down qualification and flapping.
 	case cfg.DCPMinRPCPerChannel >= cfg.DCPMaxRPCPerChannel:
 		return cfg, fmt.Errorf("DCPMinRPCPerChannel must be less than DCPMaxRPCPerChannel")
+	case cfg.DCPErrorPenaltyStep < 0:
+		return cfg, fmt.Errorf("DCPErrorPenaltyStep must be non-negative")
+	case cfg.DCPErrorPenaltyStep > int32(math.Ceil(cfg.DCPMaxRPCPerChannel)):
+		return cfg, fmt.Errorf("DCPErrorPenaltyStep must be <= ceil(DCPMaxRPCPerChannel)")
 	case cfg.DCPScaleDownCheckInterval <= 0:
 		return cfg, fmt.Errorf("DCPScaleDownCheckInterval must be positive")
 	case cfg.DCPMaxScaleUpPercent <= 0 || cfg.DCPMaxScaleUpPercent > 100:
@@ -181,40 +206,45 @@ type dynamicChannelPool struct {
 	entries             atomic.Pointer[[]*dcpEntry]
 	cfg                 DynamicChannelPoolConfig
 	targetRPCPerChannel float64
+	penaltyMax          int32
 
 	ctx    context.Context
 	cancel context.CancelFunc
 	sc     *sessionClient
 
-	dial          func(context.Context) (gtransport.ConnPool, error)
-	rrIndex       atomic.Uint64
-	nextID        atomic.Uint64
-	totalRPCLoad  atomic.Int32
-	dialMu        sync.Mutex
-	lastScaleUp   atomic.Int64
-	scaleUpSignal chan struct{}
-	done          chan struct{}
-	stopOnce      sync.Once
-	lowLoadRuns   int
-	monitorMu     sync.Mutex
-	primeSession  atomic.Value // string
-	metrics       *dcpMetrics
+	dial             func(context.Context) (gtransport.ConnPool, error)
+	rrIndex          atomic.Uint64
+	nextID           atomic.Uint64
+	totalRPCLoad     atomic.Int32
+	totalPenaltyLoad atomic.Int32
+	dialMu           sync.Mutex
+	lastScaleUp      atomic.Int64
+	scaleUpSignal    chan struct{}
+	done             chan struct{}
+	stopOnce         sync.Once
+	lowLoadRuns      int
+	monitorMu        sync.Mutex
+	primeSession     atomic.Value // string
+	metrics          *dcpMetrics
 
 	drainingCount atomic.Int64
 }
 
 // dcpEntry represents one logical DCP slot.
 type dcpEntry struct {
-	id           uint64
-	pool         gtransport.ConnPool
-	delegate     spannerClient
-	client       spannerClient
-	parent       *dynamicChannelPool
-	unaryLoad    atomic.Int32
-	streamLoad   atomic.Int32
-	state        atomic.Int32 // dcpState*
-	createdAt    atomic.Int64 // UnixNano creation time
-	lastActivity atomic.Int64 // UnixNano last pick/RPC/release time
+	id            uint64
+	pool          gtransport.ConnPool
+	delegate      spannerClient
+	client        spannerClient
+	parent        *dynamicChannelPool
+	unaryLoad     atomic.Int32
+	streamLoad    atomic.Int32
+	state         atomic.Int32 // dcpState*
+	createdAt     atomic.Int64 // UnixNano creation time
+	lastActivity  atomic.Int64 // UnixNano last pick/RPC/release time
+	penaltyExpiry atomic.Int64 // UnixNano penalty expiry; zero means no penalty
+	penaltyLoad   atomic.Int32 // Accumulated error penalty, capped by config
+	penaltyMu     sync.Mutex   // Serializes rare penalty updates and removal
 }
 
 // newDynamicChannelPool creates the initial channel set and starts scale workers.
@@ -227,6 +257,7 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 	p := &dynamicChannelPool{
 		cfg:                 cfg,
 		targetRPCPerChannel: math.Max(1, math.Floor((cfg.DCPMinRPCPerChannel+cfg.DCPMaxRPCPerChannel)/2)),
+		penaltyMax:          int32(math.Ceil(cfg.DCPMaxRPCPerChannel)),
 		ctx:                 poolCtx,
 		cancel:              cancel,
 		sc:                  sc,
@@ -277,6 +308,7 @@ func (p *dynamicChannelPool) Invoke(ctx context.Context, method string, args, re
 		e.lastActivity.Store(time.Now().UnixNano())
 	}()
 	err = e.pool.Invoke(ctx, method, args, reply, opts...)
+	e.applyErrorPenalty(err)
 	return err
 }
 
@@ -291,6 +323,7 @@ func (p *dynamicChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDes
 	e.lastActivity.Store(time.Now().UnixNano())
 	stream, err := e.pool.NewStream(ctx, desc, method, opts...)
 	if err != nil {
+		e.applyErrorPenalty(err)
 		e.streamLoad.Add(-1)
 		p.totalRPCLoad.Add(-1)
 		return nil, err
@@ -463,6 +496,7 @@ func (s *dcpConnPoolTrackedStream) CloseSend() error {
 
 func (s *dcpConnPoolTrackedStream) finish(err error) {
 	s.once.Do(func() {
+		s.entry.applyErrorPenalty(err)
 		s.entry.streamLoad.Add(-1)
 		s.entry.parent.totalRPCLoad.Add(-1)
 		s.entry.lastActivity.Store(time.Now().UnixNano())
@@ -471,7 +505,7 @@ func (s *dcpConnPoolTrackedStream) finish(err error) {
 
 var errDCPNoEntries = spannerErrorf(codes.Unavailable, "spanner_dcp: no available channels")
 
-// pickPowerOfTwo selects the lower weighted-load entry from two random active
+// pickPowerOfTwo selects the lower picker-load entry from two random active
 // entries. It retries when either random choice is draining and falls back to a
 // full least-loaded scan if random sampling cannot find an active pair.
 func (p *dynamicChannelPool) pickPowerOfTwo() (*dcpEntry, error) {
@@ -491,7 +525,7 @@ func (p *dynamicChannelPool) pickPowerOfTwo() (*dcpEntry, error) {
 		if e1.isDraining() || e2.isDraining() {
 			continue
 		}
-		if e1.weightedLoad() <= e2.weightedLoad() {
+		if e1.pickLoad() <= e2.pickLoad() {
 			return e1, nil
 		}
 		return e2, nil
@@ -516,7 +550,7 @@ func (p *dynamicChannelPool) pickRoundRobin() (*dcpEntry, error) {
 	return nil, errDCPNoEntries
 }
 
-// pickLeastLoaded returns the active entry with the lowest weighted load.
+// pickLeastLoaded returns the active entry with the lowest picker load.
 func (p *dynamicChannelPool) pickLeastLoaded() (*dcpEntry, error) {
 	var best *dcpEntry
 	min := int32(math.MaxInt32)
@@ -524,7 +558,7 @@ func (p *dynamicChannelPool) pickLeastLoaded() (*dcpEntry, error) {
 		if e.isDraining() {
 			continue
 		}
-		l := e.weightedLoad()
+		l := e.pickLoad()
 		if l < min {
 			min = l
 			best = e
@@ -543,9 +577,13 @@ func (p *dynamicChannelPool) maybeSignalScaleUp(e *dcpEntry) {
 	active := p.Num()
 	avg := float64(0)
 	if active > 0 {
-		avg = float64(p.totalRPCLoad.Load()) / float64(active)
+		// The two totals may be observed at slightly different instants. This
+		// signal is only a hint; scaleUp recomputes exact per-entry load.
+		load := int64(p.totalRPCLoad.Load()) + int64(p.totalPenaltyLoad.Load())
+		avg = float64(load) / float64(active)
 	}
-	if float64(e.rpcLoad()) <= p.cfg.DCPMaxRPCPerChannel && avg <= p.cfg.DCPMaxRPCPerChannel {
+	entryLoad := int64(e.rpcLoad()) + int64(e.currentPenalty())
+	if float64(entryLoad) <= p.cfg.DCPMaxRPCPerChannel && avg <= p.cfg.DCPMaxRPCPerChannel {
 		return
 	}
 	select {
@@ -591,11 +629,11 @@ func (p *dynamicChannelPool) scaleUp() {
 	}
 	entries := p.getEntries()
 	active := 0
-	var load int32
+	var load int64
 	for _, e := range entries {
 		if !e.isDraining() {
 			active++
-			load += e.rpcLoad()
+			load += int64(e.rpcLoad()) + int64(e.currentPenalty())
 		}
 	}
 	if active == 0 {
@@ -693,6 +731,8 @@ func (p *dynamicChannelPool) evaluateScaleDown() {
 	entries := p.getEntries()
 	active := 0
 	var load int32
+	// Error penalties are deliberately excluded from scale-down load so a
+	// failing channel is not retained as busy.
 	for _, e := range entries {
 		if !e.isDraining() {
 			active++
@@ -783,6 +823,7 @@ func (p *dynamicChannelPool) removeEntries(count int) {
 	toDrain := make(map[*dcpEntry]bool)
 	for i := 0; i < count && i < len(candidates); i++ {
 		candidates[i].e.state.Store(dcpStateDraining)
+		candidates[i].e.clearErrorPenalty()
 		toDrain[candidates[i].e] = true
 	}
 	keep := make([]*dcpEntry, 0, len(entries)-len(toDrain))
@@ -842,6 +883,7 @@ func (e *dcpEntry) close() error {
 	if !e.state.CompareAndSwap(dcpStateActive, dcpStateClosed) && !e.state.CompareAndSwap(dcpStateDraining, dcpStateClosed) {
 		return nil
 	}
+	e.clearErrorPenalty()
 	var errs []error
 	if e.client != nil {
 		errs = append(errs, e.client.Close())
@@ -862,6 +904,87 @@ func (e *dcpEntry) rpcLoad() int32 { return e.unaryLoad.Load() + e.streamLoad.Lo
 // weightedLoad returns the current in-flight RPC load for this entry.
 func (e *dcpEntry) weightedLoad() int32 { return e.rpcLoad() }
 
+// applyErrorPenalty accumulates load for errors that indicate channel-specific
+// health or capacity trouble. Internal is deliberately excluded: only
+// Unavailable and ResourceExhausted steer subsequent picks away from a channel.
+// Updates are serialized because they are rare and must keep the pool aggregate
+// consistent. The hot pick path remains lock-free while the penalty is active.
+func (e *dcpEntry) applyErrorPenalty(err error) {
+	if err == nil || e.parent.cfg.DCPErrorPenaltyDuration < 0 {
+		return
+	}
+	code := status.Code(err)
+	if code != codes.Unavailable && code != codes.ResourceExhausted {
+		return
+	}
+	e.penaltyMu.Lock()
+	defer e.penaltyMu.Unlock()
+	if e.state.Load() != dcpStateActive {
+		return
+	}
+	now := time.Now()
+	expiry := e.penaltyExpiry.Load()
+	current := int32(0)
+	if expiry != 0 {
+		if now.UnixNano() < expiry {
+			current = e.penaltyLoad.Load()
+		} else {
+			e.penaltyExpiry.Store(0)
+			e.parent.totalPenaltyLoad.Add(-e.penaltyLoad.Load())
+		}
+	}
+	load := e.parent.cfg.DCPErrorPenaltyStep
+	if current != 0 {
+		max := e.parent.penaltyMax
+		if current >= max-e.parent.cfg.DCPErrorPenaltyStep {
+			load = max
+		} else {
+			load = current + e.parent.cfg.DCPErrorPenaltyStep
+		}
+	}
+	e.penaltyLoad.Store(load)
+	e.penaltyExpiry.Store(now.Add(e.parent.cfg.DCPErrorPenaltyDuration).UnixNano())
+	e.parent.totalPenaltyLoad.Add(load - current)
+}
+
+// currentPenalty returns active accumulated error load and lazily clears an
+// expired penalty.
+func (e *dcpEntry) currentPenalty() int32 {
+	expiry := e.penaltyExpiry.Load()
+	if expiry == 0 {
+		return 0
+	}
+	if time.Now().UnixNano() < expiry {
+		return e.penaltyLoad.Load()
+	}
+	e.penaltyMu.Lock()
+	defer e.penaltyMu.Unlock()
+	expiry = e.penaltyExpiry.Load()
+	if expiry == 0 {
+		return 0
+	}
+	if time.Now().UnixNano() < expiry {
+		return e.penaltyLoad.Load()
+	}
+	// Leave penaltyLoad intact; expiry alone gates whether load is used.
+	e.penaltyExpiry.Store(0)
+	e.parent.totalPenaltyLoad.Add(-e.penaltyLoad.Load())
+	return 0
+}
+
+// clearErrorPenalty removes an entry's aggregate contribution when the entry
+// leaves the live pool. The expiry swap makes repeated close paths harmless.
+func (e *dcpEntry) clearErrorPenalty() {
+	e.penaltyMu.Lock()
+	defer e.penaltyMu.Unlock()
+	if e.penaltyExpiry.Swap(0) != 0 {
+		e.parent.totalPenaltyLoad.Add(-e.penaltyLoad.Load())
+	}
+}
+
+// pickLoad returns the in-flight RPC load plus any active error penalty.
+func (e *dcpEntry) pickLoad() int32 { return e.rpcLoad() + e.currentPenalty() }
+
 // TODO: Investigate replacing dcpSpannerClient and dcpConnPoolTrackedStream with
 // per-entry gRPC unary/stream client interceptors injected when dialing each DCP
 // entry. The interceptors could track load and trigger scale-up for both the
@@ -881,6 +1004,7 @@ func (c *dcpSpannerClient) startUnary(ctx context.Context) func(error) {
 	c.entry.parent.maybeSignalScaleUp(c.entry)
 	c.entry.lastActivity.Store(time.Now().UnixNano())
 	return func(err error) {
+		c.entry.applyErrorPenalty(err)
 		c.entry.unaryLoad.Add(-1)
 		c.entry.parent.totalRPCLoad.Add(-1)
 		c.entry.lastActivity.Store(time.Now().UnixNano())
@@ -926,6 +1050,7 @@ func (c *dcpSpannerClient) startStream(ctx context.Context) *dcpStreamRef {
 	c.entry.parent.maybeSignalScaleUp(c.entry)
 	c.entry.lastActivity.Store(time.Now().UnixNano())
 	ref := &dcpStreamRef{finish: func(err error) {
+		c.entry.applyErrorPenalty(err)
 		c.entry.streamLoad.Add(-1)
 		c.entry.parent.totalRPCLoad.Add(-1)
 		c.entry.lastActivity.Store(time.Now().UnixNano())
