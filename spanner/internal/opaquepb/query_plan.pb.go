@@ -27,7 +27,6 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -100,8 +99,8 @@ type PlanNode struct {
 	xxx_hidden_DisplayName         string                        `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3"`
 	xxx_hidden_ChildLinks          *[]*PlanNode_ChildLink        `protobuf:"bytes,4,rep,name=child_links,json=childLinks,proto3"`
 	xxx_hidden_ShortRepresentation *PlanNode_ShortRepresentation `protobuf:"bytes,5,opt,name=short_representation,json=shortRepresentation,proto3"`
-	xxx_hidden_Metadata            *structpb.Struct              `protobuf:"bytes,6,opt,name=metadata,proto3"`
-	xxx_hidden_ExecutionStats      *structpb.Struct              `protobuf:"bytes,7,opt,name=execution_stats,json=executionStats,proto3"`
+	xxx_hidden_Metadata            *Struct                       `protobuf:"bytes,6,opt,name=metadata,proto3"`
+	xxx_hidden_ExecutionStats      *Struct                       `protobuf:"bytes,7,opt,name=execution_stats,json=executionStats,proto3"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
 }
@@ -168,14 +167,14 @@ func (x *PlanNode) GetShortRepresentation() *PlanNode_ShortRepresentation {
 	return nil
 }
 
-func (x *PlanNode) GetMetadata() *structpb.Struct {
+func (x *PlanNode) GetMetadata() *Struct {
 	if x != nil {
 		return x.xxx_hidden_Metadata
 	}
 	return nil
 }
 
-func (x *PlanNode) GetExecutionStats() *structpb.Struct {
+func (x *PlanNode) GetExecutionStats() *Struct {
 	if x != nil {
 		return x.xxx_hidden_ExecutionStats
 	}
@@ -202,11 +201,11 @@ func (x *PlanNode) SetShortRepresentation(v *PlanNode_ShortRepresentation) {
 	x.xxx_hidden_ShortRepresentation = v
 }
 
-func (x *PlanNode) SetMetadata(v *structpb.Struct) {
+func (x *PlanNode) SetMetadata(v *Struct) {
 	x.xxx_hidden_Metadata = v
 }
 
-func (x *PlanNode) SetExecutionStats(v *structpb.Struct) {
+func (x *PlanNode) SetExecutionStats(v *Struct) {
 	x.xxx_hidden_ExecutionStats = v
 }
 
@@ -270,12 +269,12 @@ type PlanNode_builder struct {
 	//	  "parameter_reference": "param1",
 	//	  "parameter_type": "array"
 	//	}
-	Metadata *structpb.Struct
+	Metadata *Struct
 	// The execution statistics associated with the node, contained in a group of
 	// key-value pairs. Only present if the plan was returned as a result of a
 	// profile query. For example, number of executions, number of rows/time per
 	// execution etc.
-	ExecutionStats *structpb.Struct
+	ExecutionStats *Struct
 }
 
 func (b0 PlanNode_builder) Build() *PlanNode {
@@ -704,16 +703,16 @@ var File_librarian_opaque_google_spanner_v1_query_plan_proto protoreflect.FileDe
 
 const file_librarian_opaque_google_spanner_v1_query_plan_proto_rawDesc = "" +
 	"\n" +
-	"3librarian_opaque/google/spanner/v1/query_plan.proto\x12 google.spanner.v1.internalopaque\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xca\x06\n" +
+	"3librarian_opaque/google/spanner/v1/query_plan.proto\x12 google.spanner.v1.internalopaque\x1a\x1fgoogle/api/field_behavior.proto\x1a-librarian_opaque/google/protobuf/struct.proto\"\xec\x06\n" +
 	"\bPlanNode\x12\x14\n" +
 	"\x05index\x18\x01 \x01(\x05R\x05index\x12C\n" +
 	"\x04kind\x18\x02 \x01(\x0e2/.google.spanner.v1.internalopaque.PlanNode.KindR\x04kind\x12!\n" +
 	"\fdisplay_name\x18\x03 \x01(\tR\vdisplayName\x12U\n" +
 	"\vchild_links\x18\x04 \x03(\v24.google.spanner.v1.internalopaque.PlanNode.ChildLinkR\n" +
 	"childLinks\x12q\n" +
-	"\x14short_representation\x18\x05 \x01(\v2>.google.spanner.v1.internalopaque.PlanNode.ShortRepresentationR\x13shortRepresentation\x123\n" +
-	"\bmetadata\x18\x06 \x01(\v2\x17.google.protobuf.StructR\bmetadata\x12@\n" +
-	"\x0fexecution_stats\x18\a \x01(\v2\x17.google.protobuf.StructR\x0eexecutionStats\x1a\\\n" +
+	"\x14short_representation\x18\x05 \x01(\v2>.google.spanner.v1.internalopaque.PlanNode.ShortRepresentationR\x13shortRepresentation\x12D\n" +
+	"\bmetadata\x18\x06 \x01(\v2(.google.spanner.v1.internalopaque.StructR\bmetadata\x12Q\n" +
+	"\x0fexecution_stats\x18\a \x01(\v2(.google.spanner.v1.internalopaque.StructR\x0eexecutionStats\x1a\\\n" +
 	"\tChildLink\x12\x1f\n" +
 	"\vchild_index\x18\x01 \x01(\x05R\n" +
 	"childIndex\x12\x12\n" +
@@ -755,14 +754,14 @@ var file_librarian_opaque_google_spanner_v1_query_plan_proto_goTypes = []any{
 	(*PlanNode_ShortRepresentation)(nil),   // 5: google.spanner.v1.internalopaque.PlanNode.ShortRepresentation
 	nil,                                    // 6: google.spanner.v1.internalopaque.PlanNode.ShortRepresentation.SubqueriesEntry
 	(*QueryAdvisorResult_IndexAdvice)(nil), // 7: google.spanner.v1.internalopaque.QueryAdvisorResult.IndexAdvice
-	(*structpb.Struct)(nil),                // 8: google.protobuf.Struct
+	(*Struct)(nil),                         // 8: google.spanner.v1.internalopaque.Struct
 }
 var file_librarian_opaque_google_spanner_v1_query_plan_proto_depIdxs = []int32{
 	0, // 0: google.spanner.v1.internalopaque.PlanNode.kind:type_name -> google.spanner.v1.internalopaque.PlanNode.Kind
 	4, // 1: google.spanner.v1.internalopaque.PlanNode.child_links:type_name -> google.spanner.v1.internalopaque.PlanNode.ChildLink
 	5, // 2: google.spanner.v1.internalopaque.PlanNode.short_representation:type_name -> google.spanner.v1.internalopaque.PlanNode.ShortRepresentation
-	8, // 3: google.spanner.v1.internalopaque.PlanNode.metadata:type_name -> google.protobuf.Struct
-	8, // 4: google.spanner.v1.internalopaque.PlanNode.execution_stats:type_name -> google.protobuf.Struct
+	8, // 3: google.spanner.v1.internalopaque.PlanNode.metadata:type_name -> google.spanner.v1.internalopaque.Struct
+	8, // 4: google.spanner.v1.internalopaque.PlanNode.execution_stats:type_name -> google.spanner.v1.internalopaque.Struct
 	7, // 5: google.spanner.v1.internalopaque.QueryAdvisorResult.index_advice:type_name -> google.spanner.v1.internalopaque.QueryAdvisorResult.IndexAdvice
 	1, // 6: google.spanner.v1.internalopaque.QueryPlan.plan_nodes:type_name -> google.spanner.v1.internalopaque.PlanNode
 	2, // 7: google.spanner.v1.internalopaque.QueryPlan.query_advice:type_name -> google.spanner.v1.internalopaque.QueryAdvisorResult
@@ -779,6 +778,7 @@ func file_librarian_opaque_google_spanner_v1_query_plan_proto_init() {
 	if File_librarian_opaque_google_spanner_v1_query_plan_proto != nil {
 		return
 	}
+	file_librarian_opaque_google_protobuf_struct_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{

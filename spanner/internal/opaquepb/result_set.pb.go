@@ -27,7 +27,6 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -42,7 +41,7 @@ const (
 type ResultSet struct {
 	state                     protoimpl.MessageState            `protogen:"opaque.v1"`
 	xxx_hidden_Metadata       *ResultSetMetadata                `protobuf:"bytes,1,opt,name=metadata,proto3"`
-	xxx_hidden_Rows           *[]*structpb.ListValue            `protobuf:"bytes,2,rep,name=rows,proto3"`
+	xxx_hidden_Rows           *[]*ListValue                     `protobuf:"bytes,2,rep,name=rows,proto3"`
 	xxx_hidden_Stats          *ResultSetStats                   `protobuf:"bytes,3,opt,name=stats,proto3"`
 	xxx_hidden_PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,5,opt,name=precommit_token,json=precommitToken,proto3"`
 	xxx_hidden_CacheUpdate    *CacheUpdate                      `protobuf:"bytes,6,opt,name=cache_update,json=cacheUpdate,proto3"`
@@ -82,7 +81,7 @@ func (x *ResultSet) GetMetadata() *ResultSetMetadata {
 	return nil
 }
 
-func (x *ResultSet) GetRows() []*structpb.ListValue {
+func (x *ResultSet) GetRows() []*ListValue {
 	if x != nil {
 		if x.xxx_hidden_Rows != nil {
 			return *x.xxx_hidden_Rows
@@ -116,7 +115,7 @@ func (x *ResultSet) SetMetadata(v *ResultSetMetadata) {
 	x.xxx_hidden_Metadata = v
 }
 
-func (x *ResultSet) SetRows(v []*structpb.ListValue) {
+func (x *ResultSet) SetRows(v []*ListValue) {
 	x.xxx_hidden_Rows = &v
 }
 
@@ -186,7 +185,7 @@ type ResultSet_builder struct {
 	// element in each row matches the ith field in
 	// [metadata.row_type][google.spanner.v1.internalopaque.ResultSetMetadata.row_type]. Elements
 	// are encoded based on type as described [here][google.spanner.v1.internalopaque.TypeCode].
-	Rows []*structpb.ListValue
+	Rows []*ListValue
 	// Query plan and execution statistics for the SQL statement that
 	// produced this result set. These can be requested by setting
 	// [ExecuteSqlRequest.query_mode][google.spanner.v1.internalopaque.ExecuteSqlRequest.query_mode].
@@ -229,7 +228,7 @@ func (b0 ResultSet_builder) Build() *ResultSet {
 type PartialResultSet struct {
 	state                     protoimpl.MessageState            `protogen:"opaque.v1"`
 	xxx_hidden_Metadata       *ResultSetMetadata                `protobuf:"bytes,1,opt,name=metadata,proto3"`
-	xxx_hidden_Values         *[]*structpb.Value                `protobuf:"bytes,2,rep,name=values,proto3"`
+	xxx_hidden_Values         *[]*Value                         `protobuf:"bytes,2,rep,name=values,proto3"`
 	xxx_hidden_ChunkedValue   bool                              `protobuf:"varint,3,opt,name=chunked_value,json=chunkedValue,proto3"`
 	xxx_hidden_ResumeToken    []byte                            `protobuf:"bytes,4,opt,name=resume_token,json=resumeToken,proto3"`
 	xxx_hidden_Stats          *ResultSetStats                   `protobuf:"bytes,5,opt,name=stats,proto3"`
@@ -272,7 +271,7 @@ func (x *PartialResultSet) GetMetadata() *ResultSetMetadata {
 	return nil
 }
 
-func (x *PartialResultSet) GetValues() []*structpb.Value {
+func (x *PartialResultSet) GetValues() []*Value {
 	if x != nil {
 		if x.xxx_hidden_Values != nil {
 			return *x.xxx_hidden_Values
@@ -327,7 +326,7 @@ func (x *PartialResultSet) SetMetadata(v *ResultSetMetadata) {
 	x.xxx_hidden_Metadata = v
 }
 
-func (x *PartialResultSet) SetValues(v []*structpb.Value) {
+func (x *PartialResultSet) SetValues(v []*Value) {
 	x.xxx_hidden_Values = &v
 }
 
@@ -486,7 +485,7 @@ type PartialResultSet_builder struct {
 	// resumed from a previously yielded `resume_token`. For the above sequence of
 	// `PartialResultSet`s, resuming the query with `"resume_token": "Af65..."`
 	// yields results from the `PartialResultSet` with value "orl".
-	Values []*structpb.Value
+	Values []*Value
 	// If true, then the final value in
 	// [values][google.spanner.v1.internalopaque.PartialResultSet.values] is chunked, and must be
 	// combined with more values from subsequent `PartialResultSet`s to obtain a
@@ -682,7 +681,7 @@ func (b0 ResultSetMetadata_builder) Build() *ResultSetMetadata {
 type ResultSetStats struct {
 	state                 protoimpl.MessageState    `protogen:"opaque.v1"`
 	xxx_hidden_QueryPlan  *QueryPlan                `protobuf:"bytes,1,opt,name=query_plan,json=queryPlan,proto3"`
-	xxx_hidden_QueryStats *structpb.Struct          `protobuf:"bytes,2,opt,name=query_stats,json=queryStats,proto3"`
+	xxx_hidden_QueryStats *Struct                   `protobuf:"bytes,2,opt,name=query_stats,json=queryStats,proto3"`
 	xxx_hidden_RowCount   isResultSetStats_RowCount `protobuf_oneof:"row_count"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
@@ -720,7 +719,7 @@ func (x *ResultSetStats) GetQueryPlan() *QueryPlan {
 	return nil
 }
 
-func (x *ResultSetStats) GetQueryStats() *structpb.Struct {
+func (x *ResultSetStats) GetQueryStats() *Struct {
 	if x != nil {
 		return x.xxx_hidden_QueryStats
 	}
@@ -749,7 +748,7 @@ func (x *ResultSetStats) SetQueryPlan(v *QueryPlan) {
 	x.xxx_hidden_QueryPlan = v
 }
 
-func (x *ResultSetStats) SetQueryStats(v *structpb.Struct) {
+func (x *ResultSetStats) SetQueryStats(v *Struct) {
 	x.xxx_hidden_QueryStats = v
 }
 
@@ -855,7 +854,7 @@ type ResultSetStats_builder struct {
 	//	  "elapsed_time": "1.22 secs",
 	//	  "cpu_time": "1.19 secs"
 	//	}
-	QueryStats *structpb.Struct
+	QueryStats *Struct
 	// The number of rows modified by the DML statement.
 
 	// Fields of oneof xxx_hidden_RowCount:
@@ -915,16 +914,16 @@ var File_librarian_opaque_google_spanner_v1_result_set_proto protoreflect.FileDe
 
 const file_librarian_opaque_google_spanner_v1_result_set_proto_rawDesc = "" +
 	"\n" +
-	"3librarian_opaque/google/spanner/v1/result_set.proto\x12 google.spanner.v1.internalopaque\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a1librarian_opaque/google/spanner/v1/location.proto\x1a3librarian_opaque/google/spanner/v1/query_plan.proto\x1a4librarian_opaque/google/spanner/v1/transaction.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\x9d\x03\n" +
+	"3librarian_opaque/google/spanner/v1/result_set.proto\x12 google.spanner.v1.internalopaque\x1a\x1fgoogle/api/field_behavior.proto\x1a-librarian_opaque/google/protobuf/struct.proto\x1a1librarian_opaque/google/spanner/v1/location.proto\x1a3librarian_opaque/google/spanner/v1/query_plan.proto\x1a4librarian_opaque/google/spanner/v1/transaction.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\xae\x03\n" +
 	"\tResultSet\x12O\n" +
-	"\bmetadata\x18\x01 \x01(\v23.google.spanner.v1.internalopaque.ResultSetMetadataR\bmetadata\x12.\n" +
-	"\x04rows\x18\x02 \x03(\v2\x1a.google.protobuf.ListValueR\x04rows\x12F\n" +
+	"\bmetadata\x18\x01 \x01(\v23.google.spanner.v1.internalopaque.ResultSetMetadataR\bmetadata\x12?\n" +
+	"\x04rows\x18\x02 \x03(\v2+.google.spanner.v1.internalopaque.ListValueR\x04rows\x12F\n" +
 	"\x05stats\x18\x03 \x01(\v20.google.spanner.v1.internalopaque.ResultSetStatsR\x05stats\x12p\n" +
 	"\x0fprecommit_token\x18\x05 \x01(\v2B.google.spanner.v1.internalopaque.MultiplexedSessionPrecommitTokenB\x03\xe0A\x01R\x0eprecommitToken\x12U\n" +
-	"\fcache_update\x18\x06 \x01(\v2-.google.spanner.v1.internalopaque.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\"\x85\x04\n" +
+	"\fcache_update\x18\x06 \x01(\v2-.google.spanner.v1.internalopaque.CacheUpdateB\x03\xe0A\x01R\vcacheUpdate\"\x96\x04\n" +
 	"\x10PartialResultSet\x12O\n" +
-	"\bmetadata\x18\x01 \x01(\v23.google.spanner.v1.internalopaque.ResultSetMetadataR\bmetadata\x12.\n" +
-	"\x06values\x18\x02 \x03(\v2\x16.google.protobuf.ValueR\x06values\x12#\n" +
+	"\bmetadata\x18\x01 \x01(\v23.google.spanner.v1.internalopaque.ResultSetMetadataR\bmetadata\x12?\n" +
+	"\x06values\x18\x02 \x03(\v2'.google.spanner.v1.internalopaque.ValueR\x06values\x12#\n" +
 	"\rchunked_value\x18\x03 \x01(\bR\fchunkedValue\x12!\n" +
 	"\fresume_token\x18\x04 \x01(\fR\vresumeToken\x12F\n" +
 	"\x05stats\x18\x05 \x01(\v20.google.spanner.v1.internalopaque.ResultSetStatsR\x05stats\x12p\n" +
@@ -935,11 +934,11 @@ const file_librarian_opaque_google_spanner_v1_result_set_proto_rawDesc = "" +
 	"\x11ResultSetMetadata\x12G\n" +
 	"\brow_type\x18\x01 \x01(\v2,.google.spanner.v1.internalopaque.StructTypeR\arowType\x12O\n" +
 	"\vtransaction\x18\x02 \x01(\v2-.google.spanner.v1.internalopaque.TransactionR\vtransaction\x12a\n" +
-	"\x15undeclared_parameters\x18\x03 \x01(\v2,.google.spanner.v1.internalopaque.StructTypeR\x14undeclaredParameters\"\x82\x02\n" +
+	"\x15undeclared_parameters\x18\x03 \x01(\v2,.google.spanner.v1.internalopaque.StructTypeR\x14undeclaredParameters\"\x93\x02\n" +
 	"\x0eResultSetStats\x12J\n" +
 	"\n" +
-	"query_plan\x18\x01 \x01(\v2+.google.spanner.v1.internalopaque.QueryPlanR\tqueryPlan\x128\n" +
-	"\vquery_stats\x18\x02 \x01(\v2\x17.google.protobuf.StructR\n" +
+	"query_plan\x18\x01 \x01(\v2+.google.spanner.v1.internalopaque.QueryPlanR\tqueryPlan\x12I\n" +
+	"\vquery_stats\x18\x02 \x01(\v2(.google.spanner.v1.internalopaque.StructR\n" +
 	"queryStats\x12(\n" +
 	"\x0frow_count_exact\x18\x03 \x01(\x03H\x00R\rrowCountExact\x123\n" +
 	"\x15row_count_lower_bound\x18\x04 \x01(\x03H\x00R\x12rowCountLowerBoundB\v\n" +
@@ -952,23 +951,23 @@ var file_librarian_opaque_google_spanner_v1_result_set_proto_goTypes = []any{
 	(*PartialResultSet)(nil),                 // 1: google.spanner.v1.internalopaque.PartialResultSet
 	(*ResultSetMetadata)(nil),                // 2: google.spanner.v1.internalopaque.ResultSetMetadata
 	(*ResultSetStats)(nil),                   // 3: google.spanner.v1.internalopaque.ResultSetStats
-	(*structpb.ListValue)(nil),               // 4: google.protobuf.ListValue
+	(*ListValue)(nil),                        // 4: google.spanner.v1.internalopaque.ListValue
 	(*MultiplexedSessionPrecommitToken)(nil), // 5: google.spanner.v1.internalopaque.MultiplexedSessionPrecommitToken
 	(*CacheUpdate)(nil),                      // 6: google.spanner.v1.internalopaque.CacheUpdate
-	(*structpb.Value)(nil),                   // 7: google.protobuf.Value
+	(*Value)(nil),                            // 7: google.spanner.v1.internalopaque.Value
 	(*StructType)(nil),                       // 8: google.spanner.v1.internalopaque.StructType
 	(*Transaction)(nil),                      // 9: google.spanner.v1.internalopaque.Transaction
 	(*QueryPlan)(nil),                        // 10: google.spanner.v1.internalopaque.QueryPlan
-	(*structpb.Struct)(nil),                  // 11: google.protobuf.Struct
+	(*Struct)(nil),                           // 11: google.spanner.v1.internalopaque.Struct
 }
 var file_librarian_opaque_google_spanner_v1_result_set_proto_depIdxs = []int32{
 	2,  // 0: google.spanner.v1.internalopaque.ResultSet.metadata:type_name -> google.spanner.v1.internalopaque.ResultSetMetadata
-	4,  // 1: google.spanner.v1.internalopaque.ResultSet.rows:type_name -> google.protobuf.ListValue
+	4,  // 1: google.spanner.v1.internalopaque.ResultSet.rows:type_name -> google.spanner.v1.internalopaque.ListValue
 	3,  // 2: google.spanner.v1.internalopaque.ResultSet.stats:type_name -> google.spanner.v1.internalopaque.ResultSetStats
 	5,  // 3: google.spanner.v1.internalopaque.ResultSet.precommit_token:type_name -> google.spanner.v1.internalopaque.MultiplexedSessionPrecommitToken
 	6,  // 4: google.spanner.v1.internalopaque.ResultSet.cache_update:type_name -> google.spanner.v1.internalopaque.CacheUpdate
 	2,  // 5: google.spanner.v1.internalopaque.PartialResultSet.metadata:type_name -> google.spanner.v1.internalopaque.ResultSetMetadata
-	7,  // 6: google.spanner.v1.internalopaque.PartialResultSet.values:type_name -> google.protobuf.Value
+	7,  // 6: google.spanner.v1.internalopaque.PartialResultSet.values:type_name -> google.spanner.v1.internalopaque.Value
 	3,  // 7: google.spanner.v1.internalopaque.PartialResultSet.stats:type_name -> google.spanner.v1.internalopaque.ResultSetStats
 	5,  // 8: google.spanner.v1.internalopaque.PartialResultSet.precommit_token:type_name -> google.spanner.v1.internalopaque.MultiplexedSessionPrecommitToken
 	6,  // 9: google.spanner.v1.internalopaque.PartialResultSet.cache_update:type_name -> google.spanner.v1.internalopaque.CacheUpdate
@@ -976,7 +975,7 @@ var file_librarian_opaque_google_spanner_v1_result_set_proto_depIdxs = []int32{
 	9,  // 11: google.spanner.v1.internalopaque.ResultSetMetadata.transaction:type_name -> google.spanner.v1.internalopaque.Transaction
 	8,  // 12: google.spanner.v1.internalopaque.ResultSetMetadata.undeclared_parameters:type_name -> google.spanner.v1.internalopaque.StructType
 	10, // 13: google.spanner.v1.internalopaque.ResultSetStats.query_plan:type_name -> google.spanner.v1.internalopaque.QueryPlan
-	11, // 14: google.spanner.v1.internalopaque.ResultSetStats.query_stats:type_name -> google.protobuf.Struct
+	11, // 14: google.spanner.v1.internalopaque.ResultSetStats.query_stats:type_name -> google.spanner.v1.internalopaque.Struct
 	15, // [15:15] is the sub-list for method output_type
 	15, // [15:15] is the sub-list for method input_type
 	15, // [15:15] is the sub-list for extension type_name
@@ -989,6 +988,7 @@ func file_librarian_opaque_google_spanner_v1_result_set_proto_init() {
 	if File_librarian_opaque_google_spanner_v1_result_set_proto != nil {
 		return
 	}
+	file_librarian_opaque_google_protobuf_struct_proto_init()
 	file_librarian_opaque_google_spanner_v1_location_proto_init()
 	file_librarian_opaque_google_spanner_v1_query_plan_proto_init()
 	file_librarian_opaque_google_spanner_v1_transaction_proto_init()

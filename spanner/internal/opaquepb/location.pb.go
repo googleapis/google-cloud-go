@@ -26,7 +26,6 @@ import (
 
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
 const (
@@ -1423,7 +1422,7 @@ func (x *KeyRecipe_Part) GetIdentifier() string {
 	return ""
 }
 
-func (x *KeyRecipe_Part) GetValue() *structpb.Value {
+func (x *KeyRecipe_Part) GetValue() *Value {
 	if x != nil {
 		if x, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Value); ok {
 			return x.Value
@@ -1468,7 +1467,7 @@ func (x *KeyRecipe_Part) SetIdentifier(v string) {
 	x.xxx_hidden_ValueType = &keyRecipe_Part_Identifier{v}
 }
 
-func (x *KeyRecipe_Part) SetValue(v *structpb.Value) {
+func (x *KeyRecipe_Part) SetValue(v *Value) {
 	if v == nil {
 		x.xxx_hidden_ValueType = nil
 		return
@@ -1590,7 +1589,7 @@ type KeyRecipe_Part_builder struct {
 	Identifier *string
 	// The constant value of the key part.
 	// It is present when query uses a constant as a part of the key.
-	Value *structpb.Value
+	Value *Value
 	// If true, the client is responsible to fill in the value randomly.
 	// It's relevant only for the INT64 type.
 	Random *bool
@@ -1643,7 +1642,7 @@ type keyRecipe_Part_Identifier struct {
 type keyRecipe_Part_Value struct {
 	// The constant value of the key part.
 	// It is present when query uses a constant as a part of the key.
-	Value *structpb.Value `protobuf:"bytes,6,opt,name=value,proto3,oneof"`
+	Value *Value `protobuf:"bytes,6,opt,name=value,proto3,oneof"`
 }
 
 type keyRecipe_Part_Random struct {
@@ -1740,7 +1739,7 @@ var File_librarian_opaque_google_spanner_v1_location_proto protoreflect.FileDesc
 
 const file_librarian_opaque_google_spanner_v1_location_proto_rawDesc = "" +
 	"\n" +
-	"1librarian_opaque/google/spanner/v1/location.proto\x12 google.spanner.v1.internalopaque\x1a\x1cgoogle/protobuf/struct.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\x99\x01\n" +
+	"1librarian_opaque/google/spanner/v1/location.proto\x12 google.spanner.v1.internalopaque\x1a-librarian_opaque/google/protobuf/struct.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\x99\x01\n" +
 	"\x05Range\x12\x1b\n" +
 	"\tstart_key\x18\x01 \x01(\fR\bstartKey\x12\x1b\n" +
 	"\tlimit_key\x18\x02 \x01(\fR\blimitKey\x12\x1b\n" +
@@ -1769,14 +1768,14 @@ const file_librarian_opaque_google_spanner_v1_location_proto_rawDesc = "" +
 	"\fleader_index\x18\x03 \x01(\x05R\vleaderIndex\x12\x1e\n" +
 	"\n" +
 	"generation\x18\x04 \x01(\fR\n" +
-	"generation\"\x84\x06\n" +
+	"generation\"\x95\x06\n" +
 	"\tKeyRecipe\x12\x1f\n" +
 	"\n" +
 	"table_name\x18\x01 \x01(\tH\x00R\ttableName\x12\x1f\n" +
 	"\n" +
 	"index_name\x18\x02 \x01(\tH\x00R\tindexName\x12%\n" +
 	"\roperation_uid\x18\x03 \x01(\x04H\x00R\foperationUid\x12D\n" +
-	"\x04part\x18\x04 \x03(\v20.google.spanner.v1.internalopaque.KeyRecipe.PartR\x04part\x1a\xbd\x04\n" +
+	"\x04part\x18\x04 \x03(\v20.google.spanner.v1.internalopaque.KeyRecipe.PartR\x04part\x1a\xce\x04\n" +
 	"\x04Part\x12\x10\n" +
 	"\x03tag\x18\x01 \x01(\rR\x03tag\x12L\n" +
 	"\x05order\x18\x02 \x01(\x0e26.google.spanner.v1.internalopaque.KeyRecipe.Part.OrderR\x05order\x12Y\n" +
@@ -1785,8 +1784,8 @@ const file_librarian_opaque_google_spanner_v1_location_proto_rawDesc = "" +
 	"\x04type\x18\x04 \x01(\v2&.google.spanner.v1.internalopaque.TypeR\x04type\x12 \n" +
 	"\n" +
 	"identifier\x18\x05 \x01(\tH\x00R\n" +
-	"identifier\x12.\n" +
-	"\x05value\x18\x06 \x01(\v2\x16.google.protobuf.ValueH\x00R\x05value\x12\x18\n" +
+	"identifier\x12?\n" +
+	"\x05value\x18\x06 \x01(\v2'.google.spanner.v1.internalopaque.ValueH\x00R\x05value\x12\x18\n" +
 	"\x06random\x18\b \x01(\bH\x00R\x06random\x12-\n" +
 	"\x12struct_identifiers\x18\a \x03(\x05R\x11structIdentifiers\"=\n" +
 	"\x05Order\x12\x15\n" +
@@ -1850,7 +1849,7 @@ var file_librarian_opaque_google_spanner_v1_location_proto_goTypes = []any{
 	(*KeyRecipe_Part)(nil),            // 10: google.spanner.v1.internalopaque.KeyRecipe.Part
 	(*RoutingHint_SkippedTablet)(nil), // 11: google.spanner.v1.internalopaque.RoutingHint.SkippedTablet
 	(*Type)(nil),                      // 12: google.spanner.v1.internalopaque.Type
-	(*structpb.Value)(nil),            // 13: google.protobuf.Value
+	(*Value)(nil),                     // 13: google.spanner.v1.internalopaque.Value
 }
 var file_librarian_opaque_google_spanner_v1_location_proto_depIdxs = []int32{
 	0,  // 0: google.spanner.v1.internalopaque.Tablet.role:type_name -> google.spanner.v1.internalopaque.Tablet.Role
@@ -1864,7 +1863,7 @@ var file_librarian_opaque_google_spanner_v1_location_proto_depIdxs = []int32{
 	1,  // 8: google.spanner.v1.internalopaque.KeyRecipe.Part.order:type_name -> google.spanner.v1.internalopaque.KeyRecipe.Part.Order
 	2,  // 9: google.spanner.v1.internalopaque.KeyRecipe.Part.null_order:type_name -> google.spanner.v1.internalopaque.KeyRecipe.Part.NullOrder
 	12, // 10: google.spanner.v1.internalopaque.KeyRecipe.Part.type:type_name -> google.spanner.v1.internalopaque.Type
-	13, // 11: google.spanner.v1.internalopaque.KeyRecipe.Part.value:type_name -> google.protobuf.Value
+	13, // 11: google.spanner.v1.internalopaque.KeyRecipe.Part.value:type_name -> google.spanner.v1.internalopaque.Value
 	12, // [12:12] is the sub-list for method output_type
 	12, // [12:12] is the sub-list for method input_type
 	12, // [12:12] is the sub-list for extension type_name
@@ -1877,6 +1876,7 @@ func file_librarian_opaque_google_spanner_v1_location_proto_init() {
 	if File_librarian_opaque_google_spanner_v1_location_proto != nil {
 		return
 	}
+	file_librarian_opaque_google_protobuf_struct_proto_init()
 	file_librarian_opaque_google_spanner_v1_type_proto_init()
 	file_librarian_opaque_google_spanner_v1_location_proto_msgTypes[3].OneofWrappers = []any{
 		(*keyRecipe_TableName)(nil),

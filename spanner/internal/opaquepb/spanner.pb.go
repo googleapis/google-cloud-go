@@ -30,7 +30,6 @@ import (
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	_ "google.golang.org/protobuf/types/known/emptypb"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1430,7 +1429,7 @@ type ExecuteSqlRequest struct {
 	xxx_hidden_Session             string                          `protobuf:"bytes,1,opt,name=session,proto3"`
 	xxx_hidden_Transaction         *TransactionSelector            `protobuf:"bytes,2,opt,name=transaction,proto3"`
 	xxx_hidden_Sql                 string                          `protobuf:"bytes,3,opt,name=sql,proto3"`
-	xxx_hidden_Params              *structpb.Struct                `protobuf:"bytes,4,opt,name=params,proto3"`
+	xxx_hidden_Params              *Struct                         `protobuf:"bytes,4,opt,name=params,proto3"`
 	xxx_hidden_ParamTypes          map[string]*Type                `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_ResumeToken         []byte                          `protobuf:"bytes,6,opt,name=resume_token,json=resumeToken,proto3"`
 	xxx_hidden_QueryMode           ExecuteSqlRequest_QueryMode     `protobuf:"varint,7,opt,name=query_mode,json=queryMode,proto3,enum=google.spanner.v1.internalopaque.ExecuteSqlRequest_QueryMode"`
@@ -1492,7 +1491,7 @@ func (x *ExecuteSqlRequest) GetSql() string {
 	return ""
 }
 
-func (x *ExecuteSqlRequest) GetParams() *structpb.Struct {
+func (x *ExecuteSqlRequest) GetParams() *Struct {
 	if x != nil {
 		return x.xxx_hidden_Params
 	}
@@ -1588,7 +1587,7 @@ func (x *ExecuteSqlRequest) SetSql(v string) {
 	x.xxx_hidden_Sql = v
 }
 
-func (x *ExecuteSqlRequest) SetParams(v *structpb.Struct) {
+func (x *ExecuteSqlRequest) SetParams(v *Struct) {
 	x.xxx_hidden_Params = v
 }
 
@@ -1739,7 +1738,7 @@ type ExecuteSqlRequest_builder struct {
 	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
 	//
 	// It's an error to execute a SQL statement with unbound parameters.
-	Params *structpb.Struct
+	Params *Struct
 	// It isn't always possible for Cloud Spanner to infer the right SQL type
 	// from a JSON value. For example, values of type `BYTES` and values
 	// of type `STRING` both appear in
@@ -2264,7 +2263,7 @@ type PartitionQueryRequest struct {
 	xxx_hidden_Session          string                 `protobuf:"bytes,1,opt,name=session,proto3"`
 	xxx_hidden_Transaction      *TransactionSelector   `protobuf:"bytes,2,opt,name=transaction,proto3"`
 	xxx_hidden_Sql              string                 `protobuf:"bytes,3,opt,name=sql,proto3"`
-	xxx_hidden_Params           *structpb.Struct       `protobuf:"bytes,4,opt,name=params,proto3"`
+	xxx_hidden_Params           *Struct                `protobuf:"bytes,4,opt,name=params,proto3"`
 	xxx_hidden_ParamTypes       map[string]*Type       `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	xxx_hidden_PartitionOptions *PartitionOptions      `protobuf:"bytes,6,opt,name=partition_options,json=partitionOptions,proto3"`
 	unknownFields               protoimpl.UnknownFields
@@ -2317,7 +2316,7 @@ func (x *PartitionQueryRequest) GetSql() string {
 	return ""
 }
 
-func (x *PartitionQueryRequest) GetParams() *structpb.Struct {
+func (x *PartitionQueryRequest) GetParams() *Struct {
 	if x != nil {
 		return x.xxx_hidden_Params
 	}
@@ -2350,7 +2349,7 @@ func (x *PartitionQueryRequest) SetSql(v string) {
 	x.xxx_hidden_Sql = v
 }
 
-func (x *PartitionQueryRequest) SetParams(v *structpb.Struct) {
+func (x *PartitionQueryRequest) SetParams(v *Struct) {
 	x.xxx_hidden_Params = v
 }
 
@@ -2430,7 +2429,7 @@ type PartitionQueryRequest_builder struct {
 	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
 	//
 	// It's an error to execute a SQL statement with unbound parameters.
-	Params *structpb.Struct
+	Params *Struct
 	// Optional. It isn't always possible for Cloud Spanner to infer the right SQL
 	// type from a JSON value. For example, values of type `BYTES` and values of
 	// type `STRING` both appear in
@@ -4133,8 +4132,8 @@ func (b0 FetchCacheUpdateRequest_builder) Build() *FetchCacheUpdateRequest {
 
 // Container for various pieces of client-owned context attached to a request.
 type RequestOptions_ClientContext struct {
-	state                    protoimpl.MessageState     `protogen:"opaque.v1"`
-	xxx_hidden_SecureContext map[string]*structpb.Value `protobuf:"bytes,1,rep,name=secure_context,json=secureContext,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_SecureContext map[string]*Value      `protobuf:"bytes,1,rep,name=secure_context,json=secureContext,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields            protoimpl.UnknownFields
 	sizeCache                protoimpl.SizeCache
 }
@@ -4164,14 +4163,14 @@ func (x *RequestOptions_ClientContext) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-func (x *RequestOptions_ClientContext) GetSecureContext() map[string]*structpb.Value {
+func (x *RequestOptions_ClientContext) GetSecureContext() map[string]*Value {
 	if x != nil {
 		return x.xxx_hidden_SecureContext
 	}
 	return nil
 }
 
-func (x *RequestOptions_ClientContext) SetSecureContext(v map[string]*structpb.Value) {
+func (x *RequestOptions_ClientContext) SetSecureContext(v map[string]*Value) {
 	x.xxx_hidden_SecureContext = v
 }
 
@@ -4181,7 +4180,7 @@ type RequestOptions_ClientContext_builder struct {
 	// Optional. Map of parameter name to value for this request. These values
 	// will be returned by any SECURE_CONTEXT() calls invoked by this request
 	// (e.g., by queries against Parameterized Secure Views).
-	SecureContext map[string]*structpb.Value
+	SecureContext map[string]*Value
 }
 
 func (b0 RequestOptions_ClientContext_builder) Build() *RequestOptions_ClientContext {
@@ -4546,7 +4545,7 @@ func (b0 ExecuteSqlRequest_QueryOptions_builder) Build() *ExecuteSqlRequest_Quer
 type ExecuteBatchDmlRequest_Statement struct {
 	state                 protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Sql        string                 `protobuf:"bytes,1,opt,name=sql,proto3"`
-	xxx_hidden_Params     *structpb.Struct       `protobuf:"bytes,2,opt,name=params,proto3"`
+	xxx_hidden_Params     *Struct                `protobuf:"bytes,2,opt,name=params,proto3"`
 	xxx_hidden_ParamTypes map[string]*Type       `protobuf:"bytes,3,rep,name=param_types,json=paramTypes,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	unknownFields         protoimpl.UnknownFields
 	sizeCache             protoimpl.SizeCache
@@ -4584,7 +4583,7 @@ func (x *ExecuteBatchDmlRequest_Statement) GetSql() string {
 	return ""
 }
 
-func (x *ExecuteBatchDmlRequest_Statement) GetParams() *structpb.Struct {
+func (x *ExecuteBatchDmlRequest_Statement) GetParams() *Struct {
 	if x != nil {
 		return x.xxx_hidden_Params
 	}
@@ -4602,7 +4601,7 @@ func (x *ExecuteBatchDmlRequest_Statement) SetSql(v string) {
 	x.xxx_hidden_Sql = v
 }
 
-func (x *ExecuteBatchDmlRequest_Statement) SetParams(v *structpb.Struct) {
+func (x *ExecuteBatchDmlRequest_Statement) SetParams(v *Struct) {
 	x.xxx_hidden_Params = v
 }
 
@@ -4638,7 +4637,7 @@ type ExecuteBatchDmlRequest_Statement_builder struct {
 	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
 	//
 	// It's an error to execute a SQL statement with unbound parameters.
-	Params *structpb.Struct
+	Params *Struct
 	// It isn't always possible for Cloud Spanner to infer the right SQL type
 	// from a JSON value. For example, values of type `BYTES` and values
 	// of type `STRING` both appear in
@@ -4729,7 +4728,7 @@ var File_librarian_opaque_google_spanner_v1_spanner_proto protoreflect.FileDescr
 
 const file_librarian_opaque_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\n" +
-	"0librarian_opaque/google/spanner/v1/spanner.proto\x12 google.spanner.v1.internalopaque\x1a8librarian_opaque/google/spanner/v1/commit_response.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a-librarian_opaque/google/spanner/v1/keys.proto\x1a1librarian_opaque/google/spanner/v1/location.proto\x1a1librarian_opaque/google/spanner/v1/mutation.proto\x1a3librarian_opaque/google/spanner/v1/result_set.proto\x1a4librarian_opaque/google/spanner/v1/transaction.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\xa5\x01\n" +
+	"0librarian_opaque/google/spanner/v1/spanner.proto\x12 google.spanner.v1.internalopaque\x1a8librarian_opaque/google/spanner/v1/commit_response.proto\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a-librarian_opaque/google/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a-librarian_opaque/google/spanner/v1/keys.proto\x1a1librarian_opaque/google/spanner/v1/location.proto\x1a1librarian_opaque/google/spanner/v1/mutation.proto\x1a3librarian_opaque/google/spanner/v1/result_set.proto\x1a4librarian_opaque/google/spanner/v1/transaction.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\xa5\x01\n" +
 	"\x14CreateSessionRequest\x12C\n" +
 	"\bdatabase\x18\x01 \x01(\tB'\xe0A\x02\xfaA!\n" +
 	"\x1fspanner.googleapis.com/DatabaseR\bdatabase\x12H\n" +
@@ -4768,18 +4767,18 @@ const file_librarian_opaque_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"R\n" +
 	"\x14DeleteSessionRequest\x12:\n" +
 	"\x04name\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
-	"\x1espanner.googleapis.com/SessionR\x04name\"\xe8\x04\n" +
+	"\x1espanner.googleapis.com/SessionR\x04name\"\xf9\x04\n" +
 	"\x0eRequestOptions\x12U\n" +
 	"\bpriority\x18\x01 \x01(\x0e29.google.spanner.v1.internalopaque.RequestOptions.PriorityR\bpriority\x12\x1f\n" +
 	"\vrequest_tag\x18\x02 \x01(\tR\n" +
 	"requestTag\x12'\n" +
 	"\x0ftransaction_tag\x18\x03 \x01(\tR\x0etransactionTag\x12j\n" +
-	"\x0eclient_context\x18\x04 \x01(\v2>.google.spanner.v1.internalopaque.RequestOptions.ClientContextB\x03\xe0A\x01R\rclientContext\x1a\xe8\x01\n" +
+	"\x0eclient_context\x18\x04 \x01(\v2>.google.spanner.v1.internalopaque.RequestOptions.ClientContextB\x03\xe0A\x01R\rclientContext\x1a\xf9\x01\n" +
 	"\rClientContext\x12}\n" +
-	"\x0esecure_context\x18\x01 \x03(\v2Q.google.spanner.v1.internalopaque.RequestOptions.ClientContext.SecureContextEntryB\x03\xe0A\x01R\rsecureContext\x1aX\n" +
+	"\x0esecure_context\x18\x01 \x03(\v2Q.google.spanner.v1.internalopaque.RequestOptions.ClientContext.SecureContextEntryB\x03\xe0A\x01R\rsecureContext\x1ai\n" +
 	"\x12SecureContextEntry\x12\x10\n" +
-	"\x03key\x18\x01 \x01(\tR\x03key\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value:\x028\x01\"^\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12=\n" +
+	"\x05value\x18\x02 \x01(\v2'.google.spanner.v1.internalopaque.ValueR\x05value:\x028\x01\"^\n" +
 	"\bPriority\x12\x18\n" +
 	"\x14PRIORITY_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fPRIORITY_LOW\x10\x01\x12\x13\n" +
@@ -4802,14 +4801,14 @@ const file_librarian_opaque_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\x0fExcludeReplicas\x12u\n" +
 	"\x12replica_selections\x18\x01 \x03(\v2F.google.spanner.v1.internalopaque.DirectedReadOptions.ReplicaSelectionR\x11replicaSelectionsB\n" +
 	"\n" +
-	"\breplicas\"\xb9\n" +
+	"\breplicas\"\xca\n" +
 	"\n" +
 	"\x11ExecuteSqlRequest\x12@\n" +
 	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12W\n" +
 	"\vtransaction\x18\x02 \x01(\v25.google.spanner.v1.internalopaque.TransactionSelectorR\vtransaction\x12\x15\n" +
-	"\x03sql\x18\x03 \x01(\tB\x03\xe0A\x02R\x03sql\x12/\n" +
-	"\x06params\x18\x04 \x01(\v2\x17.google.protobuf.StructR\x06params\x12d\n" +
+	"\x03sql\x18\x03 \x01(\tB\x03\xe0A\x02R\x03sql\x12@\n" +
+	"\x06params\x18\x04 \x01(\v2(.google.spanner.v1.internalopaque.StructR\x06params\x12d\n" +
 	"\vparam_types\x18\x05 \x03(\v2C.google.spanner.v1.internalopaque.ExecuteSqlRequest.ParamTypesEntryR\n" +
 	"paramTypes\x12!\n" +
 	"\fresume_token\x18\x06 \x01(\fR\vresumeToken\x12\\\n" +
@@ -4837,7 +4836,7 @@ const file_librarian_opaque_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\aPROFILE\x10\x02\x12\x0e\n" +
 	"\n" +
 	"WITH_STATS\x10\x03\x12\x17\n" +
-	"\x13WITH_PLAN_AND_STATS\x10\x04\"\xf7\x05\n" +
+	"\x13WITH_PLAN_AND_STATS\x10\x04\"\x88\x06\n" +
 	"\x16ExecuteBatchDmlRequest\x12@\n" +
 	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12\\\n" +
@@ -4847,10 +4846,10 @@ const file_librarian_opaque_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"statements\x12\x19\n" +
 	"\x05seqno\x18\x04 \x01(\x03B\x03\xe0A\x02R\x05seqno\x12Y\n" +
 	"\x0frequest_options\x18\x05 \x01(\v20.google.spanner.v1.internalopaque.RequestOptionsR\x0erequestOptions\x12,\n" +
-	"\x0flast_statements\x18\x06 \x01(\bB\x03\xe0A\x01R\x0elastStatements\x1a\xaf\x02\n" +
+	"\x0flast_statements\x18\x06 \x01(\bB\x03\xe0A\x01R\x0elastStatements\x1a\xc0\x02\n" +
 	"\tStatement\x12\x15\n" +
-	"\x03sql\x18\x01 \x01(\tB\x03\xe0A\x02R\x03sql\x12/\n" +
-	"\x06params\x18\x02 \x01(\v2\x17.google.protobuf.StructR\x06params\x12s\n" +
+	"\x03sql\x18\x01 \x01(\tB\x03\xe0A\x02R\x03sql\x12@\n" +
+	"\x06params\x18\x02 \x01(\v2(.google.spanner.v1.internalopaque.StructR\x06params\x12s\n" +
 	"\vparam_types\x18\x03 \x03(\v2R.google.spanner.v1.internalopaque.ExecuteBatchDmlRequest.Statement.ParamTypesEntryR\n" +
 	"paramTypes\x1ae\n" +
 	"\x0fParamTypesEntry\x12\x10\n" +
@@ -4863,13 +4862,13 @@ const file_librarian_opaque_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\x0fprecommit_token\x18\x03 \x01(\v2B.google.spanner.v1.internalopaque.MultiplexedSessionPrecommitTokenB\x03\xe0A\x01R\x0eprecommitToken\"k\n" +
 	"\x10PartitionOptions\x120\n" +
 	"\x14partition_size_bytes\x18\x01 \x01(\x03R\x12partitionSizeBytes\x12%\n" +
-	"\x0emax_partitions\x18\x02 \x01(\x03R\rmaxPartitions\"\xb6\x04\n" +
+	"\x0emax_partitions\x18\x02 \x01(\x03R\rmaxPartitions\"\xc7\x04\n" +
 	"\x15PartitionQueryRequest\x12@\n" +
 	"\asession\x18\x01 \x01(\tB&\xe0A\x02\xfaA \n" +
 	"\x1espanner.googleapis.com/SessionR\asession\x12W\n" +
 	"\vtransaction\x18\x02 \x01(\v25.google.spanner.v1.internalopaque.TransactionSelectorR\vtransaction\x12\x15\n" +
-	"\x03sql\x18\x03 \x01(\tB\x03\xe0A\x02R\x03sql\x124\n" +
-	"\x06params\x18\x04 \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\x06params\x12m\n" +
+	"\x03sql\x18\x03 \x01(\tB\x03\xe0A\x02R\x03sql\x12E\n" +
+	"\x06params\x18\x04 \x01(\v2(.google.spanner.v1.internalopaque.StructB\x03\xe0A\x01R\x06params\x12m\n" +
 	"\vparam_types\x18\x05 \x03(\v2G.google.spanner.v1.internalopaque.PartitionQueryRequest.ParamTypesEntryB\x03\xe0A\x01R\n" +
 	"paramTypes\x12_\n" +
 	"\x11partition_options\x18\x06 \x01(\v22.google.spanner.v1.internalopaque.PartitionOptionsR\x10partitionOptions\x1ae\n" +
@@ -5009,7 +5008,7 @@ var file_librarian_opaque_google_spanner_v1_spanner_proto_goTypes = []any{
 	(*BatchWriteRequest_MutationGroup)(nil),        // 41: google.spanner.v1.internalopaque.BatchWriteRequest.MutationGroup
 	(*timestamppb.Timestamp)(nil),                  // 42: google.protobuf.Timestamp
 	(*TransactionSelector)(nil),                    // 43: google.spanner.v1.internalopaque.TransactionSelector
-	(*structpb.Struct)(nil),                        // 44: google.protobuf.Struct
+	(*Struct)(nil),                                 // 44: google.spanner.v1.internalopaque.Struct
 	(*RoutingHint)(nil),                            // 45: google.spanner.v1.internalopaque.RoutingHint
 	(*ResultSet)(nil),                              // 46: google.spanner.v1.internalopaque.ResultSet
 	(*status.Status)(nil),                          // 47: google.rpc.Status
@@ -5019,7 +5018,7 @@ var file_librarian_opaque_google_spanner_v1_spanner_proto_goTypes = []any{
 	(*TransactionOptions)(nil),                     // 51: google.spanner.v1.internalopaque.TransactionOptions
 	(*Mutation)(nil),                               // 52: google.spanner.v1.internalopaque.Mutation
 	(*durationpb.Duration)(nil),                    // 53: google.protobuf.Duration
-	(*structpb.Value)(nil),                         // 54: google.protobuf.Value
+	(*Value)(nil),                                  // 54: google.spanner.v1.internalopaque.Value
 	(*Type)(nil),                                   // 55: google.spanner.v1.internalopaque.Type
 }
 var file_librarian_opaque_google_spanner_v1_spanner_proto_depIdxs = []int32{
@@ -5035,7 +5034,7 @@ var file_librarian_opaque_google_spanner_v1_spanner_proto_depIdxs = []int32{
 	34, // 9: google.spanner.v1.internalopaque.DirectedReadOptions.include_replicas:type_name -> google.spanner.v1.internalopaque.DirectedReadOptions.IncludeReplicas
 	35, // 10: google.spanner.v1.internalopaque.DirectedReadOptions.exclude_replicas:type_name -> google.spanner.v1.internalopaque.DirectedReadOptions.ExcludeReplicas
 	43, // 11: google.spanner.v1.internalopaque.ExecuteSqlRequest.transaction:type_name -> google.spanner.v1.internalopaque.TransactionSelector
-	44, // 12: google.spanner.v1.internalopaque.ExecuteSqlRequest.params:type_name -> google.protobuf.Struct
+	44, // 12: google.spanner.v1.internalopaque.ExecuteSqlRequest.params:type_name -> google.spanner.v1.internalopaque.Struct
 	37, // 13: google.spanner.v1.internalopaque.ExecuteSqlRequest.param_types:type_name -> google.spanner.v1.internalopaque.ExecuteSqlRequest.ParamTypesEntry
 	2,  // 14: google.spanner.v1.internalopaque.ExecuteSqlRequest.query_mode:type_name -> google.spanner.v1.internalopaque.ExecuteSqlRequest.QueryMode
 	36, // 15: google.spanner.v1.internalopaque.ExecuteSqlRequest.query_options:type_name -> google.spanner.v1.internalopaque.ExecuteSqlRequest.QueryOptions
@@ -5049,7 +5048,7 @@ var file_librarian_opaque_google_spanner_v1_spanner_proto_depIdxs = []int32{
 	47, // 23: google.spanner.v1.internalopaque.ExecuteBatchDmlResponse.status:type_name -> google.rpc.Status
 	48, // 24: google.spanner.v1.internalopaque.ExecuteBatchDmlResponse.precommit_token:type_name -> google.spanner.v1.internalopaque.MultiplexedSessionPrecommitToken
 	43, // 25: google.spanner.v1.internalopaque.PartitionQueryRequest.transaction:type_name -> google.spanner.v1.internalopaque.TransactionSelector
-	44, // 26: google.spanner.v1.internalopaque.PartitionQueryRequest.params:type_name -> google.protobuf.Struct
+	44, // 26: google.spanner.v1.internalopaque.PartitionQueryRequest.params:type_name -> google.spanner.v1.internalopaque.Struct
 	40, // 27: google.spanner.v1.internalopaque.PartitionQueryRequest.param_types:type_name -> google.spanner.v1.internalopaque.PartitionQueryRequest.ParamTypesEntry
 	18, // 28: google.spanner.v1.internalopaque.PartitionQueryRequest.partition_options:type_name -> google.spanner.v1.internalopaque.PartitionOptions
 	43, // 29: google.spanner.v1.internalopaque.PartitionReadRequest.transaction:type_name -> google.spanner.v1.internalopaque.TransactionSelector
@@ -5079,12 +5078,12 @@ var file_librarian_opaque_google_spanner_v1_spanner_proto_depIdxs = []int32{
 	47, // 53: google.spanner.v1.internalopaque.BatchWriteResponse.status:type_name -> google.rpc.Status
 	42, // 54: google.spanner.v1.internalopaque.BatchWriteResponse.commit_timestamp:type_name -> google.protobuf.Timestamp
 	32, // 55: google.spanner.v1.internalopaque.RequestOptions.ClientContext.secure_context:type_name -> google.spanner.v1.internalopaque.RequestOptions.ClientContext.SecureContextEntry
-	54, // 56: google.spanner.v1.internalopaque.RequestOptions.ClientContext.SecureContextEntry.value:type_name -> google.protobuf.Value
+	54, // 56: google.spanner.v1.internalopaque.RequestOptions.ClientContext.SecureContextEntry.value:type_name -> google.spanner.v1.internalopaque.Value
 	1,  // 57: google.spanner.v1.internalopaque.DirectedReadOptions.ReplicaSelection.type:type_name -> google.spanner.v1.internalopaque.DirectedReadOptions.ReplicaSelection.Type
 	33, // 58: google.spanner.v1.internalopaque.DirectedReadOptions.IncludeReplicas.replica_selections:type_name -> google.spanner.v1.internalopaque.DirectedReadOptions.ReplicaSelection
 	33, // 59: google.spanner.v1.internalopaque.DirectedReadOptions.ExcludeReplicas.replica_selections:type_name -> google.spanner.v1.internalopaque.DirectedReadOptions.ReplicaSelection
 	55, // 60: google.spanner.v1.internalopaque.ExecuteSqlRequest.ParamTypesEntry.value:type_name -> google.spanner.v1.internalopaque.Type
-	44, // 61: google.spanner.v1.internalopaque.ExecuteBatchDmlRequest.Statement.params:type_name -> google.protobuf.Struct
+	44, // 61: google.spanner.v1.internalopaque.ExecuteBatchDmlRequest.Statement.params:type_name -> google.spanner.v1.internalopaque.Struct
 	39, // 62: google.spanner.v1.internalopaque.ExecuteBatchDmlRequest.Statement.param_types:type_name -> google.spanner.v1.internalopaque.ExecuteBatchDmlRequest.Statement.ParamTypesEntry
 	55, // 63: google.spanner.v1.internalopaque.ExecuteBatchDmlRequest.Statement.ParamTypesEntry.value:type_name -> google.spanner.v1.internalopaque.Type
 	55, // 64: google.spanner.v1.internalopaque.PartitionQueryRequest.ParamTypesEntry.value:type_name -> google.spanner.v1.internalopaque.Type
@@ -5102,6 +5101,7 @@ func file_librarian_opaque_google_spanner_v1_spanner_proto_init() {
 		return
 	}
 	file_librarian_opaque_google_spanner_v1_commit_response_proto_init()
+	file_librarian_opaque_google_protobuf_struct_proto_init()
 	file_librarian_opaque_google_spanner_v1_keys_proto_init()
 	file_librarian_opaque_google_spanner_v1_location_proto_init()
 	file_librarian_opaque_google_spanner_v1_mutation_proto_init()

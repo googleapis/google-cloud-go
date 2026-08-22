@@ -26,7 +26,6 @@ import (
 
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -1438,7 +1437,7 @@ func (b0 ChangeStreamRecord_DataChangeRecord_ColumnMetadata_builder) Build() *Ch
 type ChangeStreamRecord_DataChangeRecord_ModValue struct {
 	state                          protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_ColumnMetadataIndex int32                  `protobuf:"varint,1,opt,name=column_metadata_index,json=columnMetadataIndex,proto3"`
-	xxx_hidden_Value               *structpb.Value        `protobuf:"bytes,2,opt,name=value,proto3"`
+	xxx_hidden_Value               *Value                 `protobuf:"bytes,2,opt,name=value,proto3"`
 	unknownFields                  protoimpl.UnknownFields
 	sizeCache                      protoimpl.SizeCache
 }
@@ -1475,7 +1474,7 @@ func (x *ChangeStreamRecord_DataChangeRecord_ModValue) GetColumnMetadataIndex() 
 	return 0
 }
 
-func (x *ChangeStreamRecord_DataChangeRecord_ModValue) GetValue() *structpb.Value {
+func (x *ChangeStreamRecord_DataChangeRecord_ModValue) GetValue() *Value {
 	if x != nil {
 		return x.xxx_hidden_Value
 	}
@@ -1486,7 +1485,7 @@ func (x *ChangeStreamRecord_DataChangeRecord_ModValue) SetColumnMetadataIndex(v 
 	x.xxx_hidden_ColumnMetadataIndex = v
 }
 
-func (x *ChangeStreamRecord_DataChangeRecord_ModValue) SetValue(v *structpb.Value) {
+func (x *ChangeStreamRecord_DataChangeRecord_ModValue) SetValue(v *Value) {
 	x.xxx_hidden_Value = v
 }
 
@@ -1509,7 +1508,7 @@ type ChangeStreamRecord_DataChangeRecord_ModValue_builder struct {
 	// field, to obtain the column metadata for the column that was modified.
 	ColumnMetadataIndex int32
 	// The value of the column.
-	Value *structpb.Value
+	Value *Value
 }
 
 func (b0 ChangeStreamRecord_DataChangeRecord_ModValue_builder) Build() *ChangeStreamRecord_DataChangeRecord_ModValue {
@@ -1769,13 +1768,13 @@ var File_librarian_opaque_google_spanner_v1_change_stream_proto protoreflect.Fil
 
 const file_librarian_opaque_google_spanner_v1_change_stream_proto_rawDesc = "" +
 	"\n" +
-	"6librarian_opaque/google/spanner/v1/change_stream.proto\x12 google.spanner.v1.internalopaque\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\xa4\x1b\n" +
+	"6librarian_opaque/google/spanner/v1/change_stream.proto\x12 google.spanner.v1.internalopaque\x1a-librarian_opaque/google/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-librarian_opaque/google/spanner/v1/type.proto\"\xb5\x1b\n" +
 	"\x12ChangeStreamRecord\x12u\n" +
 	"\x12data_change_record\x18\x01 \x01(\v2E.google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecordH\x00R\x10dataChangeRecord\x12q\n" +
 	"\x10heartbeat_record\x18\x02 \x01(\v2D.google.spanner.v1.internalopaque.ChangeStreamRecord.HeartbeatRecordH\x00R\x0fheartbeatRecord\x12\x81\x01\n" +
 	"\x16partition_start_record\x18\x03 \x01(\v2I.google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionStartRecordH\x00R\x14partitionStartRecord\x12{\n" +
 	"\x14partition_end_record\x18\x04 \x01(\v2G.google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEndRecordH\x00R\x12partitionEndRecord\x12\x81\x01\n" +
-	"\x16partition_event_record\x18\x05 \x01(\v2I.google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEventRecordH\x00R\x14partitionEventRecord\x1a\xa7\x0e\n" +
+	"\x16partition_event_record\x18\x05 \x01(\v2I.google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEventRecordH\x00R\x14partitionEventRecord\x1a\xb8\x0e\n" +
 	"\x10DataChangeRecord\x12E\n" +
 	"\x10commit_timestamp\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\x0fcommitTimestamp\x12'\n" +
 	"\x0frecord_sequence\x18\x02 \x01(\tR\x0erecordSequence\x122\n" +
@@ -1795,10 +1794,10 @@ const file_librarian_opaque_google_spanner_v1_change_stream_proto_rawDesc = "" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12:\n" +
 	"\x04type\x18\x02 \x01(\v2&.google.spanner.v1.internalopaque.TypeR\x04type\x12$\n" +
 	"\x0eis_primary_key\x18\x03 \x01(\bR\fisPrimaryKey\x12)\n" +
-	"\x10ordinal_position\x18\x04 \x01(\x03R\x0fordinalPosition\x1al\n" +
+	"\x10ordinal_position\x18\x04 \x01(\x03R\x0fordinalPosition\x1a}\n" +
 	"\bModValue\x122\n" +
-	"\x15column_metadata_index\x18\x01 \x01(\x05R\x13columnMetadataIndex\x12,\n" +
-	"\x05value\x18\x02 \x01(\v2\x16.google.protobuf.ValueR\x05value\x1a\xc7\x02\n" +
+	"\x15column_metadata_index\x18\x01 \x01(\x05R\x13columnMetadataIndex\x12=\n" +
+	"\x05value\x18\x02 \x01(\v2'.google.spanner.v1.internalopaque.ValueR\x05value\x1a\xc7\x02\n" +
 	"\x03Mod\x12b\n" +
 	"\x04keys\x18\x01 \x03(\v2N.google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.ModValueR\x04keys\x12m\n" +
 	"\n" +
@@ -1863,7 +1862,7 @@ var file_librarian_opaque_google_spanner_v1_change_stream_proto_goTypes = []any{
 	(*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent)(nil), // 12: google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEventRecord.MoveOutEvent
 	(*timestamppb.Timestamp)(nil),                                // 13: google.protobuf.Timestamp
 	(*Type)(nil),                                                 // 14: google.spanner.v1.internalopaque.Type
-	(*structpb.Value)(nil),                                       // 15: google.protobuf.Value
+	(*Value)(nil),                                                // 15: google.spanner.v1.internalopaque.Value
 }
 var file_librarian_opaque_google_spanner_v1_change_stream_proto_depIdxs = []int32{
 	3,  // 0: google.spanner.v1.internalopaque.ChangeStreamRecord.data_change_record:type_name -> google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord
@@ -1883,7 +1882,7 @@ var file_librarian_opaque_google_spanner_v1_change_stream_proto_depIdxs = []int3
 	11, // 14: google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEventRecord.move_in_events:type_name -> google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEventRecord.MoveInEvent
 	12, // 15: google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEventRecord.move_out_events:type_name -> google.spanner.v1.internalopaque.ChangeStreamRecord.PartitionEventRecord.MoveOutEvent
 	14, // 16: google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.ColumnMetadata.type:type_name -> google.spanner.v1.internalopaque.Type
-	15, // 17: google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.ModValue.value:type_name -> google.protobuf.Value
+	15, // 17: google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.ModValue.value:type_name -> google.spanner.v1.internalopaque.Value
 	9,  // 18: google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.Mod.keys:type_name -> google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.ModValue
 	9,  // 19: google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.Mod.old_values:type_name -> google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.ModValue
 	9,  // 20: google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.Mod.new_values:type_name -> google.spanner.v1.internalopaque.ChangeStreamRecord.DataChangeRecord.ModValue
@@ -1899,6 +1898,7 @@ func file_librarian_opaque_google_spanner_v1_change_stream_proto_init() {
 	if File_librarian_opaque_google_spanner_v1_change_stream_proto != nil {
 		return
 	}
+	file_librarian_opaque_google_protobuf_struct_proto_init()
 	file_librarian_opaque_google_spanner_v1_type_proto_init()
 	file_librarian_opaque_google_spanner_v1_change_stream_proto_msgTypes[0].OneofWrappers = []any{
 		(*changeStreamRecord_DataChangeRecord_)(nil),

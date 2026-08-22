@@ -27,7 +27,6 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
-	structpb "google.golang.org/protobuf/types/known/structpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
 
@@ -496,7 +495,7 @@ type Mutation_Write struct {
 	state              protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Table   string                 `protobuf:"bytes,1,opt,name=table,proto3"`
 	xxx_hidden_Columns []string               `protobuf:"bytes,2,rep,name=columns,proto3"`
-	xxx_hidden_Values  *[]*structpb.ListValue `protobuf:"bytes,3,rep,name=values,proto3"`
+	xxx_hidden_Values  *[]*ListValue          `protobuf:"bytes,3,rep,name=values,proto3"`
 	unknownFields      protoimpl.UnknownFields
 	sizeCache          protoimpl.SizeCache
 }
@@ -540,7 +539,7 @@ func (x *Mutation_Write) GetColumns() []string {
 	return nil
 }
 
-func (x *Mutation_Write) GetValues() []*structpb.ListValue {
+func (x *Mutation_Write) GetValues() []*ListValue {
 	if x != nil {
 		if x.xxx_hidden_Values != nil {
 			return *x.xxx_hidden_Values
@@ -557,7 +556,7 @@ func (x *Mutation_Write) SetColumns(v []string) {
 	x.xxx_hidden_Columns = v
 }
 
-func (x *Mutation_Write) SetValues(v []*structpb.ListValue) {
+func (x *Mutation_Write) SetValues(v []*ListValue) {
 	x.xxx_hidden_Values = &v
 }
 
@@ -583,7 +582,7 @@ type Mutation_Write_builder struct {
 	// [table][google.spanner.v1.internalopaque.Mutation.Write.table] and
 	// [columns][google.spanner.v1.internalopaque.Mutation.Write.columns]. Individual values in
 	// each list are encoded as described [here][google.spanner.v1.internalopaque.TypeCode].
-	Values []*structpb.ListValue
+	Values []*ListValue
 }
 
 func (b0 Mutation_Write_builder) Build() *Mutation_Write {
@@ -690,9 +689,9 @@ func (b0 Mutation_Delete_builder) Build() *Mutation_Delete {
 type Mutation_Send struct {
 	state                  protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Queue       string                 `protobuf:"bytes,1,opt,name=queue,proto3"`
-	xxx_hidden_Key         *structpb.ListValue    `protobuf:"bytes,2,opt,name=key,proto3"`
+	xxx_hidden_Key         *ListValue             `protobuf:"bytes,2,opt,name=key,proto3"`
 	xxx_hidden_DeliverTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=deliver_time,json=deliverTime,proto3"`
-	xxx_hidden_Payload     *structpb.Value        `protobuf:"bytes,4,opt,name=payload,proto3"`
+	xxx_hidden_Payload     *Value                 `protobuf:"bytes,4,opt,name=payload,proto3"`
 	unknownFields          protoimpl.UnknownFields
 	sizeCache              protoimpl.SizeCache
 }
@@ -729,7 +728,7 @@ func (x *Mutation_Send) GetQueue() string {
 	return ""
 }
 
-func (x *Mutation_Send) GetKey() *structpb.ListValue {
+func (x *Mutation_Send) GetKey() *ListValue {
 	if x != nil {
 		return x.xxx_hidden_Key
 	}
@@ -743,7 +742,7 @@ func (x *Mutation_Send) GetDeliverTime() *timestamppb.Timestamp {
 	return nil
 }
 
-func (x *Mutation_Send) GetPayload() *structpb.Value {
+func (x *Mutation_Send) GetPayload() *Value {
 	if x != nil {
 		return x.xxx_hidden_Payload
 	}
@@ -754,7 +753,7 @@ func (x *Mutation_Send) SetQueue(v string) {
 	x.xxx_hidden_Queue = v
 }
 
-func (x *Mutation_Send) SetKey(v *structpb.ListValue) {
+func (x *Mutation_Send) SetKey(v *ListValue) {
 	x.xxx_hidden_Key = v
 }
 
@@ -762,7 +761,7 @@ func (x *Mutation_Send) SetDeliverTime(v *timestamppb.Timestamp) {
 	x.xxx_hidden_DeliverTime = v
 }
 
-func (x *Mutation_Send) SetPayload(v *structpb.Value) {
+func (x *Mutation_Send) SetPayload(v *Value) {
 	x.xxx_hidden_Payload = v
 }
 
@@ -805,14 +804,14 @@ type Mutation_Send_builder struct {
 	// Required. The queue to which the message will be sent.
 	Queue string
 	// Required. The primary key of the message to be sent.
-	Key *structpb.ListValue
+	Key *ListValue
 	// The time at which Spanner will begin attempting to deliver the message.
 	// If `deliver_time` is not set, Spanner will deliver the message
 	// immediately. If `deliver_time` is in the past, Spanner will replace it
 	// with a value closer to the current time.
 	DeliverTime *timestamppb.Timestamp
 	// The payload of the message.
-	Payload *structpb.Value
+	Payload *Value
 }
 
 func (b0 Mutation_Send_builder) Build() *Mutation_Send {
@@ -830,7 +829,7 @@ func (b0 Mutation_Send_builder) Build() *Mutation_Send {
 type Mutation_Ack struct {
 	state                     protoimpl.MessageState `protogen:"opaque.v1"`
 	xxx_hidden_Queue          string                 `protobuf:"bytes,1,opt,name=queue,proto3"`
-	xxx_hidden_Key            *structpb.ListValue    `protobuf:"bytes,2,opt,name=key,proto3"`
+	xxx_hidden_Key            *ListValue             `protobuf:"bytes,2,opt,name=key,proto3"`
 	xxx_hidden_IgnoreNotFound bool                   `protobuf:"varint,3,opt,name=ignore_not_found,json=ignoreNotFound,proto3"`
 	unknownFields             protoimpl.UnknownFields
 	sizeCache                 protoimpl.SizeCache
@@ -868,7 +867,7 @@ func (x *Mutation_Ack) GetQueue() string {
 	return ""
 }
 
-func (x *Mutation_Ack) GetKey() *structpb.ListValue {
+func (x *Mutation_Ack) GetKey() *ListValue {
 	if x != nil {
 		return x.xxx_hidden_Key
 	}
@@ -886,7 +885,7 @@ func (x *Mutation_Ack) SetQueue(v string) {
 	x.xxx_hidden_Queue = v
 }
 
-func (x *Mutation_Ack) SetKey(v *structpb.ListValue) {
+func (x *Mutation_Ack) SetKey(v *ListValue) {
 	x.xxx_hidden_Key = v
 }
 
@@ -911,7 +910,7 @@ type Mutation_Ack_builder struct {
 	// Required. The queue where the message to be acked is stored.
 	Queue string
 	// Required. The primary key of the message to be acked.
-	Key *structpb.ListValue
+	Key *ListValue
 	// By default, an attempt to ack a message that does not exist will fail
 	// with a `NOT_FOUND` error. With `ignore_not_found` set to true, the ack
 	// will succeed even if the message does not exist. This is useful for
@@ -934,7 +933,7 @@ var File_librarian_opaque_google_spanner_v1_mutation_proto protoreflect.FileDesc
 
 const file_librarian_opaque_google_spanner_v1_mutation_proto_rawDesc = "" +
 	"\n" +
-	"1librarian_opaque/google/spanner/v1/mutation.proto\x12 google.spanner.v1.internalopaque\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1cgoogle/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-librarian_opaque/google/spanner/v1/keys.proto\"\xd9\b\n" +
+	"1librarian_opaque/google/spanner/v1/mutation.proto\x12 google.spanner.v1.internalopaque\x1a\x1fgoogle/api/field_behavior.proto\x1a-librarian_opaque/google/protobuf/struct.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a-librarian_opaque/google/spanner/v1/keys.proto\"\x9f\t\n" +
 	"\bMutation\x12J\n" +
 	"\x06insert\x18\x01 \x01(\v20.google.spanner.v1.internalopaque.Mutation.WriteH\x00R\x06insert\x12J\n" +
 	"\x06update\x18\x02 \x01(\v20.google.spanner.v1.internalopaque.Mutation.WriteH\x00R\x06update\x12\\\n" +
@@ -942,22 +941,22 @@ const file_librarian_opaque_google_spanner_v1_mutation_proto_rawDesc = "" +
 	"\areplace\x18\x04 \x01(\v20.google.spanner.v1.internalopaque.Mutation.WriteH\x00R\areplace\x12K\n" +
 	"\x06delete\x18\x05 \x01(\v21.google.spanner.v1.internalopaque.Mutation.DeleteH\x00R\x06delete\x12E\n" +
 	"\x04send\x18\x06 \x01(\v2/.google.spanner.v1.internalopaque.Mutation.SendH\x00R\x04send\x12B\n" +
-	"\x03ack\x18\a \x01(\v2..google.spanner.v1.internalopaque.Mutation.AckH\x00R\x03ack\x1ap\n" +
+	"\x03ack\x18\a \x01(\v2..google.spanner.v1.internalopaque.Mutation.AckH\x00R\x03ack\x1a\x81\x01\n" +
 	"\x05Write\x12\x19\n" +
 	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x02R\x05table\x12\x18\n" +
-	"\acolumns\x18\x02 \x03(\tR\acolumns\x122\n" +
-	"\x06values\x18\x03 \x03(\v2\x1a.google.protobuf.ListValueR\x06values\x1ak\n" +
+	"\acolumns\x18\x02 \x03(\tR\acolumns\x12C\n" +
+	"\x06values\x18\x03 \x03(\v2+.google.spanner.v1.internalopaque.ListValueR\x06values\x1ak\n" +
 	"\x06Delete\x12\x19\n" +
 	"\x05table\x18\x01 \x01(\tB\x03\xe0A\x02R\x05table\x12F\n" +
-	"\akey_set\x18\x02 \x01(\v2(.google.spanner.v1.internalopaque.KeySetB\x03\xe0A\x02R\x06keySet\x1a\xc5\x01\n" +
+	"\akey_set\x18\x02 \x01(\v2(.google.spanner.v1.internalopaque.KeySetB\x03\xe0A\x02R\x06keySet\x1a\xe7\x01\n" +
 	"\x04Send\x12\x19\n" +
-	"\x05queue\x18\x01 \x01(\tB\x03\xe0A\x02R\x05queue\x121\n" +
-	"\x03key\x18\x02 \x01(\v2\x1a.google.protobuf.ListValueB\x03\xe0A\x02R\x03key\x12=\n" +
-	"\fdeliver_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\vdeliverTime\x120\n" +
-	"\apayload\x18\x04 \x01(\v2\x16.google.protobuf.ValueR\apayload\x1a}\n" +
+	"\x05queue\x18\x01 \x01(\tB\x03\xe0A\x02R\x05queue\x12B\n" +
+	"\x03key\x18\x02 \x01(\v2+.google.spanner.v1.internalopaque.ListValueB\x03\xe0A\x02R\x03key\x12=\n" +
+	"\fdeliver_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\vdeliverTime\x12A\n" +
+	"\apayload\x18\x04 \x01(\v2'.google.spanner.v1.internalopaque.ValueR\apayload\x1a\x8e\x01\n" +
 	"\x03Ack\x12\x19\n" +
-	"\x05queue\x18\x01 \x01(\tB\x03\xe0A\x02R\x05queue\x121\n" +
-	"\x03key\x18\x02 \x01(\v2\x1a.google.protobuf.ListValueB\x03\xe0A\x02R\x03key\x12(\n" +
+	"\x05queue\x18\x01 \x01(\tB\x03\xe0A\x02R\x05queue\x12B\n" +
+	"\x03key\x18\x02 \x01(\v2+.google.spanner.v1.internalopaque.ListValueB\x03\xe0A\x02R\x03key\x12(\n" +
 	"\x10ignore_not_found\x18\x03 \x01(\bR\x0eignoreNotFoundB\v\n" +
 	"\toperationB\xb1\x01\n" +
 	"\x15com.google.spanner.v1B\rMutationProtoP\x01Z6cloud.google.com/go/spanner/internal/opaquepb;opaquepb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
@@ -969,10 +968,10 @@ var file_librarian_opaque_google_spanner_v1_mutation_proto_goTypes = []any{
 	(*Mutation_Delete)(nil),       // 2: google.spanner.v1.internalopaque.Mutation.Delete
 	(*Mutation_Send)(nil),         // 3: google.spanner.v1.internalopaque.Mutation.Send
 	(*Mutation_Ack)(nil),          // 4: google.spanner.v1.internalopaque.Mutation.Ack
-	(*structpb.ListValue)(nil),    // 5: google.protobuf.ListValue
+	(*ListValue)(nil),             // 5: google.spanner.v1.internalopaque.ListValue
 	(*KeySet)(nil),                // 6: google.spanner.v1.internalopaque.KeySet
 	(*timestamppb.Timestamp)(nil), // 7: google.protobuf.Timestamp
-	(*structpb.Value)(nil),        // 8: google.protobuf.Value
+	(*Value)(nil),                 // 8: google.spanner.v1.internalopaque.Value
 }
 var file_librarian_opaque_google_spanner_v1_mutation_proto_depIdxs = []int32{
 	1,  // 0: google.spanner.v1.internalopaque.Mutation.insert:type_name -> google.spanner.v1.internalopaque.Mutation.Write
@@ -982,12 +981,12 @@ var file_librarian_opaque_google_spanner_v1_mutation_proto_depIdxs = []int32{
 	2,  // 4: google.spanner.v1.internalopaque.Mutation.delete:type_name -> google.spanner.v1.internalopaque.Mutation.Delete
 	3,  // 5: google.spanner.v1.internalopaque.Mutation.send:type_name -> google.spanner.v1.internalopaque.Mutation.Send
 	4,  // 6: google.spanner.v1.internalopaque.Mutation.ack:type_name -> google.spanner.v1.internalopaque.Mutation.Ack
-	5,  // 7: google.spanner.v1.internalopaque.Mutation.Write.values:type_name -> google.protobuf.ListValue
+	5,  // 7: google.spanner.v1.internalopaque.Mutation.Write.values:type_name -> google.spanner.v1.internalopaque.ListValue
 	6,  // 8: google.spanner.v1.internalopaque.Mutation.Delete.key_set:type_name -> google.spanner.v1.internalopaque.KeySet
-	5,  // 9: google.spanner.v1.internalopaque.Mutation.Send.key:type_name -> google.protobuf.ListValue
+	5,  // 9: google.spanner.v1.internalopaque.Mutation.Send.key:type_name -> google.spanner.v1.internalopaque.ListValue
 	7,  // 10: google.spanner.v1.internalopaque.Mutation.Send.deliver_time:type_name -> google.protobuf.Timestamp
-	8,  // 11: google.spanner.v1.internalopaque.Mutation.Send.payload:type_name -> google.protobuf.Value
-	5,  // 12: google.spanner.v1.internalopaque.Mutation.Ack.key:type_name -> google.protobuf.ListValue
+	8,  // 11: google.spanner.v1.internalopaque.Mutation.Send.payload:type_name -> google.spanner.v1.internalopaque.Value
+	5,  // 12: google.spanner.v1.internalopaque.Mutation.Ack.key:type_name -> google.spanner.v1.internalopaque.ListValue
 	13, // [13:13] is the sub-list for method output_type
 	13, // [13:13] is the sub-list for method input_type
 	13, // [13:13] is the sub-list for extension type_name
@@ -1000,6 +999,7 @@ func file_librarian_opaque_google_spanner_v1_mutation_proto_init() {
 	if File_librarian_opaque_google_spanner_v1_mutation_proto != nil {
 		return
 	}
+	file_librarian_opaque_google_protobuf_struct_proto_init()
 	file_librarian_opaque_google_spanner_v1_keys_proto_init()
 	file_librarian_opaque_google_spanner_v1_mutation_proto_msgTypes[0].OneofWrappers = []any{
 		(*mutation_Insert)(nil),
