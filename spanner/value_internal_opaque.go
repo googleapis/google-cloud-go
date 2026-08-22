@@ -18,10 +18,6 @@ package spanner
 
 import (
 	"fmt"
-	"runtime"
-	"sync"
-	"sync/atomic"
-	"weak"
 
 	"cloud.google.com/go/spanner/internal/opaquepb"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
@@ -60,86 +56,38 @@ func internalValueKindOf(v *internalValue) internalValueKind {
 	case opaquepb.Value_ListValue_case:
 		return internalValueList
 	default:
-		return internalMalformedKind(v)
+		return internalValueUnset
 	}
 }
 
-type malformedValueState struct {
-	kind     internalValueKind
-	typedNil bool
-}
-
-// malformedValues preserves open oneof states that opaque messages cannot
-// represent (for example, a typed-nil oneof wrapper). Valid protobuf wire
-// values never enter this registry. Finalizers keep its lifetime bounded by
-// the compatibility value that owns the state.
-var malformedValues sync.Map
-var malformedValueCount atomic.Int64
-
-func internalMalformedState(v *internalValue) (malformedValueState, bool) {
-	if v == nil || malformedValueCount.Load() == 0 {
-		return malformedValueState{}, false
-	}
-	state, ok := malformedValues.Load(weak.Make(v))
-	if !ok {
-		return malformedValueState{}, false
-	}
-	return state.(malformedValueState), true
-}
-
-func internalMalformedKind(v *internalValue) internalValueKind {
-	if state, ok := internalMalformedState(v); ok {
-		return state.kind
-	}
-	return internalValueUnset
-}
-
-func internalMalformedTypedNil(v *internalValue) bool {
-	state, ok := internalMalformedState(v)
-	return ok && state.typedNil
-}
-
-func internalSetMalformedKind(v *internalValue, kind internalValueKind, typedNil bool) {
-	malformedValues.Range(func(key, _ interface{}) bool {
-		if key.(weak.Pointer[opaquepb.Value]).Value() == nil {
-			if _, loaded := malformedValues.LoadAndDelete(key); loaded {
-				malformedValueCount.Add(-1)
-			}
-		}
-		return true
-	})
-	key := weak.Make(v)
-	malformedValues.Store(key, malformedValueState{kind: kind, typedNil: typedNil})
-	malformedValueCount.Add(1)
-	runtime.SetFinalizer(v, func(*opaquepb.Value) {
-		if _, loaded := malformedValues.LoadAndDelete(key); loaded {
-			malformedValueCount.Add(-1)
-		}
-	})
+// Opaque Value cannot represent a typed-nil oneof wrapper. Conversion from
+// such a public value therefore produces an unset opaque value. Tagged decode
+// treats unset as NULL and reports it as <nil> in errors. A list or struct
+// wrapper with a nil message payload likewise converts to unset.
+func internalValueIsNull(v *internalValue) bool {
+	kind := internalValueKindOf(v)
+	return kind == internalValueNull || kind == internalValueUnset
 }
 
 func internalValueKindName(v *internalValue) string {
 	switch internalValueKindOf(v) {
 	case internalValueNull:
-		return "*structpb.Value_NullValue"
+		return "null"
 	case internalValueNumber:
-		return "*structpb.Value_NumberValue"
+		return "number"
 	case internalValueString:
-		return "*structpb.Value_StringValue"
+		return "string"
 	case internalValueBool:
-		return "*structpb.Value_BoolValue"
+		return "bool"
 	case internalValueStruct:
-		return "*structpb.Value_StructValue"
+		return "struct"
 	case internalValueList:
-		return "*structpb.Value_ListValue"
+		return "list"
 	default:
 		return "<nil>"
 	}
 }
 func internalValueForError(v *internalValue) string {
-	if internalMalformedKind(v) != internalValueUnset {
-		return ""
-	}
 	return fmt.Sprint(v)
 }
 
@@ -155,9 +103,6 @@ func internalGetNumberValue(v *internalValue) (float64, bool) {
 func internalGetListValue(v *internalValue) (*internalListValue, bool) {
 	if v != nil && v.WhichKind() == opaquepb.Value_ListValue_case {
 		return v.GetListValue(), true
-	}
-	if internalMalformedKind(v) == internalValueList {
-		return nil, !internalMalformedTypedNil(v)
 	}
 	return nil, false
 }
@@ -193,28 +138,6 @@ func internalNewListValue(v []*internalValue) *internalValue {
 func internalValueToPublic(v *internalValue) *proto3.Value {
 	if v == nil {
 		return nil
-	}
-	if kind := internalMalformedKind(v); kind != internalValueUnset {
-		switch kind {
-		case internalValueNull:
-			return &proto3.Value{Kind: (*proto3.Value_NullValue)(nil)}
-		case internalValueNumber:
-			return &proto3.Value{Kind: (*proto3.Value_NumberValue)(nil)}
-		case internalValueString:
-			return &proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}
-		case internalValueBool:
-			return &proto3.Value{Kind: (*proto3.Value_BoolValue)(nil)}
-		case internalValueStruct:
-			if internalMalformedTypedNil(v) {
-				return &proto3.Value{Kind: (*proto3.Value_StructValue)(nil)}
-			}
-			return &proto3.Value{Kind: &proto3.Value_StructValue{}}
-		case internalValueList:
-			if internalMalformedTypedNil(v) {
-				return &proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}
-			}
-			return &proto3.Value{Kind: &proto3.Value_ListValue{}}
-		}
 	}
 	switch internalValueKindOf(v) {
 	case internalValueNull:
@@ -273,35 +196,29 @@ func publicValueToInternal(v *proto3.Value) *internalValue {
 	switch kind := v.GetKind().(type) {
 	case *proto3.Value_NullValue:
 		if kind == nil {
-			internalSetMalformedKind(dst, internalValueNull, true)
 			break
 		}
 		dst.SetNullValue(opaquepb.NullValue(kind.NullValue))
 	case *proto3.Value_NumberValue:
 		if kind == nil {
-			internalSetMalformedKind(dst, internalValueNumber, true)
 			break
 		}
 		dst.SetNumberValue(kind.NumberValue)
 	case *proto3.Value_StringValue:
 		if kind == nil {
-			internalSetMalformedKind(dst, internalValueString, true)
 			break
 		}
 		dst.SetStringValue(kind.StringValue)
 	case *proto3.Value_BoolValue:
 		if kind == nil {
-			internalSetMalformedKind(dst, internalValueBool, true)
 			break
 		}
 		dst.SetBoolValue(kind.BoolValue)
 	case *proto3.Value_StructValue:
 		if kind == nil {
-			internalSetMalformedKind(dst, internalValueStruct, true)
 			break
 		}
 		if kind.StructValue == nil {
-			internalSetMalformedKind(dst, internalValueStruct, false)
 			break
 		}
 		fields := make(map[string]*opaquepb.Value, len(kind.StructValue.GetFields()))
@@ -313,11 +230,9 @@ func publicValueToInternal(v *proto3.Value) *internalValue {
 		dst.SetStructValue(value)
 	case *proto3.Value_ListValue:
 		if kind == nil {
-			internalSetMalformedKind(dst, internalValueList, true)
 			break
 		}
 		if kind.ListValue == nil {
-			internalSetMalformedKind(dst, internalValueList, false)
 			break
 		}
 		values := make([]*opaquepb.Value, len(kind.ListValue.GetValues()))

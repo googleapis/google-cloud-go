@@ -1686,7 +1686,7 @@ func decodeInternalValue(v *internalValue, t *sppb.Type, ptr interface{}, opts .
 		ptr = pve.Interface()
 	}
 
-	isNull := internalValueKindOf(v) == internalValueNull
+	isNull := internalValueIsNull(v)
 
 	// Do the decoding based on the type of ptr.
 	switch p := ptr.(type) {
@@ -3341,7 +3341,7 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 func (dsc decodableSpannerType) decodeValueToCustomType(v *internalValue, t *sppb.Type, acode sppb.TypeCode, atypeAnnotation sppb.TypeAnnotationCode, ptr interface{}) error {
 	code := t.Code
 	typeAnnotation := t.TypeAnnotation
-	isNull := internalValueKindOf(v) == internalValueNull
+	isNull := internalValueIsNull(v)
 	if dsc == spannerTypeInvalid {
 		return errNilDst(ptr)
 	}
@@ -3859,8 +3859,8 @@ func getListValue(v *internalValue) (*internalListValue, error) {
 
 // getGenericValue returns the interface{} value encoded in proto3.Value.
 func getGenericValue(t *sppb.Type, v *internalValue) (interface{}, error) {
-	if internalMalformedKind(v) != internalValueUnset {
-		return getPublicGenericValue(t, internalValueToPublic(v))
+	if internalValueIsNull(v) {
+		return getTypedNil(t)
 	}
 	switch internalValueKindOf(v) {
 	case internalValueNumber:
@@ -3872,23 +3872,6 @@ func getGenericValue(t *sppb.Type, v *internalValue) (interface{}, error) {
 	case internalValueList:
 		return internalListValueToPublic(v.GetListValue()), nil
 	case internalValueNull:
-		return getTypedNil(t)
-	default:
-		return 0, errSrcVal(v, "Number, Bool, String, List")
-	}
-}
-
-func getPublicGenericValue(t *sppb.Type, v *proto3.Value) (interface{}, error) {
-	switch x := v.GetKind().(type) {
-	case *proto3.Value_NumberValue:
-		return x.NumberValue, nil
-	case *proto3.Value_BoolValue:
-		return x.BoolValue, nil
-	case *proto3.Value_StringValue:
-		return x.StringValue, nil
-	case *proto3.Value_ListValue:
-		return x.ListValue, nil
-	case *proto3.Value_NullValue:
 		return getTypedNil(t)
 	default:
 		return 0, errSrcVal(v, "Number, Bool, String, List")
@@ -4290,7 +4273,7 @@ func decodeNullJSONArrayToNullJSON(pb *internalListValue) (*NullJSON, error) {
 	}
 	strs := []string{}
 	for _, v := range internalListValues(pb) {
-		if internalValueKindOf(v) == internalValueNull {
+		if internalValueIsNull(v) {
 			strs = append(strs, "null")
 		} else {
 			strs = append(strs, v.GetStringValue())
@@ -4372,7 +4355,7 @@ func decodeProtoMessagePtrArray(pb *internalListValue, t *sppb.Type, rv reflect.
 	etyp := rv.Type().Elem().Elem().Elem()
 	a := reflect.MakeSlice(rv.Type().Elem(), len(internalListValues(pb)), len(internalListValues(pb)))
 	for i, v := range internalListValues(pb) {
-		isNull := internalValueKindOf(v) == internalValueNull
+		isNull := internalValueIsNull(v)
 		if isNull {
 			continue
 		}
@@ -4394,7 +4377,7 @@ func decodeProtoEnumPtrArray(pb *internalListValue, t *sppb.Type, rv reflect.Val
 	etyp := rv.Type().Elem().Elem().Elem()
 	a := reflect.MakeSlice(rv.Type().Elem(), len(internalListValues(pb)), len(internalListValues(pb)))
 	for i, v := range internalListValues(pb) {
-		isNull := internalValueKindOf(v) == internalValueNull
+		isNull := internalValueIsNull(v)
 		if isNull {
 			continue
 		}
@@ -4418,7 +4401,7 @@ func decodeProtoEnumArray(pb *internalListValue, t *sppb.Type, rv reflect.Value,
 	// As the ENUM element in the Array is not a pointer type we cannot use decodeValue method
 	// and hence handle it separately.
 	for i, v := range internalListValues(pb) {
-		isNull := internalValueKindOf(v) == internalValueNull
+		isNull := internalValueIsNull(v)
 		// As the ENUM elements in the array are value type and not pointer type,
 		// we cannot support NULL values in the array
 		if isNull {
@@ -4593,7 +4576,7 @@ func decodeRowArray(ty *sppb.StructType, pb *internalListValue) ([]NullRow, erro
 			}
 		// Null elements not currently supported by the server, see
 		// https://cloud.google.com/spanner/docs/query-syntax#using-structs-with-select
-		case internalValueNull:
+		case internalValueNull, internalValueUnset:
 			// no-op, a[i] is NullRow{} already
 		default:
 			return nil, errNotStructElement(i, internalListValues(pb)[i])
@@ -4749,7 +4732,7 @@ func decodeStructArray(ty *sppb.StructType, pb *internalListValue, ptr interface
 	// Decode every struct in internalListValues(pb).
 	for i, pv := range internalListValues(pb) {
 		// Check if pv is a NULL value.
-		if internalValueKindOf(pv) == internalValueNull {
+		if internalValueIsNull(pv) {
 			// Append a nil pointer to the slice.
 			v.Set(reflect.Append(v, reflect.New(ts).Elem()))
 			continue

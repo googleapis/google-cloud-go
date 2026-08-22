@@ -1677,13 +1677,13 @@ func TestBrokenRow(t *testing.T) {
 			),
 		},
 	} {
-		if gotErr := test.row.Column(0, test.dst); !testEqual(gotErr, test.wantErr) {
+		if gotErr := test.row.Column(0, test.dst); !brokenRowErrorEqual(gotErr, test.wantErr, test.row) {
 			t.Errorf("%v: test.row.Column(0) got error %v, want %v", i, gotErr, test.wantErr)
 		}
-		if gotErr := test.row.ColumnByName("Col0", test.dst); !testEqual(gotErr, test.wantErr) {
+		if gotErr := test.row.ColumnByName("Col0", test.dst); !brokenRowErrorEqual(gotErr, test.wantErr, test.row) {
 			t.Errorf("%v: test.row.ColumnByName(%q) got error %v, want %v", i, "Col0", gotErr, test.wantErr)
 		}
-		if gotErr := test.row.Columns(test.dst); !testEqual(gotErr, test.wantErr) {
+		if gotErr := test.row.Columns(test.dst); !brokenRowErrorEqual(gotErr, test.wantErr, test.row) {
 			t.Errorf("%v: test.row.Columns(%T) got error %v, want %v", i, test.dst, gotErr, test.wantErr)
 		}
 	}

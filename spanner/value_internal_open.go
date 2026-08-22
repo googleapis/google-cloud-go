@@ -62,9 +62,10 @@ func internalValueKindName(v *internalValue) string {
 	}
 	return fmt.Sprintf("%T", v.Kind)
 }
-func internalMalformedKind(*internalValue) internalValueKind { return internalValueUnset }
-func internalMalformedTypedNil(*internalValue) bool          { return false }
-func internalValueForError(v *internalValue) string          { return fmt.Sprint(v) }
+func internalValueIsNull(v *internalValue) bool {
+	return internalValueKindOf(v) == internalValueNull
+}
+func internalValueForError(v *internalValue) string { return fmt.Sprint(v) }
 
 func internalGetStringValue(v *internalValue) (string, bool) {
 	x, ok := v.GetKind().(*proto3.Value_StringValue)
