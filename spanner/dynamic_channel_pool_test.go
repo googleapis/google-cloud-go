@@ -1230,6 +1230,11 @@ func TestDCPCurrentPenaltyAfterNewWindow(t *testing.T) {
 	if got, want := e.currentPenalty(), int32(5); got != want {
 		t.Fatalf("currentPenalty() after new window = %d, want %d", got, want)
 	}
+	// A unit test cannot observe the atomic update's transient states, but this
+	// pins its net-delta contract: replace the old counted contribution with new.
+	if got, want := p.totalPenaltyLoad.Load(), int32(5); got != want {
+		t.Fatalf("total penalty after new window = %d, want net contribution %d", got, want)
+	}
 }
 
 func TestDynamicChannelPoolPowerOfTwoErrorPenalty(t *testing.T) {

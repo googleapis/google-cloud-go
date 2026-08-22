@@ -926,12 +926,11 @@ func (e *dcpEntry) applyErrorPenalty(err error) {
 	now := time.Now()
 	expiry := e.penaltyExpiry.Load()
 	current := int32(0)
+	oldContribution := int32(0)
 	if expiry != 0 {
+		oldContribution = e.penaltyLoad.Load()
 		if now.UnixNano() < expiry {
-			current = e.penaltyLoad.Load()
-		} else {
-			e.penaltyExpiry.Store(0)
-			e.parent.totalPenaltyLoad.Add(-e.penaltyLoad.Load())
+			current = oldContribution
 		}
 	}
 	load := e.parent.cfg.DCPErrorPenaltyStep
@@ -945,7 +944,7 @@ func (e *dcpEntry) applyErrorPenalty(err error) {
 	}
 	e.penaltyLoad.Store(load)
 	e.penaltyExpiry.Store(now.Add(e.parent.cfg.DCPErrorPenaltyDuration).UnixNano())
-	e.parent.totalPenaltyLoad.Add(load - current)
+	e.parent.totalPenaltyLoad.Add(load - oldContribution)
 }
 
 // currentPenalty returns active accumulated error load and lazily clears an
