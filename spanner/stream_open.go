@@ -16,8 +16,24 @@
 
 package spanner
 
-import sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+import (
+	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	"google.golang.org/protobuf/proto"
+)
 
-func recvPartialResultSet(stream streamingReceiver) (*sppb.PartialResultSet, error) {
+type internalPartialResultSet = sppb.PartialResultSet
+
+func recvPartialResultSet(stream streamingReceiver) (*internalPartialResultSet, error) {
 	return stream.Recv()
+}
+
+func partialResultSetSize(result *internalPartialResultSet) int { return proto.Size(result) }
+func internalPartialResultSetFromOpen(result *sppb.PartialResultSet) *internalPartialResultSet {
+	return result
+}
+func internalPartialResultSetToOpen(result *internalPartialResultSet) *sppb.PartialResultSet {
+	return result
+}
+func internalPartialResultSetsToOpen(results []*internalPartialResultSet) []*sppb.PartialResultSet {
+	return results
 }

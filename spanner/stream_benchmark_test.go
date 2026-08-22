@@ -66,12 +66,16 @@ func newRecordedPartialResultSetStream(b *testing.B) *recordedPartialResultSetSt
 			result.Metadata = &sppb.ResultSetMetadata{RowType: &sppb.StructType{Fields: []*sppb.StructType_Field{
 				{Name: "SingerId", Type: &sppb.Type{Code: sppb.TypeCode_INT64}},
 				{Name: "Name", Type: &sppb.Type{Code: sppb.TypeCode_STRING}},
+				{Name: "Score", Type: &sppb.Type{Code: sppb.TypeCode_FLOAT64}},
+				{Name: "Tags", Type: listType(stringType())},
 			}}}
 		}
 		for rowIndex := 0; rowIndex < rowsPerMessage; rowIndex++ {
 			result.Values = append(result.Values,
 				structpb.NewStringValue("123456789"),
 				structpb.NewStringValue("Ada Lovelace"),
+				structpb.NewNumberValue(99.5),
+				structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("math"), structpb.NewStringValue("code")}}),
 			)
 		}
 		encoded, err := proto.Marshal(result)
@@ -102,7 +106,19 @@ func BenchmarkPartialResultSetStreamingReceive(b *testing.B) {
 			if err != nil {
 				b.Fatal(err)
 			}
-			rowCount += len(rows)
+			for _, row := range rows {
+				var id int64
+				var name string
+				var score float64
+				var tags []string
+				if err := row.Columns(&id, &name, &score, &tags); err != nil {
+					b.Fatal(err)
+				}
+				if id != 123456789 || name != "Ada Lovelace" || score != 99.5 || len(tags) != 2 {
+					b.Fatalf("unexpected decoded row: %d %q %f %v", id, name, score, tags)
+				}
+				rowCount++
+			}
 		}
 		if rowCount != 100 {
 			b.Fatalf("decoded %d rows, want 100", rowCount)

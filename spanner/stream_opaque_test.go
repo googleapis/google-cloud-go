@@ -47,6 +47,12 @@ func (s *opaqueRecvTestStream) RecvMsg(message any) error {
 func (*opaqueRecvTestStream) Context() context.Context { return context.Background() }
 
 func TestOpaquePartialResultSetReceive(t *testing.T) {
+	object, err := structpb.NewStruct(map[string]interface{}{
+		"nested": []interface{}{nil, "value"},
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
 	input := &sppb.PartialResultSet{
 		Metadata: &sppb.ResultSetMetadata{
 			RowType: &sppb.StructType{Fields: []*sppb.StructType_Field{{
@@ -55,7 +61,10 @@ func TestOpaquePartialResultSetReceive(t *testing.T) {
 			}}},
 			Transaction: &sppb.Transaction{Id: []byte("transaction")},
 		},
-		Values:         []*structpb.Value{structpb.NewStringValue("1")},
+		Values: []*structpb.Value{
+			structpb.NewStringValue("1"),
+			structpb.NewStructValue(object),
+		},
 		ChunkedValue:   true,
 		ResumeToken:    []byte("resume"),
 		Stats:          &sppb.ResultSetStats{QueryPlan: &sppb.QueryPlan{}},
@@ -80,10 +89,108 @@ func TestOpaquePartialResultSetReceive(t *testing.T) {
 	if !ok {
 		t.Fatalf("RecvMsg target type = %T, want *opaquepb.PartialResultSet", stream.received)
 	}
-	if !proto.Equal(got, input) {
+	if !proto.Equal(internalPartialResultSetToOpen(got), input) {
 		t.Fatalf("received result mismatch\n got: %v\nwant: %v", got, input)
 	}
 	if got.Values[0] != opaque.GetValues()[0] {
-		t.Fatal("structpb.Value was re-marshaled at the open boundary")
+		t.Fatal("opaque Value was copied on the streaming path")
+	}
+	if got.Values[1].WhichKind() != opaquepb.Value_StructValue_case || got.Values[1].GetStructValue().GetFields()["nested"].WhichKind() != opaquepb.Value_ListValue_case {
+		t.Fatalf("nested struct did not remain opaque: %v", got.Values[1])
+	}
+}
+
+func receiveOpaqueForTest(t *testing.T, result *sppb.PartialResultSet) *internalPartialResultSet {
+	t.Helper()
+	wire, err := proto.Marshal(result)
+	if err != nil {
+		t.Fatal(err)
+	}
+	got, err := recvPartialResultSet(&opaqueRecvTestStream{wire: wire})
+	if err != nil {
+		t.Fatal(err)
+	}
+	return got
+}
+
+func TestOpaqueNestedListChunkMerge(t *testing.T) {
+	metadata := &sppb.ResultSetMetadata{RowType: &sppb.StructType{Fields: []*sppb.StructType_Field{{
+		Name: "Nested",
+		Type: listType(stringType()),
+	}}}}
+	first := receiveOpaqueForTest(t, &sppb.PartialResultSet{
+		Metadata: metadata,
+		Values: []*structpb.Value{structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{
+			structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("nest")}}),
+		}})},
+		ChunkedValue: true,
+	})
+	second := receiveOpaqueForTest(t, &sppb.PartialResultSet{
+		Values: []*structpb.Value{structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{
+			structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("ed")}}),
+			structpb.NewNullValue(),
+		}})},
+	})
+
+	decoder := new(partialResultSetDecoder)
+	if rows, _, err := decoder.add(first); err != nil || len(rows) != 0 {
+		t.Fatalf("first chunk: rows=%d err=%v", len(rows), err)
+	}
+	rows, _, err := decoder.add(second)
+	if err != nil || len(rows) != 1 {
+		t.Fatalf("second chunk: rows=%d err=%v", len(rows), err)
+	}
+	value := rows[0].vals[0]
+	if _, ok := interface{}(value).(*opaquepb.Value); !ok {
+		t.Fatalf("row stored %T, want *opaquepb.Value", value)
+	}
+	outer := internalListValues(value.GetListValue())
+	inner := internalListValues(outer[0].GetListValue())
+	if got := inner[0].GetStringValue(); got != "nested" {
+		t.Fatalf("merged nested string = %q, want nested", got)
+	}
+	if internalValueKindOf(outer[1]) != internalValueNull {
+		t.Fatalf("second nested value kind = %v, want null", internalValueKindOf(outer[1]))
+	}
+}
+
+func TestOpaqueRowDecodeAndColumnValueCompatibility(t *testing.T) {
+	metadata := &sppb.ResultSetMetadata{RowType: &sppb.StructType{Fields: []*sppb.StructType_Field{
+		{Name: "SingerId", Type: intType()},
+		{Name: "Tags", Type: listType(stringType())},
+		{Name: "Details", Type: listType(structType(mkField("Name", stringType()), mkField("Missing", stringType())))},
+	}}}
+	result := receiveOpaqueForTest(t, &sppb.PartialResultSet{
+		Metadata: metadata,
+		Values: []*structpb.Value{
+			structpb.NewStringValue("7"),
+			structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("math"), structpb.NewStringValue("code")}}),
+			structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{
+				structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("Ada"), structpb.NewNullValue()}}),
+			}}),
+		},
+	})
+	rows, _, err := new(partialResultSetDecoder).add(result)
+	if err != nil || len(rows) != 1 {
+		t.Fatalf("decode rows=%d err=%v", len(rows), err)
+	}
+	var id int64
+	var tags []string
+	var details []*struct {
+		Name    string
+		Missing NullString
+	}
+	if err := rows[0].Columns(&id, &tags, &details); err != nil {
+		t.Fatal(err)
+	}
+	if id != 7 || len(tags) != 2 || tags[1] != "code" || len(details) != 1 || details[0].Name != "Ada" || details[0].Missing.Valid {
+		t.Fatalf("decoded values: id=%d tags=%v details=%+v", id, tags, details)
+	}
+	if got := rows[0].ColumnValue(1); !proto.Equal(got, structpb.NewListValue(&structpb.ListValue{Values: []*structpb.Value{structpb.NewStringValue("math"), structpb.NewStringValue("code")}})) {
+		t.Fatalf("ColumnValue compatibility: %v", got)
+	}
+	var generic GenericColumnValue
+	if err := rows[0].Column(0, &generic); err != nil || generic.Value.GetStringValue() != "7" {
+		t.Fatalf("GenericColumnValue: value=%v err=%v", generic.Value, err)
 	}
 }
