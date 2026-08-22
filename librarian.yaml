@@ -1324,6 +1324,8 @@ libraries:
           no_metadata: true
           no_snippets: true
           opaque_copy:
+            extra_protos:
+              - google/protobuf/struct.proto
             import_path: spanner/internal/opaquepb
             proto_package: google.spanner.v1.internalopaque
       - path: google/spanner/adapter/v1
