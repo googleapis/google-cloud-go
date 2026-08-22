@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -85,11 +84,6 @@ func (x Tablet_Role) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use Tablet_Role.Descriptor instead.
-func (Tablet_Role) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{1, 0}
-}
-
 // The remaining fields encode column values.
 type KeyRecipe_Part_Order int32
 
@@ -136,11 +130,6 @@ func (KeyRecipe_Part_Order) Type() protoreflect.EnumType {
 
 func (x KeyRecipe_Part_Order) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use KeyRecipe_Part_Order.Descriptor instead.
-func (KeyRecipe_Part_Order) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{3, 0, 0}
 }
 
 // The null order of the key column. This dictates where NULL values sort
@@ -197,11 +186,6 @@ func (x KeyRecipe_Part_NullOrder) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use KeyRecipe_Part_NullOrder.Descriptor instead.
-func (KeyRecipe_Part_NullOrder) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{3, 0, 1}
-}
-
 // A `Range` represents a range of keys in a database. The keys themselves
 // are encoded in "sortable string format", also known as ssformat. Consult
 // Spanner's open source client libraries for details on the encoding.
@@ -212,28 +196,14 @@ func (KeyRecipe_Part_NullOrder) EnumDescriptor() ([]byte, []int) {
 // the group), and a generation that can be used to determine whether a given
 // `Range` represents a newer or older location for the key range.
 type Range struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The start key of the range, inclusive. Encoded in "sortable string format"
-	// (ssformat).
-	StartKey []byte `protobuf:"bytes,1,opt,name=start_key,json=startKey,proto3" json:"start_key,omitempty"`
-	// The limit key of the range, exclusive. Encoded in "sortable string format"
-	// (ssformat).
-	LimitKey []byte `protobuf:"bytes,2,opt,name=limit_key,json=limitKey,proto3" json:"limit_key,omitempty"`
-	// The UID of the paxos group where this range is stored. UIDs are unique
-	// within the database. References `Group.group_uid`.
-	GroupUid uint64 `protobuf:"varint,3,opt,name=group_uid,json=groupUid,proto3" json:"group_uid,omitempty"`
-	// A group can store multiple ranges of keys. Each key range is named by an
-	// ID (the split ID). Within a group, split IDs are unique. The `split_id`
-	// names the exact split in `group_uid` where this range is stored.
-	SplitId uint64 `protobuf:"varint,4,opt,name=split_id,json=splitId,proto3" json:"split_id,omitempty"`
-	// `generation` indicates the freshness of the range information contained
-	// in this proto. Generations can be compared lexicographically; if generation
-	// A is greater than generation B, then the `Range` corresponding to A is
-	// newer than the `Range` corresponding to B, and should be used
-	// preferentially.
-	Generation    []byte `protobuf:"bytes,5,opt,name=generation,proto3" json:"generation,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_StartKey   []byte                 `protobuf:"bytes,1,opt,name=start_key,json=startKey,proto3"`
+	xxx_hidden_LimitKey   []byte                 `protobuf:"bytes,2,opt,name=limit_key,json=limitKey,proto3"`
+	xxx_hidden_GroupUid   uint64                 `protobuf:"varint,3,opt,name=group_uid,json=groupUid,proto3"`
+	xxx_hidden_SplitId    uint64                 `protobuf:"varint,4,opt,name=split_id,json=splitId,proto3"`
+	xxx_hidden_Generation []byte                 `protobuf:"bytes,5,opt,name=generation,proto3"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *Range) Reset() {
@@ -261,68 +231,247 @@ func (x *Range) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Range.ProtoReflect.Descriptor instead.
-func (*Range) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *Range) GetStartKey() []byte {
 	if x != nil {
-		return x.StartKey
+		return x.xxx_hidden_StartKey
 	}
 	return nil
 }
 
 func (x *Range) GetLimitKey() []byte {
 	if x != nil {
-		return x.LimitKey
+		return x.xxx_hidden_LimitKey
 	}
 	return nil
 }
 
 func (x *Range) GetGroupUid() uint64 {
 	if x != nil {
-		return x.GroupUid
+		return x.xxx_hidden_GroupUid
 	}
 	return 0
 }
 
 func (x *Range) GetSplitId() uint64 {
 	if x != nil {
-		return x.SplitId
+		return x.xxx_hidden_SplitId
 	}
 	return 0
 }
 
 func (x *Range) GetGeneration() []byte {
 	if x != nil {
-		return x.Generation
+		return x.xxx_hidden_Generation
 	}
 	return nil
+}
+
+func (x *Range) SetStartKey(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_StartKey = v
+}
+
+func (x *Range) SetLimitKey(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_LimitKey = v
+}
+
+func (x *Range) SetGroupUid(v uint64) {
+	x.xxx_hidden_GroupUid = v
+}
+
+func (x *Range) SetSplitId(v uint64) {
+	x.xxx_hidden_SplitId = v
+}
+
+func (x *Range) SetGeneration(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Generation = v
+}
+
+type Range_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The start key of the range, inclusive. Encoded in "sortable string format"
+	// (ssformat).
+	StartKey []byte
+	// The limit key of the range, exclusive. Encoded in "sortable string format"
+	// (ssformat).
+	LimitKey []byte
+	// The UID of the paxos group where this range is stored. UIDs are unique
+	// within the database. References `Group.group_uid`.
+	GroupUid uint64
+	// A group can store multiple ranges of keys. Each key range is named by an
+	// ID (the split ID). Within a group, split IDs are unique. The `split_id`
+	// names the exact split in `group_uid` where this range is stored.
+	SplitId uint64
+	// `generation` indicates the freshness of the range information contained
+	// in this proto. Generations can be compared lexicographically; if generation
+	// A is greater than generation B, then the `Range` corresponding to A is
+	// newer than the `Range` corresponding to B, and should be used
+	// preferentially.
+	Generation []byte
+}
+
+func (b0 Range_builder) Build() *Range {
+	m0 := &Range{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_StartKey = b.StartKey
+	x.xxx_hidden_LimitKey = b.LimitKey
+	x.xxx_hidden_GroupUid = b.GroupUid
+	x.xxx_hidden_SplitId = b.SplitId
+	x.xxx_hidden_Generation = b.Generation
+	return m0
 }
 
 // A `Tablet` represents a single replica of a `Group`. A tablet is served by a
 // single server at a time, and can move between servers due to server death or
 // simply load balancing.
 type Tablet struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_TabletUid     uint64                 `protobuf:"varint,1,opt,name=tablet_uid,json=tabletUid,proto3"`
+	xxx_hidden_ServerAddress string                 `protobuf:"bytes,2,opt,name=server_address,json=serverAddress,proto3"`
+	xxx_hidden_Location      string                 `protobuf:"bytes,3,opt,name=location,proto3"`
+	xxx_hidden_Role          Tablet_Role            `protobuf:"varint,4,opt,name=role,proto3,enum=google.spanner.v1.Tablet_Role"`
+	xxx_hidden_Incarnation   []byte                 `protobuf:"bytes,5,opt,name=incarnation,proto3"`
+	xxx_hidden_Distance      uint32                 `protobuf:"varint,6,opt,name=distance,proto3"`
+	xxx_hidden_Skip          bool                   `protobuf:"varint,7,opt,name=skip,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *Tablet) Reset() {
+	*x = Tablet{}
+	mi := &file_google_spanner_v1_location_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Tablet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Tablet) ProtoMessage() {}
+
+func (x *Tablet) ProtoReflect() protoreflect.Message {
+	mi := &file_google_spanner_v1_location_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *Tablet) GetTabletUid() uint64 {
+	if x != nil {
+		return x.xxx_hidden_TabletUid
+	}
+	return 0
+}
+
+func (x *Tablet) GetServerAddress() string {
+	if x != nil {
+		return x.xxx_hidden_ServerAddress
+	}
+	return ""
+}
+
+func (x *Tablet) GetLocation() string {
+	if x != nil {
+		return x.xxx_hidden_Location
+	}
+	return ""
+}
+
+func (x *Tablet) GetRole() Tablet_Role {
+	if x != nil {
+		return x.xxx_hidden_Role
+	}
+	return Tablet_ROLE_UNSPECIFIED
+}
+
+func (x *Tablet) GetIncarnation() []byte {
+	if x != nil {
+		return x.xxx_hidden_Incarnation
+	}
+	return nil
+}
+
+func (x *Tablet) GetDistance() uint32 {
+	if x != nil {
+		return x.xxx_hidden_Distance
+	}
+	return 0
+}
+
+func (x *Tablet) GetSkip() bool {
+	if x != nil {
+		return x.xxx_hidden_Skip
+	}
+	return false
+}
+
+func (x *Tablet) SetTabletUid(v uint64) {
+	x.xxx_hidden_TabletUid = v
+}
+
+func (x *Tablet) SetServerAddress(v string) {
+	x.xxx_hidden_ServerAddress = v
+}
+
+func (x *Tablet) SetLocation(v string) {
+	x.xxx_hidden_Location = v
+}
+
+func (x *Tablet) SetRole(v Tablet_Role) {
+	x.xxx_hidden_Role = v
+}
+
+func (x *Tablet) SetIncarnation(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Incarnation = v
+}
+
+func (x *Tablet) SetDistance(v uint32) {
+	x.xxx_hidden_Distance = v
+}
+
+func (x *Tablet) SetSkip(v bool) {
+	x.xxx_hidden_Skip = v
+}
+
+type Tablet_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
 	// The UID of the tablet, unique within the database. Matches the
 	// `tablet_uids` and `leader_tablet_uid` fields in `Group`.
-	TabletUid uint64 `protobuf:"varint,1,opt,name=tablet_uid,json=tabletUid,proto3" json:"tablet_uid,omitempty"`
+	TabletUid uint64
 	// The address of the server that is serving this tablet -- either an IP
 	// address or DNS hostname and a port number.
-	ServerAddress string `protobuf:"bytes,2,opt,name=server_address,json=serverAddress,proto3" json:"server_address,omitempty"`
+	ServerAddress string
 	// Where this tablet is located. This is the name of a Google Cloud region,
 	// such as "us-central1".
-	Location string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
+	Location string
 	// The role of the tablet.
-	Role Tablet_Role `protobuf:"varint,4,opt,name=role,proto3,enum=google.spanner.v1.Tablet_Role" json:"role,omitempty"`
+	Role Tablet_Role
 	// `incarnation` indicates the freshness of the tablet information contained
 	// in this proto. Incarnations can be compared lexicographically; if
 	// incarnation A is greater than incarnation B, then the `Tablet`
 	// corresponding to A is newer than the `Tablet` corresponding to B, and
 	// should be used preferentially.
-	Incarnation []byte `protobuf:"bytes,5,opt,name=incarnation,proto3" json:"incarnation,omitempty"`
+	Incarnation []byte
 	// Distances help the client pick the closest tablet out of the list of
 	// tablets for a given request. Tablets with lower distances should generally
 	// be preferred. Tablets with the same distance are approximately equally
@@ -356,121 +505,40 @@ type Tablet struct {
 	// `skipped_tablet_uid` field in `RoutingHint`; the algorithm above should
 	// then be re-run without including the skipped tablet(s) to pick the next
 	// best tablet.
-	Distance uint32 `protobuf:"varint,6,opt,name=distance,proto3" json:"distance,omitempty"`
+	Distance uint32
 	// If true, the tablet should not be chosen by the client. Typically, this
 	// signals that the tablet is unhealthy in some way. Tablets with `skip`
 	// set to true should be reported back to the server in
 	// `RoutingHint.skipped_tablet_uid`; this cues the server to send updated
 	// information for this tablet should it become usable again.
-	Skip          bool `protobuf:"varint,7,opt,name=skip,proto3" json:"skip,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Skip bool
 }
 
-func (x *Tablet) Reset() {
-	*x = Tablet{}
-	mi := &file_google_spanner_v1_location_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *Tablet) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*Tablet) ProtoMessage() {}
-
-func (x *Tablet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_location_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use Tablet.ProtoReflect.Descriptor instead.
-func (*Tablet) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *Tablet) GetTabletUid() uint64 {
-	if x != nil {
-		return x.TabletUid
-	}
-	return 0
-}
-
-func (x *Tablet) GetServerAddress() string {
-	if x != nil {
-		return x.ServerAddress
-	}
-	return ""
-}
-
-func (x *Tablet) GetLocation() string {
-	if x != nil {
-		return x.Location
-	}
-	return ""
-}
-
-func (x *Tablet) GetRole() Tablet_Role {
-	if x != nil {
-		return x.Role
-	}
-	return Tablet_ROLE_UNSPECIFIED
-}
-
-func (x *Tablet) GetIncarnation() []byte {
-	if x != nil {
-		return x.Incarnation
-	}
-	return nil
-}
-
-func (x *Tablet) GetDistance() uint32 {
-	if x != nil {
-		return x.Distance
-	}
-	return 0
-}
-
-func (x *Tablet) GetSkip() bool {
-	if x != nil {
-		return x.Skip
-	}
-	return false
+func (b0 Tablet_builder) Build() *Tablet {
+	m0 := &Tablet{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_TabletUid = b.TabletUid
+	x.xxx_hidden_ServerAddress = b.ServerAddress
+	x.xxx_hidden_Location = b.Location
+	x.xxx_hidden_Role = b.Role
+	x.xxx_hidden_Incarnation = b.Incarnation
+	x.xxx_hidden_Distance = b.Distance
+	x.xxx_hidden_Skip = b.Skip
+	return m0
 }
 
 // A `Group` represents a paxos group in a database. A group is a set of
 // tablets that are replicated across multiple servers. Groups may have a leader
 // tablet. Groups store one (or sometimes more) ranges of keys.
 type Group struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The UID of the paxos group, unique within the database. Matches the
-	// `group_uid` field in `Range`.
-	GroupUid uint64 `protobuf:"varint,1,opt,name=group_uid,json=groupUid,proto3" json:"group_uid,omitempty"`
-	// A list of tablets that are part of the group. Note that this list may not
-	// be exhaustive; it will only include tablets the server considers useful
-	// to the client. The returned list is ordered ascending by distance.
-	//
-	// Tablet UIDs reference `Tablet.tablet_uid`.
-	Tablets []*Tablet `protobuf:"bytes,2,rep,name=tablets,proto3" json:"tablets,omitempty"`
-	// The last known leader tablet of the group as an index into `tablets`. May
-	// be negative if the group has no known leader.
-	LeaderIndex int32 `protobuf:"varint,3,opt,name=leader_index,json=leaderIndex,proto3" json:"leader_index,omitempty"`
-	// `generation` indicates the freshness of the group information (including
-	// leader information) contained in this proto. Generations can be compared
-	// lexicographically; if generation A is greater than generation B, then the
-	// `Group` corresponding to A is newer than the `Group` corresponding to B,
-	// and should be used preferentially.
-	Generation    []byte `protobuf:"bytes,4,opt,name=generation,proto3" json:"generation,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_GroupUid    uint64                 `protobuf:"varint,1,opt,name=group_uid,json=groupUid,proto3"`
+	xxx_hidden_Tablets     *[]*Tablet             `protobuf:"bytes,2,rep,name=tablets,proto3"`
+	xxx_hidden_LeaderIndex int32                  `protobuf:"varint,3,opt,name=leader_index,json=leaderIndex,proto3"`
+	xxx_hidden_Generation  []byte                 `protobuf:"bytes,4,opt,name=generation,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Group) Reset() {
@@ -498,37 +566,87 @@ func (x *Group) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Group.ProtoReflect.Descriptor instead.
-func (*Group) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *Group) GetGroupUid() uint64 {
 	if x != nil {
-		return x.GroupUid
+		return x.xxx_hidden_GroupUid
 	}
 	return 0
 }
 
 func (x *Group) GetTablets() []*Tablet {
 	if x != nil {
-		return x.Tablets
+		if x.xxx_hidden_Tablets != nil {
+			return *x.xxx_hidden_Tablets
+		}
 	}
 	return nil
 }
 
 func (x *Group) GetLeaderIndex() int32 {
 	if x != nil {
-		return x.LeaderIndex
+		return x.xxx_hidden_LeaderIndex
 	}
 	return 0
 }
 
 func (x *Group) GetGeneration() []byte {
 	if x != nil {
-		return x.Generation
+		return x.xxx_hidden_Generation
 	}
 	return nil
+}
+
+func (x *Group) SetGroupUid(v uint64) {
+	x.xxx_hidden_GroupUid = v
+}
+
+func (x *Group) SetTablets(v []*Tablet) {
+	x.xxx_hidden_Tablets = &v
+}
+
+func (x *Group) SetLeaderIndex(v int32) {
+	x.xxx_hidden_LeaderIndex = v
+}
+
+func (x *Group) SetGeneration(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Generation = v
+}
+
+type Group_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The UID of the paxos group, unique within the database. Matches the
+	// `group_uid` field in `Range`.
+	GroupUid uint64
+	// A list of tablets that are part of the group. Note that this list may not
+	// be exhaustive; it will only include tablets the server considers useful
+	// to the client. The returned list is ordered ascending by distance.
+	//
+	// Tablet UIDs reference `Tablet.tablet_uid`.
+	Tablets []*Tablet
+	// The last known leader tablet of the group as an index into `tablets`. May
+	// be negative if the group has no known leader.
+	LeaderIndex int32
+	// `generation` indicates the freshness of the group information (including
+	// leader information) contained in this proto. Generations can be compared
+	// lexicographically; if generation A is greater than generation B, then the
+	// `Group` corresponding to A is newer than the `Group` corresponding to B,
+	// and should be used preferentially.
+	Generation []byte
+}
+
+func (b0 Group_builder) Build() *Group {
+	m0 := &Group{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_GroupUid = b.GroupUid
+	x.xxx_hidden_Tablets = &b.Tablets
+	x.xxx_hidden_LeaderIndex = b.LeaderIndex
+	x.xxx_hidden_Generation = b.Generation
+	return m0
 }
 
 // A `KeyRecipe` provides the metadata required to translate reads, mutations,
@@ -538,21 +656,11 @@ func (x *Group) GetGeneration() []byte {
 // change over time. Requests with invalid `KeyRecipe`s should be routed to a
 // default server.
 type KeyRecipe struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// A recipe can be associated with a table, index, or query. Tables recipes
-	// are used to encode read and write keys; index recipes are used for index
-	// reads, and query recipes are used only for SQL queries.
-	//
-	// Types that are valid to be assigned to Target:
-	//
-	//	*KeyRecipe_TableName
-	//	*KeyRecipe_IndexName
-	//	*KeyRecipe_OperationUid
-	Target isKeyRecipe_Target `protobuf_oneof:"target"`
-	// Parts are in the order they should appear in the encoded key.
-	Part          []*KeyRecipe_Part `protobuf:"bytes,4,rep,name=part,proto3" json:"part,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Target isKeyRecipe_Target     `protobuf_oneof:"target"`
+	xxx_hidden_Part   *[]*KeyRecipe_Part     `protobuf:"bytes,4,rep,name=part,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *KeyRecipe) Reset() {
@@ -580,21 +688,9 @@ func (x *KeyRecipe) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use KeyRecipe.ProtoReflect.Descriptor instead.
-func (*KeyRecipe) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{3}
-}
-
-func (x *KeyRecipe) GetTarget() isKeyRecipe_Target {
-	if x != nil {
-		return x.Target
-	}
-	return nil
-}
-
 func (x *KeyRecipe) GetTableName() string {
 	if x != nil {
-		if x, ok := x.Target.(*KeyRecipe_TableName); ok {
+		if x, ok := x.xxx_hidden_Target.(*keyRecipe_TableName); ok {
 			return x.TableName
 		}
 	}
@@ -603,7 +699,7 @@ func (x *KeyRecipe) GetTableName() string {
 
 func (x *KeyRecipe) GetIndexName() string {
 	if x != nil {
-		if x, ok := x.Target.(*KeyRecipe_IndexName); ok {
+		if x, ok := x.xxx_hidden_Target.(*keyRecipe_IndexName); ok {
 			return x.IndexName
 		}
 	}
@@ -612,7 +708,7 @@ func (x *KeyRecipe) GetIndexName() string {
 
 func (x *KeyRecipe) GetOperationUid() uint64 {
 	if x != nil {
-		if x, ok := x.Target.(*KeyRecipe_OperationUid); ok {
+		if x, ok := x.xxx_hidden_Target.(*keyRecipe_OperationUid); ok {
 			return x.OperationUid
 		}
 	}
@@ -621,51 +717,182 @@ func (x *KeyRecipe) GetOperationUid() uint64 {
 
 func (x *KeyRecipe) GetPart() []*KeyRecipe_Part {
 	if x != nil {
-		return x.Part
+		if x.xxx_hidden_Part != nil {
+			return *x.xxx_hidden_Part
+		}
 	}
 	return nil
+}
+
+func (x *KeyRecipe) SetTableName(v string) {
+	x.xxx_hidden_Target = &keyRecipe_TableName{v}
+}
+
+func (x *KeyRecipe) SetIndexName(v string) {
+	x.xxx_hidden_Target = &keyRecipe_IndexName{v}
+}
+
+func (x *KeyRecipe) SetOperationUid(v uint64) {
+	x.xxx_hidden_Target = &keyRecipe_OperationUid{v}
+}
+
+func (x *KeyRecipe) SetPart(v []*KeyRecipe_Part) {
+	x.xxx_hidden_Part = &v
+}
+
+func (x *KeyRecipe) HasTarget() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Target != nil
+}
+
+func (x *KeyRecipe) HasTableName() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Target.(*keyRecipe_TableName)
+	return ok
+}
+
+func (x *KeyRecipe) HasIndexName() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Target.(*keyRecipe_IndexName)
+	return ok
+}
+
+func (x *KeyRecipe) HasOperationUid() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Target.(*keyRecipe_OperationUid)
+	return ok
+}
+
+func (x *KeyRecipe) ClearTarget() {
+	x.xxx_hidden_Target = nil
+}
+
+func (x *KeyRecipe) ClearTableName() {
+	if _, ok := x.xxx_hidden_Target.(*keyRecipe_TableName); ok {
+		x.xxx_hidden_Target = nil
+	}
+}
+
+func (x *KeyRecipe) ClearIndexName() {
+	if _, ok := x.xxx_hidden_Target.(*keyRecipe_IndexName); ok {
+		x.xxx_hidden_Target = nil
+	}
+}
+
+func (x *KeyRecipe) ClearOperationUid() {
+	if _, ok := x.xxx_hidden_Target.(*keyRecipe_OperationUid); ok {
+		x.xxx_hidden_Target = nil
+	}
+}
+
+const KeyRecipe_Target_not_set_case case_KeyRecipe_Target = 0
+const KeyRecipe_TableName_case case_KeyRecipe_Target = 1
+const KeyRecipe_IndexName_case case_KeyRecipe_Target = 2
+const KeyRecipe_OperationUid_case case_KeyRecipe_Target = 3
+
+func (x *KeyRecipe) WhichTarget() case_KeyRecipe_Target {
+	if x == nil {
+		return KeyRecipe_Target_not_set_case
+	}
+	switch x.xxx_hidden_Target.(type) {
+	case *keyRecipe_TableName:
+		return KeyRecipe_TableName_case
+	case *keyRecipe_IndexName:
+		return KeyRecipe_IndexName_case
+	case *keyRecipe_OperationUid:
+		return KeyRecipe_OperationUid_case
+	default:
+		return KeyRecipe_Target_not_set_case
+	}
+}
+
+type KeyRecipe_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// A recipe can be associated with a table, index, or query. Tables recipes
+	// are used to encode read and write keys; index recipes are used for index
+	// reads, and query recipes are used only for SQL queries.
+
+	// Fields of oneof xxx_hidden_Target:
+	// A table name, matching the name from the database schema.
+	TableName *string
+	// An index name, matching the name from the database schema.
+	IndexName *string
+	// The UID of a query, matching the UID from `RoutingHint`.
+	OperationUid *uint64
+	// -- end of xxx_hidden_Target
+	// Parts are in the order they should appear in the encoded key.
+	Part []*KeyRecipe_Part
+}
+
+func (b0 KeyRecipe_builder) Build() *KeyRecipe {
+	m0 := &KeyRecipe{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.TableName != nil {
+		x.xxx_hidden_Target = &keyRecipe_TableName{*b.TableName}
+	}
+	if b.IndexName != nil {
+		x.xxx_hidden_Target = &keyRecipe_IndexName{*b.IndexName}
+	}
+	if b.OperationUid != nil {
+		x.xxx_hidden_Target = &keyRecipe_OperationUid{*b.OperationUid}
+	}
+	x.xxx_hidden_Part = &b.Part
+	return m0
+}
+
+type case_KeyRecipe_Target protoreflect.FieldNumber
+
+func (x case_KeyRecipe_Target) String() string {
+	md := file_google_spanner_v1_location_proto_msgTypes[3].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
 }
 
 type isKeyRecipe_Target interface {
 	isKeyRecipe_Target()
 }
 
-type KeyRecipe_TableName struct {
+type keyRecipe_TableName struct {
 	// A table name, matching the name from the database schema.
 	TableName string `protobuf:"bytes,1,opt,name=table_name,json=tableName,proto3,oneof"`
 }
 
-type KeyRecipe_IndexName struct {
+type keyRecipe_IndexName struct {
 	// An index name, matching the name from the database schema.
 	IndexName string `protobuf:"bytes,2,opt,name=index_name,json=indexName,proto3,oneof"`
 }
 
-type KeyRecipe_OperationUid struct {
+type keyRecipe_OperationUid struct {
 	// The UID of a query, matching the UID from `RoutingHint`.
 	OperationUid uint64 `protobuf:"varint,3,opt,name=operation_uid,json=operationUid,proto3,oneof"`
 }
 
-func (*KeyRecipe_TableName) isKeyRecipe_Target() {}
+func (*keyRecipe_TableName) isKeyRecipe_Target() {}
 
-func (*KeyRecipe_IndexName) isKeyRecipe_Target() {}
+func (*keyRecipe_IndexName) isKeyRecipe_Target() {}
 
-func (*KeyRecipe_OperationUid) isKeyRecipe_Target() {}
+func (*keyRecipe_OperationUid) isKeyRecipe_Target() {}
 
 // A `RecipeList` contains a list of `KeyRecipe`s, which share the same
 // schema generation.
 type RecipeList struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The schema generation of the recipes. To be sent to the server in
-	// `RoutingHint.schema_generation` whenever one of the recipes is used.
-	// `schema_generation` values are comparable with each other; if generation A
-	// compares greater than generation B, then A is a more recent schema than B.
-	// Clients should in general aim to cache only the latest schema generation,
-	// and discard more stale recipes.
-	SchemaGeneration []byte `protobuf:"bytes,1,opt,name=schema_generation,json=schemaGeneration,proto3" json:"schema_generation,omitempty"`
-	// A list of recipes to be cached.
-	Recipe        []*KeyRecipe `protobuf:"bytes,3,rep,name=recipe,proto3" json:"recipe,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_SchemaGeneration []byte                 `protobuf:"bytes,1,opt,name=schema_generation,json=schemaGeneration,proto3"`
+	xxx_hidden_Recipe           *[]*KeyRecipe          `protobuf:"bytes,3,rep,name=recipe,proto3"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *RecipeList) Reset() {
@@ -693,23 +920,54 @@ func (x *RecipeList) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RecipeList.ProtoReflect.Descriptor instead.
-func (*RecipeList) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *RecipeList) GetSchemaGeneration() []byte {
 	if x != nil {
-		return x.SchemaGeneration
+		return x.xxx_hidden_SchemaGeneration
 	}
 	return nil
 }
 
 func (x *RecipeList) GetRecipe() []*KeyRecipe {
 	if x != nil {
-		return x.Recipe
+		if x.xxx_hidden_Recipe != nil {
+			return *x.xxx_hidden_Recipe
+		}
 	}
 	return nil
+}
+
+func (x *RecipeList) SetSchemaGeneration(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_SchemaGeneration = v
+}
+
+func (x *RecipeList) SetRecipe(v []*KeyRecipe) {
+	x.xxx_hidden_Recipe = &v
+}
+
+type RecipeList_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The schema generation of the recipes. To be sent to the server in
+	// `RoutingHint.schema_generation` whenever one of the recipes is used.
+	// `schema_generation` values are comparable with each other; if generation A
+	// compares greater than generation B, then A is a more recent schema than B.
+	// Clients should in general aim to cache only the latest schema generation,
+	// and discard more stale recipes.
+	SchemaGeneration []byte
+	// A list of recipes to be cached.
+	Recipe []*KeyRecipe
+}
+
+func (b0 RecipeList_builder) Build() *RecipeList {
+	m0 := &RecipeList{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_SchemaGeneration = b.SchemaGeneration
+	x.xxx_hidden_Recipe = &b.Recipe
+	return m0
 }
 
 // A `CacheUpdate` expresses a set of changes the client should incorporate into
@@ -719,19 +977,13 @@ func (x *RecipeList) GetRecipe() []*KeyRecipe {
 // field, but may also be obtained by explicit location-fetching RPCs which may
 // be added in the future.
 type CacheUpdate struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// An internal ID for the database. Database names can be reused if a database
-	// is deleted and re-created. Each time the database is re-created, it will
-	// get a new database ID, which will never be re-used for any other database.
-	DatabaseId uint64 `protobuf:"varint,1,opt,name=database_id,json=databaseId,proto3" json:"database_id,omitempty"`
-	// A list of ranges to be cached.
-	Range []*Range `protobuf:"bytes,2,rep,name=range,proto3" json:"range,omitempty"`
-	// A list of groups to be cached.
-	Group []*Group `protobuf:"bytes,3,rep,name=group,proto3" json:"group,omitempty"`
-	// A list of recipes to be cached.
-	KeyRecipes    *RecipeList `protobuf:"bytes,5,opt,name=key_recipes,json=keyRecipes,proto3" json:"key_recipes,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_DatabaseId uint64                 `protobuf:"varint,1,opt,name=database_id,json=databaseId,proto3"`
+	xxx_hidden_Range      *[]*Range              `protobuf:"bytes,2,rep,name=range,proto3"`
+	xxx_hidden_Group      *[]*Group              `protobuf:"bytes,3,rep,name=group,proto3"`
+	xxx_hidden_KeyRecipes *RecipeList            `protobuf:"bytes,5,opt,name=key_recipes,json=keyRecipes,proto3"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *CacheUpdate) Reset() {
@@ -759,37 +1011,89 @@ func (x *CacheUpdate) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CacheUpdate.ProtoReflect.Descriptor instead.
-func (*CacheUpdate) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *CacheUpdate) GetDatabaseId() uint64 {
 	if x != nil {
-		return x.DatabaseId
+		return x.xxx_hidden_DatabaseId
 	}
 	return 0
 }
 
 func (x *CacheUpdate) GetRange() []*Range {
 	if x != nil {
-		return x.Range
+		if x.xxx_hidden_Range != nil {
+			return *x.xxx_hidden_Range
+		}
 	}
 	return nil
 }
 
 func (x *CacheUpdate) GetGroup() []*Group {
 	if x != nil {
-		return x.Group
+		if x.xxx_hidden_Group != nil {
+			return *x.xxx_hidden_Group
+		}
 	}
 	return nil
 }
 
 func (x *CacheUpdate) GetKeyRecipes() *RecipeList {
 	if x != nil {
-		return x.KeyRecipes
+		return x.xxx_hidden_KeyRecipes
 	}
 	return nil
+}
+
+func (x *CacheUpdate) SetDatabaseId(v uint64) {
+	x.xxx_hidden_DatabaseId = v
+}
+
+func (x *CacheUpdate) SetRange(v []*Range) {
+	x.xxx_hidden_Range = &v
+}
+
+func (x *CacheUpdate) SetGroup(v []*Group) {
+	x.xxx_hidden_Group = &v
+}
+
+func (x *CacheUpdate) SetKeyRecipes(v *RecipeList) {
+	x.xxx_hidden_KeyRecipes = v
+}
+
+func (x *CacheUpdate) HasKeyRecipes() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_KeyRecipes != nil
+}
+
+func (x *CacheUpdate) ClearKeyRecipes() {
+	x.xxx_hidden_KeyRecipes = nil
+}
+
+type CacheUpdate_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// An internal ID for the database. Database names can be reused if a database
+	// is deleted and re-created. Each time the database is re-created, it will
+	// get a new database ID, which will never be re-used for any other database.
+	DatabaseId uint64
+	// A list of ranges to be cached.
+	Range []*Range
+	// A list of groups to be cached.
+	Group []*Group
+	// A list of recipes to be cached.
+	KeyRecipes *RecipeList
+}
+
+func (b0 CacheUpdate_builder) Build() *CacheUpdate {
+	m0 := &CacheUpdate{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_DatabaseId = b.DatabaseId
+	x.xxx_hidden_Range = &b.Range
+	x.xxx_hidden_Group = &b.Group
+	x.xxx_hidden_KeyRecipes = b.KeyRecipes
+	return m0
 }
 
 // `RoutingHint` can be optionally added to location-aware Spanner
@@ -807,62 +1111,19 @@ func (x *CacheUpdate) GetKeyRecipes() *RecipeList {
 // the `RoutingHint` is incomplete or incorrect, the response may include
 // a `CacheUpdate` the client can use to correct its location cache.
 type RoutingHint struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// A session-scoped unique ID for the operation, computed client-side.
-	// Requests with the same `operation_uid` should have a shared 'shape',
-	// meaning that some fields are expected to be the same, such as the SQL
-	// query, the target table/columns (for reads) etc. Requests with the same
-	// `operation_uid` are meant to differ only in fields like keys/key
-	// ranges/query parameters, transaction IDs, etc.
-	//
-	// `operation_uid` must be non-zero for `RoutingHint` to be valid.
-	OperationUid uint64 `protobuf:"varint,1,opt,name=operation_uid,json=operationUid,proto3" json:"operation_uid,omitempty"`
-	// The database ID of the database being accessed, see
-	// `CacheUpdate.database_id`. Should match the cache entries that were used
-	// to generate the rest of the fields in this `RoutingHint`.
-	DatabaseId uint64 `protobuf:"varint,2,opt,name=database_id,json=databaseId,proto3" json:"database_id,omitempty"`
-	// The schema generation of the recipe that was used to generate `key` and
-	// `limit_key`. See also `RecipeList.schema_generation`.
-	SchemaGeneration []byte `protobuf:"bytes,3,opt,name=schema_generation,json=schemaGeneration,proto3" json:"schema_generation,omitempty"`
-	// The key / key range that this request accesses. For operations that
-	// access a single key, `key` should be set and `limit_key` should be empty.
-	// For operations that access a key range, `key` and `limit_key` should both
-	// be set, to the inclusive start and exclusive end of the range respectively.
-	//
-	// The keys are encoded in "sortable string format" (ssformat), using a
-	// `KeyRecipe` that is appropriate for the request. See `KeyRecipe` for more
-	// details.
-	Key []byte `protobuf:"bytes,4,opt,name=key,proto3" json:"key,omitempty"`
-	// If this request targets a key range, this is the exclusive end of the
-	// range. See `key` for more details.
-	LimitKey []byte `protobuf:"bytes,5,opt,name=limit_key,json=limitKey,proto3" json:"limit_key,omitempty"`
-	// The group UID of the group that the client believes serves the range
-	// defined by `key` and `limit_key`. See `Range.group_uid` for more details.
-	GroupUid uint64 `protobuf:"varint,6,opt,name=group_uid,json=groupUid,proto3" json:"group_uid,omitempty"`
-	// The split ID of the split that the client believes contains the range
-	// defined by `key` and `limit_key`. See `Range.split_id` for more details.
-	SplitId uint64 `protobuf:"varint,7,opt,name=split_id,json=splitId,proto3" json:"split_id,omitempty"`
-	// The tablet UID of the tablet from group `group_uid` that the client
-	// believes is best to serve this request. See `Group.local_tablet_uids` and
-	// `Group.leader_tablet_uid`.
-	TabletUid uint64 `protobuf:"varint,8,opt,name=tablet_uid,json=tabletUid,proto3" json:"tablet_uid,omitempty"`
-	// If the client had multiple options for tablet selection, and some of its
-	// first choices were unhealthy (e.g., the server is unreachable, or
-	// `Tablet.skip` is true), this field will contain the tablet UIDs of those
-	// tablets, with their incarnations. The server may include a `CacheUpdate`
-	// with new locations for those tablets.
-	SkippedTabletUid []*RoutingHint_SkippedTablet `protobuf:"bytes,9,rep,name=skipped_tablet_uid,json=skippedTabletUid,proto3" json:"skipped_tablet_uid,omitempty"`
-	// If present, the client's current location. This should be the name of a
-	// Google Cloud zone or region, such as "us-central1".
-	//
-	// If absent, the client's location will be assumed to be the same as the
-	// location of the server the client ends up connected to.
-	//
-	// Locations are primarily valuable for clients that connect from regions
-	// other than the ones that contain the Spanner database.
-	ClientLocation string `protobuf:"bytes,10,opt,name=client_location,json=clientLocation,proto3" json:"client_location,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                       protoimpl.MessageState        `protogen:"opaque.v1"`
+	xxx_hidden_OperationUid     uint64                        `protobuf:"varint,1,opt,name=operation_uid,json=operationUid,proto3"`
+	xxx_hidden_DatabaseId       uint64                        `protobuf:"varint,2,opt,name=database_id,json=databaseId,proto3"`
+	xxx_hidden_SchemaGeneration []byte                        `protobuf:"bytes,3,opt,name=schema_generation,json=schemaGeneration,proto3"`
+	xxx_hidden_Key              []byte                        `protobuf:"bytes,4,opt,name=key,proto3"`
+	xxx_hidden_LimitKey         []byte                        `protobuf:"bytes,5,opt,name=limit_key,json=limitKey,proto3"`
+	xxx_hidden_GroupUid         uint64                        `protobuf:"varint,6,opt,name=group_uid,json=groupUid,proto3"`
+	xxx_hidden_SplitId          uint64                        `protobuf:"varint,7,opt,name=split_id,json=splitId,proto3"`
+	xxx_hidden_TabletUid        uint64                        `protobuf:"varint,8,opt,name=tablet_uid,json=tabletUid,proto3"`
+	xxx_hidden_SkippedTabletUid *[]*RoutingHint_SkippedTablet `protobuf:"bytes,9,rep,name=skipped_tablet_uid,json=skippedTabletUid,proto3"`
+	xxx_hidden_ClientLocation   string                        `protobuf:"bytes,10,opt,name=client_location,json=clientLocation,proto3"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *RoutingHint) Reset() {
@@ -890,109 +1151,214 @@ func (x *RoutingHint) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RoutingHint.ProtoReflect.Descriptor instead.
-func (*RoutingHint) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *RoutingHint) GetOperationUid() uint64 {
 	if x != nil {
-		return x.OperationUid
+		return x.xxx_hidden_OperationUid
 	}
 	return 0
 }
 
 func (x *RoutingHint) GetDatabaseId() uint64 {
 	if x != nil {
-		return x.DatabaseId
+		return x.xxx_hidden_DatabaseId
 	}
 	return 0
 }
 
 func (x *RoutingHint) GetSchemaGeneration() []byte {
 	if x != nil {
-		return x.SchemaGeneration
+		return x.xxx_hidden_SchemaGeneration
 	}
 	return nil
 }
 
 func (x *RoutingHint) GetKey() []byte {
 	if x != nil {
-		return x.Key
+		return x.xxx_hidden_Key
 	}
 	return nil
 }
 
 func (x *RoutingHint) GetLimitKey() []byte {
 	if x != nil {
-		return x.LimitKey
+		return x.xxx_hidden_LimitKey
 	}
 	return nil
 }
 
 func (x *RoutingHint) GetGroupUid() uint64 {
 	if x != nil {
-		return x.GroupUid
+		return x.xxx_hidden_GroupUid
 	}
 	return 0
 }
 
 func (x *RoutingHint) GetSplitId() uint64 {
 	if x != nil {
-		return x.SplitId
+		return x.xxx_hidden_SplitId
 	}
 	return 0
 }
 
 func (x *RoutingHint) GetTabletUid() uint64 {
 	if x != nil {
-		return x.TabletUid
+		return x.xxx_hidden_TabletUid
 	}
 	return 0
 }
 
 func (x *RoutingHint) GetSkippedTabletUid() []*RoutingHint_SkippedTablet {
 	if x != nil {
-		return x.SkippedTabletUid
+		if x.xxx_hidden_SkippedTabletUid != nil {
+			return *x.xxx_hidden_SkippedTabletUid
+		}
 	}
 	return nil
 }
 
 func (x *RoutingHint) GetClientLocation() string {
 	if x != nil {
-		return x.ClientLocation
+		return x.xxx_hidden_ClientLocation
 	}
 	return ""
+}
+
+func (x *RoutingHint) SetOperationUid(v uint64) {
+	x.xxx_hidden_OperationUid = v
+}
+
+func (x *RoutingHint) SetDatabaseId(v uint64) {
+	x.xxx_hidden_DatabaseId = v
+}
+
+func (x *RoutingHint) SetSchemaGeneration(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_SchemaGeneration = v
+}
+
+func (x *RoutingHint) SetKey(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Key = v
+}
+
+func (x *RoutingHint) SetLimitKey(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_LimitKey = v
+}
+
+func (x *RoutingHint) SetGroupUid(v uint64) {
+	x.xxx_hidden_GroupUid = v
+}
+
+func (x *RoutingHint) SetSplitId(v uint64) {
+	x.xxx_hidden_SplitId = v
+}
+
+func (x *RoutingHint) SetTabletUid(v uint64) {
+	x.xxx_hidden_TabletUid = v
+}
+
+func (x *RoutingHint) SetSkippedTabletUid(v []*RoutingHint_SkippedTablet) {
+	x.xxx_hidden_SkippedTabletUid = &v
+}
+
+func (x *RoutingHint) SetClientLocation(v string) {
+	x.xxx_hidden_ClientLocation = v
+}
+
+type RoutingHint_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// A session-scoped unique ID for the operation, computed client-side.
+	// Requests with the same `operation_uid` should have a shared 'shape',
+	// meaning that some fields are expected to be the same, such as the SQL
+	// query, the target table/columns (for reads) etc. Requests with the same
+	// `operation_uid` are meant to differ only in fields like keys/key
+	// ranges/query parameters, transaction IDs, etc.
+	//
+	// `operation_uid` must be non-zero for `RoutingHint` to be valid.
+	OperationUid uint64
+	// The database ID of the database being accessed, see
+	// `CacheUpdate.database_id`. Should match the cache entries that were used
+	// to generate the rest of the fields in this `RoutingHint`.
+	DatabaseId uint64
+	// The schema generation of the recipe that was used to generate `key` and
+	// `limit_key`. See also `RecipeList.schema_generation`.
+	SchemaGeneration []byte
+	// The key / key range that this request accesses. For operations that
+	// access a single key, `key` should be set and `limit_key` should be empty.
+	// For operations that access a key range, `key` and `limit_key` should both
+	// be set, to the inclusive start and exclusive end of the range respectively.
+	//
+	// The keys are encoded in "sortable string format" (ssformat), using a
+	// `KeyRecipe` that is appropriate for the request. See `KeyRecipe` for more
+	// details.
+	Key []byte
+	// If this request targets a key range, this is the exclusive end of the
+	// range. See `key` for more details.
+	LimitKey []byte
+	// The group UID of the group that the client believes serves the range
+	// defined by `key` and `limit_key`. See `Range.group_uid` for more details.
+	GroupUid uint64
+	// The split ID of the split that the client believes contains the range
+	// defined by `key` and `limit_key`. See `Range.split_id` for more details.
+	SplitId uint64
+	// The tablet UID of the tablet from group `group_uid` that the client
+	// believes is best to serve this request. See `Group.local_tablet_uids` and
+	// `Group.leader_tablet_uid`.
+	TabletUid uint64
+	// If the client had multiple options for tablet selection, and some of its
+	// first choices were unhealthy (e.g., the server is unreachable, or
+	// `Tablet.skip` is true), this field will contain the tablet UIDs of those
+	// tablets, with their incarnations. The server may include a `CacheUpdate`
+	// with new locations for those tablets.
+	SkippedTabletUid []*RoutingHint_SkippedTablet
+	// If present, the client's current location. This should be the name of a
+	// Google Cloud zone or region, such as "us-central1".
+	//
+	// If absent, the client's location will be assumed to be the same as the
+	// location of the server the client ends up connected to.
+	//
+	// Locations are primarily valuable for clients that connect from regions
+	// other than the ones that contain the Spanner database.
+	ClientLocation string
+}
+
+func (b0 RoutingHint_builder) Build() *RoutingHint {
+	m0 := &RoutingHint{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_OperationUid = b.OperationUid
+	x.xxx_hidden_DatabaseId = b.DatabaseId
+	x.xxx_hidden_SchemaGeneration = b.SchemaGeneration
+	x.xxx_hidden_Key = b.Key
+	x.xxx_hidden_LimitKey = b.LimitKey
+	x.xxx_hidden_GroupUid = b.GroupUid
+	x.xxx_hidden_SplitId = b.SplitId
+	x.xxx_hidden_TabletUid = b.TabletUid
+	x.xxx_hidden_SkippedTabletUid = &b.SkippedTabletUid
+	x.xxx_hidden_ClientLocation = b.ClientLocation
+	return m0
 }
 
 // An ssformat key is composed of a sequence of tag numbers and key column
 // values. `Part` represents a single tag or key column value.
 type KeyRecipe_Part struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// If non-zero, `tag` is the only field present in this `Part`. The part
-	// is encoded by appending `tag` to the ssformat key.
-	Tag uint32 `protobuf:"varint,1,opt,name=tag,proto3" json:"tag,omitempty"`
-	// Whether the key column is sorted ascending or descending. Only present
-	// if `tag` is zero.
-	Order KeyRecipe_Part_Order `protobuf:"varint,2,opt,name=order,proto3,enum=google.spanner.v1.KeyRecipe_Part_Order" json:"order,omitempty"`
-	// How NULLs are represented in the encoded key part. Only present if `tag`
-	// is zero.
-	NullOrder KeyRecipe_Part_NullOrder `protobuf:"varint,3,opt,name=null_order,json=nullOrder,proto3,enum=google.spanner.v1.KeyRecipe_Part_NullOrder" json:"null_order,omitempty"`
-	// The type of the key part. Only present if `tag` is zero.
-	Type *Type `protobuf:"bytes,4,opt,name=type,proto3" json:"type,omitempty"`
-	// Only present if `tag` is zero.
-	//
-	// Types that are valid to be assigned to ValueType:
-	//
-	//	*KeyRecipe_Part_Identifier
-	//	*KeyRecipe_Part_Value
-	//	*KeyRecipe_Part_Random
-	ValueType isKeyRecipe_Part_ValueType `protobuf_oneof:"value_type"`
-	// It is a repeated field to support fetching key columns from nested
-	// structs, such as `STRUCT` query parameters.
-	StructIdentifiers []int32 `protobuf:"varint,7,rep,packed,name=struct_identifiers,json=structIdentifiers,proto3" json:"struct_identifiers,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state                        protoimpl.MessageState     `protogen:"opaque.v1"`
+	xxx_hidden_Tag               uint32                     `protobuf:"varint,1,opt,name=tag,proto3"`
+	xxx_hidden_Order             KeyRecipe_Part_Order       `protobuf:"varint,2,opt,name=order,proto3,enum=google.spanner.v1.KeyRecipe_Part_Order"`
+	xxx_hidden_NullOrder         KeyRecipe_Part_NullOrder   `protobuf:"varint,3,opt,name=null_order,json=nullOrder,proto3,enum=google.spanner.v1.KeyRecipe_Part_NullOrder"`
+	xxx_hidden_Type              *Type                      `protobuf:"bytes,4,opt,name=type,proto3"`
+	xxx_hidden_ValueType         isKeyRecipe_Part_ValueType `protobuf_oneof:"value_type"`
+	xxx_hidden_StructIdentifiers []int32                    `protobuf:"varint,7,rep,packed,name=struct_identifiers,json=structIdentifiers,proto3"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *KeyRecipe_Part) Reset() {
@@ -1020,49 +1386,37 @@ func (x *KeyRecipe_Part) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use KeyRecipe_Part.ProtoReflect.Descriptor instead.
-func (*KeyRecipe_Part) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{3, 0}
-}
-
 func (x *KeyRecipe_Part) GetTag() uint32 {
 	if x != nil {
-		return x.Tag
+		return x.xxx_hidden_Tag
 	}
 	return 0
 }
 
 func (x *KeyRecipe_Part) GetOrder() KeyRecipe_Part_Order {
 	if x != nil {
-		return x.Order
+		return x.xxx_hidden_Order
 	}
 	return KeyRecipe_Part_ORDER_UNSPECIFIED
 }
 
 func (x *KeyRecipe_Part) GetNullOrder() KeyRecipe_Part_NullOrder {
 	if x != nil {
-		return x.NullOrder
+		return x.xxx_hidden_NullOrder
 	}
 	return KeyRecipe_Part_NULL_ORDER_UNSPECIFIED
 }
 
 func (x *KeyRecipe_Part) GetType() *Type {
 	if x != nil {
-		return x.Type
-	}
-	return nil
-}
-
-func (x *KeyRecipe_Part) GetValueType() isKeyRecipe_Part_ValueType {
-	if x != nil {
-		return x.ValueType
+		return x.xxx_hidden_Type
 	}
 	return nil
 }
 
 func (x *KeyRecipe_Part) GetIdentifier() string {
 	if x != nil {
-		if x, ok := x.ValueType.(*KeyRecipe_Part_Identifier); ok {
+		if x, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Identifier); ok {
 			return x.Identifier
 		}
 	}
@@ -1071,7 +1425,7 @@ func (x *KeyRecipe_Part) GetIdentifier() string {
 
 func (x *KeyRecipe_Part) GetValue() *structpb.Value {
 	if x != nil {
-		if x, ok := x.ValueType.(*KeyRecipe_Part_Value); ok {
+		if x, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Value); ok {
 			return x.Value
 		}
 	}
@@ -1080,7 +1434,7 @@ func (x *KeyRecipe_Part) GetValue() *structpb.Value {
 
 func (x *KeyRecipe_Part) GetRandom() bool {
 	if x != nil {
-		if x, ok := x.ValueType.(*KeyRecipe_Part_Random); ok {
+		if x, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Random); ok {
 			return x.Random
 		}
 	}
@@ -1089,48 +1443,229 @@ func (x *KeyRecipe_Part) GetRandom() bool {
 
 func (x *KeyRecipe_Part) GetStructIdentifiers() []int32 {
 	if x != nil {
-		return x.StructIdentifiers
+		return x.xxx_hidden_StructIdentifiers
 	}
 	return nil
+}
+
+func (x *KeyRecipe_Part) SetTag(v uint32) {
+	x.xxx_hidden_Tag = v
+}
+
+func (x *KeyRecipe_Part) SetOrder(v KeyRecipe_Part_Order) {
+	x.xxx_hidden_Order = v
+}
+
+func (x *KeyRecipe_Part) SetNullOrder(v KeyRecipe_Part_NullOrder) {
+	x.xxx_hidden_NullOrder = v
+}
+
+func (x *KeyRecipe_Part) SetType(v *Type) {
+	x.xxx_hidden_Type = v
+}
+
+func (x *KeyRecipe_Part) SetIdentifier(v string) {
+	x.xxx_hidden_ValueType = &keyRecipe_Part_Identifier{v}
+}
+
+func (x *KeyRecipe_Part) SetValue(v *structpb.Value) {
+	if v == nil {
+		x.xxx_hidden_ValueType = nil
+		return
+	}
+	x.xxx_hidden_ValueType = &keyRecipe_Part_Value{v}
+}
+
+func (x *KeyRecipe_Part) SetRandom(v bool) {
+	x.xxx_hidden_ValueType = &keyRecipe_Part_Random{v}
+}
+
+func (x *KeyRecipe_Part) SetStructIdentifiers(v []int32) {
+	x.xxx_hidden_StructIdentifiers = v
+}
+
+func (x *KeyRecipe_Part) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Type != nil
+}
+
+func (x *KeyRecipe_Part) HasValueType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ValueType != nil
+}
+
+func (x *KeyRecipe_Part) HasIdentifier() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Identifier)
+	return ok
+}
+
+func (x *KeyRecipe_Part) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Value)
+	return ok
+}
+
+func (x *KeyRecipe_Part) HasRandom() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Random)
+	return ok
+}
+
+func (x *KeyRecipe_Part) ClearType() {
+	x.xxx_hidden_Type = nil
+}
+
+func (x *KeyRecipe_Part) ClearValueType() {
+	x.xxx_hidden_ValueType = nil
+}
+
+func (x *KeyRecipe_Part) ClearIdentifier() {
+	if _, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Identifier); ok {
+		x.xxx_hidden_ValueType = nil
+	}
+}
+
+func (x *KeyRecipe_Part) ClearValue() {
+	if _, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Value); ok {
+		x.xxx_hidden_ValueType = nil
+	}
+}
+
+func (x *KeyRecipe_Part) ClearRandom() {
+	if _, ok := x.xxx_hidden_ValueType.(*keyRecipe_Part_Random); ok {
+		x.xxx_hidden_ValueType = nil
+	}
+}
+
+const KeyRecipe_Part_ValueType_not_set_case case_KeyRecipe_Part_ValueType = 0
+const KeyRecipe_Part_Identifier_case case_KeyRecipe_Part_ValueType = 5
+const KeyRecipe_Part_Value_case case_KeyRecipe_Part_ValueType = 6
+const KeyRecipe_Part_Random_case case_KeyRecipe_Part_ValueType = 8
+
+func (x *KeyRecipe_Part) WhichValueType() case_KeyRecipe_Part_ValueType {
+	if x == nil {
+		return KeyRecipe_Part_ValueType_not_set_case
+	}
+	switch x.xxx_hidden_ValueType.(type) {
+	case *keyRecipe_Part_Identifier:
+		return KeyRecipe_Part_Identifier_case
+	case *keyRecipe_Part_Value:
+		return KeyRecipe_Part_Value_case
+	case *keyRecipe_Part_Random:
+		return KeyRecipe_Part_Random_case
+	default:
+		return KeyRecipe_Part_ValueType_not_set_case
+	}
+}
+
+type KeyRecipe_Part_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// If non-zero, `tag` is the only field present in this `Part`. The part
+	// is encoded by appending `tag` to the ssformat key.
+	Tag uint32
+	// Whether the key column is sorted ascending or descending. Only present
+	// if `tag` is zero.
+	Order KeyRecipe_Part_Order
+	// How NULLs are represented in the encoded key part. Only present if `tag`
+	// is zero.
+	NullOrder KeyRecipe_Part_NullOrder
+	// The type of the key part. Only present if `tag` is zero.
+	Type *Type
+	// Only present if `tag` is zero.
+
+	// Fields of oneof xxx_hidden_ValueType:
+	// `identifier` is the name of the column or query parameter.
+	Identifier *string
+	// The constant value of the key part.
+	// It is present when query uses a constant as a part of the key.
+	Value *structpb.Value
+	// If true, the client is responsible to fill in the value randomly.
+	// It's relevant only for the INT64 type.
+	Random *bool
+	// -- end of xxx_hidden_ValueType
+	// It is a repeated field to support fetching key columns from nested
+	// structs, such as `STRUCT` query parameters.
+	StructIdentifiers []int32
+}
+
+func (b0 KeyRecipe_Part_builder) Build() *KeyRecipe_Part {
+	m0 := &KeyRecipe_Part{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Tag = b.Tag
+	x.xxx_hidden_Order = b.Order
+	x.xxx_hidden_NullOrder = b.NullOrder
+	x.xxx_hidden_Type = b.Type
+	if b.Identifier != nil {
+		x.xxx_hidden_ValueType = &keyRecipe_Part_Identifier{*b.Identifier}
+	}
+	if b.Value != nil {
+		x.xxx_hidden_ValueType = &keyRecipe_Part_Value{b.Value}
+	}
+	if b.Random != nil {
+		x.xxx_hidden_ValueType = &keyRecipe_Part_Random{*b.Random}
+	}
+	x.xxx_hidden_StructIdentifiers = b.StructIdentifiers
+	return m0
+}
+
+type case_KeyRecipe_Part_ValueType protoreflect.FieldNumber
+
+func (x case_KeyRecipe_Part_ValueType) String() string {
+	md := file_google_spanner_v1_location_proto_msgTypes[7].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
 }
 
 type isKeyRecipe_Part_ValueType interface {
 	isKeyRecipe_Part_ValueType()
 }
 
-type KeyRecipe_Part_Identifier struct {
+type keyRecipe_Part_Identifier struct {
 	// `identifier` is the name of the column or query parameter.
 	Identifier string `protobuf:"bytes,5,opt,name=identifier,proto3,oneof"`
 }
 
-type KeyRecipe_Part_Value struct {
+type keyRecipe_Part_Value struct {
 	// The constant value of the key part.
 	// It is present when query uses a constant as a part of the key.
 	Value *structpb.Value `protobuf:"bytes,6,opt,name=value,proto3,oneof"`
 }
 
-type KeyRecipe_Part_Random struct {
+type keyRecipe_Part_Random struct {
 	// If true, the client is responsible to fill in the value randomly.
 	// It's relevant only for the INT64 type.
 	Random bool `protobuf:"varint,8,opt,name=random,proto3,oneof"`
 }
 
-func (*KeyRecipe_Part_Identifier) isKeyRecipe_Part_ValueType() {}
+func (*keyRecipe_Part_Identifier) isKeyRecipe_Part_ValueType() {}
 
-func (*KeyRecipe_Part_Value) isKeyRecipe_Part_ValueType() {}
+func (*keyRecipe_Part_Value) isKeyRecipe_Part_ValueType() {}
 
-func (*KeyRecipe_Part_Random) isKeyRecipe_Part_ValueType() {}
+func (*keyRecipe_Part_Random) isKeyRecipe_Part_ValueType() {}
 
 // A tablet that was skipped by the client. See `Tablet.tablet_uid` and
 // `Tablet.incarnation`.
 type RoutingHint_SkippedTablet struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The tablet UID of the tablet that was skipped. See `Tablet.tablet_uid`.
-	TabletUid uint64 `protobuf:"varint,1,opt,name=tablet_uid,json=tabletUid,proto3" json:"tablet_uid,omitempty"`
-	// The incarnation of the tablet that was skipped. See `Tablet.incarnation`.
-	Incarnation   []byte `protobuf:"bytes,2,opt,name=incarnation,proto3" json:"incarnation,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_TabletUid   uint64                 `protobuf:"varint,1,opt,name=tablet_uid,json=tabletUid,proto3"`
+	xxx_hidden_Incarnation []byte                 `protobuf:"bytes,2,opt,name=incarnation,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *RoutingHint_SkippedTablet) Reset() {
@@ -1158,23 +1693,47 @@ func (x *RoutingHint_SkippedTablet) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RoutingHint_SkippedTablet.ProtoReflect.Descriptor instead.
-func (*RoutingHint_SkippedTablet) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_location_proto_rawDescGZIP(), []int{6, 0}
-}
-
 func (x *RoutingHint_SkippedTablet) GetTabletUid() uint64 {
 	if x != nil {
-		return x.TabletUid
+		return x.xxx_hidden_TabletUid
 	}
 	return 0
 }
 
 func (x *RoutingHint_SkippedTablet) GetIncarnation() []byte {
 	if x != nil {
-		return x.Incarnation
+		return x.xxx_hidden_Incarnation
 	}
 	return nil
+}
+
+func (x *RoutingHint_SkippedTablet) SetTabletUid(v uint64) {
+	x.xxx_hidden_TabletUid = v
+}
+
+func (x *RoutingHint_SkippedTablet) SetIncarnation(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Incarnation = v
+}
+
+type RoutingHint_SkippedTablet_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The tablet UID of the tablet that was skipped. See `Tablet.tablet_uid`.
+	TabletUid uint64
+	// The incarnation of the tablet that was skipped. See `Tablet.incarnation`.
+	Incarnation []byte
+}
+
+func (b0 RoutingHint_SkippedTablet_builder) Build() *RoutingHint_SkippedTablet {
+	m0 := &RoutingHint_SkippedTablet{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_TabletUid = b.TabletUid
+	x.xxx_hidden_Incarnation = b.Incarnation
+	return m0
 }
 
 var File_google_spanner_v1_location_proto protoreflect.FileDescriptor
@@ -1275,18 +1834,6 @@ const file_google_spanner_v1_location_proto_rawDesc = "" +
 	"\vincarnation\x18\x02 \x01(\fR\vincarnationB\xb0\x01\n" +
 	"\x15com.google.spanner.v1B\rLocationProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
 
-var (
-	file_google_spanner_v1_location_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_location_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_location_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_location_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_location_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_location_proto_rawDesc), len(file_google_spanner_v1_location_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_location_proto_rawDescData
-}
-
 var file_google_spanner_v1_location_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_google_spanner_v1_location_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_spanner_v1_location_proto_goTypes = []any{
@@ -1332,14 +1879,14 @@ func file_google_spanner_v1_location_proto_init() {
 	}
 	file_google_spanner_v1_type_proto_init()
 	file_google_spanner_v1_location_proto_msgTypes[3].OneofWrappers = []any{
-		(*KeyRecipe_TableName)(nil),
-		(*KeyRecipe_IndexName)(nil),
-		(*KeyRecipe_OperationUid)(nil),
+		(*keyRecipe_TableName)(nil),
+		(*keyRecipe_IndexName)(nil),
+		(*keyRecipe_OperationUid)(nil),
 	}
 	file_google_spanner_v1_location_proto_msgTypes[7].OneofWrappers = []any{
-		(*KeyRecipe_Part_Identifier)(nil),
-		(*KeyRecipe_Part_Value)(nil),
-		(*KeyRecipe_Part_Random)(nil),
+		(*keyRecipe_Part_Identifier)(nil),
+		(*keyRecipe_Part_Value)(nil),
+		(*keyRecipe_Part_Random)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

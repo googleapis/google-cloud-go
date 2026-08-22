@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -109,11 +108,6 @@ func (x RequestOptions_Priority) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use RequestOptions_Priority.Descriptor instead.
-func (RequestOptions_Priority) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{8, 0}
-}
-
 // Indicates the type of replica.
 type DirectedReadOptions_ReplicaSelection_Type int32
 
@@ -160,11 +154,6 @@ func (DirectedReadOptions_ReplicaSelection_Type) Type() protoreflect.EnumType {
 
 func (x DirectedReadOptions_ReplicaSelection_Type) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use DirectedReadOptions_ReplicaSelection_Type.Descriptor instead.
-func (DirectedReadOptions_ReplicaSelection_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{9, 0, 0}
 }
 
 // Mode in which the statement must be processed.
@@ -229,11 +218,6 @@ func (x ExecuteSqlRequest_QueryMode) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use ExecuteSqlRequest_QueryMode.Descriptor instead.
-func (ExecuteSqlRequest_QueryMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{10, 0}
-}
-
 // An option to control the order in which rows are returned from a read.
 type ReadRequest_OrderBy int32
 
@@ -285,11 +269,6 @@ func (ReadRequest_OrderBy) Type() protoreflect.EnumType {
 
 func (x ReadRequest_OrderBy) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
-}
-
-// Deprecated: Use ReadRequest_OrderBy.Descriptor instead.
-func (ReadRequest_OrderBy) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{18, 0}
 }
 
 // A lock hint mechanism for reads done within a transaction.
@@ -376,20 +355,13 @@ func (x ReadRequest_LockHint) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use ReadRequest_LockHint.Descriptor instead.
-func (ReadRequest_LockHint) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{18, 1}
-}
-
 // The request for [CreateSession][google.spanner.v1.Spanner.CreateSession].
 type CreateSessionRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The database in which the new session is created.
-	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
-	// Required. The session to create.
-	Session       *Session `protobuf:"bytes,2,opt,name=session,proto3" json:"session,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Database string                 `protobuf:"bytes,1,opt,name=database,proto3"`
+	xxx_hidden_Session  *Session               `protobuf:"bytes,2,opt,name=session,proto3"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *CreateSessionRequest) Reset() {
@@ -417,42 +389,66 @@ func (x *CreateSessionRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CreateSessionRequest.ProtoReflect.Descriptor instead.
-func (*CreateSessionRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *CreateSessionRequest) GetDatabase() string {
 	if x != nil {
-		return x.Database
+		return x.xxx_hidden_Database
 	}
 	return ""
 }
 
 func (x *CreateSessionRequest) GetSession() *Session {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return nil
+}
+
+func (x *CreateSessionRequest) SetDatabase(v string) {
+	x.xxx_hidden_Database = v
+}
+
+func (x *CreateSessionRequest) SetSession(v *Session) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *CreateSessionRequest) HasSession() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Session != nil
+}
+
+func (x *CreateSessionRequest) ClearSession() {
+	x.xxx_hidden_Session = nil
+}
+
+type CreateSessionRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The database in which the new session is created.
+	Database string
+	// Required. The session to create.
+	Session *Session
+}
+
+func (b0 CreateSessionRequest_builder) Build() *CreateSessionRequest {
+	m0 := &CreateSessionRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Database = b.Database
+	x.xxx_hidden_Session = b.Session
+	return m0
 }
 
 // The request for
 // [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions].
 type BatchCreateSessionsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The database in which the new sessions are created.
-	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
-	// Parameters to apply to each created session.
-	SessionTemplate *Session `protobuf:"bytes,2,opt,name=session_template,json=sessionTemplate,proto3" json:"session_template,omitempty"`
-	// Required. The number of sessions to be created in this batch call. At least
-	// one session is created. The API can return fewer than the requested number
-	// of sessions. If a specific number of sessions are desired, the client can
-	// make additional calls to `BatchCreateSessions` (adjusting
-	// [session_count][google.spanner.v1.BatchCreateSessionsRequest.session_count]
-	// as necessary).
-	SessionCount  int32 `protobuf:"varint,3,opt,name=session_count,json=sessionCount,proto3" json:"session_count,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Database        string                 `protobuf:"bytes,1,opt,name=database,proto3"`
+	xxx_hidden_SessionTemplate *Session               `protobuf:"bytes,2,opt,name=session_template,json=sessionTemplate,proto3"`
+	xxx_hidden_SessionCount    int32                  `protobuf:"varint,3,opt,name=session_count,json=sessionCount,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *BatchCreateSessionsRequest) Reset() {
@@ -480,40 +476,83 @@ func (x *BatchCreateSessionsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BatchCreateSessionsRequest.ProtoReflect.Descriptor instead.
-func (*BatchCreateSessionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *BatchCreateSessionsRequest) GetDatabase() string {
 	if x != nil {
-		return x.Database
+		return x.xxx_hidden_Database
 	}
 	return ""
 }
 
 func (x *BatchCreateSessionsRequest) GetSessionTemplate() *Session {
 	if x != nil {
-		return x.SessionTemplate
+		return x.xxx_hidden_SessionTemplate
 	}
 	return nil
 }
 
 func (x *BatchCreateSessionsRequest) GetSessionCount() int32 {
 	if x != nil {
-		return x.SessionCount
+		return x.xxx_hidden_SessionCount
 	}
 	return 0
+}
+
+func (x *BatchCreateSessionsRequest) SetDatabase(v string) {
+	x.xxx_hidden_Database = v
+}
+
+func (x *BatchCreateSessionsRequest) SetSessionTemplate(v *Session) {
+	x.xxx_hidden_SessionTemplate = v
+}
+
+func (x *BatchCreateSessionsRequest) SetSessionCount(v int32) {
+	x.xxx_hidden_SessionCount = v
+}
+
+func (x *BatchCreateSessionsRequest) HasSessionTemplate() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_SessionTemplate != nil
+}
+
+func (x *BatchCreateSessionsRequest) ClearSessionTemplate() {
+	x.xxx_hidden_SessionTemplate = nil
+}
+
+type BatchCreateSessionsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The database in which the new sessions are created.
+	Database string
+	// Parameters to apply to each created session.
+	SessionTemplate *Session
+	// Required. The number of sessions to be created in this batch call. At least
+	// one session is created. The API can return fewer than the requested number
+	// of sessions. If a specific number of sessions are desired, the client can
+	// make additional calls to `BatchCreateSessions` (adjusting
+	// [session_count][google.spanner.v1.BatchCreateSessionsRequest.session_count]
+	// as necessary).
+	SessionCount int32
+}
+
+func (b0 BatchCreateSessionsRequest_builder) Build() *BatchCreateSessionsRequest {
+	m0 := &BatchCreateSessionsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Database = b.Database
+	x.xxx_hidden_SessionTemplate = b.SessionTemplate
+	x.xxx_hidden_SessionCount = b.SessionCount
+	return m0
 }
 
 // The response for
 // [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions].
 type BatchCreateSessionsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The freshly created sessions.
-	Session       []*Session `protobuf:"bytes,1,rep,name=session,proto3" json:"session,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Session *[]*Session            `protobuf:"bytes,1,rep,name=session,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *BatchCreateSessionsResponse) Reset() {
@@ -541,51 +580,45 @@ func (x *BatchCreateSessionsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BatchCreateSessionsResponse.ProtoReflect.Descriptor instead.
-func (*BatchCreateSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *BatchCreateSessionsResponse) GetSession() []*Session {
 	if x != nil {
-		return x.Session
+		if x.xxx_hidden_Session != nil {
+			return *x.xxx_hidden_Session
+		}
 	}
 	return nil
 }
 
+func (x *BatchCreateSessionsResponse) SetSession(v []*Session) {
+	x.xxx_hidden_Session = &v
+}
+
+type BatchCreateSessionsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The freshly created sessions.
+	Session []*Session
+}
+
+func (b0 BatchCreateSessionsResponse_builder) Build() *BatchCreateSessionsResponse {
+	m0 := &BatchCreateSessionsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = &b.Session
+	return m0
+}
+
 // A session in the Cloud Spanner API.
 type Session struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Output only. The name of the session. This is always system-assigned.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The labels for the session.
-	//
-	//   - Label keys must be between 1 and 63 characters long and must conform to
-	//     the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.
-	//   - Label values must be between 0 and 63 characters long and must conform
-	//     to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.
-	//   - No more than 64 labels can be associated with a given session.
-	//
-	// See https://goo.gl/xmQnxf for more information on and examples of labels.
-	Labels map[string]string `protobuf:"bytes,2,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Output only. The timestamp when the session is created.
-	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
-	// Output only. The approximate timestamp when the session is last used. It's
-	// typically earlier than the actual last use time.
-	ApproximateLastUseTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=approximate_last_use_time,json=approximateLastUseTime,proto3" json:"approximate_last_use_time,omitempty"`
-	// The database role which created this session.
-	CreatorRole string `protobuf:"bytes,5,opt,name=creator_role,json=creatorRole,proto3" json:"creator_role,omitempty"`
-	// Optional. If `true`, specifies a multiplexed session. Use a multiplexed
-	// session for multiple, concurrent operations including any combination of
-	// read-only and read-write transactions. Use
-	// [`sessions.create`][google.spanner.v1.Spanner.CreateSession] to create
-	// multiplexed sessions. Don't use
-	// [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions] to
-	// create a multiplexed session. You can't delete or list multiplexed
-	// sessions.
-	Multiplexed   bool `protobuf:"varint,6,opt,name=multiplexed,proto3" json:"multiplexed,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name                   string                 `protobuf:"bytes,1,opt,name=name,proto3"`
+	xxx_hidden_Labels                 map[string]string      `protobuf:"bytes,2,rep,name=labels,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_CreateTime             *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3"`
+	xxx_hidden_ApproximateLastUseTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=approximate_last_use_time,json=approximateLastUseTime,proto3"`
+	xxx_hidden_CreatorRole            string                 `protobuf:"bytes,5,opt,name=creator_role,json=creatorRole,proto3"`
+	xxx_hidden_Multiplexed            bool                   `protobuf:"varint,6,opt,name=multiplexed,proto3"`
+	unknownFields                     protoimpl.UnknownFields
+	sizeCache                         protoimpl.SizeCache
 }
 
 func (x *Session) Reset() {
@@ -613,60 +646,146 @@ func (x *Session) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Session.ProtoReflect.Descriptor instead.
-func (*Session) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *Session) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
 func (x *Session) GetLabels() map[string]string {
 	if x != nil {
-		return x.Labels
+		return x.xxx_hidden_Labels
 	}
 	return nil
 }
 
 func (x *Session) GetCreateTime() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CreateTime
+		return x.xxx_hidden_CreateTime
 	}
 	return nil
 }
 
 func (x *Session) GetApproximateLastUseTime() *timestamppb.Timestamp {
 	if x != nil {
-		return x.ApproximateLastUseTime
+		return x.xxx_hidden_ApproximateLastUseTime
 	}
 	return nil
 }
 
 func (x *Session) GetCreatorRole() string {
 	if x != nil {
-		return x.CreatorRole
+		return x.xxx_hidden_CreatorRole
 	}
 	return ""
 }
 
 func (x *Session) GetMultiplexed() bool {
 	if x != nil {
-		return x.Multiplexed
+		return x.xxx_hidden_Multiplexed
 	}
 	return false
 }
 
+func (x *Session) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *Session) SetLabels(v map[string]string) {
+	x.xxx_hidden_Labels = v
+}
+
+func (x *Session) SetCreateTime(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CreateTime = v
+}
+
+func (x *Session) SetApproximateLastUseTime(v *timestamppb.Timestamp) {
+	x.xxx_hidden_ApproximateLastUseTime = v
+}
+
+func (x *Session) SetCreatorRole(v string) {
+	x.xxx_hidden_CreatorRole = v
+}
+
+func (x *Session) SetMultiplexed(v bool) {
+	x.xxx_hidden_Multiplexed = v
+}
+
+func (x *Session) HasCreateTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CreateTime != nil
+}
+
+func (x *Session) HasApproximateLastUseTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ApproximateLastUseTime != nil
+}
+
+func (x *Session) ClearCreateTime() {
+	x.xxx_hidden_CreateTime = nil
+}
+
+func (x *Session) ClearApproximateLastUseTime() {
+	x.xxx_hidden_ApproximateLastUseTime = nil
+}
+
+type Session_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Output only. The name of the session. This is always system-assigned.
+	Name string
+	// The labels for the session.
+	//
+	//   - Label keys must be between 1 and 63 characters long and must conform to
+	//     the following regular expression: `[a-z]([-a-z0-9]*[a-z0-9])?`.
+	//   - Label values must be between 0 and 63 characters long and must conform
+	//     to the regular expression `([a-z]([-a-z0-9]*[a-z0-9])?)?`.
+	//   - No more than 64 labels can be associated with a given session.
+	//
+	// See https://goo.gl/xmQnxf for more information on and examples of labels.
+	Labels map[string]string
+	// Output only. The timestamp when the session is created.
+	CreateTime *timestamppb.Timestamp
+	// Output only. The approximate timestamp when the session is last used. It's
+	// typically earlier than the actual last use time.
+	ApproximateLastUseTime *timestamppb.Timestamp
+	// The database role which created this session.
+	CreatorRole string
+	// Optional. If `true`, specifies a multiplexed session. Use a multiplexed
+	// session for multiple, concurrent operations including any combination of
+	// read-only and read-write transactions. Use
+	// [`sessions.create`][google.spanner.v1.Spanner.CreateSession] to create
+	// multiplexed sessions. Don't use
+	// [BatchCreateSessions][google.spanner.v1.Spanner.BatchCreateSessions] to
+	// create a multiplexed session. You can't delete or list multiplexed
+	// sessions.
+	Multiplexed bool
+}
+
+func (b0 Session_builder) Build() *Session {
+	m0 := &Session{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Labels = b.Labels
+	x.xxx_hidden_CreateTime = b.CreateTime
+	x.xxx_hidden_ApproximateLastUseTime = b.ApproximateLastUseTime
+	x.xxx_hidden_CreatorRole = b.CreatorRole
+	x.xxx_hidden_Multiplexed = b.Multiplexed
+	return m0
+}
+
 // The request for [GetSession][google.spanner.v1.Spanner.GetSession].
 type GetSessionRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the session to retrieve.
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *GetSessionRequest) Reset() {
@@ -694,44 +813,41 @@ func (x *GetSessionRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use GetSessionRequest.ProtoReflect.Descriptor instead.
-func (*GetSessionRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{4}
-}
-
 func (x *GetSessionRequest) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
+func (x *GetSessionRequest) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+type GetSessionRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The name of the session to retrieve.
+	Name string
+}
+
+func (b0 GetSessionRequest_builder) Build() *GetSessionRequest {
+	m0 := &GetSessionRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Name = b.Name
+	return m0
+}
+
 // The request for [ListSessions][google.spanner.v1.Spanner.ListSessions].
 type ListSessionsRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The database in which to list sessions.
-	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
-	// Number of sessions to be returned in the response. If 0 or less, defaults
-	// to the server's maximum allowed page size.
-	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
-	// If non-empty, `page_token` should contain a
-	// [next_page_token][google.spanner.v1.ListSessionsResponse.next_page_token]
-	// from a previous
-	// [ListSessionsResponse][google.spanner.v1.ListSessionsResponse].
-	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// An expression for filtering the results of the request. Filter rules are
-	// case insensitive. The fields eligible for filtering are:
-	//
-	//   - `labels.key` where key is the name of a label
-	//
-	// Some examples of using filters are:
-	//
-	//   - `labels.env:*` --> The session has the label "env".
-	//   - `labels.env:dev` --> The session has the label "env" and the value of
-	//     the label contains the string "dev".
-	Filter        string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Database  string                 `protobuf:"bytes,1,opt,name=database,proto3"`
+	xxx_hidden_PageSize  int32                  `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3"`
+	xxx_hidden_PageToken string                 `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3"`
+	xxx_hidden_Filter    string                 `protobuf:"bytes,4,opt,name=filter,proto3"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *ListSessionsRequest) Reset() {
@@ -759,50 +875,94 @@ func (x *ListSessionsRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListSessionsRequest.ProtoReflect.Descriptor instead.
-func (*ListSessionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{5}
-}
-
 func (x *ListSessionsRequest) GetDatabase() string {
 	if x != nil {
-		return x.Database
+		return x.xxx_hidden_Database
 	}
 	return ""
 }
 
 func (x *ListSessionsRequest) GetPageSize() int32 {
 	if x != nil {
-		return x.PageSize
+		return x.xxx_hidden_PageSize
 	}
 	return 0
 }
 
 func (x *ListSessionsRequest) GetPageToken() string {
 	if x != nil {
-		return x.PageToken
+		return x.xxx_hidden_PageToken
 	}
 	return ""
 }
 
 func (x *ListSessionsRequest) GetFilter() string {
 	if x != nil {
-		return x.Filter
+		return x.xxx_hidden_Filter
 	}
 	return ""
 }
 
+func (x *ListSessionsRequest) SetDatabase(v string) {
+	x.xxx_hidden_Database = v
+}
+
+func (x *ListSessionsRequest) SetPageSize(v int32) {
+	x.xxx_hidden_PageSize = v
+}
+
+func (x *ListSessionsRequest) SetPageToken(v string) {
+	x.xxx_hidden_PageToken = v
+}
+
+func (x *ListSessionsRequest) SetFilter(v string) {
+	x.xxx_hidden_Filter = v
+}
+
+type ListSessionsRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The database in which to list sessions.
+	Database string
+	// Number of sessions to be returned in the response. If 0 or less, defaults
+	// to the server's maximum allowed page size.
+	PageSize int32
+	// If non-empty, `page_token` should contain a
+	// [next_page_token][google.spanner.v1.ListSessionsResponse.next_page_token]
+	// from a previous
+	// [ListSessionsResponse][google.spanner.v1.ListSessionsResponse].
+	PageToken string
+	// An expression for filtering the results of the request. Filter rules are
+	// case insensitive. The fields eligible for filtering are:
+	//
+	//   - `labels.key` where key is the name of a label
+	//
+	// Some examples of using filters are:
+	//
+	//   - `labels.env:*` --> The session has the label "env".
+	//   - `labels.env:dev` --> The session has the label "env" and the value of
+	//     the label contains the string "dev".
+	Filter string
+}
+
+func (b0 ListSessionsRequest_builder) Build() *ListSessionsRequest {
+	m0 := &ListSessionsRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Database = b.Database
+	x.xxx_hidden_PageSize = b.PageSize
+	x.xxx_hidden_PageToken = b.PageToken
+	x.xxx_hidden_Filter = b.Filter
+	return m0
+}
+
 // The response for [ListSessions][google.spanner.v1.Spanner.ListSessions].
 type ListSessionsResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The list of requested sessions.
-	Sessions []*Session `protobuf:"bytes,1,rep,name=sessions,proto3" json:"sessions,omitempty"`
-	// `next_page_token` can be sent in a subsequent
-	// [ListSessions][google.spanner.v1.Spanner.ListSessions] call to fetch more
-	// of the matching sessions.
-	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Sessions      *[]*Session            `protobuf:"bytes,1,rep,name=sessions,proto3"`
+	xxx_hidden_NextPageToken string                 `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ListSessionsResponse) Reset() {
@@ -830,32 +990,56 @@ func (x *ListSessionsResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ListSessionsResponse.ProtoReflect.Descriptor instead.
-func (*ListSessionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{6}
-}
-
 func (x *ListSessionsResponse) GetSessions() []*Session {
 	if x != nil {
-		return x.Sessions
+		if x.xxx_hidden_Sessions != nil {
+			return *x.xxx_hidden_Sessions
+		}
 	}
 	return nil
 }
 
 func (x *ListSessionsResponse) GetNextPageToken() string {
 	if x != nil {
-		return x.NextPageToken
+		return x.xxx_hidden_NextPageToken
 	}
 	return ""
 }
 
+func (x *ListSessionsResponse) SetSessions(v []*Session) {
+	x.xxx_hidden_Sessions = &v
+}
+
+func (x *ListSessionsResponse) SetNextPageToken(v string) {
+	x.xxx_hidden_NextPageToken = v
+}
+
+type ListSessionsResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The list of requested sessions.
+	Sessions []*Session
+	// `next_page_token` can be sent in a subsequent
+	// [ListSessions][google.spanner.v1.Spanner.ListSessions] call to fetch more
+	// of the matching sessions.
+	NextPageToken string
+}
+
+func (b0 ListSessionsResponse_builder) Build() *ListSessionsResponse {
+	m0 := &ListSessionsResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Sessions = &b.Sessions
+	x.xxx_hidden_NextPageToken = b.NextPageToken
+	return m0
+}
+
 // The request for [DeleteSession][google.spanner.v1.Spanner.DeleteSession].
 type DeleteSessionRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The name of the session to delete.
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *DeleteSessionRequest) Reset() {
@@ -883,51 +1067,41 @@ func (x *DeleteSessionRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DeleteSessionRequest.ProtoReflect.Descriptor instead.
-func (*DeleteSessionRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{7}
-}
-
 func (x *DeleteSessionRequest) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
+func (x *DeleteSessionRequest) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+type DeleteSessionRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The name of the session to delete.
+	Name string
+}
+
+func (b0 DeleteSessionRequest_builder) Build() *DeleteSessionRequest {
+	m0 := &DeleteSessionRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Name = b.Name
+	return m0
+}
+
 // Common request options for various APIs.
 type RequestOptions struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Priority for the request.
-	Priority RequestOptions_Priority `protobuf:"varint,1,opt,name=priority,proto3,enum=google.spanner.v1.RequestOptions_Priority" json:"priority,omitempty"`
-	// A per-request tag which can be applied to queries or reads, used for
-	// statistics collection.
-	// Both `request_tag` and `transaction_tag` can be specified for a read or
-	// query that belongs to a transaction.
-	// This field is ignored for requests where it's not applicable (for example,
-	// `CommitRequest`).
-	// Legal characters for `request_tag` values are all printable characters
-	// (ASCII 32 - 126) and the length of a request_tag is limited to 50
-	// characters. Values that exceed this limit are truncated.
-	// Any leading underscore (_) characters are removed from the string.
-	RequestTag string `protobuf:"bytes,2,opt,name=request_tag,json=requestTag,proto3" json:"request_tag,omitempty"`
-	// A tag used for statistics collection about this transaction.
-	// Both `request_tag` and `transaction_tag` can be specified for a read or
-	// query that belongs to a transaction.
-	// To enable tagging on a transaction, `transaction_tag` must be set to the
-	// same value for all requests belonging to the same transaction, including
-	// [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction].
-	// If this request doesn't belong to any transaction, `transaction_tag` is
-	// ignored.
-	// Legal characters for `transaction_tag` values are all printable characters
-	// (ASCII 32 - 126) and the length of a `transaction_tag` is limited to 50
-	// characters. Values that exceed this limit are truncated.
-	// Any leading underscore (_) characters are removed from the string.
-	TransactionTag string `protobuf:"bytes,3,opt,name=transaction_tag,json=transactionTag,proto3" json:"transaction_tag,omitempty"`
-	// Optional. Optional context that may be needed for some requests.
-	ClientContext *RequestOptions_ClientContext `protobuf:"bytes,4,opt,name=client_context,json=clientContext,proto3" json:"client_context,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                     protoimpl.MessageState        `protogen:"opaque.v1"`
+	xxx_hidden_Priority       RequestOptions_Priority       `protobuf:"varint,1,opt,name=priority,proto3,enum=google.spanner.v1.RequestOptions_Priority"`
+	xxx_hidden_RequestTag     string                        `protobuf:"bytes,2,opt,name=request_tag,json=requestTag,proto3"`
+	xxx_hidden_TransactionTag string                        `protobuf:"bytes,3,opt,name=transaction_tag,json=transactionTag,proto3"`
+	xxx_hidden_ClientContext  *RequestOptions_ClientContext `protobuf:"bytes,4,opt,name=client_context,json=clientContext,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *RequestOptions) Reset() {
@@ -955,37 +1129,103 @@ func (x *RequestOptions) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RequestOptions.ProtoReflect.Descriptor instead.
-func (*RequestOptions) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{8}
-}
-
 func (x *RequestOptions) GetPriority() RequestOptions_Priority {
 	if x != nil {
-		return x.Priority
+		return x.xxx_hidden_Priority
 	}
 	return RequestOptions_PRIORITY_UNSPECIFIED
 }
 
 func (x *RequestOptions) GetRequestTag() string {
 	if x != nil {
-		return x.RequestTag
+		return x.xxx_hidden_RequestTag
 	}
 	return ""
 }
 
 func (x *RequestOptions) GetTransactionTag() string {
 	if x != nil {
-		return x.TransactionTag
+		return x.xxx_hidden_TransactionTag
 	}
 	return ""
 }
 
 func (x *RequestOptions) GetClientContext() *RequestOptions_ClientContext {
 	if x != nil {
-		return x.ClientContext
+		return x.xxx_hidden_ClientContext
 	}
 	return nil
+}
+
+func (x *RequestOptions) SetPriority(v RequestOptions_Priority) {
+	x.xxx_hidden_Priority = v
+}
+
+func (x *RequestOptions) SetRequestTag(v string) {
+	x.xxx_hidden_RequestTag = v
+}
+
+func (x *RequestOptions) SetTransactionTag(v string) {
+	x.xxx_hidden_TransactionTag = v
+}
+
+func (x *RequestOptions) SetClientContext(v *RequestOptions_ClientContext) {
+	x.xxx_hidden_ClientContext = v
+}
+
+func (x *RequestOptions) HasClientContext() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ClientContext != nil
+}
+
+func (x *RequestOptions) ClearClientContext() {
+	x.xxx_hidden_ClientContext = nil
+}
+
+type RequestOptions_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Priority for the request.
+	Priority RequestOptions_Priority
+	// A per-request tag which can be applied to queries or reads, used for
+	// statistics collection.
+	// Both `request_tag` and `transaction_tag` can be specified for a read or
+	// query that belongs to a transaction.
+	// This field is ignored for requests where it's not applicable (for example,
+	// `CommitRequest`).
+	// Legal characters for `request_tag` values are all printable characters
+	// (ASCII 32 - 126) and the length of a request_tag is limited to 50
+	// characters. Values that exceed this limit are truncated.
+	// Any leading underscore (_) characters are removed from the string.
+	RequestTag string
+	// A tag used for statistics collection about this transaction.
+	// Both `request_tag` and `transaction_tag` can be specified for a read or
+	// query that belongs to a transaction.
+	// To enable tagging on a transaction, `transaction_tag` must be set to the
+	// same value for all requests belonging to the same transaction, including
+	// [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction].
+	// If this request doesn't belong to any transaction, `transaction_tag` is
+	// ignored.
+	// Legal characters for `transaction_tag` values are all printable characters
+	// (ASCII 32 - 126) and the length of a `transaction_tag` is limited to 50
+	// characters. Values that exceed this limit are truncated.
+	// Any leading underscore (_) characters are removed from the string.
+	TransactionTag string
+	// Optional. Optional context that may be needed for some requests.
+	ClientContext *RequestOptions_ClientContext
+}
+
+func (b0 RequestOptions_builder) Build() *RequestOptions {
+	m0 := &RequestOptions{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Priority = b.Priority
+	x.xxx_hidden_RequestTag = b.RequestTag
+	x.xxx_hidden_TransactionTag = b.TransactionTag
+	x.xxx_hidden_ClientContext = b.ClientContext
+	return m0
 }
 
 // The `DirectedReadOptions` can be used to indicate which replicas or regions
@@ -994,17 +1234,10 @@ func (x *RequestOptions) GetClientContext() *RequestOptions_ClientContext {
 // `DirectedReadOptions` can only be specified for a read-only transaction,
 // otherwise the API returns an `INVALID_ARGUMENT` error.
 type DirectedReadOptions struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. At most one of either `include_replicas` or `exclude_replicas`
-	// should be present in the message.
-	//
-	// Types that are valid to be assigned to Replicas:
-	//
-	//	*DirectedReadOptions_IncludeReplicas_
-	//	*DirectedReadOptions_ExcludeReplicas_
-	Replicas      isDirectedReadOptions_Replicas `protobuf_oneof:"replicas"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState         `protogen:"opaque.v1"`
+	xxx_hidden_Replicas isDirectedReadOptions_Replicas `protobuf_oneof:"replicas"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *DirectedReadOptions) Reset() {
@@ -1032,21 +1265,9 @@ func (x *DirectedReadOptions) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DirectedReadOptions.ProtoReflect.Descriptor instead.
-func (*DirectedReadOptions) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{9}
-}
-
-func (x *DirectedReadOptions) GetReplicas() isDirectedReadOptions_Replicas {
-	if x != nil {
-		return x.Replicas
-	}
-	return nil
-}
-
 func (x *DirectedReadOptions) GetIncludeReplicas() *DirectedReadOptions_IncludeReplicas {
 	if x != nil {
-		if x, ok := x.Replicas.(*DirectedReadOptions_IncludeReplicas_); ok {
+		if x, ok := x.xxx_hidden_Replicas.(*directedReadOptions_IncludeReplicas_); ok {
 			return x.IncludeReplicas
 		}
 	}
@@ -1055,18 +1276,134 @@ func (x *DirectedReadOptions) GetIncludeReplicas() *DirectedReadOptions_IncludeR
 
 func (x *DirectedReadOptions) GetExcludeReplicas() *DirectedReadOptions_ExcludeReplicas {
 	if x != nil {
-		if x, ok := x.Replicas.(*DirectedReadOptions_ExcludeReplicas_); ok {
+		if x, ok := x.xxx_hidden_Replicas.(*directedReadOptions_ExcludeReplicas_); ok {
 			return x.ExcludeReplicas
 		}
 	}
 	return nil
 }
 
+func (x *DirectedReadOptions) SetIncludeReplicas(v *DirectedReadOptions_IncludeReplicas) {
+	if v == nil {
+		x.xxx_hidden_Replicas = nil
+		return
+	}
+	x.xxx_hidden_Replicas = &directedReadOptions_IncludeReplicas_{v}
+}
+
+func (x *DirectedReadOptions) SetExcludeReplicas(v *DirectedReadOptions_ExcludeReplicas) {
+	if v == nil {
+		x.xxx_hidden_Replicas = nil
+		return
+	}
+	x.xxx_hidden_Replicas = &directedReadOptions_ExcludeReplicas_{v}
+}
+
+func (x *DirectedReadOptions) HasReplicas() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Replicas != nil
+}
+
+func (x *DirectedReadOptions) HasIncludeReplicas() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Replicas.(*directedReadOptions_IncludeReplicas_)
+	return ok
+}
+
+func (x *DirectedReadOptions) HasExcludeReplicas() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Replicas.(*directedReadOptions_ExcludeReplicas_)
+	return ok
+}
+
+func (x *DirectedReadOptions) ClearReplicas() {
+	x.xxx_hidden_Replicas = nil
+}
+
+func (x *DirectedReadOptions) ClearIncludeReplicas() {
+	if _, ok := x.xxx_hidden_Replicas.(*directedReadOptions_IncludeReplicas_); ok {
+		x.xxx_hidden_Replicas = nil
+	}
+}
+
+func (x *DirectedReadOptions) ClearExcludeReplicas() {
+	if _, ok := x.xxx_hidden_Replicas.(*directedReadOptions_ExcludeReplicas_); ok {
+		x.xxx_hidden_Replicas = nil
+	}
+}
+
+const DirectedReadOptions_Replicas_not_set_case case_DirectedReadOptions_Replicas = 0
+const DirectedReadOptions_IncludeReplicas_case case_DirectedReadOptions_Replicas = 1
+const DirectedReadOptions_ExcludeReplicas_case case_DirectedReadOptions_Replicas = 2
+
+func (x *DirectedReadOptions) WhichReplicas() case_DirectedReadOptions_Replicas {
+	if x == nil {
+		return DirectedReadOptions_Replicas_not_set_case
+	}
+	switch x.xxx_hidden_Replicas.(type) {
+	case *directedReadOptions_IncludeReplicas_:
+		return DirectedReadOptions_IncludeReplicas_case
+	case *directedReadOptions_ExcludeReplicas_:
+		return DirectedReadOptions_ExcludeReplicas_case
+	default:
+		return DirectedReadOptions_Replicas_not_set_case
+	}
+}
+
+type DirectedReadOptions_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. At most one of either `include_replicas` or `exclude_replicas`
+	// should be present in the message.
+
+	// Fields of oneof xxx_hidden_Replicas:
+	// `Include_replicas` indicates the order of replicas (as they appear in
+	// this list) to process the request. If `auto_failover_disabled` is set to
+	// `true` and all replicas are exhausted without finding a healthy replica,
+	// Spanner waits for a replica in the list to become available, requests
+	// might fail due to `DEADLINE_EXCEEDED` errors.
+	IncludeReplicas *DirectedReadOptions_IncludeReplicas
+	// `Exclude_replicas` indicates that specified replicas should be excluded
+	// from serving requests. Spanner doesn't route requests to the replicas
+	// in this list.
+	ExcludeReplicas *DirectedReadOptions_ExcludeReplicas
+	// -- end of xxx_hidden_Replicas
+}
+
+func (b0 DirectedReadOptions_builder) Build() *DirectedReadOptions {
+	m0 := &DirectedReadOptions{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.IncludeReplicas != nil {
+		x.xxx_hidden_Replicas = &directedReadOptions_IncludeReplicas_{b.IncludeReplicas}
+	}
+	if b.ExcludeReplicas != nil {
+		x.xxx_hidden_Replicas = &directedReadOptions_ExcludeReplicas_{b.ExcludeReplicas}
+	}
+	return m0
+}
+
+type case_DirectedReadOptions_Replicas protoreflect.FieldNumber
+
+func (x case_DirectedReadOptions_Replicas) String() string {
+	md := file_google_spanner_v1_spanner_proto_msgTypes[9].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isDirectedReadOptions_Replicas interface {
 	isDirectedReadOptions_Replicas()
 }
 
-type DirectedReadOptions_IncludeReplicas_ struct {
+type directedReadOptions_IncludeReplicas_ struct {
 	// `Include_replicas` indicates the order of replicas (as they appear in
 	// this list) to process the request. If `auto_failover_disabled` is set to
 	// `true` and all replicas are exhausted without finding a healthy replica,
@@ -1075,121 +1412,38 @@ type DirectedReadOptions_IncludeReplicas_ struct {
 	IncludeReplicas *DirectedReadOptions_IncludeReplicas `protobuf:"bytes,1,opt,name=include_replicas,json=includeReplicas,proto3,oneof"`
 }
 
-type DirectedReadOptions_ExcludeReplicas_ struct {
+type directedReadOptions_ExcludeReplicas_ struct {
 	// `Exclude_replicas` indicates that specified replicas should be excluded
 	// from serving requests. Spanner doesn't route requests to the replicas
 	// in this list.
 	ExcludeReplicas *DirectedReadOptions_ExcludeReplicas `protobuf:"bytes,2,opt,name=exclude_replicas,json=excludeReplicas,proto3,oneof"`
 }
 
-func (*DirectedReadOptions_IncludeReplicas_) isDirectedReadOptions_Replicas() {}
+func (*directedReadOptions_IncludeReplicas_) isDirectedReadOptions_Replicas() {}
 
-func (*DirectedReadOptions_ExcludeReplicas_) isDirectedReadOptions_Replicas() {}
+func (*directedReadOptions_ExcludeReplicas_) isDirectedReadOptions_Replicas() {}
 
 // The request for [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql] and
 // [ExecuteStreamingSql][google.spanner.v1.Spanner.ExecuteStreamingSql].
 type ExecuteSqlRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session in which the SQL query should be performed.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// The transaction to use.
-	//
-	// For queries, if none is provided, the default is a temporary read-only
-	// transaction with strong concurrency.
-	//
-	// Standard DML statements require a read-write transaction. To protect
-	// against replays, single-use transactions are not supported. The caller
-	// must either supply an existing transaction ID or begin a new transaction.
-	//
-	// Partitioned DML requires an existing Partitioned DML transaction ID.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	// Required. The SQL string.
-	Sql string `protobuf:"bytes,3,opt,name=sql,proto3" json:"sql,omitempty"`
-	// Parameter names and values that bind to placeholders in the SQL string.
-	//
-	// A parameter placeholder consists of the `@` character followed by the
-	// parameter name (for example, `@firstName`). Parameter names must conform
-	// to the naming requirements of identifiers as specified at
-	// https://cloud.google.com/spanner/docs/lexical#identifiers.
-	//
-	// Parameters can appear anywhere that a literal value is expected. The same
-	// parameter name can be used more than once, for example:
-	//
-	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
-	//
-	// It's an error to execute a SQL statement with unbound parameters.
-	Params *structpb.Struct `protobuf:"bytes,4,opt,name=params,proto3" json:"params,omitempty"`
-	// It isn't always possible for Cloud Spanner to infer the right SQL type
-	// from a JSON value. For example, values of type `BYTES` and values
-	// of type `STRING` both appear in
-	// [params][google.spanner.v1.ExecuteSqlRequest.params] as JSON strings.
-	//
-	// In these cases, you can use `param_types` to specify the exact
-	// SQL type for some or all of the SQL statement parameters. See the
-	// definition of [Type][google.spanner.v1.Type] for more information
-	// about SQL types.
-	ParamTypes map[string]*Type `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" json:"param_types,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// If this request is resuming a previously interrupted SQL statement
-	// execution, `resume_token` should be copied from the last
-	// [PartialResultSet][google.spanner.v1.PartialResultSet] yielded before the
-	// interruption. Doing this enables the new SQL statement execution to resume
-	// where the last one left off. The rest of the request parameters must
-	// exactly match the request that yielded this token.
-	ResumeToken []byte `protobuf:"bytes,6,opt,name=resume_token,json=resumeToken,proto3" json:"resume_token,omitempty"`
-	// Used to control the amount of debugging information returned in
-	// [ResultSetStats][google.spanner.v1.ResultSetStats]. If
-	// [partition_token][google.spanner.v1.ExecuteSqlRequest.partition_token] is
-	// set, [query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode] can only
-	// be set to
-	// [QueryMode.NORMAL][google.spanner.v1.ExecuteSqlRequest.QueryMode.NORMAL].
-	QueryMode ExecuteSqlRequest_QueryMode `protobuf:"varint,7,opt,name=query_mode,json=queryMode,proto3,enum=google.spanner.v1.ExecuteSqlRequest_QueryMode" json:"query_mode,omitempty"`
-	// If present, results are restricted to the specified partition
-	// previously created using `PartitionQuery`. There must be an exact
-	// match for the values of fields common to this message and the
-	// `PartitionQueryRequest` message used to create this `partition_token`.
-	PartitionToken []byte `protobuf:"bytes,8,opt,name=partition_token,json=partitionToken,proto3" json:"partition_token,omitempty"`
-	// A per-transaction sequence number used to identify this request. This field
-	// makes each request idempotent such that if the request is received multiple
-	// times, at most one succeeds.
-	//
-	// The sequence number must be monotonically increasing within the
-	// transaction. If a request arrives for the first time with an out-of-order
-	// sequence number, the transaction can be aborted. Replays of previously
-	// handled requests yield the same response as the first execution.
-	//
-	// Required for DML statements. Ignored for queries.
-	Seqno int64 `protobuf:"varint,9,opt,name=seqno,proto3" json:"seqno,omitempty"`
-	// Query optimizer configuration to use for the given query.
-	QueryOptions *ExecuteSqlRequest_QueryOptions `protobuf:"bytes,10,opt,name=query_options,json=queryOptions,proto3" json:"query_options,omitempty"`
-	// Common options for this request.
-	RequestOptions *RequestOptions `protobuf:"bytes,11,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
-	// Directed read options for this request.
-	DirectedReadOptions *DirectedReadOptions `protobuf:"bytes,15,opt,name=directed_read_options,json=directedReadOptions,proto3" json:"directed_read_options,omitempty"`
-	// If this is for a partitioned query and this field is set to `true`, the
-	// request is executed with Spanner Data Boost independent compute resources.
-	//
-	// If the field is set to `true` but the request doesn't set
-	// `partition_token`, the API returns an `INVALID_ARGUMENT` error.
-	DataBoostEnabled bool `protobuf:"varint,16,opt,name=data_boost_enabled,json=dataBoostEnabled,proto3" json:"data_boost_enabled,omitempty"`
-	// Optional. If set to `true`, this statement marks the end of the
-	// transaction. After this statement executes, you must commit or abort the
-	// transaction. Attempts to execute any other requests against this
-	// transaction (including reads and queries) are rejected.
-	//
-	// For DML statements, setting this option might cause some error reporting to
-	// be deferred until commit time (for example, validation of unique
-	// constraints). Given this, successful execution of a DML statement shouldn't
-	// be assumed until a subsequent `Commit` call completes successfully.
-	LastStatement bool `protobuf:"varint,17,opt,name=last_statement,json=lastStatement,proto3" json:"last_statement,omitempty"`
-	// Optional. Makes the Spanner requests location-aware if present.
-	//
-	// It gives the server hints that can be used to route the request
-	// to an appropriate server, potentially significantly decreasing latency and
-	// improving throughput. To achieve improved performance, most fields must be
-	// filled in with accurate values.
-	RoutingHint   *RoutingHint `protobuf:"bytes,18,opt,name=routing_hint,json=routingHint,proto3" json:"routing_hint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                          protoimpl.MessageState          `protogen:"opaque.v1"`
+	xxx_hidden_Session             string                          `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_Transaction         *TransactionSelector            `protobuf:"bytes,2,opt,name=transaction,proto3"`
+	xxx_hidden_Sql                 string                          `protobuf:"bytes,3,opt,name=sql,proto3"`
+	xxx_hidden_Params              *structpb.Struct                `protobuf:"bytes,4,opt,name=params,proto3"`
+	xxx_hidden_ParamTypes          map[string]*Type                `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_ResumeToken         []byte                          `protobuf:"bytes,6,opt,name=resume_token,json=resumeToken,proto3"`
+	xxx_hidden_QueryMode           ExecuteSqlRequest_QueryMode     `protobuf:"varint,7,opt,name=query_mode,json=queryMode,proto3,enum=google.spanner.v1.ExecuteSqlRequest_QueryMode"`
+	xxx_hidden_PartitionToken      []byte                          `protobuf:"bytes,8,opt,name=partition_token,json=partitionToken,proto3"`
+	xxx_hidden_Seqno               int64                           `protobuf:"varint,9,opt,name=seqno,proto3"`
+	xxx_hidden_QueryOptions        *ExecuteSqlRequest_QueryOptions `protobuf:"bytes,10,opt,name=query_options,json=queryOptions,proto3"`
+	xxx_hidden_RequestOptions      *RequestOptions                 `protobuf:"bytes,11,opt,name=request_options,json=requestOptions,proto3"`
+	xxx_hidden_DirectedReadOptions *DirectedReadOptions            `protobuf:"bytes,15,opt,name=directed_read_options,json=directedReadOptions,proto3"`
+	xxx_hidden_DataBoostEnabled    bool                            `protobuf:"varint,16,opt,name=data_boost_enabled,json=dataBoostEnabled,proto3"`
+	xxx_hidden_LastStatement       bool                            `protobuf:"varint,17,opt,name=last_statement,json=lastStatement,proto3"`
+	xxx_hidden_RoutingHint         *RoutingHint                    `protobuf:"bytes,18,opt,name=routing_hint,json=routingHint,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *ExecuteSqlRequest) Reset() {
@@ -1217,157 +1471,379 @@ func (x *ExecuteSqlRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExecuteSqlRequest.ProtoReflect.Descriptor instead.
-func (*ExecuteSqlRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{10}
-}
-
 func (x *ExecuteSqlRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *ExecuteSqlRequest) GetTransaction() *TransactionSelector {
 	if x != nil {
-		return x.Transaction
+		return x.xxx_hidden_Transaction
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetSql() string {
 	if x != nil {
-		return x.Sql
+		return x.xxx_hidden_Sql
 	}
 	return ""
 }
 
 func (x *ExecuteSqlRequest) GetParams() *structpb.Struct {
 	if x != nil {
-		return x.Params
+		return x.xxx_hidden_Params
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetParamTypes() map[string]*Type {
 	if x != nil {
-		return x.ParamTypes
+		return x.xxx_hidden_ParamTypes
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetResumeToken() []byte {
 	if x != nil {
-		return x.ResumeToken
+		return x.xxx_hidden_ResumeToken
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetQueryMode() ExecuteSqlRequest_QueryMode {
 	if x != nil {
-		return x.QueryMode
+		return x.xxx_hidden_QueryMode
 	}
 	return ExecuteSqlRequest_NORMAL
 }
 
 func (x *ExecuteSqlRequest) GetPartitionToken() []byte {
 	if x != nil {
-		return x.PartitionToken
+		return x.xxx_hidden_PartitionToken
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetSeqno() int64 {
 	if x != nil {
-		return x.Seqno
+		return x.xxx_hidden_Seqno
 	}
 	return 0
 }
 
 func (x *ExecuteSqlRequest) GetQueryOptions() *ExecuteSqlRequest_QueryOptions {
 	if x != nil {
-		return x.QueryOptions
+		return x.xxx_hidden_QueryOptions
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetRequestOptions() *RequestOptions {
 	if x != nil {
-		return x.RequestOptions
+		return x.xxx_hidden_RequestOptions
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetDirectedReadOptions() *DirectedReadOptions {
 	if x != nil {
-		return x.DirectedReadOptions
+		return x.xxx_hidden_DirectedReadOptions
 	}
 	return nil
 }
 
 func (x *ExecuteSqlRequest) GetDataBoostEnabled() bool {
 	if x != nil {
-		return x.DataBoostEnabled
+		return x.xxx_hidden_DataBoostEnabled
 	}
 	return false
 }
 
 func (x *ExecuteSqlRequest) GetLastStatement() bool {
 	if x != nil {
-		return x.LastStatement
+		return x.xxx_hidden_LastStatement
 	}
 	return false
 }
 
 func (x *ExecuteSqlRequest) GetRoutingHint() *RoutingHint {
 	if x != nil {
-		return x.RoutingHint
+		return x.xxx_hidden_RoutingHint
 	}
 	return nil
 }
 
-// The request for [ExecuteBatchDml][google.spanner.v1.Spanner.ExecuteBatchDml].
-type ExecuteBatchDmlRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session in which the DML statements should be performed.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// Required. The transaction to use. Must be a read-write transaction.
+func (x *ExecuteSqlRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *ExecuteSqlRequest) SetTransaction(v *TransactionSelector) {
+	x.xxx_hidden_Transaction = v
+}
+
+func (x *ExecuteSqlRequest) SetSql(v string) {
+	x.xxx_hidden_Sql = v
+}
+
+func (x *ExecuteSqlRequest) SetParams(v *structpb.Struct) {
+	x.xxx_hidden_Params = v
+}
+
+func (x *ExecuteSqlRequest) SetParamTypes(v map[string]*Type) {
+	x.xxx_hidden_ParamTypes = v
+}
+
+func (x *ExecuteSqlRequest) SetResumeToken(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_ResumeToken = v
+}
+
+func (x *ExecuteSqlRequest) SetQueryMode(v ExecuteSqlRequest_QueryMode) {
+	x.xxx_hidden_QueryMode = v
+}
+
+func (x *ExecuteSqlRequest) SetPartitionToken(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_PartitionToken = v
+}
+
+func (x *ExecuteSqlRequest) SetSeqno(v int64) {
+	x.xxx_hidden_Seqno = v
+}
+
+func (x *ExecuteSqlRequest) SetQueryOptions(v *ExecuteSqlRequest_QueryOptions) {
+	x.xxx_hidden_QueryOptions = v
+}
+
+func (x *ExecuteSqlRequest) SetRequestOptions(v *RequestOptions) {
+	x.xxx_hidden_RequestOptions = v
+}
+
+func (x *ExecuteSqlRequest) SetDirectedReadOptions(v *DirectedReadOptions) {
+	x.xxx_hidden_DirectedReadOptions = v
+}
+
+func (x *ExecuteSqlRequest) SetDataBoostEnabled(v bool) {
+	x.xxx_hidden_DataBoostEnabled = v
+}
+
+func (x *ExecuteSqlRequest) SetLastStatement(v bool) {
+	x.xxx_hidden_LastStatement = v
+}
+
+func (x *ExecuteSqlRequest) SetRoutingHint(v *RoutingHint) {
+	x.xxx_hidden_RoutingHint = v
+}
+
+func (x *ExecuteSqlRequest) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *ExecuteSqlRequest) HasParams() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Params != nil
+}
+
+func (x *ExecuteSqlRequest) HasQueryOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_QueryOptions != nil
+}
+
+func (x *ExecuteSqlRequest) HasRequestOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RequestOptions != nil
+}
+
+func (x *ExecuteSqlRequest) HasDirectedReadOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DirectedReadOptions != nil
+}
+
+func (x *ExecuteSqlRequest) HasRoutingHint() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RoutingHint != nil
+}
+
+func (x *ExecuteSqlRequest) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+func (x *ExecuteSqlRequest) ClearParams() {
+	x.xxx_hidden_Params = nil
+}
+
+func (x *ExecuteSqlRequest) ClearQueryOptions() {
+	x.xxx_hidden_QueryOptions = nil
+}
+
+func (x *ExecuteSqlRequest) ClearRequestOptions() {
+	x.xxx_hidden_RequestOptions = nil
+}
+
+func (x *ExecuteSqlRequest) ClearDirectedReadOptions() {
+	x.xxx_hidden_DirectedReadOptions = nil
+}
+
+func (x *ExecuteSqlRequest) ClearRoutingHint() {
+	x.xxx_hidden_RoutingHint = nil
+}
+
+type ExecuteSqlRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session in which the SQL query should be performed.
+	Session string
+	// The transaction to use.
 	//
-	// To protect against replays, single-use transactions are not supported. The
-	// caller must either supply an existing transaction ID or begin a new
-	// transaction.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	// Required. The list of statements to execute in this batch. Statements are
-	// executed serially, such that the effects of statement `i` are visible to
-	// statement `i+1`. Each statement must be a DML statement. Execution stops at
-	// the first failed statement; the remaining statements are not executed.
+	// For queries, if none is provided, the default is a temporary read-only
+	// transaction with strong concurrency.
 	//
-	// Callers must provide at least one statement.
-	Statements []*ExecuteBatchDmlRequest_Statement `protobuf:"bytes,3,rep,name=statements,proto3" json:"statements,omitempty"`
-	// Required. A per-transaction sequence number used to identify this request.
-	// This field makes each request idempotent such that if the request is
-	// received multiple times, at most one succeeds.
+	// Standard DML statements require a read-write transaction. To protect
+	// against replays, single-use transactions are not supported. The caller
+	// must either supply an existing transaction ID or begin a new transaction.
+	//
+	// Partitioned DML requires an existing Partitioned DML transaction ID.
+	Transaction *TransactionSelector
+	// Required. The SQL string.
+	Sql string
+	// Parameter names and values that bind to placeholders in the SQL string.
+	//
+	// A parameter placeholder consists of the `@` character followed by the
+	// parameter name (for example, `@firstName`). Parameter names must conform
+	// to the naming requirements of identifiers as specified at
+	// https://cloud.google.com/spanner/docs/lexical#identifiers.
+	//
+	// Parameters can appear anywhere that a literal value is expected. The same
+	// parameter name can be used more than once, for example:
+	//
+	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
+	//
+	// It's an error to execute a SQL statement with unbound parameters.
+	Params *structpb.Struct
+	// It isn't always possible for Cloud Spanner to infer the right SQL type
+	// from a JSON value. For example, values of type `BYTES` and values
+	// of type `STRING` both appear in
+	// [params][google.spanner.v1.ExecuteSqlRequest.params] as JSON strings.
+	//
+	// In these cases, you can use `param_types` to specify the exact
+	// SQL type for some or all of the SQL statement parameters. See the
+	// definition of [Type][google.spanner.v1.Type] for more information
+	// about SQL types.
+	ParamTypes map[string]*Type
+	// If this request is resuming a previously interrupted SQL statement
+	// execution, `resume_token` should be copied from the last
+	// [PartialResultSet][google.spanner.v1.PartialResultSet] yielded before the
+	// interruption. Doing this enables the new SQL statement execution to resume
+	// where the last one left off. The rest of the request parameters must
+	// exactly match the request that yielded this token.
+	ResumeToken []byte
+	// Used to control the amount of debugging information returned in
+	// [ResultSetStats][google.spanner.v1.ResultSetStats]. If
+	// [partition_token][google.spanner.v1.ExecuteSqlRequest.partition_token] is
+	// set, [query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode] can only
+	// be set to
+	// [QueryMode.NORMAL][google.spanner.v1.ExecuteSqlRequest.QueryMode.NORMAL].
+	QueryMode ExecuteSqlRequest_QueryMode
+	// If present, results are restricted to the specified partition
+	// previously created using `PartitionQuery`. There must be an exact
+	// match for the values of fields common to this message and the
+	// `PartitionQueryRequest` message used to create this `partition_token`.
+	PartitionToken []byte
+	// A per-transaction sequence number used to identify this request. This field
+	// makes each request idempotent such that if the request is received multiple
+	// times, at most one succeeds.
 	//
 	// The sequence number must be monotonically increasing within the
 	// transaction. If a request arrives for the first time with an out-of-order
-	// sequence number, the transaction might be aborted. Replays of previously
+	// sequence number, the transaction can be aborted. Replays of previously
 	// handled requests yield the same response as the first execution.
-	Seqno int64 `protobuf:"varint,4,opt,name=seqno,proto3" json:"seqno,omitempty"`
-	// Common options for this request.
-	RequestOptions *RequestOptions `protobuf:"bytes,5,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
-	// Optional. If set to `true`, this request marks the end of the transaction.
-	// After these statements execute, you must commit or abort the transaction.
-	// Attempts to execute any other requests against this transaction
-	// (including reads and queries) are rejected.
 	//
-	// Setting this option might cause some error reporting to be deferred until
-	// commit time (for example, validation of unique constraints). Given this,
-	// successful execution of statements shouldn't be assumed until a subsequent
-	// `Commit` call completes successfully.
-	LastStatements bool `protobuf:"varint,6,opt,name=last_statements,json=lastStatements,proto3" json:"last_statements,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	// Required for DML statements. Ignored for queries.
+	Seqno int64
+	// Query optimizer configuration to use for the given query.
+	QueryOptions *ExecuteSqlRequest_QueryOptions
+	// Common options for this request.
+	RequestOptions *RequestOptions
+	// Directed read options for this request.
+	DirectedReadOptions *DirectedReadOptions
+	// If this is for a partitioned query and this field is set to `true`, the
+	// request is executed with Spanner Data Boost independent compute resources.
+	//
+	// If the field is set to `true` but the request doesn't set
+	// `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+	DataBoostEnabled bool
+	// Optional. If set to `true`, this statement marks the end of the
+	// transaction. After this statement executes, you must commit or abort the
+	// transaction. Attempts to execute any other requests against this
+	// transaction (including reads and queries) are rejected.
+	//
+	// For DML statements, setting this option might cause some error reporting to
+	// be deferred until commit time (for example, validation of unique
+	// constraints). Given this, successful execution of a DML statement shouldn't
+	// be assumed until a subsequent `Commit` call completes successfully.
+	LastStatement bool
+	// Optional. Makes the Spanner requests location-aware if present.
+	//
+	// It gives the server hints that can be used to route the request
+	// to an appropriate server, potentially significantly decreasing latency and
+	// improving throughput. To achieve improved performance, most fields must be
+	// filled in with accurate values.
+	RoutingHint *RoutingHint
+}
+
+func (b0 ExecuteSqlRequest_builder) Build() *ExecuteSqlRequest {
+	m0 := &ExecuteSqlRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_Transaction = b.Transaction
+	x.xxx_hidden_Sql = b.Sql
+	x.xxx_hidden_Params = b.Params
+	x.xxx_hidden_ParamTypes = b.ParamTypes
+	x.xxx_hidden_ResumeToken = b.ResumeToken
+	x.xxx_hidden_QueryMode = b.QueryMode
+	x.xxx_hidden_PartitionToken = b.PartitionToken
+	x.xxx_hidden_Seqno = b.Seqno
+	x.xxx_hidden_QueryOptions = b.QueryOptions
+	x.xxx_hidden_RequestOptions = b.RequestOptions
+	x.xxx_hidden_DirectedReadOptions = b.DirectedReadOptions
+	x.xxx_hidden_DataBoostEnabled = b.DataBoostEnabled
+	x.xxx_hidden_LastStatement = b.LastStatement
+	x.xxx_hidden_RoutingHint = b.RoutingHint
+	return m0
+}
+
+// The request for [ExecuteBatchDml][google.spanner.v1.Spanner.ExecuteBatchDml].
+type ExecuteBatchDmlRequest struct {
+	state                     protoimpl.MessageState               `protogen:"opaque.v1"`
+	xxx_hidden_Session        string                               `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_Transaction    *TransactionSelector                 `protobuf:"bytes,2,opt,name=transaction,proto3"`
+	xxx_hidden_Statements     *[]*ExecuteBatchDmlRequest_Statement `protobuf:"bytes,3,rep,name=statements,proto3"`
+	xxx_hidden_Seqno          int64                                `protobuf:"varint,4,opt,name=seqno,proto3"`
+	xxx_hidden_RequestOptions *RequestOptions                      `protobuf:"bytes,5,opt,name=request_options,json=requestOptions,proto3"`
+	xxx_hidden_LastStatements bool                                 `protobuf:"varint,6,opt,name=last_statements,json=lastStatements,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *ExecuteBatchDmlRequest) Reset() {
@@ -1395,51 +1871,148 @@ func (x *ExecuteBatchDmlRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExecuteBatchDmlRequest.ProtoReflect.Descriptor instead.
-func (*ExecuteBatchDmlRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{11}
-}
-
 func (x *ExecuteBatchDmlRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *ExecuteBatchDmlRequest) GetTransaction() *TransactionSelector {
 	if x != nil {
-		return x.Transaction
+		return x.xxx_hidden_Transaction
 	}
 	return nil
 }
 
 func (x *ExecuteBatchDmlRequest) GetStatements() []*ExecuteBatchDmlRequest_Statement {
 	if x != nil {
-		return x.Statements
+		if x.xxx_hidden_Statements != nil {
+			return *x.xxx_hidden_Statements
+		}
 	}
 	return nil
 }
 
 func (x *ExecuteBatchDmlRequest) GetSeqno() int64 {
 	if x != nil {
-		return x.Seqno
+		return x.xxx_hidden_Seqno
 	}
 	return 0
 }
 
 func (x *ExecuteBatchDmlRequest) GetRequestOptions() *RequestOptions {
 	if x != nil {
-		return x.RequestOptions
+		return x.xxx_hidden_RequestOptions
 	}
 	return nil
 }
 
 func (x *ExecuteBatchDmlRequest) GetLastStatements() bool {
 	if x != nil {
-		return x.LastStatements
+		return x.xxx_hidden_LastStatements
 	}
 	return false
+}
+
+func (x *ExecuteBatchDmlRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *ExecuteBatchDmlRequest) SetTransaction(v *TransactionSelector) {
+	x.xxx_hidden_Transaction = v
+}
+
+func (x *ExecuteBatchDmlRequest) SetStatements(v []*ExecuteBatchDmlRequest_Statement) {
+	x.xxx_hidden_Statements = &v
+}
+
+func (x *ExecuteBatchDmlRequest) SetSeqno(v int64) {
+	x.xxx_hidden_Seqno = v
+}
+
+func (x *ExecuteBatchDmlRequest) SetRequestOptions(v *RequestOptions) {
+	x.xxx_hidden_RequestOptions = v
+}
+
+func (x *ExecuteBatchDmlRequest) SetLastStatements(v bool) {
+	x.xxx_hidden_LastStatements = v
+}
+
+func (x *ExecuteBatchDmlRequest) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *ExecuteBatchDmlRequest) HasRequestOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RequestOptions != nil
+}
+
+func (x *ExecuteBatchDmlRequest) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+func (x *ExecuteBatchDmlRequest) ClearRequestOptions() {
+	x.xxx_hidden_RequestOptions = nil
+}
+
+type ExecuteBatchDmlRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session in which the DML statements should be performed.
+	Session string
+	// Required. The transaction to use. Must be a read-write transaction.
+	//
+	// To protect against replays, single-use transactions are not supported. The
+	// caller must either supply an existing transaction ID or begin a new
+	// transaction.
+	Transaction *TransactionSelector
+	// Required. The list of statements to execute in this batch. Statements are
+	// executed serially, such that the effects of statement `i` are visible to
+	// statement `i+1`. Each statement must be a DML statement. Execution stops at
+	// the first failed statement; the remaining statements are not executed.
+	//
+	// Callers must provide at least one statement.
+	Statements []*ExecuteBatchDmlRequest_Statement
+	// Required. A per-transaction sequence number used to identify this request.
+	// This field makes each request idempotent such that if the request is
+	// received multiple times, at most one succeeds.
+	//
+	// The sequence number must be monotonically increasing within the
+	// transaction. If a request arrives for the first time with an out-of-order
+	// sequence number, the transaction might be aborted. Replays of previously
+	// handled requests yield the same response as the first execution.
+	Seqno int64
+	// Common options for this request.
+	RequestOptions *RequestOptions
+	// Optional. If set to `true`, this request marks the end of the transaction.
+	// After these statements execute, you must commit or abort the transaction.
+	// Attempts to execute any other requests against this transaction
+	// (including reads and queries) are rejected.
+	//
+	// Setting this option might cause some error reporting to be deferred until
+	// commit time (for example, validation of unique constraints). Given this,
+	// successful execution of statements shouldn't be assumed until a subsequent
+	// `Commit` call completes successfully.
+	LastStatements bool
+}
+
+func (b0 ExecuteBatchDmlRequest_builder) Build() *ExecuteBatchDmlRequest {
+	m0 := &ExecuteBatchDmlRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_Transaction = b.Transaction
+	x.xxx_hidden_Statements = &b.Statements
+	x.xxx_hidden_Seqno = b.Seqno
+	x.xxx_hidden_RequestOptions = b.RequestOptions
+	x.xxx_hidden_LastStatements = b.LastStatements
+	return m0
 }
 
 // The response for
@@ -1476,27 +2049,12 @@ func (x *ExecuteBatchDmlRequest) GetLastStatements() bool {
 //	indicates that the third statement failed, and the fourth and fifth
 //	statements were not executed.
 type ExecuteBatchDmlResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// One [ResultSet][google.spanner.v1.ResultSet] for each statement in the
-	// request that ran successfully, in the same order as the statements in the
-	// request. Each [ResultSet][google.spanner.v1.ResultSet] does not contain any
-	// rows. The [ResultSetStats][google.spanner.v1.ResultSetStats] in each
-	// [ResultSet][google.spanner.v1.ResultSet] contain the number of rows
-	// modified by the statement.
-	//
-	// Only the first [ResultSet][google.spanner.v1.ResultSet] in the response
-	// contains valid [ResultSetMetadata][google.spanner.v1.ResultSetMetadata].
-	ResultSets []*ResultSet `protobuf:"bytes,1,rep,name=result_sets,json=resultSets,proto3" json:"result_sets,omitempty"`
-	// If all DML statements are executed successfully, the status is `OK`.
-	// Otherwise, the error status of the first failed statement.
-	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	// Optional. A precommit token is included if the read-write transaction
-	// is on a multiplexed session. Pass the precommit token with the highest
-	// sequence number from this transaction attempt should be passed to the
-	// [Commit][google.spanner.v1.Spanner.Commit] request for this transaction.
-	PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,3,opt,name=precommit_token,json=precommitToken,proto3" json:"precommit_token,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState            `protogen:"opaque.v1"`
+	xxx_hidden_ResultSets     *[]*ResultSet                     `protobuf:"bytes,1,rep,name=result_sets,json=resultSets,proto3"`
+	xxx_hidden_Status         *status.Status                    `protobuf:"bytes,2,opt,name=status,proto3"`
+	xxx_hidden_PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,3,opt,name=precommit_token,json=precommitToken,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *ExecuteBatchDmlResponse) Reset() {
@@ -1524,53 +2082,103 @@ func (x *ExecuteBatchDmlResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExecuteBatchDmlResponse.ProtoReflect.Descriptor instead.
-func (*ExecuteBatchDmlResponse) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{12}
-}
-
 func (x *ExecuteBatchDmlResponse) GetResultSets() []*ResultSet {
 	if x != nil {
-		return x.ResultSets
+		if x.xxx_hidden_ResultSets != nil {
+			return *x.xxx_hidden_ResultSets
+		}
 	}
 	return nil
 }
 
 func (x *ExecuteBatchDmlResponse) GetStatus() *status.Status {
 	if x != nil {
-		return x.Status
+		return x.xxx_hidden_Status
 	}
 	return nil
 }
 
 func (x *ExecuteBatchDmlResponse) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
 	if x != nil {
-		return x.PrecommitToken
+		return x.xxx_hidden_PrecommitToken
 	}
 	return nil
 }
 
+func (x *ExecuteBatchDmlResponse) SetResultSets(v []*ResultSet) {
+	x.xxx_hidden_ResultSets = &v
+}
+
+func (x *ExecuteBatchDmlResponse) SetStatus(v *status.Status) {
+	x.xxx_hidden_Status = v
+}
+
+func (x *ExecuteBatchDmlResponse) SetPrecommitToken(v *MultiplexedSessionPrecommitToken) {
+	x.xxx_hidden_PrecommitToken = v
+}
+
+func (x *ExecuteBatchDmlResponse) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Status != nil
+}
+
+func (x *ExecuteBatchDmlResponse) HasPrecommitToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PrecommitToken != nil
+}
+
+func (x *ExecuteBatchDmlResponse) ClearStatus() {
+	x.xxx_hidden_Status = nil
+}
+
+func (x *ExecuteBatchDmlResponse) ClearPrecommitToken() {
+	x.xxx_hidden_PrecommitToken = nil
+}
+
+type ExecuteBatchDmlResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// One [ResultSet][google.spanner.v1.ResultSet] for each statement in the
+	// request that ran successfully, in the same order as the statements in the
+	// request. Each [ResultSet][google.spanner.v1.ResultSet] does not contain any
+	// rows. The [ResultSetStats][google.spanner.v1.ResultSetStats] in each
+	// [ResultSet][google.spanner.v1.ResultSet] contain the number of rows
+	// modified by the statement.
+	//
+	// Only the first [ResultSet][google.spanner.v1.ResultSet] in the response
+	// contains valid [ResultSetMetadata][google.spanner.v1.ResultSetMetadata].
+	ResultSets []*ResultSet
+	// If all DML statements are executed successfully, the status is `OK`.
+	// Otherwise, the error status of the first failed statement.
+	Status *status.Status
+	// Optional. A precommit token is included if the read-write transaction
+	// is on a multiplexed session. Pass the precommit token with the highest
+	// sequence number from this transaction attempt should be passed to the
+	// [Commit][google.spanner.v1.Spanner.Commit] request for this transaction.
+	PrecommitToken *MultiplexedSessionPrecommitToken
+}
+
+func (b0 ExecuteBatchDmlResponse_builder) Build() *ExecuteBatchDmlResponse {
+	m0 := &ExecuteBatchDmlResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_ResultSets = &b.ResultSets
+	x.xxx_hidden_Status = b.Status
+	x.xxx_hidden_PrecommitToken = b.PrecommitToken
+	return m0
+}
+
 // Options for a `PartitionQueryRequest` and `PartitionReadRequest`.
 type PartitionOptions struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// **Note:** This hint is currently ignored by `PartitionQuery` and
-	// `PartitionRead` requests.
-	//
-	// The desired data size for each partition generated. The default for this
-	// option is currently 1 GiB. This is only a hint. The actual size of each
-	// partition can be smaller or larger than this size request.
-	PartitionSizeBytes int64 `protobuf:"varint,1,opt,name=partition_size_bytes,json=partitionSizeBytes,proto3" json:"partition_size_bytes,omitempty"`
-	// **Note:** This hint is currently ignored by `PartitionQuery` and
-	// `PartitionRead` requests.
-	//
-	// The desired maximum number of partitions to return. For example, this
-	// might be set to the number of workers available. The default for this
-	// option is currently 10,000. The maximum value is currently 200,000. This
-	// is only a hint. The actual number of partitions returned can be smaller or
-	// larger than this maximum count request.
-	MaxPartitions int64 `protobuf:"varint,2,opt,name=max_partitions,json=maxPartitions,proto3" json:"max_partitions,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                         protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_PartitionSizeBytes int64                  `protobuf:"varint,1,opt,name=partition_size_bytes,json=partitionSizeBytes,proto3"`
+	xxx_hidden_MaxPartitions      int64                  `protobuf:"varint,2,opt,name=max_partitions,json=maxPartitions,proto3"`
+	unknownFields                 protoimpl.UnknownFields
+	sizeCache                     protoimpl.SizeCache
 }
 
 func (x *PartitionOptions) Reset() {
@@ -1598,75 +2206,69 @@ func (x *PartitionOptions) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PartitionOptions.ProtoReflect.Descriptor instead.
-func (*PartitionOptions) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{13}
-}
-
 func (x *PartitionOptions) GetPartitionSizeBytes() int64 {
 	if x != nil {
-		return x.PartitionSizeBytes
+		return x.xxx_hidden_PartitionSizeBytes
 	}
 	return 0
 }
 
 func (x *PartitionOptions) GetMaxPartitions() int64 {
 	if x != nil {
-		return x.MaxPartitions
+		return x.xxx_hidden_MaxPartitions
 	}
 	return 0
 }
 
+func (x *PartitionOptions) SetPartitionSizeBytes(v int64) {
+	x.xxx_hidden_PartitionSizeBytes = v
+}
+
+func (x *PartitionOptions) SetMaxPartitions(v int64) {
+	x.xxx_hidden_MaxPartitions = v
+}
+
+type PartitionOptions_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// **Note:** This hint is currently ignored by `PartitionQuery` and
+	// `PartitionRead` requests.
+	//
+	// The desired data size for each partition generated. The default for this
+	// option is currently 1 GiB. This is only a hint. The actual size of each
+	// partition can be smaller or larger than this size request.
+	PartitionSizeBytes int64
+	// **Note:** This hint is currently ignored by `PartitionQuery` and
+	// `PartitionRead` requests.
+	//
+	// The desired maximum number of partitions to return. For example, this
+	// might be set to the number of workers available. The default for this
+	// option is currently 10,000. The maximum value is currently 200,000. This
+	// is only a hint. The actual number of partitions returned can be smaller or
+	// larger than this maximum count request.
+	MaxPartitions int64
+}
+
+func (b0 PartitionOptions_builder) Build() *PartitionOptions {
+	m0 := &PartitionOptions{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_PartitionSizeBytes = b.PartitionSizeBytes
+	x.xxx_hidden_MaxPartitions = b.MaxPartitions
+	return m0
+}
+
 // The request for [PartitionQuery][google.spanner.v1.Spanner.PartitionQuery]
 type PartitionQueryRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session used to create the partitions.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// Read-only snapshot transactions are supported, read and write and
-	// single-use transactions are not.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	// Required. The query request to generate partitions for. The request fails
-	// if the query isn't root partitionable. For a query to be root
-	// partitionable, it needs to satisfy a few conditions. For example, if the
-	// query execution plan contains a distributed union operator, then it must be
-	// the first operator in the plan. For more information about other
-	// conditions, see [Read data in
-	// parallel](https://cloud.google.com/spanner/docs/reads#read_data_in_parallel).
-	//
-	// The query request must not contain DML commands, such as `INSERT`,
-	// `UPDATE`, or `DELETE`. Use
-	// [`ExecuteStreamingSql`][google.spanner.v1.Spanner.ExecuteStreamingSql] with
-	// a `PartitionedDml` transaction for large, partition-friendly DML
-	// operations.
-	Sql string `protobuf:"bytes,3,opt,name=sql,proto3" json:"sql,omitempty"`
-	// Optional. Parameter names and values that bind to placeholders in the SQL
-	// string.
-	//
-	// A parameter placeholder consists of the `@` character followed by the
-	// parameter name (for example, `@firstName`). Parameter names can contain
-	// letters, numbers, and underscores.
-	//
-	// Parameters can appear anywhere that a literal value is expected. The same
-	// parameter name can be used more than once, for example:
-	//
-	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
-	//
-	// It's an error to execute a SQL statement with unbound parameters.
-	Params *structpb.Struct `protobuf:"bytes,4,opt,name=params,proto3" json:"params,omitempty"`
-	// Optional. It isn't always possible for Cloud Spanner to infer the right SQL
-	// type from a JSON value. For example, values of type `BYTES` and values of
-	// type `STRING` both appear in
-	// [params][google.spanner.v1.PartitionQueryRequest.params] as JSON strings.
-	//
-	// In these cases, `param_types` can be used to specify the exact
-	// SQL type for some or all of the SQL query parameters. See the
-	// definition of [Type][google.spanner.v1.Type] for more information
-	// about SQL types.
-	ParamTypes map[string]*Type `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" json:"param_types,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	// Additional options that affect how many partitions are created.
-	PartitionOptions *PartitionOptions `protobuf:"bytes,6,opt,name=partition_options,json=partitionOptions,proto3" json:"partition_options,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Session          string                 `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_Transaction      *TransactionSelector   `protobuf:"bytes,2,opt,name=transaction,proto3"`
+	xxx_hidden_Sql              string                 `protobuf:"bytes,3,opt,name=sql,proto3"`
+	xxx_hidden_Params           *structpb.Struct       `protobuf:"bytes,4,opt,name=params,proto3"`
+	xxx_hidden_ParamTypes       map[string]*Type       `protobuf:"bytes,5,rep,name=param_types,json=paramTypes,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	xxx_hidden_PartitionOptions *PartitionOptions      `protobuf:"bytes,6,opt,name=partition_options,json=partitionOptions,proto3"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *PartitionQueryRequest) Reset() {
@@ -1694,88 +2296,180 @@ func (x *PartitionQueryRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PartitionQueryRequest.ProtoReflect.Descriptor instead.
-func (*PartitionQueryRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{14}
-}
-
 func (x *PartitionQueryRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *PartitionQueryRequest) GetTransaction() *TransactionSelector {
 	if x != nil {
-		return x.Transaction
+		return x.xxx_hidden_Transaction
 	}
 	return nil
 }
 
 func (x *PartitionQueryRequest) GetSql() string {
 	if x != nil {
-		return x.Sql
+		return x.xxx_hidden_Sql
 	}
 	return ""
 }
 
 func (x *PartitionQueryRequest) GetParams() *structpb.Struct {
 	if x != nil {
-		return x.Params
+		return x.xxx_hidden_Params
 	}
 	return nil
 }
 
 func (x *PartitionQueryRequest) GetParamTypes() map[string]*Type {
 	if x != nil {
-		return x.ParamTypes
+		return x.xxx_hidden_ParamTypes
 	}
 	return nil
 }
 
 func (x *PartitionQueryRequest) GetPartitionOptions() *PartitionOptions {
 	if x != nil {
-		return x.PartitionOptions
+		return x.xxx_hidden_PartitionOptions
 	}
 	return nil
 }
 
+func (x *PartitionQueryRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *PartitionQueryRequest) SetTransaction(v *TransactionSelector) {
+	x.xxx_hidden_Transaction = v
+}
+
+func (x *PartitionQueryRequest) SetSql(v string) {
+	x.xxx_hidden_Sql = v
+}
+
+func (x *PartitionQueryRequest) SetParams(v *structpb.Struct) {
+	x.xxx_hidden_Params = v
+}
+
+func (x *PartitionQueryRequest) SetParamTypes(v map[string]*Type) {
+	x.xxx_hidden_ParamTypes = v
+}
+
+func (x *PartitionQueryRequest) SetPartitionOptions(v *PartitionOptions) {
+	x.xxx_hidden_PartitionOptions = v
+}
+
+func (x *PartitionQueryRequest) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *PartitionQueryRequest) HasParams() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Params != nil
+}
+
+func (x *PartitionQueryRequest) HasPartitionOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PartitionOptions != nil
+}
+
+func (x *PartitionQueryRequest) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+func (x *PartitionQueryRequest) ClearParams() {
+	x.xxx_hidden_Params = nil
+}
+
+func (x *PartitionQueryRequest) ClearPartitionOptions() {
+	x.xxx_hidden_PartitionOptions = nil
+}
+
+type PartitionQueryRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session used to create the partitions.
+	Session string
+	// Read-only snapshot transactions are supported, read and write and
+	// single-use transactions are not.
+	Transaction *TransactionSelector
+	// Required. The query request to generate partitions for. The request fails
+	// if the query isn't root partitionable. For a query to be root
+	// partitionable, it needs to satisfy a few conditions. For example, if the
+	// query execution plan contains a distributed union operator, then it must be
+	// the first operator in the plan. For more information about other
+	// conditions, see [Read data in
+	// parallel](https://cloud.google.com/spanner/docs/reads#read_data_in_parallel).
+	//
+	// The query request must not contain DML commands, such as `INSERT`,
+	// `UPDATE`, or `DELETE`. Use
+	// [`ExecuteStreamingSql`][google.spanner.v1.Spanner.ExecuteStreamingSql] with
+	// a `PartitionedDml` transaction for large, partition-friendly DML
+	// operations.
+	Sql string
+	// Optional. Parameter names and values that bind to placeholders in the SQL
+	// string.
+	//
+	// A parameter placeholder consists of the `@` character followed by the
+	// parameter name (for example, `@firstName`). Parameter names can contain
+	// letters, numbers, and underscores.
+	//
+	// Parameters can appear anywhere that a literal value is expected. The same
+	// parameter name can be used more than once, for example:
+	//
+	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
+	//
+	// It's an error to execute a SQL statement with unbound parameters.
+	Params *structpb.Struct
+	// Optional. It isn't always possible for Cloud Spanner to infer the right SQL
+	// type from a JSON value. For example, values of type `BYTES` and values of
+	// type `STRING` both appear in
+	// [params][google.spanner.v1.PartitionQueryRequest.params] as JSON strings.
+	//
+	// In these cases, `param_types` can be used to specify the exact
+	// SQL type for some or all of the SQL query parameters. See the
+	// definition of [Type][google.spanner.v1.Type] for more information
+	// about SQL types.
+	ParamTypes map[string]*Type
+	// Additional options that affect how many partitions are created.
+	PartitionOptions *PartitionOptions
+}
+
+func (b0 PartitionQueryRequest_builder) Build() *PartitionQueryRequest {
+	m0 := &PartitionQueryRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_Transaction = b.Transaction
+	x.xxx_hidden_Sql = b.Sql
+	x.xxx_hidden_Params = b.Params
+	x.xxx_hidden_ParamTypes = b.ParamTypes
+	x.xxx_hidden_PartitionOptions = b.PartitionOptions
+	return m0
+}
+
 // The request for [PartitionRead][google.spanner.v1.Spanner.PartitionRead]
 type PartitionReadRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session used to create the partitions.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// Read only snapshot transactions are supported, read/write and single use
-	// transactions are not.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	// Required. The name of the table in the database to be read.
-	Table string `protobuf:"bytes,3,opt,name=table,proto3" json:"table,omitempty"`
-	// If non-empty, the name of an index on
-	// [table][google.spanner.v1.PartitionReadRequest.table]. This index is used
-	// instead of the table primary key when interpreting
-	// [key_set][google.spanner.v1.PartitionReadRequest.key_set] and sorting
-	// result rows. See [key_set][google.spanner.v1.PartitionReadRequest.key_set]
-	// for further information.
-	Index string `protobuf:"bytes,4,opt,name=index,proto3" json:"index,omitempty"`
-	// The columns of [table][google.spanner.v1.PartitionReadRequest.table] to be
-	// returned for each row matching this request.
-	Columns []string `protobuf:"bytes,5,rep,name=columns,proto3" json:"columns,omitempty"`
-	// Required. `key_set` identifies the rows to be yielded. `key_set` names the
-	// primary keys of the rows in
-	// [table][google.spanner.v1.PartitionReadRequest.table] to be yielded, unless
-	// [index][google.spanner.v1.PartitionReadRequest.index] is present. If
-	// [index][google.spanner.v1.PartitionReadRequest.index] is present, then
-	// [key_set][google.spanner.v1.PartitionReadRequest.key_set] instead names
-	// index keys in [index][google.spanner.v1.PartitionReadRequest.index].
-	//
-	// It isn't an error for the `key_set` to name rows that don't
-	// exist in the database. Read yields nothing for nonexistent rows.
-	KeySet *KeySet `protobuf:"bytes,6,opt,name=key_set,json=keySet,proto3" json:"key_set,omitempty"`
-	// Additional options that affect how many partitions are created.
-	PartitionOptions *PartitionOptions `protobuf:"bytes,9,opt,name=partition_options,json=partitionOptions,proto3" json:"partition_options,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Session          string                 `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_Transaction      *TransactionSelector   `protobuf:"bytes,2,opt,name=transaction,proto3"`
+	xxx_hidden_Table            string                 `protobuf:"bytes,3,opt,name=table,proto3"`
+	xxx_hidden_Index            string                 `protobuf:"bytes,4,opt,name=index,proto3"`
+	xxx_hidden_Columns          []string               `protobuf:"bytes,5,rep,name=columns,proto3"`
+	xxx_hidden_KeySet           *KeySet                `protobuf:"bytes,6,opt,name=key_set,json=keySet,proto3"`
+	xxx_hidden_PartitionOptions *PartitionOptions      `protobuf:"bytes,9,opt,name=partition_options,json=partitionOptions,proto3"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *PartitionReadRequest) Reset() {
@@ -1803,70 +2497,172 @@ func (x *PartitionReadRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PartitionReadRequest.ProtoReflect.Descriptor instead.
-func (*PartitionReadRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{15}
-}
-
 func (x *PartitionReadRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *PartitionReadRequest) GetTransaction() *TransactionSelector {
 	if x != nil {
-		return x.Transaction
+		return x.xxx_hidden_Transaction
 	}
 	return nil
 }
 
 func (x *PartitionReadRequest) GetTable() string {
 	if x != nil {
-		return x.Table
+		return x.xxx_hidden_Table
 	}
 	return ""
 }
 
 func (x *PartitionReadRequest) GetIndex() string {
 	if x != nil {
-		return x.Index
+		return x.xxx_hidden_Index
 	}
 	return ""
 }
 
 func (x *PartitionReadRequest) GetColumns() []string {
 	if x != nil {
-		return x.Columns
+		return x.xxx_hidden_Columns
 	}
 	return nil
 }
 
 func (x *PartitionReadRequest) GetKeySet() *KeySet {
 	if x != nil {
-		return x.KeySet
+		return x.xxx_hidden_KeySet
 	}
 	return nil
 }
 
 func (x *PartitionReadRequest) GetPartitionOptions() *PartitionOptions {
 	if x != nil {
-		return x.PartitionOptions
+		return x.xxx_hidden_PartitionOptions
 	}
 	return nil
+}
+
+func (x *PartitionReadRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *PartitionReadRequest) SetTransaction(v *TransactionSelector) {
+	x.xxx_hidden_Transaction = v
+}
+
+func (x *PartitionReadRequest) SetTable(v string) {
+	x.xxx_hidden_Table = v
+}
+
+func (x *PartitionReadRequest) SetIndex(v string) {
+	x.xxx_hidden_Index = v
+}
+
+func (x *PartitionReadRequest) SetColumns(v []string) {
+	x.xxx_hidden_Columns = v
+}
+
+func (x *PartitionReadRequest) SetKeySet(v *KeySet) {
+	x.xxx_hidden_KeySet = v
+}
+
+func (x *PartitionReadRequest) SetPartitionOptions(v *PartitionOptions) {
+	x.xxx_hidden_PartitionOptions = v
+}
+
+func (x *PartitionReadRequest) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *PartitionReadRequest) HasKeySet() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_KeySet != nil
+}
+
+func (x *PartitionReadRequest) HasPartitionOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PartitionOptions != nil
+}
+
+func (x *PartitionReadRequest) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+func (x *PartitionReadRequest) ClearKeySet() {
+	x.xxx_hidden_KeySet = nil
+}
+
+func (x *PartitionReadRequest) ClearPartitionOptions() {
+	x.xxx_hidden_PartitionOptions = nil
+}
+
+type PartitionReadRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session used to create the partitions.
+	Session string
+	// Read only snapshot transactions are supported, read/write and single use
+	// transactions are not.
+	Transaction *TransactionSelector
+	// Required. The name of the table in the database to be read.
+	Table string
+	// If non-empty, the name of an index on
+	// [table][google.spanner.v1.PartitionReadRequest.table]. This index is used
+	// instead of the table primary key when interpreting
+	// [key_set][google.spanner.v1.PartitionReadRequest.key_set] and sorting
+	// result rows. See [key_set][google.spanner.v1.PartitionReadRequest.key_set]
+	// for further information.
+	Index string
+	// The columns of [table][google.spanner.v1.PartitionReadRequest.table] to be
+	// returned for each row matching this request.
+	Columns []string
+	// Required. `key_set` identifies the rows to be yielded. `key_set` names the
+	// primary keys of the rows in
+	// [table][google.spanner.v1.PartitionReadRequest.table] to be yielded, unless
+	// [index][google.spanner.v1.PartitionReadRequest.index] is present. If
+	// [index][google.spanner.v1.PartitionReadRequest.index] is present, then
+	// [key_set][google.spanner.v1.PartitionReadRequest.key_set] instead names
+	// index keys in [index][google.spanner.v1.PartitionReadRequest.index].
+	//
+	// It isn't an error for the `key_set` to name rows that don't
+	// exist in the database. Read yields nothing for nonexistent rows.
+	KeySet *KeySet
+	// Additional options that affect how many partitions are created.
+	PartitionOptions *PartitionOptions
+}
+
+func (b0 PartitionReadRequest_builder) Build() *PartitionReadRequest {
+	m0 := &PartitionReadRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_Transaction = b.Transaction
+	x.xxx_hidden_Table = b.Table
+	x.xxx_hidden_Index = b.Index
+	x.xxx_hidden_Columns = b.Columns
+	x.xxx_hidden_KeySet = b.KeySet
+	x.xxx_hidden_PartitionOptions = b.PartitionOptions
+	return m0
 }
 
 // Information returned for each partition returned in a
 // PartitionResponse.
 type Partition struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// This token can be passed to `Read`, `StreamingRead`, `ExecuteSql`, or
-	// `ExecuteStreamingSql` requests to restrict the results to those identified
-	// by this partition token.
-	PartitionToken []byte `protobuf:"bytes,1,opt,name=partition_token,json=partitionToken,proto3" json:"partition_token,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_PartitionToken []byte                 `protobuf:"bytes,1,opt,name=partition_token,json=partitionToken,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *Partition) Reset() {
@@ -1894,28 +2690,45 @@ func (x *Partition) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Partition.ProtoReflect.Descriptor instead.
-func (*Partition) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{16}
-}
-
 func (x *Partition) GetPartitionToken() []byte {
 	if x != nil {
-		return x.PartitionToken
+		return x.xxx_hidden_PartitionToken
 	}
 	return nil
+}
+
+func (x *Partition) SetPartitionToken(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_PartitionToken = v
+}
+
+type Partition_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// This token can be passed to `Read`, `StreamingRead`, `ExecuteSql`, or
+	// `ExecuteStreamingSql` requests to restrict the results to those identified
+	// by this partition token.
+	PartitionToken []byte
+}
+
+func (b0 Partition_builder) Build() *Partition {
+	m0 := &Partition{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_PartitionToken = b.PartitionToken
+	return m0
 }
 
 // The response for [PartitionQuery][google.spanner.v1.Spanner.PartitionQuery]
 // or [PartitionRead][google.spanner.v1.Spanner.PartitionRead]
 type PartitionResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Partitions created by this request.
-	Partitions []*Partition `protobuf:"bytes,1,rep,name=partitions,proto3" json:"partitions,omitempty"`
-	// Transaction created by this request.
-	Transaction   *Transaction `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Partitions  *[]*Partition          `protobuf:"bytes,1,rep,name=partitions,proto3"`
+	xxx_hidden_Transaction *Transaction           `protobuf:"bytes,2,opt,name=transaction,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *PartitionResponse) Reset() {
@@ -1943,110 +2756,80 @@ func (x *PartitionResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PartitionResponse.ProtoReflect.Descriptor instead.
-func (*PartitionResponse) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{17}
-}
-
 func (x *PartitionResponse) GetPartitions() []*Partition {
 	if x != nil {
-		return x.Partitions
+		if x.xxx_hidden_Partitions != nil {
+			return *x.xxx_hidden_Partitions
+		}
 	}
 	return nil
 }
 
 func (x *PartitionResponse) GetTransaction() *Transaction {
 	if x != nil {
-		return x.Transaction
+		return x.xxx_hidden_Transaction
 	}
 	return nil
+}
+
+func (x *PartitionResponse) SetPartitions(v []*Partition) {
+	x.xxx_hidden_Partitions = &v
+}
+
+func (x *PartitionResponse) SetTransaction(v *Transaction) {
+	x.xxx_hidden_Transaction = v
+}
+
+func (x *PartitionResponse) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *PartitionResponse) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+type PartitionResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Partitions created by this request.
+	Partitions []*Partition
+	// Transaction created by this request.
+	Transaction *Transaction
+}
+
+func (b0 PartitionResponse_builder) Build() *PartitionResponse {
+	m0 := &PartitionResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Partitions = &b.Partitions
+	x.xxx_hidden_Transaction = b.Transaction
+	return m0
 }
 
 // The request for [Read][google.spanner.v1.Spanner.Read] and
 // [StreamingRead][google.spanner.v1.Spanner.StreamingRead].
 type ReadRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session in which the read should be performed.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// The transaction to use. If none is provided, the default is a
-	// temporary read-only transaction with strong concurrency.
-	Transaction *TransactionSelector `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	// Required. The name of the table in the database to be read.
-	Table string `protobuf:"bytes,3,opt,name=table,proto3" json:"table,omitempty"`
-	// If non-empty, the name of an index on
-	// [table][google.spanner.v1.ReadRequest.table]. This index is used instead of
-	// the table primary key when interpreting
-	// [key_set][google.spanner.v1.ReadRequest.key_set] and sorting result rows.
-	// See [key_set][google.spanner.v1.ReadRequest.key_set] for further
-	// information.
-	Index string `protobuf:"bytes,4,opt,name=index,proto3" json:"index,omitempty"`
-	// Required. The columns of [table][google.spanner.v1.ReadRequest.table] to be
-	// returned for each row matching this request.
-	Columns []string `protobuf:"bytes,5,rep,name=columns,proto3" json:"columns,omitempty"`
-	// Required. `key_set` identifies the rows to be yielded. `key_set` names the
-	// primary keys of the rows in [table][google.spanner.v1.ReadRequest.table] to
-	// be yielded, unless [index][google.spanner.v1.ReadRequest.index] is present.
-	// If [index][google.spanner.v1.ReadRequest.index] is present, then
-	// [key_set][google.spanner.v1.ReadRequest.key_set] instead names index keys
-	// in [index][google.spanner.v1.ReadRequest.index].
-	//
-	// If the [partition_token][google.spanner.v1.ReadRequest.partition_token]
-	// field is empty, rows are yielded in table primary key order (if
-	// [index][google.spanner.v1.ReadRequest.index] is empty) or index key order
-	// (if [index][google.spanner.v1.ReadRequest.index] is non-empty). If the
-	// [partition_token][google.spanner.v1.ReadRequest.partition_token] field
-	// isn't empty, rows are yielded in an unspecified order.
-	//
-	// It isn't an error for the `key_set` to name rows that don't
-	// exist in the database. Read yields nothing for nonexistent rows.
-	KeySet *KeySet `protobuf:"bytes,6,opt,name=key_set,json=keySet,proto3" json:"key_set,omitempty"`
-	// If greater than zero, only the first `limit` rows are yielded. If `limit`
-	// is zero, the default is no limit. A limit can't be specified if
-	// `partition_token` is set.
-	Limit int64 `protobuf:"varint,8,opt,name=limit,proto3" json:"limit,omitempty"`
-	// If this request is resuming a previously interrupted read,
-	// `resume_token` should be copied from the last
-	// [PartialResultSet][google.spanner.v1.PartialResultSet] yielded before the
-	// interruption. Doing this enables the new read to resume where the last read
-	// left off. The rest of the request parameters must exactly match the request
-	// that yielded this token.
-	ResumeToken []byte `protobuf:"bytes,9,opt,name=resume_token,json=resumeToken,proto3" json:"resume_token,omitempty"`
-	// If present, results are restricted to the specified partition
-	// previously created using `PartitionRead`. There must be an exact
-	// match for the values of fields common to this message and the
-	// PartitionReadRequest message used to create this partition_token.
-	PartitionToken []byte `protobuf:"bytes,10,opt,name=partition_token,json=partitionToken,proto3" json:"partition_token,omitempty"`
-	// Common options for this request.
-	RequestOptions *RequestOptions `protobuf:"bytes,11,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
-	// Directed read options for this request.
-	DirectedReadOptions *DirectedReadOptions `protobuf:"bytes,14,opt,name=directed_read_options,json=directedReadOptions,proto3" json:"directed_read_options,omitempty"`
-	// If this is for a partitioned read and this field is set to `true`, the
-	// request is executed with Spanner Data Boost independent compute resources.
-	//
-	// If the field is set to `true` but the request doesn't set
-	// `partition_token`, the API returns an `INVALID_ARGUMENT` error.
-	DataBoostEnabled bool `protobuf:"varint,15,opt,name=data_boost_enabled,json=dataBoostEnabled,proto3" json:"data_boost_enabled,omitempty"`
-	// Optional. Order for the returned rows.
-	//
-	// By default, Spanner returns result rows in primary key order except for
-	// PartitionRead requests. For applications that don't require rows to be
-	// returned in primary key (`ORDER_BY_PRIMARY_KEY`) order, setting
-	// `ORDER_BY_NO_ORDER` option allows Spanner to optimize row retrieval,
-	// resulting in lower latencies in certain cases (for example, bulk point
-	// lookups).
-	OrderBy ReadRequest_OrderBy `protobuf:"varint,16,opt,name=order_by,json=orderBy,proto3,enum=google.spanner.v1.ReadRequest_OrderBy" json:"order_by,omitempty"`
-	// Optional. Lock Hint for the request, it can only be used with read-write
-	// transactions.
-	LockHint ReadRequest_LockHint `protobuf:"varint,17,opt,name=lock_hint,json=lockHint,proto3,enum=google.spanner.v1.ReadRequest_LockHint" json:"lock_hint,omitempty"`
-	// Optional. Makes the Spanner requests location-aware if present.
-	//
-	// It gives the server hints that can be used to route the request
-	// to an appropriate server, potentially significantly decreasing latency and
-	// improving throughput. To achieve improved performance, most fields must be
-	// filled in with accurate values.
-	RoutingHint   *RoutingHint `protobuf:"bytes,18,opt,name=routing_hint,json=routingHint,proto3" json:"routing_hint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Session             string                 `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_Transaction         *TransactionSelector   `protobuf:"bytes,2,opt,name=transaction,proto3"`
+	xxx_hidden_Table               string                 `protobuf:"bytes,3,opt,name=table,proto3"`
+	xxx_hidden_Index               string                 `protobuf:"bytes,4,opt,name=index,proto3"`
+	xxx_hidden_Columns             []string               `protobuf:"bytes,5,rep,name=columns,proto3"`
+	xxx_hidden_KeySet              *KeySet                `protobuf:"bytes,6,opt,name=key_set,json=keySet,proto3"`
+	xxx_hidden_Limit               int64                  `protobuf:"varint,8,opt,name=limit,proto3"`
+	xxx_hidden_ResumeToken         []byte                 `protobuf:"bytes,9,opt,name=resume_token,json=resumeToken,proto3"`
+	xxx_hidden_PartitionToken      []byte                 `protobuf:"bytes,10,opt,name=partition_token,json=partitionToken,proto3"`
+	xxx_hidden_RequestOptions      *RequestOptions        `protobuf:"bytes,11,opt,name=request_options,json=requestOptions,proto3"`
+	xxx_hidden_DirectedReadOptions *DirectedReadOptions   `protobuf:"bytes,14,opt,name=directed_read_options,json=directedReadOptions,proto3"`
+	xxx_hidden_DataBoostEnabled    bool                   `protobuf:"varint,15,opt,name=data_boost_enabled,json=dataBoostEnabled,proto3"`
+	xxx_hidden_OrderBy             ReadRequest_OrderBy    `protobuf:"varint,16,opt,name=order_by,json=orderBy,proto3,enum=google.spanner.v1.ReadRequest_OrderBy"`
+	xxx_hidden_LockHint            ReadRequest_LockHint   `protobuf:"varint,17,opt,name=lock_hint,json=lockHint,proto3,enum=google.spanner.v1.ReadRequest_LockHint"`
+	xxx_hidden_RoutingHint         *RoutingHint           `protobuf:"bytes,18,opt,name=routing_hint,json=routingHint,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *ReadRequest) Reset() {
@@ -2074,144 +2857,349 @@ func (x *ReadRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ReadRequest.ProtoReflect.Descriptor instead.
-func (*ReadRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{18}
-}
-
 func (x *ReadRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *ReadRequest) GetTransaction() *TransactionSelector {
 	if x != nil {
-		return x.Transaction
+		return x.xxx_hidden_Transaction
 	}
 	return nil
 }
 
 func (x *ReadRequest) GetTable() string {
 	if x != nil {
-		return x.Table
+		return x.xxx_hidden_Table
 	}
 	return ""
 }
 
 func (x *ReadRequest) GetIndex() string {
 	if x != nil {
-		return x.Index
+		return x.xxx_hidden_Index
 	}
 	return ""
 }
 
 func (x *ReadRequest) GetColumns() []string {
 	if x != nil {
-		return x.Columns
+		return x.xxx_hidden_Columns
 	}
 	return nil
 }
 
 func (x *ReadRequest) GetKeySet() *KeySet {
 	if x != nil {
-		return x.KeySet
+		return x.xxx_hidden_KeySet
 	}
 	return nil
 }
 
 func (x *ReadRequest) GetLimit() int64 {
 	if x != nil {
-		return x.Limit
+		return x.xxx_hidden_Limit
 	}
 	return 0
 }
 
 func (x *ReadRequest) GetResumeToken() []byte {
 	if x != nil {
-		return x.ResumeToken
+		return x.xxx_hidden_ResumeToken
 	}
 	return nil
 }
 
 func (x *ReadRequest) GetPartitionToken() []byte {
 	if x != nil {
-		return x.PartitionToken
+		return x.xxx_hidden_PartitionToken
 	}
 	return nil
 }
 
 func (x *ReadRequest) GetRequestOptions() *RequestOptions {
 	if x != nil {
-		return x.RequestOptions
+		return x.xxx_hidden_RequestOptions
 	}
 	return nil
 }
 
 func (x *ReadRequest) GetDirectedReadOptions() *DirectedReadOptions {
 	if x != nil {
-		return x.DirectedReadOptions
+		return x.xxx_hidden_DirectedReadOptions
 	}
 	return nil
 }
 
 func (x *ReadRequest) GetDataBoostEnabled() bool {
 	if x != nil {
-		return x.DataBoostEnabled
+		return x.xxx_hidden_DataBoostEnabled
 	}
 	return false
 }
 
 func (x *ReadRequest) GetOrderBy() ReadRequest_OrderBy {
 	if x != nil {
-		return x.OrderBy
+		return x.xxx_hidden_OrderBy
 	}
 	return ReadRequest_ORDER_BY_UNSPECIFIED
 }
 
 func (x *ReadRequest) GetLockHint() ReadRequest_LockHint {
 	if x != nil {
-		return x.LockHint
+		return x.xxx_hidden_LockHint
 	}
 	return ReadRequest_LOCK_HINT_UNSPECIFIED
 }
 
 func (x *ReadRequest) GetRoutingHint() *RoutingHint {
 	if x != nil {
-		return x.RoutingHint
+		return x.xxx_hidden_RoutingHint
 	}
 	return nil
 }
 
-// The request for
-// [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction].
-type BeginTransactionRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session in which the transaction runs.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// Required. Options for the new transaction.
-	Options *TransactionOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
+func (x *ReadRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *ReadRequest) SetTransaction(v *TransactionSelector) {
+	x.xxx_hidden_Transaction = v
+}
+
+func (x *ReadRequest) SetTable(v string) {
+	x.xxx_hidden_Table = v
+}
+
+func (x *ReadRequest) SetIndex(v string) {
+	x.xxx_hidden_Index = v
+}
+
+func (x *ReadRequest) SetColumns(v []string) {
+	x.xxx_hidden_Columns = v
+}
+
+func (x *ReadRequest) SetKeySet(v *KeySet) {
+	x.xxx_hidden_KeySet = v
+}
+
+func (x *ReadRequest) SetLimit(v int64) {
+	x.xxx_hidden_Limit = v
+}
+
+func (x *ReadRequest) SetResumeToken(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_ResumeToken = v
+}
+
+func (x *ReadRequest) SetPartitionToken(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_PartitionToken = v
+}
+
+func (x *ReadRequest) SetRequestOptions(v *RequestOptions) {
+	x.xxx_hidden_RequestOptions = v
+}
+
+func (x *ReadRequest) SetDirectedReadOptions(v *DirectedReadOptions) {
+	x.xxx_hidden_DirectedReadOptions = v
+}
+
+func (x *ReadRequest) SetDataBoostEnabled(v bool) {
+	x.xxx_hidden_DataBoostEnabled = v
+}
+
+func (x *ReadRequest) SetOrderBy(v ReadRequest_OrderBy) {
+	x.xxx_hidden_OrderBy = v
+}
+
+func (x *ReadRequest) SetLockHint(v ReadRequest_LockHint) {
+	x.xxx_hidden_LockHint = v
+}
+
+func (x *ReadRequest) SetRoutingHint(v *RoutingHint) {
+	x.xxx_hidden_RoutingHint = v
+}
+
+func (x *ReadRequest) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *ReadRequest) HasKeySet() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_KeySet != nil
+}
+
+func (x *ReadRequest) HasRequestOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RequestOptions != nil
+}
+
+func (x *ReadRequest) HasDirectedReadOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DirectedReadOptions != nil
+}
+
+func (x *ReadRequest) HasRoutingHint() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RoutingHint != nil
+}
+
+func (x *ReadRequest) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+func (x *ReadRequest) ClearKeySet() {
+	x.xxx_hidden_KeySet = nil
+}
+
+func (x *ReadRequest) ClearRequestOptions() {
+	x.xxx_hidden_RequestOptions = nil
+}
+
+func (x *ReadRequest) ClearDirectedReadOptions() {
+	x.xxx_hidden_DirectedReadOptions = nil
+}
+
+func (x *ReadRequest) ClearRoutingHint() {
+	x.xxx_hidden_RoutingHint = nil
+}
+
+type ReadRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session in which the read should be performed.
+	Session string
+	// The transaction to use. If none is provided, the default is a
+	// temporary read-only transaction with strong concurrency.
+	Transaction *TransactionSelector
+	// Required. The name of the table in the database to be read.
+	Table string
+	// If non-empty, the name of an index on
+	// [table][google.spanner.v1.ReadRequest.table]. This index is used instead of
+	// the table primary key when interpreting
+	// [key_set][google.spanner.v1.ReadRequest.key_set] and sorting result rows.
+	// See [key_set][google.spanner.v1.ReadRequest.key_set] for further
+	// information.
+	Index string
+	// Required. The columns of [table][google.spanner.v1.ReadRequest.table] to be
+	// returned for each row matching this request.
+	Columns []string
+	// Required. `key_set` identifies the rows to be yielded. `key_set` names the
+	// primary keys of the rows in [table][google.spanner.v1.ReadRequest.table] to
+	// be yielded, unless [index][google.spanner.v1.ReadRequest.index] is present.
+	// If [index][google.spanner.v1.ReadRequest.index] is present, then
+	// [key_set][google.spanner.v1.ReadRequest.key_set] instead names index keys
+	// in [index][google.spanner.v1.ReadRequest.index].
+	//
+	// If the [partition_token][google.spanner.v1.ReadRequest.partition_token]
+	// field is empty, rows are yielded in table primary key order (if
+	// [index][google.spanner.v1.ReadRequest.index] is empty) or index key order
+	// (if [index][google.spanner.v1.ReadRequest.index] is non-empty). If the
+	// [partition_token][google.spanner.v1.ReadRequest.partition_token] field
+	// isn't empty, rows are yielded in an unspecified order.
+	//
+	// It isn't an error for the `key_set` to name rows that don't
+	// exist in the database. Read yields nothing for nonexistent rows.
+	KeySet *KeySet
+	// If greater than zero, only the first `limit` rows are yielded. If `limit`
+	// is zero, the default is no limit. A limit can't be specified if
+	// `partition_token` is set.
+	Limit int64
+	// If this request is resuming a previously interrupted read,
+	// `resume_token` should be copied from the last
+	// [PartialResultSet][google.spanner.v1.PartialResultSet] yielded before the
+	// interruption. Doing this enables the new read to resume where the last read
+	// left off. The rest of the request parameters must exactly match the request
+	// that yielded this token.
+	ResumeToken []byte
+	// If present, results are restricted to the specified partition
+	// previously created using `PartitionRead`. There must be an exact
+	// match for the values of fields common to this message and the
+	// PartitionReadRequest message used to create this partition_token.
+	PartitionToken []byte
 	// Common options for this request.
-	// Priority is ignored for this request. Setting the priority in this
-	// `request_options` struct doesn't do anything. To set the priority for a
-	// transaction, set it on the reads and writes that are part of this
-	// transaction instead.
-	RequestOptions *RequestOptions `protobuf:"bytes,3,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
-	// Optional. Required for read-write transactions on a multiplexed session
-	// that commit mutations but don't perform any reads or queries. You must
-	// randomly select one of the mutations from the mutation set and send it as a
-	// part of this request.
-	MutationKey *Mutation `protobuf:"bytes,4,opt,name=mutation_key,json=mutationKey,proto3" json:"mutation_key,omitempty"`
+	RequestOptions *RequestOptions
+	// Directed read options for this request.
+	DirectedReadOptions *DirectedReadOptions
+	// If this is for a partitioned read and this field is set to `true`, the
+	// request is executed with Spanner Data Boost independent compute resources.
+	//
+	// If the field is set to `true` but the request doesn't set
+	// `partition_token`, the API returns an `INVALID_ARGUMENT` error.
+	DataBoostEnabled bool
+	// Optional. Order for the returned rows.
+	//
+	// By default, Spanner returns result rows in primary key order except for
+	// PartitionRead requests. For applications that don't require rows to be
+	// returned in primary key (`ORDER_BY_PRIMARY_KEY`) order, setting
+	// `ORDER_BY_NO_ORDER` option allows Spanner to optimize row retrieval,
+	// resulting in lower latencies in certain cases (for example, bulk point
+	// lookups).
+	OrderBy ReadRequest_OrderBy
+	// Optional. Lock Hint for the request, it can only be used with read-write
+	// transactions.
+	LockHint ReadRequest_LockHint
 	// Optional. Makes the Spanner requests location-aware if present.
 	//
 	// It gives the server hints that can be used to route the request
 	// to an appropriate server, potentially significantly decreasing latency and
 	// improving throughput. To achieve improved performance, most fields must be
 	// filled in with accurate values.
-	RoutingHint   *RoutingHint `protobuf:"bytes,5,opt,name=routing_hint,json=routingHint,proto3" json:"routing_hint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	RoutingHint *RoutingHint
+}
+
+func (b0 ReadRequest_builder) Build() *ReadRequest {
+	m0 := &ReadRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_Transaction = b.Transaction
+	x.xxx_hidden_Table = b.Table
+	x.xxx_hidden_Index = b.Index
+	x.xxx_hidden_Columns = b.Columns
+	x.xxx_hidden_KeySet = b.KeySet
+	x.xxx_hidden_Limit = b.Limit
+	x.xxx_hidden_ResumeToken = b.ResumeToken
+	x.xxx_hidden_PartitionToken = b.PartitionToken
+	x.xxx_hidden_RequestOptions = b.RequestOptions
+	x.xxx_hidden_DirectedReadOptions = b.DirectedReadOptions
+	x.xxx_hidden_DataBoostEnabled = b.DataBoostEnabled
+	x.xxx_hidden_OrderBy = b.OrderBy
+	x.xxx_hidden_LockHint = b.LockHint
+	x.xxx_hidden_RoutingHint = b.RoutingHint
+	return m0
+}
+
+// The request for
+// [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction].
+type BeginTransactionRequest struct {
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Session        string                 `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_Options        *TransactionOptions    `protobuf:"bytes,2,opt,name=options,proto3"`
+	xxx_hidden_RequestOptions *RequestOptions        `protobuf:"bytes,3,opt,name=request_options,json=requestOptions,proto3"`
+	xxx_hidden_MutationKey    *Mutation              `protobuf:"bytes,4,opt,name=mutation_key,json=mutationKey,proto3"`
+	xxx_hidden_RoutingHint    *RoutingHint           `protobuf:"bytes,5,opt,name=routing_hint,json=routingHint,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *BeginTransactionRequest) Reset() {
@@ -2239,88 +3227,157 @@ func (x *BeginTransactionRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BeginTransactionRequest.ProtoReflect.Descriptor instead.
-func (*BeginTransactionRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{19}
-}
-
 func (x *BeginTransactionRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *BeginTransactionRequest) GetOptions() *TransactionOptions {
 	if x != nil {
-		return x.Options
+		return x.xxx_hidden_Options
 	}
 	return nil
 }
 
 func (x *BeginTransactionRequest) GetRequestOptions() *RequestOptions {
 	if x != nil {
-		return x.RequestOptions
+		return x.xxx_hidden_RequestOptions
 	}
 	return nil
 }
 
 func (x *BeginTransactionRequest) GetMutationKey() *Mutation {
 	if x != nil {
-		return x.MutationKey
+		return x.xxx_hidden_MutationKey
 	}
 	return nil
 }
 
 func (x *BeginTransactionRequest) GetRoutingHint() *RoutingHint {
 	if x != nil {
-		return x.RoutingHint
+		return x.xxx_hidden_RoutingHint
 	}
 	return nil
 }
 
-// The request for [Commit][google.spanner.v1.Spanner.Commit].
-type CommitRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session in which the transaction to be committed is running.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// Required. The transaction in which to commit.
-	//
-	// Types that are valid to be assigned to Transaction:
-	//
-	//	*CommitRequest_TransactionId
-	//	*CommitRequest_SingleUseTransaction
-	Transaction isCommitRequest_Transaction `protobuf_oneof:"transaction"`
-	// The mutations to be executed when this transaction commits. All
-	// mutations are applied atomically, in the order they appear in
-	// this list.
-	Mutations []*Mutation `protobuf:"bytes,4,rep,name=mutations,proto3" json:"mutations,omitempty"`
-	// If `true`, then statistics related to the transaction is included in
-	// the [CommitResponse][google.spanner.v1.CommitResponse.commit_stats].
-	// Default value is `false`.
-	ReturnCommitStats bool `protobuf:"varint,5,opt,name=return_commit_stats,json=returnCommitStats,proto3" json:"return_commit_stats,omitempty"`
-	// Optional. The amount of latency this request is configured to incur in
-	// order to improve throughput. If this field isn't set, Spanner assumes
-	// requests are relatively latency sensitive and automatically determines an
-	// appropriate delay time. You can specify a commit delay value between 0 and
-	// 500 ms.
-	MaxCommitDelay *durationpb.Duration `protobuf:"bytes,8,opt,name=max_commit_delay,json=maxCommitDelay,proto3" json:"max_commit_delay,omitempty"`
+func (x *BeginTransactionRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *BeginTransactionRequest) SetOptions(v *TransactionOptions) {
+	x.xxx_hidden_Options = v
+}
+
+func (x *BeginTransactionRequest) SetRequestOptions(v *RequestOptions) {
+	x.xxx_hidden_RequestOptions = v
+}
+
+func (x *BeginTransactionRequest) SetMutationKey(v *Mutation) {
+	x.xxx_hidden_MutationKey = v
+}
+
+func (x *BeginTransactionRequest) SetRoutingHint(v *RoutingHint) {
+	x.xxx_hidden_RoutingHint = v
+}
+
+func (x *BeginTransactionRequest) HasOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Options != nil
+}
+
+func (x *BeginTransactionRequest) HasRequestOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RequestOptions != nil
+}
+
+func (x *BeginTransactionRequest) HasMutationKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MutationKey != nil
+}
+
+func (x *BeginTransactionRequest) HasRoutingHint() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RoutingHint != nil
+}
+
+func (x *BeginTransactionRequest) ClearOptions() {
+	x.xxx_hidden_Options = nil
+}
+
+func (x *BeginTransactionRequest) ClearRequestOptions() {
+	x.xxx_hidden_RequestOptions = nil
+}
+
+func (x *BeginTransactionRequest) ClearMutationKey() {
+	x.xxx_hidden_MutationKey = nil
+}
+
+func (x *BeginTransactionRequest) ClearRoutingHint() {
+	x.xxx_hidden_RoutingHint = nil
+}
+
+type BeginTransactionRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session in which the transaction runs.
+	Session string
+	// Required. Options for the new transaction.
+	Options *TransactionOptions
 	// Common options for this request.
-	RequestOptions *RequestOptions `protobuf:"bytes,6,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
-	// Optional. If the read-write transaction was executed on a multiplexed
-	// session, then you must include the precommit token with the highest
-	// sequence number received in this transaction attempt. Failing to do so
-	// results in a `FailedPrecondition` error.
-	PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,9,opt,name=precommit_token,json=precommitToken,proto3" json:"precommit_token,omitempty"`
+	// Priority is ignored for this request. Setting the priority in this
+	// `request_options` struct doesn't do anything. To set the priority for a
+	// transaction, set it on the reads and writes that are part of this
+	// transaction instead.
+	RequestOptions *RequestOptions
+	// Optional. Required for read-write transactions on a multiplexed session
+	// that commit mutations but don't perform any reads or queries. You must
+	// randomly select one of the mutations from the mutation set and send it as a
+	// part of this request.
+	MutationKey *Mutation
 	// Optional. Makes the Spanner requests location-aware if present.
 	//
 	// It gives the server hints that can be used to route the request
 	// to an appropriate server, potentially significantly decreasing latency and
 	// improving throughput. To achieve improved performance, most fields must be
 	// filled in with accurate values.
-	RoutingHint   *RoutingHint `protobuf:"bytes,10,opt,name=routing_hint,json=routingHint,proto3" json:"routing_hint,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	RoutingHint *RoutingHint
+}
+
+func (b0 BeginTransactionRequest_builder) Build() *BeginTransactionRequest {
+	m0 := &BeginTransactionRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_Options = b.Options
+	x.xxx_hidden_RequestOptions = b.RequestOptions
+	x.xxx_hidden_MutationKey = b.MutationKey
+	x.xxx_hidden_RoutingHint = b.RoutingHint
+	return m0
+}
+
+// The request for [Commit][google.spanner.v1.Spanner.Commit].
+type CommitRequest struct {
+	state                        protoimpl.MessageState            `protogen:"opaque.v1"`
+	xxx_hidden_Session           string                            `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_Transaction       isCommitRequest_Transaction       `protobuf_oneof:"transaction"`
+	xxx_hidden_Mutations         *[]*Mutation                      `protobuf:"bytes,4,rep,name=mutations,proto3"`
+	xxx_hidden_ReturnCommitStats bool                              `protobuf:"varint,5,opt,name=return_commit_stats,json=returnCommitStats,proto3"`
+	xxx_hidden_MaxCommitDelay    *durationpb.Duration              `protobuf:"bytes,8,opt,name=max_commit_delay,json=maxCommitDelay,proto3"`
+	xxx_hidden_RequestOptions    *RequestOptions                   `protobuf:"bytes,6,opt,name=request_options,json=requestOptions,proto3"`
+	xxx_hidden_PrecommitToken    *MultiplexedSessionPrecommitToken `protobuf:"bytes,9,opt,name=precommit_token,json=precommitToken,proto3"`
+	xxx_hidden_RoutingHint       *RoutingHint                      `protobuf:"bytes,10,opt,name=routing_hint,json=routingHint,proto3"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *CommitRequest) Reset() {
@@ -2348,28 +3405,16 @@ func (x *CommitRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CommitRequest.ProtoReflect.Descriptor instead.
-func (*CommitRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{20}
-}
-
 func (x *CommitRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
-func (x *CommitRequest) GetTransaction() isCommitRequest_Transaction {
-	if x != nil {
-		return x.Transaction
-	}
-	return nil
-}
-
 func (x *CommitRequest) GetTransactionId() []byte {
 	if x != nil {
-		if x, ok := x.Transaction.(*CommitRequest_TransactionId); ok {
+		if x, ok := x.xxx_hidden_Transaction.(*commitRequest_TransactionId); ok {
 			return x.TransactionId
 		}
 	}
@@ -2378,7 +3423,7 @@ func (x *CommitRequest) GetTransactionId() []byte {
 
 func (x *CommitRequest) GetSingleUseTransaction() *TransactionOptions {
 	if x != nil {
-		if x, ok := x.Transaction.(*CommitRequest_SingleUseTransaction); ok {
+		if x, ok := x.xxx_hidden_Transaction.(*commitRequest_SingleUseTransaction); ok {
 			return x.SingleUseTransaction
 		}
 	}
@@ -2387,56 +3432,283 @@ func (x *CommitRequest) GetSingleUseTransaction() *TransactionOptions {
 
 func (x *CommitRequest) GetMutations() []*Mutation {
 	if x != nil {
-		return x.Mutations
+		if x.xxx_hidden_Mutations != nil {
+			return *x.xxx_hidden_Mutations
+		}
 	}
 	return nil
 }
 
 func (x *CommitRequest) GetReturnCommitStats() bool {
 	if x != nil {
-		return x.ReturnCommitStats
+		return x.xxx_hidden_ReturnCommitStats
 	}
 	return false
 }
 
 func (x *CommitRequest) GetMaxCommitDelay() *durationpb.Duration {
 	if x != nil {
-		return x.MaxCommitDelay
+		return x.xxx_hidden_MaxCommitDelay
 	}
 	return nil
 }
 
 func (x *CommitRequest) GetRequestOptions() *RequestOptions {
 	if x != nil {
-		return x.RequestOptions
+		return x.xxx_hidden_RequestOptions
 	}
 	return nil
 }
 
 func (x *CommitRequest) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
 	if x != nil {
-		return x.PrecommitToken
+		return x.xxx_hidden_PrecommitToken
 	}
 	return nil
 }
 
 func (x *CommitRequest) GetRoutingHint() *RoutingHint {
 	if x != nil {
-		return x.RoutingHint
+		return x.xxx_hidden_RoutingHint
 	}
 	return nil
+}
+
+func (x *CommitRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *CommitRequest) SetTransactionId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Transaction = &commitRequest_TransactionId{v}
+}
+
+func (x *CommitRequest) SetSingleUseTransaction(v *TransactionOptions) {
+	if v == nil {
+		x.xxx_hidden_Transaction = nil
+		return
+	}
+	x.xxx_hidden_Transaction = &commitRequest_SingleUseTransaction{v}
+}
+
+func (x *CommitRequest) SetMutations(v []*Mutation) {
+	x.xxx_hidden_Mutations = &v
+}
+
+func (x *CommitRequest) SetReturnCommitStats(v bool) {
+	x.xxx_hidden_ReturnCommitStats = v
+}
+
+func (x *CommitRequest) SetMaxCommitDelay(v *durationpb.Duration) {
+	x.xxx_hidden_MaxCommitDelay = v
+}
+
+func (x *CommitRequest) SetRequestOptions(v *RequestOptions) {
+	x.xxx_hidden_RequestOptions = v
+}
+
+func (x *CommitRequest) SetPrecommitToken(v *MultiplexedSessionPrecommitToken) {
+	x.xxx_hidden_PrecommitToken = v
+}
+
+func (x *CommitRequest) SetRoutingHint(v *RoutingHint) {
+	x.xxx_hidden_RoutingHint = v
+}
+
+func (x *CommitRequest) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *CommitRequest) HasTransactionId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Transaction.(*commitRequest_TransactionId)
+	return ok
+}
+
+func (x *CommitRequest) HasSingleUseTransaction() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Transaction.(*commitRequest_SingleUseTransaction)
+	return ok
+}
+
+func (x *CommitRequest) HasMaxCommitDelay() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MaxCommitDelay != nil
+}
+
+func (x *CommitRequest) HasRequestOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RequestOptions != nil
+}
+
+func (x *CommitRequest) HasPrecommitToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PrecommitToken != nil
+}
+
+func (x *CommitRequest) HasRoutingHint() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RoutingHint != nil
+}
+
+func (x *CommitRequest) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+func (x *CommitRequest) ClearTransactionId() {
+	if _, ok := x.xxx_hidden_Transaction.(*commitRequest_TransactionId); ok {
+		x.xxx_hidden_Transaction = nil
+	}
+}
+
+func (x *CommitRequest) ClearSingleUseTransaction() {
+	if _, ok := x.xxx_hidden_Transaction.(*commitRequest_SingleUseTransaction); ok {
+		x.xxx_hidden_Transaction = nil
+	}
+}
+
+func (x *CommitRequest) ClearMaxCommitDelay() {
+	x.xxx_hidden_MaxCommitDelay = nil
+}
+
+func (x *CommitRequest) ClearRequestOptions() {
+	x.xxx_hidden_RequestOptions = nil
+}
+
+func (x *CommitRequest) ClearPrecommitToken() {
+	x.xxx_hidden_PrecommitToken = nil
+}
+
+func (x *CommitRequest) ClearRoutingHint() {
+	x.xxx_hidden_RoutingHint = nil
+}
+
+const CommitRequest_Transaction_not_set_case case_CommitRequest_Transaction = 0
+const CommitRequest_TransactionId_case case_CommitRequest_Transaction = 2
+const CommitRequest_SingleUseTransaction_case case_CommitRequest_Transaction = 3
+
+func (x *CommitRequest) WhichTransaction() case_CommitRequest_Transaction {
+	if x == nil {
+		return CommitRequest_Transaction_not_set_case
+	}
+	switch x.xxx_hidden_Transaction.(type) {
+	case *commitRequest_TransactionId:
+		return CommitRequest_TransactionId_case
+	case *commitRequest_SingleUseTransaction:
+		return CommitRequest_SingleUseTransaction_case
+	default:
+		return CommitRequest_Transaction_not_set_case
+	}
+}
+
+type CommitRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session in which the transaction to be committed is running.
+	Session string
+	// Required. The transaction in which to commit.
+
+	// Fields of oneof xxx_hidden_Transaction:
+	// Commit a previously-started transaction.
+	TransactionId []byte
+	// Execute mutations in a temporary transaction. Note that unlike
+	// commit of a previously-started transaction, commit with a
+	// temporary transaction is non-idempotent. That is, if the
+	// `CommitRequest` is sent to Cloud Spanner more than once (for
+	// instance, due to retries in the application, or in the
+	// transport library), it's possible that the mutations are
+	// executed more than once. If this is undesirable, use
+	// [BeginTransaction][google.spanner.v1.Spanner.BeginTransaction] and
+	// [Commit][google.spanner.v1.Spanner.Commit] instead.
+	SingleUseTransaction *TransactionOptions
+	// -- end of xxx_hidden_Transaction
+	// The mutations to be executed when this transaction commits. All
+	// mutations are applied atomically, in the order they appear in
+	// this list.
+	Mutations []*Mutation
+	// If `true`, then statistics related to the transaction is included in
+	// the [CommitResponse][google.spanner.v1.CommitResponse.commit_stats].
+	// Default value is `false`.
+	ReturnCommitStats bool
+	// Optional. The amount of latency this request is configured to incur in
+	// order to improve throughput. If this field isn't set, Spanner assumes
+	// requests are relatively latency sensitive and automatically determines an
+	// appropriate delay time. You can specify a commit delay value between 0 and
+	// 500 ms.
+	MaxCommitDelay *durationpb.Duration
+	// Common options for this request.
+	RequestOptions *RequestOptions
+	// Optional. If the read-write transaction was executed on a multiplexed
+	// session, then you must include the precommit token with the highest
+	// sequence number received in this transaction attempt. Failing to do so
+	// results in a `FailedPrecondition` error.
+	PrecommitToken *MultiplexedSessionPrecommitToken
+	// Optional. Makes the Spanner requests location-aware if present.
+	//
+	// It gives the server hints that can be used to route the request
+	// to an appropriate server, potentially significantly decreasing latency and
+	// improving throughput. To achieve improved performance, most fields must be
+	// filled in with accurate values.
+	RoutingHint *RoutingHint
+}
+
+func (b0 CommitRequest_builder) Build() *CommitRequest {
+	m0 := &CommitRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	if b.TransactionId != nil {
+		x.xxx_hidden_Transaction = &commitRequest_TransactionId{b.TransactionId}
+	}
+	if b.SingleUseTransaction != nil {
+		x.xxx_hidden_Transaction = &commitRequest_SingleUseTransaction{b.SingleUseTransaction}
+	}
+	x.xxx_hidden_Mutations = &b.Mutations
+	x.xxx_hidden_ReturnCommitStats = b.ReturnCommitStats
+	x.xxx_hidden_MaxCommitDelay = b.MaxCommitDelay
+	x.xxx_hidden_RequestOptions = b.RequestOptions
+	x.xxx_hidden_PrecommitToken = b.PrecommitToken
+	x.xxx_hidden_RoutingHint = b.RoutingHint
+	return m0
+}
+
+type case_CommitRequest_Transaction protoreflect.FieldNumber
+
+func (x case_CommitRequest_Transaction) String() string {
+	md := file_google_spanner_v1_spanner_proto_msgTypes[20].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
 }
 
 type isCommitRequest_Transaction interface {
 	isCommitRequest_Transaction()
 }
 
-type CommitRequest_TransactionId struct {
+type commitRequest_TransactionId struct {
 	// Commit a previously-started transaction.
 	TransactionId []byte `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3,oneof"`
 }
 
-type CommitRequest_SingleUseTransaction struct {
+type commitRequest_SingleUseTransaction struct {
 	// Execute mutations in a temporary transaction. Note that unlike
 	// commit of a previously-started transaction, commit with a
 	// temporary transaction is non-idempotent. That is, if the
@@ -2449,19 +3721,17 @@ type CommitRequest_SingleUseTransaction struct {
 	SingleUseTransaction *TransactionOptions `protobuf:"bytes,3,opt,name=single_use_transaction,json=singleUseTransaction,proto3,oneof"`
 }
 
-func (*CommitRequest_TransactionId) isCommitRequest_Transaction() {}
+func (*commitRequest_TransactionId) isCommitRequest_Transaction() {}
 
-func (*CommitRequest_SingleUseTransaction) isCommitRequest_Transaction() {}
+func (*commitRequest_SingleUseTransaction) isCommitRequest_Transaction() {}
 
 // The request for [Rollback][google.spanner.v1.Spanner.Rollback].
 type RollbackRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session in which the transaction to roll back is running.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// Required. The transaction to roll back.
-	TransactionId []byte `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3" json:"transaction_id,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Session       string                 `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_TransactionId []byte                 `protobuf:"bytes,2,opt,name=transaction_id,json=transactionId,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *RollbackRequest) Reset() {
@@ -2489,40 +3759,58 @@ func (x *RollbackRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RollbackRequest.ProtoReflect.Descriptor instead.
-func (*RollbackRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{21}
-}
-
 func (x *RollbackRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *RollbackRequest) GetTransactionId() []byte {
 	if x != nil {
-		return x.TransactionId
+		return x.xxx_hidden_TransactionId
 	}
 	return nil
 }
 
+func (x *RollbackRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *RollbackRequest) SetTransactionId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_TransactionId = v
+}
+
+type RollbackRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session in which the transaction to roll back is running.
+	Session string
+	// Required. The transaction to roll back.
+	TransactionId []byte
+}
+
+func (b0 RollbackRequest_builder) Build() *RollbackRequest {
+	m0 := &RollbackRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_TransactionId = b.TransactionId
+	return m0
+}
+
 // The request for [BatchWrite][google.spanner.v1.Spanner.BatchWrite].
 type BatchWriteRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The session in which the batch request is to be run.
-	Session string `protobuf:"bytes,1,opt,name=session,proto3" json:"session,omitempty"`
-	// Common options for this request.
-	RequestOptions *RequestOptions `protobuf:"bytes,3,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
-	// Required. The groups of mutations to be applied.
-	MutationGroups []*BatchWriteRequest_MutationGroup `protobuf:"bytes,4,rep,name=mutation_groups,json=mutationGroups,proto3" json:"mutation_groups,omitempty"`
-	// Optional. If you don't set the `exclude_txn_from_change_streams` option or
-	// if it's set to `false`, then any change streams monitoring columns modified
-	// by transactions will capture the updates made within that transaction.
-	ExcludeTxnFromChangeStreams bool `protobuf:"varint,5,opt,name=exclude_txn_from_change_streams,json=excludeTxnFromChangeStreams,proto3" json:"exclude_txn_from_change_streams,omitempty"`
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	state                                  protoimpl.MessageState              `protogen:"opaque.v1"`
+	xxx_hidden_Session                     string                              `protobuf:"bytes,1,opt,name=session,proto3"`
+	xxx_hidden_RequestOptions              *RequestOptions                     `protobuf:"bytes,3,opt,name=request_options,json=requestOptions,proto3"`
+	xxx_hidden_MutationGroups              *[]*BatchWriteRequest_MutationGroup `protobuf:"bytes,4,rep,name=mutation_groups,json=mutationGroups,proto3"`
+	xxx_hidden_ExcludeTxnFromChangeStreams bool                                `protobuf:"varint,5,opt,name=exclude_txn_from_change_streams,json=excludeTxnFromChangeStreams,proto3"`
+	unknownFields                          protoimpl.UnknownFields
+	sizeCache                              protoimpl.SizeCache
 }
 
 func (x *BatchWriteRequest) Reset() {
@@ -2550,57 +3838,97 @@ func (x *BatchWriteRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BatchWriteRequest.ProtoReflect.Descriptor instead.
-func (*BatchWriteRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{22}
-}
-
 func (x *BatchWriteRequest) GetSession() string {
 	if x != nil {
-		return x.Session
+		return x.xxx_hidden_Session
 	}
 	return ""
 }
 
 func (x *BatchWriteRequest) GetRequestOptions() *RequestOptions {
 	if x != nil {
-		return x.RequestOptions
+		return x.xxx_hidden_RequestOptions
 	}
 	return nil
 }
 
 func (x *BatchWriteRequest) GetMutationGroups() []*BatchWriteRequest_MutationGroup {
 	if x != nil {
-		return x.MutationGroups
+		if x.xxx_hidden_MutationGroups != nil {
+			return *x.xxx_hidden_MutationGroups
+		}
 	}
 	return nil
 }
 
 func (x *BatchWriteRequest) GetExcludeTxnFromChangeStreams() bool {
 	if x != nil {
-		return x.ExcludeTxnFromChangeStreams
+		return x.xxx_hidden_ExcludeTxnFromChangeStreams
 	}
 	return false
 }
 
+func (x *BatchWriteRequest) SetSession(v string) {
+	x.xxx_hidden_Session = v
+}
+
+func (x *BatchWriteRequest) SetRequestOptions(v *RequestOptions) {
+	x.xxx_hidden_RequestOptions = v
+}
+
+func (x *BatchWriteRequest) SetMutationGroups(v []*BatchWriteRequest_MutationGroup) {
+	x.xxx_hidden_MutationGroups = &v
+}
+
+func (x *BatchWriteRequest) SetExcludeTxnFromChangeStreams(v bool) {
+	x.xxx_hidden_ExcludeTxnFromChangeStreams = v
+}
+
+func (x *BatchWriteRequest) HasRequestOptions() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RequestOptions != nil
+}
+
+func (x *BatchWriteRequest) ClearRequestOptions() {
+	x.xxx_hidden_RequestOptions = nil
+}
+
+type BatchWriteRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The session in which the batch request is to be run.
+	Session string
+	// Common options for this request.
+	RequestOptions *RequestOptions
+	// Required. The groups of mutations to be applied.
+	MutationGroups []*BatchWriteRequest_MutationGroup
+	// Optional. If you don't set the `exclude_txn_from_change_streams` option or
+	// if it's set to `false`, then any change streams monitoring columns modified
+	// by transactions will capture the updates made within that transaction.
+	ExcludeTxnFromChangeStreams bool
+}
+
+func (b0 BatchWriteRequest_builder) Build() *BatchWriteRequest {
+	m0 := &BatchWriteRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Session = b.Session
+	x.xxx_hidden_RequestOptions = b.RequestOptions
+	x.xxx_hidden_MutationGroups = &b.MutationGroups
+	x.xxx_hidden_ExcludeTxnFromChangeStreams = b.ExcludeTxnFromChangeStreams
+	return m0
+}
+
 // The result of applying a batch of mutations.
 type BatchWriteResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The mutation groups applied in this batch. The values index into the
-	// `mutation_groups` field in the corresponding `BatchWriteRequest`.
-	Indexes []int32 `protobuf:"varint,1,rep,packed,name=indexes,proto3" json:"indexes,omitempty"`
-	// An `OK` status indicates success. Any other status indicates a failure.
-	Status *status.Status `protobuf:"bytes,2,opt,name=status,proto3" json:"status,omitempty"`
-	// The commit timestamp of the transaction that applied this batch.
-	// Present if status is OK and the mutation groups were applied, absent
-	// otherwise.
-	//
-	// For mutation groups with conditions, a status=OK and missing
-	// commit_timestamp means that the mutation groups were not applied due to the
-	// condition not being satisfied after evaluation.
-	CommitTimestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=commit_timestamp,json=commitTimestamp,proto3" json:"commit_timestamp,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Indexes         []int32                `protobuf:"varint,1,rep,packed,name=indexes,proto3"`
+	xxx_hidden_Status          *status.Status         `protobuf:"bytes,2,opt,name=status,proto3"`
+	xxx_hidden_CommitTimestamp *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=commit_timestamp,json=commitTimestamp,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *BatchWriteResponse) Reset() {
@@ -2628,46 +3956,98 @@ func (x *BatchWriteResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BatchWriteResponse.ProtoReflect.Descriptor instead.
-func (*BatchWriteResponse) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{23}
-}
-
 func (x *BatchWriteResponse) GetIndexes() []int32 {
 	if x != nil {
-		return x.Indexes
+		return x.xxx_hidden_Indexes
 	}
 	return nil
 }
 
 func (x *BatchWriteResponse) GetStatus() *status.Status {
 	if x != nil {
-		return x.Status
+		return x.xxx_hidden_Status
 	}
 	return nil
 }
 
 func (x *BatchWriteResponse) GetCommitTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CommitTimestamp
+		return x.xxx_hidden_CommitTimestamp
 	}
 	return nil
+}
+
+func (x *BatchWriteResponse) SetIndexes(v []int32) {
+	x.xxx_hidden_Indexes = v
+}
+
+func (x *BatchWriteResponse) SetStatus(v *status.Status) {
+	x.xxx_hidden_Status = v
+}
+
+func (x *BatchWriteResponse) SetCommitTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CommitTimestamp = v
+}
+
+func (x *BatchWriteResponse) HasStatus() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Status != nil
+}
+
+func (x *BatchWriteResponse) HasCommitTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CommitTimestamp != nil
+}
+
+func (x *BatchWriteResponse) ClearStatus() {
+	x.xxx_hidden_Status = nil
+}
+
+func (x *BatchWriteResponse) ClearCommitTimestamp() {
+	x.xxx_hidden_CommitTimestamp = nil
+}
+
+type BatchWriteResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The mutation groups applied in this batch. The values index into the
+	// `mutation_groups` field in the corresponding `BatchWriteRequest`.
+	Indexes []int32
+	// An `OK` status indicates success. Any other status indicates a failure.
+	Status *status.Status
+	// The commit timestamp of the transaction that applied this batch.
+	// Present if status is OK and the mutation groups were applied, absent
+	// otherwise.
+	//
+	// For mutation groups with conditions, a status=OK and missing
+	// commit_timestamp means that the mutation groups were not applied due to the
+	// condition not being satisfied after evaluation.
+	CommitTimestamp *timestamppb.Timestamp
+}
+
+func (b0 BatchWriteResponse_builder) Build() *BatchWriteResponse {
+	m0 := &BatchWriteResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Indexes = b.Indexes
+	x.xxx_hidden_Status = b.Status
+	x.xxx_hidden_CommitTimestamp = b.CommitTimestamp
+	return m0
 }
 
 // The request for
 // [FetchCacheUpdate][google.spanner.v1.Spanner.FetchCacheUpdate].
 type FetchCacheUpdateRequest struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The database for which to retrieve the cache update.
-	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
-	// Optional. The maximum number of key recipes to return in the response.
-	// If not set, a default limit of 100 will be used.
-	MaxRecipeCount int32 `protobuf:"varint,2,opt,name=max_recipe_count,json=maxRecipeCount,proto3" json:"max_recipe_count,omitempty"`
-	// Optional. The maximum number of ranges to return in the response.
-	// If not set, a default limit of 10000 will be used.
-	MaxRangeCount int32 `protobuf:"varint,3,opt,name=max_range_count,json=maxRangeCount,proto3" json:"max_range_count,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Database       string                 `protobuf:"bytes,1,opt,name=database,proto3"`
+	xxx_hidden_MaxRecipeCount int32                  `protobuf:"varint,2,opt,name=max_recipe_count,json=maxRecipeCount,proto3"`
+	xxx_hidden_MaxRangeCount  int32                  `protobuf:"varint,3,opt,name=max_range_count,json=maxRangeCount,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *FetchCacheUpdateRequest) Reset() {
@@ -2695,41 +4075,68 @@ func (x *FetchCacheUpdateRequest) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use FetchCacheUpdateRequest.ProtoReflect.Descriptor instead.
-func (*FetchCacheUpdateRequest) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{24}
-}
-
 func (x *FetchCacheUpdateRequest) GetDatabase() string {
 	if x != nil {
-		return x.Database
+		return x.xxx_hidden_Database
 	}
 	return ""
 }
 
 func (x *FetchCacheUpdateRequest) GetMaxRecipeCount() int32 {
 	if x != nil {
-		return x.MaxRecipeCount
+		return x.xxx_hidden_MaxRecipeCount
 	}
 	return 0
 }
 
 func (x *FetchCacheUpdateRequest) GetMaxRangeCount() int32 {
 	if x != nil {
-		return x.MaxRangeCount
+		return x.xxx_hidden_MaxRangeCount
 	}
 	return 0
 }
 
+func (x *FetchCacheUpdateRequest) SetDatabase(v string) {
+	x.xxx_hidden_Database = v
+}
+
+func (x *FetchCacheUpdateRequest) SetMaxRecipeCount(v int32) {
+	x.xxx_hidden_MaxRecipeCount = v
+}
+
+func (x *FetchCacheUpdateRequest) SetMaxRangeCount(v int32) {
+	x.xxx_hidden_MaxRangeCount = v
+}
+
+type FetchCacheUpdateRequest_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The database for which to retrieve the cache update.
+	Database string
+	// Optional. The maximum number of key recipes to return in the response.
+	// If not set, a default limit of 100 will be used.
+	MaxRecipeCount int32
+	// Optional. The maximum number of ranges to return in the response.
+	// If not set, a default limit of 10000 will be used.
+	MaxRangeCount int32
+}
+
+func (b0 FetchCacheUpdateRequest_builder) Build() *FetchCacheUpdateRequest {
+	m0 := &FetchCacheUpdateRequest{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Database = b.Database
+	x.xxx_hidden_MaxRecipeCount = b.MaxRecipeCount
+	x.xxx_hidden_MaxRangeCount = b.MaxRangeCount
+	return m0
+}
+
 // Container for various pieces of client-owned context attached to a request.
 type RequestOptions_ClientContext struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Map of parameter name to value for this request. These values
-	// will be returned by any SECURE_CONTEXT() calls invoked by this request
-	// (e.g., by queries against Parameterized Secure Views).
-	SecureContext map[string]*structpb.Value `protobuf:"bytes,1,rep,name=secure_context,json=secureContext,proto3" json:"secure_context,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState     `protogen:"opaque.v1"`
+	xxx_hidden_SecureContext map[string]*structpb.Value `protobuf:"bytes,1,rep,name=secure_context,json=secureContext,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *RequestOptions_ClientContext) Reset() {
@@ -2757,16 +4164,32 @@ func (x *RequestOptions_ClientContext) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use RequestOptions_ClientContext.ProtoReflect.Descriptor instead.
-func (*RequestOptions_ClientContext) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{8, 0}
-}
-
 func (x *RequestOptions_ClientContext) GetSecureContext() map[string]*structpb.Value {
 	if x != nil {
-		return x.SecureContext
+		return x.xxx_hidden_SecureContext
 	}
 	return nil
+}
+
+func (x *RequestOptions_ClientContext) SetSecureContext(v map[string]*structpb.Value) {
+	x.xxx_hidden_SecureContext = v
+}
+
+type RequestOptions_ClientContext_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Optional. Map of parameter name to value for this request. These values
+	// will be returned by any SECURE_CONTEXT() calls invoked by this request
+	// (e.g., by queries against Parameterized Secure Views).
+	SecureContext map[string]*structpb.Value
+}
+
+func (b0 RequestOptions_ClientContext_builder) Build() *RequestOptions_ClientContext {
+	m0 := &RequestOptions_ClientContext{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_SecureContext = b.SecureContext
+	return m0
 }
 
 // The directed read replica selector.
@@ -2788,13 +4211,11 @@ func (x *RequestOptions_ClientContext) GetSecureContext() map[string]*structpb.V
 //     in location "us-east1" is used to process
 //     the request.
 type DirectedReadOptions_ReplicaSelection struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The location or region of the serving requests, for example, "us-east1".
-	Location string `protobuf:"bytes,1,opt,name=location,proto3" json:"location,omitempty"`
-	// The type of replica.
-	Type          DirectedReadOptions_ReplicaSelection_Type `protobuf:"varint,2,opt,name=type,proto3,enum=google.spanner.v1.DirectedReadOptions_ReplicaSelection_Type" json:"type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState                    `protogen:"opaque.v1"`
+	xxx_hidden_Location string                                    `protobuf:"bytes,1,opt,name=location,proto3"`
+	xxx_hidden_Type     DirectedReadOptions_ReplicaSelection_Type `protobuf:"varint,2,opt,name=type,proto3,enum=google.spanner.v1.DirectedReadOptions_ReplicaSelection_Type"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *DirectedReadOptions_ReplicaSelection) Reset() {
@@ -2822,37 +4243,54 @@ func (x *DirectedReadOptions_ReplicaSelection) ProtoReflect() protoreflect.Messa
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DirectedReadOptions_ReplicaSelection.ProtoReflect.Descriptor instead.
-func (*DirectedReadOptions_ReplicaSelection) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{9, 0}
-}
-
 func (x *DirectedReadOptions_ReplicaSelection) GetLocation() string {
 	if x != nil {
-		return x.Location
+		return x.xxx_hidden_Location
 	}
 	return ""
 }
 
 func (x *DirectedReadOptions_ReplicaSelection) GetType() DirectedReadOptions_ReplicaSelection_Type {
 	if x != nil {
-		return x.Type
+		return x.xxx_hidden_Type
 	}
 	return DirectedReadOptions_ReplicaSelection_TYPE_UNSPECIFIED
+}
+
+func (x *DirectedReadOptions_ReplicaSelection) SetLocation(v string) {
+	x.xxx_hidden_Location = v
+}
+
+func (x *DirectedReadOptions_ReplicaSelection) SetType(v DirectedReadOptions_ReplicaSelection_Type) {
+	x.xxx_hidden_Type = v
+}
+
+type DirectedReadOptions_ReplicaSelection_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The location or region of the serving requests, for example, "us-east1".
+	Location string
+	// The type of replica.
+	Type DirectedReadOptions_ReplicaSelection_Type
+}
+
+func (b0 DirectedReadOptions_ReplicaSelection_builder) Build() *DirectedReadOptions_ReplicaSelection {
+	m0 := &DirectedReadOptions_ReplicaSelection{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Location = b.Location
+	x.xxx_hidden_Type = b.Type
+	return m0
 }
 
 // An `IncludeReplicas` contains a repeated set of `ReplicaSelection` which
 // indicates the order in which replicas should be considered.
 type DirectedReadOptions_IncludeReplicas struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The directed read replica selector.
-	ReplicaSelections []*DirectedReadOptions_ReplicaSelection `protobuf:"bytes,1,rep,name=replica_selections,json=replicaSelections,proto3" json:"replica_selections,omitempty"`
-	// If `true`, Spanner doesn't route requests to a replica outside the
-	// <`include_replicas` list when all of the specified replicas are
-	// unavailable or unhealthy. Default value is `false`.
-	AutoFailoverDisabled bool `protobuf:"varint,2,opt,name=auto_failover_disabled,json=autoFailoverDisabled,proto3" json:"auto_failover_disabled,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state                           protoimpl.MessageState                   `protogen:"opaque.v1"`
+	xxx_hidden_ReplicaSelections    *[]*DirectedReadOptions_ReplicaSelection `protobuf:"bytes,1,rep,name=replica_selections,json=replicaSelections,proto3"`
+	xxx_hidden_AutoFailoverDisabled bool                                     `protobuf:"varint,2,opt,name=auto_failover_disabled,json=autoFailoverDisabled,proto3"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
 }
 
 func (x *DirectedReadOptions_IncludeReplicas) Reset() {
@@ -2880,33 +4318,57 @@ func (x *DirectedReadOptions_IncludeReplicas) ProtoReflect() protoreflect.Messag
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DirectedReadOptions_IncludeReplicas.ProtoReflect.Descriptor instead.
-func (*DirectedReadOptions_IncludeReplicas) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{9, 1}
-}
-
 func (x *DirectedReadOptions_IncludeReplicas) GetReplicaSelections() []*DirectedReadOptions_ReplicaSelection {
 	if x != nil {
-		return x.ReplicaSelections
+		if x.xxx_hidden_ReplicaSelections != nil {
+			return *x.xxx_hidden_ReplicaSelections
+		}
 	}
 	return nil
 }
 
 func (x *DirectedReadOptions_IncludeReplicas) GetAutoFailoverDisabled() bool {
 	if x != nil {
-		return x.AutoFailoverDisabled
+		return x.xxx_hidden_AutoFailoverDisabled
 	}
 	return false
+}
+
+func (x *DirectedReadOptions_IncludeReplicas) SetReplicaSelections(v []*DirectedReadOptions_ReplicaSelection) {
+	x.xxx_hidden_ReplicaSelections = &v
+}
+
+func (x *DirectedReadOptions_IncludeReplicas) SetAutoFailoverDisabled(v bool) {
+	x.xxx_hidden_AutoFailoverDisabled = v
+}
+
+type DirectedReadOptions_IncludeReplicas_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The directed read replica selector.
+	ReplicaSelections []*DirectedReadOptions_ReplicaSelection
+	// If `true`, Spanner doesn't route requests to a replica outside the
+	// <`include_replicas` list when all of the specified replicas are
+	// unavailable or unhealthy. Default value is `false`.
+	AutoFailoverDisabled bool
+}
+
+func (b0 DirectedReadOptions_IncludeReplicas_builder) Build() *DirectedReadOptions_IncludeReplicas {
+	m0 := &DirectedReadOptions_IncludeReplicas{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_ReplicaSelections = &b.ReplicaSelections
+	x.xxx_hidden_AutoFailoverDisabled = b.AutoFailoverDisabled
+	return m0
 }
 
 // An ExcludeReplicas contains a repeated set of ReplicaSelection that should
 // be excluded from serving requests.
 type DirectedReadOptions_ExcludeReplicas struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The directed read replica selector.
-	ReplicaSelections []*DirectedReadOptions_ReplicaSelection `protobuf:"bytes,1,rep,name=replica_selections,json=replicaSelections,proto3" json:"replica_selections,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state                        protoimpl.MessageState                   `protogen:"opaque.v1"`
+	xxx_hidden_ReplicaSelections *[]*DirectedReadOptions_ReplicaSelection `protobuf:"bytes,1,rep,name=replica_selections,json=replicaSelections,proto3"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *DirectedReadOptions_ExcludeReplicas) Reset() {
@@ -2934,71 +4396,41 @@ func (x *DirectedReadOptions_ExcludeReplicas) ProtoReflect() protoreflect.Messag
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use DirectedReadOptions_ExcludeReplicas.ProtoReflect.Descriptor instead.
-func (*DirectedReadOptions_ExcludeReplicas) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{9, 2}
-}
-
 func (x *DirectedReadOptions_ExcludeReplicas) GetReplicaSelections() []*DirectedReadOptions_ReplicaSelection {
 	if x != nil {
-		return x.ReplicaSelections
+		if x.xxx_hidden_ReplicaSelections != nil {
+			return *x.xxx_hidden_ReplicaSelections
+		}
 	}
 	return nil
 }
 
+func (x *DirectedReadOptions_ExcludeReplicas) SetReplicaSelections(v []*DirectedReadOptions_ReplicaSelection) {
+	x.xxx_hidden_ReplicaSelections = &v
+}
+
+type DirectedReadOptions_ExcludeReplicas_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The directed read replica selector.
+	ReplicaSelections []*DirectedReadOptions_ReplicaSelection
+}
+
+func (b0 DirectedReadOptions_ExcludeReplicas_builder) Build() *DirectedReadOptions_ExcludeReplicas {
+	m0 := &DirectedReadOptions_ExcludeReplicas{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_ReplicaSelections = &b.ReplicaSelections
+	return m0
+}
+
 // Query optimizer configuration.
 type ExecuteSqlRequest_QueryOptions struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// An option to control the selection of optimizer version.
-	//
-	// This parameter allows individual queries to pick different query
-	// optimizer versions.
-	//
-	// Specifying `latest` as a value instructs Cloud Spanner to use the
-	// latest supported query optimizer version. If not specified, Cloud Spanner
-	// uses the optimizer version set at the database level options. Any other
-	// positive integer (from the list of supported optimizer versions)
-	// overrides the default optimizer version for query execution.
-	//
-	// The list of supported optimizer versions can be queried from
-	// `SPANNER_SYS.SUPPORTED_OPTIMIZER_VERSIONS`.
-	//
-	// Executing a SQL statement with an invalid optimizer version fails with
-	// an `INVALID_ARGUMENT` error.
-	//
-	// See
-	// https://cloud.google.com/spanner/docs/query-optimizer/manage-query-optimizer
-	// for more information on managing the query optimizer.
-	//
-	// The `optimizer_version` statement hint has precedence over this setting.
-	OptimizerVersion string `protobuf:"bytes,1,opt,name=optimizer_version,json=optimizerVersion,proto3" json:"optimizer_version,omitempty"`
-	// An option to control the selection of optimizer statistics package.
-	//
-	// This parameter allows individual queries to use a different query
-	// optimizer statistics package.
-	//
-	// Specifying `latest` as a value instructs Cloud Spanner to use the latest
-	// generated statistics package. If not specified, Cloud Spanner uses
-	// the statistics package set at the database level options, or the latest
-	// package if the database option isn't set.
-	//
-	// The statistics package requested by the query has to be exempt from
-	// garbage collection. This can be achieved with the following DDL
-	// statement:
-	//
-	// ```sql
-	// ALTER STATISTICS <package_name> SET OPTIONS (allow_gc=false)
-	// ```
-	//
-	// The list of available statistics packages can be queried from
-	// `INFORMATION_SCHEMA.SPANNER_STATISTICS`.
-	//
-	// Executing a SQL statement with an invalid optimizer statistics package
-	// or with a statistics package that allows garbage collection fails with
-	// an `INVALID_ARGUMENT` error.
-	OptimizerStatisticsPackage string `protobuf:"bytes,2,opt,name=optimizer_statistics_package,json=optimizerStatisticsPackage,proto3" json:"optimizer_statistics_package,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	state                                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_OptimizerVersion           string                 `protobuf:"bytes,1,opt,name=optimizer_version,json=optimizerVersion,proto3"`
+	xxx_hidden_OptimizerStatisticsPackage string                 `protobuf:"bytes,2,opt,name=optimizer_statistics_package,json=optimizerStatisticsPackage,proto3"`
+	unknownFields                         protoimpl.UnknownFields
+	sizeCache                             protoimpl.SizeCache
 }
 
 func (x *ExecuteSqlRequest_QueryOptions) Reset() {
@@ -3026,56 +4458,98 @@ func (x *ExecuteSqlRequest_QueryOptions) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExecuteSqlRequest_QueryOptions.ProtoReflect.Descriptor instead.
-func (*ExecuteSqlRequest_QueryOptions) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{10, 0}
-}
-
 func (x *ExecuteSqlRequest_QueryOptions) GetOptimizerVersion() string {
 	if x != nil {
-		return x.OptimizerVersion
+		return x.xxx_hidden_OptimizerVersion
 	}
 	return ""
 }
 
 func (x *ExecuteSqlRequest_QueryOptions) GetOptimizerStatisticsPackage() string {
 	if x != nil {
-		return x.OptimizerStatisticsPackage
+		return x.xxx_hidden_OptimizerStatisticsPackage
 	}
 	return ""
 }
 
+func (x *ExecuteSqlRequest_QueryOptions) SetOptimizerVersion(v string) {
+	x.xxx_hidden_OptimizerVersion = v
+}
+
+func (x *ExecuteSqlRequest_QueryOptions) SetOptimizerStatisticsPackage(v string) {
+	x.xxx_hidden_OptimizerStatisticsPackage = v
+}
+
+type ExecuteSqlRequest_QueryOptions_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// An option to control the selection of optimizer version.
+	//
+	// This parameter allows individual queries to pick different query
+	// optimizer versions.
+	//
+	// Specifying `latest` as a value instructs Cloud Spanner to use the
+	// latest supported query optimizer version. If not specified, Cloud Spanner
+	// uses the optimizer version set at the database level options. Any other
+	// positive integer (from the list of supported optimizer versions)
+	// overrides the default optimizer version for query execution.
+	//
+	// The list of supported optimizer versions can be queried from
+	// `SPANNER_SYS.SUPPORTED_OPTIMIZER_VERSIONS`.
+	//
+	// Executing a SQL statement with an invalid optimizer version fails with
+	// an `INVALID_ARGUMENT` error.
+	//
+	// See
+	// https://cloud.google.com/spanner/docs/query-optimizer/manage-query-optimizer
+	// for more information on managing the query optimizer.
+	//
+	// The `optimizer_version` statement hint has precedence over this setting.
+	OptimizerVersion string
+	// An option to control the selection of optimizer statistics package.
+	//
+	// This parameter allows individual queries to use a different query
+	// optimizer statistics package.
+	//
+	// Specifying `latest` as a value instructs Cloud Spanner to use the latest
+	// generated statistics package. If not specified, Cloud Spanner uses
+	// the statistics package set at the database level options, or the latest
+	// package if the database option isn't set.
+	//
+	// The statistics package requested by the query has to be exempt from
+	// garbage collection. This can be achieved with the following DDL
+	// statement:
+	//
+	// ```sql
+	// ALTER STATISTICS <package_name> SET OPTIONS (allow_gc=false)
+	// ```
+	//
+	// The list of available statistics packages can be queried from
+	// `INFORMATION_SCHEMA.SPANNER_STATISTICS`.
+	//
+	// Executing a SQL statement with an invalid optimizer statistics package
+	// or with a statistics package that allows garbage collection fails with
+	// an `INVALID_ARGUMENT` error.
+	OptimizerStatisticsPackage string
+}
+
+func (b0 ExecuteSqlRequest_QueryOptions_builder) Build() *ExecuteSqlRequest_QueryOptions {
+	m0 := &ExecuteSqlRequest_QueryOptions{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_OptimizerVersion = b.OptimizerVersion
+	x.xxx_hidden_OptimizerStatisticsPackage = b.OptimizerStatisticsPackage
+	return m0
+}
+
 // A single DML statement.
 type ExecuteBatchDmlRequest_Statement struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The DML string.
-	Sql string `protobuf:"bytes,1,opt,name=sql,proto3" json:"sql,omitempty"`
-	// Parameter names and values that bind to placeholders in the DML string.
-	//
-	// A parameter placeholder consists of the `@` character followed by the
-	// parameter name (for example, `@firstName`). Parameter names can contain
-	// letters, numbers, and underscores.
-	//
-	// Parameters can appear anywhere that a literal value is expected. The
-	// same parameter name can be used more than once, for example:
-	//
-	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
-	//
-	// It's an error to execute a SQL statement with unbound parameters.
-	Params *structpb.Struct `protobuf:"bytes,2,opt,name=params,proto3" json:"params,omitempty"`
-	// It isn't always possible for Cloud Spanner to infer the right SQL type
-	// from a JSON value. For example, values of type `BYTES` and values
-	// of type `STRING` both appear in
-	// [params][google.spanner.v1.ExecuteBatchDmlRequest.Statement.params] as
-	// JSON strings.
-	//
-	// In these cases, `param_types` can be used to specify the exact
-	// SQL type for some or all of the SQL statement parameters. See the
-	// definition of [Type][google.spanner.v1.Type] for more information
-	// about SQL types.
-	ParamTypes    map[string]*Type `protobuf:"bytes,3,rep,name=param_types,json=paramTypes,proto3" json:"param_types,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Sql        string                 `protobuf:"bytes,1,opt,name=sql,proto3"`
+	xxx_hidden_Params     *structpb.Struct       `protobuf:"bytes,2,opt,name=params,proto3"`
+	xxx_hidden_ParamTypes map[string]*Type       `protobuf:"bytes,3,rep,name=param_types,json=paramTypes,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *ExecuteBatchDmlRequest_Statement) Reset() {
@@ -3103,41 +4577,99 @@ func (x *ExecuteBatchDmlRequest_Statement) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ExecuteBatchDmlRequest_Statement.ProtoReflect.Descriptor instead.
-func (*ExecuteBatchDmlRequest_Statement) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{11, 0}
-}
-
 func (x *ExecuteBatchDmlRequest_Statement) GetSql() string {
 	if x != nil {
-		return x.Sql
+		return x.xxx_hidden_Sql
 	}
 	return ""
 }
 
 func (x *ExecuteBatchDmlRequest_Statement) GetParams() *structpb.Struct {
 	if x != nil {
-		return x.Params
+		return x.xxx_hidden_Params
 	}
 	return nil
 }
 
 func (x *ExecuteBatchDmlRequest_Statement) GetParamTypes() map[string]*Type {
 	if x != nil {
-		return x.ParamTypes
+		return x.xxx_hidden_ParamTypes
 	}
 	return nil
+}
+
+func (x *ExecuteBatchDmlRequest_Statement) SetSql(v string) {
+	x.xxx_hidden_Sql = v
+}
+
+func (x *ExecuteBatchDmlRequest_Statement) SetParams(v *structpb.Struct) {
+	x.xxx_hidden_Params = v
+}
+
+func (x *ExecuteBatchDmlRequest_Statement) SetParamTypes(v map[string]*Type) {
+	x.xxx_hidden_ParamTypes = v
+}
+
+func (x *ExecuteBatchDmlRequest_Statement) HasParams() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Params != nil
+}
+
+func (x *ExecuteBatchDmlRequest_Statement) ClearParams() {
+	x.xxx_hidden_Params = nil
+}
+
+type ExecuteBatchDmlRequest_Statement_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The DML string.
+	Sql string
+	// Parameter names and values that bind to placeholders in the DML string.
+	//
+	// A parameter placeholder consists of the `@` character followed by the
+	// parameter name (for example, `@firstName`). Parameter names can contain
+	// letters, numbers, and underscores.
+	//
+	// Parameters can appear anywhere that a literal value is expected. The
+	// same parameter name can be used more than once, for example:
+	//
+	// `"WHERE id > @msg_id AND id < @msg_id + 100"`
+	//
+	// It's an error to execute a SQL statement with unbound parameters.
+	Params *structpb.Struct
+	// It isn't always possible for Cloud Spanner to infer the right SQL type
+	// from a JSON value. For example, values of type `BYTES` and values
+	// of type `STRING` both appear in
+	// [params][google.spanner.v1.ExecuteBatchDmlRequest.Statement.params] as
+	// JSON strings.
+	//
+	// In these cases, `param_types` can be used to specify the exact
+	// SQL type for some or all of the SQL statement parameters. See the
+	// definition of [Type][google.spanner.v1.Type] for more information
+	// about SQL types.
+	ParamTypes map[string]*Type
+}
+
+func (b0 ExecuteBatchDmlRequest_Statement_builder) Build() *ExecuteBatchDmlRequest_Statement {
+	m0 := &ExecuteBatchDmlRequest_Statement{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Sql = b.Sql
+	x.xxx_hidden_Params = b.Params
+	x.xxx_hidden_ParamTypes = b.ParamTypes
+	return m0
 }
 
 // A group of mutations to be committed together. Related mutations should be
 // placed in a group. For example, two mutations inserting rows with the same
 // primary key prefix in both parent and child tables are related.
 type BatchWriteRequest_MutationGroup struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The mutations in this group.
-	Mutations     []*Mutation `protobuf:"bytes,1,rep,name=mutations,proto3" json:"mutations,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Mutations *[]*Mutation           `protobuf:"bytes,1,rep,name=mutations,proto3"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *BatchWriteRequest_MutationGroup) Reset() {
@@ -3165,16 +4697,32 @@ func (x *BatchWriteRequest_MutationGroup) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use BatchWriteRequest_MutationGroup.ProtoReflect.Descriptor instead.
-func (*BatchWriteRequest_MutationGroup) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_spanner_proto_rawDescGZIP(), []int{22, 0}
-}
-
 func (x *BatchWriteRequest_MutationGroup) GetMutations() []*Mutation {
 	if x != nil {
-		return x.Mutations
+		if x.xxx_hidden_Mutations != nil {
+			return *x.xxx_hidden_Mutations
+		}
 	}
 	return nil
+}
+
+func (x *BatchWriteRequest_MutationGroup) SetMutations(v []*Mutation) {
+	x.xxx_hidden_Mutations = &v
+}
+
+type BatchWriteRequest_MutationGroup_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The mutations in this group.
+	Mutations []*Mutation
+}
+
+func (b0 BatchWriteRequest_MutationGroup_builder) Build() *BatchWriteRequest_MutationGroup {
+	m0 := &BatchWriteRequest_MutationGroup{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Mutations = &b.Mutations
+	return m0
 }
 
 var File_google_spanner_v1_spanner_proto protoreflect.FileDescriptor
@@ -3434,18 +4982,6 @@ const file_google_spanner_v1_spanner_proto_rawDesc = "" +
 	"\x1fspanner.googleapis.com/Database\x12<projects/{project}/instances/{instance}/databases/{database}\n" +
 	"\x15com.google.spanner.v1B\fSpannerProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1P\x00b\x06proto3"
 
-var (
-	file_google_spanner_v1_spanner_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_spanner_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_spanner_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_spanner_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_spanner_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_spanner_proto_rawDesc), len(file_google_spanner_v1_spanner_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_spanner_proto_rawDescData
-}
-
 var file_google_spanner_v1_spanner_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
 var file_google_spanner_v1_spanner_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
 var file_google_spanner_v1_spanner_proto_goTypes = []any{
@@ -3631,12 +5167,12 @@ func file_google_spanner_v1_spanner_proto_init() {
 	file_google_spanner_v1_transaction_proto_init()
 	file_google_spanner_v1_type_proto_init()
 	file_google_spanner_v1_spanner_proto_msgTypes[9].OneofWrappers = []any{
-		(*DirectedReadOptions_IncludeReplicas_)(nil),
-		(*DirectedReadOptions_ExcludeReplicas_)(nil),
+		(*directedReadOptions_IncludeReplicas_)(nil),
+		(*directedReadOptions_ExcludeReplicas_)(nil),
 	}
 	file_google_spanner_v1_spanner_proto_msgTypes[20].OneofWrappers = []any{
-		(*CommitRequest_TransactionId)(nil),
-		(*CommitRequest_SingleUseTransaction)(nil),
+		(*commitRequest_TransactionId)(nil),
+		(*commitRequest_SingleUseTransaction)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

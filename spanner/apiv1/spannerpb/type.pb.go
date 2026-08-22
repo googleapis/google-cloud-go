@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -181,11 +180,6 @@ func (x TypeCode) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use TypeCode.Descriptor instead.
-func (TypeCode) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_type_proto_rawDescGZIP(), []int{0}
-}
-
 // `TypeAnnotationCode` is used as a part of [Type][google.spanner.v1.Type] to
 // disambiguate SQL types that should be used for a given Cloud Spanner value.
 // Disambiguation is needed because the same Cloud Spanner type can be mapped to
@@ -255,42 +249,17 @@ func (x TypeAnnotationCode) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use TypeAnnotationCode.Descriptor instead.
-func (TypeAnnotationCode) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_type_proto_rawDescGZIP(), []int{1}
-}
-
 // `Type` indicates the type of a Cloud Spanner value, as might be stored in a
 // table cell or returned from an SQL query.
 type Type struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The [TypeCode][google.spanner.v1.TypeCode] for this type.
-	Code TypeCode `protobuf:"varint,1,opt,name=code,proto3,enum=google.spanner.v1.TypeCode" json:"code,omitempty"`
-	// If [code][google.spanner.v1.Type.code] ==
-	// [ARRAY][google.spanner.v1.TypeCode.ARRAY], then `array_element_type` is the
-	// type of the array elements.
-	ArrayElementType *Type `protobuf:"bytes,2,opt,name=array_element_type,json=arrayElementType,proto3" json:"array_element_type,omitempty"`
-	// If [code][google.spanner.v1.Type.code] ==
-	// [STRUCT][google.spanner.v1.TypeCode.STRUCT], then `struct_type` provides
-	// type information for the struct's fields.
-	StructType *StructType `protobuf:"bytes,3,opt,name=struct_type,json=structType,proto3" json:"struct_type,omitempty"`
-	// The [TypeAnnotationCode][google.spanner.v1.TypeAnnotationCode] that
-	// disambiguates SQL type that Spanner will use to represent values of this
-	// type during query processing. This is necessary for some type codes because
-	// a single [TypeCode][google.spanner.v1.TypeCode] can be mapped to different
-	// SQL types depending on the SQL dialect.
-	// [type_annotation][google.spanner.v1.Type.type_annotation] typically is not
-	// needed to process the content of a value (it doesn't affect serialization)
-	// and clients can ignore it on the read path.
-	TypeAnnotation TypeAnnotationCode `protobuf:"varint,4,opt,name=type_annotation,json=typeAnnotation,proto3,enum=google.spanner.v1.TypeAnnotationCode" json:"type_annotation,omitempty"`
-	// If [code][google.spanner.v1.Type.code] ==
-	// [PROTO][google.spanner.v1.TypeCode.PROTO] or
-	// [code][google.spanner.v1.Type.code] ==
-	// [ENUM][google.spanner.v1.TypeCode.ENUM], then `proto_type_fqn` is the fully
-	// qualified name of the proto type representing the proto/enum definition.
-	ProtoTypeFqn  string `protobuf:"bytes,5,opt,name=proto_type_fqn,json=protoTypeFqn,proto3" json:"proto_type_fqn,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                       protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Code             TypeCode               `protobuf:"varint,1,opt,name=code,proto3,enum=google.spanner.v1.TypeCode"`
+	xxx_hidden_ArrayElementType *Type                  `protobuf:"bytes,2,opt,name=array_element_type,json=arrayElementType,proto3"`
+	xxx_hidden_StructType       *StructType            `protobuf:"bytes,3,opt,name=struct_type,json=structType,proto3"`
+	xxx_hidden_TypeAnnotation   TypeAnnotationCode     `protobuf:"varint,4,opt,name=type_annotation,json=typeAnnotation,proto3,enum=google.spanner.v1.TypeAnnotationCode"`
+	xxx_hidden_ProtoTypeFqn     string                 `protobuf:"bytes,5,opt,name=proto_type_fqn,json=protoTypeFqn,proto3"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
 }
 
 func (x *Type) Reset() {
@@ -318,59 +287,132 @@ func (x *Type) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Type.ProtoReflect.Descriptor instead.
-func (*Type) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_type_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *Type) GetCode() TypeCode {
 	if x != nil {
-		return x.Code
+		return x.xxx_hidden_Code
 	}
 	return TypeCode_TYPE_CODE_UNSPECIFIED
 }
 
 func (x *Type) GetArrayElementType() *Type {
 	if x != nil {
-		return x.ArrayElementType
+		return x.xxx_hidden_ArrayElementType
 	}
 	return nil
 }
 
 func (x *Type) GetStructType() *StructType {
 	if x != nil {
-		return x.StructType
+		return x.xxx_hidden_StructType
 	}
 	return nil
 }
 
 func (x *Type) GetTypeAnnotation() TypeAnnotationCode {
 	if x != nil {
-		return x.TypeAnnotation
+		return x.xxx_hidden_TypeAnnotation
 	}
 	return TypeAnnotationCode_TYPE_ANNOTATION_CODE_UNSPECIFIED
 }
 
 func (x *Type) GetProtoTypeFqn() string {
 	if x != nil {
-		return x.ProtoTypeFqn
+		return x.xxx_hidden_ProtoTypeFqn
 	}
 	return ""
+}
+
+func (x *Type) SetCode(v TypeCode) {
+	x.xxx_hidden_Code = v
+}
+
+func (x *Type) SetArrayElementType(v *Type) {
+	x.xxx_hidden_ArrayElementType = v
+}
+
+func (x *Type) SetStructType(v *StructType) {
+	x.xxx_hidden_StructType = v
+}
+
+func (x *Type) SetTypeAnnotation(v TypeAnnotationCode) {
+	x.xxx_hidden_TypeAnnotation = v
+}
+
+func (x *Type) SetProtoTypeFqn(v string) {
+	x.xxx_hidden_ProtoTypeFqn = v
+}
+
+func (x *Type) HasArrayElementType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ArrayElementType != nil
+}
+
+func (x *Type) HasStructType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_StructType != nil
+}
+
+func (x *Type) ClearArrayElementType() {
+	x.xxx_hidden_ArrayElementType = nil
+}
+
+func (x *Type) ClearStructType() {
+	x.xxx_hidden_StructType = nil
+}
+
+type Type_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The [TypeCode][google.spanner.v1.TypeCode] for this type.
+	Code TypeCode
+	// If [code][google.spanner.v1.Type.code] ==
+	// [ARRAY][google.spanner.v1.TypeCode.ARRAY], then `array_element_type` is the
+	// type of the array elements.
+	ArrayElementType *Type
+	// If [code][google.spanner.v1.Type.code] ==
+	// [STRUCT][google.spanner.v1.TypeCode.STRUCT], then `struct_type` provides
+	// type information for the struct's fields.
+	StructType *StructType
+	// The [TypeAnnotationCode][google.spanner.v1.TypeAnnotationCode] that
+	// disambiguates SQL type that Spanner will use to represent values of this
+	// type during query processing. This is necessary for some type codes because
+	// a single [TypeCode][google.spanner.v1.TypeCode] can be mapped to different
+	// SQL types depending on the SQL dialect.
+	// [type_annotation][google.spanner.v1.Type.type_annotation] typically is not
+	// needed to process the content of a value (it doesn't affect serialization)
+	// and clients can ignore it on the read path.
+	TypeAnnotation TypeAnnotationCode
+	// If [code][google.spanner.v1.Type.code] ==
+	// [PROTO][google.spanner.v1.TypeCode.PROTO] or
+	// [code][google.spanner.v1.Type.code] ==
+	// [ENUM][google.spanner.v1.TypeCode.ENUM], then `proto_type_fqn` is the fully
+	// qualified name of the proto type representing the proto/enum definition.
+	ProtoTypeFqn string
+}
+
+func (b0 Type_builder) Build() *Type {
+	m0 := &Type{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Code = b.Code
+	x.xxx_hidden_ArrayElementType = b.ArrayElementType
+	x.xxx_hidden_StructType = b.StructType
+	x.xxx_hidden_TypeAnnotation = b.TypeAnnotation
+	x.xxx_hidden_ProtoTypeFqn = b.ProtoTypeFqn
+	return m0
 }
 
 // `StructType` defines the fields of a
 // [STRUCT][google.spanner.v1.TypeCode.STRUCT] type.
 type StructType struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The list of fields that make up this struct. Order is
-	// significant, because values of this struct type are represented as
-	// lists, where the order of field values matches the order of
-	// fields in the [StructType][google.spanner.v1.StructType]. In turn, the
-	// order of fields matches the order of columns in a read request, or the
-	// order of fields in the `SELECT` clause of a query.
-	Fields        []*StructType_Field `protobuf:"bytes,1,rep,name=fields,proto3" json:"fields,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Fields *[]*StructType_Field   `protobuf:"bytes,1,rep,name=fields,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *StructType) Reset() {
@@ -398,33 +440,46 @@ func (x *StructType) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StructType.ProtoReflect.Descriptor instead.
-func (*StructType) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_type_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *StructType) GetFields() []*StructType_Field {
 	if x != nil {
-		return x.Fields
+		if x.xxx_hidden_Fields != nil {
+			return *x.xxx_hidden_Fields
+		}
 	}
 	return nil
 }
 
+func (x *StructType) SetFields(v []*StructType_Field) {
+	x.xxx_hidden_Fields = &v
+}
+
+type StructType_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The list of fields that make up this struct. Order is
+	// significant, because values of this struct type are represented as
+	// lists, where the order of field values matches the order of
+	// fields in the [StructType][google.spanner.v1.StructType]. In turn, the
+	// order of fields matches the order of columns in a read request, or the
+	// order of fields in the `SELECT` clause of a query.
+	Fields []*StructType_Field
+}
+
+func (b0 StructType_builder) Build() *StructType {
+	m0 := &StructType{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Fields = &b.Fields
+	return m0
+}
+
 // Message representing a single field of a struct.
 type StructType_Field struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The name of the field. For reads, this is the column name. For
-	// SQL queries, it is the column alias (e.g., `"Word"` in the
-	// query `"SELECT 'hello' AS Word"`), or the column name (e.g.,
-	// `"ColName"` in the query `"SELECT ColName FROM Table"`). Some
-	// columns might have an empty name (e.g., `"SELECT
-	// UPPER(ColName)"`). Note that a query result can contain
-	// multiple fields with the same name.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// The type of the field.
-	Type          *Type `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name string                 `protobuf:"bytes,1,opt,name=name,proto3"`
+	xxx_hidden_Type *Type                  `protobuf:"bytes,2,opt,name=type,proto3"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
 }
 
 func (x *StructType_Field) Reset() {
@@ -452,23 +507,61 @@ func (x *StructType_Field) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use StructType_Field.ProtoReflect.Descriptor instead.
-func (*StructType_Field) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_type_proto_rawDescGZIP(), []int{1, 0}
-}
-
 func (x *StructType_Field) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
 func (x *StructType_Field) GetType() *Type {
 	if x != nil {
-		return x.Type
+		return x.xxx_hidden_Type
 	}
 	return nil
+}
+
+func (x *StructType_Field) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *StructType_Field) SetType(v *Type) {
+	x.xxx_hidden_Type = v
+}
+
+func (x *StructType_Field) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Type != nil
+}
+
+func (x *StructType_Field) ClearType() {
+	x.xxx_hidden_Type = nil
+}
+
+type StructType_Field_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The name of the field. For reads, this is the column name. For
+	// SQL queries, it is the column alias (e.g., `"Word"` in the
+	// query `"SELECT 'hello' AS Word"`), or the column name (e.g.,
+	// `"ColName"` in the query `"SELECT ColName FROM Table"`). Some
+	// columns might have an empty name (e.g., `"SELECT
+	// UPPER(ColName)"`). Note that a query result can contain
+	// multiple fields with the same name.
+	Name string
+	// The type of the field.
+	Type *Type
+}
+
+func (b0 StructType_Field_builder) Build() *StructType_Field {
+	m0 := &StructType_Field{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Type = b.Type
+	return m0
 }
 
 var File_google_spanner_v1_type_proto protoreflect.FileDescriptor
@@ -518,18 +611,6 @@ const file_google_spanner_v1_type_proto_rawDesc = "" +
 	"\n" +
 	"\x06PG_OID\x10\x04B\xac\x01\n" +
 	"\x15com.google.spanner.v1B\tTypeProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
-
-var (
-	file_google_spanner_v1_type_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_type_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_type_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_type_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_type_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_type_proto_rawDesc), len(file_google_spanner_v1_type_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_type_proto_rawDescData
-}
 
 var file_google_spanner_v1_type_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_spanner_v1_type_proto_msgTypes = make([]protoimpl.MessageInfo, 3)

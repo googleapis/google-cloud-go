@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -40,37 +39,16 @@ const (
 
 // The response for [Commit][google.spanner.v1.Spanner.Commit].
 type CommitResponse struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The Cloud Spanner timestamp at which the transaction committed.
-	CommitTimestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp,proto3" json:"commit_timestamp,omitempty"`
-	// The statistics about this `Commit`. Not returned by default.
-	// For more information, see
-	// [CommitRequest.return_commit_stats][google.spanner.v1.CommitRequest.return_commit_stats].
-	CommitStats *CommitResponse_CommitStats `protobuf:"bytes,2,opt,name=commit_stats,json=commitStats,proto3" json:"commit_stats,omitempty"`
-	// You must examine and retry the commit if the following is populated.
-	//
-	// Types that are valid to be assigned to MultiplexedSessionRetry:
-	//
-	//	*CommitResponse_PrecommitToken
-	MultiplexedSessionRetry isCommitResponse_MultiplexedSessionRetry `protobuf_oneof:"MultiplexedSessionRetry"`
-	// If `TransactionOptions.isolation_level` is set to
-	// `IsolationLevel.REPEATABLE_READ`, then the snapshot timestamp is the
-	// timestamp at which all reads in the transaction ran. This timestamp is
-	// never returned.
-	SnapshotTimestamp *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=snapshot_timestamp,json=snapshotTimestamp,proto3" json:"snapshot_timestamp,omitempty"`
-	// Optional. A cache update expresses a set of changes the client should
-	// incorporate into its location cache. The client should discard the changes
-	// if they are older than the data it already has. This data can be obtained
-	// in response to requests that included a `RoutingHint` field, but may also
-	// be obtained by explicit location-fetching RPCs which may be added in the
-	// future.
-	CacheUpdate *CacheUpdate `protobuf:"bytes,6,opt,name=cache_update,json=cacheUpdate,proto3" json:"cache_update,omitempty"`
-	// The isolation level used for the read-write transaction.
-	IsolationLevel TransactionOptions_IsolationLevel `protobuf:"varint,7,opt,name=isolation_level,json=isolationLevel,proto3,enum=google.spanner.v1.TransactionOptions_IsolationLevel" json:"isolation_level,omitempty"`
-	// The read lock mode used for the read-write transaction.
-	ReadLockMode  TransactionOptions_ReadWrite_ReadLockMode `protobuf:"varint,8,opt,name=read_lock_mode,json=readLockMode,proto3,enum=google.spanner.v1.TransactionOptions_ReadWrite_ReadLockMode" json:"read_lock_mode,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                              protoimpl.MessageState                    `protogen:"opaque.v1"`
+	xxx_hidden_CommitTimestamp         *timestamppb.Timestamp                    `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp,proto3"`
+	xxx_hidden_CommitStats             *CommitResponse_CommitStats               `protobuf:"bytes,2,opt,name=commit_stats,json=commitStats,proto3"`
+	xxx_hidden_MultiplexedSessionRetry isCommitResponse_MultiplexedSessionRetry  `protobuf_oneof:"MultiplexedSessionRetry"`
+	xxx_hidden_SnapshotTimestamp       *timestamppb.Timestamp                    `protobuf:"bytes,5,opt,name=snapshot_timestamp,json=snapshotTimestamp,proto3"`
+	xxx_hidden_CacheUpdate             *CacheUpdate                              `protobuf:"bytes,6,opt,name=cache_update,json=cacheUpdate,proto3"`
+	xxx_hidden_IsolationLevel          TransactionOptions_IsolationLevel         `protobuf:"varint,7,opt,name=isolation_level,json=isolationLevel,proto3,enum=google.spanner.v1.TransactionOptions_IsolationLevel"`
+	xxx_hidden_ReadLockMode            TransactionOptions_ReadWrite_ReadLockMode `protobuf:"varint,8,opt,name=read_lock_mode,json=readLockMode,proto3,enum=google.spanner.v1.TransactionOptions_ReadWrite_ReadLockMode"`
+	unknownFields                      protoimpl.UnknownFields
+	sizeCache                          protoimpl.SizeCache
 }
 
 func (x *CommitResponse) Reset() {
@@ -98,35 +76,23 @@ func (x *CommitResponse) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CommitResponse.ProtoReflect.Descriptor instead.
-func (*CommitResponse) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_commit_response_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *CommitResponse) GetCommitTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CommitTimestamp
+		return x.xxx_hidden_CommitTimestamp
 	}
 	return nil
 }
 
 func (x *CommitResponse) GetCommitStats() *CommitResponse_CommitStats {
 	if x != nil {
-		return x.CommitStats
-	}
-	return nil
-}
-
-func (x *CommitResponse) GetMultiplexedSessionRetry() isCommitResponse_MultiplexedSessionRetry {
-	if x != nil {
-		return x.MultiplexedSessionRetry
+		return x.xxx_hidden_CommitStats
 	}
 	return nil
 }
 
 func (x *CommitResponse) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
 	if x != nil {
-		if x, ok := x.MultiplexedSessionRetry.(*CommitResponse_PrecommitToken); ok {
+		if x, ok := x.xxx_hidden_MultiplexedSessionRetry.(*commitResponse_PrecommitToken); ok {
 			return x.PrecommitToken
 		}
 	}
@@ -135,57 +101,226 @@ func (x *CommitResponse) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
 
 func (x *CommitResponse) GetSnapshotTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.SnapshotTimestamp
+		return x.xxx_hidden_SnapshotTimestamp
 	}
 	return nil
 }
 
 func (x *CommitResponse) GetCacheUpdate() *CacheUpdate {
 	if x != nil {
-		return x.CacheUpdate
+		return x.xxx_hidden_CacheUpdate
 	}
 	return nil
 }
 
 func (x *CommitResponse) GetIsolationLevel() TransactionOptions_IsolationLevel {
 	if x != nil {
-		return x.IsolationLevel
+		return x.xxx_hidden_IsolationLevel
 	}
 	return TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED
 }
 
 func (x *CommitResponse) GetReadLockMode() TransactionOptions_ReadWrite_ReadLockMode {
 	if x != nil {
-		return x.ReadLockMode
+		return x.xxx_hidden_ReadLockMode
 	}
 	return TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED
+}
+
+func (x *CommitResponse) SetCommitTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CommitTimestamp = v
+}
+
+func (x *CommitResponse) SetCommitStats(v *CommitResponse_CommitStats) {
+	x.xxx_hidden_CommitStats = v
+}
+
+func (x *CommitResponse) SetPrecommitToken(v *MultiplexedSessionPrecommitToken) {
+	if v == nil {
+		x.xxx_hidden_MultiplexedSessionRetry = nil
+		return
+	}
+	x.xxx_hidden_MultiplexedSessionRetry = &commitResponse_PrecommitToken{v}
+}
+
+func (x *CommitResponse) SetSnapshotTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_SnapshotTimestamp = v
+}
+
+func (x *CommitResponse) SetCacheUpdate(v *CacheUpdate) {
+	x.xxx_hidden_CacheUpdate = v
+}
+
+func (x *CommitResponse) SetIsolationLevel(v TransactionOptions_IsolationLevel) {
+	x.xxx_hidden_IsolationLevel = v
+}
+
+func (x *CommitResponse) SetReadLockMode(v TransactionOptions_ReadWrite_ReadLockMode) {
+	x.xxx_hidden_ReadLockMode = v
+}
+
+func (x *CommitResponse) HasCommitTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CommitTimestamp != nil
+}
+
+func (x *CommitResponse) HasCommitStats() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CommitStats != nil
+}
+
+func (x *CommitResponse) HasMultiplexedSessionRetry() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_MultiplexedSessionRetry != nil
+}
+
+func (x *CommitResponse) HasPrecommitToken() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_MultiplexedSessionRetry.(*commitResponse_PrecommitToken)
+	return ok
+}
+
+func (x *CommitResponse) HasSnapshotTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_SnapshotTimestamp != nil
+}
+
+func (x *CommitResponse) HasCacheUpdate() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CacheUpdate != nil
+}
+
+func (x *CommitResponse) ClearCommitTimestamp() {
+	x.xxx_hidden_CommitTimestamp = nil
+}
+
+func (x *CommitResponse) ClearCommitStats() {
+	x.xxx_hidden_CommitStats = nil
+}
+
+func (x *CommitResponse) ClearMultiplexedSessionRetry() {
+	x.xxx_hidden_MultiplexedSessionRetry = nil
+}
+
+func (x *CommitResponse) ClearPrecommitToken() {
+	if _, ok := x.xxx_hidden_MultiplexedSessionRetry.(*commitResponse_PrecommitToken); ok {
+		x.xxx_hidden_MultiplexedSessionRetry = nil
+	}
+}
+
+func (x *CommitResponse) ClearSnapshotTimestamp() {
+	x.xxx_hidden_SnapshotTimestamp = nil
+}
+
+func (x *CommitResponse) ClearCacheUpdate() {
+	x.xxx_hidden_CacheUpdate = nil
+}
+
+const CommitResponse_MultiplexedSessionRetry_not_set_case case_CommitResponse_MultiplexedSessionRetry = 0
+const CommitResponse_PrecommitToken_case case_CommitResponse_MultiplexedSessionRetry = 4
+
+func (x *CommitResponse) WhichMultiplexedSessionRetry() case_CommitResponse_MultiplexedSessionRetry {
+	if x == nil {
+		return CommitResponse_MultiplexedSessionRetry_not_set_case
+	}
+	switch x.xxx_hidden_MultiplexedSessionRetry.(type) {
+	case *commitResponse_PrecommitToken:
+		return CommitResponse_PrecommitToken_case
+	default:
+		return CommitResponse_MultiplexedSessionRetry_not_set_case
+	}
+}
+
+type CommitResponse_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The Cloud Spanner timestamp at which the transaction committed.
+	CommitTimestamp *timestamppb.Timestamp
+	// The statistics about this `Commit`. Not returned by default.
+	// For more information, see
+	// [CommitRequest.return_commit_stats][google.spanner.v1.CommitRequest.return_commit_stats].
+	CommitStats *CommitResponse_CommitStats
+	// You must examine and retry the commit if the following is populated.
+
+	// Fields of oneof xxx_hidden_MultiplexedSessionRetry:
+	// If specified, transaction has not committed yet.
+	// You must retry the commit with the new precommit token.
+	PrecommitToken *MultiplexedSessionPrecommitToken
+	// -- end of xxx_hidden_MultiplexedSessionRetry
+	// If `TransactionOptions.isolation_level` is set to
+	// `IsolationLevel.REPEATABLE_READ`, then the snapshot timestamp is the
+	// timestamp at which all reads in the transaction ran. This timestamp is
+	// never returned.
+	SnapshotTimestamp *timestamppb.Timestamp
+	// Optional. A cache update expresses a set of changes the client should
+	// incorporate into its location cache. The client should discard the changes
+	// if they are older than the data it already has. This data can be obtained
+	// in response to requests that included a `RoutingHint` field, but may also
+	// be obtained by explicit location-fetching RPCs which may be added in the
+	// future.
+	CacheUpdate *CacheUpdate
+	// The isolation level used for the read-write transaction.
+	IsolationLevel TransactionOptions_IsolationLevel
+	// The read lock mode used for the read-write transaction.
+	ReadLockMode TransactionOptions_ReadWrite_ReadLockMode
+}
+
+func (b0 CommitResponse_builder) Build() *CommitResponse {
+	m0 := &CommitResponse{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_CommitTimestamp = b.CommitTimestamp
+	x.xxx_hidden_CommitStats = b.CommitStats
+	if b.PrecommitToken != nil {
+		x.xxx_hidden_MultiplexedSessionRetry = &commitResponse_PrecommitToken{b.PrecommitToken}
+	}
+	x.xxx_hidden_SnapshotTimestamp = b.SnapshotTimestamp
+	x.xxx_hidden_CacheUpdate = b.CacheUpdate
+	x.xxx_hidden_IsolationLevel = b.IsolationLevel
+	x.xxx_hidden_ReadLockMode = b.ReadLockMode
+	return m0
+}
+
+type case_CommitResponse_MultiplexedSessionRetry protoreflect.FieldNumber
+
+func (x case_CommitResponse_MultiplexedSessionRetry) String() string {
+	md := file_google_spanner_v1_commit_response_proto_msgTypes[0].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
 }
 
 type isCommitResponse_MultiplexedSessionRetry interface {
 	isCommitResponse_MultiplexedSessionRetry()
 }
 
-type CommitResponse_PrecommitToken struct {
+type commitResponse_PrecommitToken struct {
 	// If specified, transaction has not committed yet.
 	// You must retry the commit with the new precommit token.
 	PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,4,opt,name=precommit_token,json=precommitToken,proto3,oneof"`
 }
 
-func (*CommitResponse_PrecommitToken) isCommitResponse_MultiplexedSessionRetry() {}
+func (*commitResponse_PrecommitToken) isCommitResponse_MultiplexedSessionRetry() {}
 
 // Additional statistics about a commit.
 type CommitResponse_CommitStats struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The total number of mutations for the transaction. Knowing the
-	// `mutation_count` value can help you maximize the number of mutations
-	// in a transaction and minimize the number of API round trips. You can
-	// also monitor this value to prevent transactions from exceeding the system
-	// [limit](https://cloud.google.com/spanner/quotas#limits_for_creating_reading_updating_and_deleting_data).
-	// If the number of mutations exceeds the limit, the server returns
-	// [INVALID_ARGUMENT](https://cloud.google.com/spanner/docs/reference/rest/v1/Code#ENUM_VALUES.INVALID_ARGUMENT).
-	MutationCount int64 `protobuf:"varint,1,opt,name=mutation_count,json=mutationCount,proto3" json:"mutation_count,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                    protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_MutationCount int64                  `protobuf:"varint,1,opt,name=mutation_count,json=mutationCount,proto3"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *CommitResponse_CommitStats) Reset() {
@@ -213,16 +348,36 @@ func (x *CommitResponse_CommitStats) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use CommitResponse_CommitStats.ProtoReflect.Descriptor instead.
-func (*CommitResponse_CommitStats) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_commit_response_proto_rawDescGZIP(), []int{0, 0}
-}
-
 func (x *CommitResponse_CommitStats) GetMutationCount() int64 {
 	if x != nil {
-		return x.MutationCount
+		return x.xxx_hidden_MutationCount
 	}
 	return 0
+}
+
+func (x *CommitResponse_CommitStats) SetMutationCount(v int64) {
+	x.xxx_hidden_MutationCount = v
+}
+
+type CommitResponse_CommitStats_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The total number of mutations for the transaction. Knowing the
+	// `mutation_count` value can help you maximize the number of mutations
+	// in a transaction and minimize the number of API round trips. You can
+	// also monitor this value to prevent transactions from exceeding the system
+	// [limit](https://cloud.google.com/spanner/quotas#limits_for_creating_reading_updating_and_deleting_data).
+	// If the number of mutations exceeds the limit, the server returns
+	// [INVALID_ARGUMENT](https://cloud.google.com/spanner/docs/reference/rest/v1/Code#ENUM_VALUES.INVALID_ARGUMENT).
+	MutationCount int64
+}
+
+func (b0 CommitResponse_CommitStats_builder) Build() *CommitResponse_CommitStats {
+	m0 := &CommitResponse_CommitStats{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_MutationCount = b.MutationCount
+	return m0
 }
 
 var File_google_spanner_v1_commit_response_proto protoreflect.FileDescriptor
@@ -242,18 +397,6 @@ const file_google_spanner_v1_commit_response_proto_rawDesc = "" +
 	"\x0emutation_count\x18\x01 \x01(\x03R\rmutationCountB\x19\n" +
 	"\x17MultiplexedSessionRetryB\xb6\x01\n" +
 	"\x15com.google.spanner.v1B\x13CommitResponseProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
-
-var (
-	file_google_spanner_v1_commit_response_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_commit_response_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_commit_response_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_commit_response_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_commit_response_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_commit_response_proto_rawDesc), len(file_google_spanner_v1_commit_response_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_commit_response_proto_rawDescData
-}
 
 var file_google_spanner_v1_commit_response_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_spanner_v1_commit_response_proto_goTypes = []any{
@@ -288,7 +431,7 @@ func file_google_spanner_v1_commit_response_proto_init() {
 	file_google_spanner_v1_location_proto_init()
 	file_google_spanner_v1_transaction_proto_init()
 	file_google_spanner_v1_commit_response_proto_msgTypes[0].OneofWrappers = []any{
-		(*CommitResponse_PrecommitToken)(nil),
+		(*commitResponse_PrecommitToken)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

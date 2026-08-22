@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -110,11 +109,6 @@ func (x TransactionOptions_IsolationLevel) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use TransactionOptions_IsolationLevel.Descriptor instead.
-func (TransactionOptions_IsolationLevel) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{0, 0}
-}
-
 // `ReadLockMode` is used to set the read lock mode for read-write
 // transactions.
 type TransactionOptions_ReadWrite_ReadLockMode int32
@@ -200,46 +194,14 @@ func (x TransactionOptions_ReadWrite_ReadLockMode) Number() protoreflect.EnumNum
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use TransactionOptions_ReadWrite_ReadLockMode.Descriptor instead.
-func (TransactionOptions_ReadWrite_ReadLockMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{0, 0, 0}
-}
-
 // Options to use for transactions.
 type TransactionOptions struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The type of transaction.
-	//
-	// Types that are valid to be assigned to Mode:
-	//
-	//	*TransactionOptions_ReadWrite_
-	//	*TransactionOptions_PartitionedDml_
-	//	*TransactionOptions_ReadOnly_
-	Mode isTransactionOptions_Mode `protobuf_oneof:"mode"`
-	// When `exclude_txn_from_change_streams` is set to `true`, it prevents read
-	// or write transactions from being tracked in change streams.
-	//
-	// * If the DDL option `allow_txn_exclusion` is set to `true`, then the
-	// updates
-	//
-	//	made within this transaction aren't recorded in the change stream.
-	//
-	//   - If you don't set the DDL option `allow_txn_exclusion` or if it's
-	//     set to `false`, then the updates made within this transaction are
-	//     recorded in the change stream.
-	//
-	// When `exclude_txn_from_change_streams` is set to `false` or not set,
-	// modifications from this transaction are recorded in all change streams
-	// that are tracking columns modified by these transactions.
-	//
-	// The `exclude_txn_from_change_streams` option can only be specified
-	// for read-write or partitioned DML transactions, otherwise the API returns
-	// an `INVALID_ARGUMENT` error.
-	ExcludeTxnFromChangeStreams bool `protobuf:"varint,5,opt,name=exclude_txn_from_change_streams,json=excludeTxnFromChangeStreams,proto3" json:"exclude_txn_from_change_streams,omitempty"`
-	// Isolation level for the transaction.
-	IsolationLevel TransactionOptions_IsolationLevel `protobuf:"varint,6,opt,name=isolation_level,json=isolationLevel,proto3,enum=google.spanner.v1.TransactionOptions_IsolationLevel" json:"isolation_level,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                                  protoimpl.MessageState            `protogen:"opaque.v1"`
+	xxx_hidden_Mode                        isTransactionOptions_Mode         `protobuf_oneof:"mode"`
+	xxx_hidden_ExcludeTxnFromChangeStreams bool                              `protobuf:"varint,5,opt,name=exclude_txn_from_change_streams,json=excludeTxnFromChangeStreams,proto3"`
+	xxx_hidden_IsolationLevel              TransactionOptions_IsolationLevel `protobuf:"varint,6,opt,name=isolation_level,json=isolationLevel,proto3,enum=google.spanner.v1.TransactionOptions_IsolationLevel"`
+	unknownFields                          protoimpl.UnknownFields
+	sizeCache                              protoimpl.SizeCache
 }
 
 func (x *TransactionOptions) Reset() {
@@ -267,21 +229,9 @@ func (x *TransactionOptions) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TransactionOptions.ProtoReflect.Descriptor instead.
-func (*TransactionOptions) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *TransactionOptions) GetMode() isTransactionOptions_Mode {
-	if x != nil {
-		return x.Mode
-	}
-	return nil
-}
-
 func (x *TransactionOptions) GetReadWrite() *TransactionOptions_ReadWrite {
 	if x != nil {
-		if x, ok := x.Mode.(*TransactionOptions_ReadWrite_); ok {
+		if x, ok := x.xxx_hidden_Mode.(*transactionOptions_ReadWrite_); ok {
 			return x.ReadWrite
 		}
 	}
@@ -290,7 +240,7 @@ func (x *TransactionOptions) GetReadWrite() *TransactionOptions_ReadWrite {
 
 func (x *TransactionOptions) GetPartitionedDml() *TransactionOptions_PartitionedDml {
 	if x != nil {
-		if x, ok := x.Mode.(*TransactionOptions_PartitionedDml_); ok {
+		if x, ok := x.xxx_hidden_Mode.(*transactionOptions_PartitionedDml_); ok {
 			return x.PartitionedDml
 		}
 	}
@@ -299,7 +249,7 @@ func (x *TransactionOptions) GetPartitionedDml() *TransactionOptions_Partitioned
 
 func (x *TransactionOptions) GetReadOnly() *TransactionOptions_ReadOnly {
 	if x != nil {
-		if x, ok := x.Mode.(*TransactionOptions_ReadOnly_); ok {
+		if x, ok := x.xxx_hidden_Mode.(*transactionOptions_ReadOnly_); ok {
 			return x.ReadOnly
 		}
 	}
@@ -308,23 +258,206 @@ func (x *TransactionOptions) GetReadOnly() *TransactionOptions_ReadOnly {
 
 func (x *TransactionOptions) GetExcludeTxnFromChangeStreams() bool {
 	if x != nil {
-		return x.ExcludeTxnFromChangeStreams
+		return x.xxx_hidden_ExcludeTxnFromChangeStreams
 	}
 	return false
 }
 
 func (x *TransactionOptions) GetIsolationLevel() TransactionOptions_IsolationLevel {
 	if x != nil {
-		return x.IsolationLevel
+		return x.xxx_hidden_IsolationLevel
 	}
 	return TransactionOptions_ISOLATION_LEVEL_UNSPECIFIED
+}
+
+func (x *TransactionOptions) SetReadWrite(v *TransactionOptions_ReadWrite) {
+	if v == nil {
+		x.xxx_hidden_Mode = nil
+		return
+	}
+	x.xxx_hidden_Mode = &transactionOptions_ReadWrite_{v}
+}
+
+func (x *TransactionOptions) SetPartitionedDml(v *TransactionOptions_PartitionedDml) {
+	if v == nil {
+		x.xxx_hidden_Mode = nil
+		return
+	}
+	x.xxx_hidden_Mode = &transactionOptions_PartitionedDml_{v}
+}
+
+func (x *TransactionOptions) SetReadOnly(v *TransactionOptions_ReadOnly) {
+	if v == nil {
+		x.xxx_hidden_Mode = nil
+		return
+	}
+	x.xxx_hidden_Mode = &transactionOptions_ReadOnly_{v}
+}
+
+func (x *TransactionOptions) SetExcludeTxnFromChangeStreams(v bool) {
+	x.xxx_hidden_ExcludeTxnFromChangeStreams = v
+}
+
+func (x *TransactionOptions) SetIsolationLevel(v TransactionOptions_IsolationLevel) {
+	x.xxx_hidden_IsolationLevel = v
+}
+
+func (x *TransactionOptions) HasMode() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Mode != nil
+}
+
+func (x *TransactionOptions) HasReadWrite() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Mode.(*transactionOptions_ReadWrite_)
+	return ok
+}
+
+func (x *TransactionOptions) HasPartitionedDml() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Mode.(*transactionOptions_PartitionedDml_)
+	return ok
+}
+
+func (x *TransactionOptions) HasReadOnly() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Mode.(*transactionOptions_ReadOnly_)
+	return ok
+}
+
+func (x *TransactionOptions) ClearMode() {
+	x.xxx_hidden_Mode = nil
+}
+
+func (x *TransactionOptions) ClearReadWrite() {
+	if _, ok := x.xxx_hidden_Mode.(*transactionOptions_ReadWrite_); ok {
+		x.xxx_hidden_Mode = nil
+	}
+}
+
+func (x *TransactionOptions) ClearPartitionedDml() {
+	if _, ok := x.xxx_hidden_Mode.(*transactionOptions_PartitionedDml_); ok {
+		x.xxx_hidden_Mode = nil
+	}
+}
+
+func (x *TransactionOptions) ClearReadOnly() {
+	if _, ok := x.xxx_hidden_Mode.(*transactionOptions_ReadOnly_); ok {
+		x.xxx_hidden_Mode = nil
+	}
+}
+
+const TransactionOptions_Mode_not_set_case case_TransactionOptions_Mode = 0
+const TransactionOptions_ReadWrite_case case_TransactionOptions_Mode = 1
+const TransactionOptions_PartitionedDml_case case_TransactionOptions_Mode = 3
+const TransactionOptions_ReadOnly_case case_TransactionOptions_Mode = 2
+
+func (x *TransactionOptions) WhichMode() case_TransactionOptions_Mode {
+	if x == nil {
+		return TransactionOptions_Mode_not_set_case
+	}
+	switch x.xxx_hidden_Mode.(type) {
+	case *transactionOptions_ReadWrite_:
+		return TransactionOptions_ReadWrite_case
+	case *transactionOptions_PartitionedDml_:
+		return TransactionOptions_PartitionedDml_case
+	case *transactionOptions_ReadOnly_:
+		return TransactionOptions_ReadOnly_case
+	default:
+		return TransactionOptions_Mode_not_set_case
+	}
+}
+
+type TransactionOptions_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The type of transaction.
+
+	// Fields of oneof xxx_hidden_Mode:
+	// Transaction may write.
+	//
+	// Authorization to begin a read-write transaction requires
+	// `spanner.databases.beginOrRollbackReadWriteTransaction` permission
+	// on the `session` resource.
+	ReadWrite *TransactionOptions_ReadWrite
+	// Partitioned DML transaction.
+	//
+	// Authorization to begin a Partitioned DML transaction requires
+	// `spanner.databases.beginPartitionedDmlTransaction` permission
+	// on the `session` resource.
+	PartitionedDml *TransactionOptions_PartitionedDml
+	// Transaction does not write.
+	//
+	// Authorization to begin a read-only transaction requires
+	// `spanner.databases.beginReadOnlyTransaction` permission
+	// on the `session` resource.
+	ReadOnly *TransactionOptions_ReadOnly
+	// -- end of xxx_hidden_Mode
+	// When `exclude_txn_from_change_streams` is set to `true`, it prevents read
+	// or write transactions from being tracked in change streams.
+	//
+	// * If the DDL option `allow_txn_exclusion` is set to `true`, then the
+	// updates
+	//
+	//	made within this transaction aren't recorded in the change stream.
+	//
+	//   - If you don't set the DDL option `allow_txn_exclusion` or if it's
+	//     set to `false`, then the updates made within this transaction are
+	//     recorded in the change stream.
+	//
+	// When `exclude_txn_from_change_streams` is set to `false` or not set,
+	// modifications from this transaction are recorded in all change streams
+	// that are tracking columns modified by these transactions.
+	//
+	// The `exclude_txn_from_change_streams` option can only be specified
+	// for read-write or partitioned DML transactions, otherwise the API returns
+	// an `INVALID_ARGUMENT` error.
+	ExcludeTxnFromChangeStreams bool
+	// Isolation level for the transaction.
+	IsolationLevel TransactionOptions_IsolationLevel
+}
+
+func (b0 TransactionOptions_builder) Build() *TransactionOptions {
+	m0 := &TransactionOptions{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.ReadWrite != nil {
+		x.xxx_hidden_Mode = &transactionOptions_ReadWrite_{b.ReadWrite}
+	}
+	if b.PartitionedDml != nil {
+		x.xxx_hidden_Mode = &transactionOptions_PartitionedDml_{b.PartitionedDml}
+	}
+	if b.ReadOnly != nil {
+		x.xxx_hidden_Mode = &transactionOptions_ReadOnly_{b.ReadOnly}
+	}
+	x.xxx_hidden_ExcludeTxnFromChangeStreams = b.ExcludeTxnFromChangeStreams
+	x.xxx_hidden_IsolationLevel = b.IsolationLevel
+	return m0
+}
+
+type case_TransactionOptions_Mode protoreflect.FieldNumber
+
+func (x case_TransactionOptions_Mode) String() string {
+	md := file_google_spanner_v1_transaction_proto_msgTypes[0].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
 }
 
 type isTransactionOptions_Mode interface {
 	isTransactionOptions_Mode()
 }
 
-type TransactionOptions_ReadWrite_ struct {
+type transactionOptions_ReadWrite_ struct {
 	// Transaction may write.
 	//
 	// Authorization to begin a read-write transaction requires
@@ -333,7 +466,7 @@ type TransactionOptions_ReadWrite_ struct {
 	ReadWrite *TransactionOptions_ReadWrite `protobuf:"bytes,1,opt,name=read_write,json=readWrite,proto3,oneof"`
 }
 
-type TransactionOptions_PartitionedDml_ struct {
+type transactionOptions_PartitionedDml_ struct {
 	// Partitioned DML transaction.
 	//
 	// Authorization to begin a Partitioned DML transaction requires
@@ -342,7 +475,7 @@ type TransactionOptions_PartitionedDml_ struct {
 	PartitionedDml *TransactionOptions_PartitionedDml `protobuf:"bytes,3,opt,name=partitioned_dml,json=partitionedDml,proto3,oneof"`
 }
 
-type TransactionOptions_ReadOnly_ struct {
+type transactionOptions_ReadOnly_ struct {
 	// Transaction does not write.
 	//
 	// Authorization to begin a read-only transaction requires
@@ -351,48 +484,21 @@ type TransactionOptions_ReadOnly_ struct {
 	ReadOnly *TransactionOptions_ReadOnly `protobuf:"bytes,2,opt,name=read_only,json=readOnly,proto3,oneof"`
 }
 
-func (*TransactionOptions_ReadWrite_) isTransactionOptions_Mode() {}
+func (*transactionOptions_ReadWrite_) isTransactionOptions_Mode() {}
 
-func (*TransactionOptions_PartitionedDml_) isTransactionOptions_Mode() {}
+func (*transactionOptions_PartitionedDml_) isTransactionOptions_Mode() {}
 
-func (*TransactionOptions_ReadOnly_) isTransactionOptions_Mode() {}
+func (*transactionOptions_ReadOnly_) isTransactionOptions_Mode() {}
 
 // A transaction.
 type Transaction struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// `id` may be used to identify the transaction in subsequent
-	// [Read][google.spanner.v1.Spanner.Read],
-	// [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql],
-	// [Commit][google.spanner.v1.Spanner.Commit], or
-	// [Rollback][google.spanner.v1.Spanner.Rollback] calls.
-	//
-	// Single-use read-only transactions do not have IDs, because
-	// single-use transactions do not support multiple requests.
-	Id []byte `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
-	// For snapshot read-only transactions, the read timestamp chosen
-	// for the transaction. Not returned by default: see
-	// [TransactionOptions.ReadOnly.return_read_timestamp][google.spanner.v1.TransactionOptions.ReadOnly.return_read_timestamp].
-	//
-	// A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.
-	// Example: `"2014-10-02T15:01:23.045123456Z"`.
-	ReadTimestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=read_timestamp,json=readTimestamp,proto3" json:"read_timestamp,omitempty"`
-	// A precommit token is included in the response of a BeginTransaction
-	// request if the read-write transaction is on a multiplexed session and
-	// a mutation_key was specified in the
-	// [BeginTransaction][google.spanner.v1.BeginTransactionRequest].
-	// The precommit token with the highest sequence number from this transaction
-	// attempt should be passed to the [Commit][google.spanner.v1.Spanner.Commit]
-	// request for this transaction.
-	PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,3,opt,name=precommit_token,json=precommitToken,proto3" json:"precommit_token,omitempty"`
-	// Optional. A cache update expresses a set of changes the client should
-	// incorporate into its location cache. The client should discard the changes
-	// if they are older than the data it already has. This data can be obtained
-	// in response to requests that included a `RoutingHint` field, but may also
-	// be obtained by explicit location-fetching RPCs which may be added in the
-	// future.
-	CacheUpdate   *CacheUpdate `protobuf:"bytes,5,opt,name=cache_update,json=cacheUpdate,proto3" json:"cache_update,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                     protoimpl.MessageState            `protogen:"opaque.v1"`
+	xxx_hidden_Id             []byte                            `protobuf:"bytes,1,opt,name=id,proto3"`
+	xxx_hidden_ReadTimestamp  *timestamppb.Timestamp            `protobuf:"bytes,2,opt,name=read_timestamp,json=readTimestamp,proto3"`
+	xxx_hidden_PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,3,opt,name=precommit_token,json=precommitToken,proto3"`
+	xxx_hidden_CacheUpdate    *CacheUpdate                      `protobuf:"bytes,5,opt,name=cache_update,json=cacheUpdate,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *Transaction) Reset() {
@@ -420,37 +526,131 @@ func (x *Transaction) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Transaction.ProtoReflect.Descriptor instead.
-func (*Transaction) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *Transaction) GetId() []byte {
 	if x != nil {
-		return x.Id
+		return x.xxx_hidden_Id
 	}
 	return nil
 }
 
 func (x *Transaction) GetReadTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.ReadTimestamp
+		return x.xxx_hidden_ReadTimestamp
 	}
 	return nil
 }
 
 func (x *Transaction) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
 	if x != nil {
-		return x.PrecommitToken
+		return x.xxx_hidden_PrecommitToken
 	}
 	return nil
 }
 
 func (x *Transaction) GetCacheUpdate() *CacheUpdate {
 	if x != nil {
-		return x.CacheUpdate
+		return x.xxx_hidden_CacheUpdate
 	}
 	return nil
+}
+
+func (x *Transaction) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Id = v
+}
+
+func (x *Transaction) SetReadTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_ReadTimestamp = v
+}
+
+func (x *Transaction) SetPrecommitToken(v *MultiplexedSessionPrecommitToken) {
+	x.xxx_hidden_PrecommitToken = v
+}
+
+func (x *Transaction) SetCacheUpdate(v *CacheUpdate) {
+	x.xxx_hidden_CacheUpdate = v
+}
+
+func (x *Transaction) HasReadTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ReadTimestamp != nil
+}
+
+func (x *Transaction) HasPrecommitToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PrecommitToken != nil
+}
+
+func (x *Transaction) HasCacheUpdate() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CacheUpdate != nil
+}
+
+func (x *Transaction) ClearReadTimestamp() {
+	x.xxx_hidden_ReadTimestamp = nil
+}
+
+func (x *Transaction) ClearPrecommitToken() {
+	x.xxx_hidden_PrecommitToken = nil
+}
+
+func (x *Transaction) ClearCacheUpdate() {
+	x.xxx_hidden_CacheUpdate = nil
+}
+
+type Transaction_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// `id` may be used to identify the transaction in subsequent
+	// [Read][google.spanner.v1.Spanner.Read],
+	// [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql],
+	// [Commit][google.spanner.v1.Spanner.Commit], or
+	// [Rollback][google.spanner.v1.Spanner.Rollback] calls.
+	//
+	// Single-use read-only transactions do not have IDs, because
+	// single-use transactions do not support multiple requests.
+	Id []byte
+	// For snapshot read-only transactions, the read timestamp chosen
+	// for the transaction. Not returned by default: see
+	// [TransactionOptions.ReadOnly.return_read_timestamp][google.spanner.v1.TransactionOptions.ReadOnly.return_read_timestamp].
+	//
+	// A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.
+	// Example: `"2014-10-02T15:01:23.045123456Z"`.
+	ReadTimestamp *timestamppb.Timestamp
+	// A precommit token is included in the response of a BeginTransaction
+	// request if the read-write transaction is on a multiplexed session and
+	// a mutation_key was specified in the
+	// [BeginTransaction][google.spanner.v1.BeginTransactionRequest].
+	// The precommit token with the highest sequence number from this transaction
+	// attempt should be passed to the [Commit][google.spanner.v1.Spanner.Commit]
+	// request for this transaction.
+	PrecommitToken *MultiplexedSessionPrecommitToken
+	// Optional. A cache update expresses a set of changes the client should
+	// incorporate into its location cache. The client should discard the changes
+	// if they are older than the data it already has. This data can be obtained
+	// in response to requests that included a `RoutingHint` field, but may also
+	// be obtained by explicit location-fetching RPCs which may be added in the
+	// future.
+	CacheUpdate *CacheUpdate
+}
+
+func (b0 Transaction_builder) Build() *Transaction {
+	m0 := &Transaction{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Id = b.Id
+	x.xxx_hidden_ReadTimestamp = b.ReadTimestamp
+	x.xxx_hidden_PrecommitToken = b.PrecommitToken
+	x.xxx_hidden_CacheUpdate = b.CacheUpdate
+	return m0
 }
 
 // This message is used to select the transaction in which a
@@ -460,18 +660,10 @@ func (x *Transaction) GetCacheUpdate() *CacheUpdate {
 // See [TransactionOptions][google.spanner.v1.TransactionOptions] for more
 // information about transactions.
 type TransactionSelector struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// If no fields are set, the default is a single use transaction
-	// with strong concurrency.
-	//
-	// Types that are valid to be assigned to Selector:
-	//
-	//	*TransactionSelector_SingleUse
-	//	*TransactionSelector_Id
-	//	*TransactionSelector_Begin
-	Selector      isTransactionSelector_Selector `protobuf_oneof:"selector"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state               protoimpl.MessageState         `protogen:"opaque.v1"`
+	xxx_hidden_Selector isTransactionSelector_Selector `protobuf_oneof:"selector"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *TransactionSelector) Reset() {
@@ -499,21 +691,9 @@ func (x *TransactionSelector) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TransactionSelector.ProtoReflect.Descriptor instead.
-func (*TransactionSelector) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{2}
-}
-
-func (x *TransactionSelector) GetSelector() isTransactionSelector_Selector {
-	if x != nil {
-		return x.Selector
-	}
-	return nil
-}
-
 func (x *TransactionSelector) GetSingleUse() *TransactionOptions {
 	if x != nil {
-		if x, ok := x.Selector.(*TransactionSelector_SingleUse); ok {
+		if x, ok := x.xxx_hidden_Selector.(*transactionSelector_SingleUse); ok {
 			return x.SingleUse
 		}
 	}
@@ -522,7 +702,7 @@ func (x *TransactionSelector) GetSingleUse() *TransactionOptions {
 
 func (x *TransactionSelector) GetId() []byte {
 	if x != nil {
-		if x, ok := x.Selector.(*TransactionSelector_Id); ok {
+		if x, ok := x.xxx_hidden_Selector.(*transactionSelector_Id); ok {
 			return x.Id
 		}
 	}
@@ -531,30 +711,174 @@ func (x *TransactionSelector) GetId() []byte {
 
 func (x *TransactionSelector) GetBegin() *TransactionOptions {
 	if x != nil {
-		if x, ok := x.Selector.(*TransactionSelector_Begin); ok {
+		if x, ok := x.xxx_hidden_Selector.(*transactionSelector_Begin); ok {
 			return x.Begin
 		}
 	}
 	return nil
 }
 
+func (x *TransactionSelector) SetSingleUse(v *TransactionOptions) {
+	if v == nil {
+		x.xxx_hidden_Selector = nil
+		return
+	}
+	x.xxx_hidden_Selector = &transactionSelector_SingleUse{v}
+}
+
+func (x *TransactionSelector) SetId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_Selector = &transactionSelector_Id{v}
+}
+
+func (x *TransactionSelector) SetBegin(v *TransactionOptions) {
+	if v == nil {
+		x.xxx_hidden_Selector = nil
+		return
+	}
+	x.xxx_hidden_Selector = &transactionSelector_Begin{v}
+}
+
+func (x *TransactionSelector) HasSelector() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Selector != nil
+}
+
+func (x *TransactionSelector) HasSingleUse() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Selector.(*transactionSelector_SingleUse)
+	return ok
+}
+
+func (x *TransactionSelector) HasId() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Selector.(*transactionSelector_Id)
+	return ok
+}
+
+func (x *TransactionSelector) HasBegin() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Selector.(*transactionSelector_Begin)
+	return ok
+}
+
+func (x *TransactionSelector) ClearSelector() {
+	x.xxx_hidden_Selector = nil
+}
+
+func (x *TransactionSelector) ClearSingleUse() {
+	if _, ok := x.xxx_hidden_Selector.(*transactionSelector_SingleUse); ok {
+		x.xxx_hidden_Selector = nil
+	}
+}
+
+func (x *TransactionSelector) ClearId() {
+	if _, ok := x.xxx_hidden_Selector.(*transactionSelector_Id); ok {
+		x.xxx_hidden_Selector = nil
+	}
+}
+
+func (x *TransactionSelector) ClearBegin() {
+	if _, ok := x.xxx_hidden_Selector.(*transactionSelector_Begin); ok {
+		x.xxx_hidden_Selector = nil
+	}
+}
+
+const TransactionSelector_Selector_not_set_case case_TransactionSelector_Selector = 0
+const TransactionSelector_SingleUse_case case_TransactionSelector_Selector = 1
+const TransactionSelector_Id_case case_TransactionSelector_Selector = 2
+const TransactionSelector_Begin_case case_TransactionSelector_Selector = 3
+
+func (x *TransactionSelector) WhichSelector() case_TransactionSelector_Selector {
+	if x == nil {
+		return TransactionSelector_Selector_not_set_case
+	}
+	switch x.xxx_hidden_Selector.(type) {
+	case *transactionSelector_SingleUse:
+		return TransactionSelector_SingleUse_case
+	case *transactionSelector_Id:
+		return TransactionSelector_Id_case
+	case *transactionSelector_Begin:
+		return TransactionSelector_Begin_case
+	default:
+		return TransactionSelector_Selector_not_set_case
+	}
+}
+
+type TransactionSelector_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// If no fields are set, the default is a single use transaction
+	// with strong concurrency.
+
+	// Fields of oneof xxx_hidden_Selector:
+	// Execute the read or SQL query in a temporary transaction.
+	// This is the most efficient way to execute a transaction that
+	// consists of a single SQL query.
+	SingleUse *TransactionOptions
+	// Execute the read or SQL query in a previously-started transaction.
+	Id []byte
+	// Begin a new transaction and execute this read or SQL query in
+	// it. The transaction ID of the new transaction is returned in
+	// [ResultSetMetadata.transaction][google.spanner.v1.ResultSetMetadata.transaction],
+	// which is a [Transaction][google.spanner.v1.Transaction].
+	Begin *TransactionOptions
+	// -- end of xxx_hidden_Selector
+}
+
+func (b0 TransactionSelector_builder) Build() *TransactionSelector {
+	m0 := &TransactionSelector{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.SingleUse != nil {
+		x.xxx_hidden_Selector = &transactionSelector_SingleUse{b.SingleUse}
+	}
+	if b.Id != nil {
+		x.xxx_hidden_Selector = &transactionSelector_Id{b.Id}
+	}
+	if b.Begin != nil {
+		x.xxx_hidden_Selector = &transactionSelector_Begin{b.Begin}
+	}
+	return m0
+}
+
+type case_TransactionSelector_Selector protoreflect.FieldNumber
+
+func (x case_TransactionSelector_Selector) String() string {
+	md := file_google_spanner_v1_transaction_proto_msgTypes[2].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isTransactionSelector_Selector interface {
 	isTransactionSelector_Selector()
 }
 
-type TransactionSelector_SingleUse struct {
+type transactionSelector_SingleUse struct {
 	// Execute the read or SQL query in a temporary transaction.
 	// This is the most efficient way to execute a transaction that
 	// consists of a single SQL query.
 	SingleUse *TransactionOptions `protobuf:"bytes,1,opt,name=single_use,json=singleUse,proto3,oneof"`
 }
 
-type TransactionSelector_Id struct {
+type transactionSelector_Id struct {
 	// Execute the read or SQL query in a previously-started transaction.
 	Id []byte `protobuf:"bytes,2,opt,name=id,proto3,oneof"`
 }
 
-type TransactionSelector_Begin struct {
+type transactionSelector_Begin struct {
 	// Begin a new transaction and execute this read or SQL query in
 	// it. The transaction ID of the new transaction is returned in
 	// [ResultSetMetadata.transaction][google.spanner.v1.ResultSetMetadata.transaction],
@@ -562,11 +886,11 @@ type TransactionSelector_Begin struct {
 	Begin *TransactionOptions `protobuf:"bytes,3,opt,name=begin,proto3,oneof"`
 }
 
-func (*TransactionSelector_SingleUse) isTransactionSelector_Selector() {}
+func (*transactionSelector_SingleUse) isTransactionSelector_Selector() {}
 
-func (*TransactionSelector_Id) isTransactionSelector_Selector() {}
+func (*transactionSelector_Id) isTransactionSelector_Selector() {}
 
-func (*TransactionSelector_Begin) isTransactionSelector_Selector() {}
+func (*transactionSelector_Begin) isTransactionSelector_Selector() {}
 
 // When a read-write transaction is executed on a multiplexed session,
 // this precommit token is sent back to the client
@@ -575,15 +899,11 @@ func (*TransactionSelector_Begin) isTransactionSelector_Selector() {}
 // also as a part of the [ResultSet][google.spanner.v1.ResultSet] and
 // [PartialResultSet][google.spanner.v1.PartialResultSet] responses.
 type MultiplexedSessionPrecommitToken struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Opaque precommit token.
-	PrecommitToken []byte `protobuf:"bytes,1,opt,name=precommit_token,json=precommitToken,proto3" json:"precommit_token,omitempty"`
-	// An incrementing seq number is generated on every precommit token
-	// that is returned. Clients should remember the precommit token with the
-	// highest sequence number from the current transaction attempt.
-	SeqNum        int32 `protobuf:"varint,2,opt,name=seq_num,json=seqNum,proto3" json:"seq_num,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_PrecommitToken []byte                 `protobuf:"bytes,1,opt,name=precommit_token,json=precommitToken,proto3"`
+	xxx_hidden_SeqNum         int32                  `protobuf:"varint,2,opt,name=seq_num,json=seqNum,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *MultiplexedSessionPrecommitToken) Reset() {
@@ -611,37 +931,59 @@ func (x *MultiplexedSessionPrecommitToken) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use MultiplexedSessionPrecommitToken.ProtoReflect.Descriptor instead.
-func (*MultiplexedSessionPrecommitToken) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *MultiplexedSessionPrecommitToken) GetPrecommitToken() []byte {
 	if x != nil {
-		return x.PrecommitToken
+		return x.xxx_hidden_PrecommitToken
 	}
 	return nil
 }
 
 func (x *MultiplexedSessionPrecommitToken) GetSeqNum() int32 {
 	if x != nil {
-		return x.SeqNum
+		return x.xxx_hidden_SeqNum
 	}
 	return 0
+}
+
+func (x *MultiplexedSessionPrecommitToken) SetPrecommitToken(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_PrecommitToken = v
+}
+
+func (x *MultiplexedSessionPrecommitToken) SetSeqNum(v int32) {
+	x.xxx_hidden_SeqNum = v
+}
+
+type MultiplexedSessionPrecommitToken_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Opaque precommit token.
+	PrecommitToken []byte
+	// An incrementing seq number is generated on every precommit token
+	// that is returned. Clients should remember the precommit token with the
+	// highest sequence number from the current transaction attempt.
+	SeqNum int32
+}
+
+func (b0 MultiplexedSessionPrecommitToken_builder) Build() *MultiplexedSessionPrecommitToken {
+	m0 := &MultiplexedSessionPrecommitToken{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_PrecommitToken = b.PrecommitToken
+	x.xxx_hidden_SeqNum = b.SeqNum
+	return m0
 }
 
 // Message type to initiate a read-write transaction. Currently this
 // transaction type has no options.
 type TransactionOptions_ReadWrite struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Read lock mode for the transaction.
-	ReadLockMode TransactionOptions_ReadWrite_ReadLockMode `protobuf:"varint,1,opt,name=read_lock_mode,json=readLockMode,proto3,enum=google.spanner.v1.TransactionOptions_ReadWrite_ReadLockMode" json:"read_lock_mode,omitempty"`
-	// Optional. Clients should pass the transaction ID of the previous
-	// transaction attempt that was aborted if this transaction is being
-	// executed on a multiplexed session.
-	MultiplexedSessionPreviousTransactionId []byte `protobuf:"bytes,2,opt,name=multiplexed_session_previous_transaction_id,json=multiplexedSessionPreviousTransactionId,proto3" json:"multiplexed_session_previous_transaction_id,omitempty"`
-	unknownFields                           protoimpl.UnknownFields
-	sizeCache                               protoimpl.SizeCache
+	state                                              protoimpl.MessageState                    `protogen:"opaque.v1"`
+	xxx_hidden_ReadLockMode                            TransactionOptions_ReadWrite_ReadLockMode `protobuf:"varint,1,opt,name=read_lock_mode,json=readLockMode,proto3,enum=google.spanner.v1.TransactionOptions_ReadWrite_ReadLockMode"`
+	xxx_hidden_MultiplexedSessionPreviousTransactionId []byte                                    `protobuf:"bytes,2,opt,name=multiplexed_session_previous_transaction_id,json=multiplexedSessionPreviousTransactionId,proto3"`
+	unknownFields                                      protoimpl.UnknownFields
+	sizeCache                                          protoimpl.SizeCache
 }
 
 func (x *TransactionOptions_ReadWrite) Reset() {
@@ -669,28 +1011,54 @@ func (x *TransactionOptions_ReadWrite) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TransactionOptions_ReadWrite.ProtoReflect.Descriptor instead.
-func (*TransactionOptions_ReadWrite) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{0, 0}
-}
-
 func (x *TransactionOptions_ReadWrite) GetReadLockMode() TransactionOptions_ReadWrite_ReadLockMode {
 	if x != nil {
-		return x.ReadLockMode
+		return x.xxx_hidden_ReadLockMode
 	}
 	return TransactionOptions_ReadWrite_READ_LOCK_MODE_UNSPECIFIED
 }
 
 func (x *TransactionOptions_ReadWrite) GetMultiplexedSessionPreviousTransactionId() []byte {
 	if x != nil {
-		return x.MultiplexedSessionPreviousTransactionId
+		return x.xxx_hidden_MultiplexedSessionPreviousTransactionId
 	}
 	return nil
 }
 
+func (x *TransactionOptions_ReadWrite) SetReadLockMode(v TransactionOptions_ReadWrite_ReadLockMode) {
+	x.xxx_hidden_ReadLockMode = v
+}
+
+func (x *TransactionOptions_ReadWrite) SetMultiplexedSessionPreviousTransactionId(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_MultiplexedSessionPreviousTransactionId = v
+}
+
+type TransactionOptions_ReadWrite_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Read lock mode for the transaction.
+	ReadLockMode TransactionOptions_ReadWrite_ReadLockMode
+	// Optional. Clients should pass the transaction ID of the previous
+	// transaction attempt that was aborted if this transaction is being
+	// executed on a multiplexed session.
+	MultiplexedSessionPreviousTransactionId []byte
+}
+
+func (b0 TransactionOptions_ReadWrite_builder) Build() *TransactionOptions_ReadWrite {
+	m0 := &TransactionOptions_ReadWrite{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_ReadLockMode = b.ReadLockMode
+	x.xxx_hidden_MultiplexedSessionPreviousTransactionId = b.MultiplexedSessionPreviousTransactionId
+	return m0
+}
+
 // Message type to initiate a Partitioned DML transaction.
 type TransactionOptions_PartitionedDml struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
+	state         protoimpl.MessageState `protogen:"opaque.v1"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -720,30 +1088,25 @@ func (x *TransactionOptions_PartitionedDml) ProtoReflect() protoreflect.Message 
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TransactionOptions_PartitionedDml.ProtoReflect.Descriptor instead.
-func (*TransactionOptions_PartitionedDml) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{0, 1}
+type TransactionOptions_PartitionedDml_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+}
+
+func (b0 TransactionOptions_PartitionedDml_builder) Build() *TransactionOptions_PartitionedDml {
+	m0 := &TransactionOptions_PartitionedDml{}
+	b, x := &b0, m0
+	_, _ = b, x
+	return m0
 }
 
 // Message type to initiate a read-only transaction.
 type TransactionOptions_ReadOnly struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// How to choose the timestamp for the read-only transaction.
-	//
-	// Types that are valid to be assigned to TimestampBound:
-	//
-	//	*TransactionOptions_ReadOnly_Strong
-	//	*TransactionOptions_ReadOnly_MinReadTimestamp
-	//	*TransactionOptions_ReadOnly_MaxStaleness
-	//	*TransactionOptions_ReadOnly_ReadTimestamp
-	//	*TransactionOptions_ReadOnly_ExactStaleness
-	TimestampBound isTransactionOptions_ReadOnly_TimestampBound `protobuf_oneof:"timestamp_bound"`
-	// If true, the Cloud Spanner-selected read timestamp is included in
-	// the [Transaction][google.spanner.v1.Transaction] message that describes
-	// the transaction.
-	ReturnReadTimestamp bool `protobuf:"varint,6,opt,name=return_read_timestamp,json=returnReadTimestamp,proto3" json:"return_read_timestamp,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state                          protoimpl.MessageState                       `protogen:"opaque.v1"`
+	xxx_hidden_TimestampBound      isTransactionOptions_ReadOnly_TimestampBound `protobuf_oneof:"timestamp_bound"`
+	xxx_hidden_ReturnReadTimestamp bool                                         `protobuf:"varint,6,opt,name=return_read_timestamp,json=returnReadTimestamp,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *TransactionOptions_ReadOnly) Reset() {
@@ -771,21 +1134,9 @@ func (x *TransactionOptions_ReadOnly) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use TransactionOptions_ReadOnly.ProtoReflect.Descriptor instead.
-func (*TransactionOptions_ReadOnly) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_transaction_proto_rawDescGZIP(), []int{0, 2}
-}
-
-func (x *TransactionOptions_ReadOnly) GetTimestampBound() isTransactionOptions_ReadOnly_TimestampBound {
-	if x != nil {
-		return x.TimestampBound
-	}
-	return nil
-}
-
 func (x *TransactionOptions_ReadOnly) GetStrong() bool {
 	if x != nil {
-		if x, ok := x.TimestampBound.(*TransactionOptions_ReadOnly_Strong); ok {
+		if x, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_Strong); ok {
 			return x.Strong
 		}
 	}
@@ -794,7 +1145,7 @@ func (x *TransactionOptions_ReadOnly) GetStrong() bool {
 
 func (x *TransactionOptions_ReadOnly) GetMinReadTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		if x, ok := x.TimestampBound.(*TransactionOptions_ReadOnly_MinReadTimestamp); ok {
+		if x, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_MinReadTimestamp); ok {
 			return x.MinReadTimestamp
 		}
 	}
@@ -803,7 +1154,7 @@ func (x *TransactionOptions_ReadOnly) GetMinReadTimestamp() *timestamppb.Timesta
 
 func (x *TransactionOptions_ReadOnly) GetMaxStaleness() *durationpb.Duration {
 	if x != nil {
-		if x, ok := x.TimestampBound.(*TransactionOptions_ReadOnly_MaxStaleness); ok {
+		if x, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_MaxStaleness); ok {
 			return x.MaxStaleness
 		}
 	}
@@ -812,7 +1163,7 @@ func (x *TransactionOptions_ReadOnly) GetMaxStaleness() *durationpb.Duration {
 
 func (x *TransactionOptions_ReadOnly) GetReadTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		if x, ok := x.TimestampBound.(*TransactionOptions_ReadOnly_ReadTimestamp); ok {
+		if x, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_ReadTimestamp); ok {
 			return x.ReadTimestamp
 		}
 	}
@@ -821,7 +1172,7 @@ func (x *TransactionOptions_ReadOnly) GetReadTimestamp() *timestamppb.Timestamp 
 
 func (x *TransactionOptions_ReadOnly) GetExactStaleness() *durationpb.Duration {
 	if x != nil {
-		if x, ok := x.TimestampBound.(*TransactionOptions_ReadOnly_ExactStaleness); ok {
+		if x, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_ExactStaleness); ok {
 			return x.ExactStaleness
 		}
 	}
@@ -830,22 +1181,269 @@ func (x *TransactionOptions_ReadOnly) GetExactStaleness() *durationpb.Duration {
 
 func (x *TransactionOptions_ReadOnly) GetReturnReadTimestamp() bool {
 	if x != nil {
-		return x.ReturnReadTimestamp
+		return x.xxx_hidden_ReturnReadTimestamp
 	}
 	return false
+}
+
+func (x *TransactionOptions_ReadOnly) SetStrong(v bool) {
+	x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_Strong{v}
+}
+
+func (x *TransactionOptions_ReadOnly) SetMinReadTimestamp(v *timestamppb.Timestamp) {
+	if v == nil {
+		x.xxx_hidden_TimestampBound = nil
+		return
+	}
+	x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_MinReadTimestamp{v}
+}
+
+func (x *TransactionOptions_ReadOnly) SetMaxStaleness(v *durationpb.Duration) {
+	if v == nil {
+		x.xxx_hidden_TimestampBound = nil
+		return
+	}
+	x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_MaxStaleness{v}
+}
+
+func (x *TransactionOptions_ReadOnly) SetReadTimestamp(v *timestamppb.Timestamp) {
+	if v == nil {
+		x.xxx_hidden_TimestampBound = nil
+		return
+	}
+	x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_ReadTimestamp{v}
+}
+
+func (x *TransactionOptions_ReadOnly) SetExactStaleness(v *durationpb.Duration) {
+	if v == nil {
+		x.xxx_hidden_TimestampBound = nil
+		return
+	}
+	x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_ExactStaleness{v}
+}
+
+func (x *TransactionOptions_ReadOnly) SetReturnReadTimestamp(v bool) {
+	x.xxx_hidden_ReturnReadTimestamp = v
+}
+
+func (x *TransactionOptions_ReadOnly) HasTimestampBound() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_TimestampBound != nil
+}
+
+func (x *TransactionOptions_ReadOnly) HasStrong() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_Strong)
+	return ok
+}
+
+func (x *TransactionOptions_ReadOnly) HasMinReadTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_MinReadTimestamp)
+	return ok
+}
+
+func (x *TransactionOptions_ReadOnly) HasMaxStaleness() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_MaxStaleness)
+	return ok
+}
+
+func (x *TransactionOptions_ReadOnly) HasReadTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_ReadTimestamp)
+	return ok
+}
+
+func (x *TransactionOptions_ReadOnly) HasExactStaleness() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_ExactStaleness)
+	return ok
+}
+
+func (x *TransactionOptions_ReadOnly) ClearTimestampBound() {
+	x.xxx_hidden_TimestampBound = nil
+}
+
+func (x *TransactionOptions_ReadOnly) ClearStrong() {
+	if _, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_Strong); ok {
+		x.xxx_hidden_TimestampBound = nil
+	}
+}
+
+func (x *TransactionOptions_ReadOnly) ClearMinReadTimestamp() {
+	if _, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_MinReadTimestamp); ok {
+		x.xxx_hidden_TimestampBound = nil
+	}
+}
+
+func (x *TransactionOptions_ReadOnly) ClearMaxStaleness() {
+	if _, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_MaxStaleness); ok {
+		x.xxx_hidden_TimestampBound = nil
+	}
+}
+
+func (x *TransactionOptions_ReadOnly) ClearReadTimestamp() {
+	if _, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_ReadTimestamp); ok {
+		x.xxx_hidden_TimestampBound = nil
+	}
+}
+
+func (x *TransactionOptions_ReadOnly) ClearExactStaleness() {
+	if _, ok := x.xxx_hidden_TimestampBound.(*transactionOptions_ReadOnly_ExactStaleness); ok {
+		x.xxx_hidden_TimestampBound = nil
+	}
+}
+
+const TransactionOptions_ReadOnly_TimestampBound_not_set_case case_TransactionOptions_ReadOnly_TimestampBound = 0
+const TransactionOptions_ReadOnly_Strong_case case_TransactionOptions_ReadOnly_TimestampBound = 1
+const TransactionOptions_ReadOnly_MinReadTimestamp_case case_TransactionOptions_ReadOnly_TimestampBound = 2
+const TransactionOptions_ReadOnly_MaxStaleness_case case_TransactionOptions_ReadOnly_TimestampBound = 3
+const TransactionOptions_ReadOnly_ReadTimestamp_case case_TransactionOptions_ReadOnly_TimestampBound = 4
+const TransactionOptions_ReadOnly_ExactStaleness_case case_TransactionOptions_ReadOnly_TimestampBound = 5
+
+func (x *TransactionOptions_ReadOnly) WhichTimestampBound() case_TransactionOptions_ReadOnly_TimestampBound {
+	if x == nil {
+		return TransactionOptions_ReadOnly_TimestampBound_not_set_case
+	}
+	switch x.xxx_hidden_TimestampBound.(type) {
+	case *transactionOptions_ReadOnly_Strong:
+		return TransactionOptions_ReadOnly_Strong_case
+	case *transactionOptions_ReadOnly_MinReadTimestamp:
+		return TransactionOptions_ReadOnly_MinReadTimestamp_case
+	case *transactionOptions_ReadOnly_MaxStaleness:
+		return TransactionOptions_ReadOnly_MaxStaleness_case
+	case *transactionOptions_ReadOnly_ReadTimestamp:
+		return TransactionOptions_ReadOnly_ReadTimestamp_case
+	case *transactionOptions_ReadOnly_ExactStaleness:
+		return TransactionOptions_ReadOnly_ExactStaleness_case
+	default:
+		return TransactionOptions_ReadOnly_TimestampBound_not_set_case
+	}
+}
+
+type TransactionOptions_ReadOnly_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// How to choose the timestamp for the read-only transaction.
+
+	// Fields of oneof xxx_hidden_TimestampBound:
+	// Read at a timestamp where all previously committed transactions
+	// are visible.
+	Strong *bool
+	// Executes all reads at a timestamp >= `min_read_timestamp`.
+	//
+	// This is useful for requesting fresher data than some previous
+	// read, or data that is fresh enough to observe the effects of some
+	// previously committed transaction whose timestamp is known.
+	//
+	// Note that this option can only be used in single-use transactions.
+	//
+	// A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.
+	// Example: `"2014-10-02T15:01:23.045123456Z"`.
+	MinReadTimestamp *timestamppb.Timestamp
+	// Read data at a timestamp >= `NOW - max_staleness`
+	// seconds. Guarantees that all writes that have committed more
+	// than the specified number of seconds ago are visible. Because
+	// Cloud Spanner chooses the exact timestamp, this mode works even if
+	// the client's local clock is substantially skewed from Cloud Spanner
+	// commit timestamps.
+	//
+	// Useful for reading the freshest data available at a nearby
+	// replica, while bounding the possible staleness if the local
+	// replica has fallen behind.
+	//
+	// Note that this option can only be used in single-use
+	// transactions.
+	MaxStaleness *durationpb.Duration
+	// Executes all reads at the given timestamp. Unlike other modes,
+	// reads at a specific timestamp are repeatable; the same read at
+	// the same timestamp always returns the same data. If the
+	// timestamp is in the future, the read is blocked until the
+	// specified timestamp, modulo the read's deadline.
+	//
+	// Useful for large scale consistent reads such as mapreduces, or
+	// for coordinating many reads against a consistent snapshot of the
+	// data.
+	//
+	// A timestamp in RFC3339 UTC \"Zulu\" format, accurate to nanoseconds.
+	// Example: `"2014-10-02T15:01:23.045123456Z"`.
+	ReadTimestamp *timestamppb.Timestamp
+	// Executes all reads at a timestamp that is `exact_staleness`
+	// old. The timestamp is chosen soon after the read is started.
+	//
+	// Guarantees that all writes that have committed more than the
+	// specified number of seconds ago are visible. Because Cloud Spanner
+	// chooses the exact timestamp, this mode works even if the client's
+	// local clock is substantially skewed from Cloud Spanner commit
+	// timestamps.
+	//
+	// Useful for reading at nearby replicas without the distributed
+	// timestamp negotiation overhead of `max_staleness`.
+	ExactStaleness *durationpb.Duration
+	// -- end of xxx_hidden_TimestampBound
+	// If true, the Cloud Spanner-selected read timestamp is included in
+	// the [Transaction][google.spanner.v1.Transaction] message that describes
+	// the transaction.
+	ReturnReadTimestamp bool
+}
+
+func (b0 TransactionOptions_ReadOnly_builder) Build() *TransactionOptions_ReadOnly {
+	m0 := &TransactionOptions_ReadOnly{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Strong != nil {
+		x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_Strong{*b.Strong}
+	}
+	if b.MinReadTimestamp != nil {
+		x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_MinReadTimestamp{b.MinReadTimestamp}
+	}
+	if b.MaxStaleness != nil {
+		x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_MaxStaleness{b.MaxStaleness}
+	}
+	if b.ReadTimestamp != nil {
+		x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_ReadTimestamp{b.ReadTimestamp}
+	}
+	if b.ExactStaleness != nil {
+		x.xxx_hidden_TimestampBound = &transactionOptions_ReadOnly_ExactStaleness{b.ExactStaleness}
+	}
+	x.xxx_hidden_ReturnReadTimestamp = b.ReturnReadTimestamp
+	return m0
+}
+
+type case_TransactionOptions_ReadOnly_TimestampBound protoreflect.FieldNumber
+
+func (x case_TransactionOptions_ReadOnly_TimestampBound) String() string {
+	md := file_google_spanner_v1_transaction_proto_msgTypes[6].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
 }
 
 type isTransactionOptions_ReadOnly_TimestampBound interface {
 	isTransactionOptions_ReadOnly_TimestampBound()
 }
 
-type TransactionOptions_ReadOnly_Strong struct {
+type transactionOptions_ReadOnly_Strong struct {
 	// Read at a timestamp where all previously committed transactions
 	// are visible.
 	Strong bool `protobuf:"varint,1,opt,name=strong,proto3,oneof"`
 }
 
-type TransactionOptions_ReadOnly_MinReadTimestamp struct {
+type transactionOptions_ReadOnly_MinReadTimestamp struct {
 	// Executes all reads at a timestamp >= `min_read_timestamp`.
 	//
 	// This is useful for requesting fresher data than some previous
@@ -859,7 +1457,7 @@ type TransactionOptions_ReadOnly_MinReadTimestamp struct {
 	MinReadTimestamp *timestamppb.Timestamp `protobuf:"bytes,2,opt,name=min_read_timestamp,json=minReadTimestamp,proto3,oneof"`
 }
 
-type TransactionOptions_ReadOnly_MaxStaleness struct {
+type transactionOptions_ReadOnly_MaxStaleness struct {
 	// Read data at a timestamp >= `NOW - max_staleness`
 	// seconds. Guarantees that all writes that have committed more
 	// than the specified number of seconds ago are visible. Because
@@ -876,7 +1474,7 @@ type TransactionOptions_ReadOnly_MaxStaleness struct {
 	MaxStaleness *durationpb.Duration `protobuf:"bytes,3,opt,name=max_staleness,json=maxStaleness,proto3,oneof"`
 }
 
-type TransactionOptions_ReadOnly_ReadTimestamp struct {
+type transactionOptions_ReadOnly_ReadTimestamp struct {
 	// Executes all reads at the given timestamp. Unlike other modes,
 	// reads at a specific timestamp are repeatable; the same read at
 	// the same timestamp always returns the same data. If the
@@ -892,7 +1490,7 @@ type TransactionOptions_ReadOnly_ReadTimestamp struct {
 	ReadTimestamp *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=read_timestamp,json=readTimestamp,proto3,oneof"`
 }
 
-type TransactionOptions_ReadOnly_ExactStaleness struct {
+type transactionOptions_ReadOnly_ExactStaleness struct {
 	// Executes all reads at a timestamp that is `exact_staleness`
 	// old. The timestamp is chosen soon after the read is started.
 	//
@@ -907,15 +1505,15 @@ type TransactionOptions_ReadOnly_ExactStaleness struct {
 	ExactStaleness *durationpb.Duration `protobuf:"bytes,5,opt,name=exact_staleness,json=exactStaleness,proto3,oneof"`
 }
 
-func (*TransactionOptions_ReadOnly_Strong) isTransactionOptions_ReadOnly_TimestampBound() {}
+func (*transactionOptions_ReadOnly_Strong) isTransactionOptions_ReadOnly_TimestampBound() {}
 
-func (*TransactionOptions_ReadOnly_MinReadTimestamp) isTransactionOptions_ReadOnly_TimestampBound() {}
+func (*transactionOptions_ReadOnly_MinReadTimestamp) isTransactionOptions_ReadOnly_TimestampBound() {}
 
-func (*TransactionOptions_ReadOnly_MaxStaleness) isTransactionOptions_ReadOnly_TimestampBound() {}
+func (*transactionOptions_ReadOnly_MaxStaleness) isTransactionOptions_ReadOnly_TimestampBound() {}
 
-func (*TransactionOptions_ReadOnly_ReadTimestamp) isTransactionOptions_ReadOnly_TimestampBound() {}
+func (*transactionOptions_ReadOnly_ReadTimestamp) isTransactionOptions_ReadOnly_TimestampBound() {}
 
-func (*TransactionOptions_ReadOnly_ExactStaleness) isTransactionOptions_ReadOnly_TimestampBound() {}
+func (*transactionOptions_ReadOnly_ExactStaleness) isTransactionOptions_ReadOnly_TimestampBound() {}
 
 var File_google_spanner_v1_transaction_proto protoreflect.FileDescriptor
 
@@ -968,18 +1566,6 @@ const file_google_spanner_v1_transaction_proto_rawDesc = "" +
 	"\aseq_num\x18\x02 \x01(\x05R\x06seqNumB\xb3\x01\n" +
 	"\x15com.google.spanner.v1B\x10TransactionProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
 
-var (
-	file_google_spanner_v1_transaction_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_transaction_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_transaction_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_transaction_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_transaction_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_transaction_proto_rawDesc), len(file_google_spanner_v1_transaction_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_transaction_proto_rawDescData
-}
-
 var file_google_spanner_v1_transaction_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_spanner_v1_transaction_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_spanner_v1_transaction_proto_goTypes = []any{
@@ -1025,21 +1611,21 @@ func file_google_spanner_v1_transaction_proto_init() {
 	}
 	file_google_spanner_v1_location_proto_init()
 	file_google_spanner_v1_transaction_proto_msgTypes[0].OneofWrappers = []any{
-		(*TransactionOptions_ReadWrite_)(nil),
-		(*TransactionOptions_PartitionedDml_)(nil),
-		(*TransactionOptions_ReadOnly_)(nil),
+		(*transactionOptions_ReadWrite_)(nil),
+		(*transactionOptions_PartitionedDml_)(nil),
+		(*transactionOptions_ReadOnly_)(nil),
 	}
 	file_google_spanner_v1_transaction_proto_msgTypes[2].OneofWrappers = []any{
-		(*TransactionSelector_SingleUse)(nil),
-		(*TransactionSelector_Id)(nil),
-		(*TransactionSelector_Begin)(nil),
+		(*transactionSelector_SingleUse)(nil),
+		(*transactionSelector_Id)(nil),
+		(*transactionSelector_Begin)(nil),
 	}
 	file_google_spanner_v1_transaction_proto_msgTypes[6].OneofWrappers = []any{
-		(*TransactionOptions_ReadOnly_Strong)(nil),
-		(*TransactionOptions_ReadOnly_MinReadTimestamp)(nil),
-		(*TransactionOptions_ReadOnly_MaxStaleness)(nil),
-		(*TransactionOptions_ReadOnly_ReadTimestamp)(nil),
-		(*TransactionOptions_ReadOnly_ExactStaleness)(nil),
+		(*transactionOptions_ReadOnly_Strong)(nil),
+		(*transactionOptions_ReadOnly_MinReadTimestamp)(nil),
+		(*transactionOptions_ReadOnly_MaxStaleness)(nil),
+		(*transactionOptions_ReadOnly_ReadTimestamp)(nil),
+		(*transactionOptions_ReadOnly_ExactStaleness)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

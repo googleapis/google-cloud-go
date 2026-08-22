@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -43,21 +42,10 @@ const (
 // applied to a Cloud Spanner database by sending them in a
 // [Commit][google.spanner.v1.Spanner.Commit] call.
 type Mutation struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The operation to perform.
-	//
-	// Types that are valid to be assigned to Operation:
-	//
-	//	*Mutation_Insert
-	//	*Mutation_Update
-	//	*Mutation_InsertOrUpdate
-	//	*Mutation_Replace
-	//	*Mutation_Delete_
-	//	*Mutation_Send_
-	//	*Mutation_Ack_
-	Operation     isMutation_Operation `protobuf_oneof:"operation"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Operation isMutation_Operation   `protobuf_oneof:"operation"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *Mutation) Reset() {
@@ -85,21 +73,9 @@ func (x *Mutation) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Mutation.ProtoReflect.Descriptor instead.
-func (*Mutation) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_mutation_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *Mutation) GetOperation() isMutation_Operation {
-	if x != nil {
-		return x.Operation
-	}
-	return nil
-}
-
 func (x *Mutation) GetInsert() *Mutation_Write {
 	if x != nil {
-		if x, ok := x.Operation.(*Mutation_Insert); ok {
+		if x, ok := x.xxx_hidden_Operation.(*mutation_Insert); ok {
 			return x.Insert
 		}
 	}
@@ -108,7 +84,7 @@ func (x *Mutation) GetInsert() *Mutation_Write {
 
 func (x *Mutation) GetUpdate() *Mutation_Write {
 	if x != nil {
-		if x, ok := x.Operation.(*Mutation_Update); ok {
+		if x, ok := x.xxx_hidden_Operation.(*mutation_Update); ok {
 			return x.Update
 		}
 	}
@@ -117,7 +93,7 @@ func (x *Mutation) GetUpdate() *Mutation_Write {
 
 func (x *Mutation) GetInsertOrUpdate() *Mutation_Write {
 	if x != nil {
-		if x, ok := x.Operation.(*Mutation_InsertOrUpdate); ok {
+		if x, ok := x.xxx_hidden_Operation.(*mutation_InsertOrUpdate); ok {
 			return x.InsertOrUpdate
 		}
 	}
@@ -126,7 +102,7 @@ func (x *Mutation) GetInsertOrUpdate() *Mutation_Write {
 
 func (x *Mutation) GetReplace() *Mutation_Write {
 	if x != nil {
-		if x, ok := x.Operation.(*Mutation_Replace); ok {
+		if x, ok := x.xxx_hidden_Operation.(*mutation_Replace); ok {
 			return x.Replace
 		}
 	}
@@ -135,7 +111,7 @@ func (x *Mutation) GetReplace() *Mutation_Write {
 
 func (x *Mutation) GetDelete() *Mutation_Delete {
 	if x != nil {
-		if x, ok := x.Operation.(*Mutation_Delete_); ok {
+		if x, ok := x.xxx_hidden_Operation.(*mutation_Delete_); ok {
 			return x.Delete
 		}
 	}
@@ -144,7 +120,7 @@ func (x *Mutation) GetDelete() *Mutation_Delete {
 
 func (x *Mutation) GetSend() *Mutation_Send {
 	if x != nil {
-		if x, ok := x.Operation.(*Mutation_Send_); ok {
+		if x, ok := x.xxx_hidden_Operation.(*mutation_Send_); ok {
 			return x.Send
 		}
 	}
@@ -153,30 +129,309 @@ func (x *Mutation) GetSend() *Mutation_Send {
 
 func (x *Mutation) GetAck() *Mutation_Ack {
 	if x != nil {
-		if x, ok := x.Operation.(*Mutation_Ack_); ok {
+		if x, ok := x.xxx_hidden_Operation.(*mutation_Ack_); ok {
 			return x.Ack
 		}
 	}
 	return nil
 }
 
+func (x *Mutation) SetInsert(v *Mutation_Write) {
+	if v == nil {
+		x.xxx_hidden_Operation = nil
+		return
+	}
+	x.xxx_hidden_Operation = &mutation_Insert{v}
+}
+
+func (x *Mutation) SetUpdate(v *Mutation_Write) {
+	if v == nil {
+		x.xxx_hidden_Operation = nil
+		return
+	}
+	x.xxx_hidden_Operation = &mutation_Update{v}
+}
+
+func (x *Mutation) SetInsertOrUpdate(v *Mutation_Write) {
+	if v == nil {
+		x.xxx_hidden_Operation = nil
+		return
+	}
+	x.xxx_hidden_Operation = &mutation_InsertOrUpdate{v}
+}
+
+func (x *Mutation) SetReplace(v *Mutation_Write) {
+	if v == nil {
+		x.xxx_hidden_Operation = nil
+		return
+	}
+	x.xxx_hidden_Operation = &mutation_Replace{v}
+}
+
+func (x *Mutation) SetDelete(v *Mutation_Delete) {
+	if v == nil {
+		x.xxx_hidden_Operation = nil
+		return
+	}
+	x.xxx_hidden_Operation = &mutation_Delete_{v}
+}
+
+func (x *Mutation) SetSend(v *Mutation_Send) {
+	if v == nil {
+		x.xxx_hidden_Operation = nil
+		return
+	}
+	x.xxx_hidden_Operation = &mutation_Send_{v}
+}
+
+func (x *Mutation) SetAck(v *Mutation_Ack) {
+	if v == nil {
+		x.xxx_hidden_Operation = nil
+		return
+	}
+	x.xxx_hidden_Operation = &mutation_Ack_{v}
+}
+
+func (x *Mutation) HasOperation() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Operation != nil
+}
+
+func (x *Mutation) HasInsert() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Operation.(*mutation_Insert)
+	return ok
+}
+
+func (x *Mutation) HasUpdate() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Operation.(*mutation_Update)
+	return ok
+}
+
+func (x *Mutation) HasInsertOrUpdate() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Operation.(*mutation_InsertOrUpdate)
+	return ok
+}
+
+func (x *Mutation) HasReplace() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Operation.(*mutation_Replace)
+	return ok
+}
+
+func (x *Mutation) HasDelete() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Operation.(*mutation_Delete_)
+	return ok
+}
+
+func (x *Mutation) HasSend() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Operation.(*mutation_Send_)
+	return ok
+}
+
+func (x *Mutation) HasAck() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Operation.(*mutation_Ack_)
+	return ok
+}
+
+func (x *Mutation) ClearOperation() {
+	x.xxx_hidden_Operation = nil
+}
+
+func (x *Mutation) ClearInsert() {
+	if _, ok := x.xxx_hidden_Operation.(*mutation_Insert); ok {
+		x.xxx_hidden_Operation = nil
+	}
+}
+
+func (x *Mutation) ClearUpdate() {
+	if _, ok := x.xxx_hidden_Operation.(*mutation_Update); ok {
+		x.xxx_hidden_Operation = nil
+	}
+}
+
+func (x *Mutation) ClearInsertOrUpdate() {
+	if _, ok := x.xxx_hidden_Operation.(*mutation_InsertOrUpdate); ok {
+		x.xxx_hidden_Operation = nil
+	}
+}
+
+func (x *Mutation) ClearReplace() {
+	if _, ok := x.xxx_hidden_Operation.(*mutation_Replace); ok {
+		x.xxx_hidden_Operation = nil
+	}
+}
+
+func (x *Mutation) ClearDelete() {
+	if _, ok := x.xxx_hidden_Operation.(*mutation_Delete_); ok {
+		x.xxx_hidden_Operation = nil
+	}
+}
+
+func (x *Mutation) ClearSend() {
+	if _, ok := x.xxx_hidden_Operation.(*mutation_Send_); ok {
+		x.xxx_hidden_Operation = nil
+	}
+}
+
+func (x *Mutation) ClearAck() {
+	if _, ok := x.xxx_hidden_Operation.(*mutation_Ack_); ok {
+		x.xxx_hidden_Operation = nil
+	}
+}
+
+const Mutation_Operation_not_set_case case_Mutation_Operation = 0
+const Mutation_Insert_case case_Mutation_Operation = 1
+const Mutation_Update_case case_Mutation_Operation = 2
+const Mutation_InsertOrUpdate_case case_Mutation_Operation = 3
+const Mutation_Replace_case case_Mutation_Operation = 4
+const Mutation_Delete_case case_Mutation_Operation = 5
+const Mutation_Send_case case_Mutation_Operation = 6
+const Mutation_Ack_case case_Mutation_Operation = 7
+
+func (x *Mutation) WhichOperation() case_Mutation_Operation {
+	if x == nil {
+		return Mutation_Operation_not_set_case
+	}
+	switch x.xxx_hidden_Operation.(type) {
+	case *mutation_Insert:
+		return Mutation_Insert_case
+	case *mutation_Update:
+		return Mutation_Update_case
+	case *mutation_InsertOrUpdate:
+		return Mutation_InsertOrUpdate_case
+	case *mutation_Replace:
+		return Mutation_Replace_case
+	case *mutation_Delete_:
+		return Mutation_Delete_case
+	case *mutation_Send_:
+		return Mutation_Send_case
+	case *mutation_Ack_:
+		return Mutation_Ack_case
+	default:
+		return Mutation_Operation_not_set_case
+	}
+}
+
+type Mutation_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The operation to perform.
+
+	// Fields of oneof xxx_hidden_Operation:
+	// Insert new rows in a table. If any of the rows already exist,
+	// the write or transaction fails with error `ALREADY_EXISTS`.
+	Insert *Mutation_Write
+	// Update existing rows in a table. If any of the rows does not
+	// already exist, the transaction fails with error `NOT_FOUND`.
+	Update *Mutation_Write
+	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row
+	// already exists, then its column values are overwritten with the ones
+	// provided. Any column values not explicitly written are preserved.
+	//
+	// When using
+	// [insert_or_update][google.spanner.v1.Mutation.insert_or_update], just as
+	// when using [insert][google.spanner.v1.Mutation.insert], all `NOT NULL`
+	// columns in the table must be given a value. This holds true even when the
+	// row already exists and will therefore actually be updated.
+	InsertOrUpdate *Mutation_Write
+	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row
+	// already exists, it is deleted, and the column values provided are
+	// inserted instead. Unlike
+	// [insert_or_update][google.spanner.v1.Mutation.insert_or_update], this
+	// means any values not explicitly written become `NULL`.
+	//
+	// In an interleaved table, if you create the child table with the
+	// `ON DELETE CASCADE` annotation, then replacing a parent row
+	// also deletes the child rows. Otherwise, you must delete the
+	// child rows before you replace the parent row.
+	Replace *Mutation_Write
+	// Delete rows from a table. Succeeds whether or not the named
+	// rows were present.
+	Delete *Mutation_Delete
+	// Send a message to a queue.
+	Send *Mutation_Send
+	// Ack a message from a queue.
+	Ack *Mutation_Ack
+	// -- end of xxx_hidden_Operation
+}
+
+func (b0 Mutation_builder) Build() *Mutation {
+	m0 := &Mutation{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.Insert != nil {
+		x.xxx_hidden_Operation = &mutation_Insert{b.Insert}
+	}
+	if b.Update != nil {
+		x.xxx_hidden_Operation = &mutation_Update{b.Update}
+	}
+	if b.InsertOrUpdate != nil {
+		x.xxx_hidden_Operation = &mutation_InsertOrUpdate{b.InsertOrUpdate}
+	}
+	if b.Replace != nil {
+		x.xxx_hidden_Operation = &mutation_Replace{b.Replace}
+	}
+	if b.Delete != nil {
+		x.xxx_hidden_Operation = &mutation_Delete_{b.Delete}
+	}
+	if b.Send != nil {
+		x.xxx_hidden_Operation = &mutation_Send_{b.Send}
+	}
+	if b.Ack != nil {
+		x.xxx_hidden_Operation = &mutation_Ack_{b.Ack}
+	}
+	return m0
+}
+
+type case_Mutation_Operation protoreflect.FieldNumber
+
+func (x case_Mutation_Operation) String() string {
+	md := file_google_spanner_v1_mutation_proto_msgTypes[0].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isMutation_Operation interface {
 	isMutation_Operation()
 }
 
-type Mutation_Insert struct {
+type mutation_Insert struct {
 	// Insert new rows in a table. If any of the rows already exist,
 	// the write or transaction fails with error `ALREADY_EXISTS`.
 	Insert *Mutation_Write `protobuf:"bytes,1,opt,name=insert,proto3,oneof"`
 }
 
-type Mutation_Update struct {
+type mutation_Update struct {
 	// Update existing rows in a table. If any of the rows does not
 	// already exist, the transaction fails with error `NOT_FOUND`.
 	Update *Mutation_Write `protobuf:"bytes,2,opt,name=update,proto3,oneof"`
 }
 
-type Mutation_InsertOrUpdate struct {
+type mutation_InsertOrUpdate struct {
 	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row
 	// already exists, then its column values are overwritten with the ones
 	// provided. Any column values not explicitly written are preserved.
@@ -189,7 +444,7 @@ type Mutation_InsertOrUpdate struct {
 	InsertOrUpdate *Mutation_Write `protobuf:"bytes,3,opt,name=insert_or_update,json=insertOrUpdate,proto3,oneof"`
 }
 
-type Mutation_Replace struct {
+type mutation_Replace struct {
 	// Like [insert][google.spanner.v1.Mutation.insert], except that if the row
 	// already exists, it is deleted, and the column values provided are
 	// inserted instead. Unlike
@@ -203,64 +458,47 @@ type Mutation_Replace struct {
 	Replace *Mutation_Write `protobuf:"bytes,4,opt,name=replace,proto3,oneof"`
 }
 
-type Mutation_Delete_ struct {
+type mutation_Delete_ struct {
 	// Delete rows from a table. Succeeds whether or not the named
 	// rows were present.
 	Delete *Mutation_Delete `protobuf:"bytes,5,opt,name=delete,proto3,oneof"`
 }
 
-type Mutation_Send_ struct {
+type mutation_Send_ struct {
 	// Send a message to a queue.
 	Send *Mutation_Send `protobuf:"bytes,6,opt,name=send,proto3,oneof"`
 }
 
-type Mutation_Ack_ struct {
+type mutation_Ack_ struct {
 	// Ack a message from a queue.
 	Ack *Mutation_Ack `protobuf:"bytes,7,opt,name=ack,proto3,oneof"`
 }
 
-func (*Mutation_Insert) isMutation_Operation() {}
+func (*mutation_Insert) isMutation_Operation() {}
 
-func (*Mutation_Update) isMutation_Operation() {}
+func (*mutation_Update) isMutation_Operation() {}
 
-func (*Mutation_InsertOrUpdate) isMutation_Operation() {}
+func (*mutation_InsertOrUpdate) isMutation_Operation() {}
 
-func (*Mutation_Replace) isMutation_Operation() {}
+func (*mutation_Replace) isMutation_Operation() {}
 
-func (*Mutation_Delete_) isMutation_Operation() {}
+func (*mutation_Delete_) isMutation_Operation() {}
 
-func (*Mutation_Send_) isMutation_Operation() {}
+func (*mutation_Send_) isMutation_Operation() {}
 
-func (*Mutation_Ack_) isMutation_Operation() {}
+func (*mutation_Ack_) isMutation_Operation() {}
 
 // Arguments to [insert][google.spanner.v1.Mutation.insert],
 // [update][google.spanner.v1.Mutation.update],
 // [insert_or_update][google.spanner.v1.Mutation.insert_or_update], and
 // [replace][google.spanner.v1.Mutation.replace] operations.
 type Mutation_Write struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The table whose rows will be written.
-	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
-	// The names of the columns in
-	// [table][google.spanner.v1.Mutation.Write.table] to be written.
-	//
-	// The list of columns must contain enough columns to allow
-	// Cloud Spanner to derive values for all primary key columns in the
-	// row(s) to be modified.
-	Columns []string `protobuf:"bytes,2,rep,name=columns,proto3" json:"columns,omitempty"`
-	// The values to be written. `values` can contain more than one
-	// list of values. If it does, then multiple rows are written, one
-	// for each entry in `values`. Each list in `values` must have
-	// exactly as many entries as there are entries in
-	// [columns][google.spanner.v1.Mutation.Write.columns] above. Sending
-	// multiple lists is equivalent to sending multiple `Mutation`s, each
-	// containing one `values` entry and repeating
-	// [table][google.spanner.v1.Mutation.Write.table] and
-	// [columns][google.spanner.v1.Mutation.Write.columns]. Individual values in
-	// each list are encoded as described [here][google.spanner.v1.TypeCode].
-	Values        []*structpb.ListValue `protobuf:"bytes,3,rep,name=values,proto3" json:"values,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Table   string                 `protobuf:"bytes,1,opt,name=table,proto3"`
+	xxx_hidden_Columns []string               `protobuf:"bytes,2,rep,name=columns,proto3"`
+	xxx_hidden_Values  *[]*structpb.ListValue `protobuf:"bytes,3,rep,name=values,proto3"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *Mutation_Write) Reset() {
@@ -288,46 +526,83 @@ func (x *Mutation_Write) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Mutation_Write.ProtoReflect.Descriptor instead.
-func (*Mutation_Write) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_mutation_proto_rawDescGZIP(), []int{0, 0}
-}
-
 func (x *Mutation_Write) GetTable() string {
 	if x != nil {
-		return x.Table
+		return x.xxx_hidden_Table
 	}
 	return ""
 }
 
 func (x *Mutation_Write) GetColumns() []string {
 	if x != nil {
-		return x.Columns
+		return x.xxx_hidden_Columns
 	}
 	return nil
 }
 
 func (x *Mutation_Write) GetValues() []*structpb.ListValue {
 	if x != nil {
-		return x.Values
+		if x.xxx_hidden_Values != nil {
+			return *x.xxx_hidden_Values
+		}
 	}
 	return nil
 }
 
+func (x *Mutation_Write) SetTable(v string) {
+	x.xxx_hidden_Table = v
+}
+
+func (x *Mutation_Write) SetColumns(v []string) {
+	x.xxx_hidden_Columns = v
+}
+
+func (x *Mutation_Write) SetValues(v []*structpb.ListValue) {
+	x.xxx_hidden_Values = &v
+}
+
+type Mutation_Write_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The table whose rows will be written.
+	Table string
+	// The names of the columns in
+	// [table][google.spanner.v1.Mutation.Write.table] to be written.
+	//
+	// The list of columns must contain enough columns to allow
+	// Cloud Spanner to derive values for all primary key columns in the
+	// row(s) to be modified.
+	Columns []string
+	// The values to be written. `values` can contain more than one
+	// list of values. If it does, then multiple rows are written, one
+	// for each entry in `values`. Each list in `values` must have
+	// exactly as many entries as there are entries in
+	// [columns][google.spanner.v1.Mutation.Write.columns] above. Sending
+	// multiple lists is equivalent to sending multiple `Mutation`s, each
+	// containing one `values` entry and repeating
+	// [table][google.spanner.v1.Mutation.Write.table] and
+	// [columns][google.spanner.v1.Mutation.Write.columns]. Individual values in
+	// each list are encoded as described [here][google.spanner.v1.TypeCode].
+	Values []*structpb.ListValue
+}
+
+func (b0 Mutation_Write_builder) Build() *Mutation_Write {
+	m0 := &Mutation_Write{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Table = b.Table
+	x.xxx_hidden_Columns = b.Columns
+	x.xxx_hidden_Values = &b.Values
+	return m0
+}
+
 // Arguments to [delete][google.spanner.v1.Mutation.delete] operations.
 type Mutation_Delete struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The table whose rows will be deleted.
-	Table string `protobuf:"bytes,1,opt,name=table,proto3" json:"table,omitempty"`
-	// Required. The primary keys of the rows within
-	// [table][google.spanner.v1.Mutation.Delete.table] to delete.  The primary
-	// keys must be specified in the order in which they appear in the `PRIMARY
-	// KEY()` clause of the table's equivalent DDL statement (the DDL statement
-	// used to create the table). Delete is idempotent. The transaction will
-	// succeed even if some or all rows do not exist.
-	KeySet        *KeySet `protobuf:"bytes,2,opt,name=key_set,json=keySet,proto3" json:"key_set,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Table  string                 `protobuf:"bytes,1,opt,name=table,proto3"`
+	xxx_hidden_KeySet *KeySet                `protobuf:"bytes,2,opt,name=key_set,json=keySet,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *Mutation_Delete) Reset() {
@@ -355,41 +630,71 @@ func (x *Mutation_Delete) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Mutation_Delete.ProtoReflect.Descriptor instead.
-func (*Mutation_Delete) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_mutation_proto_rawDescGZIP(), []int{0, 1}
-}
-
 func (x *Mutation_Delete) GetTable() string {
 	if x != nil {
-		return x.Table
+		return x.xxx_hidden_Table
 	}
 	return ""
 }
 
 func (x *Mutation_Delete) GetKeySet() *KeySet {
 	if x != nil {
-		return x.KeySet
+		return x.xxx_hidden_KeySet
 	}
 	return nil
 }
 
+func (x *Mutation_Delete) SetTable(v string) {
+	x.xxx_hidden_Table = v
+}
+
+func (x *Mutation_Delete) SetKeySet(v *KeySet) {
+	x.xxx_hidden_KeySet = v
+}
+
+func (x *Mutation_Delete) HasKeySet() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_KeySet != nil
+}
+
+func (x *Mutation_Delete) ClearKeySet() {
+	x.xxx_hidden_KeySet = nil
+}
+
+type Mutation_Delete_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The table whose rows will be deleted.
+	Table string
+	// Required. The primary keys of the rows within
+	// [table][google.spanner.v1.Mutation.Delete.table] to delete.  The primary
+	// keys must be specified in the order in which they appear in the `PRIMARY
+	// KEY()` clause of the table's equivalent DDL statement (the DDL statement
+	// used to create the table). Delete is idempotent. The transaction will
+	// succeed even if some or all rows do not exist.
+	KeySet *KeySet
+}
+
+func (b0 Mutation_Delete_builder) Build() *Mutation_Delete {
+	m0 := &Mutation_Delete{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Table = b.Table
+	x.xxx_hidden_KeySet = b.KeySet
+	return m0
+}
+
 // Arguments to [send][google.spanner.v1.Mutation.send] operations.
 type Mutation_Send struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The queue to which the message will be sent.
-	Queue string `protobuf:"bytes,1,opt,name=queue,proto3" json:"queue,omitempty"`
-	// Required. The primary key of the message to be sent.
-	Key *structpb.ListValue `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	// The time at which Spanner will begin attempting to deliver the message.
-	// If `deliver_time` is not set, Spanner will deliver the message
-	// immediately. If `deliver_time` is in the past, Spanner will replace it
-	// with a value closer to the current time.
-	DeliverTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=deliver_time,json=deliverTime,proto3" json:"deliver_time,omitempty"`
-	// The payload of the message.
-	Payload       *structpb.Value `protobuf:"bytes,4,opt,name=payload,proto3" json:"payload,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Queue       string                 `protobuf:"bytes,1,opt,name=queue,proto3"`
+	xxx_hidden_Key         *structpb.ListValue    `protobuf:"bytes,2,opt,name=key,proto3"`
+	xxx_hidden_DeliverTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=deliver_time,json=deliverTime,proto3"`
+	xxx_hidden_Payload     *structpb.Value        `protobuf:"bytes,4,opt,name=payload,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Mutation_Send) Reset() {
@@ -417,54 +722,118 @@ func (x *Mutation_Send) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Mutation_Send.ProtoReflect.Descriptor instead.
-func (*Mutation_Send) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_mutation_proto_rawDescGZIP(), []int{0, 2}
-}
-
 func (x *Mutation_Send) GetQueue() string {
 	if x != nil {
-		return x.Queue
+		return x.xxx_hidden_Queue
 	}
 	return ""
 }
 
 func (x *Mutation_Send) GetKey() *structpb.ListValue {
 	if x != nil {
-		return x.Key
+		return x.xxx_hidden_Key
 	}
 	return nil
 }
 
 func (x *Mutation_Send) GetDeliverTime() *timestamppb.Timestamp {
 	if x != nil {
-		return x.DeliverTime
+		return x.xxx_hidden_DeliverTime
 	}
 	return nil
 }
 
 func (x *Mutation_Send) GetPayload() *structpb.Value {
 	if x != nil {
-		return x.Payload
+		return x.xxx_hidden_Payload
 	}
 	return nil
 }
 
+func (x *Mutation_Send) SetQueue(v string) {
+	x.xxx_hidden_Queue = v
+}
+
+func (x *Mutation_Send) SetKey(v *structpb.ListValue) {
+	x.xxx_hidden_Key = v
+}
+
+func (x *Mutation_Send) SetDeliverTime(v *timestamppb.Timestamp) {
+	x.xxx_hidden_DeliverTime = v
+}
+
+func (x *Mutation_Send) SetPayload(v *structpb.Value) {
+	x.xxx_hidden_Payload = v
+}
+
+func (x *Mutation_Send) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Key != nil
+}
+
+func (x *Mutation_Send) HasDeliverTime() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_DeliverTime != nil
+}
+
+func (x *Mutation_Send) HasPayload() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Payload != nil
+}
+
+func (x *Mutation_Send) ClearKey() {
+	x.xxx_hidden_Key = nil
+}
+
+func (x *Mutation_Send) ClearDeliverTime() {
+	x.xxx_hidden_DeliverTime = nil
+}
+
+func (x *Mutation_Send) ClearPayload() {
+	x.xxx_hidden_Payload = nil
+}
+
+type Mutation_Send_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The queue to which the message will be sent.
+	Queue string
+	// Required. The primary key of the message to be sent.
+	Key *structpb.ListValue
+	// The time at which Spanner will begin attempting to deliver the message.
+	// If `deliver_time` is not set, Spanner will deliver the message
+	// immediately. If `deliver_time` is in the past, Spanner will replace it
+	// with a value closer to the current time.
+	DeliverTime *timestamppb.Timestamp
+	// The payload of the message.
+	Payload *structpb.Value
+}
+
+func (b0 Mutation_Send_builder) Build() *Mutation_Send {
+	m0 := &Mutation_Send{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Queue = b.Queue
+	x.xxx_hidden_Key = b.Key
+	x.xxx_hidden_DeliverTime = b.DeliverTime
+	x.xxx_hidden_Payload = b.Payload
+	return m0
+}
+
 // Arguments to [ack][google.spanner.v1.Mutation.ack] operations.
 type Mutation_Ack struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The queue where the message to be acked is stored.
-	Queue string `protobuf:"bytes,1,opt,name=queue,proto3" json:"queue,omitempty"`
-	// Required. The primary key of the message to be acked.
-	Key *structpb.ListValue `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
-	// By default, an attempt to ack a message that does not exist will fail
-	// with a `NOT_FOUND` error. With `ignore_not_found` set to true, the ack
-	// will succeed even if the message does not exist. This is useful for
-	// unconditionally acking a message, even if it is missing or has already
-	// been acked.
-	IgnoreNotFound bool `protobuf:"varint,3,opt,name=ignore_not_found,json=ignoreNotFound,proto3" json:"ignore_not_found,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Queue          string                 `protobuf:"bytes,1,opt,name=queue,proto3"`
+	xxx_hidden_Key            *structpb.ListValue    `protobuf:"bytes,2,opt,name=key,proto3"`
+	xxx_hidden_IgnoreNotFound bool                   `protobuf:"varint,3,opt,name=ignore_not_found,json=ignoreNotFound,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *Mutation_Ack) Reset() {
@@ -492,30 +861,73 @@ func (x *Mutation_Ack) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use Mutation_Ack.ProtoReflect.Descriptor instead.
-func (*Mutation_Ack) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_mutation_proto_rawDescGZIP(), []int{0, 3}
-}
-
 func (x *Mutation_Ack) GetQueue() string {
 	if x != nil {
-		return x.Queue
+		return x.xxx_hidden_Queue
 	}
 	return ""
 }
 
 func (x *Mutation_Ack) GetKey() *structpb.ListValue {
 	if x != nil {
-		return x.Key
+		return x.xxx_hidden_Key
 	}
 	return nil
 }
 
 func (x *Mutation_Ack) GetIgnoreNotFound() bool {
 	if x != nil {
-		return x.IgnoreNotFound
+		return x.xxx_hidden_IgnoreNotFound
 	}
 	return false
+}
+
+func (x *Mutation_Ack) SetQueue(v string) {
+	x.xxx_hidden_Queue = v
+}
+
+func (x *Mutation_Ack) SetKey(v *structpb.ListValue) {
+	x.xxx_hidden_Key = v
+}
+
+func (x *Mutation_Ack) SetIgnoreNotFound(v bool) {
+	x.xxx_hidden_IgnoreNotFound = v
+}
+
+func (x *Mutation_Ack) HasKey() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Key != nil
+}
+
+func (x *Mutation_Ack) ClearKey() {
+	x.xxx_hidden_Key = nil
+}
+
+type Mutation_Ack_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Required. The queue where the message to be acked is stored.
+	Queue string
+	// Required. The primary key of the message to be acked.
+	Key *structpb.ListValue
+	// By default, an attempt to ack a message that does not exist will fail
+	// with a `NOT_FOUND` error. With `ignore_not_found` set to true, the ack
+	// will succeed even if the message does not exist. This is useful for
+	// unconditionally acking a message, even if it is missing or has already
+	// been acked.
+	IgnoreNotFound bool
+}
+
+func (b0 Mutation_Ack_builder) Build() *Mutation_Ack {
+	m0 := &Mutation_Ack{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Queue = b.Queue
+	x.xxx_hidden_Key = b.Key
+	x.xxx_hidden_IgnoreNotFound = b.IgnoreNotFound
+	return m0
 }
 
 var File_google_spanner_v1_mutation_proto protoreflect.FileDescriptor
@@ -549,18 +961,6 @@ const file_google_spanner_v1_mutation_proto_rawDesc = "" +
 	"\x10ignore_not_found\x18\x03 \x01(\bR\x0eignoreNotFoundB\v\n" +
 	"\toperationB\xb0\x01\n" +
 	"\x15com.google.spanner.v1B\rMutationProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
-
-var (
-	file_google_spanner_v1_mutation_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_mutation_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_mutation_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_mutation_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_mutation_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_mutation_proto_rawDesc), len(file_google_spanner_v1_mutation_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_mutation_proto_rawDescData
-}
 
 var file_google_spanner_v1_mutation_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
 var file_google_spanner_v1_mutation_proto_goTypes = []any{
@@ -602,13 +1002,13 @@ func file_google_spanner_v1_mutation_proto_init() {
 	}
 	file_google_spanner_v1_keys_proto_init()
 	file_google_spanner_v1_mutation_proto_msgTypes[0].OneofWrappers = []any{
-		(*Mutation_Insert)(nil),
-		(*Mutation_Update)(nil),
-		(*Mutation_InsertOrUpdate)(nil),
-		(*Mutation_Replace)(nil),
-		(*Mutation_Delete_)(nil),
-		(*Mutation_Send_)(nil),
-		(*Mutation_Ack_)(nil),
+		(*mutation_Insert)(nil),
+		(*mutation_Update)(nil),
+		(*mutation_InsertOrUpdate)(nil),
+		(*mutation_Replace)(nil),
+		(*mutation_Delete_)(nil),
+		(*mutation_Send_)(nil),
+		(*mutation_Ack_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

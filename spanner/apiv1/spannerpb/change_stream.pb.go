@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -94,11 +93,6 @@ func (x ChangeStreamRecord_DataChangeRecord_ModType) Number() protoreflect.EnumN
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_DataChangeRecord_ModType.Descriptor instead.
-func (ChangeStreamRecord_DataChangeRecord_ModType) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 0, 0}
-}
-
 // Value capture type describes which values are recorded in the data
 // change record.
 type ChangeStreamRecord_DataChangeRecord_ValueCaptureType int32
@@ -159,11 +153,6 @@ func (x ChangeStreamRecord_DataChangeRecord_ValueCaptureType) Number() protorefl
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_DataChangeRecord_ValueCaptureType.Descriptor instead.
-func (ChangeStreamRecord_DataChangeRecord_ValueCaptureType) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 0, 1}
-}
-
 // Spanner Change Streams enable customers to capture and stream out changes to
 // their Spanner databases in real-time. A change stream
 // can be created with option partition_mode='IMMUTABLE_KEY_RANGE' or
@@ -177,19 +166,10 @@ func (ChangeStreamRecord_DataChangeRecord_ValueCaptureType) EnumDescriptor() ([]
 // name of the change stream), and it returns a table with only one column
 // called ChangeRecord.
 type ChangeStreamRecord struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// One of the change stream subrecords.
-	//
-	// Types that are valid to be assigned to Record:
-	//
-	//	*ChangeStreamRecord_DataChangeRecord_
-	//	*ChangeStreamRecord_HeartbeatRecord_
-	//	*ChangeStreamRecord_PartitionStartRecord_
-	//	*ChangeStreamRecord_PartitionEndRecord_
-	//	*ChangeStreamRecord_PartitionEventRecord_
-	Record        isChangeStreamRecord_Record `protobuf_oneof:"record"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState      `protogen:"opaque.v1"`
+	xxx_hidden_Record isChangeStreamRecord_Record `protobuf_oneof:"record"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord) Reset() {
@@ -217,21 +197,9 @@ func (x *ChangeStreamRecord) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *ChangeStreamRecord) GetRecord() isChangeStreamRecord_Record {
-	if x != nil {
-		return x.Record
-	}
-	return nil
-}
-
 func (x *ChangeStreamRecord) GetDataChangeRecord() *ChangeStreamRecord_DataChangeRecord {
 	if x != nil {
-		if x, ok := x.Record.(*ChangeStreamRecord_DataChangeRecord_); ok {
+		if x, ok := x.xxx_hidden_Record.(*changeStreamRecord_DataChangeRecord_); ok {
 			return x.DataChangeRecord
 		}
 	}
@@ -240,7 +208,7 @@ func (x *ChangeStreamRecord) GetDataChangeRecord() *ChangeStreamRecord_DataChang
 
 func (x *ChangeStreamRecord) GetHeartbeatRecord() *ChangeStreamRecord_HeartbeatRecord {
 	if x != nil {
-		if x, ok := x.Record.(*ChangeStreamRecord_HeartbeatRecord_); ok {
+		if x, ok := x.xxx_hidden_Record.(*changeStreamRecord_HeartbeatRecord_); ok {
 			return x.HeartbeatRecord
 		}
 	}
@@ -249,7 +217,7 @@ func (x *ChangeStreamRecord) GetHeartbeatRecord() *ChangeStreamRecord_HeartbeatR
 
 func (x *ChangeStreamRecord) GetPartitionStartRecord() *ChangeStreamRecord_PartitionStartRecord {
 	if x != nil {
-		if x, ok := x.Record.(*ChangeStreamRecord_PartitionStartRecord_); ok {
+		if x, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionStartRecord_); ok {
 			return x.PartitionStartRecord
 		}
 	}
@@ -258,7 +226,7 @@ func (x *ChangeStreamRecord) GetPartitionStartRecord() *ChangeStreamRecord_Parti
 
 func (x *ChangeStreamRecord) GetPartitionEndRecord() *ChangeStreamRecord_PartitionEndRecord {
 	if x != nil {
-		if x, ok := x.Record.(*ChangeStreamRecord_PartitionEndRecord_); ok {
+		if x, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionEndRecord_); ok {
 			return x.PartitionEndRecord
 		}
 	}
@@ -267,53 +235,254 @@ func (x *ChangeStreamRecord) GetPartitionEndRecord() *ChangeStreamRecord_Partiti
 
 func (x *ChangeStreamRecord) GetPartitionEventRecord() *ChangeStreamRecord_PartitionEventRecord {
 	if x != nil {
-		if x, ok := x.Record.(*ChangeStreamRecord_PartitionEventRecord_); ok {
+		if x, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionEventRecord_); ok {
 			return x.PartitionEventRecord
 		}
 	}
 	return nil
 }
 
+func (x *ChangeStreamRecord) SetDataChangeRecord(v *ChangeStreamRecord_DataChangeRecord) {
+	if v == nil {
+		x.xxx_hidden_Record = nil
+		return
+	}
+	x.xxx_hidden_Record = &changeStreamRecord_DataChangeRecord_{v}
+}
+
+func (x *ChangeStreamRecord) SetHeartbeatRecord(v *ChangeStreamRecord_HeartbeatRecord) {
+	if v == nil {
+		x.xxx_hidden_Record = nil
+		return
+	}
+	x.xxx_hidden_Record = &changeStreamRecord_HeartbeatRecord_{v}
+}
+
+func (x *ChangeStreamRecord) SetPartitionStartRecord(v *ChangeStreamRecord_PartitionStartRecord) {
+	if v == nil {
+		x.xxx_hidden_Record = nil
+		return
+	}
+	x.xxx_hidden_Record = &changeStreamRecord_PartitionStartRecord_{v}
+}
+
+func (x *ChangeStreamRecord) SetPartitionEndRecord(v *ChangeStreamRecord_PartitionEndRecord) {
+	if v == nil {
+		x.xxx_hidden_Record = nil
+		return
+	}
+	x.xxx_hidden_Record = &changeStreamRecord_PartitionEndRecord_{v}
+}
+
+func (x *ChangeStreamRecord) SetPartitionEventRecord(v *ChangeStreamRecord_PartitionEventRecord) {
+	if v == nil {
+		x.xxx_hidden_Record = nil
+		return
+	}
+	x.xxx_hidden_Record = &changeStreamRecord_PartitionEventRecord_{v}
+}
+
+func (x *ChangeStreamRecord) HasRecord() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Record != nil
+}
+
+func (x *ChangeStreamRecord) HasDataChangeRecord() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Record.(*changeStreamRecord_DataChangeRecord_)
+	return ok
+}
+
+func (x *ChangeStreamRecord) HasHeartbeatRecord() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Record.(*changeStreamRecord_HeartbeatRecord_)
+	return ok
+}
+
+func (x *ChangeStreamRecord) HasPartitionStartRecord() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionStartRecord_)
+	return ok
+}
+
+func (x *ChangeStreamRecord) HasPartitionEndRecord() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionEndRecord_)
+	return ok
+}
+
+func (x *ChangeStreamRecord) HasPartitionEventRecord() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionEventRecord_)
+	return ok
+}
+
+func (x *ChangeStreamRecord) ClearRecord() {
+	x.xxx_hidden_Record = nil
+}
+
+func (x *ChangeStreamRecord) ClearDataChangeRecord() {
+	if _, ok := x.xxx_hidden_Record.(*changeStreamRecord_DataChangeRecord_); ok {
+		x.xxx_hidden_Record = nil
+	}
+}
+
+func (x *ChangeStreamRecord) ClearHeartbeatRecord() {
+	if _, ok := x.xxx_hidden_Record.(*changeStreamRecord_HeartbeatRecord_); ok {
+		x.xxx_hidden_Record = nil
+	}
+}
+
+func (x *ChangeStreamRecord) ClearPartitionStartRecord() {
+	if _, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionStartRecord_); ok {
+		x.xxx_hidden_Record = nil
+	}
+}
+
+func (x *ChangeStreamRecord) ClearPartitionEndRecord() {
+	if _, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionEndRecord_); ok {
+		x.xxx_hidden_Record = nil
+	}
+}
+
+func (x *ChangeStreamRecord) ClearPartitionEventRecord() {
+	if _, ok := x.xxx_hidden_Record.(*changeStreamRecord_PartitionEventRecord_); ok {
+		x.xxx_hidden_Record = nil
+	}
+}
+
+const ChangeStreamRecord_Record_not_set_case case_ChangeStreamRecord_Record = 0
+const ChangeStreamRecord_DataChangeRecord_case case_ChangeStreamRecord_Record = 1
+const ChangeStreamRecord_HeartbeatRecord_case case_ChangeStreamRecord_Record = 2
+const ChangeStreamRecord_PartitionStartRecord_case case_ChangeStreamRecord_Record = 3
+const ChangeStreamRecord_PartitionEndRecord_case case_ChangeStreamRecord_Record = 4
+const ChangeStreamRecord_PartitionEventRecord_case case_ChangeStreamRecord_Record = 5
+
+func (x *ChangeStreamRecord) WhichRecord() case_ChangeStreamRecord_Record {
+	if x == nil {
+		return ChangeStreamRecord_Record_not_set_case
+	}
+	switch x.xxx_hidden_Record.(type) {
+	case *changeStreamRecord_DataChangeRecord_:
+		return ChangeStreamRecord_DataChangeRecord_case
+	case *changeStreamRecord_HeartbeatRecord_:
+		return ChangeStreamRecord_HeartbeatRecord_case
+	case *changeStreamRecord_PartitionStartRecord_:
+		return ChangeStreamRecord_PartitionStartRecord_case
+	case *changeStreamRecord_PartitionEndRecord_:
+		return ChangeStreamRecord_PartitionEndRecord_case
+	case *changeStreamRecord_PartitionEventRecord_:
+		return ChangeStreamRecord_PartitionEventRecord_case
+	default:
+		return ChangeStreamRecord_Record_not_set_case
+	}
+}
+
+type ChangeStreamRecord_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// One of the change stream subrecords.
+
+	// Fields of oneof xxx_hidden_Record:
+	// Data change record describing a data change for a change stream
+	// partition.
+	DataChangeRecord *ChangeStreamRecord_DataChangeRecord
+	// Heartbeat record describing a heartbeat for a change stream partition.
+	HeartbeatRecord *ChangeStreamRecord_HeartbeatRecord
+	// Partition start record describing a new change stream partition.
+	PartitionStartRecord *ChangeStreamRecord_PartitionStartRecord
+	// Partition end record describing a terminated change stream partition.
+	PartitionEndRecord *ChangeStreamRecord_PartitionEndRecord
+	// Partition event record describing key range changes for a change stream
+	// partition.
+	PartitionEventRecord *ChangeStreamRecord_PartitionEventRecord
+	// -- end of xxx_hidden_Record
+}
+
+func (b0 ChangeStreamRecord_builder) Build() *ChangeStreamRecord {
+	m0 := &ChangeStreamRecord{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.DataChangeRecord != nil {
+		x.xxx_hidden_Record = &changeStreamRecord_DataChangeRecord_{b.DataChangeRecord}
+	}
+	if b.HeartbeatRecord != nil {
+		x.xxx_hidden_Record = &changeStreamRecord_HeartbeatRecord_{b.HeartbeatRecord}
+	}
+	if b.PartitionStartRecord != nil {
+		x.xxx_hidden_Record = &changeStreamRecord_PartitionStartRecord_{b.PartitionStartRecord}
+	}
+	if b.PartitionEndRecord != nil {
+		x.xxx_hidden_Record = &changeStreamRecord_PartitionEndRecord_{b.PartitionEndRecord}
+	}
+	if b.PartitionEventRecord != nil {
+		x.xxx_hidden_Record = &changeStreamRecord_PartitionEventRecord_{b.PartitionEventRecord}
+	}
+	return m0
+}
+
+type case_ChangeStreamRecord_Record protoreflect.FieldNumber
+
+func (x case_ChangeStreamRecord_Record) String() string {
+	md := file_google_spanner_v1_change_stream_proto_msgTypes[0].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isChangeStreamRecord_Record interface {
 	isChangeStreamRecord_Record()
 }
 
-type ChangeStreamRecord_DataChangeRecord_ struct {
+type changeStreamRecord_DataChangeRecord_ struct {
 	// Data change record describing a data change for a change stream
 	// partition.
 	DataChangeRecord *ChangeStreamRecord_DataChangeRecord `protobuf:"bytes,1,opt,name=data_change_record,json=dataChangeRecord,proto3,oneof"`
 }
 
-type ChangeStreamRecord_HeartbeatRecord_ struct {
+type changeStreamRecord_HeartbeatRecord_ struct {
 	// Heartbeat record describing a heartbeat for a change stream partition.
 	HeartbeatRecord *ChangeStreamRecord_HeartbeatRecord `protobuf:"bytes,2,opt,name=heartbeat_record,json=heartbeatRecord,proto3,oneof"`
 }
 
-type ChangeStreamRecord_PartitionStartRecord_ struct {
+type changeStreamRecord_PartitionStartRecord_ struct {
 	// Partition start record describing a new change stream partition.
 	PartitionStartRecord *ChangeStreamRecord_PartitionStartRecord `protobuf:"bytes,3,opt,name=partition_start_record,json=partitionStartRecord,proto3,oneof"`
 }
 
-type ChangeStreamRecord_PartitionEndRecord_ struct {
+type changeStreamRecord_PartitionEndRecord_ struct {
 	// Partition end record describing a terminated change stream partition.
 	PartitionEndRecord *ChangeStreamRecord_PartitionEndRecord `protobuf:"bytes,4,opt,name=partition_end_record,json=partitionEndRecord,proto3,oneof"`
 }
 
-type ChangeStreamRecord_PartitionEventRecord_ struct {
+type changeStreamRecord_PartitionEventRecord_ struct {
 	// Partition event record describing key range changes for a change stream
 	// partition.
 	PartitionEventRecord *ChangeStreamRecord_PartitionEventRecord `protobuf:"bytes,5,opt,name=partition_event_record,json=partitionEventRecord,proto3,oneof"`
 }
 
-func (*ChangeStreamRecord_DataChangeRecord_) isChangeStreamRecord_Record() {}
+func (*changeStreamRecord_DataChangeRecord_) isChangeStreamRecord_Record() {}
 
-func (*ChangeStreamRecord_HeartbeatRecord_) isChangeStreamRecord_Record() {}
+func (*changeStreamRecord_HeartbeatRecord_) isChangeStreamRecord_Record() {}
 
-func (*ChangeStreamRecord_PartitionStartRecord_) isChangeStreamRecord_Record() {}
+func (*changeStreamRecord_PartitionStartRecord_) isChangeStreamRecord_Record() {}
 
-func (*ChangeStreamRecord_PartitionEndRecord_) isChangeStreamRecord_Record() {}
+func (*changeStreamRecord_PartitionEndRecord_) isChangeStreamRecord_Record() {}
 
-func (*ChangeStreamRecord_PartitionEventRecord_) isChangeStreamRecord_Record() {}
+func (*changeStreamRecord_PartitionEventRecord_) isChangeStreamRecord_Record() {}
 
 // A data change record contains a set of changes to a table with the same
 // modification type (insert, update, or delete) committed at the same commit
@@ -321,68 +490,22 @@ func (*ChangeStreamRecord_PartitionEventRecord_) isChangeStreamRecord_Record() {
 // data change records can be returned for the same transaction across
 // multiple change stream partitions.
 type ChangeStreamRecord_DataChangeRecord struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Indicates the timestamp in which the change was committed.
-	// DataChangeRecord.commit_timestamps,
-	// PartitionStartRecord.start_timestamps,
-	// PartitionEventRecord.commit_timestamps, and
-	// PartitionEndRecord.end_timestamps can have the same value in the same
-	// partition.
-	CommitTimestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp,proto3" json:"commit_timestamp,omitempty"`
-	// Record sequence numbers are unique and monotonically increasing (but not
-	// necessarily contiguous) for a specific timestamp across record
-	// types in the same partition. To guarantee ordered processing, the reader
-	// should process records (of potentially different types) in
-	// record_sequence order for a specific timestamp in the same partition.
-	//
-	// The record sequence number ordering across partitions is only meaningful
-	// in the context of a specific transaction. Record sequence numbers are
-	// unique across partitions for a specific transaction. Sort the
-	// DataChangeRecords for the same
-	// [server_transaction_id][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.server_transaction_id]
-	// by
-	// [record_sequence][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.record_sequence]
-	// to reconstruct the ordering of the changes within the transaction.
-	RecordSequence string `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3" json:"record_sequence,omitempty"`
-	// Provides a globally unique string that represents the transaction in
-	// which the change was committed. Multiple transactions can have the same
-	// commit timestamp, but each transaction has a unique
-	// server_transaction_id.
-	ServerTransactionId string `protobuf:"bytes,3,opt,name=server_transaction_id,json=serverTransactionId,proto3" json:"server_transaction_id,omitempty"`
-	// Indicates whether this is the last record for a transaction in the
-	//
-	//	current partition. Clients can use this field to determine when all
-	//	records for a transaction in the current partition have been received.
-	IsLastRecordInTransactionInPartition bool `protobuf:"varint,4,opt,name=is_last_record_in_transaction_in_partition,json=isLastRecordInTransactionInPartition,proto3" json:"is_last_record_in_transaction_in_partition,omitempty"`
-	// Name of the table affected by the change.
-	Table string `protobuf:"bytes,5,opt,name=table,proto3" json:"table,omitempty"`
-	// Provides metadata describing the columns associated with the
-	// [mods][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.mods] listed
-	// below.
-	ColumnMetadata []*ChangeStreamRecord_DataChangeRecord_ColumnMetadata `protobuf:"bytes,6,rep,name=column_metadata,json=columnMetadata,proto3" json:"column_metadata,omitempty"`
-	// Describes the changes that were made.
-	Mods []*ChangeStreamRecord_DataChangeRecord_Mod `protobuf:"bytes,7,rep,name=mods,proto3" json:"mods,omitempty"`
-	// Describes the type of change.
-	ModType ChangeStreamRecord_DataChangeRecord_ModType `protobuf:"varint,8,opt,name=mod_type,json=modType,proto3,enum=google.spanner.v1.ChangeStreamRecord_DataChangeRecord_ModType" json:"mod_type,omitempty"`
-	// Describes the value capture type that was specified in the change stream
-	// configuration when this change was captured.
-	ValueCaptureType ChangeStreamRecord_DataChangeRecord_ValueCaptureType `protobuf:"varint,9,opt,name=value_capture_type,json=valueCaptureType,proto3,enum=google.spanner.v1.ChangeStreamRecord_DataChangeRecord_ValueCaptureType" json:"value_capture_type,omitempty"`
-	// Indicates the number of data change records that are part of this
-	// transaction across all change stream partitions. This value can be used
-	// to assemble all the records associated with a particular transaction.
-	NumberOfRecordsInTransaction int32 `protobuf:"varint,10,opt,name=number_of_records_in_transaction,json=numberOfRecordsInTransaction,proto3" json:"number_of_records_in_transaction,omitempty"`
-	// Indicates the number of partitions that return data change records for
-	// this transaction. This value can be helpful in assembling all records
-	// associated with a particular transaction.
-	NumberOfPartitionsInTransaction int32 `protobuf:"varint,11,opt,name=number_of_partitions_in_transaction,json=numberOfPartitionsInTransaction,proto3" json:"number_of_partitions_in_transaction,omitempty"`
-	// Indicates the transaction tag associated with this transaction.
-	TransactionTag string `protobuf:"bytes,12,opt,name=transaction_tag,json=transactionTag,proto3" json:"transaction_tag,omitempty"`
-	// Indicates whether the transaction is a system transaction. System
-	// transactions include those issued by time-to-live (TTL), column backfill,
-	// etc.
-	IsSystemTransaction bool `protobuf:"varint,13,opt,name=is_system_transaction,json=isSystemTransaction,proto3" json:"is_system_transaction,omitempty"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	state                                           protoimpl.MessageState                                 `protogen:"opaque.v1"`
+	xxx_hidden_CommitTimestamp                      *timestamppb.Timestamp                                 `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp,proto3"`
+	xxx_hidden_RecordSequence                       string                                                 `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3"`
+	xxx_hidden_ServerTransactionId                  string                                                 `protobuf:"bytes,3,opt,name=server_transaction_id,json=serverTransactionId,proto3"`
+	xxx_hidden_IsLastRecordInTransactionInPartition bool                                                   `protobuf:"varint,4,opt,name=is_last_record_in_transaction_in_partition,json=isLastRecordInTransactionInPartition,proto3"`
+	xxx_hidden_Table                                string                                                 `protobuf:"bytes,5,opt,name=table,proto3"`
+	xxx_hidden_ColumnMetadata                       *[]*ChangeStreamRecord_DataChangeRecord_ColumnMetadata `protobuf:"bytes,6,rep,name=column_metadata,json=columnMetadata,proto3"`
+	xxx_hidden_Mods                                 *[]*ChangeStreamRecord_DataChangeRecord_Mod            `protobuf:"bytes,7,rep,name=mods,proto3"`
+	xxx_hidden_ModType                              ChangeStreamRecord_DataChangeRecord_ModType            `protobuf:"varint,8,opt,name=mod_type,json=modType,proto3,enum=google.spanner.v1.ChangeStreamRecord_DataChangeRecord_ModType"`
+	xxx_hidden_ValueCaptureType                     ChangeStreamRecord_DataChangeRecord_ValueCaptureType   `protobuf:"varint,9,opt,name=value_capture_type,json=valueCaptureType,proto3,enum=google.spanner.v1.ChangeStreamRecord_DataChangeRecord_ValueCaptureType"`
+	xxx_hidden_NumberOfRecordsInTransaction         int32                                                  `protobuf:"varint,10,opt,name=number_of_records_in_transaction,json=numberOfRecordsInTransaction,proto3"`
+	xxx_hidden_NumberOfPartitionsInTransaction      int32                                                  `protobuf:"varint,11,opt,name=number_of_partitions_in_transaction,json=numberOfPartitionsInTransaction,proto3"`
+	xxx_hidden_TransactionTag                       string                                                 `protobuf:"bytes,12,opt,name=transaction_tag,json=transactionTag,proto3"`
+	xxx_hidden_IsSystemTransaction                  bool                                                   `protobuf:"varint,13,opt,name=is_system_transaction,json=isSystemTransaction,proto3"`
+	unknownFields                                   protoimpl.UnknownFields
+	sizeCache                                       protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) Reset() {
@@ -410,114 +533,256 @@ func (x *ChangeStreamRecord_DataChangeRecord) ProtoReflect() protoreflect.Messag
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_DataChangeRecord.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_DataChangeRecord) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 0}
-}
-
 func (x *ChangeStreamRecord_DataChangeRecord) GetCommitTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.CommitTimestamp
+		return x.xxx_hidden_CommitTimestamp
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetRecordSequence() string {
 	if x != nil {
-		return x.RecordSequence
+		return x.xxx_hidden_RecordSequence
 	}
 	return ""
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetServerTransactionId() string {
 	if x != nil {
-		return x.ServerTransactionId
+		return x.xxx_hidden_ServerTransactionId
 	}
 	return ""
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetIsLastRecordInTransactionInPartition() bool {
 	if x != nil {
-		return x.IsLastRecordInTransactionInPartition
+		return x.xxx_hidden_IsLastRecordInTransactionInPartition
 	}
 	return false
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetTable() string {
 	if x != nil {
-		return x.Table
+		return x.xxx_hidden_Table
 	}
 	return ""
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetColumnMetadata() []*ChangeStreamRecord_DataChangeRecord_ColumnMetadata {
 	if x != nil {
-		return x.ColumnMetadata
+		if x.xxx_hidden_ColumnMetadata != nil {
+			return *x.xxx_hidden_ColumnMetadata
+		}
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetMods() []*ChangeStreamRecord_DataChangeRecord_Mod {
 	if x != nil {
-		return x.Mods
+		if x.xxx_hidden_Mods != nil {
+			return *x.xxx_hidden_Mods
+		}
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetModType() ChangeStreamRecord_DataChangeRecord_ModType {
 	if x != nil {
-		return x.ModType
+		return x.xxx_hidden_ModType
 	}
 	return ChangeStreamRecord_DataChangeRecord_MOD_TYPE_UNSPECIFIED
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetValueCaptureType() ChangeStreamRecord_DataChangeRecord_ValueCaptureType {
 	if x != nil {
-		return x.ValueCaptureType
+		return x.xxx_hidden_ValueCaptureType
 	}
 	return ChangeStreamRecord_DataChangeRecord_VALUE_CAPTURE_TYPE_UNSPECIFIED
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetNumberOfRecordsInTransaction() int32 {
 	if x != nil {
-		return x.NumberOfRecordsInTransaction
+		return x.xxx_hidden_NumberOfRecordsInTransaction
 	}
 	return 0
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetNumberOfPartitionsInTransaction() int32 {
 	if x != nil {
-		return x.NumberOfPartitionsInTransaction
+		return x.xxx_hidden_NumberOfPartitionsInTransaction
 	}
 	return 0
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetTransactionTag() string {
 	if x != nil {
-		return x.TransactionTag
+		return x.xxx_hidden_TransactionTag
 	}
 	return ""
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord) GetIsSystemTransaction() bool {
 	if x != nil {
-		return x.IsSystemTransaction
+		return x.xxx_hidden_IsSystemTransaction
 	}
 	return false
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetCommitTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CommitTimestamp = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetRecordSequence(v string) {
+	x.xxx_hidden_RecordSequence = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetServerTransactionId(v string) {
+	x.xxx_hidden_ServerTransactionId = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetIsLastRecordInTransactionInPartition(v bool) {
+	x.xxx_hidden_IsLastRecordInTransactionInPartition = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetTable(v string) {
+	x.xxx_hidden_Table = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetColumnMetadata(v []*ChangeStreamRecord_DataChangeRecord_ColumnMetadata) {
+	x.xxx_hidden_ColumnMetadata = &v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetMods(v []*ChangeStreamRecord_DataChangeRecord_Mod) {
+	x.xxx_hidden_Mods = &v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetModType(v ChangeStreamRecord_DataChangeRecord_ModType) {
+	x.xxx_hidden_ModType = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetValueCaptureType(v ChangeStreamRecord_DataChangeRecord_ValueCaptureType) {
+	x.xxx_hidden_ValueCaptureType = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetNumberOfRecordsInTransaction(v int32) {
+	x.xxx_hidden_NumberOfRecordsInTransaction = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetNumberOfPartitionsInTransaction(v int32) {
+	x.xxx_hidden_NumberOfPartitionsInTransaction = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetTransactionTag(v string) {
+	x.xxx_hidden_TransactionTag = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) SetIsSystemTransaction(v bool) {
+	x.xxx_hidden_IsSystemTransaction = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) HasCommitTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CommitTimestamp != nil
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord) ClearCommitTimestamp() {
+	x.xxx_hidden_CommitTimestamp = nil
+}
+
+type ChangeStreamRecord_DataChangeRecord_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Indicates the timestamp in which the change was committed.
+	// DataChangeRecord.commit_timestamps,
+	// PartitionStartRecord.start_timestamps,
+	// PartitionEventRecord.commit_timestamps, and
+	// PartitionEndRecord.end_timestamps can have the same value in the same
+	// partition.
+	CommitTimestamp *timestamppb.Timestamp
+	// Record sequence numbers are unique and monotonically increasing (but not
+	// necessarily contiguous) for a specific timestamp across record
+	// types in the same partition. To guarantee ordered processing, the reader
+	// should process records (of potentially different types) in
+	// record_sequence order for a specific timestamp in the same partition.
+	//
+	// The record sequence number ordering across partitions is only meaningful
+	// in the context of a specific transaction. Record sequence numbers are
+	// unique across partitions for a specific transaction. Sort the
+	// DataChangeRecords for the same
+	// [server_transaction_id][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.server_transaction_id]
+	// by
+	// [record_sequence][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.record_sequence]
+	// to reconstruct the ordering of the changes within the transaction.
+	RecordSequence string
+	// Provides a globally unique string that represents the transaction in
+	// which the change was committed. Multiple transactions can have the same
+	// commit timestamp, but each transaction has a unique
+	// server_transaction_id.
+	ServerTransactionId string
+	// Indicates whether this is the last record for a transaction in the
+	//
+	//	current partition. Clients can use this field to determine when all
+	//	records for a transaction in the current partition have been received.
+	IsLastRecordInTransactionInPartition bool
+	// Name of the table affected by the change.
+	Table string
+	// Provides metadata describing the columns associated with the
+	// [mods][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.mods] listed
+	// below.
+	ColumnMetadata []*ChangeStreamRecord_DataChangeRecord_ColumnMetadata
+	// Describes the changes that were made.
+	Mods []*ChangeStreamRecord_DataChangeRecord_Mod
+	// Describes the type of change.
+	ModType ChangeStreamRecord_DataChangeRecord_ModType
+	// Describes the value capture type that was specified in the change stream
+	// configuration when this change was captured.
+	ValueCaptureType ChangeStreamRecord_DataChangeRecord_ValueCaptureType
+	// Indicates the number of data change records that are part of this
+	// transaction across all change stream partitions. This value can be used
+	// to assemble all the records associated with a particular transaction.
+	NumberOfRecordsInTransaction int32
+	// Indicates the number of partitions that return data change records for
+	// this transaction. This value can be helpful in assembling all records
+	// associated with a particular transaction.
+	NumberOfPartitionsInTransaction int32
+	// Indicates the transaction tag associated with this transaction.
+	TransactionTag string
+	// Indicates whether the transaction is a system transaction. System
+	// transactions include those issued by time-to-live (TTL), column backfill,
+	// etc.
+	IsSystemTransaction bool
+}
+
+func (b0 ChangeStreamRecord_DataChangeRecord_builder) Build() *ChangeStreamRecord_DataChangeRecord {
+	m0 := &ChangeStreamRecord_DataChangeRecord{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_CommitTimestamp = b.CommitTimestamp
+	x.xxx_hidden_RecordSequence = b.RecordSequence
+	x.xxx_hidden_ServerTransactionId = b.ServerTransactionId
+	x.xxx_hidden_IsLastRecordInTransactionInPartition = b.IsLastRecordInTransactionInPartition
+	x.xxx_hidden_Table = b.Table
+	x.xxx_hidden_ColumnMetadata = &b.ColumnMetadata
+	x.xxx_hidden_Mods = &b.Mods
+	x.xxx_hidden_ModType = b.ModType
+	x.xxx_hidden_ValueCaptureType = b.ValueCaptureType
+	x.xxx_hidden_NumberOfRecordsInTransaction = b.NumberOfRecordsInTransaction
+	x.xxx_hidden_NumberOfPartitionsInTransaction = b.NumberOfPartitionsInTransaction
+	x.xxx_hidden_TransactionTag = b.TransactionTag
+	x.xxx_hidden_IsSystemTransaction = b.IsSystemTransaction
+	return m0
 }
 
 // A heartbeat record is returned as a progress indicator, when there are no
 // data changes or any other partition record types in the change stream
 // partition.
 type ChangeStreamRecord_HeartbeatRecord struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Indicates the timestamp at which the query has returned all the records
-	// in the change stream partition with timestamp <= heartbeat timestamp.
-	// The heartbeat timestamp will not be the same as the timestamps of other
-	// record types in the same partition.
-	Timestamp     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3" json:"timestamp,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Timestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=timestamp,proto3"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_HeartbeatRecord) Reset() {
@@ -545,41 +810,56 @@ func (x *ChangeStreamRecord_HeartbeatRecord) ProtoReflect() protoreflect.Message
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_HeartbeatRecord.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_HeartbeatRecord) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 1}
-}
-
 func (x *ChangeStreamRecord_HeartbeatRecord) GetTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.Timestamp
+		return x.xxx_hidden_Timestamp
 	}
 	return nil
+}
+
+func (x *ChangeStreamRecord_HeartbeatRecord) SetTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_Timestamp = v
+}
+
+func (x *ChangeStreamRecord_HeartbeatRecord) HasTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Timestamp != nil
+}
+
+func (x *ChangeStreamRecord_HeartbeatRecord) ClearTimestamp() {
+	x.xxx_hidden_Timestamp = nil
+}
+
+type ChangeStreamRecord_HeartbeatRecord_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Indicates the timestamp at which the query has returned all the records
+	// in the change stream partition with timestamp <= heartbeat timestamp.
+	// The heartbeat timestamp will not be the same as the timestamps of other
+	// record types in the same partition.
+	Timestamp *timestamppb.Timestamp
+}
+
+func (b0 ChangeStreamRecord_HeartbeatRecord_builder) Build() *ChangeStreamRecord_HeartbeatRecord {
+	m0 := &ChangeStreamRecord_HeartbeatRecord{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Timestamp = b.Timestamp
+	return m0
 }
 
 // A partition start record serves as a notification that the client should
 // schedule the partitions to be queried. PartitionStartRecord returns
 // information about one or more partitions.
 type ChangeStreamRecord_PartitionStartRecord struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Start timestamp at which the partitions should be queried to return
-	// change stream records with timestamps >= start_timestamp.
-	// DataChangeRecord.commit_timestamps,
-	// PartitionStartRecord.start_timestamps,
-	// PartitionEventRecord.commit_timestamps, and
-	// PartitionEndRecord.end_timestamps can have the same value in the same
-	// partition.
-	StartTimestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_timestamp,json=startTimestamp,proto3" json:"start_timestamp,omitempty"`
-	// Record sequence numbers are unique and monotonically increasing (but not
-	// necessarily contiguous) for a specific timestamp across record
-	// types in the same partition. To guarantee ordered processing, the reader
-	// should process records (of potentially different types) in
-	// record_sequence order for a specific timestamp in the same partition.
-	RecordSequence string `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3" json:"record_sequence,omitempty"`
-	// Unique partition identifiers to be used in queries.
-	PartitionTokens []string `protobuf:"bytes,3,rep,name=partition_tokens,json=partitionTokens,proto3" json:"partition_tokens,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_StartTimestamp  *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=start_timestamp,json=startTimestamp,proto3"`
+	xxx_hidden_RecordSequence  string                 `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3"`
+	xxx_hidden_PartitionTokens []string               `protobuf:"bytes,3,rep,name=partition_tokens,json=partitionTokens,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_PartitionStartRecord) Reset() {
@@ -607,60 +887,91 @@ func (x *ChangeStreamRecord_PartitionStartRecord) ProtoReflect() protoreflect.Me
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_PartitionStartRecord.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_PartitionStartRecord) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 2}
-}
-
 func (x *ChangeStreamRecord_PartitionStartRecord) GetStartTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.StartTimestamp
+		return x.xxx_hidden_StartTimestamp
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_PartitionStartRecord) GetRecordSequence() string {
 	if x != nil {
-		return x.RecordSequence
+		return x.xxx_hidden_RecordSequence
 	}
 	return ""
 }
 
 func (x *ChangeStreamRecord_PartitionStartRecord) GetPartitionTokens() []string {
 	if x != nil {
-		return x.PartitionTokens
+		return x.xxx_hidden_PartitionTokens
 	}
 	return nil
+}
+
+func (x *ChangeStreamRecord_PartitionStartRecord) SetStartTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_StartTimestamp = v
+}
+
+func (x *ChangeStreamRecord_PartitionStartRecord) SetRecordSequence(v string) {
+	x.xxx_hidden_RecordSequence = v
+}
+
+func (x *ChangeStreamRecord_PartitionStartRecord) SetPartitionTokens(v []string) {
+	x.xxx_hidden_PartitionTokens = v
+}
+
+func (x *ChangeStreamRecord_PartitionStartRecord) HasStartTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_StartTimestamp != nil
+}
+
+func (x *ChangeStreamRecord_PartitionStartRecord) ClearStartTimestamp() {
+	x.xxx_hidden_StartTimestamp = nil
+}
+
+type ChangeStreamRecord_PartitionStartRecord_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Start timestamp at which the partitions should be queried to return
+	// change stream records with timestamps >= start_timestamp.
+	// DataChangeRecord.commit_timestamps,
+	// PartitionStartRecord.start_timestamps,
+	// PartitionEventRecord.commit_timestamps, and
+	// PartitionEndRecord.end_timestamps can have the same value in the same
+	// partition.
+	StartTimestamp *timestamppb.Timestamp
+	// Record sequence numbers are unique and monotonically increasing (but not
+	// necessarily contiguous) for a specific timestamp across record
+	// types in the same partition. To guarantee ordered processing, the reader
+	// should process records (of potentially different types) in
+	// record_sequence order for a specific timestamp in the same partition.
+	RecordSequence string
+	// Unique partition identifiers to be used in queries.
+	PartitionTokens []string
+}
+
+func (b0 ChangeStreamRecord_PartitionStartRecord_builder) Build() *ChangeStreamRecord_PartitionStartRecord {
+	m0 := &ChangeStreamRecord_PartitionStartRecord{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_StartTimestamp = b.StartTimestamp
+	x.xxx_hidden_RecordSequence = b.RecordSequence
+	x.xxx_hidden_PartitionTokens = b.PartitionTokens
+	return m0
 }
 
 // A partition end record serves as a notification that the client should stop
 // reading the partition. No further records are expected to be retrieved on
 // it.
 type ChangeStreamRecord_PartitionEndRecord struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// End timestamp at which the change stream partition is terminated. All
-	// changes generated by this partition will have timestamps <=
-	// end_timestamp. DataChangeRecord.commit_timestamps,
-	// PartitionStartRecord.start_timestamps,
-	// PartitionEventRecord.commit_timestamps, and
-	// PartitionEndRecord.end_timestamps can have the same value in the same
-	// partition. PartitionEndRecord is the last record returned for a
-	// partition.
-	EndTimestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=end_timestamp,json=endTimestamp,proto3" json:"end_timestamp,omitempty"`
-	// Record sequence numbers are unique and monotonically increasing (but not
-	// necessarily contiguous) for a specific timestamp across record
-	// types in the same partition. To guarantee ordered processing, the reader
-	// should process records (of potentially different types) in
-	// record_sequence order for a specific timestamp in the same partition.
-	RecordSequence string `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3" json:"record_sequence,omitempty"`
-	// Unique partition identifier describing the terminated change stream
-	// partition.
-	// [partition_token][google.spanner.v1.ChangeStreamRecord.PartitionEndRecord.partition_token]
-	// is equal to the partition token of the change stream partition currently
-	// queried to return this PartitionEndRecord.
-	PartitionToken string `protobuf:"bytes,3,opt,name=partition_token,json=partitionToken,proto3" json:"partition_token,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                     protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_EndTimestamp   *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=end_timestamp,json=endTimestamp,proto3"`
+	xxx_hidden_RecordSequence string                 `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3"`
+	xxx_hidden_PartitionToken string                 `protobuf:"bytes,3,opt,name=partition_token,json=partitionToken,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_PartitionEndRecord) Reset() {
@@ -688,30 +999,84 @@ func (x *ChangeStreamRecord_PartitionEndRecord) ProtoReflect() protoreflect.Mess
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_PartitionEndRecord.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_PartitionEndRecord) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 3}
-}
-
 func (x *ChangeStreamRecord_PartitionEndRecord) GetEndTimestamp() *timestamppb.Timestamp {
 	if x != nil {
-		return x.EndTimestamp
+		return x.xxx_hidden_EndTimestamp
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_PartitionEndRecord) GetRecordSequence() string {
 	if x != nil {
-		return x.RecordSequence
+		return x.xxx_hidden_RecordSequence
 	}
 	return ""
 }
 
 func (x *ChangeStreamRecord_PartitionEndRecord) GetPartitionToken() string {
 	if x != nil {
-		return x.PartitionToken
+		return x.xxx_hidden_PartitionToken
 	}
 	return ""
+}
+
+func (x *ChangeStreamRecord_PartitionEndRecord) SetEndTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_EndTimestamp = v
+}
+
+func (x *ChangeStreamRecord_PartitionEndRecord) SetRecordSequence(v string) {
+	x.xxx_hidden_RecordSequence = v
+}
+
+func (x *ChangeStreamRecord_PartitionEndRecord) SetPartitionToken(v string) {
+	x.xxx_hidden_PartitionToken = v
+}
+
+func (x *ChangeStreamRecord_PartitionEndRecord) HasEndTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_EndTimestamp != nil
+}
+
+func (x *ChangeStreamRecord_PartitionEndRecord) ClearEndTimestamp() {
+	x.xxx_hidden_EndTimestamp = nil
+}
+
+type ChangeStreamRecord_PartitionEndRecord_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// End timestamp at which the change stream partition is terminated. All
+	// changes generated by this partition will have timestamps <=
+	// end_timestamp. DataChangeRecord.commit_timestamps,
+	// PartitionStartRecord.start_timestamps,
+	// PartitionEventRecord.commit_timestamps, and
+	// PartitionEndRecord.end_timestamps can have the same value in the same
+	// partition. PartitionEndRecord is the last record returned for a
+	// partition.
+	EndTimestamp *timestamppb.Timestamp
+	// Record sequence numbers are unique and monotonically increasing (but not
+	// necessarily contiguous) for a specific timestamp across record
+	// types in the same partition. To guarantee ordered processing, the reader
+	// should process records (of potentially different types) in
+	// record_sequence order for a specific timestamp in the same partition.
+	RecordSequence string
+	// Unique partition identifier describing the terminated change stream
+	// partition.
+	// [partition_token][google.spanner.v1.ChangeStreamRecord.PartitionEndRecord.partition_token]
+	// is equal to the partition token of the change stream partition currently
+	// queried to return this PartitionEndRecord.
+	PartitionToken string
+}
+
+func (b0 ChangeStreamRecord_PartitionEndRecord_builder) Build() *ChangeStreamRecord_PartitionEndRecord {
+	m0 := &ChangeStreamRecord_PartitionEndRecord{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_EndTimestamp = b.EndTimestamp
+	x.xxx_hidden_RecordSequence = b.RecordSequence
+	x.xxx_hidden_PartitionToken = b.PartitionToken
+	return m0
 }
 
 // A partition event record describes key range changes for a change stream
@@ -731,26 +1096,133 @@ func (x *ChangeStreamRecord_PartitionEndRecord) GetPartitionToken() string {
 // notify the readers of the destination partitions that they can continue
 // processing.
 type ChangeStreamRecord_PartitionEventRecord struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state                      protoimpl.MessageState                                   `protogen:"opaque.v1"`
+	xxx_hidden_CommitTimestamp *timestamppb.Timestamp                                   `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp,proto3"`
+	xxx_hidden_RecordSequence  string                                                   `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3"`
+	xxx_hidden_PartitionToken  string                                                   `protobuf:"bytes,3,opt,name=partition_token,json=partitionToken,proto3"`
+	xxx_hidden_MoveInEvents    *[]*ChangeStreamRecord_PartitionEventRecord_MoveInEvent  `protobuf:"bytes,4,rep,name=move_in_events,json=moveInEvents,proto3"`
+	xxx_hidden_MoveOutEvents   *[]*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent `protobuf:"bytes,5,rep,name=move_out_events,json=moveOutEvents,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) Reset() {
+	*x = ChangeStreamRecord_PartitionEventRecord{}
+	mi := &file_google_spanner_v1_change_stream_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ChangeStreamRecord_PartitionEventRecord) ProtoMessage() {}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) ProtoReflect() protoreflect.Message {
+	mi := &file_google_spanner_v1_change_stream_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) GetCommitTimestamp() *timestamppb.Timestamp {
+	if x != nil {
+		return x.xxx_hidden_CommitTimestamp
+	}
+	return nil
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) GetRecordSequence() string {
+	if x != nil {
+		return x.xxx_hidden_RecordSequence
+	}
+	return ""
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) GetPartitionToken() string {
+	if x != nil {
+		return x.xxx_hidden_PartitionToken
+	}
+	return ""
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) GetMoveInEvents() []*ChangeStreamRecord_PartitionEventRecord_MoveInEvent {
+	if x != nil {
+		if x.xxx_hidden_MoveInEvents != nil {
+			return *x.xxx_hidden_MoveInEvents
+		}
+	}
+	return nil
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) GetMoveOutEvents() []*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent {
+	if x != nil {
+		if x.xxx_hidden_MoveOutEvents != nil {
+			return *x.xxx_hidden_MoveOutEvents
+		}
+	}
+	return nil
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) SetCommitTimestamp(v *timestamppb.Timestamp) {
+	x.xxx_hidden_CommitTimestamp = v
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) SetRecordSequence(v string) {
+	x.xxx_hidden_RecordSequence = v
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) SetPartitionToken(v string) {
+	x.xxx_hidden_PartitionToken = v
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) SetMoveInEvents(v []*ChangeStreamRecord_PartitionEventRecord_MoveInEvent) {
+	x.xxx_hidden_MoveInEvents = &v
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) SetMoveOutEvents(v []*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent) {
+	x.xxx_hidden_MoveOutEvents = &v
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) HasCommitTimestamp() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CommitTimestamp != nil
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord) ClearCommitTimestamp() {
+	x.xxx_hidden_CommitTimestamp = nil
+}
+
+type ChangeStreamRecord_PartitionEventRecord_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
 	// Indicates the commit timestamp at which the key range change occurred.
 	// DataChangeRecord.commit_timestamps,
 	// PartitionStartRecord.start_timestamps,
 	// PartitionEventRecord.commit_timestamps, and
 	// PartitionEndRecord.end_timestamps can have the same value in the same
 	// partition.
-	CommitTimestamp *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=commit_timestamp,json=commitTimestamp,proto3" json:"commit_timestamp,omitempty"`
+	CommitTimestamp *timestamppb.Timestamp
 	// Record sequence numbers are unique and monotonically increasing (but not
 	// necessarily contiguous) for a specific timestamp across record
 	// types in the same partition. To guarantee ordered processing, the reader
 	// should process records (of potentially different types) in
 	// record_sequence order for a specific timestamp in the same partition.
-	RecordSequence string `protobuf:"bytes,2,opt,name=record_sequence,json=recordSequence,proto3" json:"record_sequence,omitempty"`
+	RecordSequence string
 	// Unique partition identifier describing the partition this event
 	// occurred on.
 	// [partition_token][google.spanner.v1.ChangeStreamRecord.PartitionEventRecord.partition_token]
 	// is equal to the partition token of the change stream partition currently
 	// queried to return this PartitionEventRecord.
-	PartitionToken string `protobuf:"bytes,3,opt,name=partition_token,json=partitionToken,proto3" json:"partition_token,omitempty"`
+	PartitionToken string
 	// Set when one or more key ranges are moved into the change stream
 	// partition identified by
 	// [partition_token][google.spanner.v1.ChangeStreamRecord.PartitionEventRecord.partition_token].
@@ -790,7 +1262,7 @@ type ChangeStreamRecord_PartitionEventRecord struct {
 	//	    destination_partition_token: "P1"
 	//	  }
 	//	}
-	MoveInEvents []*ChangeStreamRecord_PartitionEventRecord_MoveInEvent `protobuf:"bytes,4,rep,name=move_in_events,json=moveInEvents,proto3" json:"move_in_events,omitempty"`
+	MoveInEvents []*ChangeStreamRecord_PartitionEventRecord_MoveInEvent
 	// Set when one or more key ranges are moved out of the change stream
 	// partition identified by
 	// [partition_token][google.spanner.v1.ChangeStreamRecord.PartitionEventRecord.partition_token].
@@ -830,90 +1302,30 @@ type ChangeStreamRecord_PartitionEventRecord struct {
 	//	    source_partition_token: "P1"
 	//	  }
 	//	}
-	MoveOutEvents []*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent `protobuf:"bytes,5,rep,name=move_out_events,json=moveOutEvents,proto3" json:"move_out_events,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	MoveOutEvents []*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent
 }
 
-func (x *ChangeStreamRecord_PartitionEventRecord) Reset() {
-	*x = ChangeStreamRecord_PartitionEventRecord{}
-	mi := &file_google_spanner_v1_change_stream_proto_msgTypes[5]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *ChangeStreamRecord_PartitionEventRecord) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*ChangeStreamRecord_PartitionEventRecord) ProtoMessage() {}
-
-func (x *ChangeStreamRecord_PartitionEventRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_change_stream_proto_msgTypes[5]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use ChangeStreamRecord_PartitionEventRecord.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_PartitionEventRecord) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 4}
-}
-
-func (x *ChangeStreamRecord_PartitionEventRecord) GetCommitTimestamp() *timestamppb.Timestamp {
-	if x != nil {
-		return x.CommitTimestamp
-	}
-	return nil
-}
-
-func (x *ChangeStreamRecord_PartitionEventRecord) GetRecordSequence() string {
-	if x != nil {
-		return x.RecordSequence
-	}
-	return ""
-}
-
-func (x *ChangeStreamRecord_PartitionEventRecord) GetPartitionToken() string {
-	if x != nil {
-		return x.PartitionToken
-	}
-	return ""
-}
-
-func (x *ChangeStreamRecord_PartitionEventRecord) GetMoveInEvents() []*ChangeStreamRecord_PartitionEventRecord_MoveInEvent {
-	if x != nil {
-		return x.MoveInEvents
-	}
-	return nil
-}
-
-func (x *ChangeStreamRecord_PartitionEventRecord) GetMoveOutEvents() []*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent {
-	if x != nil {
-		return x.MoveOutEvents
-	}
-	return nil
+func (b0 ChangeStreamRecord_PartitionEventRecord_builder) Build() *ChangeStreamRecord_PartitionEventRecord {
+	m0 := &ChangeStreamRecord_PartitionEventRecord{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_CommitTimestamp = b.CommitTimestamp
+	x.xxx_hidden_RecordSequence = b.RecordSequence
+	x.xxx_hidden_PartitionToken = b.PartitionToken
+	x.xxx_hidden_MoveInEvents = &b.MoveInEvents
+	x.xxx_hidden_MoveOutEvents = &b.MoveOutEvents
+	return m0
 }
 
 // Metadata for a column.
 type ChangeStreamRecord_DataChangeRecord_ColumnMetadata struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Name of the column.
-	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
-	// Type of the column.
-	Type *Type `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	// Indicates whether the column is a primary key column.
-	IsPrimaryKey bool `protobuf:"varint,3,opt,name=is_primary_key,json=isPrimaryKey,proto3" json:"is_primary_key,omitempty"`
-	// Ordinal position of the column based on the original table definition
-	// in the schema starting with a value of 1.
-	OrdinalPosition int64 `protobuf:"varint,4,opt,name=ordinal_position,json=ordinalPosition,proto3" json:"ordinal_position,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	state                      protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Name            string                 `protobuf:"bytes,1,opt,name=name,proto3"`
+	xxx_hidden_Type            *Type                  `protobuf:"bytes,2,opt,name=type,proto3"`
+	xxx_hidden_IsPrimaryKey    bool                   `protobuf:"varint,3,opt,name=is_primary_key,json=isPrimaryKey,proto3"`
+	xxx_hidden_OrdinalPosition int64                  `protobuf:"varint,4,opt,name=ordinal_position,json=ordinalPosition,proto3"`
+	unknownFields              protoimpl.UnknownFields
+	sizeCache                  protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) Reset() {
@@ -941,51 +1353,94 @@ func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) ProtoReflect() prot
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_DataChangeRecord_ColumnMetadata.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_DataChangeRecord_ColumnMetadata) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 0, 0}
-}
-
 func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) GetName() string {
 	if x != nil {
-		return x.Name
+		return x.xxx_hidden_Name
 	}
 	return ""
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) GetType() *Type {
 	if x != nil {
-		return x.Type
+		return x.xxx_hidden_Type
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) GetIsPrimaryKey() bool {
 	if x != nil {
-		return x.IsPrimaryKey
+		return x.xxx_hidden_IsPrimaryKey
 	}
 	return false
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) GetOrdinalPosition() int64 {
 	if x != nil {
-		return x.OrdinalPosition
+		return x.xxx_hidden_OrdinalPosition
 	}
 	return 0
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) SetName(v string) {
+	x.xxx_hidden_Name = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) SetType(v *Type) {
+	x.xxx_hidden_Type = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) SetIsPrimaryKey(v bool) {
+	x.xxx_hidden_IsPrimaryKey = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) SetOrdinalPosition(v int64) {
+	x.xxx_hidden_OrdinalPosition = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) HasType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Type != nil
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ColumnMetadata) ClearType() {
+	x.xxx_hidden_Type = nil
+}
+
+type ChangeStreamRecord_DataChangeRecord_ColumnMetadata_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Name of the column.
+	Name string
+	// Type of the column.
+	Type *Type
+	// Indicates whether the column is a primary key column.
+	IsPrimaryKey bool
+	// Ordinal position of the column based on the original table definition
+	// in the schema starting with a value of 1.
+	OrdinalPosition int64
+}
+
+func (b0 ChangeStreamRecord_DataChangeRecord_ColumnMetadata_builder) Build() *ChangeStreamRecord_DataChangeRecord_ColumnMetadata {
+	m0 := &ChangeStreamRecord_DataChangeRecord_ColumnMetadata{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Name = b.Name
+	x.xxx_hidden_Type = b.Type
+	x.xxx_hidden_IsPrimaryKey = b.IsPrimaryKey
+	x.xxx_hidden_OrdinalPosition = b.OrdinalPosition
+	return m0
 }
 
 // Returns the value and associated metadata for a particular field of the
 // [Mod][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.Mod].
 type ChangeStreamRecord_DataChangeRecord_ModValue struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Index within the repeated
-	// [column_metadata][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.column_metadata]
-	// field, to obtain the column metadata for the column that was modified.
-	ColumnMetadataIndex int32 `protobuf:"varint,1,opt,name=column_metadata_index,json=columnMetadataIndex,proto3" json:"column_metadata_index,omitempty"`
-	// The value of the column.
-	Value         *structpb.Value `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                          protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ColumnMetadataIndex int32                  `protobuf:"varint,1,opt,name=column_metadata_index,json=columnMetadataIndex,proto3"`
+	xxx_hidden_Value               *structpb.Value        `protobuf:"bytes,2,opt,name=value,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_ModValue) Reset() {
@@ -1013,42 +1468,67 @@ func (x *ChangeStreamRecord_DataChangeRecord_ModValue) ProtoReflect() protorefle
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_DataChangeRecord_ModValue.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_DataChangeRecord_ModValue) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 0, 1}
-}
-
 func (x *ChangeStreamRecord_DataChangeRecord_ModValue) GetColumnMetadataIndex() int32 {
 	if x != nil {
-		return x.ColumnMetadataIndex
+		return x.xxx_hidden_ColumnMetadataIndex
 	}
 	return 0
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_ModValue) GetValue() *structpb.Value {
 	if x != nil {
-		return x.Value
+		return x.xxx_hidden_Value
 	}
 	return nil
 }
 
+func (x *ChangeStreamRecord_DataChangeRecord_ModValue) SetColumnMetadataIndex(v int32) {
+	x.xxx_hidden_ColumnMetadataIndex = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ModValue) SetValue(v *structpb.Value) {
+	x.xxx_hidden_Value = v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ModValue) HasValue() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Value != nil
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_ModValue) ClearValue() {
+	x.xxx_hidden_Value = nil
+}
+
+type ChangeStreamRecord_DataChangeRecord_ModValue_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Index within the repeated
+	// [column_metadata][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.column_metadata]
+	// field, to obtain the column metadata for the column that was modified.
+	ColumnMetadataIndex int32
+	// The value of the column.
+	Value *structpb.Value
+}
+
+func (b0 ChangeStreamRecord_DataChangeRecord_ModValue_builder) Build() *ChangeStreamRecord_DataChangeRecord_ModValue {
+	m0 := &ChangeStreamRecord_DataChangeRecord_ModValue{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_ColumnMetadataIndex = b.ColumnMetadataIndex
+	x.xxx_hidden_Value = b.Value
+	return m0
+}
+
 // A mod describes all data changes in a watched table row.
 type ChangeStreamRecord_DataChangeRecord_Mod struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Returns the value of the primary key of the modified row.
-	Keys []*ChangeStreamRecord_DataChangeRecord_ModValue `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
-	// Returns the old values before the change for the modified columns.
-	// Always empty for
-	// [INSERT][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.ModType.INSERT],
-	// or if old values are not being captured specified by
-	// [value_capture_type][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.ValueCaptureType].
-	OldValues []*ChangeStreamRecord_DataChangeRecord_ModValue `protobuf:"bytes,2,rep,name=old_values,json=oldValues,proto3" json:"old_values,omitempty"`
-	// Returns the new values after the change for the modified columns.
-	// Always empty for
-	// [DELETE][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.ModType.DELETE].
-	NewValues     []*ChangeStreamRecord_DataChangeRecord_ModValue `protobuf:"bytes,3,rep,name=new_values,json=newValues,proto3" json:"new_values,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                protoimpl.MessageState                           `protogen:"opaque.v1"`
+	xxx_hidden_Keys      *[]*ChangeStreamRecord_DataChangeRecord_ModValue `protobuf:"bytes,1,rep,name=keys,proto3"`
+	xxx_hidden_OldValues *[]*ChangeStreamRecord_DataChangeRecord_ModValue `protobuf:"bytes,2,rep,name=old_values,json=oldValues,proto3"`
+	xxx_hidden_NewValues *[]*ChangeStreamRecord_DataChangeRecord_ModValue `protobuf:"bytes,3,rep,name=new_values,json=newValues,proto3"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_Mod) Reset() {
@@ -1076,30 +1556,70 @@ func (x *ChangeStreamRecord_DataChangeRecord_Mod) ProtoReflect() protoreflect.Me
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_DataChangeRecord_Mod.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_DataChangeRecord_Mod) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 0, 2}
-}
-
 func (x *ChangeStreamRecord_DataChangeRecord_Mod) GetKeys() []*ChangeStreamRecord_DataChangeRecord_ModValue {
 	if x != nil {
-		return x.Keys
+		if x.xxx_hidden_Keys != nil {
+			return *x.xxx_hidden_Keys
+		}
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_Mod) GetOldValues() []*ChangeStreamRecord_DataChangeRecord_ModValue {
 	if x != nil {
-		return x.OldValues
+		if x.xxx_hidden_OldValues != nil {
+			return *x.xxx_hidden_OldValues
+		}
 	}
 	return nil
 }
 
 func (x *ChangeStreamRecord_DataChangeRecord_Mod) GetNewValues() []*ChangeStreamRecord_DataChangeRecord_ModValue {
 	if x != nil {
-		return x.NewValues
+		if x.xxx_hidden_NewValues != nil {
+			return *x.xxx_hidden_NewValues
+		}
 	}
 	return nil
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_Mod) SetKeys(v []*ChangeStreamRecord_DataChangeRecord_ModValue) {
+	x.xxx_hidden_Keys = &v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_Mod) SetOldValues(v []*ChangeStreamRecord_DataChangeRecord_ModValue) {
+	x.xxx_hidden_OldValues = &v
+}
+
+func (x *ChangeStreamRecord_DataChangeRecord_Mod) SetNewValues(v []*ChangeStreamRecord_DataChangeRecord_ModValue) {
+	x.xxx_hidden_NewValues = &v
+}
+
+type ChangeStreamRecord_DataChangeRecord_Mod_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Returns the value of the primary key of the modified row.
+	Keys []*ChangeStreamRecord_DataChangeRecord_ModValue
+	// Returns the old values before the change for the modified columns.
+	// Always empty for
+	// [INSERT][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.ModType.INSERT],
+	// or if old values are not being captured specified by
+	// [value_capture_type][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.ValueCaptureType].
+	OldValues []*ChangeStreamRecord_DataChangeRecord_ModValue
+	// Returns the new values after the change for the modified columns.
+	// Always empty for
+	// [DELETE][google.spanner.v1.ChangeStreamRecord.DataChangeRecord.ModType.DELETE].
+	NewValues []*ChangeStreamRecord_DataChangeRecord_ModValue
+}
+
+func (b0 ChangeStreamRecord_DataChangeRecord_Mod_builder) Build() *ChangeStreamRecord_DataChangeRecord_Mod {
+	m0 := &ChangeStreamRecord_DataChangeRecord_Mod{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Keys = &b.Keys
+	x.xxx_hidden_OldValues = &b.OldValues
+	x.xxx_hidden_NewValues = &b.NewValues
+	return m0
 }
 
 // Describes move-in of the key ranges into the change stream partition
@@ -1114,13 +1634,10 @@ func (x *ChangeStreamRecord_DataChangeRecord_Mod) GetNewValues() []*ChangeStream
 // processed all change stream records with timestamps <= the partition
 // event record commit timestamp.
 type ChangeStreamRecord_PartitionEventRecord_MoveInEvent struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// An unique partition identifier describing the source change stream
-	// partition that recorded changes for the key range that is moving
-	// into this partition.
-	SourcePartitionToken string `protobuf:"bytes,1,opt,name=source_partition_token,json=sourcePartitionToken,proto3" json:"source_partition_token,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state                           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_SourcePartitionToken string                 `protobuf:"bytes,1,opt,name=source_partition_token,json=sourcePartitionToken,proto3"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_PartitionEventRecord_MoveInEvent) Reset() {
@@ -1148,16 +1665,32 @@ func (x *ChangeStreamRecord_PartitionEventRecord_MoveInEvent) ProtoReflect() pro
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_PartitionEventRecord_MoveInEvent.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_PartitionEventRecord_MoveInEvent) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 4, 0}
-}
-
 func (x *ChangeStreamRecord_PartitionEventRecord_MoveInEvent) GetSourcePartitionToken() string {
 	if x != nil {
-		return x.SourcePartitionToken
+		return x.xxx_hidden_SourcePartitionToken
 	}
 	return ""
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord_MoveInEvent) SetSourcePartitionToken(v string) {
+	x.xxx_hidden_SourcePartitionToken = v
+}
+
+type ChangeStreamRecord_PartitionEventRecord_MoveInEvent_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// An unique partition identifier describing the source change stream
+	// partition that recorded changes for the key range that is moving
+	// into this partition.
+	SourcePartitionToken string
+}
+
+func (b0 ChangeStreamRecord_PartitionEventRecord_MoveInEvent_builder) Build() *ChangeStreamRecord_PartitionEventRecord_MoveInEvent {
+	m0 := &ChangeStreamRecord_PartitionEventRecord_MoveInEvent{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_SourcePartitionToken = b.SourcePartitionToken
+	return m0
 }
 
 // Describes move-out of the key ranges out of the change stream partition
@@ -1173,13 +1706,10 @@ func (x *ChangeStreamRecord_PartitionEventRecord_MoveInEvent) GetSourcePartition
 // they can unblock and proceed processing records past the
 // [commit_timestamp][google.spanner.v1.ChangeStreamRecord.PartitionEventRecord.commit_timestamp].
 type ChangeStreamRecord_PartitionEventRecord_MoveOutEvent struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// An unique partition identifier describing the destination change
-	// stream partition that will record changes for the key range that is
-	// moving out of this partition.
-	DestinationPartitionToken string `protobuf:"bytes,1,opt,name=destination_partition_token,json=destinationPartitionToken,proto3" json:"destination_partition_token,omitempty"`
-	unknownFields             protoimpl.UnknownFields
-	sizeCache                 protoimpl.SizeCache
+	state                                protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_DestinationPartitionToken string                 `protobuf:"bytes,1,opt,name=destination_partition_token,json=destinationPartitionToken,proto3"`
+	unknownFields                        protoimpl.UnknownFields
+	sizeCache                            protoimpl.SizeCache
 }
 
 func (x *ChangeStreamRecord_PartitionEventRecord_MoveOutEvent) Reset() {
@@ -1207,16 +1737,32 @@ func (x *ChangeStreamRecord_PartitionEventRecord_MoveOutEvent) ProtoReflect() pr
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ChangeStreamRecord_PartitionEventRecord_MoveOutEvent.ProtoReflect.Descriptor instead.
-func (*ChangeStreamRecord_PartitionEventRecord_MoveOutEvent) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_change_stream_proto_rawDescGZIP(), []int{0, 4, 1}
-}
-
 func (x *ChangeStreamRecord_PartitionEventRecord_MoveOutEvent) GetDestinationPartitionToken() string {
 	if x != nil {
-		return x.DestinationPartitionToken
+		return x.xxx_hidden_DestinationPartitionToken
 	}
 	return ""
+}
+
+func (x *ChangeStreamRecord_PartitionEventRecord_MoveOutEvent) SetDestinationPartitionToken(v string) {
+	x.xxx_hidden_DestinationPartitionToken = v
+}
+
+type ChangeStreamRecord_PartitionEventRecord_MoveOutEvent_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// An unique partition identifier describing the destination change
+	// stream partition that will record changes for the key range that is
+	// moving out of this partition.
+	DestinationPartitionToken string
+}
+
+func (b0 ChangeStreamRecord_PartitionEventRecord_MoveOutEvent_builder) Build() *ChangeStreamRecord_PartitionEventRecord_MoveOutEvent {
+	m0 := &ChangeStreamRecord_PartitionEventRecord_MoveOutEvent{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_DestinationPartitionToken = b.DestinationPartitionToken
+	return m0
 }
 
 var File_google_spanner_v1_change_stream_proto protoreflect.FileDescriptor
@@ -1299,18 +1845,6 @@ const file_google_spanner_v1_change_stream_proto_rawDesc = "" +
 	"\x06recordB\xb4\x01\n" +
 	"\x15com.google.spanner.v1B\x11ChangeStreamProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
 
-var (
-	file_google_spanner_v1_change_stream_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_change_stream_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_change_stream_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_change_stream_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_change_stream_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_change_stream_proto_rawDesc), len(file_google_spanner_v1_change_stream_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_change_stream_proto_rawDescData
-}
-
 var file_google_spanner_v1_change_stream_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
 var file_google_spanner_v1_change_stream_proto_msgTypes = make([]protoimpl.MessageInfo, 11)
 var file_google_spanner_v1_change_stream_proto_goTypes = []any{
@@ -1367,11 +1901,11 @@ func file_google_spanner_v1_change_stream_proto_init() {
 	}
 	file_google_spanner_v1_type_proto_init()
 	file_google_spanner_v1_change_stream_proto_msgTypes[0].OneofWrappers = []any{
-		(*ChangeStreamRecord_DataChangeRecord_)(nil),
-		(*ChangeStreamRecord_HeartbeatRecord_)(nil),
-		(*ChangeStreamRecord_PartitionStartRecord_)(nil),
-		(*ChangeStreamRecord_PartitionEndRecord_)(nil),
-		(*ChangeStreamRecord_PartitionEventRecord_)(nil),
+		(*changeStreamRecord_DataChangeRecord_)(nil),
+		(*changeStreamRecord_HeartbeatRecord_)(nil),
+		(*changeStreamRecord_PartitionStartRecord_)(nil),
+		(*changeStreamRecord_PartitionEndRecord_)(nil),
+		(*changeStreamRecord_PartitionEventRecord_)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
@@ -126,23 +125,11 @@ const (
 // Note that 100 is passed as the start, and 1 is passed as the end,
 // because `Key` is a descending column in the schema.
 type KeyRange struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The start key must be provided. It can be either closed or open.
-	//
-	// Types that are valid to be assigned to StartKeyType:
-	//
-	//	*KeyRange_StartClosed
-	//	*KeyRange_StartOpen
-	StartKeyType isKeyRange_StartKeyType `protobuf_oneof:"start_key_type"`
-	// The end key must be provided. It can be either closed or open.
-	//
-	// Types that are valid to be assigned to EndKeyType:
-	//
-	//	*KeyRange_EndClosed
-	//	*KeyRange_EndOpen
-	EndKeyType    isKeyRange_EndKeyType `protobuf_oneof:"end_key_type"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                   protoimpl.MessageState  `protogen:"opaque.v1"`
+	xxx_hidden_StartKeyType isKeyRange_StartKeyType `protobuf_oneof:"start_key_type"`
+	xxx_hidden_EndKeyType   isKeyRange_EndKeyType   `protobuf_oneof:"end_key_type"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
 }
 
 func (x *KeyRange) Reset() {
@@ -170,21 +157,9 @@ func (x *KeyRange) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use KeyRange.ProtoReflect.Descriptor instead.
-func (*KeyRange) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_keys_proto_rawDescGZIP(), []int{0}
-}
-
-func (x *KeyRange) GetStartKeyType() isKeyRange_StartKeyType {
-	if x != nil {
-		return x.StartKeyType
-	}
-	return nil
-}
-
 func (x *KeyRange) GetStartClosed() *structpb.ListValue {
 	if x != nil {
-		if x, ok := x.StartKeyType.(*KeyRange_StartClosed); ok {
+		if x, ok := x.xxx_hidden_StartKeyType.(*keyRange_StartClosed); ok {
 			return x.StartClosed
 		}
 	}
@@ -193,23 +168,16 @@ func (x *KeyRange) GetStartClosed() *structpb.ListValue {
 
 func (x *KeyRange) GetStartOpen() *structpb.ListValue {
 	if x != nil {
-		if x, ok := x.StartKeyType.(*KeyRange_StartOpen); ok {
+		if x, ok := x.xxx_hidden_StartKeyType.(*keyRange_StartOpen); ok {
 			return x.StartOpen
 		}
 	}
 	return nil
 }
 
-func (x *KeyRange) GetEndKeyType() isKeyRange_EndKeyType {
-	if x != nil {
-		return x.EndKeyType
-	}
-	return nil
-}
-
 func (x *KeyRange) GetEndClosed() *structpb.ListValue {
 	if x != nil {
-		if x, ok := x.EndKeyType.(*KeyRange_EndClosed); ok {
+		if x, ok := x.xxx_hidden_EndKeyType.(*keyRange_EndClosed); ok {
 			return x.EndClosed
 		}
 	}
@@ -218,52 +186,262 @@ func (x *KeyRange) GetEndClosed() *structpb.ListValue {
 
 func (x *KeyRange) GetEndOpen() *structpb.ListValue {
 	if x != nil {
-		if x, ok := x.EndKeyType.(*KeyRange_EndOpen); ok {
+		if x, ok := x.xxx_hidden_EndKeyType.(*keyRange_EndOpen); ok {
 			return x.EndOpen
 		}
 	}
 	return nil
 }
 
+func (x *KeyRange) SetStartClosed(v *structpb.ListValue) {
+	if v == nil {
+		x.xxx_hidden_StartKeyType = nil
+		return
+	}
+	x.xxx_hidden_StartKeyType = &keyRange_StartClosed{v}
+}
+
+func (x *KeyRange) SetStartOpen(v *structpb.ListValue) {
+	if v == nil {
+		x.xxx_hidden_StartKeyType = nil
+		return
+	}
+	x.xxx_hidden_StartKeyType = &keyRange_StartOpen{v}
+}
+
+func (x *KeyRange) SetEndClosed(v *structpb.ListValue) {
+	if v == nil {
+		x.xxx_hidden_EndKeyType = nil
+		return
+	}
+	x.xxx_hidden_EndKeyType = &keyRange_EndClosed{v}
+}
+
+func (x *KeyRange) SetEndOpen(v *structpb.ListValue) {
+	if v == nil {
+		x.xxx_hidden_EndKeyType = nil
+		return
+	}
+	x.xxx_hidden_EndKeyType = &keyRange_EndOpen{v}
+}
+
+func (x *KeyRange) HasStartKeyType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_StartKeyType != nil
+}
+
+func (x *KeyRange) HasStartClosed() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_StartKeyType.(*keyRange_StartClosed)
+	return ok
+}
+
+func (x *KeyRange) HasStartOpen() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_StartKeyType.(*keyRange_StartOpen)
+	return ok
+}
+
+func (x *KeyRange) HasEndKeyType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_EndKeyType != nil
+}
+
+func (x *KeyRange) HasEndClosed() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_EndKeyType.(*keyRange_EndClosed)
+	return ok
+}
+
+func (x *KeyRange) HasEndOpen() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_EndKeyType.(*keyRange_EndOpen)
+	return ok
+}
+
+func (x *KeyRange) ClearStartKeyType() {
+	x.xxx_hidden_StartKeyType = nil
+}
+
+func (x *KeyRange) ClearStartClosed() {
+	if _, ok := x.xxx_hidden_StartKeyType.(*keyRange_StartClosed); ok {
+		x.xxx_hidden_StartKeyType = nil
+	}
+}
+
+func (x *KeyRange) ClearStartOpen() {
+	if _, ok := x.xxx_hidden_StartKeyType.(*keyRange_StartOpen); ok {
+		x.xxx_hidden_StartKeyType = nil
+	}
+}
+
+func (x *KeyRange) ClearEndKeyType() {
+	x.xxx_hidden_EndKeyType = nil
+}
+
+func (x *KeyRange) ClearEndClosed() {
+	if _, ok := x.xxx_hidden_EndKeyType.(*keyRange_EndClosed); ok {
+		x.xxx_hidden_EndKeyType = nil
+	}
+}
+
+func (x *KeyRange) ClearEndOpen() {
+	if _, ok := x.xxx_hidden_EndKeyType.(*keyRange_EndOpen); ok {
+		x.xxx_hidden_EndKeyType = nil
+	}
+}
+
+const KeyRange_StartKeyType_not_set_case case_KeyRange_StartKeyType = 0
+const KeyRange_StartClosed_case case_KeyRange_StartKeyType = 1
+const KeyRange_StartOpen_case case_KeyRange_StartKeyType = 2
+
+func (x *KeyRange) WhichStartKeyType() case_KeyRange_StartKeyType {
+	if x == nil {
+		return KeyRange_StartKeyType_not_set_case
+	}
+	switch x.xxx_hidden_StartKeyType.(type) {
+	case *keyRange_StartClosed:
+		return KeyRange_StartClosed_case
+	case *keyRange_StartOpen:
+		return KeyRange_StartOpen_case
+	default:
+		return KeyRange_StartKeyType_not_set_case
+	}
+}
+
+const KeyRange_EndKeyType_not_set_case case_KeyRange_EndKeyType = 0
+const KeyRange_EndClosed_case case_KeyRange_EndKeyType = 3
+const KeyRange_EndOpen_case case_KeyRange_EndKeyType = 4
+
+func (x *KeyRange) WhichEndKeyType() case_KeyRange_EndKeyType {
+	if x == nil {
+		return KeyRange_EndKeyType_not_set_case
+	}
+	switch x.xxx_hidden_EndKeyType.(type) {
+	case *keyRange_EndClosed:
+		return KeyRange_EndClosed_case
+	case *keyRange_EndOpen:
+		return KeyRange_EndOpen_case
+	default:
+		return KeyRange_EndKeyType_not_set_case
+	}
+}
+
+type KeyRange_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The start key must be provided. It can be either closed or open.
+
+	// Fields of oneof xxx_hidden_StartKeyType:
+	// If the start is closed, then the range includes all rows whose
+	// first `len(start_closed)` key columns exactly match `start_closed`.
+	StartClosed *structpb.ListValue
+	// If the start is open, then the range excludes rows whose first
+	// `len(start_open)` key columns exactly match `start_open`.
+	StartOpen *structpb.ListValue
+	// -- end of xxx_hidden_StartKeyType
+	// The end key must be provided. It can be either closed or open.
+
+	// Fields of oneof xxx_hidden_EndKeyType:
+	// If the end is closed, then the range includes all rows whose
+	// first `len(end_closed)` key columns exactly match `end_closed`.
+	EndClosed *structpb.ListValue
+	// If the end is open, then the range excludes rows whose first
+	// `len(end_open)` key columns exactly match `end_open`.
+	EndOpen *structpb.ListValue
+	// -- end of xxx_hidden_EndKeyType
+}
+
+func (b0 KeyRange_builder) Build() *KeyRange {
+	m0 := &KeyRange{}
+	b, x := &b0, m0
+	_, _ = b, x
+	if b.StartClosed != nil {
+		x.xxx_hidden_StartKeyType = &keyRange_StartClosed{b.StartClosed}
+	}
+	if b.StartOpen != nil {
+		x.xxx_hidden_StartKeyType = &keyRange_StartOpen{b.StartOpen}
+	}
+	if b.EndClosed != nil {
+		x.xxx_hidden_EndKeyType = &keyRange_EndClosed{b.EndClosed}
+	}
+	if b.EndOpen != nil {
+		x.xxx_hidden_EndKeyType = &keyRange_EndOpen{b.EndOpen}
+	}
+	return m0
+}
+
+type case_KeyRange_StartKeyType protoreflect.FieldNumber
+
+func (x case_KeyRange_StartKeyType) String() string {
+	md := file_google_spanner_v1_keys_proto_msgTypes[0].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
+type case_KeyRange_EndKeyType protoreflect.FieldNumber
+
+func (x case_KeyRange_EndKeyType) String() string {
+	md := file_google_spanner_v1_keys_proto_msgTypes[0].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isKeyRange_StartKeyType interface {
 	isKeyRange_StartKeyType()
 }
 
-type KeyRange_StartClosed struct {
+type keyRange_StartClosed struct {
 	// If the start is closed, then the range includes all rows whose
 	// first `len(start_closed)` key columns exactly match `start_closed`.
 	StartClosed *structpb.ListValue `protobuf:"bytes,1,opt,name=start_closed,json=startClosed,proto3,oneof"`
 }
 
-type KeyRange_StartOpen struct {
+type keyRange_StartOpen struct {
 	// If the start is open, then the range excludes rows whose first
 	// `len(start_open)` key columns exactly match `start_open`.
 	StartOpen *structpb.ListValue `protobuf:"bytes,2,opt,name=start_open,json=startOpen,proto3,oneof"`
 }
 
-func (*KeyRange_StartClosed) isKeyRange_StartKeyType() {}
+func (*keyRange_StartClosed) isKeyRange_StartKeyType() {}
 
-func (*KeyRange_StartOpen) isKeyRange_StartKeyType() {}
+func (*keyRange_StartOpen) isKeyRange_StartKeyType() {}
 
 type isKeyRange_EndKeyType interface {
 	isKeyRange_EndKeyType()
 }
 
-type KeyRange_EndClosed struct {
+type keyRange_EndClosed struct {
 	// If the end is closed, then the range includes all rows whose
 	// first `len(end_closed)` key columns exactly match `end_closed`.
 	EndClosed *structpb.ListValue `protobuf:"bytes,3,opt,name=end_closed,json=endClosed,proto3,oneof"`
 }
 
-type KeyRange_EndOpen struct {
+type keyRange_EndOpen struct {
 	// If the end is open, then the range excludes rows whose first
 	// `len(end_open)` key columns exactly match `end_open`.
 	EndOpen *structpb.ListValue `protobuf:"bytes,4,opt,name=end_open,json=endOpen,proto3,oneof"`
 }
 
-func (*KeyRange_EndClosed) isKeyRange_EndKeyType() {}
+func (*keyRange_EndClosed) isKeyRange_EndKeyType() {}
 
-func (*KeyRange_EndOpen) isKeyRange_EndKeyType() {}
+func (*keyRange_EndOpen) isKeyRange_EndKeyType() {}
 
 // `KeySet` defines a collection of Cloud Spanner keys and/or key ranges. All
 // the keys are expected to be in the same table or index. The keys need
@@ -273,21 +451,12 @@ func (*KeyRange_EndOpen) isKeyRange_EndKeyType() {}
 // if two ranges, two keys, or a key and a range overlap), Cloud Spanner
 // behaves as if the key were only specified once.
 type KeySet struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// A list of specific keys. Entries in `keys` should have exactly as
-	// many elements as there are columns in the primary or index key
-	// with which this `KeySet` is used.  Individual key values are
-	// encoded as described [here][google.spanner.v1.TypeCode].
-	Keys []*structpb.ListValue `protobuf:"bytes,1,rep,name=keys,proto3" json:"keys,omitempty"`
-	// A list of key ranges. See [KeyRange][google.spanner.v1.KeyRange] for more
-	// information about key range specifications.
-	Ranges []*KeyRange `protobuf:"bytes,2,rep,name=ranges,proto3" json:"ranges,omitempty"`
-	// For convenience `all` can be set to `true` to indicate that this
-	// `KeySet` matches all keys in the table or index. Note that any keys
-	// specified in `keys` or `ranges` are only yielded once.
-	All           bool `protobuf:"varint,3,opt,name=all,proto3" json:"all,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state             protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Keys   *[]*structpb.ListValue `protobuf:"bytes,1,rep,name=keys,proto3"`
+	xxx_hidden_Ranges *[]*KeyRange           `protobuf:"bytes,2,rep,name=ranges,proto3"`
+	xxx_hidden_All    bool                   `protobuf:"varint,3,opt,name=all,proto3"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
 }
 
 func (x *KeySet) Reset() {
@@ -315,30 +484,68 @@ func (x *KeySet) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use KeySet.ProtoReflect.Descriptor instead.
-func (*KeySet) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_keys_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *KeySet) GetKeys() []*structpb.ListValue {
 	if x != nil {
-		return x.Keys
+		if x.xxx_hidden_Keys != nil {
+			return *x.xxx_hidden_Keys
+		}
 	}
 	return nil
 }
 
 func (x *KeySet) GetRanges() []*KeyRange {
 	if x != nil {
-		return x.Ranges
+		if x.xxx_hidden_Ranges != nil {
+			return *x.xxx_hidden_Ranges
+		}
 	}
 	return nil
 }
 
 func (x *KeySet) GetAll() bool {
 	if x != nil {
-		return x.All
+		return x.xxx_hidden_All
 	}
 	return false
+}
+
+func (x *KeySet) SetKeys(v []*structpb.ListValue) {
+	x.xxx_hidden_Keys = &v
+}
+
+func (x *KeySet) SetRanges(v []*KeyRange) {
+	x.xxx_hidden_Ranges = &v
+}
+
+func (x *KeySet) SetAll(v bool) {
+	x.xxx_hidden_All = v
+}
+
+type KeySet_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// A list of specific keys. Entries in `keys` should have exactly as
+	// many elements as there are columns in the primary or index key
+	// with which this `KeySet` is used.  Individual key values are
+	// encoded as described [here][google.spanner.v1.TypeCode].
+	Keys []*structpb.ListValue
+	// A list of key ranges. See [KeyRange][google.spanner.v1.KeyRange] for more
+	// information about key range specifications.
+	Ranges []*KeyRange
+	// For convenience `all` can be set to `true` to indicate that this
+	// `KeySet` matches all keys in the table or index. Note that any keys
+	// specified in `keys` or `ranges` are only yielded once.
+	All bool
+}
+
+func (b0 KeySet_builder) Build() *KeySet {
+	m0 := &KeySet{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Keys = &b.Keys
+	x.xxx_hidden_Ranges = &b.Ranges
+	x.xxx_hidden_All = b.All
+	return m0
 }
 
 var File_google_spanner_v1_keys_proto protoreflect.FileDescriptor
@@ -360,18 +567,6 @@ const file_google_spanner_v1_keys_proto_rawDesc = "" +
 	"\x06ranges\x18\x02 \x03(\v2\x1b.google.spanner.v1.KeyRangeR\x06ranges\x12\x10\n" +
 	"\x03all\x18\x03 \x01(\bR\x03allB\xac\x01\n" +
 	"\x15com.google.spanner.v1B\tKeysProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
-
-var (
-	file_google_spanner_v1_keys_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_keys_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_keys_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_keys_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_keys_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_keys_proto_rawDesc), len(file_google_spanner_v1_keys_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_keys_proto_rawDescData
-}
 
 var file_google_spanner_v1_keys_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_spanner_v1_keys_proto_goTypes = []any{
@@ -399,10 +594,10 @@ func file_google_spanner_v1_keys_proto_init() {
 		return
 	}
 	file_google_spanner_v1_keys_proto_msgTypes[0].OneofWrappers = []any{
-		(*KeyRange_StartClosed)(nil),
-		(*KeyRange_StartOpen)(nil),
-		(*KeyRange_EndClosed)(nil),
-		(*KeyRange_EndOpen)(nil),
+		(*keyRange_StartClosed)(nil),
+		(*keyRange_StartOpen)(nil),
+		(*keyRange_EndClosed)(nil),
+		(*keyRange_EndOpen)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{

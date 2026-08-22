@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -92,47 +91,19 @@ func (x PlanNode_Kind) Number() protoreflect.EnumNumber {
 	return protoreflect.EnumNumber(x)
 }
 
-// Deprecated: Use PlanNode_Kind.Descriptor instead.
-func (PlanNode_Kind) EnumDescriptor() ([]byte, []int) {
-	return file_google_spanner_v1_query_plan_proto_rawDescGZIP(), []int{0, 0}
-}
-
 // Node information for nodes appearing in a
 // [QueryPlan.plan_nodes][google.spanner.v1.QueryPlan.plan_nodes].
 type PlanNode struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The `PlanNode`'s index in [node
-	// list][google.spanner.v1.QueryPlan.plan_nodes].
-	Index int32 `protobuf:"varint,1,opt,name=index,proto3" json:"index,omitempty"`
-	// Used to determine the type of node. May be needed for visualizing
-	// different kinds of nodes differently. For example, If the node is a
-	// [SCALAR][google.spanner.v1.PlanNode.Kind.SCALAR] node, it will have a
-	// condensed representation which can be used to directly embed a description
-	// of the node in its parent.
-	Kind PlanNode_Kind `protobuf:"varint,2,opt,name=kind,proto3,enum=google.spanner.v1.PlanNode_Kind" json:"kind,omitempty"`
-	// The display name for the node.
-	DisplayName string `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// List of child node `index`es and their relationship to this parent.
-	ChildLinks []*PlanNode_ChildLink `protobuf:"bytes,4,rep,name=child_links,json=childLinks,proto3" json:"child_links,omitempty"`
-	// Condensed representation for
-	// [SCALAR][google.spanner.v1.PlanNode.Kind.SCALAR] nodes.
-	ShortRepresentation *PlanNode_ShortRepresentation `protobuf:"bytes,5,opt,name=short_representation,json=shortRepresentation,proto3" json:"short_representation,omitempty"`
-	// Attributes relevant to the node contained in a group of key-value pairs.
-	// For example, a Parameter Reference node could have the following
-	// information in its metadata:
-	//
-	//	{
-	//	  "parameter_reference": "param1",
-	//	  "parameter_type": "array"
-	//	}
-	Metadata *structpb.Struct `protobuf:"bytes,6,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// The execution statistics associated with the node, contained in a group of
-	// key-value pairs. Only present if the plan was returned as a result of a
-	// profile query. For example, number of executions, number of rows/time per
-	// execution etc.
-	ExecutionStats *structpb.Struct `protobuf:"bytes,7,opt,name=execution_stats,json=executionStats,proto3" json:"execution_stats,omitempty"`
-	unknownFields  protoimpl.UnknownFields
-	sizeCache      protoimpl.SizeCache
+	state                          protoimpl.MessageState        `protogen:"opaque.v1"`
+	xxx_hidden_Index               int32                         `protobuf:"varint,1,opt,name=index,proto3"`
+	xxx_hidden_Kind                PlanNode_Kind                 `protobuf:"varint,2,opt,name=kind,proto3,enum=google.spanner.v1.PlanNode_Kind"`
+	xxx_hidden_DisplayName         string                        `protobuf:"bytes,3,opt,name=display_name,json=displayName,proto3"`
+	xxx_hidden_ChildLinks          *[]*PlanNode_ChildLink        `protobuf:"bytes,4,rep,name=child_links,json=childLinks,proto3"`
+	xxx_hidden_ShortRepresentation *PlanNode_ShortRepresentation `protobuf:"bytes,5,opt,name=short_representation,json=shortRepresentation,proto3"`
+	xxx_hidden_Metadata            *structpb.Struct              `protobuf:"bytes,6,opt,name=metadata,proto3"`
+	xxx_hidden_ExecutionStats      *structpb.Struct              `protobuf:"bytes,7,opt,name=execution_stats,json=executionStats,proto3"`
+	unknownFields                  protoimpl.UnknownFields
+	sizeCache                      protoimpl.SizeCache
 }
 
 func (x *PlanNode) Reset() {
@@ -160,69 +131,173 @@ func (x *PlanNode) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PlanNode.ProtoReflect.Descriptor instead.
-func (*PlanNode) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_query_plan_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *PlanNode) GetIndex() int32 {
 	if x != nil {
-		return x.Index
+		return x.xxx_hidden_Index
 	}
 	return 0
 }
 
 func (x *PlanNode) GetKind() PlanNode_Kind {
 	if x != nil {
-		return x.Kind
+		return x.xxx_hidden_Kind
 	}
 	return PlanNode_KIND_UNSPECIFIED
 }
 
 func (x *PlanNode) GetDisplayName() string {
 	if x != nil {
-		return x.DisplayName
+		return x.xxx_hidden_DisplayName
 	}
 	return ""
 }
 
 func (x *PlanNode) GetChildLinks() []*PlanNode_ChildLink {
 	if x != nil {
-		return x.ChildLinks
+		if x.xxx_hidden_ChildLinks != nil {
+			return *x.xxx_hidden_ChildLinks
+		}
 	}
 	return nil
 }
 
 func (x *PlanNode) GetShortRepresentation() *PlanNode_ShortRepresentation {
 	if x != nil {
-		return x.ShortRepresentation
+		return x.xxx_hidden_ShortRepresentation
 	}
 	return nil
 }
 
 func (x *PlanNode) GetMetadata() *structpb.Struct {
 	if x != nil {
-		return x.Metadata
+		return x.xxx_hidden_Metadata
 	}
 	return nil
 }
 
 func (x *PlanNode) GetExecutionStats() *structpb.Struct {
 	if x != nil {
-		return x.ExecutionStats
+		return x.xxx_hidden_ExecutionStats
 	}
 	return nil
 }
 
+func (x *PlanNode) SetIndex(v int32) {
+	x.xxx_hidden_Index = v
+}
+
+func (x *PlanNode) SetKind(v PlanNode_Kind) {
+	x.xxx_hidden_Kind = v
+}
+
+func (x *PlanNode) SetDisplayName(v string) {
+	x.xxx_hidden_DisplayName = v
+}
+
+func (x *PlanNode) SetChildLinks(v []*PlanNode_ChildLink) {
+	x.xxx_hidden_ChildLinks = &v
+}
+
+func (x *PlanNode) SetShortRepresentation(v *PlanNode_ShortRepresentation) {
+	x.xxx_hidden_ShortRepresentation = v
+}
+
+func (x *PlanNode) SetMetadata(v *structpb.Struct) {
+	x.xxx_hidden_Metadata = v
+}
+
+func (x *PlanNode) SetExecutionStats(v *structpb.Struct) {
+	x.xxx_hidden_ExecutionStats = v
+}
+
+func (x *PlanNode) HasShortRepresentation() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ShortRepresentation != nil
+}
+
+func (x *PlanNode) HasMetadata() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Metadata != nil
+}
+
+func (x *PlanNode) HasExecutionStats() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_ExecutionStats != nil
+}
+
+func (x *PlanNode) ClearShortRepresentation() {
+	x.xxx_hidden_ShortRepresentation = nil
+}
+
+func (x *PlanNode) ClearMetadata() {
+	x.xxx_hidden_Metadata = nil
+}
+
+func (x *PlanNode) ClearExecutionStats() {
+	x.xxx_hidden_ExecutionStats = nil
+}
+
+type PlanNode_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The `PlanNode`'s index in [node
+	// list][google.spanner.v1.QueryPlan.plan_nodes].
+	Index int32
+	// Used to determine the type of node. May be needed for visualizing
+	// different kinds of nodes differently. For example, If the node is a
+	// [SCALAR][google.spanner.v1.PlanNode.Kind.SCALAR] node, it will have a
+	// condensed representation which can be used to directly embed a description
+	// of the node in its parent.
+	Kind PlanNode_Kind
+	// The display name for the node.
+	DisplayName string
+	// List of child node `index`es and their relationship to this parent.
+	ChildLinks []*PlanNode_ChildLink
+	// Condensed representation for
+	// [SCALAR][google.spanner.v1.PlanNode.Kind.SCALAR] nodes.
+	ShortRepresentation *PlanNode_ShortRepresentation
+	// Attributes relevant to the node contained in a group of key-value pairs.
+	// For example, a Parameter Reference node could have the following
+	// information in its metadata:
+	//
+	//	{
+	//	  "parameter_reference": "param1",
+	//	  "parameter_type": "array"
+	//	}
+	Metadata *structpb.Struct
+	// The execution statistics associated with the node, contained in a group of
+	// key-value pairs. Only present if the plan was returned as a result of a
+	// profile query. For example, number of executions, number of rows/time per
+	// execution etc.
+	ExecutionStats *structpb.Struct
+}
+
+func (b0 PlanNode_builder) Build() *PlanNode {
+	m0 := &PlanNode{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Index = b.Index
+	x.xxx_hidden_Kind = b.Kind
+	x.xxx_hidden_DisplayName = b.DisplayName
+	x.xxx_hidden_ChildLinks = &b.ChildLinks
+	x.xxx_hidden_ShortRepresentation = b.ShortRepresentation
+	x.xxx_hidden_Metadata = b.Metadata
+	x.xxx_hidden_ExecutionStats = b.ExecutionStats
+	return m0
+}
+
 // Output of query advisor analysis.
 type QueryAdvisorResult struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. Index Recommendation for a query. This is an optional field and
-	// the recommendation will only be available when the recommendation
-	// guarantees significant improvement in query performance.
-	IndexAdvice   []*QueryAdvisorResult_IndexAdvice `protobuf:"bytes,1,rep,name=index_advice,json=indexAdvice,proto3" json:"index_advice,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState             `protogen:"opaque.v1"`
+	xxx_hidden_IndexAdvice *[]*QueryAdvisorResult_IndexAdvice `protobuf:"bytes,1,rep,name=index_advice,json=indexAdvice,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *QueryAdvisorResult) Reset() {
@@ -250,30 +325,43 @@ func (x *QueryAdvisorResult) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use QueryAdvisorResult.ProtoReflect.Descriptor instead.
-func (*QueryAdvisorResult) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_query_plan_proto_rawDescGZIP(), []int{1}
-}
-
 func (x *QueryAdvisorResult) GetIndexAdvice() []*QueryAdvisorResult_IndexAdvice {
 	if x != nil {
-		return x.IndexAdvice
+		if x.xxx_hidden_IndexAdvice != nil {
+			return *x.xxx_hidden_IndexAdvice
+		}
 	}
 	return nil
 }
 
+func (x *QueryAdvisorResult) SetIndexAdvice(v []*QueryAdvisorResult_IndexAdvice) {
+	x.xxx_hidden_IndexAdvice = &v
+}
+
+type QueryAdvisorResult_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Optional. Index Recommendation for a query. This is an optional field and
+	// the recommendation will only be available when the recommendation
+	// guarantees significant improvement in query performance.
+	IndexAdvice []*QueryAdvisorResult_IndexAdvice
+}
+
+func (b0 QueryAdvisorResult_builder) Build() *QueryAdvisorResult {
+	m0 := &QueryAdvisorResult{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_IndexAdvice = &b.IndexAdvice
+	return m0
+}
+
 // Contains an ordered list of nodes appearing in the query plan.
 type QueryPlan struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The nodes in the query plan. Plan nodes are returned in pre-order starting
-	// with the plan root. Each [PlanNode][google.spanner.v1.PlanNode]'s `id`
-	// corresponds to its index in `plan_nodes`.
-	PlanNodes []*PlanNode `protobuf:"bytes,1,rep,name=plan_nodes,json=planNodes,proto3" json:"plan_nodes,omitempty"`
-	// Optional. The advise/recommendations for a query. Currently this field will
-	// be serving index recommendations for a query.
-	QueryAdvice   *QueryAdvisorResult `protobuf:"bytes,2,opt,name=query_advice,json=queryAdvice,proto3" json:"query_advice,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_PlanNodes   *[]*PlanNode           `protobuf:"bytes,1,rep,name=plan_nodes,json=planNodes,proto3"`
+	xxx_hidden_QueryAdvice *QueryAdvisorResult    `protobuf:"bytes,2,opt,name=query_advice,json=queryAdvice,proto3"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *QueryPlan) Reset() {
@@ -301,47 +389,71 @@ func (x *QueryPlan) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use QueryPlan.ProtoReflect.Descriptor instead.
-func (*QueryPlan) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_query_plan_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *QueryPlan) GetPlanNodes() []*PlanNode {
 	if x != nil {
-		return x.PlanNodes
+		if x.xxx_hidden_PlanNodes != nil {
+			return *x.xxx_hidden_PlanNodes
+		}
 	}
 	return nil
 }
 
 func (x *QueryPlan) GetQueryAdvice() *QueryAdvisorResult {
 	if x != nil {
-		return x.QueryAdvice
+		return x.xxx_hidden_QueryAdvice
 	}
 	return nil
+}
+
+func (x *QueryPlan) SetPlanNodes(v []*PlanNode) {
+	x.xxx_hidden_PlanNodes = &v
+}
+
+func (x *QueryPlan) SetQueryAdvice(v *QueryAdvisorResult) {
+	x.xxx_hidden_QueryAdvice = v
+}
+
+func (x *QueryPlan) HasQueryAdvice() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_QueryAdvice != nil
+}
+
+func (x *QueryPlan) ClearQueryAdvice() {
+	x.xxx_hidden_QueryAdvice = nil
+}
+
+type QueryPlan_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The nodes in the query plan. Plan nodes are returned in pre-order starting
+	// with the plan root. Each [PlanNode][google.spanner.v1.PlanNode]'s `id`
+	// corresponds to its index in `plan_nodes`.
+	PlanNodes []*PlanNode
+	// Optional. The advise/recommendations for a query. Currently this field will
+	// be serving index recommendations for a query.
+	QueryAdvice *QueryAdvisorResult
+}
+
+func (b0 QueryPlan_builder) Build() *QueryPlan {
+	m0 := &QueryPlan{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_PlanNodes = &b.PlanNodes
+	x.xxx_hidden_QueryAdvice = b.QueryAdvice
+	return m0
 }
 
 // Metadata associated with a parent-child relationship appearing in a
 // [PlanNode][google.spanner.v1.PlanNode].
 type PlanNode_ChildLink struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// The node to which the link points.
-	ChildIndex int32 `protobuf:"varint,1,opt,name=child_index,json=childIndex,proto3" json:"child_index,omitempty"`
-	// The type of the link. For example, in Hash Joins this could be used to
-	// distinguish between the build child and the probe child, or in the case
-	// of the child being an output variable, to represent the tag associated
-	// with the output variable.
-	Type string `protobuf:"bytes,2,opt,name=type,proto3" json:"type,omitempty"`
-	// Only present if the child node is
-	// [SCALAR][google.spanner.v1.PlanNode.Kind.SCALAR] and corresponds to an
-	// output variable of the parent node. The field carries the name of the
-	// output variable. For example, a `TableScan` operator that reads rows from
-	// a table will have child links to the `SCALAR` nodes representing the
-	// output variables created for each column that is read by the operator.
-	// The corresponding `variable` fields will be set to the variable names
-	// assigned to the columns.
-	Variable      string `protobuf:"bytes,3,opt,name=variable,proto3" json:"variable,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_ChildIndex int32                  `protobuf:"varint,1,opt,name=child_index,json=childIndex,proto3"`
+	xxx_hidden_Type       string                 `protobuf:"bytes,2,opt,name=type,proto3"`
+	xxx_hidden_Variable   string                 `protobuf:"bytes,3,opt,name=variable,proto3"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *PlanNode_ChildLink) Reset() {
@@ -369,46 +481,78 @@ func (x *PlanNode_ChildLink) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PlanNode_ChildLink.ProtoReflect.Descriptor instead.
-func (*PlanNode_ChildLink) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_query_plan_proto_rawDescGZIP(), []int{0, 0}
-}
-
 func (x *PlanNode_ChildLink) GetChildIndex() int32 {
 	if x != nil {
-		return x.ChildIndex
+		return x.xxx_hidden_ChildIndex
 	}
 	return 0
 }
 
 func (x *PlanNode_ChildLink) GetType() string {
 	if x != nil {
-		return x.Type
+		return x.xxx_hidden_Type
 	}
 	return ""
 }
 
 func (x *PlanNode_ChildLink) GetVariable() string {
 	if x != nil {
-		return x.Variable
+		return x.xxx_hidden_Variable
 	}
 	return ""
+}
+
+func (x *PlanNode_ChildLink) SetChildIndex(v int32) {
+	x.xxx_hidden_ChildIndex = v
+}
+
+func (x *PlanNode_ChildLink) SetType(v string) {
+	x.xxx_hidden_Type = v
+}
+
+func (x *PlanNode_ChildLink) SetVariable(v string) {
+	x.xxx_hidden_Variable = v
+}
+
+type PlanNode_ChildLink_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// The node to which the link points.
+	ChildIndex int32
+	// The type of the link. For example, in Hash Joins this could be used to
+	// distinguish between the build child and the probe child, or in the case
+	// of the child being an output variable, to represent the tag associated
+	// with the output variable.
+	Type string
+	// Only present if the child node is
+	// [SCALAR][google.spanner.v1.PlanNode.Kind.SCALAR] and corresponds to an
+	// output variable of the parent node. The field carries the name of the
+	// output variable. For example, a `TableScan` operator that reads rows from
+	// a table will have child links to the `SCALAR` nodes representing the
+	// output variables created for each column that is read by the operator.
+	// The corresponding `variable` fields will be set to the variable names
+	// assigned to the columns.
+	Variable string
+}
+
+func (b0 PlanNode_ChildLink_builder) Build() *PlanNode_ChildLink {
+	m0 := &PlanNode_ChildLink{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_ChildIndex = b.ChildIndex
+	x.xxx_hidden_Type = b.Type
+	x.xxx_hidden_Variable = b.Variable
+	return m0
 }
 
 // Condensed representation of a node and its subtree. Only present for
 // `SCALAR` [PlanNode(s)][google.spanner.v1.PlanNode].
 type PlanNode_ShortRepresentation struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// A string representation of the expression subtree rooted at this node.
-	Description string `protobuf:"bytes,1,opt,name=description,proto3" json:"description,omitempty"`
-	// A mapping of (subquery variable name) -> (subquery node id) for cases
-	// where the `description` string of this node references a `SCALAR`
-	// subquery contained in the expression subtree rooted at this node. The
-	// referenced `SCALAR` subquery may not necessarily be a direct child of
-	// this node.
-	Subqueries    map[string]int32 `protobuf:"bytes,2,rep,name=subqueries,proto3" json:"subqueries,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                  protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Description string                 `protobuf:"bytes,1,opt,name=description,proto3"`
+	xxx_hidden_Subqueries  map[string]int32       `protobuf:"bytes,2,rep,name=subqueries,proto3" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"varint,2,opt,name=value"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *PlanNode_ShortRepresentation) Reset() {
@@ -436,36 +580,57 @@ func (x *PlanNode_ShortRepresentation) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use PlanNode_ShortRepresentation.ProtoReflect.Descriptor instead.
-func (*PlanNode_ShortRepresentation) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_query_plan_proto_rawDescGZIP(), []int{0, 1}
-}
-
 func (x *PlanNode_ShortRepresentation) GetDescription() string {
 	if x != nil {
-		return x.Description
+		return x.xxx_hidden_Description
 	}
 	return ""
 }
 
 func (x *PlanNode_ShortRepresentation) GetSubqueries() map[string]int32 {
 	if x != nil {
-		return x.Subqueries
+		return x.xxx_hidden_Subqueries
 	}
 	return nil
 }
 
+func (x *PlanNode_ShortRepresentation) SetDescription(v string) {
+	x.xxx_hidden_Description = v
+}
+
+func (x *PlanNode_ShortRepresentation) SetSubqueries(v map[string]int32) {
+	x.xxx_hidden_Subqueries = v
+}
+
+type PlanNode_ShortRepresentation_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// A string representation of the expression subtree rooted at this node.
+	Description string
+	// A mapping of (subquery variable name) -> (subquery node id) for cases
+	// where the `description` string of this node references a `SCALAR`
+	// subquery contained in the expression subtree rooted at this node. The
+	// referenced `SCALAR` subquery may not necessarily be a direct child of
+	// this node.
+	Subqueries map[string]int32
+}
+
+func (b0 PlanNode_ShortRepresentation_builder) Build() *PlanNode_ShortRepresentation {
+	m0 := &PlanNode_ShortRepresentation{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Description = b.Description
+	x.xxx_hidden_Subqueries = b.Subqueries
+	return m0
+}
+
 // Recommendation to add new indexes to run queries more efficiently.
 type QueryAdvisorResult_IndexAdvice struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Optional. DDL statements to add new indexes that will improve the query.
-	Ddl []string `protobuf:"bytes,1,rep,name=ddl,proto3" json:"ddl,omitempty"`
-	// Optional. Estimated latency improvement factor. For example if the query
-	// currently takes 500 ms to run and the estimated latency with new indexes
-	// is 100 ms this field will be 5.
-	ImprovementFactor float64 `protobuf:"fixed64,2,opt,name=improvement_factor,json=improvementFactor,proto3" json:"improvement_factor,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	state                        protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_Ddl               []string               `protobuf:"bytes,1,rep,name=ddl,proto3"`
+	xxx_hidden_ImprovementFactor float64                `protobuf:"fixed64,2,opt,name=improvement_factor,json=improvementFactor,proto3"`
+	unknownFields                protoimpl.UnknownFields
+	sizeCache                    protoimpl.SizeCache
 }
 
 func (x *QueryAdvisorResult_IndexAdvice) Reset() {
@@ -493,23 +658,46 @@ func (x *QueryAdvisorResult_IndexAdvice) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use QueryAdvisorResult_IndexAdvice.ProtoReflect.Descriptor instead.
-func (*QueryAdvisorResult_IndexAdvice) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_query_plan_proto_rawDescGZIP(), []int{1, 0}
-}
-
 func (x *QueryAdvisorResult_IndexAdvice) GetDdl() []string {
 	if x != nil {
-		return x.Ddl
+		return x.xxx_hidden_Ddl
 	}
 	return nil
 }
 
 func (x *QueryAdvisorResult_IndexAdvice) GetImprovementFactor() float64 {
 	if x != nil {
-		return x.ImprovementFactor
+		return x.xxx_hidden_ImprovementFactor
 	}
 	return 0
+}
+
+func (x *QueryAdvisorResult_IndexAdvice) SetDdl(v []string) {
+	x.xxx_hidden_Ddl = v
+}
+
+func (x *QueryAdvisorResult_IndexAdvice) SetImprovementFactor(v float64) {
+	x.xxx_hidden_ImprovementFactor = v
+}
+
+type QueryAdvisorResult_IndexAdvice_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Optional. DDL statements to add new indexes that will improve the query.
+	Ddl []string
+	// Optional. Estimated latency improvement factor. For example if the query
+	// currently takes 500 ms to run and the estimated latency with new indexes
+	// is 100 ms this field will be 5.
+	ImprovementFactor float64
+}
+
+func (b0 QueryAdvisorResult_IndexAdvice_builder) Build() *QueryAdvisorResult_IndexAdvice {
+	m0 := &QueryAdvisorResult_IndexAdvice{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Ddl = b.Ddl
+	x.xxx_hidden_ImprovementFactor = b.ImprovementFactor
+	return m0
 }
 
 var File_google_spanner_v1_query_plan_proto protoreflect.FileDescriptor
@@ -555,18 +743,6 @@ const file_google_spanner_v1_query_plan_proto_rawDesc = "" +
 	"plan_nodes\x18\x01 \x03(\v2\x1b.google.spanner.v1.PlanNodeR\tplanNodes\x12M\n" +
 	"\fquery_advice\x18\x02 \x01(\v2%.google.spanner.v1.QueryAdvisorResultB\x03\xe0A\x01R\vqueryAdviceB\xb1\x01\n" +
 	"\x15com.google.spanner.v1B\x0eQueryPlanProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
-
-var (
-	file_google_spanner_v1_query_plan_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_query_plan_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_query_plan_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_query_plan_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_query_plan_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_query_plan_proto_rawDesc), len(file_google_spanner_v1_query_plan_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_query_plan_proto_rawDescData
-}
 
 var file_google_spanner_v1_query_plan_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
 var file_google_spanner_v1_query_plan_proto_msgTypes = make([]protoimpl.MessageInfo, 7)

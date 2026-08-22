@@ -22,7 +22,6 @@ package spannerpb
 
 import (
 	reflect "reflect"
-	sync "sync"
 	unsafe "unsafe"
 
 	_ "google.golang.org/genproto/googleapis/api/annotations"
@@ -41,39 +40,14 @@ const (
 // Results from [Read][google.spanner.v1.Spanner.Read] or
 // [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql].
 type ResultSet struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Metadata about the result set, such as row type information.
-	Metadata *ResultSetMetadata `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	// Each element in `rows` is a row whose format is defined by
-	// [metadata.row_type][google.spanner.v1.ResultSetMetadata.row_type]. The ith
-	// element in each row matches the ith field in
-	// [metadata.row_type][google.spanner.v1.ResultSetMetadata.row_type]. Elements
-	// are encoded based on type as described [here][google.spanner.v1.TypeCode].
-	Rows []*structpb.ListValue `protobuf:"bytes,2,rep,name=rows,proto3" json:"rows,omitempty"`
-	// Query plan and execution statistics for the SQL statement that
-	// produced this result set. These can be requested by setting
-	// [ExecuteSqlRequest.query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode].
-	// DML statements always produce stats containing the number of rows
-	// modified, unless executed using the
-	// [ExecuteSqlRequest.QueryMode.PLAN][google.spanner.v1.ExecuteSqlRequest.QueryMode.PLAN]
-	// [ExecuteSqlRequest.query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode].
-	// Other fields might or might not be populated, based on the
-	// [ExecuteSqlRequest.query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode].
-	Stats *ResultSetStats `protobuf:"bytes,3,opt,name=stats,proto3" json:"stats,omitempty"`
-	// Optional. A precommit token is included if the read-write transaction is on
-	// a multiplexed session. Pass the precommit token with the highest sequence
-	// number from this transaction attempt to the
-	// [Commit][google.spanner.v1.Spanner.Commit] request for this transaction.
-	PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,5,opt,name=precommit_token,json=precommitToken,proto3" json:"precommit_token,omitempty"`
-	// Optional. A cache update expresses a set of changes the client should
-	// incorporate into its location cache. The client should discard the changes
-	// if they are older than the data it already has. This data can be obtained
-	// in response to requests that included a `RoutingHint` field, but may also
-	// be obtained by explicit location-fetching RPCs which may be added in the
-	// future.
-	CacheUpdate   *CacheUpdate `protobuf:"bytes,6,opt,name=cache_update,json=cacheUpdate,proto3" json:"cache_update,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                     protoimpl.MessageState            `protogen:"opaque.v1"`
+	xxx_hidden_Metadata       *ResultSetMetadata                `protobuf:"bytes,1,opt,name=metadata,proto3"`
+	xxx_hidden_Rows           *[]*structpb.ListValue            `protobuf:"bytes,2,rep,name=rows,proto3"`
+	xxx_hidden_Stats          *ResultSetStats                   `protobuf:"bytes,3,opt,name=stats,proto3"`
+	xxx_hidden_PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,5,opt,name=precommit_token,json=precommitToken,proto3"`
+	xxx_hidden_CacheUpdate    *CacheUpdate                      `protobuf:"bytes,6,opt,name=cache_update,json=cacheUpdate,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *ResultSet) Reset() {
@@ -101,54 +75,339 @@ func (x *ResultSet) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ResultSet.ProtoReflect.Descriptor instead.
-func (*ResultSet) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_result_set_proto_rawDescGZIP(), []int{0}
-}
-
 func (x *ResultSet) GetMetadata() *ResultSetMetadata {
 	if x != nil {
-		return x.Metadata
+		return x.xxx_hidden_Metadata
 	}
 	return nil
 }
 
 func (x *ResultSet) GetRows() []*structpb.ListValue {
 	if x != nil {
-		return x.Rows
+		if x.xxx_hidden_Rows != nil {
+			return *x.xxx_hidden_Rows
+		}
 	}
 	return nil
 }
 
 func (x *ResultSet) GetStats() *ResultSetStats {
 	if x != nil {
-		return x.Stats
+		return x.xxx_hidden_Stats
 	}
 	return nil
 }
 
 func (x *ResultSet) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
 	if x != nil {
-		return x.PrecommitToken
+		return x.xxx_hidden_PrecommitToken
 	}
 	return nil
 }
 
 func (x *ResultSet) GetCacheUpdate() *CacheUpdate {
 	if x != nil {
-		return x.CacheUpdate
+		return x.xxx_hidden_CacheUpdate
 	}
 	return nil
+}
+
+func (x *ResultSet) SetMetadata(v *ResultSetMetadata) {
+	x.xxx_hidden_Metadata = v
+}
+
+func (x *ResultSet) SetRows(v []*structpb.ListValue) {
+	x.xxx_hidden_Rows = &v
+}
+
+func (x *ResultSet) SetStats(v *ResultSetStats) {
+	x.xxx_hidden_Stats = v
+}
+
+func (x *ResultSet) SetPrecommitToken(v *MultiplexedSessionPrecommitToken) {
+	x.xxx_hidden_PrecommitToken = v
+}
+
+func (x *ResultSet) SetCacheUpdate(v *CacheUpdate) {
+	x.xxx_hidden_CacheUpdate = v
+}
+
+func (x *ResultSet) HasMetadata() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Metadata != nil
+}
+
+func (x *ResultSet) HasStats() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Stats != nil
+}
+
+func (x *ResultSet) HasPrecommitToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PrecommitToken != nil
+}
+
+func (x *ResultSet) HasCacheUpdate() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CacheUpdate != nil
+}
+
+func (x *ResultSet) ClearMetadata() {
+	x.xxx_hidden_Metadata = nil
+}
+
+func (x *ResultSet) ClearStats() {
+	x.xxx_hidden_Stats = nil
+}
+
+func (x *ResultSet) ClearPrecommitToken() {
+	x.xxx_hidden_PrecommitToken = nil
+}
+
+func (x *ResultSet) ClearCacheUpdate() {
+	x.xxx_hidden_CacheUpdate = nil
+}
+
+type ResultSet_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Metadata about the result set, such as row type information.
+	Metadata *ResultSetMetadata
+	// Each element in `rows` is a row whose format is defined by
+	// [metadata.row_type][google.spanner.v1.ResultSetMetadata.row_type]. The ith
+	// element in each row matches the ith field in
+	// [metadata.row_type][google.spanner.v1.ResultSetMetadata.row_type]. Elements
+	// are encoded based on type as described [here][google.spanner.v1.TypeCode].
+	Rows []*structpb.ListValue
+	// Query plan and execution statistics for the SQL statement that
+	// produced this result set. These can be requested by setting
+	// [ExecuteSqlRequest.query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode].
+	// DML statements always produce stats containing the number of rows
+	// modified, unless executed using the
+	// [ExecuteSqlRequest.QueryMode.PLAN][google.spanner.v1.ExecuteSqlRequest.QueryMode.PLAN]
+	// [ExecuteSqlRequest.query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode].
+	// Other fields might or might not be populated, based on the
+	// [ExecuteSqlRequest.query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode].
+	Stats *ResultSetStats
+	// Optional. A precommit token is included if the read-write transaction is on
+	// a multiplexed session. Pass the precommit token with the highest sequence
+	// number from this transaction attempt to the
+	// [Commit][google.spanner.v1.Spanner.Commit] request for this transaction.
+	PrecommitToken *MultiplexedSessionPrecommitToken
+	// Optional. A cache update expresses a set of changes the client should
+	// incorporate into its location cache. The client should discard the changes
+	// if they are older than the data it already has. This data can be obtained
+	// in response to requests that included a `RoutingHint` field, but may also
+	// be obtained by explicit location-fetching RPCs which may be added in the
+	// future.
+	CacheUpdate *CacheUpdate
+}
+
+func (b0 ResultSet_builder) Build() *ResultSet {
+	m0 := &ResultSet{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Metadata = b.Metadata
+	x.xxx_hidden_Rows = &b.Rows
+	x.xxx_hidden_Stats = b.Stats
+	x.xxx_hidden_PrecommitToken = b.PrecommitToken
+	x.xxx_hidden_CacheUpdate = b.CacheUpdate
+	return m0
 }
 
 // Partial results from a streaming read or SQL query. Streaming reads and
 // SQL queries better tolerate large result sets, large rows, and large
 // values, but are a little trickier to consume.
 type PartialResultSet struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
+	state                     protoimpl.MessageState            `protogen:"opaque.v1"`
+	xxx_hidden_Metadata       *ResultSetMetadata                `protobuf:"bytes,1,opt,name=metadata,proto3"`
+	xxx_hidden_Values         *[]*structpb.Value                `protobuf:"bytes,2,rep,name=values,proto3"`
+	xxx_hidden_ChunkedValue   bool                              `protobuf:"varint,3,opt,name=chunked_value,json=chunkedValue,proto3"`
+	xxx_hidden_ResumeToken    []byte                            `protobuf:"bytes,4,opt,name=resume_token,json=resumeToken,proto3"`
+	xxx_hidden_Stats          *ResultSetStats                   `protobuf:"bytes,5,opt,name=stats,proto3"`
+	xxx_hidden_PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,8,opt,name=precommit_token,json=precommitToken,proto3"`
+	xxx_hidden_Last           bool                              `protobuf:"varint,9,opt,name=last,proto3"`
+	xxx_hidden_CacheUpdate    *CacheUpdate                      `protobuf:"bytes,10,opt,name=cache_update,json=cacheUpdate,proto3"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
+}
+
+func (x *PartialResultSet) Reset() {
+	*x = PartialResultSet{}
+	mi := &file_google_spanner_v1_result_set_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *PartialResultSet) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*PartialResultSet) ProtoMessage() {}
+
+func (x *PartialResultSet) ProtoReflect() protoreflect.Message {
+	mi := &file_google_spanner_v1_result_set_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+func (x *PartialResultSet) GetMetadata() *ResultSetMetadata {
+	if x != nil {
+		return x.xxx_hidden_Metadata
+	}
+	return nil
+}
+
+func (x *PartialResultSet) GetValues() []*structpb.Value {
+	if x != nil {
+		if x.xxx_hidden_Values != nil {
+			return *x.xxx_hidden_Values
+		}
+	}
+	return nil
+}
+
+func (x *PartialResultSet) GetChunkedValue() bool {
+	if x != nil {
+		return x.xxx_hidden_ChunkedValue
+	}
+	return false
+}
+
+func (x *PartialResultSet) GetResumeToken() []byte {
+	if x != nil {
+		return x.xxx_hidden_ResumeToken
+	}
+	return nil
+}
+
+func (x *PartialResultSet) GetStats() *ResultSetStats {
+	if x != nil {
+		return x.xxx_hidden_Stats
+	}
+	return nil
+}
+
+func (x *PartialResultSet) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
+	if x != nil {
+		return x.xxx_hidden_PrecommitToken
+	}
+	return nil
+}
+
+func (x *PartialResultSet) GetLast() bool {
+	if x != nil {
+		return x.xxx_hidden_Last
+	}
+	return false
+}
+
+func (x *PartialResultSet) GetCacheUpdate() *CacheUpdate {
+	if x != nil {
+		return x.xxx_hidden_CacheUpdate
+	}
+	return nil
+}
+
+func (x *PartialResultSet) SetMetadata(v *ResultSetMetadata) {
+	x.xxx_hidden_Metadata = v
+}
+
+func (x *PartialResultSet) SetValues(v []*structpb.Value) {
+	x.xxx_hidden_Values = &v
+}
+
+func (x *PartialResultSet) SetChunkedValue(v bool) {
+	x.xxx_hidden_ChunkedValue = v
+}
+
+func (x *PartialResultSet) SetResumeToken(v []byte) {
+	if v == nil {
+		v = []byte{}
+	}
+	x.xxx_hidden_ResumeToken = v
+}
+
+func (x *PartialResultSet) SetStats(v *ResultSetStats) {
+	x.xxx_hidden_Stats = v
+}
+
+func (x *PartialResultSet) SetPrecommitToken(v *MultiplexedSessionPrecommitToken) {
+	x.xxx_hidden_PrecommitToken = v
+}
+
+func (x *PartialResultSet) SetLast(v bool) {
+	x.xxx_hidden_Last = v
+}
+
+func (x *PartialResultSet) SetCacheUpdate(v *CacheUpdate) {
+	x.xxx_hidden_CacheUpdate = v
+}
+
+func (x *PartialResultSet) HasMetadata() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Metadata != nil
+}
+
+func (x *PartialResultSet) HasStats() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Stats != nil
+}
+
+func (x *PartialResultSet) HasPrecommitToken() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_PrecommitToken != nil
+}
+
+func (x *PartialResultSet) HasCacheUpdate() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_CacheUpdate != nil
+}
+
+func (x *PartialResultSet) ClearMetadata() {
+	x.xxx_hidden_Metadata = nil
+}
+
+func (x *PartialResultSet) ClearStats() {
+	x.xxx_hidden_Stats = nil
+}
+
+func (x *PartialResultSet) ClearPrecommitToken() {
+	x.xxx_hidden_PrecommitToken = nil
+}
+
+func (x *PartialResultSet) ClearCacheUpdate() {
+	x.xxx_hidden_CacheUpdate = nil
+}
+
+type PartialResultSet_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
 	// Metadata about the result set, such as row type information.
 	// Only present in the first response.
-	Metadata *ResultSetMetadata `protobuf:"bytes,1,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	Metadata *ResultSetMetadata
 	// A streamed result set consists of a stream of values, which might
 	// be split into many `PartialResultSet` messages to accommodate
 	// large rows and/or large values. Every N complete values defines a
@@ -227,159 +486,66 @@ type PartialResultSet struct {
 	// resumed from a previously yielded `resume_token`. For the above sequence of
 	// `PartialResultSet`s, resuming the query with `"resume_token": "Af65..."`
 	// yields results from the `PartialResultSet` with value "orl".
-	Values []*structpb.Value `protobuf:"bytes,2,rep,name=values,proto3" json:"values,omitempty"`
+	Values []*structpb.Value
 	// If true, then the final value in
 	// [values][google.spanner.v1.PartialResultSet.values] is chunked, and must be
 	// combined with more values from subsequent `PartialResultSet`s to obtain a
 	// complete field value.
-	ChunkedValue bool `protobuf:"varint,3,opt,name=chunked_value,json=chunkedValue,proto3" json:"chunked_value,omitempty"`
+	ChunkedValue bool
 	// Streaming calls might be interrupted for a variety of reasons, such
 	// as TCP connection loss. If this occurs, the stream of results can
 	// be resumed by re-sending the original request and including
 	// `resume_token`. Note that executing any other transaction in the
 	// same session invalidates the token.
-	ResumeToken []byte `protobuf:"bytes,4,opt,name=resume_token,json=resumeToken,proto3" json:"resume_token,omitempty"`
+	ResumeToken []byte
 	// Query plan and execution statistics for the statement that produced this
 	// streaming result set. These can be requested by setting
 	// [ExecuteSqlRequest.query_mode][google.spanner.v1.ExecuteSqlRequest.query_mode]
 	// and are sent only once with the last response in the stream. This field is
 	// also present in the last response for DML statements.
-	Stats *ResultSetStats `protobuf:"bytes,5,opt,name=stats,proto3" json:"stats,omitempty"`
+	Stats *ResultSetStats
 	// Optional. A precommit token is included if the read-write transaction
 	// has multiplexed sessions enabled. Pass the precommit token with the highest
 	// sequence number from this transaction attempt to the
 	// [Commit][google.spanner.v1.Spanner.Commit] request for this transaction.
-	PrecommitToken *MultiplexedSessionPrecommitToken `protobuf:"bytes,8,opt,name=precommit_token,json=precommitToken,proto3" json:"precommit_token,omitempty"`
+	PrecommitToken *MultiplexedSessionPrecommitToken
 	// Optional. Indicates whether this is the last `PartialResultSet` in the
 	// stream. The server might optionally set this field. Clients shouldn't rely
 	// on this field being set in all cases.
-	Last bool `protobuf:"varint,9,opt,name=last,proto3" json:"last,omitempty"`
+	Last bool
 	// Optional. A cache update expresses a set of changes the client should
 	// incorporate into its location cache. The client should discard the changes
 	// if they are older than the data it already has. This data can be obtained
 	// in response to requests that included a `RoutingHint` field, but may also
 	// be obtained by explicit location-fetching RPCs which may be added in the
 	// future.
-	CacheUpdate   *CacheUpdate `protobuf:"bytes,10,opt,name=cache_update,json=cacheUpdate,proto3" json:"cache_update,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	CacheUpdate *CacheUpdate
 }
 
-func (x *PartialResultSet) Reset() {
-	*x = PartialResultSet{}
-	mi := &file_google_spanner_v1_result_set_proto_msgTypes[1]
-	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-	ms.StoreMessageInfo(mi)
-}
-
-func (x *PartialResultSet) String() string {
-	return protoimpl.X.MessageStringOf(x)
-}
-
-func (*PartialResultSet) ProtoMessage() {}
-
-func (x *PartialResultSet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_spanner_v1_result_set_proto_msgTypes[1]
-	if x != nil {
-		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
-		if ms.LoadMessageInfo() == nil {
-			ms.StoreMessageInfo(mi)
-		}
-		return ms
-	}
-	return mi.MessageOf(x)
-}
-
-// Deprecated: Use PartialResultSet.ProtoReflect.Descriptor instead.
-func (*PartialResultSet) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_result_set_proto_rawDescGZIP(), []int{1}
-}
-
-func (x *PartialResultSet) GetMetadata() *ResultSetMetadata {
-	if x != nil {
-		return x.Metadata
-	}
-	return nil
-}
-
-func (x *PartialResultSet) GetValues() []*structpb.Value {
-	if x != nil {
-		return x.Values
-	}
-	return nil
-}
-
-func (x *PartialResultSet) GetChunkedValue() bool {
-	if x != nil {
-		return x.ChunkedValue
-	}
-	return false
-}
-
-func (x *PartialResultSet) GetResumeToken() []byte {
-	if x != nil {
-		return x.ResumeToken
-	}
-	return nil
-}
-
-func (x *PartialResultSet) GetStats() *ResultSetStats {
-	if x != nil {
-		return x.Stats
-	}
-	return nil
-}
-
-func (x *PartialResultSet) GetPrecommitToken() *MultiplexedSessionPrecommitToken {
-	if x != nil {
-		return x.PrecommitToken
-	}
-	return nil
-}
-
-func (x *PartialResultSet) GetLast() bool {
-	if x != nil {
-		return x.Last
-	}
-	return false
-}
-
-func (x *PartialResultSet) GetCacheUpdate() *CacheUpdate {
-	if x != nil {
-		return x.CacheUpdate
-	}
-	return nil
+func (b0 PartialResultSet_builder) Build() *PartialResultSet {
+	m0 := &PartialResultSet{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_Metadata = b.Metadata
+	x.xxx_hidden_Values = &b.Values
+	x.xxx_hidden_ChunkedValue = b.ChunkedValue
+	x.xxx_hidden_ResumeToken = b.ResumeToken
+	x.xxx_hidden_Stats = b.Stats
+	x.xxx_hidden_PrecommitToken = b.PrecommitToken
+	x.xxx_hidden_Last = b.Last
+	x.xxx_hidden_CacheUpdate = b.CacheUpdate
+	return m0
 }
 
 // Metadata about a [ResultSet][google.spanner.v1.ResultSet] or
 // [PartialResultSet][google.spanner.v1.PartialResultSet].
 type ResultSetMetadata struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// Indicates the field names and types for the rows in the result
-	// set. For example, a SQL query like `"SELECT UserId, UserName FROM
-	// Users"` could return a `row_type` value like:
-	//
-	//	"fields": [
-	//	  { "name": "UserId", "type": { "code": "INT64" } },
-	//	  { "name": "UserName", "type": { "code": "STRING" } },
-	//	]
-	RowType *StructType `protobuf:"bytes,1,opt,name=row_type,json=rowType,proto3" json:"row_type,omitempty"`
-	// If the read or SQL query began a transaction as a side-effect, the
-	// information about the new transaction is yielded here.
-	Transaction *Transaction `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	// A SQL query can be parameterized. In PLAN mode, these parameters can be
-	// undeclared. This indicates the field names and types for those undeclared
-	// parameters in the SQL query. For example, a SQL query like `"SELECT * FROM
-	// Users where UserId = @userId and UserName = @userName "` could return a
-	// `undeclared_parameters` value like:
-	//
-	//	"fields": [
-	//	  { "name": "UserId", "type": { "code": "INT64" } },
-	//	  { "name": "UserName", "type": { "code": "STRING" } },
-	//	]
-	UndeclaredParameters *StructType `protobuf:"bytes,3,opt,name=undeclared_parameters,json=undeclaredParameters,proto3" json:"undeclared_parameters,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	state                           protoimpl.MessageState `protogen:"opaque.v1"`
+	xxx_hidden_RowType              *StructType            `protobuf:"bytes,1,opt,name=row_type,json=rowType,proto3"`
+	xxx_hidden_Transaction          *Transaction           `protobuf:"bytes,2,opt,name=transaction,proto3"`
+	xxx_hidden_UndeclaredParameters *StructType            `protobuf:"bytes,3,opt,name=undeclared_parameters,json=undeclaredParameters,proto3"`
+	unknownFields                   protoimpl.UnknownFields
+	sizeCache                       protoimpl.SizeCache
 }
 
 func (x *ResultSetMetadata) Reset() {
@@ -407,58 +573,119 @@ func (x *ResultSetMetadata) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ResultSetMetadata.ProtoReflect.Descriptor instead.
-func (*ResultSetMetadata) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_result_set_proto_rawDescGZIP(), []int{2}
-}
-
 func (x *ResultSetMetadata) GetRowType() *StructType {
 	if x != nil {
-		return x.RowType
+		return x.xxx_hidden_RowType
 	}
 	return nil
 }
 
 func (x *ResultSetMetadata) GetTransaction() *Transaction {
 	if x != nil {
-		return x.Transaction
+		return x.xxx_hidden_Transaction
 	}
 	return nil
 }
 
 func (x *ResultSetMetadata) GetUndeclaredParameters() *StructType {
 	if x != nil {
-		return x.UndeclaredParameters
+		return x.xxx_hidden_UndeclaredParameters
 	}
 	return nil
+}
+
+func (x *ResultSetMetadata) SetRowType(v *StructType) {
+	x.xxx_hidden_RowType = v
+}
+
+func (x *ResultSetMetadata) SetTransaction(v *Transaction) {
+	x.xxx_hidden_Transaction = v
+}
+
+func (x *ResultSetMetadata) SetUndeclaredParameters(v *StructType) {
+	x.xxx_hidden_UndeclaredParameters = v
+}
+
+func (x *ResultSetMetadata) HasRowType() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RowType != nil
+}
+
+func (x *ResultSetMetadata) HasTransaction() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_Transaction != nil
+}
+
+func (x *ResultSetMetadata) HasUndeclaredParameters() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_UndeclaredParameters != nil
+}
+
+func (x *ResultSetMetadata) ClearRowType() {
+	x.xxx_hidden_RowType = nil
+}
+
+func (x *ResultSetMetadata) ClearTransaction() {
+	x.xxx_hidden_Transaction = nil
+}
+
+func (x *ResultSetMetadata) ClearUndeclaredParameters() {
+	x.xxx_hidden_UndeclaredParameters = nil
+}
+
+type ResultSetMetadata_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// Indicates the field names and types for the rows in the result
+	// set. For example, a SQL query like `"SELECT UserId, UserName FROM
+	// Users"` could return a `row_type` value like:
+	//
+	//	"fields": [
+	//	  { "name": "UserId", "type": { "code": "INT64" } },
+	//	  { "name": "UserName", "type": { "code": "STRING" } },
+	//	]
+	RowType *StructType
+	// If the read or SQL query began a transaction as a side-effect, the
+	// information about the new transaction is yielded here.
+	Transaction *Transaction
+	// A SQL query can be parameterized. In PLAN mode, these parameters can be
+	// undeclared. This indicates the field names and types for those undeclared
+	// parameters in the SQL query. For example, a SQL query like `"SELECT * FROM
+	// Users where UserId = @userId and UserName = @userName "` could return a
+	// `undeclared_parameters` value like:
+	//
+	//	"fields": [
+	//	  { "name": "UserId", "type": { "code": "INT64" } },
+	//	  { "name": "UserName", "type": { "code": "STRING" } },
+	//	]
+	UndeclaredParameters *StructType
+}
+
+func (b0 ResultSetMetadata_builder) Build() *ResultSetMetadata {
+	m0 := &ResultSetMetadata{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_RowType = b.RowType
+	x.xxx_hidden_Transaction = b.Transaction
+	x.xxx_hidden_UndeclaredParameters = b.UndeclaredParameters
+	return m0
 }
 
 // Additional statistics about a [ResultSet][google.spanner.v1.ResultSet] or
 // [PartialResultSet][google.spanner.v1.PartialResultSet].
 type ResultSetStats struct {
-	state protoimpl.MessageState `protogen:"open.v1"`
-	// [QueryPlan][google.spanner.v1.QueryPlan] for the query associated with this
-	// result.
-	QueryPlan *QueryPlan `protobuf:"bytes,1,opt,name=query_plan,json=queryPlan,proto3" json:"query_plan,omitempty"`
-	// Aggregated statistics from the execution of the query. Only present when
-	// the query is profiled. For example, a query could return the statistics as
-	// follows:
-	//
-	//	{
-	//	  "rows_returned": "3",
-	//	  "elapsed_time": "1.22 secs",
-	//	  "cpu_time": "1.19 secs"
-	//	}
-	QueryStats *structpb.Struct `protobuf:"bytes,2,opt,name=query_stats,json=queryStats,proto3" json:"query_stats,omitempty"`
-	// The number of rows modified by the DML statement.
-	//
-	// Types that are valid to be assigned to RowCount:
-	//
-	//	*ResultSetStats_RowCountExact
-	//	*ResultSetStats_RowCountLowerBound
-	RowCount      isResultSetStats_RowCount `protobuf_oneof:"row_count"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state                 protoimpl.MessageState    `protogen:"opaque.v1"`
+	xxx_hidden_QueryPlan  *QueryPlan                `protobuf:"bytes,1,opt,name=query_plan,json=queryPlan,proto3"`
+	xxx_hidden_QueryStats *structpb.Struct          `protobuf:"bytes,2,opt,name=query_stats,json=queryStats,proto3"`
+	xxx_hidden_RowCount   isResultSetStats_RowCount `protobuf_oneof:"row_count"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *ResultSetStats) Reset() {
@@ -486,35 +713,23 @@ func (x *ResultSetStats) ProtoReflect() protoreflect.Message {
 	return mi.MessageOf(x)
 }
 
-// Deprecated: Use ResultSetStats.ProtoReflect.Descriptor instead.
-func (*ResultSetStats) Descriptor() ([]byte, []int) {
-	return file_google_spanner_v1_result_set_proto_rawDescGZIP(), []int{3}
-}
-
 func (x *ResultSetStats) GetQueryPlan() *QueryPlan {
 	if x != nil {
-		return x.QueryPlan
+		return x.xxx_hidden_QueryPlan
 	}
 	return nil
 }
 
 func (x *ResultSetStats) GetQueryStats() *structpb.Struct {
 	if x != nil {
-		return x.QueryStats
-	}
-	return nil
-}
-
-func (x *ResultSetStats) GetRowCount() isResultSetStats_RowCount {
-	if x != nil {
-		return x.RowCount
+		return x.xxx_hidden_QueryStats
 	}
 	return nil
 }
 
 func (x *ResultSetStats) GetRowCountExact() int64 {
 	if x != nil {
-		if x, ok := x.RowCount.(*ResultSetStats_RowCountExact); ok {
+		if x, ok := x.xxx_hidden_RowCount.(*resultSetStats_RowCountExact); ok {
 			return x.RowCountExact
 		}
 	}
@@ -523,31 +738,178 @@ func (x *ResultSetStats) GetRowCountExact() int64 {
 
 func (x *ResultSetStats) GetRowCountLowerBound() int64 {
 	if x != nil {
-		if x, ok := x.RowCount.(*ResultSetStats_RowCountLowerBound); ok {
+		if x, ok := x.xxx_hidden_RowCount.(*resultSetStats_RowCountLowerBound); ok {
 			return x.RowCountLowerBound
 		}
 	}
 	return 0
 }
 
+func (x *ResultSetStats) SetQueryPlan(v *QueryPlan) {
+	x.xxx_hidden_QueryPlan = v
+}
+
+func (x *ResultSetStats) SetQueryStats(v *structpb.Struct) {
+	x.xxx_hidden_QueryStats = v
+}
+
+func (x *ResultSetStats) SetRowCountExact(v int64) {
+	x.xxx_hidden_RowCount = &resultSetStats_RowCountExact{v}
+}
+
+func (x *ResultSetStats) SetRowCountLowerBound(v int64) {
+	x.xxx_hidden_RowCount = &resultSetStats_RowCountLowerBound{v}
+}
+
+func (x *ResultSetStats) HasQueryPlan() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_QueryPlan != nil
+}
+
+func (x *ResultSetStats) HasQueryStats() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_QueryStats != nil
+}
+
+func (x *ResultSetStats) HasRowCount() bool {
+	if x == nil {
+		return false
+	}
+	return x.xxx_hidden_RowCount != nil
+}
+
+func (x *ResultSetStats) HasRowCountExact() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_RowCount.(*resultSetStats_RowCountExact)
+	return ok
+}
+
+func (x *ResultSetStats) HasRowCountLowerBound() bool {
+	if x == nil {
+		return false
+	}
+	_, ok := x.xxx_hidden_RowCount.(*resultSetStats_RowCountLowerBound)
+	return ok
+}
+
+func (x *ResultSetStats) ClearQueryPlan() {
+	x.xxx_hidden_QueryPlan = nil
+}
+
+func (x *ResultSetStats) ClearQueryStats() {
+	x.xxx_hidden_QueryStats = nil
+}
+
+func (x *ResultSetStats) ClearRowCount() {
+	x.xxx_hidden_RowCount = nil
+}
+
+func (x *ResultSetStats) ClearRowCountExact() {
+	if _, ok := x.xxx_hidden_RowCount.(*resultSetStats_RowCountExact); ok {
+		x.xxx_hidden_RowCount = nil
+	}
+}
+
+func (x *ResultSetStats) ClearRowCountLowerBound() {
+	if _, ok := x.xxx_hidden_RowCount.(*resultSetStats_RowCountLowerBound); ok {
+		x.xxx_hidden_RowCount = nil
+	}
+}
+
+const ResultSetStats_RowCount_not_set_case case_ResultSetStats_RowCount = 0
+const ResultSetStats_RowCountExact_case case_ResultSetStats_RowCount = 3
+const ResultSetStats_RowCountLowerBound_case case_ResultSetStats_RowCount = 4
+
+func (x *ResultSetStats) WhichRowCount() case_ResultSetStats_RowCount {
+	if x == nil {
+		return ResultSetStats_RowCount_not_set_case
+	}
+	switch x.xxx_hidden_RowCount.(type) {
+	case *resultSetStats_RowCountExact:
+		return ResultSetStats_RowCountExact_case
+	case *resultSetStats_RowCountLowerBound:
+		return ResultSetStats_RowCountLowerBound_case
+	default:
+		return ResultSetStats_RowCount_not_set_case
+	}
+}
+
+type ResultSetStats_builder struct {
+	_ [0]func() // Prevents comparability and use of unkeyed literals for the builder.
+
+	// [QueryPlan][google.spanner.v1.QueryPlan] for the query associated with this
+	// result.
+	QueryPlan *QueryPlan
+	// Aggregated statistics from the execution of the query. Only present when
+	// the query is profiled. For example, a query could return the statistics as
+	// follows:
+	//
+	//	{
+	//	  "rows_returned": "3",
+	//	  "elapsed_time": "1.22 secs",
+	//	  "cpu_time": "1.19 secs"
+	//	}
+	QueryStats *structpb.Struct
+	// The number of rows modified by the DML statement.
+
+	// Fields of oneof xxx_hidden_RowCount:
+	// Standard DML returns an exact count of rows that were modified.
+	RowCountExact *int64
+	// Partitioned DML doesn't offer exactly-once semantics, so it
+	// returns a lower bound of the rows modified.
+	RowCountLowerBound *int64
+	// -- end of xxx_hidden_RowCount
+}
+
+func (b0 ResultSetStats_builder) Build() *ResultSetStats {
+	m0 := &ResultSetStats{}
+	b, x := &b0, m0
+	_, _ = b, x
+	x.xxx_hidden_QueryPlan = b.QueryPlan
+	x.xxx_hidden_QueryStats = b.QueryStats
+	if b.RowCountExact != nil {
+		x.xxx_hidden_RowCount = &resultSetStats_RowCountExact{*b.RowCountExact}
+	}
+	if b.RowCountLowerBound != nil {
+		x.xxx_hidden_RowCount = &resultSetStats_RowCountLowerBound{*b.RowCountLowerBound}
+	}
+	return m0
+}
+
+type case_ResultSetStats_RowCount protoreflect.FieldNumber
+
+func (x case_ResultSetStats_RowCount) String() string {
+	md := file_google_spanner_v1_result_set_proto_msgTypes[3].Descriptor()
+	if x == 0 {
+		return "not set"
+	}
+	return protoimpl.X.MessageFieldStringOf(md, protoreflect.FieldNumber(x))
+}
+
 type isResultSetStats_RowCount interface {
 	isResultSetStats_RowCount()
 }
 
-type ResultSetStats_RowCountExact struct {
+type resultSetStats_RowCountExact struct {
 	// Standard DML returns an exact count of rows that were modified.
 	RowCountExact int64 `protobuf:"varint,3,opt,name=row_count_exact,json=rowCountExact,proto3,oneof"`
 }
 
-type ResultSetStats_RowCountLowerBound struct {
+type resultSetStats_RowCountLowerBound struct {
 	// Partitioned DML doesn't offer exactly-once semantics, so it
 	// returns a lower bound of the rows modified.
 	RowCountLowerBound int64 `protobuf:"varint,4,opt,name=row_count_lower_bound,json=rowCountLowerBound,proto3,oneof"`
 }
 
-func (*ResultSetStats_RowCountExact) isResultSetStats_RowCount() {}
+func (*resultSetStats_RowCountExact) isResultSetStats_RowCount() {}
 
-func (*ResultSetStats_RowCountLowerBound) isResultSetStats_RowCount() {}
+func (*resultSetStats_RowCountLowerBound) isResultSetStats_RowCount() {}
 
 var File_google_spanner_v1_result_set_proto protoreflect.FileDescriptor
 
@@ -583,18 +945,6 @@ const file_google_spanner_v1_result_set_proto_rawDesc = "" +
 	"\x15row_count_lower_bound\x18\x04 \x01(\x03H\x00R\x12rowCountLowerBoundB\v\n" +
 	"\trow_countB\xb1\x01\n" +
 	"\x15com.google.spanner.v1B\x0eResultSetProtoP\x01Z5cloud.google.com/go/spanner/apiv1/spannerpb;spannerpb\xaa\x02\x17Google.Cloud.Spanner.V1\xca\x02\x17Google\\Cloud\\Spanner\\V1\xea\x02\x1aGoogle::Cloud::Spanner::V1b\x06proto3"
-
-var (
-	file_google_spanner_v1_result_set_proto_rawDescOnce sync.Once
-	file_google_spanner_v1_result_set_proto_rawDescData []byte
-)
-
-func file_google_spanner_v1_result_set_proto_rawDescGZIP() []byte {
-	file_google_spanner_v1_result_set_proto_rawDescOnce.Do(func() {
-		file_google_spanner_v1_result_set_proto_rawDescData = protoimpl.X.CompressGZIP(unsafe.Slice(unsafe.StringData(file_google_spanner_v1_result_set_proto_rawDesc), len(file_google_spanner_v1_result_set_proto_rawDesc)))
-	})
-	return file_google_spanner_v1_result_set_proto_rawDescData
-}
 
 var file_google_spanner_v1_result_set_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_spanner_v1_result_set_proto_goTypes = []any{
@@ -644,8 +994,8 @@ func file_google_spanner_v1_result_set_proto_init() {
 	file_google_spanner_v1_transaction_proto_init()
 	file_google_spanner_v1_type_proto_init()
 	file_google_spanner_v1_result_set_proto_msgTypes[3].OneofWrappers = []any{
-		(*ResultSetStats_RowCountExact)(nil),
-		(*ResultSetStats_RowCountLowerBound)(nil),
+		(*resultSetStats_RowCountExact)(nil),
+		(*resultSetStats_RowCountLowerBound)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
