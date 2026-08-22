@@ -715,7 +715,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 // tryRecv attempts to receive a PartialResultSet from gRPC stream.
 func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer) {
 	var res *sppb.PartialResultSet
-	res, d.err = d.stream.Recv()
+	res, d.err = recvPartialResultSet(d.stream)
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
