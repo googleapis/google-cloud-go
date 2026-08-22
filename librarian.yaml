@@ -1323,6 +1323,7 @@ libraries:
             - F_export_set_google_client_info
           no_metadata: true
           no_snippets: true
+          proto_api_level: API_OPAQUE
       - path: google/spanner/adapter/v1
         go:
           no_snippets: true
