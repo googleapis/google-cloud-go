@@ -71,10 +71,11 @@ type DynamicChannelPoolConfig struct {
 	// DCPMinRPCPerChannel is the low-load threshold used by scale-down checks.
 	DCPMinRPCPerChannel float64
 	// DCPErrorPenaltyStep is the picker load added for each qualifying error. Zero
-	// defaults to 5. One transient error therefore biases selection only slightly;
-	// repeated errors within the penalty window accumulate up to
-	// ceil(DCPMaxRPCPerChannel), so a persistently failing channel looks exactly as
-	// busy as a full one.
+	// defaults to 5, or to ceil(DCPMaxRPCPerChannel) when that is smaller. An
+	// explicitly set step must not exceed ceil(DCPMaxRPCPerChannel). One transient
+	// error therefore biases selection only slightly; repeated errors within the
+	// penalty window accumulate up to ceil(DCPMaxRPCPerChannel), so a persistently
+	// failing channel looks exactly as busy as a full one.
 	DCPErrorPenaltyStep int32
 	// DCPErrorPenaltyDuration controls the penalty window. Every qualifying error
 	// restarts the window, and the accumulated penalty expires to zero when it
@@ -139,7 +140,7 @@ func normalizeDCPConfig(cfg DynamicChannelPoolConfig) (DynamicChannelPoolConfig,
 		cfg.DCPMinRPCPerChannel = def.DCPMinRPCPerChannel
 	}
 	if cfg.DCPErrorPenaltyStep == 0 {
-		cfg.DCPErrorPenaltyStep = def.DCPErrorPenaltyStep
+		cfg.DCPErrorPenaltyStep = min(def.DCPErrorPenaltyStep, int32(math.Ceil(cfg.DCPMaxRPCPerChannel)))
 	}
 	if cfg.DCPErrorPenaltyDuration == 0 {
 		cfg.DCPErrorPenaltyDuration = def.DCPErrorPenaltyDuration

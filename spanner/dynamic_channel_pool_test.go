@@ -1592,6 +1592,30 @@ func TestDCPErrorPenaltyCapFollowsMaxRPCFromDefaultConfig(t *testing.T) {
 }
 
 func TestDynamicChannelPoolErrorPenaltyConfigNormalization(t *testing.T) {
+	t.Run("zero step clamps to derived cap", func(t *testing.T) {
+		cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{
+			DCPMaxRPCPerChannel: 3,
+			DCPMinRPCPerChannel: 2,
+		})
+		if err != nil {
+			t.Fatalf("normalizeDCPConfig() failed: %v", err)
+		}
+		if got, want := cfg.DCPErrorPenaltyStep, int32(3); got != want {
+			t.Fatalf("DCPErrorPenaltyStep = %d, want derived cap %d", got, want)
+		}
+		p := &dynamicChannelPool{cfg: cfg, penaltyMax: 3}
+		e := &dcpEntry{parent: p}
+		errUnavailable := status.Error(codes.Unavailable, "unavailable")
+		e.applyErrorPenalty(errUnavailable)
+		if got, want := e.currentPenalty(), int32(3); got != want {
+			t.Fatalf("penalty after one error = %d, want cap %d", got, want)
+		}
+		e.applyErrorPenalty(errUnavailable)
+		if got, want := e.currentPenalty(), int32(3); got != want {
+			t.Fatalf("penalty after second error = %d, want capped at %d", got, want)
+		}
+	})
+
 	t.Run("zero uses defaults", func(t *testing.T) {
 		cfg, err := normalizeDCPConfig(DynamicChannelPoolConfig{DCPMaxRPCPerChannel: 25.1})
 		if err != nil {
