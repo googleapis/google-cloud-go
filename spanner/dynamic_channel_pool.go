@@ -217,7 +217,7 @@ type dynamicChannelPool struct {
 	rrIndex          atomic.Uint64
 	nextID           atomic.Uint64
 	totalRPCLoad     atomic.Int32
-	totalPenaltyLoad atomic.Int32
+	totalPenaltyLoad atomic.Int64
 	dialMu           sync.Mutex
 	lastScaleUp      atomic.Int64
 	scaleUpSignal    chan struct{}
@@ -944,7 +944,7 @@ func (e *dcpEntry) applyErrorPenalty(err error) {
 	}
 	e.penaltyLoad.Store(load)
 	e.penaltyExpiry.Store(now.Add(e.parent.cfg.DCPErrorPenaltyDuration).UnixNano())
-	e.parent.totalPenaltyLoad.Add(load - oldContribution)
+	e.parent.totalPenaltyLoad.Add(int64(load - oldContribution))
 }
 
 // currentPenalty returns active accumulated error load and lazily clears an
@@ -968,7 +968,7 @@ func (e *dcpEntry) currentPenalty() int32 {
 	}
 	// Leave penaltyLoad intact; expiry alone gates whether load is used.
 	e.penaltyExpiry.Store(0)
-	e.parent.totalPenaltyLoad.Add(-e.penaltyLoad.Load())
+	e.parent.totalPenaltyLoad.Add(-int64(e.penaltyLoad.Load()))
 	return 0
 }
 
@@ -978,7 +978,7 @@ func (e *dcpEntry) clearErrorPenalty() {
 	e.penaltyMu.Lock()
 	defer e.penaltyMu.Unlock()
 	if e.penaltyExpiry.Swap(0) != 0 {
-		e.parent.totalPenaltyLoad.Add(-e.penaltyLoad.Load())
+		e.parent.totalPenaltyLoad.Add(-int64(e.penaltyLoad.Load()))
 	}
 }
 

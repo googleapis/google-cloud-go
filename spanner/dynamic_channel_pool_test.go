@@ -19,6 +19,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"math"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -1136,7 +1137,7 @@ func TestDCPErrorPenaltyAggregateAppliesCappedDeltas(t *testing.T) {
 
 	first.applyErrorPenalty(errUnavailable)
 	second.applyErrorPenalty(errUnavailable)
-	if got, want := p.totalPenaltyLoad.Load(), int32(10); got != want {
+	if got, want := p.totalPenaltyLoad.Load(), int64(10); got != want {
 		t.Fatalf("total penalty after two entries = %d, want %d", got, want)
 	}
 	first.applyErrorPenalty(errUnavailable)
@@ -1145,8 +1146,23 @@ func TestDCPErrorPenaltyAggregateAppliesCappedDeltas(t *testing.T) {
 	if got, want := first.currentPenalty(), int32(12); got != want {
 		t.Fatalf("first entry penalty at cap = %d, want %d", got, want)
 	}
-	if got, want := p.totalPenaltyLoad.Load(), int32(17); got != want {
+	if got, want := p.totalPenaltyLoad.Load(), int64(17); got != want {
 		t.Fatalf("total penalty after capped increments = %d, want %d", got, want)
+	}
+}
+
+func TestDCPErrorPenaltyAggregateDoesNotOverflowInt32(t *testing.T) {
+	p := &dynamicChannelPool{penaltyMax: math.MaxInt32, cfg: DynamicChannelPoolConfig{
+		DCPErrorPenaltyStep:     math.MaxInt32,
+		DCPErrorPenaltyDuration: time.Hour,
+	}}
+	errUnavailable := status.Error(codes.Unavailable, "unavailable")
+	for range 2 {
+		e := &dcpEntry{parent: p}
+		e.applyErrorPenalty(errUnavailable)
+	}
+	if got, want := int64(p.totalPenaltyLoad.Load()), int64(2*math.MaxInt32); got != want {
+		t.Fatalf("total penalty = %d, want %d", got, want)
 	}
 }
 
@@ -1232,7 +1248,7 @@ func TestDCPCurrentPenaltyAfterNewWindow(t *testing.T) {
 	}
 	// A unit test cannot observe the atomic update's transient states, but this
 	// pins its net-delta contract: replace the old counted contribution with new.
-	if got, want := p.totalPenaltyLoad.Load(), int32(5); got != want {
+	if got, want := p.totalPenaltyLoad.Load(), int64(5); got != want {
 		t.Fatalf("total penalty after new window = %d, want net contribution %d", got, want)
 	}
 }
@@ -1484,7 +1500,7 @@ func TestDCPErrorPenaltyAffectsScaleUp(t *testing.T) {
 				p.totalRPCLoad.Add(load)
 			}
 			for _, penalty := range test.penalties {
-				p.totalPenaltyLoad.Add(penalty)
+				p.totalPenaltyLoad.Add(int64(penalty))
 			}
 			p.maybeSignalScaleUp(entries[test.selected])
 			select {
