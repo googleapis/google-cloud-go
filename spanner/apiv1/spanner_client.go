@@ -1061,12 +1061,12 @@ func (c *gRPCClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*spannerpb.Session, string, error) {
 		resp := &spannerpb.ListSessionsResponse{}
 		if pageToken != "" {
-			req.PageToken = pageToken
+			req.SetPageToken(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
+			req.SetPageSize(math.MaxInt32)
 		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
+			req.SetPageSize(int32(pageSize))
 		}
 		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 			var err error
@@ -1622,12 +1622,12 @@ func (c *restClient) ListSessions(ctx context.Context, req *spannerpb.ListSessio
 	it.InternalFetch = func(pageSize int, pageToken string) ([]*spannerpb.Session, string, error) {
 		resp := &spannerpb.ListSessionsResponse{}
 		if pageToken != "" {
-			req.PageToken = pageToken
+			req.SetPageToken(pageToken)
 		}
 		if pageSize > math.MaxInt32 {
-			req.PageSize = math.MaxInt32
+			req.SetPageSize(math.MaxInt32)
 		} else if pageSize != 0 {
-			req.PageSize = int32(pageSize)
+			req.SetPageSize(int32(pageSize))
 		}
 		baseUrl, err := url.Parse(c.endpoint)
 		if err != nil {
