@@ -153,3 +153,30 @@ func TestEndpointLatencyRegistryCleanupEvictsLeastRecentlyAccessedWhenBounded(t 
 		t.Fatal("expected newly added tracker 3 to exist")
 	}
 }
+
+func TestEndpointLatencyRegistryRateLimitsCleanupWhenOverLimit(t *testing.T) {
+	now := time.Unix(3_000, 0)
+	registry := newEndpointLatencyRegistry(func() time.Time { return now })
+	registry.maxTrackers = 2
+
+	registry.recordLatency(1, false, "server-a:443", 10*time.Millisecond)
+	registry.recordLatency(2, false, "server-b:443", 10*time.Millisecond)
+	registry.recordLatency(3, false, "server-c:443", 10*time.Millisecond)
+
+	registry.mu.RLock()
+	trackerCount := len(registry.trackers)
+	registry.mu.RUnlock()
+	if trackerCount != 3 {
+		t.Fatalf("tracker count before cleanup interval = %d, want 3", trackerCount)
+	}
+
+	now = now.Add(registry.cleanupInterval)
+	registry.recordLatency(4, false, "server-d:443", 10*time.Millisecond)
+
+	registry.mu.RLock()
+	trackerCount = len(registry.trackers)
+	registry.mu.RUnlock()
+	if trackerCount != registry.maxTrackers {
+		t.Fatalf("tracker count after cleanup interval = %d, want %d", trackerCount, registry.maxTrackers)
+	}
+}

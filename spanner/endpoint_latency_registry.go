@@ -111,7 +111,9 @@ func (r *endpointLatencyRegistry) hasScore(operationUID uint64, preferLeader boo
 	if !ok {
 		return false
 	}
-	entry := r.lookupTracker(key, r.now(), true)
+	now := r.now()
+	r.maybeCleanup(now)
+	entry := r.lookupTracker(key, now, true)
 	return entry != nil && entry.tracker.hasScore()
 }
 
@@ -126,7 +128,9 @@ func (r *endpointLatencyRegistry) selectionCost(operationUID uint64, preferLeade
 		activeRequests = float64(endpoint.ActiveRequestCount())
 	}
 
-	entry := r.lookupTracker(key, r.now(), true)
+	now := r.now()
+	r.maybeCleanup(now)
+	entry := r.lookupTracker(key, now, true)
 	if entry != nil {
 		return entry.tracker.scoreValue() * (activeRequests + 1)
 	}
@@ -155,8 +159,6 @@ func (r *endpointLatencyRegistry) recordError(operationUID uint64, preferLeader 
 }
 
 func (r *endpointLatencyRegistry) lookupTracker(key endpointLatencyTrackerKey, now time.Time, refresh bool) *endpointLatencyTrackerEntry {
-	r.maybeCleanup(now)
-
 	r.mu.RLock()
 	entry := r.trackers[key]
 	r.mu.RUnlock()
@@ -174,6 +176,7 @@ func (r *endpointLatencyRegistry) lookupTracker(key endpointLatencyTrackerKey, n
 
 func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerKey, now time.Time) *endpointLatencyTrackerEntry {
 	if entry := r.lookupTracker(key, now, true); entry != nil {
+		r.maybeCleanup(now)
 		return entry
 	}
 
@@ -184,6 +187,9 @@ func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerK
 			delete(r.trackers, key)
 		} else {
 			entry.lastAccessNanos.Store(now.UnixNano())
+			if r.claimCleanup(now) {
+				r.cleanupLocked(now)
+			}
 			r.mu.Unlock()
 			return entry
 		}
@@ -195,11 +201,10 @@ func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerK
 	}
 	entry.lastAccessNanos.Store(now.UnixNano())
 	r.trackers[key] = entry
-	overLimit := r.maxTrackers > 0 && len(r.trackers) > r.maxTrackers
-	r.mu.Unlock()
-	if overLimit {
-		r.cleanup(now)
+	if r.claimCleanup(now) {
+		r.cleanupLocked(now)
 	}
+	r.mu.Unlock()
 	return entry
 }
 
@@ -219,22 +224,28 @@ func (r *endpointLatencyRegistry) maybeCleanup(now time.Time) {
 	if r == nil {
 		return
 	}
-
-	nowNanos := now.UnixNano()
-	lastCleanupNanos := r.lastCleanupNanos.Load()
-	if r.cleanupInterval > 0 && lastCleanupNanos != 0 && nowNanos-lastCleanupNanos < int64(r.cleanupInterval) {
-		return
-	}
-	if !r.lastCleanupNanos.CompareAndSwap(lastCleanupNanos, nowNanos) {
+	if !r.claimCleanup(now) {
 		return
 	}
 	r.cleanup(now)
 }
 
+func (r *endpointLatencyRegistry) claimCleanup(now time.Time) bool {
+	nowNanos := now.UnixNano()
+	lastCleanupNanos := r.lastCleanupNanos.Load()
+	if r.cleanupInterval > 0 && lastCleanupNanos != 0 && nowNanos-lastCleanupNanos < int64(r.cleanupInterval) {
+		return false
+	}
+	return r.lastCleanupNanos.CompareAndSwap(lastCleanupNanos, nowNanos)
+}
+
 func (r *endpointLatencyRegistry) cleanup(now time.Time) {
 	r.mu.Lock()
 	defer r.mu.Unlock()
+	r.cleanupLocked(now)
+}
 
+func (r *endpointLatencyRegistry) cleanupLocked(now time.Time) {
 	if len(r.trackers) == 0 {
 		return
 	}
