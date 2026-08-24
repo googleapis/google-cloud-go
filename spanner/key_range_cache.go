@@ -1330,6 +1330,9 @@ func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpoin
 	sort.SliceStable(candidates, func(i, j int) bool {
 		firstFailure := cooldowns.lastOverloadFailure(candidates[i].tablet.serverAddress)
 		secondFailure := cooldowns.lastOverloadFailure(candidates[j].tablet.serverAddress)
+		if firstFailure.IsZero() && secondFailure.IsZero() {
+			return candidates[i].selectionCost < candidates[j].selectionCost
+		}
 		if firstFailure.IsZero() {
 			return false
 		}

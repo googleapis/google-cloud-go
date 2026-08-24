@@ -295,9 +295,6 @@ func (m *endpointLifecycleManager) createEndpoint(address string) bool {
 }
 
 func (m *endpointLifecycleManager) updateActiveAddresses(addresses map[string]struct{}) {
-	if m == nil {
-		return
-	}
 	if m.testHooks != nil && m.testHooks.beforeRemovalLock != nil {
 		m.testHooks.beforeRemovalLock()
 	}

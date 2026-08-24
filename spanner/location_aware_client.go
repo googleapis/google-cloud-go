@@ -166,7 +166,7 @@ func (c *locationAwareSpannerClient) maybeMarkEndpointCoolingDown(ep channelEndp
 }
 
 func (c *locationAwareSpannerClient) recordEndpointSuccess(ep channelEndpoint) {
-	if c == nil || ep == nil || ep.Address() == c.defaultEndpointAddress || c.endpointCooldowns == nil {
+	if c.endpointCooldowns == nil || ep.Address() == c.defaultEndpointAddress {
 		return
 	}
 	c.endpointCooldowns.recordSuccess(ep.Address())
@@ -179,6 +179,8 @@ func endpointCooldownRetryDelay(err error) *time.Duration {
 	var grpcStatus *status.Status
 	var spannerErr *Error
 	if errors.As(err, &spannerErr) {
+		// Error.GRPCStatus rebuilds the status from its code and description,
+		// dropping rich status details such as RetryInfo. Convert its cause.
 		grpcStatus = status.Convert(spannerErr.Unwrap())
 	} else {
 		grpcStatus = status.Convert(err)

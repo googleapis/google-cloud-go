@@ -250,6 +250,40 @@ func TestCachedGroupFillRoutingHintReservesHintedOverloadProbe(t *testing.T) {
 	}
 }
 
+func TestCachedGroupCoolingDownCandidatesWithoutFailureTimesOrderByCost(t *testing.T) {
+	withIsolatedEndpointLatencyRegistry(t)
+	endpointCache := newTestEndpointCache()
+	expensive := endpointCache.Get(context.Background(), "expensive:443")
+	endpointCache.Get(context.Background(), "cheap:443")
+	expensive.IncrementActiveRequests()
+	group := &cachedGroup{
+		leaderIdx: -1,
+		tablets: []*cachedTablet{
+			{tabletUID: 1, serverAddress: "expensive:443", incarnation: []byte("1")},
+			{tabletUID: 2, serverAddress: "cheap:443", incarnation: []byte("1")},
+		},
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	cooldowns := newEndpointOverloadCooldownTrackerWithOptions(
+		10*time.Second, time.Minute, 10*time.Minute, clock.Now,
+		func(int64) int64 { return 0 },
+	)
+	state := cooldowns.emptyState(clock.Now())
+	state.overloadFailures = 1
+	state.overloadUntil = clock.Now().Add(time.Minute)
+	cooldowns.mu.Lock()
+	cooldowns.storeEntryLocked("expensive:443", state)
+	cooldowns.storeEntryLocked("cheap:443", state)
+	cooldowns.mu.Unlock()
+
+	selected := group.selectCoolingDownTabletLocked(
+		endpointCache, false, nil, &sppb.RoutingHint{OperationUid: 987654321}, cooldowns,
+	)
+	if selected == nil || selected.serverAddress != "cheap:443" {
+		t.Fatalf("selected cooling-down tablet = %#v, want cheap:443", selected)
+	}
+}
+
 func TestKeyRangeCache_FillRoutingHintSkipsUnhealthyCachedTablet(t *testing.T) {
 	endpointCache := newTestEndpointCache()
 	cache := newKeyRangeCache(endpointCache)

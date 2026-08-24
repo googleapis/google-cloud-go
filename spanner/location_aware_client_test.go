@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"sync"
 	"sync/atomic"
@@ -405,6 +406,24 @@ func TestEndpointCooldownRetryDelayUsesLargestValidRichStatusDetail(t *testing.T
 	delay := endpointCooldownRetryDelay(err)
 	if delay == nil || *delay != 200*time.Millisecond {
 		t.Fatalf("retry delay = %v, want 200ms", delay)
+	}
+}
+
+func TestEndpointCooldownRetryDelayUnwrapsSpannerErrorToPreserveRichDetails(t *testing.T) {
+	retryInfo := &errdetails.RetryInfo{RetryDelay: durationpb.New(250 * time.Millisecond)}
+	richStatus, err := status.New(codes.ResourceExhausted, "busy").WithDetails(retryInfo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	spannerErr := &Error{Code: codes.ResourceExhausted, Desc: "busy", err: richStatus.Err()}
+	wrapped := fmt.Errorf("outer: %w", spannerErr)
+	if got := len(status.Convert(wrapped).Proto().GetDetails()); got != 0 {
+		t.Fatalf("direct status conversion retained %d details; simplify endpointCooldownRetryDelay", got)
+	}
+
+	delay := endpointCooldownRetryDelay(wrapped)
+	if delay == nil || *delay != 250*time.Millisecond {
+		t.Fatalf("retry delay = %v, want 250ms", delay)
 	}
 }
 
