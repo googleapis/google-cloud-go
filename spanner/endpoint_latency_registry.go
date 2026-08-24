@@ -50,16 +50,13 @@ type endpointLatencyTrackerEntry struct {
 }
 
 type endpointLatencyRegistry struct {
-	mu              sync.RWMutex
-	stopOnce        sync.Once
-	now             func() time.Time
-	maxTrackers     int
-	expireAfter     time.Duration
-	cleanupInterval time.Duration
-	trackers        map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry
-	cleanupCh       chan struct{}
-	stopCh          chan struct{}
-	doneCh          chan struct{}
+	mu               sync.RWMutex
+	now              func() time.Time
+	maxTrackers      int
+	expireAfter      time.Duration
+	cleanupInterval  time.Duration
+	trackers         map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry
+	lastCleanupNanos atomic.Int64
 }
 
 func init() {
@@ -76,11 +73,7 @@ func newEndpointLatencyRegistry(now func() time.Time) *endpointLatencyRegistry {
 		expireAfter:     endpointLatencyTrackerExpireAfter,
 		cleanupInterval: endpointLatencyCleanupInterval,
 		trackers:        make(map[endpointLatencyTrackerKey]*endpointLatencyTrackerEntry),
-		cleanupCh:       make(chan struct{}, 1),
-		stopCh:          make(chan struct{}),
-		doneCh:          make(chan struct{}),
 	}
-	go registry.runCleanup()
 	return registry
 }
 
@@ -100,7 +93,6 @@ func clearEndpointLatencyRegistry() {
 	current := currentEndpointLatencyRegistry()
 	replacement := newEndpointLatencyRegistry(current.now)
 	defaultEndpointLatencyRegistry.Store(replacement)
-	current.close()
 }
 
 func currentEndpointLatencyRegistry() *endpointLatencyRegistry {
@@ -111,18 +103,7 @@ func currentEndpointLatencyRegistry() *endpointLatencyRegistry {
 	if defaultEndpointLatencyRegistry.CompareAndSwap(nil, registry) {
 		return registry
 	}
-	registry.close()
 	return defaultEndpointLatencyRegistry.Load()
-}
-
-func (r *endpointLatencyRegistry) close() {
-	if r == nil {
-		return
-	}
-	r.stopOnce.Do(func() {
-		close(r.stopCh)
-		<-r.doneCh
-	})
 }
 
 func (r *endpointLatencyRegistry) hasScore(operationUID uint64, preferLeader bool, address string) bool {
@@ -174,6 +155,8 @@ func (r *endpointLatencyRegistry) recordError(operationUID uint64, preferLeader 
 }
 
 func (r *endpointLatencyRegistry) lookupTracker(key endpointLatencyTrackerKey, now time.Time, refresh bool) *endpointLatencyTrackerEntry {
+	r.maybeCleanup(now)
+
 	r.mu.RLock()
 	entry := r.trackers[key]
 	r.mu.RUnlock()
@@ -181,7 +164,6 @@ func (r *endpointLatencyRegistry) lookupTracker(key endpointLatencyTrackerKey, n
 		return nil
 	}
 	if r.isExpiredEntry(entry, now) {
-		r.requestCleanup()
 		return nil
 	}
 	if refresh {
@@ -196,13 +178,13 @@ func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerK
 	}
 
 	r.mu.Lock()
-	defer r.mu.Unlock()
 
 	if entry := r.trackers[key]; entry != nil {
 		if r.isExpiredEntry(entry, now) {
 			delete(r.trackers, key)
 		} else {
 			entry.lastAccessNanos.Store(now.UnixNano())
+			r.mu.Unlock()
 			return entry
 		}
 	}
@@ -213,8 +195,10 @@ func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerK
 	}
 	entry.lastAccessNanos.Store(now.UnixNano())
 	r.trackers[key] = entry
-	if r.maxTrackers > 0 && len(r.trackers) > r.maxTrackers {
-		r.requestCleanup()
+	overLimit := r.maxTrackers > 0 && len(r.trackers) > r.maxTrackers
+	r.mu.Unlock()
+	if overLimit {
+		r.cleanup(now)
 	}
 	return entry
 }
@@ -231,32 +215,20 @@ func (r *endpointLatencyRegistry) isExpiredEntry(entry *endpointLatencyTrackerEn
 	return !lastAccess.Add(r.expireAfter).After(now)
 }
 
-func (r *endpointLatencyRegistry) requestCleanup() {
+func (r *endpointLatencyRegistry) maybeCleanup(now time.Time) {
 	if r == nil {
 		return
 	}
-	select {
-	case r.cleanupCh <- struct{}{}:
-	default:
+
+	nowNanos := now.UnixNano()
+	lastCleanupNanos := r.lastCleanupNanos.Load()
+	if r.cleanupInterval > 0 && lastCleanupNanos != 0 && nowNanos-lastCleanupNanos < int64(r.cleanupInterval) {
+		return
 	}
-}
-
-func (r *endpointLatencyRegistry) runCleanup() {
-	defer close(r.doneCh)
-
-	ticker := time.NewTicker(r.cleanupInterval)
-	defer ticker.Stop()
-
-	for {
-		select {
-		case <-ticker.C:
-			r.cleanup(r.now())
-		case <-r.cleanupCh:
-			r.cleanup(r.now())
-		case <-r.stopCh:
-			return
-		}
+	if !r.lastCleanupNanos.CompareAndSwap(lastCleanupNanos, nowNanos) {
+		return
 	}
+	r.cleanup(now)
 }
 
 func (r *endpointLatencyRegistry) cleanup(now time.Time) {
