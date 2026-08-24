@@ -132,13 +132,13 @@ func requireDCPGaugeValue(t *testing.T, rm metricdata.ResourceMetrics, name stri
 	m := requireDCPMetric(t, rm, name)
 	gauge, ok := m.Data.(metricdata.Gauge[int64])
 	if !ok {
-		t.Fatalf("metric %q data type = %T, want metricdata.Gauge[int64]", name, m.Data)
+		t.Fatalf("metric %q data type mismatch:\n Got: %T\nWant: metricdata.Gauge[int64]", name, m.Data)
 	}
 	if got, want := len(gauge.DataPoints), 1; got != want {
-		t.Fatalf("metric %q datapoints = %d, want %d", name, got, want)
+		t.Fatalf("metric %q datapoints mismatch:\n Got: %d\nWant: %d", name, got, want)
 	}
 	if got := gauge.DataPoints[0].Value; got != want {
-		t.Fatalf("metric %q value = %d, want %d", name, got, want)
+		t.Fatalf("metric %q value mismatch:\n Got: %d\nWant: %d", name, got, want)
 	}
 	metricdatatest.AssertHasAttributes[metricdata.DataPoint[int64]](t, gauge.DataPoints[0], attrs...)
 }
@@ -175,7 +175,7 @@ func TestDynamicChannelPoolOptInCreatesInitialChannels(t *testing.T) {
 	defer teardown()
 
 	if got, want := client.sc.dynamicPool.Num(), 2; got != want {
-		t.Fatalf("DCP initial channel count = %d, want %d", got, want)
+		t.Fatalf("DCP initial channel count mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 }
 
@@ -184,7 +184,7 @@ func TestDynamicChannelPoolScaleUpPrimesNewChannels(t *testing.T) {
 	defer teardown()
 	server.TestSpanner.PutExecutionTime(MethodExecuteStreamingSql, SimulatedExecutionTime{MinimumExecutionTime: 2 * time.Second})
 	if got := len(server.TestSpanner.DumpPings()); got != 0 {
-		t.Fatalf("initial DCP channel priming count = %d, want 0", got)
+		t.Fatalf("initial DCP channel priming count mismatch:\n Got: %d\nWant: 0", got)
 	}
 
 	ctx := context.Background()
@@ -245,7 +245,7 @@ func TestDynamicChannelPoolScaleDownRequiresRepeatedLowLoad(t *testing.T) {
 
 	p.evaluateScaleDown()
 	if got, want := p.Num(), 3; got != want {
-		t.Fatalf("DCP channel count after first low-load check = %d, want %d", got, want)
+		t.Fatalf("DCP channel count after first low-load check mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	p.evaluateScaleDown()
 	waitFor(t, func() error {
@@ -270,7 +270,7 @@ func TestDynamicChannelPoolPickerSkipsDrainingEntries(t *testing.T) {
 			t.Fatalf("pick failed: %v", err)
 		}
 		if e != entries[2] {
-			t.Fatalf("picker returned draining entry %d, want active entry %d", e.id, entries[2].id)
+			t.Fatalf("picked entry mismatch:\n Got: draining entry %d\nWant: active entry %d", e.id, entries[2].id)
 		}
 	}
 }
@@ -300,7 +300,7 @@ func TestDynamicChannelPoolRoundRobinSkipsDrainingEntries(t *testing.T) {
 			t.Fatalf("round-robin sequence = %v, picked unexpected entry %d", got, id)
 		}
 		if i > 0 && got[i] == got[i-1] {
-			t.Fatalf("round-robin sequence = %v, want active entries to alternate", got)
+			t.Fatalf("round-robin sequence mismatch:\n Got: %v\nWant: active entries to alternate", got)
 		}
 	}
 }
@@ -324,7 +324,7 @@ func TestDynamicChannelPoolMaxChannelsCapsScaleUp(t *testing.T) {
 		t.Fatalf("query workload failed: %v", err)
 	}
 	if got, max := client.sc.dynamicPool.Num(), 2; got > max {
-		t.Fatalf("DCP channel count = %d, want <= %d", got, max)
+		t.Fatalf("DCP channel count mismatch:\n Got: %d\nWant: <= %d", got, max)
 	}
 }
 
@@ -412,12 +412,12 @@ func TestDynamicChannelPoolOTMetricsScalingCounterUsesChannelDeltaAndDirection(t
 	m := requireDCPMetric(t, rm, "spanner/dynamic_channel_pool/channel_pool_scaling")
 	sum, ok := m.Data.(metricdata.Sum[int64])
 	if !ok {
-		t.Fatalf("channel_pool_scaling data type = %T, want metricdata.Sum[int64]", m.Data)
+		t.Fatalf("channel_pool_scaling data type mismatch:\n Got: %T\nWant: metricdata.Sum[int64]", m.Data)
 	}
 	attrs := dcpCommonAttrs(client.ClientID())
 	want := map[string]int64{"up": 2, "down": 1}
 	if got, want := len(sum.DataPoints), 2; got != want {
-		t.Fatalf("channel_pool_scaling datapoints = %d, want %d: %+v", got, want, sum.DataPoints)
+		t.Fatalf("channel_pool_scaling datapoints mismatch:\n Got: %d\nWant: %d: %+v", got, want, sum.DataPoints)
 	}
 	for _, dp := range sum.DataPoints {
 		metricdatatest.AssertHasAttributes[metricdata.DataPoint[int64]](t, dp, attrs...)
@@ -427,7 +427,7 @@ func TestDynamicChannelPoolOTMetricsScalingCounterUsesChannelDeltaAndDirection(t
 		}
 		directionValue := direction.AsString()
 		if got, ok := want[directionValue]; !ok || dp.Value != got {
-			t.Fatalf("channel_pool_scaling{%s} = %d, want map %v", directionValue, dp.Value, want)
+			t.Fatalf("channel_pool_scaling{%s} mismatch:\n Got: %d\nWant: map %v", directionValue, dp.Value, want)
 		}
 		delete(want, directionValue)
 	}
@@ -462,12 +462,12 @@ func TestDynamicChannelPoolOTMetricsInstrumentErrorsDisableMetrics(t *testing.T)
 
 	gaugeFailure := &failingDCPMeterProvider{meter: &failingDCPMeter{failGaugeName: dcpMetricsPrefix + "num_channels"}}
 	if got := newDCPMetrics(p, gaugeFailure); got != nil {
-		t.Fatalf("newDCPMetrics with gauge registration failure = %+v, want nil", got)
+		t.Fatalf("newDCPMetrics with gauge registration failure mismatch:\n Got: %+v\nWant: nil", got)
 	}
 
 	counterFailure := &failingDCPMeterProvider{meter: &failingDCPMeter{failCounterName: dcpMetricsPrefix + "channel_pool_scaling"}}
 	if got := newDCPMetrics(p, counterFailure); got != nil {
-		t.Fatalf("newDCPMetrics with counter registration failure = %+v, want nil", got)
+		t.Fatalf("newDCPMetrics with counter registration failure mismatch:\n Got: %+v\nWant: nil", got)
 	}
 }
 
@@ -514,7 +514,7 @@ func TestDynamicChannelPoolCloseUnregistersMetricsOnce(t *testing.T) {
 		t.Fatal("metric unregistration called more than once")
 	}
 	if got := reg.count.Load(); got != 1 {
-		t.Fatalf("metric unregistration count = %d, want 1", got)
+		t.Fatalf("metric unregistration count mismatch:\n Got: %d\nWant: 1", got)
 	}
 }
 
@@ -611,7 +611,7 @@ func TestDynamicChannelPoolScaleUpPrimeFailureDoesNotPublishEntry(t *testing.T) 
 	})
 	client.sc.dynamicPool.scaleUp()
 	if got, want := client.sc.dynamicPool.Num(), 1; got != want {
-		t.Fatalf("DCP channel count after failed prime = %d, want %d", got, want)
+		t.Fatalf("DCP channel count after failed prime mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	for _, e := range client.sc.dynamicPool.getEntries() {
 		if e.state.Load() != dcpStateActive {
@@ -659,11 +659,11 @@ func TestDynamicChannelPoolCloseClosesActiveAndDrainingEntries(t *testing.T) {
 
 	client.Close()
 	if got := p.Num(); got != 0 {
-		t.Fatalf("DCP pool entries after close = %d, want 0", got)
+		t.Fatalf("DCP pool entries after close mismatch:\n Got: %d\nWant: 0", got)
 	}
 	for _, e := range entries {
 		if got := e.state.Load(); got != dcpStateClosed {
-			t.Fatalf("entry %d state after close = %d, want closed", e.id, got)
+			t.Fatalf("entry %d state after close mismatch:\n Got: %d\nWant: closed", e.id, got)
 		}
 	}
 }
@@ -713,7 +713,7 @@ func TestDynamicChannelPoolRequestIDUsesEntryChannelID(t *testing.T) {
 		observedChannelIDs[segments.ChannelID] = true
 	}
 	if len(observedChannelIDs) <= 1 {
-		t.Fatalf("distinct DCP request-id channel ids = %v, want cardinality growth after scale-up", observedChannelIDs)
+		t.Fatalf("distinct DCP request-id channel ids mismatch:\n Got: %v\nWant: cardinality growth after scale-up", observedChannelIDs)
 	}
 	if err := interceptorTracker.validateRequestIDsMonotonicity(); err != nil {
 		t.Fatal(err)
@@ -735,14 +735,14 @@ func TestDynamicChannelPoolFullScanFallbackFindsOnlyActiveEntry(t *testing.T) {
 		t.Fatalf("pickLeastLoaded failed: %v", err)
 	}
 	if e != entries[3] {
-		t.Fatalf("full-scan fallback returned entry %d, want only active entry %d", e.id, entries[3].id)
+		t.Fatalf("full-scan fallback entry mismatch:\n Got: entry %d\nWant: only active entry %d", e.id, entries[3].id)
 	}
 	picked, err := p.pick(context.Background())
 	if err != nil {
 		t.Fatalf("pick fallback failed: %v", err)
 	}
 	if picked != entries[3] {
-		t.Fatalf("power-of-two fallback returned entry %d, want only active entry %d", picked.id, entries[3].id)
+		t.Fatalf("power-of-two fallback entry mismatch:\n Got: entry %d\nWant: only active entry %d", picked.id, entries[3].id)
 	}
 }
 
@@ -763,10 +763,10 @@ func TestDCPResolvingClientRebindsDrainingEntry(t *testing.T) {
 		t.Fatalf("resolve failed: %v", err)
 	}
 	if client != entry2.client {
-		t.Fatalf("resolved client = %p, want entry2 client %p", client, entry2.client)
+		t.Fatalf("resolved client mismatch:\n Got: %p\nWant: entry2 client %p", client, entry2.client)
 	}
 	if got, want := resolver.entryID.Load(), entry2.id; got != want {
-		t.Fatalf("resolver entry id = %d, want %d", got, want)
+		t.Fatalf("resolver entry id mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 }
 
@@ -815,7 +815,7 @@ func TestDynamicChannelPoolDrainWaitsForActiveStreamLoad(t *testing.T) {
 		}
 	})
 	if got := entry.state.Load(); got != dcpStateClosed {
-		t.Fatalf("entry state = %d, want closed", got)
+		t.Fatalf("entry state mismatch:\n Got: %d\nWant: closed", got)
 	}
 }
 
@@ -827,7 +827,7 @@ func TestDCPStreamContextCancelReleasesStreamLoad(t *testing.T) {
 
 	_ = client.startStream(ctx)
 	if got := entry.streamLoad.Load(); got != 1 {
-		t.Fatalf("stream load after start = %d, want 1", got)
+		t.Fatalf("stream load after start mismatch:\n Got: %d\nWant: 1", got)
 	}
 	cancel()
 	waitFor(t, func() error {
@@ -874,11 +874,11 @@ func TestDynamicChannelPoolPowerOfTwoSpreadDoesNotHerd(t *testing.T) {
 		counts[e.id]++
 	}
 	if got := counts[overloaded.id]; got > 60 {
-		t.Fatalf("overloaded entry picked %d times, want <= 60; counts=%v", got, counts)
+		t.Fatalf("overloaded entry pick count mismatch:\n Got: %d\nWant: <= 60\ncounts: %v", got, counts)
 	}
 	for _, e := range entries[1:] {
 		if got := counts[e.id]; got < 70 {
-			t.Fatalf("entry %d picked %d times, want spread across low-load entries; counts=%v", e.id, got, counts)
+			t.Fatalf("entry %d pick count mismatch:\n Got: %d\nWant: spread across low-load entries\ncounts: %v", e.id, got, counts)
 		}
 	}
 	var maxLow int
@@ -914,7 +914,7 @@ func TestDynamicChannelPoolScaleUpFloorsCapAtTwo(t *testing.T) {
 
 	p.scaleUp()
 	if got, want := p.Num(), 6; got != want {
-		t.Fatalf("DCP channel count after floored scale-up = %d, want %d", got, want)
+		t.Fatalf("DCP channel count after floored scale-up mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 }
 
@@ -938,7 +938,7 @@ func TestDynamicChannelPoolScaleUpHonorsMaxScaleUpPercent(t *testing.T) {
 
 	p.scaleUp()
 	if got, want := p.Num(), 15; got != want {
-		t.Fatalf("DCP channel count after percent-capped scale-up = %d, want %d", got, want)
+		t.Fatalf("DCP channel count after percent-capped scale-up mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 }
 
@@ -970,7 +970,7 @@ func TestDynamicChannelPoolScaleUpDialFailureDoesNotPublishEntry(t *testing.T) {
 
 	p.scaleUp()
 	if got, want := p.Num(), 1; got != want {
-		t.Fatalf("DCP channel count after failed dial = %d, want %d", got, want)
+		t.Fatalf("DCP channel count after failed dial mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	if got := p.getEntries()[0]; got != initialEntries[0] {
 		t.Fatalf("active entry pointer changed after failed dial")
@@ -1009,7 +1009,7 @@ func TestDefaultDynamicChannelPoolConfigValues(t *testing.T) {
 		DCPSelectionStrategy:                 DCPPowerOfTwoLeastBusy,
 	}
 	if got != want {
-		t.Fatalf("DefaultDynamicChannelPoolConfig() = %+v, want %+v", got, want)
+		t.Fatalf("DefaultDynamicChannelPoolConfig() mismatch:\n Got: %+v\nWant: %+v", got, want)
 	}
 }
 
@@ -1019,7 +1019,7 @@ func TestDynamicChannelPoolConfigDefaultsInitialChannelsToMinWhenInitialUnset(t 
 		t.Fatalf("normalizeDCPConfig failed: %v", err)
 	}
 	if got, want := cfg.DCPInitialChannels, 8; got != want {
-		t.Fatalf("DCPInitialChannels = %d, want min channels %d", got, want)
+		t.Fatalf("DCPInitialChannels mismatch:\n Got: %d\nWant: min channels %d", got, want)
 	}
 }
 
@@ -1073,18 +1073,18 @@ func TestDCPApplyErrorPenaltyCodes(t *testing.T) {
 			expiry := e.penaltyExpiry.Load()
 			if test.wantPenalty {
 				if expiry <= before {
-					t.Fatalf("penalty expiry = %d, want after %d", expiry, before)
+					t.Fatalf("penalty expiry mismatch:\n Got: %d\nWant: after %d", expiry, before)
 				}
 				if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-					t.Fatalf("penalty load = %d, want %d", got, want)
+					t.Fatalf("penalty load mismatch:\n Got: %d\nWant: %d", got, want)
 				}
 				return
 			}
 			if expiry != 0 {
-				t.Fatalf("penalty expiry = %d, want 0", expiry)
+				t.Fatalf("penalty expiry mismatch:\n Got: %d\nWant: 0", expiry)
 			}
 			if got := e.penaltyLoad.Load(); got != 0 {
-				t.Fatalf("penalty load = %d, want 0", got)
+				t.Fatalf("penalty load mismatch:\n Got: %d\nWant: 0", got)
 			}
 		})
 	}
@@ -1101,27 +1101,27 @@ func TestDCPApplyErrorPenaltyAccumulatesCapsAndRestarts(t *testing.T) {
 
 	e.applyErrorPenalty(errUnavailable)
 	if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-		t.Fatalf("penalty after one error = %d, want %d", got, want)
+		t.Fatalf("penalty after one error mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	firstExpiry := e.penaltyExpiry.Load()
 	time.Sleep(time.Millisecond)
 	e.applyErrorPenalty(errUnavailable)
 	e.applyErrorPenalty(errUnavailable)
 	if got, want := e.penaltyLoad.Load(), int32(15); got != want {
-		t.Fatalf("penalty after three errors = %d, want %d", got, want)
+		t.Fatalf("penalty after three errors mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	if got := e.penaltyExpiry.Load(); got <= firstExpiry {
-		t.Fatalf("penalty expiry after later error = %d, want after %d", got, firstExpiry)
+		t.Fatalf("penalty expiry after later error mismatch:\n Got: %d\nWant: after %d", got, firstExpiry)
 	}
 	e.applyErrorPenalty(errUnavailable)
 	if got, want := e.penaltyLoad.Load(), int32(15); got != want {
-		t.Fatalf("penalty beyond cap = %d, want %d", got, want)
+		t.Fatalf("penalty beyond cap mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 
 	e.penaltyExpiry.Store(time.Now().Add(-time.Second).UnixNano())
 	e.applyErrorPenalty(errUnavailable)
 	if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-		t.Fatalf("penalty after expired window = %d, want fresh step %d", got, want)
+		t.Fatalf("penalty after expired window mismatch:\n Got: %d\nWant: fresh step %d", got, want)
 	}
 }
 
@@ -1138,16 +1138,16 @@ func TestDCPErrorPenaltyAggregateAppliesCappedDeltas(t *testing.T) {
 	first.applyErrorPenalty(errUnavailable)
 	second.applyErrorPenalty(errUnavailable)
 	if got, want := p.totalPenaltyLoad.Load(), int64(10); got != want {
-		t.Fatalf("total penalty after two entries = %d, want %d", got, want)
+		t.Fatalf("total penalty after two entries mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	first.applyErrorPenalty(errUnavailable)
 	first.applyErrorPenalty(errUnavailable)
 	first.applyErrorPenalty(errUnavailable)
 	if got, want := first.currentPenalty(), int32(12); got != want {
-		t.Fatalf("first entry penalty at cap = %d, want %d", got, want)
+		t.Fatalf("first entry penalty at cap mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	if got, want := p.totalPenaltyLoad.Load(), int64(17); got != want {
-		t.Fatalf("total penalty after capped increments = %d, want %d", got, want)
+		t.Fatalf("total penalty after capped increments mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 }
 
@@ -1162,7 +1162,7 @@ func TestDCPErrorPenaltyAggregateDoesNotOverflowInt32(t *testing.T) {
 		e.applyErrorPenalty(errUnavailable)
 	}
 	if got, want := int64(p.totalPenaltyLoad.Load()), int64(2*math.MaxInt32); got != want {
-		t.Fatalf("total penalty = %d, want %d", got, want)
+		t.Fatalf("total penalty mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 }
 
@@ -1185,7 +1185,7 @@ func TestDCPErrorPenaltyAggregateExpirySubtractsExactlyOnce(t *testing.T) {
 			defer wg.Done()
 			<-start
 			if got := e.currentPenalty(); got != 0 {
-				t.Errorf("currentPenalty() after expiry = %d, want 0", got)
+				t.Errorf("currentPenalty() after expiry mismatch:\n Got: %d\nWant: 0", got)
 			}
 		}()
 	}
@@ -1193,7 +1193,7 @@ func TestDCPErrorPenaltyAggregateExpirySubtractsExactlyOnce(t *testing.T) {
 	wg.Wait()
 
 	if got := p.totalPenaltyLoad.Load(); got != 0 {
-		t.Fatalf("total penalty after concurrent expiry = %d, want 0", got)
+		t.Fatalf("total penalty after concurrent expiry mismatch:\n Got: %d\nWant: 0", got)
 	}
 }
 
@@ -1207,27 +1207,27 @@ func TestDCPCurrentPenaltyAndPickLoadWindow(t *testing.T) {
 	p.totalPenaltyLoad.Store(10)
 
 	if got, want := e.currentPenalty(), int32(10); got != want {
-		t.Fatalf("currentPenalty() during window = %d, want %d", got, want)
+		t.Fatalf("currentPenalty() during window mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	if got, want := e.pickLoad(), int32(15); got != want {
-		t.Fatalf("pickLoad() during penalty = %d, want %d", got, want)
+		t.Fatalf("pickLoad() during penalty mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	if got, want := e.rpcLoad(), int32(5); got != want {
-		t.Fatalf("rpcLoad() during penalty = %d, want %d", got, want)
+		t.Fatalf("rpcLoad() during penalty mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	if got, want := e.weightedLoad(), int32(5); got != want {
-		t.Fatalf("weightedLoad() during penalty = %d, want %d", got, want)
+		t.Fatalf("weightedLoad() during penalty mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 
 	e.penaltyExpiry.Store(time.Now().Add(-time.Second).UnixNano())
 	if got, want := e.pickLoad(), int32(5); got != want {
-		t.Fatalf("pickLoad() after penalty = %d, want %d", got, want)
+		t.Fatalf("pickLoad() after penalty mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	if got := e.penaltyExpiry.Load(); got != 0 {
-		t.Fatalf("expired penalty = %d, want CAS reset to 0", got)
+		t.Fatalf("expired penalty mismatch:\n Got: %d\nWant: CAS reset to 0", got)
 	}
 	if got := e.currentPenalty(); got != 0 {
-		t.Fatalf("currentPenalty() after lazy reset = %d, want 0", got)
+		t.Fatalf("currentPenalty() after lazy reset mismatch:\n Got: %d\nWant: 0", got)
 	}
 }
 
@@ -1244,12 +1244,12 @@ func TestDCPCurrentPenaltyAfterNewWindow(t *testing.T) {
 
 	e.applyErrorPenalty(status.Error(codes.Unavailable, "unavailable"))
 	if got, want := e.currentPenalty(), int32(5); got != want {
-		t.Fatalf("currentPenalty() after new window = %d, want %d", got, want)
+		t.Fatalf("currentPenalty() after new window mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 	// A unit test cannot observe the atomic update's transient states, but this
 	// pins its net-delta contract: replace the old counted contribution with new.
 	if got, want := p.totalPenaltyLoad.Load(), int64(5); got != want {
-		t.Fatalf("total penalty after new window = %d, want net contribution %d", got, want)
+		t.Fatalf("total penalty after new window mismatch:\n Got: %d\nWant: net contribution %d", got, want)
 	}
 }
 
@@ -1279,7 +1279,7 @@ func TestDynamicChannelPoolPowerOfTwoErrorPenalty(t *testing.T) {
 		}
 	}
 	if penalizedPicks < 650 || penalizedPicks > 850 {
-		t.Fatalf("single-step entry picked %d/%d times, want mixed-pair wins (roughly 75%%)", penalizedPicks, picks)
+		t.Fatalf("single-step entry pick share mismatch:\n Got: %d/%d\nWant: mixed-pair wins (roughly 75%%)", penalizedPicks, picks)
 	}
 
 	healthy.unaryLoad.Store(0)
@@ -1297,7 +1297,7 @@ func TestDynamicChannelPoolPowerOfTwoErrorPenalty(t *testing.T) {
 		}
 	}
 	if penalizedPicks < 175 || penalizedPicks > 325 {
-		t.Fatalf("max-penalty entry picked %d/%d times, want only same-entry draws (roughly 25%%)", penalizedPicks, picks)
+		t.Fatalf("max-penalty entry pick share mismatch:\n Got: %d/%d\nWant: only same-entry draws (roughly 25%%)", penalizedPicks, picks)
 	}
 }
 
@@ -1315,7 +1315,7 @@ func TestDynamicChannelPoolLeastLoadedErrorPenalty(t *testing.T) {
 		t.Fatalf("pickLeastLoaded() failed: %v", err)
 	}
 	if got != healthy {
-		t.Fatalf("pickLeastLoaded() = entry %d, want healthy entry %d", got.id, healthy.id)
+		t.Fatalf("pickLeastLoaded() mismatch:\n Got: entry %d\nWant: healthy entry %d", got.id, healthy.id)
 	}
 
 	healthy.penaltyLoad.Store(25)
@@ -1350,7 +1350,7 @@ func TestDynamicChannelPoolRoundRobinIgnoresErrorPenalty(t *testing.T) {
 		}
 	}
 	if penalizedPicks < 450 || penalizedPicks > 550 {
-		t.Fatalf("penalized entry picked %d/%d times, want roughly even share", penalizedPicks, picks)
+		t.Fatalf("penalized entry pick share mismatch:\n Got: %d/%d\nWant: roughly even share", penalizedPicks, picks)
 	}
 }
 
@@ -1372,16 +1372,16 @@ func TestDCPErrorPenaltyCallPaths(t *testing.T) {
 		entries := []*dcpEntry{e}
 		p.entries.Store(&entries)
 		if err := p.Invoke(context.Background(), "method", nil, nil); !errors.Is(err, errUnavailable) {
-			t.Fatalf("Invoke() error = %v, want %v", err, errUnavailable)
+			t.Fatalf("Invoke() error mismatch:\n Got: %v\nWant: %v", err, errUnavailable)
 		}
 		if pool.invokeCount != 1 {
-			t.Fatalf("underlying Invoke count = %d, want 1", pool.invokeCount)
+			t.Fatalf("underlying Invoke count mismatch:\n Got: %d\nWant: 1", pool.invokeCount)
 		}
 		if e.penaltyExpiry.Load() == 0 {
 			t.Fatal("Invoke() did not apply error penalty")
 		}
 		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-			t.Fatalf("Invoke() penalty = %d, want exactly one step %d", got, want)
+			t.Fatalf("Invoke() penalty mismatch:\n Got: %d\nWant: exactly one step %d", got, want)
 		}
 	})
 
@@ -1401,7 +1401,7 @@ func TestDCPErrorPenaltyCallPaths(t *testing.T) {
 			t.Fatalf("tracked stream applied penalty more than once: first %d, then %d", expiry, got)
 		}
 		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-			t.Fatalf("tracked stream penalty = %d, want exactly one step %d", got, want)
+			t.Fatalf("tracked stream penalty mismatch:\n Got: %d\nWant: exactly one step %d", got, want)
 		}
 	})
 
@@ -1412,16 +1412,16 @@ func TestDCPErrorPenaltyCallPaths(t *testing.T) {
 		entries := []*dcpEntry{e}
 		p.entries.Store(&entries)
 		if _, err := p.NewStream(context.Background(), &grpc.StreamDesc{}, "method"); !errors.Is(err, errUnavailable) {
-			t.Fatalf("NewStream() error = %v, want %v", err, errUnavailable)
+			t.Fatalf("NewStream() error mismatch:\n Got: %v\nWant: %v", err, errUnavailable)
 		}
 		if pool.newStreamCount != 1 {
-			t.Fatalf("underlying NewStream count = %d, want 1", pool.newStreamCount)
+			t.Fatalf("underlying NewStream count mismatch:\n Got: %d\nWant: 1", pool.newStreamCount)
 		}
 		if e.penaltyExpiry.Load() == 0 {
 			t.Fatal("NewStream() creation failure did not apply error penalty")
 		}
 		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-			t.Fatalf("NewStream() creation penalty = %d, want exactly one step %d", got, want)
+			t.Fatalf("NewStream() creation penalty mismatch:\n Got: %d\nWant: exactly one step %d", got, want)
 		}
 	})
 
@@ -1431,16 +1431,16 @@ func TestDCPErrorPenaltyCallPaths(t *testing.T) {
 		delegate := &mockSpannerClient{executeSQLErr: errUnavailable}
 		client := &dcpSpannerClient{entry: e, delegate: delegate}
 		if _, err := client.ExecuteSql(context.Background(), &spannerpb.ExecuteSqlRequest{}); !errors.Is(err, errUnavailable) {
-			t.Fatalf("ExecuteSql() error = %v, want %v", err, errUnavailable)
+			t.Fatalf("ExecuteSql() error mismatch:\n Got: %v\nWant: %v", err, errUnavailable)
 		}
 		if delegate.executeSQLCount != 1 {
-			t.Fatalf("underlying ExecuteSql count = %d, want 1", delegate.executeSQLCount)
+			t.Fatalf("underlying ExecuteSql count mismatch:\n Got: %d\nWant: 1", delegate.executeSQLCount)
 		}
 		if e.penaltyExpiry.Load() == 0 {
 			t.Fatal("unary call did not apply error penalty")
 		}
 		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-			t.Fatalf("unary call penalty = %d, want exactly one step %d", got, want)
+			t.Fatalf("unary call penalty mismatch:\n Got: %d\nWant: exactly one step %d", got, want)
 		}
 	})
 
@@ -1460,7 +1460,7 @@ func TestDCPErrorPenaltyCallPaths(t *testing.T) {
 			t.Fatalf("stream call applied penalty more than once: first %d, then %d", expiry, got)
 		}
 		if got, want := e.penaltyLoad.Load(), int32(5); got != want {
-			t.Fatalf("stream call penalty = %d, want exactly one step %d", got, want)
+			t.Fatalf("stream call penalty mismatch:\n Got: %d\nWant: exactly one step %d", got, want)
 		}
 	})
 }
@@ -1538,7 +1538,7 @@ func TestDCPErrorPenaltyIncludedInScaleUpSizing(t *testing.T) {
 
 	p.scaleUp()
 	if got, want := p.Num(), 3; got != want {
-		t.Fatalf("DCP channel count after penalty-inclusive scale-up = %d, want %d", got, want)
+		t.Fatalf("DCP channel count after penalty-inclusive scale-up mismatch:\n Got: %d\nWant: %d", got, want)
 	}
 }
 
@@ -1576,13 +1576,13 @@ func TestDCPErrorPenaltyDoesNotAffectScaleDownOrDrain(t *testing.T) {
 	p.removeEntries(1)
 	got := p.getEntries()
 	if len(got) != 2 {
-		t.Fatalf("scale-down kept %d entries, want 2", len(got))
+		t.Fatalf("scale-down kept entry count mismatch:\n Got: %d\nWant: 2", len(got))
 	}
 	if got[0] != middle || got[1] != busy {
-		t.Fatalf("scale-down kept entries %v, want unpenalized entries 2 and 3", []uint64{got[0].id, got[1].id})
+		t.Fatalf("scale-down kept entries mismatch:\n Got: %v\nWant: unpenalized entries 2 and 3", []uint64{got[0].id, got[1].id})
 	}
 	if got := p.totalPenaltyLoad.Load(); got != 0 {
-		t.Fatalf("total penalty after removing penalized entry = %d, want 0", got)
+		t.Fatalf("total penalty after removing penalized entry mismatch:\n Got: %d\nWant: 0", got)
 	}
 	waitFor(t, func() error {
 		if got := penalized.state.Load(); got != dcpStateClosed {
@@ -1600,7 +1600,7 @@ func TestDCPErrorPenaltyCapFollowsMaxRPCFromDefaultConfig(t *testing.T) {
 	defer teardown()
 	p := client.sc.dynamicPool
 	if got, want := p.penaltyMax, int32(40); got != want {
-		t.Fatalf("penalty max = %d, want ceil(DCPMaxRPCPerChannel) %d", got, want)
+		t.Fatalf("penalty max mismatch:\n Got: %d\nWant: ceil(DCPMaxRPCPerChannel) %d", got, want)
 	}
 	e := p.getEntries()[0]
 	errUnavailable := status.Error(codes.Unavailable, "unavailable")
@@ -1608,7 +1608,7 @@ func TestDCPErrorPenaltyCapFollowsMaxRPCFromDefaultConfig(t *testing.T) {
 		e.applyErrorPenalty(errUnavailable)
 	}
 	if got, want := e.currentPenalty(), int32(40); got != want {
-		t.Fatalf("accumulated penalty = %d, want derived cap %d", got, want)
+		t.Fatalf("accumulated penalty mismatch:\n Got: %d\nWant: derived cap %d", got, want)
 	}
 }
 
@@ -1622,18 +1622,18 @@ func TestDynamicChannelPoolErrorPenaltyConfigNormalization(t *testing.T) {
 			t.Fatalf("normalizeDCPConfig() failed: %v", err)
 		}
 		if got, want := cfg.DCPErrorPenaltyStep, int32(3); got != want {
-			t.Fatalf("DCPErrorPenaltyStep = %d, want derived cap %d", got, want)
+			t.Fatalf("DCPErrorPenaltyStep mismatch:\n Got: %d\nWant: derived cap %d", got, want)
 		}
 		p := &dynamicChannelPool{cfg: cfg, penaltyMax: 3}
 		e := &dcpEntry{parent: p}
 		errUnavailable := status.Error(codes.Unavailable, "unavailable")
 		e.applyErrorPenalty(errUnavailable)
 		if got, want := e.currentPenalty(), int32(3); got != want {
-			t.Fatalf("penalty after one error = %d, want cap %d", got, want)
+			t.Fatalf("penalty after one error mismatch:\n Got: %d\nWant: cap %d", got, want)
 		}
 		e.applyErrorPenalty(errUnavailable)
 		if got, want := e.currentPenalty(), int32(3); got != want {
-			t.Fatalf("penalty after second error = %d, want capped at %d", got, want)
+			t.Fatalf("penalty after second error mismatch:\n Got: %d\nWant: capped at %d", got, want)
 		}
 	})
 
@@ -1643,10 +1643,10 @@ func TestDynamicChannelPoolErrorPenaltyConfigNormalization(t *testing.T) {
 			t.Fatalf("normalizeDCPConfig() failed: %v", err)
 		}
 		if got, want := cfg.DCPErrorPenaltyStep, int32(5); got != want {
-			t.Fatalf("DCPErrorPenaltyStep = %d, want %d", got, want)
+			t.Fatalf("DCPErrorPenaltyStep mismatch:\n Got: %d\nWant: %d", got, want)
 		}
 		if got, want := cfg.DCPErrorPenaltyDuration, 5*time.Second; got != want {
-			t.Fatalf("DCPErrorPenaltyDuration = %v, want %v", got, want)
+			t.Fatalf("DCPErrorPenaltyDuration mismatch:\n Got: %v\nWant: %v", got, want)
 		}
 	})
 
@@ -1656,7 +1656,7 @@ func TestDynamicChannelPoolErrorPenaltyConfigNormalization(t *testing.T) {
 			t.Fatalf("normalizeDCPConfig() failed: %v", err)
 		}
 		if got, want := cfg.DCPErrorPenaltyDuration, -time.Second; got != want {
-			t.Fatalf("DCPErrorPenaltyDuration = %v, want %v", got, want)
+			t.Fatalf("DCPErrorPenaltyDuration mismatch:\n Got: %v\nWant: %v", got, want)
 		}
 	})
 
@@ -1677,7 +1677,7 @@ func TestDynamicChannelPoolErrorPenaltyConfigNormalization(t *testing.T) {
 			t.Fatal("normalizeDCPConfig() succeeded, want step-above-derived-cap error")
 		}
 		if got, want := err.Error(), "DCPErrorPenaltyStep must be <= ceil(DCPMaxRPCPerChannel)"; got != want {
-			t.Fatalf("normalizeDCPConfig() error = %q, want %q", got, want)
+			t.Fatalf("normalizeDCPConfig() error mismatch:\n Got: %q\nWant: %q", got, want)
 		}
 	})
 }
