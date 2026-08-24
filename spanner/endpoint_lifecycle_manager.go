@@ -46,6 +46,11 @@ type endpointLifecycleState struct {
 	needsCreate                  bool
 }
 
+type endpointLifecycleManagerTestHooks struct {
+	beforeCreateReconcile func()
+	beforeRemovalLock     func()
+}
+
 type endpointLifecycleManager struct {
 	endpointCache          channelEndpointCache
 	defaultEndpointAddress string
@@ -55,9 +60,11 @@ type endpointLifecycleManager struct {
 
 	mu                               sync.Mutex
 	endpoints                        map[string]*endpointLifecycleState
+	activeAddresses                  map[string]struct{}
 	transientFailureEvictedAddresses map[string]struct{}
 	shutdownOnce                     sync.Once
 	stopped                          bool
+	testHooks                        *endpointLifecycleManagerTestHooks
 
 	workCh chan struct{}
 	stopCh chan struct{}
@@ -104,6 +111,7 @@ func newEndpointLifecycleManagerWithOptions(
 		idleEvictionDuration:             idleEvictionDuration,
 		now:                              now,
 		endpoints:                        make(map[string]*endpointLifecycleState),
+		activeAddresses:                  make(map[string]struct{}),
 		transientFailureEvictedAddresses: make(map[string]struct{}),
 		workCh:                           make(chan struct{}, 1),
 		stopCh:                           make(chan struct{}),
@@ -161,6 +169,7 @@ func (m *endpointLifecycleManager) recordRealTraffic(address string) {
 		return
 	}
 	state, ok := m.endpoints[address]
+	m.activeAddresses[address] = struct{}{}
 	if !ok {
 		state = &endpointLifecycleState{
 			lastRealTrafficAt: now,
@@ -196,11 +205,13 @@ func (m *endpointLifecycleManager) requestEndpointRecreation(address string) {
 		m.mu.Unlock()
 		return
 	}
+	if _, active := m.activeAddresses[address]; !active {
+		m.mu.Unlock()
+		return
+	}
 	state, ok := m.endpoints[address]
 	if !ok {
-		state = &endpointLifecycleState{
-			lastRealTrafficAt: now,
-		}
+		state = &endpointLifecycleState{lastRealTrafficAt: now}
 		m.endpoints[address] = state
 	}
 	state.needsCreate = true
@@ -271,13 +282,48 @@ func (m *endpointLifecycleManager) createEndpoint(address string) bool {
 	}
 
 	m.mu.Lock()
+	if m.testHooks != nil && m.testHooks.beforeCreateReconcile != nil {
+		m.testHooks.beforeCreateReconcile()
+	}
 	_, stillManaged := m.endpoints[address]
 	stopped := m.stopped
-	m.mu.Unlock()
 	if stopped || !stillManaged {
 		m.endpointCache.Evict(address)
 	}
+	m.mu.Unlock()
 	return true
+}
+
+func (m *endpointLifecycleManager) updateActiveAddresses(addresses map[string]struct{}) {
+	if m == nil {
+		return
+	}
+	if m.testHooks != nil && m.testHooks.beforeRemovalLock != nil {
+		m.testHooks.beforeRemovalLock()
+	}
+
+	m.mu.Lock()
+	if m.stopped {
+		m.mu.Unlock()
+		return
+	}
+	next := make(map[string]struct{}, len(addresses))
+	for address := range addresses {
+		if address == "" || address == m.defaultEndpointAddress {
+			continue
+		}
+		next[address] = struct{}{}
+	}
+	for address := range m.activeAddresses {
+		if _, active := next[address]; active {
+			continue
+		}
+		delete(m.endpoints, address)
+		delete(m.transientFailureEvictedAddresses, address)
+		m.endpointCache.Evict(address)
+	}
+	m.activeAddresses = next
+	m.mu.Unlock()
 }
 
 func (m *endpointLifecycleManager) pendingCreationAddresses() []string {
@@ -430,9 +476,8 @@ func (m *endpointLifecycleManager) evictEndpoint(address string, reason lifecycl
 	} else {
 		delete(m.transientFailureEvictedAddresses, address)
 	}
-	m.mu.Unlock()
-
 	m.endpointCache.Evict(address)
+	m.mu.Unlock()
 }
 
 func (m *endpointLifecycleManager) isManaged(address string) bool {
@@ -483,6 +528,7 @@ func (m *endpointLifecycleManager) shutdown() {
 
 		m.mu.Lock()
 		m.endpoints = make(map[string]*endpointLifecycleState)
+		m.activeAddresses = make(map[string]struct{})
 		m.transientFailureEvictedAddresses = make(map[string]struct{})
 		m.mu.Unlock()
 	})

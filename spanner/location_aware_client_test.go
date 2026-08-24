@@ -735,6 +735,7 @@ func TestLocationAwareSpannerClient_AffinityClientRequestsLifecycleRecreationFor
 		time.Now,
 	)
 	defer router.lifecycleManager.shutdown()
+	router.lifecycleManager.updateActiveAddresses(map[string]struct{}{"replica-2:443": {}})
 
 	unhealthyEndpoint := &mockEndpoint{address: "replica-2:443", healthy: false}
 	router.setTransactionAffinity("tx-unhealthy", unhealthyEndpoint)

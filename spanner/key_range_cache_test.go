@@ -17,6 +17,7 @@ limitations under the License.
 package spanner
 
 import (
+	"bytes"
 	"context"
 	"fmt"
 	"sync/atomic"
@@ -304,6 +305,7 @@ func TestKeyRangeCache_FillRoutingHintSkipsTransientFailureTablet(t *testing.T) 
 
 	endpointCache.Get(context.Background(), "server1")
 	endpointCache.Get(context.Background(), "server2")
+	manager.recordRealTraffic("server1")
 	endpointCache.setHealthy("server1", false)
 	endpointCache.setTransientFailure("server1", true)
 
@@ -724,6 +726,99 @@ func TestKeyRangeCache_GetActiveAddresses(t *testing.T) {
 	}
 	if _, ok := addresses["server-b"]; !ok {
 		t.Fatal("expected server-b to be active")
+	}
+}
+
+func TestCachedGroupUpdateIgnoresStaleGeneration(t *testing.T) {
+	group := &cachedGroup{groupUID: 5, leaderIdx: -1}
+	group.update(testRoutingGroup("2",
+		&sppb.Tablet{TabletUid: 1, Skip: true},
+		&sppb.Tablet{TabletUid: 2, ServerAddress: "survivor", Incarnation: []byte("2")},
+	))
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, ServerAddress: "isolated-dead", Incarnation: []byte("1")},
+		&sppb.Tablet{TabletUid: 2, ServerAddress: "survivor", Incarnation: []byte("1")},
+	))
+
+	group.mu.RLock()
+	defer group.mu.RUnlock()
+	if got := group.generation; !bytes.Equal(got, []byte("2")) {
+		t.Fatalf("generation = %q, want 2", got)
+	}
+	if got := group.tablets[0].serverAddress; got != "" {
+		t.Fatalf("stale update restored tablet address %q", got)
+	}
+	if !group.tablets[0].skip {
+		t.Fatal("stale update cleared tablet skip state")
+	}
+}
+
+func TestCachedGroupUpdateEqualGenerationRetainsSkippedEmptyTablet(t *testing.T) {
+	group := &cachedGroup{groupUID: 5, leaderIdx: -1}
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, Skip: true, Incarnation: []byte("1")},
+	))
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, ServerAddress: "isolated-dead", Incarnation: []byte("1")},
+	))
+
+	group.mu.RLock()
+	defer group.mu.RUnlock()
+	if got := group.tablets[0].serverAddress; got != "" {
+		t.Fatalf("equal-incarnation update restored tablet address %q", got)
+	}
+	if !group.tablets[0].skip {
+		t.Fatal("equal-incarnation update cleared tablet skip state")
+	}
+}
+
+func TestCachedGroupUpdateEqualGenerationAllowsNewerIncarnationRecovery(t *testing.T) {
+	group := &cachedGroup{groupUID: 5, leaderIdx: -1}
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, Skip: true, Incarnation: []byte("1")},
+	))
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, ServerAddress: "recovered", Incarnation: []byte("2")},
+	))
+
+	group.mu.RLock()
+	defer group.mu.RUnlock()
+	if got := group.tablets[0].serverAddress; got != "recovered" {
+		t.Fatalf("newer-incarnation tablet address = %q, want recovered", got)
+	}
+	if group.tablets[0].skip {
+		t.Fatal("newer-incarnation update did not clear tablet skip state")
+	}
+}
+
+func TestCachedGroupUpdateEqualGenerationSkipDoesNotLaunderIncarnation(t *testing.T) {
+	group := &cachedGroup{groupUID: 5, leaderIdx: -1}
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, ServerAddress: "healthy", Incarnation: []byte("1")},
+	))
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, Skip: true},
+	))
+	group.update(testRoutingGroup("1",
+		&sppb.Tablet{TabletUid: 1, ServerAddress: "replayed", Incarnation: []byte("1")},
+	))
+
+	group.mu.RLock()
+	defer group.mu.RUnlock()
+	if got := group.tablets[0].serverAddress; got != "" {
+		t.Fatalf("replayed tablet address = %q, want empty", got)
+	}
+	if !group.tablets[0].skip {
+		t.Fatal("replayed update cleared tablet skip state")
+	}
+}
+
+func testRoutingGroup(generation string, tablets ...*sppb.Tablet) *sppb.Group {
+	return &sppb.Group{
+		GroupUid:    5,
+		Generation:  []byte(generation),
+		LeaderIndex: 0,
+		Tablets:     tablets,
 	}
 }
 
