@@ -82,12 +82,16 @@ const (
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
 func defaultGRPCOptions() []option.ClientOption {
-	poolSize := runtime.GOMAXPROCS(0)
-	// Cap the default pool size to 8. Because grpc-go pins one TCP socket
-	// per ClientConn, 8 connections provides up to ~32 GiB/s of framing
-	// throughput (which readily saturates 200Gbps network interfaces).
-	// Bounding it at 8 prevents massive VMs (e.g. 192 cores) from allocating
-	// excessive socket buffers when not needed. Users can explicitly override.
+	// Scale connection pool based on GOMAXPROCS (typically the vCPU count on GCP).
+	// On GCP, egress bandwidth roughly scales at ~2 Gbps per vCPU.
+	// Since 1 grpc-go connection can push ~32 Gbps (4 GiB/s), 1 pool connection
+	// is more than enough to saturate the network limit of 1-16 core machines.
+	// We scale as (vCPU / 4) to stay well ahead of physical hardware envelopes
+	// without over-allocating minimal VMs. 
+	poolSize := runtime.GOMAXPROCS(0) / 4
+	if poolSize < 1 {
+		poolSize = 1
+	}
 	if poolSize > 8 {
 		poolSize = 8
 	}
