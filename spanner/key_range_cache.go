@@ -93,10 +93,6 @@ type routeSelectionState struct {
 	hasUnroutableReplica     bool
 }
 
-func (s routeSelectionState) allCoolingDown() bool {
-	return s.sawMatchingReplica && s.sawCoolingDownReplica && !s.sawNonCoolingDownReplica
-}
-
 type cachedGroup struct {
 	groupUID uint64
 
@@ -1207,9 +1203,9 @@ func (g *cachedGroup) fillRoutingHintWithCooldownTracker(ctx context.Context, en
 	if selected != nil {
 		return selected.pick(hint)
 	}
-	if state.allCoolingDown() {
+	if state.sawCoolingDownReplica {
 		g.mu.RLock()
-		selected = g.selectCoolingDownTabletLocked(endpointCache, deterministicRandom, preferLeader, directedReadOptions, hint)
+		selected = g.selectCoolingDownTabletLocked(endpointCache, preferLeader, directedReadOptions, hint, cooldowns)
 		if selected != nil {
 			g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, cooldowns, skippedTabletUIDsFromHint(hint))
 			g.mu.RUnlock()
@@ -1223,11 +1219,11 @@ func (g *cachedGroup) fillRoutingHintWithCooldownTracker(ctx context.Context, en
 	warmPendingEndpoints(ctx, endpointCache, pendingCreations)
 	selected, state = g.fillRoutingHintAttempt(endpointCache, lifecycleManager, deterministicRandom, preferLeader, directedReadOptions, hint, cooldowns, nil)
 	if selected == nil {
-		if !state.allCoolingDown() {
+		if !state.sawCoolingDownReplica {
 			return nil
 		}
 		g.mu.RLock()
-		selected = g.selectCoolingDownTabletLocked(endpointCache, deterministicRandom, preferLeader, directedReadOptions, hint)
+		selected = g.selectCoolingDownTabletLocked(endpointCache, preferLeader, directedReadOptions, hint, cooldowns)
 		if selected == nil {
 			g.mu.RUnlock()
 			return nil
@@ -1310,12 +1306,15 @@ func (g *cachedGroup) selectScoreAwareTabletLocked(endpointCache channelEndpoint
 	return selected.tablet
 }
 
-func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpointCache, deterministicRandom bool, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) *cachedTablet {
+func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpointCache, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker) *cachedTablet {
+	if cooldowns == nil {
+		return nil
+	}
 	hasDirectedReadOptions := directedReadOptions != nil && directedReadOptions.GetReplicas() != nil
 	preferredLeader := g.localLeaderForScoreBiasLocked(hasDirectedReadOptions)
 	candidates := make([]eligibleReplica, 0, len(g.tablets))
 	for _, tablet := range g.tablets {
-		if tablet == nil || !tablet.matches(directedReadOptions) || tablet.skip || tablet.serverAddress == "" {
+		if tablet == nil || !tablet.matches(directedReadOptions) || tablet.skip || tablet.serverAddress == "" || !cooldowns.isCoolingDown(tablet.serverAddress) {
 			continue
 		}
 		endpoint := tablet.getOrLoadEndpointIfPresent(endpointCache)
@@ -1328,11 +1327,26 @@ func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpoin
 			selectionCost: selectionCostForTablet(routingOperationUID(hint), preferLeader, endpoint, tablet, preferredLeader),
 		})
 	}
-	selected := selectEligibleReplica(candidates, deterministicRandom)
-	if selected == nil {
-		return nil
+	sort.SliceStable(candidates, func(i, j int) bool {
+		firstFailure := cooldowns.lastOverloadFailure(candidates[i].tablet.serverAddress)
+		secondFailure := cooldowns.lastOverloadFailure(candidates[j].tablet.serverAddress)
+		if firstFailure.IsZero() {
+			return false
+		}
+		if secondFailure.IsZero() {
+			return true
+		}
+		if !firstFailure.Equal(secondFailure) {
+			return firstFailure.Before(secondFailure)
+		}
+		return candidates[i].selectionCost < candidates[j].selectionCost
+	})
+	for _, candidate := range candidates {
+		if cooldowns.tryReserveProbe(candidate.tablet.serverAddress) {
+			return candidate.tablet
+		}
 	}
-	return selected.tablet
+	return nil
 }
 
 func (g *cachedGroup) localLeaderForScoreBiasLocked(hasDirectedReadOptions bool) *cachedTablet {

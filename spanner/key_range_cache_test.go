@@ -26,6 +26,7 @@ import (
 
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/connectivity"
 )
 
@@ -206,6 +207,46 @@ func TestCachedGroupFillRoutingHint_PreferLeaderDisabledByDirectedReadOptions(t 
 	)
 	if endpoint == nil || endpoint.Address() != "replica" {
 		t.Fatalf("expected directed read to route to replica, got %#v", endpoint)
+	}
+}
+
+func TestCachedGroupFillRoutingHintReservesHintedOverloadProbe(t *testing.T) {
+	endpointCache := newTestEndpointCache()
+	endpointCache.Get(context.Background(), "replica:443")
+	group := &cachedGroup{
+		leaderIdx: 0,
+		tablets: []*cachedTablet{{
+			tabletUID:     1,
+			serverAddress: "replica:443",
+			incarnation:   []byte("1"),
+		}},
+	}
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	cooldowns := newEndpointOverloadCooldownTrackerWithOptions(
+		10*time.Second, time.Minute, 10*time.Minute, clock.Now,
+		func(int64) int64 { return 0 },
+	)
+	hintDelay := 100 * time.Millisecond
+	for i := 0; i < defaultEndpointCooldownMaxTier; i++ {
+		cooldowns.recordFailureWithStatus("replica:443", codes.ResourceExhausted, &hintDelay)
+	}
+
+	selectEndpoint := func() channelEndpoint {
+		return group.fillRoutingHintWithCooldownTracker(
+			context.Background(), endpointCache, nil, true, false,
+			&sppb.DirectedReadOptions{}, &sppb.RoutingHint{}, cooldowns,
+		)
+	}
+	clock.Advance(99 * time.Millisecond)
+	if endpoint := selectEndpoint(); endpoint != nil {
+		t.Fatalf("selected endpoint before probe delay: %v", endpoint.Address())
+	}
+	clock.Advance(time.Millisecond)
+	if endpoint := selectEndpoint(); endpoint == nil || endpoint.Address() != "replica:443" {
+		t.Fatalf("reserved probe endpoint = %v, want replica:443", endpoint)
+	}
+	if endpoint := selectEndpoint(); endpoint != nil {
+		t.Fatalf("selected duplicate reserved probe: %v", endpoint.Address())
 	}
 }
 
