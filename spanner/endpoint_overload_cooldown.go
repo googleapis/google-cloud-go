@@ -19,6 +19,7 @@ package spanner
 import (
 	"math/rand"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	"google.golang.org/grpc/codes"
@@ -61,6 +62,7 @@ type hintedEndpointCooldown struct {
 type endpointOverloadCooldownTracker struct {
 	mu              sync.RWMutex
 	entries         map[string]endpointOverloadCooldownState
+	entryCount      atomic.Int64
 	initialCooldown time.Duration
 	maxCooldown     time.Duration
 	resetAfter      time.Duration
@@ -132,7 +134,7 @@ func (t *endpointOverloadCooldownTracker) isCoolingDown(address string) bool {
 		return true
 	}
 	if t.isIdle(state, now) {
-		delete(t.entries, address)
+		t.deleteEntryLocked(address)
 	}
 	return false
 }
@@ -172,13 +174,19 @@ func (t *endpointOverloadCooldownTracker) recordFailureWithStatus(address string
 		state.unavailableUntil = laterTime(state.unavailableUntil, now.Add(t.cooldownForFailures(failures)))
 		state.lastUnavailableFailureAt = now
 	}
-	t.entries[address] = state
+	t.storeEntryLocked(address, state)
 }
 
 func (t *endpointOverloadCooldownTracker) recordSuccess(address string) {
 	if t == nil || address == "" {
 		return
 	}
+	if t.entryCount.Load() == 0 {
+		// A concurrent insertion can miss one success credit, delaying repair by
+		// one call without corrupting state.
+		return
+	}
+	// A stale nonzero read falls through to the locked lookup and finds no entry.
 	now := t.now()
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -187,12 +195,12 @@ func (t *endpointOverloadCooldownTracker) recordSuccess(address string) {
 		return
 	}
 	if t.isIdle(state, now) {
-		delete(t.entries, address)
+		t.deleteEntryLocked(address)
 		return
 	}
 	state.successesTowardRepair++
 	if state.successesTowardRepair < defaultEndpointCooldownSuccessesToRepair {
-		t.entries[address] = state
+		t.storeEntryLocked(address, state)
 		return
 	}
 	if state.overloadFailures > 0 {
@@ -204,10 +212,10 @@ func (t *endpointOverloadCooldownTracker) recordSuccess(address string) {
 	state.successesTowardRepair = 0
 	if state.overloadFailures == 0 && state.unavailableFailures == 0 &&
 		!state.overloadUntil.After(now) && !state.unavailableUntil.After(now) {
-		delete(t.entries, address)
+		t.deleteEntryLocked(address)
 		return
 	}
-	t.entries[address] = state
+	t.storeEntryLocked(address, state)
 }
 
 func (t *endpointOverloadCooldownTracker) tryReserveProbe(address string) bool {
@@ -225,12 +233,15 @@ func (t *endpointOverloadCooldownTracker) tryReserveProbe(address string) bool {
 	minMillis := minEndpointProbeReservation.Milliseconds()
 	rangeMillis := maxEndpointProbeReservation.Milliseconds() - minMillis + 1
 	state.probeReservedUntil = now.Add(time.Duration(minMillis+t.randInt63n(rangeMillis)) * time.Millisecond)
-	t.entries[address] = state
+	t.storeEntryLocked(address, state)
 	return true
 }
 
 func (t *endpointOverloadCooldownTracker) lastOverloadFailure(address string) time.Time {
 	if t == nil || address == "" {
+		return time.Time{}
+	}
+	if t.entryCount.Load() == 0 {
 		return time.Time{}
 	}
 	t.mu.RLock()
@@ -306,6 +317,9 @@ func (t *endpointOverloadCooldownTracker) pruneStaleEntries(maxAge time.Duration
 	if t == nil || maxAge <= 0 {
 		return
 	}
+	if t.entryCount.Load() == 0 {
+		return
+	}
 	now := t.now()
 	t.mu.Lock()
 	defer t.mu.Unlock()
@@ -315,9 +329,26 @@ func (t *endpointOverloadCooldownTracker) pruneStaleEntries(maxAge time.Duration
 		}
 		lastFailureAt := laterTime(state.lastOverloadFailureAt, state.lastUnavailableFailureAt)
 		if lastFailureAt.IsZero() || now.Sub(lastFailureAt) >= maxAge {
-			delete(t.entries, address)
+			t.deleteEntryLocked(address)
 		}
 	}
+}
+
+// storeEntryLocked stores state and tracks first insertion. t.mu must be held.
+func (t *endpointOverloadCooldownTracker) storeEntryLocked(address string, state endpointOverloadCooldownState) {
+	if _, ok := t.entries[address]; !ok {
+		t.entryCount.Add(1)
+	}
+	t.entries[address] = state
+}
+
+// deleteEntryLocked deletes state and tracks removal. t.mu must be held.
+func (t *endpointOverloadCooldownTracker) deleteEntryLocked(address string) {
+	if _, ok := t.entries[address]; !ok {
+		return
+	}
+	delete(t.entries, address)
+	t.entryCount.Add(-1)
 }
 
 func minCooldownDuration(first, second time.Duration) time.Duration {

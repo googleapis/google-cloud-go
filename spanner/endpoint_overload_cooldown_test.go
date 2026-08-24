@@ -128,6 +128,75 @@ func TestEndpointOverloadCooldownTracker_RepairDeletesZeroTierExpiredEntry(t *te
 	if _, ok := tracker.entries["replica-a:443"]; ok {
 		t.Fatal("zero-tier expired entry was retained")
 	}
+	assertEndpointCooldownEntryCount(t, tracker, 0)
+}
+
+func TestEndpointOverloadCooldownTracker_EntryCountTracksMapMutations(t *testing.T) {
+	newTracker := func(clock *lifecycleTestClock) *endpointOverloadCooldownTracker {
+		return newEndpointOverloadCooldownTrackerWithOptions(
+			time.Second, time.Second, 10*time.Minute, clock.Now,
+			func(int64) int64 { return 0 },
+		)
+	}
+
+	t.Run("insert and repair delete", func(t *testing.T) {
+		clock := newLifecycleTestClock(time.Unix(100, 0))
+		tracker := newTracker(clock)
+		assertEndpointCooldownEntryCount(t, tracker, 0)
+		hint := 100 * time.Millisecond
+		tracker.recordFailureWithStatus("replica-a:443", codes.ResourceExhausted, &hint)
+		tracker.recordFailureWithStatus("replica-a:443", codes.ResourceExhausted, &hint)
+		tracker.recordFailureWithStatus("replica-b:443", codes.ResourceExhausted, &hint)
+		assertEndpointCooldownEntryCount(t, tracker, 2)
+
+		clock.Advance(2 * hint)
+		for i := 0; i < 2*defaultEndpointCooldownSuccessesToRepair; i++ {
+			tracker.recordSuccess("replica-a:443")
+		}
+		assertEndpointCooldownEntryCount(t, tracker, 1)
+	})
+
+	t.Run("idle delete", func(t *testing.T) {
+		clock := newLifecycleTestClock(time.Unix(100, 0))
+		tracker := newTracker(clock)
+		tracker.recordFailure("replica-a:443")
+		assertEndpointCooldownEntryCount(t, tracker, 1)
+		clock.Advance(10 * time.Minute)
+		tracker.isCoolingDown("replica-a:443")
+		assertEndpointCooldownEntryCount(t, tracker, 0)
+	})
+
+	t.Run("prune delete", func(t *testing.T) {
+		clock := newLifecycleTestClock(time.Unix(100, 0))
+		tracker := newTracker(clock)
+		tracker.recordFailure("replica-a:443")
+		tracker.recordFailure("replica-b:443")
+		assertEndpointCooldownEntryCount(t, tracker, 2)
+		clock.Advance(20 * time.Minute)
+		tracker.pruneStaleEntries(20 * time.Minute)
+		assertEndpointCooldownEntryCount(t, tracker, 0)
+	})
+}
+
+func TestEndpointOverloadCooldownTracker_EmptyRecordSuccessSkipsClock(t *testing.T) {
+	tracker := newEndpointOverloadCooldownTrackerWithOptions(
+		time.Second, time.Second, 10*time.Minute,
+		func() time.Time { t.Fatal("recordSuccess called clock for empty tracker"); return time.Time{} },
+		func(int64) int64 { return 0 },
+	)
+
+	tracker.recordSuccess("replica-a:443")
+	assertEndpointCooldownEntryCount(t, tracker, 0)
+}
+
+func assertEndpointCooldownEntryCount(t *testing.T, tracker *endpointOverloadCooldownTracker, want int64) {
+	t.Helper()
+	if got := tracker.entryCount.Load(); got != want {
+		t.Fatalf("entryCount = %d, want %d", got, want)
+	}
+	if got := int64(len(tracker.entries)); got != want {
+		t.Fatalf("len(entries) = %d, want %d", got, want)
+	}
 }
 
 func TestEndpointOverloadCooldownTracker_FailureResetsRepairAndIdleResetsLanes(t *testing.T) {
