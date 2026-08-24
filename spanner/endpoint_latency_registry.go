@@ -18,7 +18,6 @@ package spanner
 
 import (
 	"math"
-	"sort"
 	"sync"
 	"sync/atomic"
 	"time"
@@ -28,6 +27,7 @@ const (
 	endpointLatencyDefaultPenaltyValue = 1_000_000.0
 	endpointLatencyMaxTrackers         = 100_000
 	endpointLatencyCleanupInterval     = time.Minute
+	endpointLatencyEvictSampleSize     = 8
 )
 
 var (
@@ -201,6 +201,9 @@ func (r *endpointLatencyRegistry) getOrCreateTracker(key endpointLatencyTrackerK
 	}
 	entry.lastAccessNanos.Store(now.UnixNano())
 	r.trackers[key] = entry
+	if r.maxTrackers > 0 && len(r.trackers) > r.maxTrackers {
+		r.evictSampleLocked(now)
+	}
 	if r.claimCleanup(now) {
 		r.cleanupLocked(now)
 	}
@@ -246,30 +249,34 @@ func (r *endpointLatencyRegistry) cleanup(now time.Time) {
 }
 
 func (r *endpointLatencyRegistry) cleanupLocked(now time.Time) {
-	if len(r.trackers) == 0 {
-		return
-	}
-
-	entries := make([]*endpointLatencyTrackerEntry, 0, len(r.trackers))
 	for key, entry := range r.trackers {
 		if r.isExpiredEntry(entry, now) {
 			delete(r.trackers, key)
-			continue
 		}
-		entries = append(entries, entry)
 	}
+}
 
-	if r.maxTrackers <= 0 || len(entries) <= r.maxTrackers {
-		return
-	}
-
-	sort.Slice(entries, func(i, j int) bool {
-		return entries[i].lastAccessNanos.Load() < entries[j].lastAccessNanos.Load()
-	})
-
-	excess := len(entries) - r.maxTrackers
-	for i := 0; i < excess; i++ {
-		delete(r.trackers, entries[i].key)
+func (r *endpointLatencyRegistry) evictSampleLocked(now time.Time) {
+	for r.maxTrackers > 0 && len(r.trackers) > r.maxTrackers {
+		var victim *endpointLatencyTrackerEntry
+		sampled := 0
+		for _, entry := range r.trackers {
+			if r.isExpiredEntry(entry, now) {
+				victim = entry
+				break
+			}
+			if victim == nil || entry.lastAccessNanos.Load() < victim.lastAccessNanos.Load() {
+				victim = entry
+			}
+			sampled++
+			if sampled >= endpointLatencyEvictSampleSize {
+				break
+			}
+		}
+		if victim == nil {
+			return
+		}
+		delete(r.trackers, victim.key)
 	}
 }
 

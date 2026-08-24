@@ -160,23 +160,17 @@ func TestEndpointLatencyRegistryRateLimitsCleanupWhenOverLimit(t *testing.T) {
 	registry.maxTrackers = 2
 
 	registry.recordLatency(1, false, "server-a:443", 10*time.Millisecond)
+	lastCleanupNanos := registry.lastCleanupNanos.Load()
 	registry.recordLatency(2, false, "server-b:443", 10*time.Millisecond)
 	registry.recordLatency(3, false, "server-c:443", 10*time.Millisecond)
 
 	registry.mu.RLock()
 	trackerCount := len(registry.trackers)
 	registry.mu.RUnlock()
-	if trackerCount != 3 {
-		t.Fatalf("tracker count before cleanup interval = %d, want 3", trackerCount)
-	}
-
-	now = now.Add(registry.cleanupInterval)
-	registry.recordLatency(4, false, "server-d:443", 10*time.Millisecond)
-
-	registry.mu.RLock()
-	trackerCount = len(registry.trackers)
-	registry.mu.RUnlock()
 	if trackerCount != registry.maxTrackers {
-		t.Fatalf("tracker count after cleanup interval = %d, want %d", trackerCount, registry.maxTrackers)
+		t.Fatalf("tracker count after over-cap insert = %d, want %d", trackerCount, registry.maxTrackers)
+	}
+	if got := registry.lastCleanupNanos.Load(); got != lastCleanupNanos {
+		t.Fatalf("last cleanup timestamp after sampled eviction = %d, want %d", got, lastCleanupNanos)
 	}
 }
