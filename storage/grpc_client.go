@@ -23,6 +23,7 @@ import (
 	"io"
 	"log"
 	"os"
+	"runtime"
 	"strconv"
 	"strings"
 
@@ -81,8 +82,13 @@ const (
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
 func defaultGRPCOptions() []option.ClientOption {
+	poolSize := runtime.GOMAXPROCS(0)
+	if poolSize > 4 {
+		poolSize = 4
+	}
+
 	defaults := []option.ClientOption{
-		option.WithGRPCConnectionPool(defaultConnPoolSize),
+		option.WithGRPCConnectionPool(poolSize),
 	}
 
 	// Set emulator options for gRPC if an emulator was specified. Note that in a
