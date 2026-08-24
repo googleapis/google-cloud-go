@@ -1315,7 +1315,7 @@ libraries:
           import_path: shopping/type
           proto_only: true
   - name: spanner
-    version: 1.94.0
+    version: 1.95.0
     apis:
       - path: google/spanner/v1
         go:
