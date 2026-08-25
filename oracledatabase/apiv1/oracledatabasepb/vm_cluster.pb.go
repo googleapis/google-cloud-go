@@ -271,6 +271,112 @@ func (CloudVmClusterProperties_StorageManagementType) EnumDescriptor() ([]byte, 
 	return file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDescGZIP(), []int{1, 3}
 }
 
+// Storage types for VM File System.
+type CloudVmClusterProperties_VmFileSystemStorageType int32
+
+const (
+	// Unspecified storage type.
+	CloudVmClusterProperties_VM_FILE_SYSTEM_STORAGE_TYPE_UNSPECIFIED CloudVmClusterProperties_VmFileSystemStorageType = 0
+	// Local DB server storage.
+	CloudVmClusterProperties_VM_FILE_SYSTEM_STORAGE_TYPE_LOCAL CloudVmClusterProperties_VmFileSystemStorageType = 1
+	// Exascale storage.
+	CloudVmClusterProperties_VM_FILE_SYSTEM_STORAGE_TYPE_EXASCALE CloudVmClusterProperties_VmFileSystemStorageType = 2
+)
+
+// Enum value maps for CloudVmClusterProperties_VmFileSystemStorageType.
+var (
+	CloudVmClusterProperties_VmFileSystemStorageType_name = map[int32]string{
+		0: "VM_FILE_SYSTEM_STORAGE_TYPE_UNSPECIFIED",
+		1: "VM_FILE_SYSTEM_STORAGE_TYPE_LOCAL",
+		2: "VM_FILE_SYSTEM_STORAGE_TYPE_EXASCALE",
+	}
+	CloudVmClusterProperties_VmFileSystemStorageType_value = map[string]int32{
+		"VM_FILE_SYSTEM_STORAGE_TYPE_UNSPECIFIED": 0,
+		"VM_FILE_SYSTEM_STORAGE_TYPE_LOCAL":       1,
+		"VM_FILE_SYSTEM_STORAGE_TYPE_EXASCALE":    2,
+	}
+)
+
+func (x CloudVmClusterProperties_VmFileSystemStorageType) Enum() *CloudVmClusterProperties_VmFileSystemStorageType {
+	p := new(CloudVmClusterProperties_VmFileSystemStorageType)
+	*p = x
+	return p
+}
+
+func (x CloudVmClusterProperties_VmFileSystemStorageType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CloudVmClusterProperties_VmFileSystemStorageType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_oracledatabase_v1_vm_cluster_proto_enumTypes[4].Descriptor()
+}
+
+func (CloudVmClusterProperties_VmFileSystemStorageType) Type() protoreflect.EnumType {
+	return &file_google_cloud_oracledatabase_v1_vm_cluster_proto_enumTypes[4]
+}
+
+func (x CloudVmClusterProperties_VmFileSystemStorageType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CloudVmClusterProperties_VmFileSystemStorageType.Descriptor instead.
+func (CloudVmClusterProperties_VmFileSystemStorageType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDescGZIP(), []int{1, 4}
+}
+
+// Storage types for VM Backup.
+type CloudVmClusterProperties_VmBackupStorageType int32
+
+const (
+	// Unspecified storage type.
+	CloudVmClusterProperties_VM_BACKUP_STORAGE_TYPE_UNSPECIFIED CloudVmClusterProperties_VmBackupStorageType = 0
+	// Local DB server storage.
+	CloudVmClusterProperties_VM_BACKUP_STORAGE_TYPE_LOCAL CloudVmClusterProperties_VmBackupStorageType = 1
+	// Exascale storage.
+	CloudVmClusterProperties_VM_BACKUP_STORAGE_TYPE_EXASCALE CloudVmClusterProperties_VmBackupStorageType = 2
+)
+
+// Enum value maps for CloudVmClusterProperties_VmBackupStorageType.
+var (
+	CloudVmClusterProperties_VmBackupStorageType_name = map[int32]string{
+		0: "VM_BACKUP_STORAGE_TYPE_UNSPECIFIED",
+		1: "VM_BACKUP_STORAGE_TYPE_LOCAL",
+		2: "VM_BACKUP_STORAGE_TYPE_EXASCALE",
+	}
+	CloudVmClusterProperties_VmBackupStorageType_value = map[string]int32{
+		"VM_BACKUP_STORAGE_TYPE_UNSPECIFIED": 0,
+		"VM_BACKUP_STORAGE_TYPE_LOCAL":       1,
+		"VM_BACKUP_STORAGE_TYPE_EXASCALE":    2,
+	}
+)
+
+func (x CloudVmClusterProperties_VmBackupStorageType) Enum() *CloudVmClusterProperties_VmBackupStorageType {
+	p := new(CloudVmClusterProperties_VmBackupStorageType)
+	*p = x
+	return p
+}
+
+func (x CloudVmClusterProperties_VmBackupStorageType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (CloudVmClusterProperties_VmBackupStorageType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_oracledatabase_v1_vm_cluster_proto_enumTypes[5].Descriptor()
+}
+
+func (CloudVmClusterProperties_VmBackupStorageType) Type() protoreflect.EnumType {
+	return &file_google_cloud_oracledatabase_v1_vm_cluster_proto_enumTypes[5]
+}
+
+func (x CloudVmClusterProperties_VmBackupStorageType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use CloudVmClusterProperties_VmBackupStorageType.Descriptor instead.
+func (CloudVmClusterProperties_VmBackupStorageType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDescGZIP(), []int{1, 5}
+}
+
 // Details of the Cloud VM Cluster resource.
 // https://docs.oracle.com/en-us/iaas/api/#/en/database/20160918/CloudVmCluster/
 type CloudVmCluster struct {
@@ -536,8 +642,14 @@ type CloudVmClusterProperties struct {
 	ComputeModel ComputeModel `protobuf:"varint,37,opt,name=compute_model,json=computeModel,proto3,enum=google.cloud.oracledatabase.v1.ComputeModel" json:"compute_model,omitempty"`
 	// Output only. The storage management type of the VM Cluster.
 	StorageManagementType CloudVmClusterProperties_StorageManagementType `protobuf:"varint,38,opt,name=storage_management_type,json=storageManagementType,proto3,enum=google.cloud.oracledatabase.v1.CloudVmClusterProperties_StorageManagementType" json:"storage_management_type,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. Specifies whether VM file system storage / VM images are stored
+	// on local DB server storage or Exascale storage.
+	VmFileSystemStorageType CloudVmClusterProperties_VmFileSystemStorageType `protobuf:"varint,39,opt,name=vm_file_system_storage_type,json=vmFileSystemStorageType,proto3,enum=google.cloud.oracledatabase.v1.CloudVmClusterProperties_VmFileSystemStorageType" json:"vm_file_system_storage_type,omitempty"`
+	// Optional. Specifies whether VM backups are stored on local DB server
+	// storage or Exascale storage.
+	VmBackupStorageType CloudVmClusterProperties_VmBackupStorageType `protobuf:"varint,40,opt,name=vm_backup_storage_type,json=vmBackupStorageType,proto3,enum=google.cloud.oracledatabase.v1.CloudVmClusterProperties_VmBackupStorageType" json:"vm_backup_storage_type,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *CloudVmClusterProperties) Reset() {
@@ -808,6 +920,20 @@ func (x *CloudVmClusterProperties) GetStorageManagementType() CloudVmClusterProp
 	return CloudVmClusterProperties_STORAGE_MANAGEMENT_TYPE_UNSPECIFIED
 }
 
+func (x *CloudVmClusterProperties) GetVmFileSystemStorageType() CloudVmClusterProperties_VmFileSystemStorageType {
+	if x != nil {
+		return x.VmFileSystemStorageType
+	}
+	return CloudVmClusterProperties_VM_FILE_SYSTEM_STORAGE_TYPE_UNSPECIFIED
+}
+
+func (x *CloudVmClusterProperties) GetVmBackupStorageType() CloudVmClusterProperties_VmBackupStorageType {
+	if x != nil {
+		return x.VmBackupStorageType
+	}
+	return CloudVmClusterProperties_VM_BACKUP_STORAGE_TYPE_UNSPECIFIED
+}
+
 // Data collection options for diagnostics.
 type DataCollectionOptions struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -911,7 +1037,7 @@ const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x9f\x01\xeaA\x9b\x01\n" +
-	",oracledatabase.googleapis.com/CloudVmCluster\x12Jprojects/{project}/locations/{location}/cloudVmClusters/{cloud_vm_cluster}*\x0fcloudVmClusters2\x0ecloudVmCluster\"\xad\x12\n" +
+	",oracledatabase.googleapis.com/CloudVmCluster\x12Jprojects/{project}/locations/{location}/cloudVmClusters/{cloud_vm_cluster}*\x0fcloudVmClusters2\x0ecloudVmCluster\"\xed\x16\n" +
 	"\x18CloudVmClusterProperties\x12\x17\n" +
 	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12l\n" +
 	"\flicense_type\x18\x02 \x01(\x0e2D.google.cloud.oracledatabase.v1.CloudVmClusterProperties.LicenseTypeB\x03\xe0A\x02R\vlicenseType\x12\"\n" +
@@ -950,7 +1076,9 @@ const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"\x0fdns_listener_ip\x18# \x01(\tB\x03\xe0A\x03R\rdnsListenerIp\x12&\n" +
 	"\fcluster_name\x18$ \x01(\tB\x03\xe0A\x01R\vclusterName\x12V\n" +
 	"\rcompute_model\x18% \x01(\x0e2,.google.cloud.oracledatabase.v1.ComputeModelB\x03\xe0A\x03R\fcomputeModel\x12\x8b\x01\n" +
-	"\x17storage_management_type\x18& \x01(\x0e2N.google.cloud.oracledatabase.v1.CloudVmClusterProperties.StorageManagementTypeB\x03\xe0A\x03R\x15storageManagementType\"]\n" +
+	"\x17storage_management_type\x18& \x01(\x0e2N.google.cloud.oracledatabase.v1.CloudVmClusterProperties.StorageManagementTypeB\x03\xe0A\x03R\x15storageManagementType\x12\x93\x01\n" +
+	"\x1bvm_file_system_storage_type\x18' \x01(\x0e2P.google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmFileSystemStorageTypeB\x03\xe0A\x01R\x17vmFileSystemStorageType\x12\x86\x01\n" +
+	"\x16vm_backup_storage_type\x18( \x01(\x0e2L.google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmBackupStorageTypeB\x03\xe0A\x01R\x13vmBackupStorageType\"]\n" +
 	"\vLicenseType\x12\x1c\n" +
 	"\x18LICENSE_TYPE_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10LICENSE_INCLUDED\x10\x01\x12\x1a\n" +
@@ -974,7 +1102,15 @@ const file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc = "" +
 	"\x15StorageManagementType\x12'\n" +
 	"#STORAGE_MANAGEMENT_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ASM\x10\x01\x12\f\n" +
-	"\bEXASCALE\x10\x02\"\xd4\x01\n" +
+	"\bEXASCALE\x10\x02\"\x97\x01\n" +
+	"\x17VmFileSystemStorageType\x12+\n" +
+	"'VM_FILE_SYSTEM_STORAGE_TYPE_UNSPECIFIED\x10\x00\x12%\n" +
+	"!VM_FILE_SYSTEM_STORAGE_TYPE_LOCAL\x10\x01\x12(\n" +
+	"$VM_FILE_SYSTEM_STORAGE_TYPE_EXASCALE\x10\x02\"\x84\x01\n" +
+	"\x13VmBackupStorageType\x12&\n" +
+	"\"VM_BACKUP_STORAGE_TYPE_UNSPECIFIED\x10\x00\x12 \n" +
+	"\x1cVM_BACKUP_STORAGE_TYPE_LOCAL\x10\x01\x12#\n" +
+	"\x1fVM_BACKUP_STORAGE_TYPE_EXASCALE\x10\x02\"\xd4\x01\n" +
 	"\x15DataCollectionOptions\x12A\n" +
 	"\x1adiagnostics_events_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x18diagnosticsEventsEnabled\x12?\n" +
 	"\x19health_monitoring_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x17healthMonitoringEnabled\x127\n" +
@@ -993,39 +1129,43 @@ func file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDescGZIP() []byte {
 	return file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDescData
 }
 
-var file_google_cloud_oracledatabase_v1_vm_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_google_cloud_oracledatabase_v1_vm_cluster_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_google_cloud_oracledatabase_v1_vm_cluster_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_cloud_oracledatabase_v1_vm_cluster_proto_goTypes = []any{
-	(CloudVmClusterProperties_LicenseType)(0),           // 0: google.cloud.oracledatabase.v1.CloudVmClusterProperties.LicenseType
-	(CloudVmClusterProperties_DiskRedundancy)(0),        // 1: google.cloud.oracledatabase.v1.CloudVmClusterProperties.DiskRedundancy
-	(CloudVmClusterProperties_State)(0),                 // 2: google.cloud.oracledatabase.v1.CloudVmClusterProperties.State
-	(CloudVmClusterProperties_StorageManagementType)(0), // 3: google.cloud.oracledatabase.v1.CloudVmClusterProperties.StorageManagementType
-	(*CloudVmCluster)(nil),                              // 4: google.cloud.oracledatabase.v1.CloudVmCluster
-	(*CloudVmClusterProperties)(nil),                    // 5: google.cloud.oracledatabase.v1.CloudVmClusterProperties
-	(*DataCollectionOptions)(nil),                       // 6: google.cloud.oracledatabase.v1.DataCollectionOptions
-	nil,                                                 // 7: google.cloud.oracledatabase.v1.CloudVmCluster.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                       // 8: google.protobuf.Timestamp
-	(*IdentityConnector)(nil),                           // 9: google.cloud.oracledatabase.v1.IdentityConnector
-	(*datetime.TimeZone)(nil),                           // 10: google.type.TimeZone
-	(ComputeModel)(0),                                   // 11: google.cloud.oracledatabase.v1.ComputeModel
+	(CloudVmClusterProperties_LicenseType)(0),             // 0: google.cloud.oracledatabase.v1.CloudVmClusterProperties.LicenseType
+	(CloudVmClusterProperties_DiskRedundancy)(0),          // 1: google.cloud.oracledatabase.v1.CloudVmClusterProperties.DiskRedundancy
+	(CloudVmClusterProperties_State)(0),                   // 2: google.cloud.oracledatabase.v1.CloudVmClusterProperties.State
+	(CloudVmClusterProperties_StorageManagementType)(0),   // 3: google.cloud.oracledatabase.v1.CloudVmClusterProperties.StorageManagementType
+	(CloudVmClusterProperties_VmFileSystemStorageType)(0), // 4: google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmFileSystemStorageType
+	(CloudVmClusterProperties_VmBackupStorageType)(0),     // 5: google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmBackupStorageType
+	(*CloudVmCluster)(nil),                                // 6: google.cloud.oracledatabase.v1.CloudVmCluster
+	(*CloudVmClusterProperties)(nil),                      // 7: google.cloud.oracledatabase.v1.CloudVmClusterProperties
+	(*DataCollectionOptions)(nil),                         // 8: google.cloud.oracledatabase.v1.DataCollectionOptions
+	nil,                                                   // 9: google.cloud.oracledatabase.v1.CloudVmCluster.LabelsEntry
+	(*timestamppb.Timestamp)(nil),                         // 10: google.protobuf.Timestamp
+	(*IdentityConnector)(nil),                             // 11: google.cloud.oracledatabase.v1.IdentityConnector
+	(*datetime.TimeZone)(nil),                             // 12: google.type.TimeZone
+	(ComputeModel)(0),                                     // 13: google.cloud.oracledatabase.v1.ComputeModel
 }
 var file_google_cloud_oracledatabase_v1_vm_cluster_proto_depIdxs = []int32{
-	5,  // 0: google.cloud.oracledatabase.v1.CloudVmCluster.properties:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties
-	7,  // 1: google.cloud.oracledatabase.v1.CloudVmCluster.labels:type_name -> google.cloud.oracledatabase.v1.CloudVmCluster.LabelsEntry
-	8,  // 2: google.cloud.oracledatabase.v1.CloudVmCluster.create_time:type_name -> google.protobuf.Timestamp
-	9,  // 3: google.cloud.oracledatabase.v1.CloudVmCluster.identity_connector:type_name -> google.cloud.oracledatabase.v1.IdentityConnector
+	7,  // 0: google.cloud.oracledatabase.v1.CloudVmCluster.properties:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties
+	9,  // 1: google.cloud.oracledatabase.v1.CloudVmCluster.labels:type_name -> google.cloud.oracledatabase.v1.CloudVmCluster.LabelsEntry
+	10, // 2: google.cloud.oracledatabase.v1.CloudVmCluster.create_time:type_name -> google.protobuf.Timestamp
+	11, // 3: google.cloud.oracledatabase.v1.CloudVmCluster.identity_connector:type_name -> google.cloud.oracledatabase.v1.IdentityConnector
 	0,  // 4: google.cloud.oracledatabase.v1.CloudVmClusterProperties.license_type:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties.LicenseType
-	10, // 5: google.cloud.oracledatabase.v1.CloudVmClusterProperties.time_zone:type_name -> google.type.TimeZone
+	12, // 5: google.cloud.oracledatabase.v1.CloudVmClusterProperties.time_zone:type_name -> google.type.TimeZone
 	1,  // 6: google.cloud.oracledatabase.v1.CloudVmClusterProperties.disk_redundancy:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties.DiskRedundancy
-	6,  // 7: google.cloud.oracledatabase.v1.CloudVmClusterProperties.diagnostics_data_collection_options:type_name -> google.cloud.oracledatabase.v1.DataCollectionOptions
+	8,  // 7: google.cloud.oracledatabase.v1.CloudVmClusterProperties.diagnostics_data_collection_options:type_name -> google.cloud.oracledatabase.v1.DataCollectionOptions
 	2,  // 8: google.cloud.oracledatabase.v1.CloudVmClusterProperties.state:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties.State
-	11, // 9: google.cloud.oracledatabase.v1.CloudVmClusterProperties.compute_model:type_name -> google.cloud.oracledatabase.v1.ComputeModel
+	13, // 9: google.cloud.oracledatabase.v1.CloudVmClusterProperties.compute_model:type_name -> google.cloud.oracledatabase.v1.ComputeModel
 	3,  // 10: google.cloud.oracledatabase.v1.CloudVmClusterProperties.storage_management_type:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties.StorageManagementType
-	11, // [11:11] is the sub-list for method output_type
-	11, // [11:11] is the sub-list for method input_type
-	11, // [11:11] is the sub-list for extension type_name
-	11, // [11:11] is the sub-list for extension extendee
-	0,  // [0:11] is the sub-list for field type_name
+	4,  // 11: google.cloud.oracledatabase.v1.CloudVmClusterProperties.vm_file_system_storage_type:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmFileSystemStorageType
+	5,  // 12: google.cloud.oracledatabase.v1.CloudVmClusterProperties.vm_backup_storage_type:type_name -> google.cloud.oracledatabase.v1.CloudVmClusterProperties.VmBackupStorageType
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_oracledatabase_v1_vm_cluster_proto_init() }
@@ -1039,7 +1179,7 @@ func file_google_cloud_oracledatabase_v1_vm_cluster_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc), len(file_google_cloud_oracledatabase_v1_vm_cluster_proto_rawDesc)),
-			NumEnums:      4,
+			NumEnums:      6,
 			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,

@@ -297,24 +297,31 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// EnrollResource enrolls the customer resource(folder/project/organization) to the audit
-// manager service by creating the audit managers Service Agent in customers
-// workload and granting required permissions to the Service Agent. Please
-// note that if enrollment request is made on the already enrolled workload
-// then enrollment is executed overriding the existing set of destinations.
+// EnrollResource adds your project, folder, or organization to Audit
+// Manager. This method creates the Audit Manager service agent in your
+// workload and grants required permissions to the service agent.
+// If you make this request on a workload that’s already enrolled,
+// then this method overrides the existing set of destinations.
 func (c *Client) EnrollResource(ctx context.Context, req *auditmanagerpb.EnrollResourceRequest, opts ...gax.CallOption) (*auditmanagerpb.Enrollment, error) {
 	return c.internalClient.EnrollResource(ctx, req, opts...)
 }
 
-// GenerateAuditScopeReport generates a demo report highlighting different responsibilities
-// (Google/Customer/ shared) required to be fulfilled for the customer’s
-// workload to be compliant with the given standard.
+// GenerateAuditScopeReport generates an audit scope report for the given standard.
+//
+// The report includes the following:
+//
+//	The technical attributes and constraints that Audit Manager uses to
+//	verify your compliance with a framework.
+//
+//	A list of Google Cloud services and resources that are within the
+//	scope of the framework.
 func (c *Client) GenerateAuditScopeReport(ctx context.Context, req *auditmanagerpb.GenerateAuditScopeReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditScopeReport, error) {
 	return c.internalClient.GenerateAuditScopeReport(ctx, req, opts...)
 }
 
-// GenerateAuditReport register the Audit Report generation requests and returns the OperationId
-// using which the customer can track the report generation progress.
+// GenerateAuditReport registers audit report generation requests. This method returns the
+// operation identifier that you can use to track the report generation
+// progress.
 func (c *Client) GenerateAuditReport(ctx context.Context, req *auditmanagerpb.GenerateAuditReportRequest, opts ...gax.CallOption) (*GenerateAuditReportOperation, error) {
 	return c.internalClient.GenerateAuditReport(ctx, req, opts...)
 }
@@ -325,27 +332,30 @@ func (c *Client) GenerateAuditReportOperation(name string) *GenerateAuditReportO
 	return c.internalClient.GenerateAuditReportOperation(name)
 }
 
-// ListAuditReports lists audit reports in the selected parent scope
+// ListAuditReports lists the audit reports for the organization, folder, or project that you
+// specify as the parent scope.
 func (c *Client) ListAuditReports(ctx context.Context, req *auditmanagerpb.ListAuditReportsRequest, opts ...gax.CallOption) *AuditReportIterator {
 	return c.internalClient.ListAuditReports(ctx, req, opts...)
 }
 
-// GetAuditReport get the overall audit report
+// GetAuditReport gets the full metadata and findings for an audit report.
 func (c *Client) GetAuditReport(ctx context.Context, req *auditmanagerpb.GetAuditReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditReport, error) {
 	return c.internalClient.GetAuditReport(ctx, req, opts...)
 }
 
-// GetResourceEnrollmentStatus get a resource along with its enrollment status.
+// GetResourceEnrollmentStatus gets a resource and its enrollment status.
 func (c *Client) GetResourceEnrollmentStatus(ctx context.Context, req *auditmanagerpb.GetResourceEnrollmentStatusRequest, opts ...gax.CallOption) (*auditmanagerpb.ResourceEnrollmentStatus, error) {
 	return c.internalClient.GetResourceEnrollmentStatus(ctx, req, opts...)
 }
 
-// ListResourceEnrollmentStatuses fetches all resources under the parent along with their enrollment.
+// ListResourceEnrollmentStatuses lists all the folders and projects in an organization or folder, along with
+// their enrollments.
 func (c *Client) ListResourceEnrollmentStatuses(ctx context.Context, req *auditmanagerpb.ListResourceEnrollmentStatusesRequest, opts ...gax.CallOption) *ResourceEnrollmentStatusIterator {
 	return c.internalClient.ListResourceEnrollmentStatuses(ctx, req, opts...)
 }
 
-// ListControls gets controls needed to be implemented to be compliant to a standard.
+// ListControls lists the controls that you must implement to become compliant to a
+// regulatory standard.
 func (c *Client) ListControls(ctx context.Context, req *auditmanagerpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	return c.internalClient.ListControls(ctx, req, opts...)
 }
@@ -356,14 +366,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -1100,11 +1117,11 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// EnrollResource enrolls the customer resource(folder/project/organization) to the audit
-// manager service by creating the audit managers Service Agent in customers
-// workload and granting required permissions to the Service Agent. Please
-// note that if enrollment request is made on the already enrolled workload
-// then enrollment is executed overriding the existing set of destinations.
+// EnrollResource adds your project, folder, or organization to Audit
+// Manager. This method creates the Audit Manager service agent in your
+// workload and grants required permissions to the service agent.
+// If you make this request on a workload that’s already enrolled,
+// then this method overrides the existing set of destinations.
 func (c *restClient) EnrollResource(ctx context.Context, req *auditmanagerpb.EnrollResourceRequest, opts ...gax.CallOption) (*auditmanagerpb.Enrollment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1164,9 +1181,15 @@ func (c *restClient) EnrollResource(ctx context.Context, req *auditmanagerpb.Enr
 	return resp, nil
 }
 
-// GenerateAuditScopeReport generates a demo report highlighting different responsibilities
-// (Google/Customer/ shared) required to be fulfilled for the customer’s
-// workload to be compliant with the given standard.
+// GenerateAuditScopeReport generates an audit scope report for the given standard.
+//
+// The report includes the following:
+//
+//	The technical attributes and constraints that Audit Manager uses to
+//	verify your compliance with a framework.
+//
+//	A list of Google Cloud services and resources that are within the
+//	scope of the framework.
 func (c *restClient) GenerateAuditScopeReport(ctx context.Context, req *auditmanagerpb.GenerateAuditScopeReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditScopeReport, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1226,8 +1249,9 @@ func (c *restClient) GenerateAuditScopeReport(ctx context.Context, req *auditman
 	return resp, nil
 }
 
-// GenerateAuditReport register the Audit Report generation requests and returns the OperationId
-// using which the customer can track the report generation progress.
+// GenerateAuditReport registers audit report generation requests. This method returns the
+// operation identifier that you can use to track the report generation
+// progress.
 func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerpb.GenerateAuditReportRequest, opts ...gax.CallOption) (*GenerateAuditReportOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1294,7 +1318,8 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 	}, nil
 }
 
-// ListAuditReports lists audit reports in the selected parent scope
+// ListAuditReports lists the audit reports for the organization, folder, or project that you
+// specify as the parent scope.
 func (c *restClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.ListAuditReportsRequest, opts ...gax.CallOption) *AuditReportIterator {
 	it := &AuditReportIterator{}
 	req = proto.CloneOf(req)
@@ -1372,7 +1397,7 @@ func (c *restClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.L
 	return it
 }
 
-// GetAuditReport get the overall audit report
+// GetAuditReport gets the full metadata and findings for an audit report.
 func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.GetAuditReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditReport, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1429,7 +1454,7 @@ func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 	return resp, nil
 }
 
-// GetResourceEnrollmentStatus get a resource along with its enrollment status.
+// GetResourceEnrollmentStatus gets a resource and its enrollment status.
 func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *auditmanagerpb.GetResourceEnrollmentStatusRequest, opts ...gax.CallOption) (*auditmanagerpb.ResourceEnrollmentStatus, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1486,7 +1511,8 @@ func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 	return resp, nil
 }
 
-// ListResourceEnrollmentStatuses fetches all resources under the parent along with their enrollment.
+// ListResourceEnrollmentStatuses lists all the folders and projects in an organization or folder, along with
+// their enrollments.
 func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *auditmanagerpb.ListResourceEnrollmentStatusesRequest, opts ...gax.CallOption) *ResourceEnrollmentStatusIterator {
 	it := &ResourceEnrollmentStatusIterator{}
 	req = proto.CloneOf(req)
@@ -1564,7 +1590,8 @@ func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 	return it
 }
 
-// ListControls gets controls needed to be implemented to be compliant to a standard.
+// ListControls lists the controls that you must implement to become compliant to a
+// regulatory standard.
 func (c *restClient) ListControls(ctx context.Context, req *auditmanagerpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	it := &ControlIterator{}
 	req = proto.CloneOf(req)
@@ -1697,14 +1724,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)

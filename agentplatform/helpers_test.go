@@ -88,20 +88,20 @@ func cleanupAgentEngine(t testing.TB, client *Client, name string) func() {
 	}
 }
 
-func createMemoryAndWait(tt testing.TB, client *Client, re *types.ReasoningEngine, m *types.Memory) *types.Memory {
+func createAgentEngineMemoryAndWait(tt testing.TB, client *Client, re *types.ReasoningEngine, m *types.Memory) *types.Memory {
 	tt.Helper()
-	config := &types.MemoryConfig{
+	config := &types.AgentEngineMemoryConfig{
 		DisplayName: m.DisplayName,
 		Description: m.Description,
 		Metadata:    m.Metadata,
 	}
-	createOp, err := client.MemoryBanks.Memories.Create(tt.Context(), re.Name, m.Fact, m.Scope, config)
+	createOp, err := client.AgentEngines.Memories.Create(tt.Context(), re.Name, m.Fact, m.Scope, config)
 	if err != nil {
 		tt.Fatalf("create() failed unexpectedly: %v", err)
 	}
 	if !createOp.Done {
-		operation := func() (*types.MemoryOperation, error) {
-			return client.MemoryBanks.Memories.GetMemoryOperation(tt.Context(), createOp.Name, nil)
+		operation := func() (*types.AgentEngineMemoryOperation, error) {
+			return client.AgentEngines.Memories.GetMemoryOperation(tt.Context(), createOp.Name, nil)
 		}
 		waitForOperation(tt, operation)
 	}

@@ -260,28 +260,38 @@ func (c *RoutineClient) Connection() *grpc.ClientConn {
 }
 
 // GetRoutine gets the specified routine resource by routine ID.
+//
+// IAM PermissionsRequires the bigquery.routines.get permission on the routine.
 func (c *RoutineClient) GetRoutine(ctx context.Context, req *bigquerypb.GetRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return c.internalClient.GetRoutine(ctx, req, opts...)
 }
 
 // InsertRoutine creates a new routine in the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.create permission on the dataset.
 func (c *RoutineClient) InsertRoutine(ctx context.Context, req *bigquerypb.InsertRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return c.internalClient.InsertRoutine(ctx, req, opts...)
 }
 
 // UpdateRoutine updates information in an existing routine. The update method replaces the
 // entire Routine resource.
+//
+// IAM PermissionsRequires the bigquery.routines.update permission on the routine.
 func (c *RoutineClient) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	return c.internalClient.UpdateRoutine(ctx, req, opts...)
 }
 
 // DeleteRoutine deletes the routine specified by routineId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.delete permission on the routine.
 func (c *RoutineClient) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRoutine(ctx, req, opts...)
 }
 
 // ListRoutines lists all routines in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.routines.list permission on the dataset.
 func (c *RoutineClient) ListRoutines(ctx context.Context, req *bigquerypb.ListRoutinesRequest, opts ...gax.CallOption) *RoutineIterator {
 	return c.internalClient.ListRoutines(ctx, req, opts...)
 }
@@ -643,6 +653,8 @@ func (c *routineGRPCClient) ListRoutines(ctx context.Context, req *bigquerypb.Li
 }
 
 // GetRoutine gets the specified routine resource by routine ID.
+//
+// IAM PermissionsRequires the bigquery.routines.get permission on the routine.
 func (c *routineRESTClient) GetRoutine(ctx context.Context, req *bigquerypb.GetRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -695,6 +707,8 @@ func (c *routineRESTClient) GetRoutine(ctx context.Context, req *bigquerypb.GetR
 }
 
 // InsertRoutine creates a new routine in the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.create permission on the dataset.
 func (c *routineRESTClient) InsertRoutine(ctx context.Context, req *bigquerypb.InsertRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRoutine()
@@ -755,6 +769,8 @@ func (c *routineRESTClient) InsertRoutine(ctx context.Context, req *bigquerypb.I
 
 // UpdateRoutine updates information in an existing routine. The update method replaces the
 // entire Routine resource.
+//
+// IAM PermissionsRequires the bigquery.routines.update permission on the routine.
 func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.UpdateRoutineRequest, opts ...gax.CallOption) (*bigquerypb.Routine, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRoutine()
@@ -814,6 +830,8 @@ func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 }
 
 // DeleteRoutine deletes the routine specified by routineId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.routines.delete permission on the routine.
 func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.DeleteRoutineRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -852,6 +870,8 @@ func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.D
 
 // ListRoutines lists all routines in the specified dataset. Requires the READER dataset
 // role.
+//
+// IAM PermissionsRequires the bigquery.routines.list permission on the dataset.
 func (c *routineRESTClient) ListRoutines(ctx context.Context, req *bigquerypb.ListRoutinesRequest, opts ...gax.CallOption) *RoutineIterator {
 	it := &RoutineIterator{}
 	req = proto.CloneOf(req)

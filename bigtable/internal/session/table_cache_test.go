@@ -539,16 +539,15 @@ func TestTableHandle_ConcurrentEvictAndReadRace(t *testing.T) {
 }
 
 // TestTableHandle_EvictionStormConvergesOnSingleInstalled pins the
-// invariant GetOrOpen actually guarantees: N concurrent post-eviction
-// RPCs may each invoke openFn (GetOrOpen is NOT single-flight on
-// openFn per line 205-207's doc), but the cache converges on EXACTLY
-// ONE installed successor, and every loser api gets Close()d. This is
-// the leak-avoidance invariant — without it, a storm would leak N-1
-// session pools under a single key.
-//
-// (Making openFn genuinely single-flight would be a real perf win but
-// is a separate feature — this test would need to tighten if that
-// ever lands.)
+// single-flight invariant GetOrOpen guarantees: N concurrent
+// post-eviction RPCs collapse onto ONE openFn call for the key (the
+// loader), every waiter blocks and observes that one installed
+// successor, and no throwaway pools are dialed. Without single-flight a
+// storm would dial N pools and Close N-1; with it the storm dials
+// exactly one successor. opens climbs above the initial only if a
+// successor is itself evicted mid-flight (not the case here), so we
+// assert the loose opens>=2 / closes==opens-1 shape that holds in both
+// the steady and the evicted-mid-flight cases.
 func TestTableHandle_EvictionStormConvergesOnSingleInstalled(t *testing.T) {
 	clock := newFakeClock(time.Unix(1_700_000_000, 0))
 	c := NewTableCache(1*time.Hour, 1*time.Hour, clock.now)
@@ -588,10 +587,11 @@ func TestTableHandle_EvictionStormConvergesOnSingleInstalled(t *testing.T) {
 		t.Errorf("cache.entries len = %d after storm, want 1 (one installed successor)", n)
 	}
 
-	// Every openFn call except the winner must have had its api closed
-	// by GetOrOpen's loser-close path. The initial h was also closed
-	// (the h.Close() above), so total closes == opens - 1 (one live
-	// installed successor).
+	// With single-flight, the only Close in a quiescent storm is the
+	// initial h (the h.Close() above); every successor open installs
+	// and stays live. If a successor were evicted mid-flight an extra
+	// open+close pair would appear, keeping closes == opens - 1 (one
+	// live installed successor) either way.
 	opensLoaded := opens.Load()
 	closesLoaded := closes.Load()
 	if opensLoaded < 2 {
@@ -599,5 +599,49 @@ func TestTableHandle_EvictionStormConvergesOnSingleInstalled(t *testing.T) {
 	}
 	if wantCloses := opensLoaded - 1; closesLoaded != wantCloses {
 		t.Errorf("closes = %d, want %d (opens=%d, one installed live)", closesLoaded, wantCloses, opensLoaded)
+	}
+}
+
+// TestTableCache_LoaderPanic_DoesNotWedgeKey proves the loader's defer
+// clears the loading slot and wakes waiters even when openFn panics deep
+// in pool construction. Without the defer the slot stays populated with
+// an unclosed ready channel, so every later GetOrOpen(key) blocks on it
+// forever — and since every RPC routes through GetOrOpen, the resource
+// wedges until process restart.
+func TestTableCache_LoaderPanic_DoesNotWedgeKey(t *testing.T) {
+	clock := newFakeClock(time.Unix(1_700_000_000, 0))
+	c := NewTableCache(1*time.Hour, 1*time.Hour, clock.now)
+	t.Cleanup(c.Close)
+
+	// First load panics inside openFn (stands in for a nil deref /
+	// malformed proto anywhere in the buildLazyOpener chain).
+	func() {
+		defer func() {
+			if r := recover(); r == nil {
+				t.Fatal("expected openFn panic to propagate out of GetOrOpen")
+			}
+		}()
+		c.GetOrOpen("tbl:t", func() TableAPI { panic("boom in pool construction") })
+	}()
+
+	// The loading slot must be cleared, otherwise the next caller deadlocks.
+	c.mu.Lock()
+	nLoading := len(c.loading)
+	c.mu.Unlock()
+	if nLoading != 0 {
+		t.Fatalf("loading map has %d entries after panic, want 0 (leaked slot wedges future GetOrOpen)", nLoading)
+	}
+
+	// A subsequent open for the same key must succeed rather than block
+	// on the dead loadState's ready channel.
+	done := make(chan TableAPI, 1)
+	go func() { done <- c.GetOrOpen("tbl:t", openNoop("tbl:t")) }()
+	select {
+	case got := <-done:
+		if got == nil {
+			t.Fatal("GetOrOpen after panic returned nil, want a live handle")
+		}
+	case <-time.After(2 * time.Second):
+		t.Fatal("GetOrOpen after panic deadlocked — loader slot was not cleaned up")
 	}
 }

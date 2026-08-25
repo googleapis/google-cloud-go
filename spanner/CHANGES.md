@@ -1,5 +1,18 @@
 # Changes
 
+## [1.95.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.94.0...spanner/v1.95.0) (2026-08-24)
+
+
+### Features
+
+* **spanner:** Penalize channels that returned Unavailable or ResourceExhausted in the dynamic channel pool picker ([#20390](https://github.com/googleapis/google-cloud-go/issues/20390)) ([e1feec4](https://github.com/googleapis/google-cloud-go/commit/e1feec490fc7ccd9719dec8e856c021cb6c9d204))
+* **spanner:** Support caller-owned OpenTelemetry client metrics ([#20388](https://github.com/googleapis/google-cloud-go/issues/20388)) ([f1e77ce](https://github.com/googleapis/google-cloud-go/commit/f1e77ceda688f29544fe094f682a03515cb641a2))
+
+
+### Bug Fixes
+
+* **spanner:** Stop leaking endpointLatencyRegistry cleanup goroutine ([#20416](https://github.com/googleapis/google-cloud-go/issues/20416)) ([95bbcc7](https://github.com/googleapis/google-cloud-go/commit/95bbcc7c0984f076a2316b41780eb29c87128bfa)), refs [#14488](https://github.com/googleapis/google-cloud-go/issues/14488)
+
 ## [1.94.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.93.0...spanner/v1.94.0) (2026-07-28)
 
 

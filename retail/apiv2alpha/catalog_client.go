@@ -413,7 +413,7 @@ func defaultCatalogRESTCallOptions() *CatalogCallOptions {
 	}
 }
 
-// internalCatalogClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+// internalCatalogClient is an interface that defines the methods available from AI Commerce Search API.
 type internalCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -434,7 +434,7 @@ type internalCatalogClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// CatalogClient is a client for interacting with Vertex AI Search for commerce API.
+// CatalogClient is a client for interacting with AI Commerce Search API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for managing catalog configuration.
@@ -605,7 +605,7 @@ func (c *CatalogClient) ListOperations(ctx context.Context, req *longrunningpb.L
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// catalogGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// catalogGRPCClient is a client for interacting with AI Commerce Search API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type catalogGRPCClient struct {

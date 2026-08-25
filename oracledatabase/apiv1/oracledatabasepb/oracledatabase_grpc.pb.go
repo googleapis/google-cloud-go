@@ -65,6 +65,8 @@ const (
 	OracleDatabase_RestartAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RestartAutonomousDatabase"
 	OracleDatabase_SwitchoverAutonomousDatabase_FullMethodName                = "/google.cloud.oracledatabase.v1.OracleDatabase/SwitchoverAutonomousDatabase"
 	OracleDatabase_FailoverAutonomousDatabase_FullMethodName                  = "/google.cloud.oracledatabase.v1.OracleDatabase/FailoverAutonomousDatabase"
+	OracleDatabase_RefreshAutonomousDatabase_FullMethodName                   = "/google.cloud.oracledatabase.v1.OracleDatabase/RefreshAutonomousDatabase"
+	OracleDatabase_GetAutonomousDatabaseRefreshableClones_FullMethodName      = "/google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabaseRefreshableClones"
 	OracleDatabase_ListOdbNetworks_FullMethodName                             = "/google.cloud.oracledatabase.v1.OracleDatabase/ListOdbNetworks"
 	OracleDatabase_GetOdbNetwork_FullMethodName                               = "/google.cloud.oracledatabase.v1.OracleDatabase/GetOdbNetwork"
 	OracleDatabase_CreateOdbNetwork_FullMethodName                            = "/google.cloud.oracledatabase.v1.OracleDatabase/CreateOdbNetwork"
@@ -184,6 +186,10 @@ type OracleDatabaseClient interface {
 	// Initiates a failover to target autonomous database from the associated
 	// primary database.
 	FailoverAutonomousDatabase(ctx context.Context, in *FailoverAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Refreshes the refreshable clone of an Autonomous Database.
+	RefreshAutonomousDatabase(ctx context.Context, in *RefreshAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Gets the refreshable clones for a given Autonomous Database.
+	GetAutonomousDatabaseRefreshableClones(ctx context.Context, in *GetAutonomousDatabaseRefreshableClonesRequest, opts ...grpc.CallOption) (*AutonomousDatabaseRefreshableClones, error)
 	// Lists the ODB Networks in a given project and location.
 	ListOdbNetworks(ctx context.Context, in *ListOdbNetworksRequest, opts ...grpc.CallOption) (*ListOdbNetworksResponse, error)
 	// Gets details of a single ODB Network.
@@ -560,6 +566,24 @@ func (c *oracleDatabaseClient) SwitchoverAutonomousDatabase(ctx context.Context,
 func (c *oracleDatabaseClient) FailoverAutonomousDatabase(ctx context.Context, in *FailoverAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, OracleDatabase_FailoverAutonomousDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) RefreshAutonomousDatabase(ctx context.Context, in *RefreshAutonomousDatabaseRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, OracleDatabase_RefreshAutonomousDatabase_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *oracleDatabaseClient) GetAutonomousDatabaseRefreshableClones(ctx context.Context, in *GetAutonomousDatabaseRefreshableClonesRequest, opts ...grpc.CallOption) (*AutonomousDatabaseRefreshableClones, error) {
+	out := new(AutonomousDatabaseRefreshableClones)
+	err := c.cc.Invoke(ctx, OracleDatabase_GetAutonomousDatabaseRefreshableClones_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1067,6 +1091,10 @@ type OracleDatabaseServer interface {
 	// Initiates a failover to target autonomous database from the associated
 	// primary database.
 	FailoverAutonomousDatabase(context.Context, *FailoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Refreshes the refreshable clone of an Autonomous Database.
+	RefreshAutonomousDatabase(context.Context, *RefreshAutonomousDatabaseRequest) (*longrunningpb.Operation, error)
+	// Gets the refreshable clones for a given Autonomous Database.
+	GetAutonomousDatabaseRefreshableClones(context.Context, *GetAutonomousDatabaseRefreshableClonesRequest) (*AutonomousDatabaseRefreshableClones, error)
 	// Lists the ODB Networks in a given project and location.
 	ListOdbNetworks(context.Context, *ListOdbNetworksRequest) (*ListOdbNetworksResponse, error)
 	// Gets details of a single ODB Network.
@@ -1264,6 +1292,12 @@ func (UnimplementedOracleDatabaseServer) SwitchoverAutonomousDatabase(context.Co
 }
 func (UnimplementedOracleDatabaseServer) FailoverAutonomousDatabase(context.Context, *FailoverAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FailoverAutonomousDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) RefreshAutonomousDatabase(context.Context, *RefreshAutonomousDatabaseRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RefreshAutonomousDatabase not implemented")
+}
+func (UnimplementedOracleDatabaseServer) GetAutonomousDatabaseRefreshableClones(context.Context, *GetAutonomousDatabaseRefreshableClonesRequest) (*AutonomousDatabaseRefreshableClones, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAutonomousDatabaseRefreshableClones not implemented")
 }
 func (UnimplementedOracleDatabaseServer) ListOdbNetworks(context.Context, *ListOdbNetworksRequest) (*ListOdbNetworksResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListOdbNetworks not implemented")
@@ -1957,6 +1991,42 @@ func _OracleDatabase_FailoverAutonomousDatabase_Handler(srv interface{}, ctx con
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(OracleDatabaseServer).FailoverAutonomousDatabase(ctx, req.(*FailoverAutonomousDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_RefreshAutonomousDatabase_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RefreshAutonomousDatabaseRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).RefreshAutonomousDatabase(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_RefreshAutonomousDatabase_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).RefreshAutonomousDatabase(ctx, req.(*RefreshAutonomousDatabaseRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _OracleDatabase_GetAutonomousDatabaseRefreshableClones_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAutonomousDatabaseRefreshableClonesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OracleDatabaseServer).GetAutonomousDatabaseRefreshableClones(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OracleDatabase_GetAutonomousDatabaseRefreshableClones_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OracleDatabaseServer).GetAutonomousDatabaseRefreshableClones(ctx, req.(*GetAutonomousDatabaseRefreshableClonesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -2951,6 +3021,14 @@ var OracleDatabase_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FailoverAutonomousDatabase",
 			Handler:    _OracleDatabase_FailoverAutonomousDatabase_Handler,
+		},
+		{
+			MethodName: "RefreshAutonomousDatabase",
+			Handler:    _OracleDatabase_RefreshAutonomousDatabase_Handler,
+		},
+		{
+			MethodName: "GetAutonomousDatabaseRefreshableClones",
+			Handler:    _OracleDatabase_GetAutonomousDatabaseRefreshableClones_Handler,
 		},
 		{
 			MethodName: "ListOdbNetworks",

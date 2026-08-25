@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/auditmanager/apiv1",
-    "version": "1.1.0"
+    "version": "1.3.0"
   },
   "snippets": [
     {
@@ -133,7 +133,7 @@
         "resultType": "*auditmanagerpb.Enrollment",
         "shortName": "EnrollResource"
       },
-      "description": "EnrollResource enrolls the customer resource(folder/project/organization) to the audit\nmanager service by creating the audit managers Service Agent in customers\nworkload and granting required permissions to the Service Agent. Please\nnote that if enrollment request is made on the already enrolled workload\nthen enrollment is executed overriding the existing set of destinations.",
+      "description": "EnrollResource adds your project, folder, or organization to Audit\nManager. This method creates the Audit Manager service agent in your\nworkload and grants required permissions to the service agent.\nIf you make this request on a workload that's already enrolled,\nthen this method overrides the existing set of destinations.",
       "file": "Client/EnrollResource/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -179,7 +179,7 @@
         "resultType": "GenerateAuditReportOperation",
         "shortName": "GenerateAuditReport"
       },
-      "description": "GenerateAuditReport register the Audit Report generation requests and returns the OperationId\nusing which the customer can track the report generation progress.",
+      "description": "GenerateAuditReport registers audit report generation requests. This method returns the\noperation identifier that you can use to track the report generation\nprogress.",
       "file": "Client/GenerateAuditReport/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -225,7 +225,7 @@
         "resultType": "*auditmanagerpb.AuditScopeReport",
         "shortName": "GenerateAuditScopeReport"
       },
-      "description": "GenerateAuditScopeReport generates a demo report highlighting different responsibilities\n(Google/Customer/ shared) required to be fulfilled for the customer's\nworkload to be compliant with the given standard.",
+      "description": "GenerateAuditScopeReport generates an audit scope report for the given standard.\n\nThe report includes the following: \n\n* The technical attributes and constraints that Audit Manager uses to\nverify your compliance with a framework.\n* A list of Google Cloud services and resources that are within the\nscope of the framework.",
       "file": "Client/GenerateAuditScopeReport/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -271,7 +271,7 @@
         "resultType": "*auditmanagerpb.AuditReport",
         "shortName": "GetAuditReport"
       },
-      "description": "GetAuditReport get the overall audit report",
+      "description": "GetAuditReport gets the full metadata and findings for an audit report.",
       "file": "Client/GetAuditReport/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -409,7 +409,7 @@
         "resultType": "*auditmanagerpb.ResourceEnrollmentStatus",
         "shortName": "GetResourceEnrollmentStatus"
       },
-      "description": "GetResourceEnrollmentStatus get a resource along with its enrollment status.",
+      "description": "GetResourceEnrollmentStatus gets a resource and its enrollment status.",
       "file": "Client/GetResourceEnrollmentStatus/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -455,7 +455,7 @@
         "resultType": "AuditReportIterator",
         "shortName": "ListAuditReports"
       },
-      "description": "ListAuditReports lists audit reports in the selected parent scope",
+      "description": "ListAuditReports lists the audit reports for the organization, folder, or project that you\nspecify as the parent scope.",
       "file": "Client/ListAuditReports/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -501,7 +501,7 @@
         "resultType": "ControlIterator",
         "shortName": "ListControls"
       },
-      "description": "ListControls gets controls needed to be implemented to be compliant to a standard.",
+      "description": "ListControls lists the controls that you must implement to become compliant to a\nregulatory standard.",
       "file": "Client/ListControls/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -547,7 +547,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.\nThis method can be called in two ways: \n\n*   **List all public locations: ** Use the path `GET /v1/locations`.\n*   **List project-visible locations: ** Use the path\n`GET /v1/projects/{project_id}/locations`. This may include public\nlocations as well as private or other locations specifically visible\nto the project.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -639,7 +639,7 @@
         "resultType": "ResourceEnrollmentStatusIterator",
         "shortName": "ListResourceEnrollmentStatuses"
       },
-      "description": "ListResourceEnrollmentStatuses fetches all resources under the parent along with their enrollment.",
+      "description": "ListResourceEnrollmentStatuses lists all the folders and projects in an organization or folder, along with\ntheir enrollments.",
       "file": "Client/ListResourceEnrollmentStatuses/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

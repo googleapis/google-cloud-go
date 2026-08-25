@@ -42,7 +42,10 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ProjectServiceClient interface {
 	// RPC to get the service account for a project used for interactions with
-	// Google Cloud KMS
+	// Google Cloud KMS. Requires the `bigquery.jobs.create` permission on the
+	// project resource. This permission is required to authorize the retrieval
+	// of the project's service identity for technical management tasks like
+	// encryption configuration.
 	GetServiceAccount(ctx context.Context, in *GetServiceAccountRequest, opts ...grpc.CallOption) (*GetServiceAccountResponse, error)
 }
 
@@ -68,7 +71,10 @@ func (c *projectServiceClient) GetServiceAccount(ctx context.Context, in *GetSer
 // for forward compatibility
 type ProjectServiceServer interface {
 	// RPC to get the service account for a project used for interactions with
-	// Google Cloud KMS
+	// Google Cloud KMS. Requires the `bigquery.jobs.create` permission on the
+	// project resource. This permission is required to authorize the retrieval
+	// of the project's service identity for technical management tasks like
+	// encryption configuration.
 	GetServiceAccount(context.Context, *GetServiceAccountRequest) (*GetServiceAccountResponse, error)
 }
 

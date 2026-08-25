@@ -29,6 +29,12 @@ import (
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *BranchMetadataIterator) All() iter.Seq2[*dataformpb.BranchMetadata, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *CommitLogEntryIterator) All() iter.Seq2[*dataformpb.CommitLogEntry, error] {
 	return iterator.RangeAdapter(it.Next)
 }

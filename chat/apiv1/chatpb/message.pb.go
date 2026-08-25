@@ -448,9 +448,14 @@ type Message struct {
 	// Optional. An array of
 	// [cards](https://developers.google.com/workspace/chat/api/reference/rest/v1/cards).
 	//
-	// Only Chat apps can create cards. If your Chat app [authenticates as a
+	// Chat apps can create cards with [app
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
+	// As part of the [Developer Preview
+	// Program](https://developers.google.com/workspace/preview), if your Chat app
+	// [authenticates as a
 	// user](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
-	// the messages can't contain cards.
+	// it can create card messages. If your Chat app is not part of Developer
+	// Preview Program, it can't create cards with user authentication.
 	//
 	// To learn how to create a message that contains cards, see [Send a
 	// message](https://developers.google.com/workspace/chat/create-messages).
@@ -546,8 +551,11 @@ type Message struct {
 	// authentication]
 	// (https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
 	AccessoryWidgets []*AccessoryWidget `protobuf:"bytes,44,rep,name=accessory_widgets,json=accessoryWidgets,proto3" json:"accessory_widgets,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Optional. Specifies how the server interprets the message `text` field
+	// content.
+	MarkupSyntax  MarkupSyntax `protobuf:"varint,47,opt,name=markup_syntax,json=markupSyntax,proto3,enum=google.chat.v1.MarkupSyntax" json:"markup_syntax,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Message) Reset() {
@@ -768,6 +776,13 @@ func (x *Message) GetAccessoryWidgets() []*AccessoryWidget {
 		return x.AccessoryWidgets
 	}
 	return nil
+}
+
+func (x *Message) GetMarkupSyntax() MarkupSyntax {
+	if x != nil {
+		return x.MarkupSyntax
+	}
+	return MarkupSyntax_MARKUP_SYNTAX_UNSPECIFIED
 }
 
 // A GIF image that's specified by a URL.
@@ -1293,7 +1308,10 @@ type GetMessageRequest struct {
 	// `clientAssignedMessageId` field for `{message}`. For details, see [Name a
 	// message]
 	// (https://developers.google.com/workspace/chat/create-messages#name_a_created_message).
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. Specifies the desired output syntax for the Chat message
+	// `formatted_text` field.
+	MarkupSyntax  MarkupSyntax `protobuf:"varint,3,opt,name=markup_syntax,json=markupSyntax,proto3,enum=google.chat.v1.MarkupSyntax" json:"markup_syntax,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1333,6 +1351,13 @@ func (x *GetMessageRequest) GetName() string {
 		return x.Name
 	}
 	return ""
+}
+
+func (x *GetMessageRequest) GetMarkupSyntax() MarkupSyntax {
+	if x != nil {
+		return x.MarkupSyntax
+	}
+	return MarkupSyntax_MARKUP_SYNTAX_UNSPECIFIED
 }
 
 // Request to delete a message.
@@ -1747,7 +1772,10 @@ type ListMessagesRequest struct {
 	// Optional. Whether to include deleted messages. Deleted messages include
 	// deleted time and metadata about their deletion, but message content is
 	// unavailable.
-	ShowDeleted   bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
+	ShowDeleted bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
+	// Optional. Specifies the desired output syntax for the Chat message
+	// `formatted_text` field.
+	MarkupSyntax  MarkupSyntax `protobuf:"varint,9,opt,name=markup_syntax,json=markupSyntax,proto3,enum=google.chat.v1.MarkupSyntax" json:"markup_syntax,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1822,6 +1850,13 @@ func (x *ListMessagesRequest) GetShowDeleted() bool {
 		return x.ShowDeleted
 	}
 	return false
+}
+
+func (x *ListMessagesRequest) GetMarkupSyntax() MarkupSyntax {
+	if x != nil {
+		return x.MarkupSyntax
+	}
+	return MarkupSyntax_MARKUP_SYNTAX_UNSPECIFIED
 }
 
 // Response message for listing messages.
@@ -2018,9 +2053,17 @@ func (x *Dialog) GetBody() *v1.Card {
 // [card](https://developers.google.com/workspace/chat/api/reference/rest/v1/cards)
 // in a Google Chat message.
 //
-// Only Chat apps can create cards. If your Chat app [authenticates as a
+// Chat apps can create cards with [app
+// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
+// As part of the [Developer Preview
+// Program](https://developers.google.com/workspace/preview), if your Chat app
+// [authenticates as a
 // user](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
-// the message can't contain cards.
+// it can create card messages. If your Chat app is not part of Developer
+// Preview Program, it can't create cards with user authentication.
+//
+// To learn how to create a message that contains cards, see [Send a
+// message](https://developers.google.com/workspace/chat/create-messages).
 //
 // [Card builder](https://addons.gsuite.google.com/uikit/builder)
 type CardWithId struct {
@@ -2242,6 +2285,9 @@ type SearchMessagesRequest struct {
 	// (`create_time` or `relevance`) is supported. Only descending order (`desc`)
 	// is supported, and it must be specified after the order attribute.
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	// Optional. Specifies the desired output syntax for the Chat message
+	// `formatted_text` field.
+	MarkupSyntax MarkupSyntax `protobuf:"varint,6,opt,name=markup_syntax,json=markupSyntax,proto3,enum=google.chat.v1.MarkupSyntax" json:"markup_syntax,omitempty"`
 	// Optional. Specifies what kind of search results view to return. The default
 	// is `SEARCH_MESSAGES_VIEW_BASIC`.
 	View          SearchMessagesRequest_SearchMessagesView `protobuf:"varint,7,opt,name=view,proto3,enum=google.chat.v1.SearchMessagesRequest_SearchMessagesView" json:"view,omitempty"`
@@ -2312,6 +2358,13 @@ func (x *SearchMessagesRequest) GetOrderBy() string {
 		return x.OrderBy
 	}
 	return ""
+}
+
+func (x *SearchMessagesRequest) GetMarkupSyntax() MarkupSyntax {
+	if x != nil {
+		return x.MarkupSyntax
+	}
+	return MarkupSyntax_MARKUP_SYNTAX_UNSPECIFIED
 }
 
 func (x *SearchMessagesRequest) GetView() SearchMessagesRequest_SearchMessagesView {
@@ -2587,7 +2640,7 @@ var File_google_chat_v1_message_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\n" +
-	"\x1cgoogle/chat/v1/message.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/apps/card/v1/card.proto\x1a\"google/chat/v1/action_status.proto\x1a\x1fgoogle/chat/v1/annotation.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a%google/chat/v1/contextual_addon.proto\x1a&google/chat/v1/deletion_metadata.proto\x1a google/chat/v1/matched_url.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\"google/chat/v1/slash_command.proto\x1a\x1agoogle/chat/v1/space.proto\x1a/google/chat/v1/space_notification_setting.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd7\r\n" +
+	"\x1cgoogle/chat/v1/message.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/apps/card/v1/card.proto\x1a\"google/chat/v1/action_status.proto\x1a\x1fgoogle/chat/v1/annotation.proto\x1a\x1fgoogle/chat/v1/attachment.proto\x1a%google/chat/v1/contextual_addon.proto\x1a&google/chat/v1/deletion_metadata.proto\x1a\"google/chat/v1/markup_syntax.proto\x1a google/chat/v1/matched_url.proto\x1a\x1dgoogle/chat/v1/reaction.proto\x1a\"google/chat/v1/slash_command.proto\x1a\x1agoogle/chat/v1/space.proto\x1a/google/chat/v1/space_notification_setting.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9f\x0e\n" +
 	"\aMessage\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x121\n" +
 	"\x06sender\x18\x02 \x01(\v2\x14.google.chat.v1.UserB\x03\xe0A\x03R\x06sender\x12C\n" +
@@ -2621,7 +2674,8 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\x11deletion_metadata\x18& \x01(\v2 .google.chat.v1.DeletionMetadataB\x03\xe0A\x03R\x10deletionMetadata\x12b\n" +
 	"\x17quoted_message_metadata\x18' \x01(\v2%.google.chat.v1.QuotedMessageMetadataB\x03\xe0A\x01R\x15quotedMessageMetadata\x12E\n" +
 	"\rattached_gifs\x18* \x03(\v2\x1b.google.chat.v1.AttachedGifB\x03\xe0A\x03R\fattachedGifs\x12Q\n" +
-	"\x11accessory_widgets\x18, \x03(\v2\x1f.google.chat.v1.AccessoryWidgetB\x03\xe0A\x01R\x10accessoryWidgets:C\xeaA@\n" +
+	"\x11accessory_widgets\x18, \x03(\v2\x1f.google.chat.v1.AccessoryWidgetB\x03\xe0A\x01R\x10accessoryWidgets\x12F\n" +
+	"\rmarkup_syntax\x18/ \x01(\x0e2\x1c.google.chat.v1.MarkupSyntaxB\x03\xe0A\x01R\fmarkupSyntax:C\xeaA@\n" +
 	"\x1bchat.googleapis.com/Message\x12!spaces/{space}/messages/{message}\"$\n" +
 	"\vAttachedGif\x12\x15\n" +
 	"\x03uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x03uri\"\xf0\x04\n" +
@@ -2676,10 +2730,11 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\x0fAccessoryWidget\x12B\n" +
 	"\vbutton_list\x18\x01 \x01(\v2\x1f.google.apps.card.v1.ButtonListH\x00R\n" +
 	"buttonListB\b\n" +
-	"\x06action\"L\n" +
+	"\x06action\"\x94\x01\n" +
 	"\x11GetMessageRequest\x127\n" +
 	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
-	"\x1bchat.googleapis.com/MessageR\x04name\"j\n" +
+	"\x1bchat.googleapis.com/MessageR\x04name\x12F\n" +
+	"\rmarkup_syntax\x18\x03 \x01(\x0e2\x1c.google.chat.v1.MarkupSyntaxB\x03\xe0A\x01R\fmarkupSyntax\"j\n" +
 	"\x14DeleteMessageRequest\x127\n" +
 	"\x04name\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\n" +
 	"\x1bchat.googleapis.com/MessageR\x04name\x12\x19\n" +
@@ -2710,7 +2765,7 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\x10NotificationType\x12\x1a\n" +
 	"\x16NOTIFICATION_TYPE_NONE\x10\x00\x12\"\n" +
 	"\x1eNOTIFICATION_TYPE_FORCE_NOTIFY\x10\x02\x12\x1c\n" +
-	"\x18NOTIFICATION_TYPE_SILENT\x10\x03\"\xfd\x01\n" +
+	"\x18NOTIFICATION_TYPE_SILENT\x10\x03\"\xc5\x02\n" +
 	"\x13ListMessagesRequest\x12;\n" +
 	"\x06parent\x18\x01 \x01(\tB#\xe0A\x02\xfaA\x1d\x12\x1bchat.googleapis.com/MessageR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -2718,7 +2773,8 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
 	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"s\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\x12F\n" +
+	"\rmarkup_syntax\x18\t \x01(\x0e2\x1c.google.chat.v1.MarkupSyntaxB\x03\xe0A\x01R\fmarkupSyntax\"s\n" +
 	"\x14ListMessagesResponse\x123\n" +
 	"\bmessages\x18\x01 \x03(\v2\x17.google.chat.v1.MessageR\bmessages\x12&\n" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x97\x01\n" +
@@ -2731,7 +2787,7 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\n" +
 	"CardWithId\x12\x17\n" +
 	"\acard_id\x18\x01 \x01(\tR\x06cardId\x12-\n" +
-	"\x04card\x18\x02 \x01(\v2\x19.google.apps.card.v1.CardR\x04card\"\xa3\x03\n" +
+	"\x04card\x18\x02 \x01(\v2\x19.google.apps.card.v1.CardR\x04card\"\xeb\x03\n" +
 	"\x15SearchMessagesRequest\x129\n" +
 	"\x06parent\x18\x01 \x01(\tB!\xe0A\x02\xfaA\x1b\n" +
 	"\x19chat.googleapis.com/SpaceR\x06parent\x12\x1b\n" +
@@ -2739,7 +2795,8 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1e\n" +
-	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12Q\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12F\n" +
+	"\rmarkup_syntax\x18\x06 \x01(\x0e2\x1c.google.chat.v1.MarkupSyntaxB\x03\xe0A\x01R\fmarkupSyntax\x12Q\n" +
 	"\x04view\x18\a \x01(\x0e28.google.chat.v1.SearchMessagesRequest.SearchMessagesViewB\x03\xe0A\x01R\x04view\"y\n" +
 	"\x12SearchMessagesView\x12$\n" +
 	" SEARCH_MESSAGES_VIEW_UNSPECIFIED\x10\x00\x12\x1e\n" +
@@ -2808,12 +2865,13 @@ var file_google_chat_v1_message_proto_goTypes = []any{
 	(*MatchedUrl)(nil),                        // 35: google.chat.v1.MatchedUrl
 	(*EmojiReactionSummary)(nil),              // 36: google.chat.v1.EmojiReactionSummary
 	(*DeletionMetadata)(nil),                  // 37: google.chat.v1.DeletionMetadata
-	(*v1.ButtonList)(nil),                     // 38: google.apps.card.v1.ButtonList
-	(*fieldmaskpb.FieldMask)(nil),             // 39: google.protobuf.FieldMask
-	(*ActionStatus)(nil),                      // 40: google.chat.v1.ActionStatus
-	(*v1.Card)(nil),                           // 41: google.apps.card.v1.Card
-	(SpaceNotificationSetting_MuteSetting)(0), // 42: google.chat.v1.SpaceNotificationSetting.MuteSetting
-	(*v1.SelectionInput_SelectionItem)(nil),   // 43: google.apps.card.v1.SelectionInput.SelectionItem
+	(MarkupSyntax)(0),                         // 38: google.chat.v1.MarkupSyntax
+	(*v1.ButtonList)(nil),                     // 39: google.apps.card.v1.ButtonList
+	(*fieldmaskpb.FieldMask)(nil),             // 40: google.protobuf.FieldMask
+	(*ActionStatus)(nil),                      // 41: google.chat.v1.ActionStatus
+	(*v1.Card)(nil),                           // 42: google.apps.card.v1.Card
+	(SpaceNotificationSetting_MuteSetting)(0), // 43: google.chat.v1.SpaceNotificationSetting.MuteSetting
+	(*v1.SelectionInput_SelectionItem)(nil),   // 44: google.apps.card.v1.SelectionInput.SelectionItem
 }
 var file_google_chat_v1_message_proto_depIdxs = []int32{
 	28, // 0: google.chat.v1.Message.sender:type_name -> google.chat.v1.User
@@ -2835,38 +2893,42 @@ var file_google_chat_v1_message_proto_depIdxs = []int32{
 	7,  // 16: google.chat.v1.Message.quoted_message_metadata:type_name -> google.chat.v1.QuotedMessageMetadata
 	6,  // 17: google.chat.v1.Message.attached_gifs:type_name -> google.chat.v1.AttachedGif
 	12, // 18: google.chat.v1.Message.accessory_widgets:type_name -> google.chat.v1.AccessoryWidget
-	29, // 19: google.chat.v1.QuotedMessageMetadata.last_update_time:type_name -> google.protobuf.Timestamp
-	0,  // 20: google.chat.v1.QuotedMessageMetadata.quote_type:type_name -> google.chat.v1.QuotedMessageMetadata.QuoteType
-	8,  // 21: google.chat.v1.QuotedMessageMetadata.quoted_message_snapshot:type_name -> google.chat.v1.QuotedMessageSnapshot
-	9,  // 22: google.chat.v1.QuotedMessageMetadata.forwarded_metadata:type_name -> google.chat.v1.ForwardedMetadata
-	31, // 23: google.chat.v1.QuotedMessageSnapshot.annotations:type_name -> google.chat.v1.Annotation
-	34, // 24: google.chat.v1.QuotedMessageSnapshot.attachments:type_name -> google.chat.v1.Attachment
-	1,  // 25: google.chat.v1.ActionResponse.type:type_name -> google.chat.v1.ActionResponse.ResponseType
-	20, // 26: google.chat.v1.ActionResponse.dialog_action:type_name -> google.chat.v1.DialogAction
-	27, // 27: google.chat.v1.ActionResponse.updated_widget:type_name -> google.chat.v1.ActionResponse.UpdatedWidget
-	38, // 28: google.chat.v1.AccessoryWidget.button_list:type_name -> google.apps.card.v1.ButtonList
-	5,  // 29: google.chat.v1.UpdateMessageRequest.message:type_name -> google.chat.v1.Message
-	39, // 30: google.chat.v1.UpdateMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
-	5,  // 31: google.chat.v1.CreateMessageRequest.message:type_name -> google.chat.v1.Message
-	2,  // 32: google.chat.v1.CreateMessageRequest.message_reply_option:type_name -> google.chat.v1.CreateMessageRequest.MessageReplyOption
-	17, // 33: google.chat.v1.CreateMessageRequest.create_message_notification_options:type_name -> google.chat.v1.CreateMessageNotificationOptions
-	3,  // 34: google.chat.v1.CreateMessageNotificationOptions.notification_type:type_name -> google.chat.v1.CreateMessageNotificationOptions.NotificationType
-	5,  // 35: google.chat.v1.ListMessagesResponse.messages:type_name -> google.chat.v1.Message
-	21, // 36: google.chat.v1.DialogAction.dialog:type_name -> google.chat.v1.Dialog
-	40, // 37: google.chat.v1.DialogAction.action_status:type_name -> google.chat.v1.ActionStatus
-	41, // 38: google.chat.v1.Dialog.body:type_name -> google.apps.card.v1.Card
-	41, // 39: google.chat.v1.CardWithId.card:type_name -> google.apps.card.v1.Card
-	4,  // 40: google.chat.v1.SearchMessagesRequest.view:type_name -> google.chat.v1.SearchMessagesRequest.SearchMessagesView
-	25, // 41: google.chat.v1.SearchMessagesResponse.results:type_name -> google.chat.v1.SearchMessageResult
-	5,  // 42: google.chat.v1.SearchMessageResult.message:type_name -> google.chat.v1.Message
-	42, // 43: google.chat.v1.SearchMessageResult.space_mute_setting:type_name -> google.chat.v1.SpaceNotificationSetting.MuteSetting
-	43, // 44: google.chat.v1.ActionResponse.SelectionItems.items:type_name -> google.apps.card.v1.SelectionInput.SelectionItem
-	26, // 45: google.chat.v1.ActionResponse.UpdatedWidget.suggestions:type_name -> google.chat.v1.ActionResponse.SelectionItems
-	46, // [46:46] is the sub-list for method output_type
-	46, // [46:46] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	38, // 19: google.chat.v1.Message.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	29, // 20: google.chat.v1.QuotedMessageMetadata.last_update_time:type_name -> google.protobuf.Timestamp
+	0,  // 21: google.chat.v1.QuotedMessageMetadata.quote_type:type_name -> google.chat.v1.QuotedMessageMetadata.QuoteType
+	8,  // 22: google.chat.v1.QuotedMessageMetadata.quoted_message_snapshot:type_name -> google.chat.v1.QuotedMessageSnapshot
+	9,  // 23: google.chat.v1.QuotedMessageMetadata.forwarded_metadata:type_name -> google.chat.v1.ForwardedMetadata
+	31, // 24: google.chat.v1.QuotedMessageSnapshot.annotations:type_name -> google.chat.v1.Annotation
+	34, // 25: google.chat.v1.QuotedMessageSnapshot.attachments:type_name -> google.chat.v1.Attachment
+	1,  // 26: google.chat.v1.ActionResponse.type:type_name -> google.chat.v1.ActionResponse.ResponseType
+	20, // 27: google.chat.v1.ActionResponse.dialog_action:type_name -> google.chat.v1.DialogAction
+	27, // 28: google.chat.v1.ActionResponse.updated_widget:type_name -> google.chat.v1.ActionResponse.UpdatedWidget
+	39, // 29: google.chat.v1.AccessoryWidget.button_list:type_name -> google.apps.card.v1.ButtonList
+	38, // 30: google.chat.v1.GetMessageRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	5,  // 31: google.chat.v1.UpdateMessageRequest.message:type_name -> google.chat.v1.Message
+	40, // 32: google.chat.v1.UpdateMessageRequest.update_mask:type_name -> google.protobuf.FieldMask
+	5,  // 33: google.chat.v1.CreateMessageRequest.message:type_name -> google.chat.v1.Message
+	2,  // 34: google.chat.v1.CreateMessageRequest.message_reply_option:type_name -> google.chat.v1.CreateMessageRequest.MessageReplyOption
+	17, // 35: google.chat.v1.CreateMessageRequest.create_message_notification_options:type_name -> google.chat.v1.CreateMessageNotificationOptions
+	3,  // 36: google.chat.v1.CreateMessageNotificationOptions.notification_type:type_name -> google.chat.v1.CreateMessageNotificationOptions.NotificationType
+	38, // 37: google.chat.v1.ListMessagesRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	5,  // 38: google.chat.v1.ListMessagesResponse.messages:type_name -> google.chat.v1.Message
+	21, // 39: google.chat.v1.DialogAction.dialog:type_name -> google.chat.v1.Dialog
+	41, // 40: google.chat.v1.DialogAction.action_status:type_name -> google.chat.v1.ActionStatus
+	42, // 41: google.chat.v1.Dialog.body:type_name -> google.apps.card.v1.Card
+	42, // 42: google.chat.v1.CardWithId.card:type_name -> google.apps.card.v1.Card
+	38, // 43: google.chat.v1.SearchMessagesRequest.markup_syntax:type_name -> google.chat.v1.MarkupSyntax
+	4,  // 44: google.chat.v1.SearchMessagesRequest.view:type_name -> google.chat.v1.SearchMessagesRequest.SearchMessagesView
+	25, // 45: google.chat.v1.SearchMessagesResponse.results:type_name -> google.chat.v1.SearchMessageResult
+	5,  // 46: google.chat.v1.SearchMessageResult.message:type_name -> google.chat.v1.Message
+	43, // 47: google.chat.v1.SearchMessageResult.space_mute_setting:type_name -> google.chat.v1.SpaceNotificationSetting.MuteSetting
+	44, // 48: google.chat.v1.ActionResponse.SelectionItems.items:type_name -> google.apps.card.v1.SelectionInput.SelectionItem
+	26, // 49: google.chat.v1.ActionResponse.UpdatedWidget.suggestions:type_name -> google.chat.v1.ActionResponse.SelectionItems
+	50, // [50:50] is the sub-list for method output_type
+	50, // [50:50] is the sub-list for method input_type
+	50, // [50:50] is the sub-list for extension type_name
+	50, // [50:50] is the sub-list for extension extendee
+	0,  // [0:50] is the sub-list for field type_name
 }
 
 func init() { file_google_chat_v1_message_proto_init() }
@@ -2879,6 +2941,7 @@ func file_google_chat_v1_message_proto_init() {
 	file_google_chat_v1_attachment_proto_init()
 	file_google_chat_v1_contextual_addon_proto_init()
 	file_google_chat_v1_deletion_metadata_proto_init()
+	file_google_chat_v1_markup_syntax_proto_init()
 	file_google_chat_v1_matched_url_proto_init()
 	file_google_chat_v1_reaction_proto_init()
 	file_google_chat_v1_slash_command_proto_init()

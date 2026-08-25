@@ -79,6 +79,8 @@ type CallOptions struct {
 	RestartAutonomousDatabase                   []gax.CallOption
 	SwitchoverAutonomousDatabase                []gax.CallOption
 	FailoverAutonomousDatabase                  []gax.CallOption
+	RefreshAutonomousDatabase                   []gax.CallOption
+	GetAutonomousDatabaseRefreshableClones      []gax.CallOption
 	ListOdbNetworks                             []gax.CallOption
 	GetOdbNetwork                               []gax.CallOption
 	CreateOdbNetwork                            []gax.CallOption
@@ -390,6 +392,12 @@ func defaultCallOptions() *CallOptions {
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		FailoverAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		RefreshAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAutonomousDatabaseRefreshableClones: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		ListOdbNetworks: []gax.CallOption{
@@ -1042,6 +1050,12 @@ func defaultRESTCallOptions() *CallOptions {
 		FailoverAutonomousDatabase: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		RefreshAutonomousDatabase: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAutonomousDatabaseRefreshableClones: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		ListOdbNetworks: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1487,6 +1501,9 @@ type internalClient interface {
 	SwitchoverAutonomousDatabaseOperation(name string) *SwitchoverAutonomousDatabaseOperation
 	FailoverAutonomousDatabase(context.Context, *oracledatabasepb.FailoverAutonomousDatabaseRequest, ...gax.CallOption) (*FailoverAutonomousDatabaseOperation, error)
 	FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation
+	RefreshAutonomousDatabase(context.Context, *oracledatabasepb.RefreshAutonomousDatabaseRequest, ...gax.CallOption) (*RefreshAutonomousDatabaseOperation, error)
+	RefreshAutonomousDatabaseOperation(name string) *RefreshAutonomousDatabaseOperation
+	GetAutonomousDatabaseRefreshableClones(context.Context, *oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest, ...gax.CallOption) (*oracledatabasepb.AutonomousDatabaseRefreshableClones, error)
 	ListOdbNetworks(context.Context, *oracledatabasepb.ListOdbNetworksRequest, ...gax.CallOption) *OdbNetworkIterator
 	GetOdbNetwork(context.Context, *oracledatabasepb.GetOdbNetworkRequest, ...gax.CallOption) (*oracledatabasepb.OdbNetwork, error)
 	CreateOdbNetwork(context.Context, *oracledatabasepb.CreateOdbNetworkRequest, ...gax.CallOption) (*CreateOdbNetworkOperation, error)
@@ -1840,6 +1857,22 @@ func (c *Client) FailoverAutonomousDatabase(ctx context.Context, req *oracledata
 // The name must be that of a previously created FailoverAutonomousDatabaseOperation, possibly from a different process.
 func (c *Client) FailoverAutonomousDatabaseOperation(name string) *FailoverAutonomousDatabaseOperation {
 	return c.internalClient.FailoverAutonomousDatabaseOperation(name)
+}
+
+// RefreshAutonomousDatabase refreshes the refreshable clone of an Autonomous Database.
+func (c *Client) RefreshAutonomousDatabase(ctx context.Context, req *oracledatabasepb.RefreshAutonomousDatabaseRequest, opts ...gax.CallOption) (*RefreshAutonomousDatabaseOperation, error) {
+	return c.internalClient.RefreshAutonomousDatabase(ctx, req, opts...)
+}
+
+// RefreshAutonomousDatabaseOperation returns a new RefreshAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created RefreshAutonomousDatabaseOperation, possibly from a different process.
+func (c *Client) RefreshAutonomousDatabaseOperation(name string) *RefreshAutonomousDatabaseOperation {
+	return c.internalClient.RefreshAutonomousDatabaseOperation(name)
+}
+
+// GetAutonomousDatabaseRefreshableClones gets the refreshable clones for a given Autonomous Database.
+func (c *Client) GetAutonomousDatabaseRefreshableClones(ctx context.Context, req *oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabaseRefreshableClones, error) {
+	return c.internalClient.GetAutonomousDatabaseRefreshableClones(ctx, req, opts...)
 }
 
 // ListOdbNetworks lists the ODB Networks in a given project and location.
@@ -2362,6 +2395,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.RestartAutonomousDatabase = append(client.CallOptions.RestartAutonomousDatabase, gax.WithClientMetrics(metrics))
 		client.CallOptions.SwitchoverAutonomousDatabase = append(client.CallOptions.SwitchoverAutonomousDatabase, gax.WithClientMetrics(metrics))
 		client.CallOptions.FailoverAutonomousDatabase = append(client.CallOptions.FailoverAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.RefreshAutonomousDatabase = append(client.CallOptions.RefreshAutonomousDatabase, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAutonomousDatabaseRefreshableClones = append(client.CallOptions.GetAutonomousDatabaseRefreshableClones, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOdbNetworks = append(client.CallOptions.ListOdbNetworks, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOdbNetwork = append(client.CallOptions.GetOdbNetwork, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateOdbNetwork = append(client.CallOptions.CreateOdbNetwork, gax.WithClientMetrics(metrics))
@@ -2552,6 +2587,8 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.RestartAutonomousDatabase = append(callOpts.RestartAutonomousDatabase, gax.WithClientMetrics(metrics))
 		callOpts.SwitchoverAutonomousDatabase = append(callOpts.SwitchoverAutonomousDatabase, gax.WithClientMetrics(metrics))
 		callOpts.FailoverAutonomousDatabase = append(callOpts.FailoverAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.RefreshAutonomousDatabase = append(callOpts.RefreshAutonomousDatabase, gax.WithClientMetrics(metrics))
+		callOpts.GetAutonomousDatabaseRefreshableClones = append(callOpts.GetAutonomousDatabaseRefreshableClones, gax.WithClientMetrics(metrics))
 		callOpts.ListOdbNetworks = append(callOpts.ListOdbNetworks, gax.WithClientMetrics(metrics))
 		callOpts.GetOdbNetwork = append(callOpts.GetOdbNetwork, gax.WithClientMetrics(metrics))
 		callOpts.CreateOdbNetwork = append(callOpts.CreateOdbNetwork, gax.WithClientMetrics(metrics))
@@ -3793,6 +3830,60 @@ func (c *gRPCClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 	return &FailoverAutonomousDatabaseOperation{
 		lro: lro,
 	}, nil
+}
+
+func (c *gRPCClient) RefreshAutonomousDatabase(ctx context.Context, req *oracledatabasepb.RefreshAutonomousDatabaseRequest, opts ...gax.CallOption) (*RefreshAutonomousDatabaseOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RefreshAutonomousDatabase")
+	}
+	opts = append((*c.CallOptions).RefreshAutonomousDatabase[0:len((*c.CallOptions).RefreshAutonomousDatabase):len((*c.CallOptions).RefreshAutonomousDatabase)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RefreshAutonomousDatabase, req, settings.GRPC, c.logger, "RefreshAutonomousDatabase")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RefreshAutonomousDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &RefreshAutonomousDatabaseOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) GetAutonomousDatabaseRefreshableClones(ctx context.Context, req *oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabaseRefreshableClones, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabaseRefreshableClones")
+	}
+	opts = append((*c.CallOptions).GetAutonomousDatabaseRefreshableClones[0:len((*c.CallOptions).GetAutonomousDatabaseRefreshableClones):len((*c.CallOptions).GetAutonomousDatabaseRefreshableClones)], opts...)
+	var resp *oracledatabasepb.AutonomousDatabaseRefreshableClones
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAutonomousDatabaseRefreshableClones, req, settings.GRPC, c.logger, "GetAutonomousDatabaseRefreshableClones")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) ListOdbNetworks(ctx context.Context, req *oracledatabasepb.ListOdbNetworksRequest, opts ...gax.CallOption) *OdbNetworkIterator {
@@ -7917,6 +8008,133 @@ func (c *restClient) FailoverAutonomousDatabase(ctx context.Context, req *oracle
 		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// RefreshAutonomousDatabase refreshes the refreshable clone of an Autonomous Database.
+func (c *restClient) RefreshAutonomousDatabase(ctx context.Context, req *oracledatabasepb.RefreshAutonomousDatabaseRequest, opts ...gax.CallOption) (*RefreshAutonomousDatabaseOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:refresh", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/RefreshAutonomousDatabase")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:refresh")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RefreshAutonomousDatabase")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*oracledatabase.RefreshAutonomousDatabaseOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &RefreshAutonomousDatabaseOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// GetAutonomousDatabaseRefreshableClones gets the refreshable clones for a given Autonomous Database.
+func (c *restClient) GetAutonomousDatabaseRefreshableClones(ctx context.Context, req *oracledatabasepb.GetAutonomousDatabaseRefreshableClonesRequest, opts ...gax.CallOption) (*oracledatabasepb.AutonomousDatabaseRefreshableClones, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getRefreshableClones", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oracledatabase.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oracledatabase.v1.OracleDatabase/GetAutonomousDatabaseRefreshableClones")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/autonomousDatabases/*}:getRefreshableClones")
+	}
+	opts = append((*c.CallOptions).GetAutonomousDatabaseRefreshableClones[0:len((*c.CallOptions).GetAutonomousDatabaseRefreshableClones):len((*c.CallOptions).GetAutonomousDatabaseRefreshableClones)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &oracledatabasepb.AutonomousDatabaseRefreshableClones{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAutonomousDatabaseRefreshableClones")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // ListOdbNetworks lists the ODB Networks in a given project and location.
@@ -12180,6 +12398,24 @@ func (c *restClient) FailoverAutonomousDatabaseOperation(name string) *FailoverA
 	override := fmt.Sprintf("/v1/%s", name)
 	return &FailoverAutonomousDatabaseOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.FailoverAutonomousDatabaseOperation"),
+		pollPath: override,
+	}
+}
+
+// RefreshAutonomousDatabaseOperation returns a new RefreshAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created RefreshAutonomousDatabaseOperation, possibly from a different process.
+func (c *gRPCClient) RefreshAutonomousDatabaseOperation(name string) *RefreshAutonomousDatabaseOperation {
+	return &RefreshAutonomousDatabaseOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RefreshAutonomousDatabaseOperation"),
+	}
+}
+
+// RefreshAutonomousDatabaseOperation returns a new RefreshAutonomousDatabaseOperation from a given name.
+// The name must be that of a previously created RefreshAutonomousDatabaseOperation, possibly from a different process.
+func (c *restClient) RefreshAutonomousDatabaseOperation(name string) *RefreshAutonomousDatabaseOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RefreshAutonomousDatabaseOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*oracledatabase.RefreshAutonomousDatabaseOperation"),
 		pollPath: override,
 	}
 }

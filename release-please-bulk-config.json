@@ -401,6 +401,11 @@
         },
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/hive/apiv1/snippet_metadata.google.cloud.biglake.hive.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/hive/apiv1beta/snippet_metadata.google.cloud.biglake.hive.v1beta.json",
           "type": "json"
         }
@@ -873,6 +878,16 @@
         }
       ]
     },
+    "developers": {
+      "component": "developers",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/knowledge/apiv1/snippet_metadata.google.developers.knowledge.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "devicestreaming": {
       "component": "devicestreaming",
       "extra-files": [
@@ -1040,6 +1055,16 @@
     },
     "firestore": {
       "component": "firestore"
+    },
+    "ftp": {
+      "component": "ftp",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.ftp.v1.json",
+          "type": "json"
+        }
+      ]
     },
     "functions": {
       "component": "functions",
@@ -1390,6 +1415,11 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/isochrones/apiv1/snippet_metadata.google.maps.isochrones.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/mapmanagement/apiv2/snippet_metadata.google.maps.mapmanagement.v2.json",
           "type": "json"
         },
         {
@@ -2543,6 +2573,16 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/executions/apiv1beta/snippet_metadata.google.cloud.workflows.executions.v1beta.json",
+          "type": "json"
+        }
+      ]
+    },
+    "workloadidentity": {
+      "component": "workloadidentity",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.workloadidentity.v1.json",
           "type": "json"
         }
       ]

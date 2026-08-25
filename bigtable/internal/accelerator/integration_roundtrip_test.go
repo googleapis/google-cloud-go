@@ -155,7 +155,7 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 	// request; the daemon itself is scoped to (project, instance, appProfile).
 	fullTableName := fmt.Sprintf("projects/%s/instances/%s/tables/%s", project, instance, tableName)
 
-	channel, err := NewChannel(ctx, project, instance, appProfile, channelOpts...)
+	channel, err := NewChannel(ctx, project, instance, appProfile, "", channelOpts...)
 	if err != nil {
 		t.Fatalf("NewChannel: %v", err)
 	}
@@ -165,10 +165,14 @@ func TestReadRows_MutateReadRoundTrip_Prod(t *testing.T) {
 	client := btpb.NewBigtableClient(conn)
 
 	// Pre-flight: confirm the accelerator's session/vRPC transport can
-	// actually establish here before entering the (unbounded) round-trip
-	// loop. Where the session client can't run, no session is ever handed
-	// to the caller and a MutateRow on context.Background() would park on
-	// the pool's waiter queue indefinitely, so skip instead.
+	// actually establish here before entering the round-trip loop. Where the
+	// vRPC OpenSession API is not served, the session pool now surfaces the
+	// failure deterministically: after ConsecutiveSessionFailureThreshold
+	// never-activated closes the circuit breaker trips and CheckoutSession
+	// returns a consecutive-failure error carrying the underlying
+	// Unimplemented code (previously the caller parked on the waiter queue
+	// forever). Probe once and skip on that signal rather than failing the
+	// round-trip in an environment that can't run it.
 	skipIfSessionUnavailable(ctx, t, client, fullTableName, []byte("session-probe"),
 		[]*btpb.Mutation{{Mutation: &btpb.Mutation_SetCell_{SetCell: &btpb.Mutation_SetCell{
 			FamilyName:      prodColumnFamilies[0],
@@ -376,16 +380,18 @@ func boundedDo(parent context.Context, fn func(context.Context) error) error {
 // skipIfSessionUnavailable issues one bounded MutateRow to confirm the
 // accelerator's session/vRPC transport can actually establish in this
 // environment. Cloud Bigtable's vRPC OpenSession API is not served in every
-// environment; where it isn't, no session is ever handed to the caller and an
-// unbounded RPC parks on the pool's waiter queue forever. Rather than let that
-// stall the run, probe once under a bounded context and t.Skip when the
-// session client can't run here.
+// environment; where it isn't, the session pool's consecutive-failure
+// breaker trips and the RPC returns a consecutive-failure error carrying the
+// underlying Unimplemented code. Probe once and t.Skip on that signal.
 //
-// A backend-reached error (e.g. NotFound / FailedPrecondition on a table that
-// isn't writable yet) is NOT a session-availability failure — it proves a
-// session was established — so the probe returns and lets the main loop's
-// retryTransient handle table readiness. Only a code that indicates the
-// transport itself is not served triggers the skip.
+// The skip is deliberately narrow: only Unimplemented — the deterministic
+// "this transport is not served here" signal now that the pool surfaces the
+// underlying code instead of hanging. Transient codes (DeadlineExceeded,
+// Unavailable) are NOT skipped: they indicate a slow or flaky backend, not
+// an absent API, and are left to the main loop's retryTransient. A
+// backend-reached error (e.g. NotFound / FailedPrecondition on a table that
+// isn't writable yet) also proves a session was established, so the probe
+// returns and lets the round-trip proceed.
 func skipIfSessionUnavailable(ctx context.Context, t *testing.T, client btpb.BigtableClient, fullTableName string, key []byte, muts []*btpb.Mutation) {
 	t.Helper()
 	probeCtx, cancel := context.WithTimeout(ctx, sessionProbeTimeout)
@@ -398,12 +404,12 @@ func skipIfSessionUnavailable(ctx context.Context, t *testing.T, client btpb.Big
 	if err == nil {
 		return
 	}
-	switch status.Code(err) {
-	case codes.DeadlineExceeded, codes.Unavailable, codes.Unimplemented:
-		t.Skipf("accelerator session transport unavailable in this environment (%v); skipping prod round-trip", err)
+	if status.Code(err) == codes.Unimplemented {
+		t.Skipf("accelerator vRPC OpenSession API not served in this environment (%v); skipping prod round-trip", err)
 	}
-	// Any other code (incl. NotFound / FailedPrecondition on a not-yet-ready
-	// table) means a session was established — proceed with the round-trip.
+	// Any other code (incl. transient Unavailable / DeadlineExceeded and
+	// NotFound / FailedPrecondition on a not-yet-ready table) means the
+	// transport is served — proceed and let retryTransient handle readiness.
 }
 
 // retryTransient retries fn on error codes that are expected while a freshly

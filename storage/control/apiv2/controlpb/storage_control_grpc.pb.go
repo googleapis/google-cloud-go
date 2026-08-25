@@ -74,6 +74,7 @@ const (
 	StorageControl_SummarizeIntelligenceFindings_FullMethodName        = "/google.storage.control.v2.StorageControl/SummarizeIntelligenceFindings"
 	StorageControl_GetIntelligenceFindingRevision_FullMethodName       = "/google.storage.control.v2.StorageControl/GetIntelligenceFindingRevision"
 	StorageControl_ListIntelligenceFindingRevisions_FullMethodName     = "/google.storage.control.v2.StorageControl/ListIntelligenceFindingRevisions"
+	StorageControl_ViewObjectFullContext_FullMethodName                = "/google.storage.control.v2.StorageControl/ViewObjectFullContext"
 )
 
 // StorageControlClient is the client API for StorageControl service.
@@ -182,6 +183,16 @@ type StorageControlClient interface {
 	GetIntelligenceFindingRevision(ctx context.Context, in *GetIntelligenceFindingRevisionRequest, opts ...grpc.CallOption) (*IntelligenceFindingRevision, error)
 	// Lists all the revisions of an `IntelligenceFinding` resource.
 	ListIntelligenceFindingRevisions(ctx context.Context, in *ListIntelligenceFindingRevisionsRequest, opts ...grpc.CallOption) (*ListIntelligenceFindingRevisionsResponse, error)
+	// Retrieves the full content of an object context, including its key, value,
+	// and any associated extended data for a given context key.
+	//
+	// Object contexts can optionally contain extended data. If an object context
+	// contains extended data, the metadata payload structure will contain only
+	// its type URL. To retrieve the full extended data, call this method.
+	//
+	// Returns the complete representation of the context as an
+	// [`ObjectFullContext`][google.storage.control.v2.ObjectFullContext].
+	ViewObjectFullContext(ctx context.Context, in *ViewObjectFullContextRequest, opts ...grpc.CallOption) (*ObjectFullContext, error)
 }
 
 type storageControlClient struct {
@@ -525,6 +536,15 @@ func (c *storageControlClient) ListIntelligenceFindingRevisions(ctx context.Cont
 	return out, nil
 }
 
+func (c *storageControlClient) ViewObjectFullContext(ctx context.Context, in *ViewObjectFullContextRequest, opts ...grpc.CallOption) (*ObjectFullContext, error) {
+	out := new(ObjectFullContext)
+	err := c.cc.Invoke(ctx, StorageControl_ViewObjectFullContext_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageControlServer is the server API for StorageControl service.
 // All implementations should embed UnimplementedStorageControlServer
 // for forward compatibility
@@ -631,6 +651,16 @@ type StorageControlServer interface {
 	GetIntelligenceFindingRevision(context.Context, *GetIntelligenceFindingRevisionRequest) (*IntelligenceFindingRevision, error)
 	// Lists all the revisions of an `IntelligenceFinding` resource.
 	ListIntelligenceFindingRevisions(context.Context, *ListIntelligenceFindingRevisionsRequest) (*ListIntelligenceFindingRevisionsResponse, error)
+	// Retrieves the full content of an object context, including its key, value,
+	// and any associated extended data for a given context key.
+	//
+	// Object contexts can optionally contain extended data. If an object context
+	// contains extended data, the metadata payload structure will contain only
+	// its type URL. To retrieve the full extended data, call this method.
+	//
+	// Returns the complete representation of the context as an
+	// [`ObjectFullContext`][google.storage.control.v2.ObjectFullContext].
+	ViewObjectFullContext(context.Context, *ViewObjectFullContextRequest) (*ObjectFullContext, error)
 }
 
 // UnimplementedStorageControlServer should be embedded to have forward compatible implementations.
@@ -747,6 +777,9 @@ func (UnimplementedStorageControlServer) GetIntelligenceFindingRevision(context.
 }
 func (UnimplementedStorageControlServer) ListIntelligenceFindingRevisions(context.Context, *ListIntelligenceFindingRevisionsRequest) (*ListIntelligenceFindingRevisionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListIntelligenceFindingRevisions not implemented")
+}
+func (UnimplementedStorageControlServer) ViewObjectFullContext(context.Context, *ViewObjectFullContextRequest) (*ObjectFullContext, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewObjectFullContext not implemented")
 }
 
 // UnsafeStorageControlServer may be embedded to opt out of forward compatibility for this service.
@@ -1426,6 +1459,24 @@ func _StorageControl_ListIntelligenceFindingRevisions_Handler(srv interface{}, c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageControl_ViewObjectFullContext_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewObjectFullContextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).ViewObjectFullContext(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_ViewObjectFullContext_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).ViewObjectFullContext(ctx, req.(*ViewObjectFullContextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StorageControl_ServiceDesc is the grpc.ServiceDesc for StorageControl service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1580,6 +1631,10 @@ var StorageControl_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListIntelligenceFindingRevisions",
 			Handler:    _StorageControl_ListIntelligenceFindingRevisions_Handler,
+		},
+		{
+			MethodName: "ViewObjectFullContext",
+			Handler:    _StorageControl_ViewObjectFullContext_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},
