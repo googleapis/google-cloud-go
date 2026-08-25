@@ -123,6 +123,10 @@ runDirectoryTests() {
     # internal tools only expected to work with latest go version
     return
   fi
+  if [[ -z "$(find . -name '*.go' -print -quit 2>/dev/null)" ]]; then
+    echo "No Go files found in $PWD, skipping tests."
+    return
+  fi
   if [[ $PWD == *"/internal/generated"* ]]; then
     # always tidy generated snippets
     go mod tidy
