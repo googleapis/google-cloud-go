@@ -1279,7 +1279,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			res, err := resource.New(ctx,
 				resource.WithAttributes(
 					attribute.String("gcp.client.service", "storage"),
-					attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+					attribute.String("gcp.client.artifact", "cloud.google.com/go/storage"),
 				),
 			)
 			if err != nil {
@@ -1333,8 +1333,8 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			if resAttrs["gcp.client.service"] != "storage" {
 				t.Errorf("expected gcp.client.service = storage, got %q", resAttrs["gcp.client.service"])
 			}
-			if resAttrs["gcp.client.repo"] != "googleapis/google-cloud-go" {
-				t.Errorf("expected gcp.client.repo = googleapis/google-cloud-go, got %q", resAttrs["gcp.client.repo"])
+			if resAttrs["gcp.client.artifact"] != "cloud.google.com/go/storage" {
+				t.Errorf("expected gcp.client.artifact = cloud.google.com/go/storage, got %q", resAttrs["gcp.client.artifact"])
 			}
 
 			// Group metrics by name.

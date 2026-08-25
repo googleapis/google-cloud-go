@@ -231,7 +231,7 @@ func TestHTTPMetricsRecording(t *testing.T) {
 	res, err := resource.New(ctx,
 		resource.WithAttributes(
 			attribute.String("gcp.client.service", "storage"),
-			attribute.String("gcp.client.repo", "googleapis/google-cloud-go"),
+			attribute.String("gcp.client.artifact", "cloud.google.com/go/storage"),
 		),
 	)
 	if err != nil {
