@@ -285,6 +285,8 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 		for req := range cs.requests {
 			m.mu.Lock()
 			m.requests = append(m.requests, req)
+			failOnData := m.failOnData
+			respondToAllData := m.respondToAllData
 			m.mu.Unlock()
 
 			if req.requestAck {
@@ -295,11 +297,11 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 				}
 			}
 
-			if m.failOnData && (req.flush || len(req.buf) > 0) {
+			if failOnData && (req.flush || len(req.buf) > 0) {
 				return
 			}
 
-			if req.flush || m.respondToAllData {
+			if req.flush || respondToAllData {
 				completionWg.Add(1)
 				// Send completions asynchronously to avoid blocking the request loop.
 				go func(offset int64) {
