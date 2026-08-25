@@ -104,7 +104,7 @@ func stubSessionClient(t *testing.T, sc *mockSessionClient) {
 	orig := newSessionClient
 	newSessionClient = func(
 		_ context.Context,
-		_, _, _ string,
+		_, _, _, _ string,
 		_ ...option.ClientOption,
 	) (session.Client, error) {
 		return sc, nil
@@ -117,7 +117,7 @@ func stubSessionClient(t *testing.T, sc *mockSessionClient) {
 func newTestChannel(t *testing.T, sc *mockSessionClient) *Channel {
 	t.Helper()
 	stubSessionClient(t, sc)
-	channel, err := NewChannel(context.Background(), "p", "i", "ap")
+	channel, err := NewChannel(context.Background(), "p", "i", "ap", "")
 	if err != nil {
 		t.Fatalf("NewChannel error: %v", err)
 	}
@@ -754,6 +754,34 @@ func TestNewStream_UnknownMethod_ReturnsUnimplemented(t *testing.T) {
 	_, err := channel.NewStream(context.Background(), nil, "/google.bigtable.v2.Bigtable/SampleRowKeys")
 	if status.Code(err) != codes.Unimplemented {
 		t.Errorf("NewStream(unknown) code = %v; want Unimplemented", status.Code(err))
+	}
+}
+
+// TestNewChannel_ForwardsClientName asserts NewChannel hands the client_name it
+// receives (the daemon's --user-agent flag) to the session-client seam, where it
+// becomes the CSM client_name attribute via metrics.NewFactory.
+func TestNewChannel_ForwardsClientName(t *testing.T) {
+	orig := newSessionClient
+	var got string
+	newSessionClient = func(
+		_ context.Context,
+		_, _, _, clientName string,
+		_ ...option.ClientOption,
+	) (session.Client, error) {
+		got = clientName
+		return &mockSessionClient{table: &mockSessionTableAPI{}}, nil
+	}
+	t.Cleanup(func() { newSessionClient = orig })
+
+	const want = "python-bigtable/2.1.0"
+	channel, err := NewChannel(context.Background(), "p", "i", "ap", want)
+	if err != nil {
+		t.Fatalf("NewChannel error: %v", err)
+	}
+	t.Cleanup(func() { _ = channel.Close() })
+
+	if got != want {
+		t.Errorf("newSessionClient clientName = %q; want %q", got, want)
 	}
 }
 

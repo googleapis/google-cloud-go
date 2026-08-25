@@ -340,14 +340,19 @@ type sessionClient struct {
 // The load-balancing hook for a mixed-mode setup lives at
 // AddSessionLoadListener — call it after construction if you're
 // composing this Client with a bigtable.Client Diverter.
+//
+// clientName sets the client_name attribute on exported client-side metrics.
+// An empty string keeps the default "go-bigtable/<version>" token; the
+// accelerator daemon passes its --user-agent flag so CSM attributes the metrics
+// to the calling client library rather than the daemon build.
 func NewClient(
 	ctx context.Context,
-	project, instance, appProfile string,
+	project, instance, appProfile, clientName string,
 	metricsProvider metrics.MetricsProvider,
 	featureFlagsProto *btpb.FeatureFlags,
 	opts ...option.ClientOption,
 ) (Client, error) {
-	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider)
+	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider)
 	if err != nil {
 		return nil, fmt.Errorf("session.NewClient: metrics.NewFactory: %w", err)
 	}
