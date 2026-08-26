@@ -10029,6 +10029,7 @@ func TestIntegration_Rapid_SingleShotWriteAndIngestOnRead(t *testing.T) {
 
 		// Write the object via single-shot write.
 		w := obj.NewWriter(ctx)
+		w.ObjectAttrs.StorageClass = "RAPID"
 		if _, err := w.Write(content); err != nil {
 			t.Fatalf("single-shot write failed: %v", err)
 		}
@@ -10212,6 +10213,7 @@ func TestIntegration_Rapid_AppendableWrite_ReadUnfinalized_AppendMoreAndRead(t *
 
 		// Step 1: Write first chunk without finalizing the object.
 		w1 := obj.NewWriter(ctx)
+		w1.ObjectAttrs.StorageClass = "RAPID"
 		w1.Append = true
 		w1.FinalizeOnClose = false
 		if _, err := w1.Write(chunk1); err != nil {
@@ -10247,8 +10249,11 @@ func TestIntegration_Rapid_AppendableWrite_ReadUnfinalized_AppendMoreAndRead(t *
 		})
 
 		// Step 3: Append second chunk and finalize the object.
-		w2 := obj.Generation(gen).NewWriter(ctx)
-		w2.Append = true
+		w2, _, takeoverErr := obj.Generation(gen).NewWriterFromAppendableObject(ctx, &AppendableWriterOpts{})
+		if takeoverErr != nil {
+			t.Fatalf("failed to take over appendable object: %v", takeoverErr)
+		}
+		w2.ObjectAttrs.StorageClass = "RAPID"
 		w2.FinalizeOnClose = true
 		if _, err := w2.Write(chunk2); err != nil {
 			t.Fatalf("w2.Write chunk2 failed: %v", err)
