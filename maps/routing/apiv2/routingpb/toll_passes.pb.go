@@ -181,6 +181,8 @@ const (
 	// MI, USA.
 	TollPass_US_MI_BCPASS TollPass = 94
 	// MI, USA.
+	TollPass_US_MI_BREAKAWAY TollPass = 101
+	// MI, USA.
 	TollPass_US_MI_GROSSE_ILE_TOLL_BRIDGE_PASS_TAG TollPass = 37
 	// MI, USA.
 	// Deprecated as this pass type no longer exists.
@@ -327,6 +329,7 @@ var (
 		35:  "US_ME_EZPASSME",
 		36:  "US_MI_AMBASSADOR_BRIDGE_PREMIER_COMMUTER_CARD",
 		94:  "US_MI_BCPASS",
+		101: "US_MI_BREAKAWAY",
 		37:  "US_MI_GROSSE_ILE_TOLL_BRIDGE_PASS_TAG",
 		38:  "US_MI_IQ_PROX_CARD",
 		95:  "US_MI_IQ_TAG",
@@ -428,6 +431,7 @@ var (
 		"US_ME_EZPASSME":          35,
 		"US_MI_AMBASSADOR_BRIDGE_PREMIER_COMMUTER_CARD": 36,
 		"US_MI_BCPASS":                          94,
+		"US_MI_BREAKAWAY":                       101,
 		"US_MI_GROSSE_ILE_TOLL_BRIDGE_PASS_TAG": 37,
 		"US_MI_IQ_PROX_CARD":                    38,
 		"US_MI_IQ_TAG":                          95,
@@ -502,7 +506,7 @@ var File_google_maps_routing_v2_toll_passes_proto protoreflect.FileDescriptor
 
 const file_google_maps_routing_v2_toll_passes_proto_rawDesc = "" +
 	"\n" +
-	"(google/maps/routing/v2/toll_passes.proto\x12\x16google.maps.routing.v2*\xfe\x11\n" +
+	"(google/maps/routing/v2/toll_passes.proto\x12\x16google.maps.routing.v2*\x93\x12\n" +
 	"\bTollPass\x12\x19\n" +
 	"\x15TOLL_PASS_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fAU_ETOLL_TAG\x10R\x12\x0f\n" +
@@ -567,7 +571,8 @@ const file_google_maps_routing_v2_toll_passes_proto_rawDesc = "" +
 	"\x0eUS_MD_EZPASSMD\x10\"\x12\x12\n" +
 	"\x0eUS_ME_EZPASSME\x10#\x121\n" +
 	"-US_MI_AMBASSADOR_BRIDGE_PREMIER_COMMUTER_CARD\x10$\x12\x10\n" +
-	"\fUS_MI_BCPASS\x10^\x12)\n" +
+	"\fUS_MI_BCPASS\x10^\x12\x13\n" +
+	"\x0fUS_MI_BREAKAWAY\x10e\x12)\n" +
 	"%US_MI_GROSSE_ILE_TOLL_BRIDGE_PASS_TAG\x10%\x12\x1a\n" +
 	"\x12US_MI_IQ_PROX_CARD\x10&\x1a\x02\b\x01\x12\x10\n" +
 	"\fUS_MI_IQ_TAG\x10_\x12\"\n" +

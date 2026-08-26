@@ -423,6 +423,12 @@ func (it *ManagedInstanceIterator) All() iter.Seq2[*computepb.ManagedInstance, e
 
 // All returns an iterator. If an error is returned by the iterator, the
 // iterator will stop after that iteration.
+func (it *ManagedRulesetIterator) All() iter.Seq2[*computepb.ManagedRuleset, error] {
+	return iterator.RangeAdapter(it.Next)
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
 func (it *MultiMigIterator) All() iter.Seq2[*computepb.MultiMig, error] {
 	return iterator.RangeAdapter(it.Next)
 }

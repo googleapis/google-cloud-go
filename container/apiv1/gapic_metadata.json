@@ -20,6 +20,11 @@
                 "CheckAutopilotCompatibility"
               ]
             },
+            "CompleteControlPlaneUpgrade": {
+              "methods": [
+                "CompleteControlPlaneUpgrade"
+              ]
+            },
             "CompleteIPRotation": {
               "methods": [
                 "CompleteIPRotation"
@@ -203,6 +208,11 @@
             "CheckAutopilotCompatibility": {
               "methods": [
                 "CheckAutopilotCompatibility"
+              ]
+            },
+            "CompleteControlPlaneUpgrade": {
+              "methods": [
+                "CompleteControlPlaneUpgrade"
               ]
             },
             "CompleteIPRotation": {
