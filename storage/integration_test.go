@@ -9048,6 +9048,9 @@ func newWriter(ctx context.Context, obj *ObjectHandle, contentType string, force
 	w.ContentType = contentType
 	w.ForceEmptyContentType = forceEmptyContentType
 	w.FinalizeOnClose = true // Default to finalize for appendable objects.
+	if rcuBucketName != "" && obj.bucket == rcuBucketName {
+		w.ObjectAttrs.StorageClass = "RAPID"
+	}
 
 	return w
 }
