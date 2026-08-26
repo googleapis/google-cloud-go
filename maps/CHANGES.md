@@ -2,6 +2,13 @@
 
 
 
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.40.0...maps/v1.41.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
 ## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.39.0...maps/v1.40.0) (2026-08-20)
 
 
