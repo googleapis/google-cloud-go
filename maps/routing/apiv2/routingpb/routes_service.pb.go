@@ -163,6 +163,7 @@ func (ComputeRoutesRequest_ReferenceRoute) EnumDescriptor() ([]byte, []int) {
 }
 
 // Extra computations to perform while completing the request.
+// Additional values may be added in the future.
 type ComputeRoutesRequest_ExtraComputation int32
 
 const (
@@ -174,35 +175,50 @@ const (
 	ComputeRoutesRequest_FUEL_CONSUMPTION ComputeRoutesRequest_ExtraComputation = 2
 	// Traffic aware polylines for the route(s).
 	ComputeRoutesRequest_TRAFFIC_ON_POLYLINE ComputeRoutesRequest_ExtraComputation = 3
-	// [`NavigationInstructions`](google.maps.routing.v2.NavigationInstructions.instructions)
+	// [`NavigationInstruction`][google.maps.routing.v2.NavigationInstruction]
 	// presented as a formatted HTML text string. This content
 	// is meant to be read as-is. This content is for display only.
 	// Do not programmatically parse it.
 	ComputeRoutesRequest_HTML_FORMATTED_NAVIGATION_INSTRUCTIONS ComputeRoutesRequest_ExtraComputation = 4
 	// Flyover information for the route(s). The
 	// `routes.polyline_details.flyover_info` fieldmask must be specified to
-	// return this information. This data will only currently be populated for
+	// return this information. This data will currently only be populated for
 	// certain metros in India. This feature is experimental, and the
 	// SKU/charge is subject to change.
 	ComputeRoutesRequest_FLYOVER_INFO_ON_POLYLINE ComputeRoutesRequest_ExtraComputation = 7
 	// Narrow road information for the route(s). The
 	// `routes.polyline_details.narrow_road_info` fieldmask must be specified
-	// to return this information. This data will only currently be populated
+	// to return this information. This data will currently only be populated
 	// for certain metros in India. This feature is experimental, and the
 	// SKU/charge is subject to change.
 	ComputeRoutesRequest_NARROW_ROAD_INFO_ON_POLYLINE ComputeRoutesRequest_ExtraComputation = 8
+	// Tunnel information for the route(s). The
+	// `routes.polyline_details.tunnel_info` fieldmask must be specified to
+	// return this information.
+	ComputeRoutesRequest_TUNNEL_INFO_ON_POLYLINE ComputeRoutesRequest_ExtraComputation = 9
+	// Bridge information for the route(s). The
+	// `routes.polyline_details.bridge_info` fieldmask must be specified to
+	// return this information.
+	ComputeRoutesRequest_BRIDGE_INFO_ON_POLYLINE ComputeRoutesRequest_ExtraComputation = 10
+	// Skyway information for the route(s). The
+	// `routes.polyline_details.skyway_info` fieldmask must be specified to
+	// return this information.
+	ComputeRoutesRequest_SKYWAY_INFO_ON_POLYLINE ComputeRoutesRequest_ExtraComputation = 11
 )
 
 // Enum value maps for ComputeRoutesRequest_ExtraComputation.
 var (
 	ComputeRoutesRequest_ExtraComputation_name = map[int32]string{
-		0: "EXTRA_COMPUTATION_UNSPECIFIED",
-		1: "TOLLS",
-		2: "FUEL_CONSUMPTION",
-		3: "TRAFFIC_ON_POLYLINE",
-		4: "HTML_FORMATTED_NAVIGATION_INSTRUCTIONS",
-		7: "FLYOVER_INFO_ON_POLYLINE",
-		8: "NARROW_ROAD_INFO_ON_POLYLINE",
+		0:  "EXTRA_COMPUTATION_UNSPECIFIED",
+		1:  "TOLLS",
+		2:  "FUEL_CONSUMPTION",
+		3:  "TRAFFIC_ON_POLYLINE",
+		4:  "HTML_FORMATTED_NAVIGATION_INSTRUCTIONS",
+		7:  "FLYOVER_INFO_ON_POLYLINE",
+		8:  "NARROW_ROAD_INFO_ON_POLYLINE",
+		9:  "TUNNEL_INFO_ON_POLYLINE",
+		10: "BRIDGE_INFO_ON_POLYLINE",
+		11: "SKYWAY_INFO_ON_POLYLINE",
 	}
 	ComputeRoutesRequest_ExtraComputation_value = map[string]int32{
 		"EXTRA_COMPUTATION_UNSPECIFIED":          0,
@@ -212,6 +228,9 @@ var (
 		"HTML_FORMATTED_NAVIGATION_INSTRUCTIONS": 4,
 		"FLYOVER_INFO_ON_POLYLINE":               7,
 		"NARROW_ROAD_INFO_ON_POLYLINE":           8,
+		"TUNNEL_INFO_ON_POLYLINE":                9,
+		"BRIDGE_INFO_ON_POLYLINE":                10,
+		"SKYWAY_INFO_ON_POLYLINE":                11,
 	}
 )
 
@@ -359,9 +378,9 @@ type ComputeRoutesRequest struct {
 	// Optional. If set to true, the service attempts to minimize the overall cost
 	// of the route by re-ordering the specified intermediate waypoints. The
 	// request fails if any of the intermediate waypoints is a `via` waypoint. Use
-	// `ComputeRoutesResponse.Routes.optimized_intermediate_waypoint_index` to
+	// `ComputeRoutesResponse.routes.optimized_intermediate_waypoint_index` to
 	// find the new ordering.
-	// If `ComputeRoutesResponseroutes.optimized_intermediate_waypoint_index` is
+	// If `ComputeRoutesResponse.routes.optimized_intermediate_waypoint_index` is
 	// not requested in the `X-Goog-FieldMask` header, the request fails.
 	// If `optimize_waypoint_order` is set to false,
 	// `ComputeRoutesResponse.optimized_intermediate_waypoint_index` will be
@@ -1149,7 +1168,7 @@ var File_google_maps_routing_v2_routes_service_proto protoreflect.FileDescriptor
 
 const file_google_maps_routing_v2_routes_service_proto_rawDesc = "" +
 	"\n" +
-	"+google/maps/routing/v2/routes_service.proto\x12\x16google.maps.routing.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a*google/maps/routing/v2/fallback_info.proto\x1a.google/maps/routing/v2/geocoding_results.proto\x1a%google/maps/routing/v2/polyline.proto\x1a\"google/maps/routing/v2/route.proto\x1a,google/maps/routing/v2/route_modifiers.proto\x1a.google/maps/routing/v2/route_travel_mode.proto\x1a/google/maps/routing/v2/routing_preference.proto\x1a*google/maps/routing/v2/traffic_model.proto\x1a0google/maps/routing/v2/transit_preferences.proto\x1a\"google/maps/routing/v2/units.proto\x1a%google/maps/routing/v2/waypoint.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a google/type/localized_text.proto\"\x9a\x0e\n" +
+	"+google/maps/routing/v2/routes_service.proto\x12\x16google.maps.routing.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a*google/maps/routing/v2/fallback_info.proto\x1a.google/maps/routing/v2/geocoding_results.proto\x1a%google/maps/routing/v2/polyline.proto\x1a\"google/maps/routing/v2/route.proto\x1a,google/maps/routing/v2/route_modifiers.proto\x1a.google/maps/routing/v2/route_travel_mode.proto\x1a/google/maps/routing/v2/routing_preference.proto\x1a*google/maps/routing/v2/traffic_model.proto\x1a0google/maps/routing/v2/transit_preferences.proto\x1a\"google/maps/routing/v2/units.proto\x1a%google/maps/routing/v2/waypoint.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a google/type/localized_text.proto\"\xf1\x0e\n" +
 	"\x14ComputeRoutesRequest\x12=\n" +
 	"\x06origin\x18\x01 \x01(\v2 .google.maps.routing.v2.WaypointB\x03\xe0A\x02R\x06origin\x12G\n" +
 	"\vdestination\x18\x02 \x01(\v2 .google.maps.routing.v2.WaypointB\x03\xe0A\x02R\vdestination\x12K\n" +
@@ -1176,7 +1195,7 @@ const file_google_maps_routing_v2_routes_service_proto_rawDesc = "" +
 	"\x0eReferenceRoute\x12\x1f\n" +
 	"\x1bREFERENCE_ROUTE_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eFUEL_EFFICIENT\x10\x01\x12\x14\n" +
-	"\x10SHORTER_DISTANCE\x10\x02\"\xdb\x01\n" +
+	"\x10SHORTER_DISTANCE\x10\x02\"\xb2\x02\n" +
 	"\x10ExtraComputation\x12!\n" +
 	"\x1dEXTRA_COMPUTATION_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05TOLLS\x10\x01\x12\x14\n" +
@@ -1184,7 +1203,11 @@ const file_google_maps_routing_v2_routes_service_proto_rawDesc = "" +
 	"\x13TRAFFIC_ON_POLYLINE\x10\x03\x12*\n" +
 	"&HTML_FORMATTED_NAVIGATION_INSTRUCTIONS\x10\x04\x12\x1c\n" +
 	"\x18FLYOVER_INFO_ON_POLYLINE\x10\a\x12 \n" +
-	"\x1cNARROW_ROAD_INFO_ON_POLYLINE\x10\b\"\xf0\x01\n" +
+	"\x1cNARROW_ROAD_INFO_ON_POLYLINE\x10\b\x12\x1b\n" +
+	"\x17TUNNEL_INFO_ON_POLYLINE\x10\t\x12\x1b\n" +
+	"\x17BRIDGE_INFO_ON_POLYLINE\x10\n" +
+	"\x12\x1b\n" +
+	"\x17SKYWAY_INFO_ON_POLYLINE\x10\v\"\xf0\x01\n" +
 	"\x15ComputeRoutesResponse\x125\n" +
 	"\x06routes\x18\x01 \x03(\v2\x1d.google.maps.routing.v2.RouteR\x06routes\x12I\n" +
 	"\rfallback_info\x18\x02 \x01(\v2$.google.maps.routing.v2.FallbackInfoR\ffallbackInfo\x12U\n" +

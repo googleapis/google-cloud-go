@@ -122,6 +122,8 @@ type StreamAssistRequest struct {
 	Session string `protobuf:"bytes,3,opt,name=session,proto3" json:"session,omitempty"`
 	// Optional. Information about the user initiating the query.
 	UserMetadata *AssistUserMetadata `protobuf:"bytes,6,opt,name=user_metadata,json=userMetadata,proto3" json:"user_metadata,omitempty"`
+	// Optional. Specification of agents that are used to serve the request.
+	AgentsSpec *StreamAssistRequest_AgentsSpec `protobuf:"bytes,22,opt,name=agents_spec,json=agentsSpec,proto3" json:"agents_spec,omitempty"`
 	// Optional. Specification of tools that are used to serve the request.
 	ToolsSpec *StreamAssistRequest_ToolsSpec `protobuf:"bytes,18,opt,name=tools_spec,json=toolsSpec,proto3" json:"tools_spec,omitempty"`
 	// Optional. Specification of the generation configuration for the request.
@@ -184,6 +186,13 @@ func (x *StreamAssistRequest) GetSession() string {
 func (x *StreamAssistRequest) GetUserMetadata() *AssistUserMetadata {
 	if x != nil {
 		return x.UserMetadata
+	}
+	return nil
+}
+
+func (x *StreamAssistRequest) GetAgentsSpec() *StreamAssistRequest_AgentsSpec {
+	if x != nil {
+		return x.AgentsSpec
 	}
 	return nil
 }
@@ -701,6 +710,52 @@ func (x *UpdateAssistantRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
 	return nil
 }
 
+// Specification of agents that are used to serve the request.
+type StreamAssistRequest_AgentsSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Specification of agents that are used to serve the request.
+	AgentSpecs    []*StreamAssistRequest_AgentsSpec_AgentSpec `protobuf:"bytes,1,rep,name=agent_specs,json=agentSpecs,proto3" json:"agent_specs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamAssistRequest_AgentsSpec) Reset() {
+	*x = StreamAssistRequest_AgentsSpec{}
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamAssistRequest_AgentsSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamAssistRequest_AgentsSpec) ProtoMessage() {}
+
+func (x *StreamAssistRequest_AgentsSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamAssistRequest_AgentsSpec.ProtoReflect.Descriptor instead.
+func (*StreamAssistRequest_AgentsSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 0}
+}
+
+func (x *StreamAssistRequest_AgentsSpec) GetAgentSpecs() []*StreamAssistRequest_AgentsSpec_AgentSpec {
+	if x != nil {
+		return x.AgentSpecs
+	}
+	return nil
+}
+
 // Specification of tools that are used to serve the request.
 type StreamAssistRequest_ToolsSpec struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -724,7 +779,7 @@ type StreamAssistRequest_ToolsSpec struct {
 
 func (x *StreamAssistRequest_ToolsSpec) Reset() {
 	*x = StreamAssistRequest_ToolsSpec{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -736,7 +791,7 @@ func (x *StreamAssistRequest_ToolsSpec) String() string {
 func (*StreamAssistRequest_ToolsSpec) ProtoMessage() {}
 
 func (x *StreamAssistRequest_ToolsSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[9]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -749,7 +804,7 @@ func (x *StreamAssistRequest_ToolsSpec) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use StreamAssistRequest_ToolsSpec.ProtoReflect.Descriptor instead.
 func (*StreamAssistRequest_ToolsSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 0}
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 1}
 }
 
 func (x *StreamAssistRequest_ToolsSpec) GetVertexAiSearchSpec() *StreamAssistRequest_ToolsSpec_VertexAiSearchSpec {
@@ -794,7 +849,7 @@ type StreamAssistRequest_GenerationSpec struct {
 
 func (x *StreamAssistRequest_GenerationSpec) Reset() {
 	*x = StreamAssistRequest_GenerationSpec{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -806,7 +861,7 @@ func (x *StreamAssistRequest_GenerationSpec) String() string {
 func (*StreamAssistRequest_GenerationSpec) ProtoMessage() {}
 
 func (x *StreamAssistRequest_GenerationSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[10]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -819,12 +874,62 @@ func (x *StreamAssistRequest_GenerationSpec) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use StreamAssistRequest_GenerationSpec.ProtoReflect.Descriptor instead.
 func (*StreamAssistRequest_GenerationSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 1}
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 2}
 }
 
 func (x *StreamAssistRequest_GenerationSpec) GetModelId() string {
 	if x != nil {
 		return x.ModelId
+	}
+	return ""
+}
+
+// Specification of an agent.
+type StreamAssistRequest_AgentsSpec_AgentSpec struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. ID to identify the agent resource serving the request.
+	//
+	// This field must conform to
+	// [RFC-1034](https://tools.ietf.org/html/rfc1034)
+	// with a length limit of 63 characters.
+	AgentId       string `protobuf:"bytes,1,opt,name=agent_id,json=agentId,proto3" json:"agent_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StreamAssistRequest_AgentsSpec_AgentSpec) Reset() {
+	*x = StreamAssistRequest_AgentsSpec_AgentSpec{}
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StreamAssistRequest_AgentsSpec_AgentSpec) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StreamAssistRequest_AgentsSpec_AgentSpec) ProtoMessage() {}
+
+func (x *StreamAssistRequest_AgentsSpec_AgentSpec) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StreamAssistRequest_AgentsSpec_AgentSpec.ProtoReflect.Descriptor instead.
+func (*StreamAssistRequest_AgentsSpec_AgentSpec) Descriptor() ([]byte, []int) {
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 0, 0}
+}
+
+func (x *StreamAssistRequest_AgentsSpec_AgentSpec) GetAgentId() string {
+	if x != nil {
+		return x.AgentId
 	}
 	return ""
 }
@@ -861,7 +966,7 @@ type StreamAssistRequest_ToolsSpec_VertexAiSearchSpec struct {
 
 func (x *StreamAssistRequest_ToolsSpec_VertexAiSearchSpec) Reset() {
 	*x = StreamAssistRequest_ToolsSpec_VertexAiSearchSpec{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[11]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -873,7 +978,7 @@ func (x *StreamAssistRequest_ToolsSpec_VertexAiSearchSpec) String() string {
 func (*StreamAssistRequest_ToolsSpec_VertexAiSearchSpec) ProtoMessage() {}
 
 func (x *StreamAssistRequest_ToolsSpec_VertexAiSearchSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[11]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -886,7 +991,7 @@ func (x *StreamAssistRequest_ToolsSpec_VertexAiSearchSpec) ProtoReflect() protor
 
 // Deprecated: Use StreamAssistRequest_ToolsSpec_VertexAiSearchSpec.ProtoReflect.Descriptor instead.
 func (*StreamAssistRequest_ToolsSpec_VertexAiSearchSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 0, 0}
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 1, 0}
 }
 
 func (x *StreamAssistRequest_ToolsSpec_VertexAiSearchSpec) GetDataStoreSpecs() []*SearchRequest_DataStoreSpec {
@@ -912,7 +1017,7 @@ type StreamAssistRequest_ToolsSpec_WebGroundingSpec struct {
 
 func (x *StreamAssistRequest_ToolsSpec_WebGroundingSpec) Reset() {
 	*x = StreamAssistRequest_ToolsSpec_WebGroundingSpec{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[12]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -924,7 +1029,7 @@ func (x *StreamAssistRequest_ToolsSpec_WebGroundingSpec) String() string {
 func (*StreamAssistRequest_ToolsSpec_WebGroundingSpec) ProtoMessage() {}
 
 func (x *StreamAssistRequest_ToolsSpec_WebGroundingSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[12]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -937,7 +1042,7 @@ func (x *StreamAssistRequest_ToolsSpec_WebGroundingSpec) ProtoReflect() protoref
 
 // Deprecated: Use StreamAssistRequest_ToolsSpec_WebGroundingSpec.ProtoReflect.Descriptor instead.
 func (*StreamAssistRequest_ToolsSpec_WebGroundingSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 0, 1}
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 1, 1}
 }
 
 // Specification of the image generation tool.
@@ -949,7 +1054,7 @@ type StreamAssistRequest_ToolsSpec_ImageGenerationSpec struct {
 
 func (x *StreamAssistRequest_ToolsSpec_ImageGenerationSpec) Reset() {
 	*x = StreamAssistRequest_ToolsSpec_ImageGenerationSpec{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[13]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -961,7 +1066,7 @@ func (x *StreamAssistRequest_ToolsSpec_ImageGenerationSpec) String() string {
 func (*StreamAssistRequest_ToolsSpec_ImageGenerationSpec) ProtoMessage() {}
 
 func (x *StreamAssistRequest_ToolsSpec_ImageGenerationSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[13]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -974,7 +1079,7 @@ func (x *StreamAssistRequest_ToolsSpec_ImageGenerationSpec) ProtoReflect() proto
 
 // Deprecated: Use StreamAssistRequest_ToolsSpec_ImageGenerationSpec.ProtoReflect.Descriptor instead.
 func (*StreamAssistRequest_ToolsSpec_ImageGenerationSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 0, 2}
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 1, 2}
 }
 
 // Specification of the video generation tool.
@@ -986,7 +1091,7 @@ type StreamAssistRequest_ToolsSpec_VideoGenerationSpec struct {
 
 func (x *StreamAssistRequest_ToolsSpec_VideoGenerationSpec) Reset() {
 	*x = StreamAssistRequest_ToolsSpec_VideoGenerationSpec{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[14]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -998,7 +1103,7 @@ func (x *StreamAssistRequest_ToolsSpec_VideoGenerationSpec) String() string {
 func (*StreamAssistRequest_ToolsSpec_VideoGenerationSpec) ProtoMessage() {}
 
 func (x *StreamAssistRequest_ToolsSpec_VideoGenerationSpec) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[14]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1011,7 +1116,7 @@ func (x *StreamAssistRequest_ToolsSpec_VideoGenerationSpec) ProtoReflect() proto
 
 // Deprecated: Use StreamAssistRequest_ToolsSpec_VideoGenerationSpec.ProtoReflect.Descriptor instead.
 func (*StreamAssistRequest_ToolsSpec_VideoGenerationSpec) Descriptor() ([]byte, []int) {
-	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 0, 3}
+	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZIP(), []int{1, 1, 3}
 }
 
 // Information about the session.
@@ -1028,7 +1133,7 @@ type StreamAssistResponse_SessionInfo struct {
 
 func (x *StreamAssistResponse_SessionInfo) Reset() {
 	*x = StreamAssistResponse_SessionInfo{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[15]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1040,7 +1145,7 @@ func (x *StreamAssistResponse_SessionInfo) String() string {
 func (*StreamAssistResponse_SessionInfo) ProtoMessage() {}
 
 func (x *StreamAssistResponse_SessionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[15]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1076,7 +1181,7 @@ type StreamAssistResponse_InvokedSkill struct {
 
 func (x *StreamAssistResponse_InvokedSkill) Reset() {
 	*x = StreamAssistResponse_InvokedSkill{}
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[16]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1088,7 +1193,7 @@ func (x *StreamAssistResponse_InvokedSkill) String() string {
 func (*StreamAssistResponse_InvokedSkill) ProtoMessage() {}
 
 func (x *StreamAssistResponse_InvokedSkill) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[16]
+	mi := &file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1125,17 +1230,25 @@ const file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDesc =
 	";google/cloud/discoveryengine/v1beta/assistant_service.proto\x12#google.cloud.discoveryengine.v1beta\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a7google/cloud/discoveryengine/v1beta/assist_answer.proto\x1a3google/cloud/discoveryengine/v1beta/assistant.proto\x1a8google/cloud/discoveryengine/v1beta/search_service.proto\x1a1google/cloud/discoveryengine/v1beta/session.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\"s\n" +
 	"\x12AssistUserMetadata\x12 \n" +
 	"\ttime_zone\x18\x01 \x01(\tB\x03\xe0A\x01R\btimeZone\x12;\n" +
-	"\x17preferred_language_code\x18\x02 \x01(\tB\x03\xe0A\x01R\x15preferredLanguageCode\"\x92\v\n" +
+	"\x17preferred_language_code\x18\x02 \x01(\tB\x03\xe0A\x01R\x15preferredLanguageCode\"\xae\r\n" +
 	"\x13StreamAssistRequest\x12D\n" +
 	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
 	"(discoveryengine.googleapis.com/AssistantR\x04name\x12E\n" +
 	"\x05query\x18\x02 \x01(\v2*.google.cloud.discoveryengine.v1beta.QueryB\x03\xe0A\x01R\x05query\x12H\n" +
 	"\asession\x18\x03 \x01(\tB.\xe0A\x01\xfaA(\n" +
 	"&discoveryengine.googleapis.com/SessionR\asession\x12a\n" +
-	"\ruser_metadata\x18\x06 \x01(\v27.google.cloud.discoveryengine.v1beta.AssistUserMetadataB\x03\xe0A\x01R\fuserMetadata\x12f\n" +
+	"\ruser_metadata\x18\x06 \x01(\v27.google.cloud.discoveryengine.v1beta.AssistUserMetadataB\x03\xe0A\x01R\fuserMetadata\x12i\n" +
+	"\vagents_spec\x18\x16 \x01(\v2C.google.cloud.discoveryengine.v1beta.StreamAssistRequest.AgentsSpecB\x03\xe0A\x01R\n" +
+	"agentsSpec\x12f\n" +
 	"\n" +
 	"tools_spec\x18\x12 \x01(\v2B.google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpecB\x03\xe0A\x01R\ttoolsSpec\x12u\n" +
-	"\x0fgeneration_spec\x18\x13 \x01(\v2G.google.cloud.discoveryengine.v1beta.StreamAssistRequest.GenerationSpecB\x03\xe0A\x01R\x0egenerationSpec\x1a\xaf\x06\n" +
+	"\x0fgeneration_spec\x18\x13 \x01(\v2G.google.cloud.discoveryengine.v1beta.StreamAssistRequest.GenerationSpecB\x03\xe0A\x01R\x0egenerationSpec\x1a\xae\x01\n" +
+	"\n" +
+	"AgentsSpec\x12s\n" +
+	"\vagent_specs\x18\x01 \x03(\v2M.google.cloud.discoveryengine.v1beta.StreamAssistRequest.AgentsSpec.AgentSpecB\x03\xe0A\x01R\n" +
+	"agentSpecs\x1a+\n" +
+	"\tAgentSpec\x12\x1e\n" +
+	"\bagent_id\x18\x01 \x01(\tB\x03\xe0A\x02R\aagentId\x1a\xaf\x06\n" +
 	"\tToolsSpec\x12\x8d\x01\n" +
 	"\x15vertex_ai_search_spec\x18\x01 \x01(\v2U.google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VertexAiSearchSpecB\x03\xe0A\x01R\x12vertexAiSearchSpec\x12\x86\x01\n" +
 	"\x12web_grounding_spec\x18\x02 \x01(\v2S.google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.WebGroundingSpecB\x03\xe0A\x01R\x10webGroundingSpec\x12\x8f\x01\n" +
@@ -1209,7 +1322,7 @@ func file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescGZI
 	return file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDescData
 }
 
-var file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes = make([]protoimpl.MessageInfo, 17)
+var file_google_cloud_discoveryengine_v1beta_assistant_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_google_cloud_discoveryengine_v1beta_assistant_service_proto_goTypes = []any{
 	(*AssistUserMetadata)(nil),                                // 0: google.cloud.discoveryengine.v1beta.AssistUserMetadata
 	(*StreamAssistRequest)(nil),                               // 1: google.cloud.discoveryengine.v1beta.StreamAssistRequest
@@ -1220,55 +1333,59 @@ var file_google_cloud_discoveryengine_v1beta_assistant_service_proto_goTypes = [
 	(*ListAssistantsRequest)(nil),                             // 6: google.cloud.discoveryengine.v1beta.ListAssistantsRequest
 	(*ListAssistantsResponse)(nil),                            // 7: google.cloud.discoveryengine.v1beta.ListAssistantsResponse
 	(*UpdateAssistantRequest)(nil),                            // 8: google.cloud.discoveryengine.v1beta.UpdateAssistantRequest
-	(*StreamAssistRequest_ToolsSpec)(nil),                     // 9: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec
-	(*StreamAssistRequest_GenerationSpec)(nil),                // 10: google.cloud.discoveryengine.v1beta.StreamAssistRequest.GenerationSpec
-	(*StreamAssistRequest_ToolsSpec_VertexAiSearchSpec)(nil),  // 11: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VertexAiSearchSpec
-	(*StreamAssistRequest_ToolsSpec_WebGroundingSpec)(nil),    // 12: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.WebGroundingSpec
-	(*StreamAssistRequest_ToolsSpec_ImageGenerationSpec)(nil), // 13: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.ImageGenerationSpec
-	(*StreamAssistRequest_ToolsSpec_VideoGenerationSpec)(nil), // 14: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VideoGenerationSpec
-	(*StreamAssistResponse_SessionInfo)(nil),                  // 15: google.cloud.discoveryengine.v1beta.StreamAssistResponse.SessionInfo
-	(*StreamAssistResponse_InvokedSkill)(nil),                 // 16: google.cloud.discoveryengine.v1beta.StreamAssistResponse.InvokedSkill
-	(*Query)(nil),                       // 17: google.cloud.discoveryengine.v1beta.Query
-	(*AssistAnswer)(nil),                // 18: google.cloud.discoveryengine.v1beta.AssistAnswer
-	(*Assistant)(nil),                   // 19: google.cloud.discoveryengine.v1beta.Assistant
-	(*fieldmaskpb.FieldMask)(nil),       // 20: google.protobuf.FieldMask
-	(*SearchRequest_DataStoreSpec)(nil), // 21: google.cloud.discoveryengine.v1beta.SearchRequest.DataStoreSpec
-	(*emptypb.Empty)(nil),               // 22: google.protobuf.Empty
+	(*StreamAssistRequest_AgentsSpec)(nil),                    // 9: google.cloud.discoveryengine.v1beta.StreamAssistRequest.AgentsSpec
+	(*StreamAssistRequest_ToolsSpec)(nil),                     // 10: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec
+	(*StreamAssistRequest_GenerationSpec)(nil),                // 11: google.cloud.discoveryengine.v1beta.StreamAssistRequest.GenerationSpec
+	(*StreamAssistRequest_AgentsSpec_AgentSpec)(nil),          // 12: google.cloud.discoveryengine.v1beta.StreamAssistRequest.AgentsSpec.AgentSpec
+	(*StreamAssistRequest_ToolsSpec_VertexAiSearchSpec)(nil),  // 13: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VertexAiSearchSpec
+	(*StreamAssistRequest_ToolsSpec_WebGroundingSpec)(nil),    // 14: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.WebGroundingSpec
+	(*StreamAssistRequest_ToolsSpec_ImageGenerationSpec)(nil), // 15: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.ImageGenerationSpec
+	(*StreamAssistRequest_ToolsSpec_VideoGenerationSpec)(nil), // 16: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VideoGenerationSpec
+	(*StreamAssistResponse_SessionInfo)(nil),                  // 17: google.cloud.discoveryengine.v1beta.StreamAssistResponse.SessionInfo
+	(*StreamAssistResponse_InvokedSkill)(nil),                 // 18: google.cloud.discoveryengine.v1beta.StreamAssistResponse.InvokedSkill
+	(*Query)(nil),                       // 19: google.cloud.discoveryengine.v1beta.Query
+	(*AssistAnswer)(nil),                // 20: google.cloud.discoveryengine.v1beta.AssistAnswer
+	(*Assistant)(nil),                   // 21: google.cloud.discoveryengine.v1beta.Assistant
+	(*fieldmaskpb.FieldMask)(nil),       // 22: google.protobuf.FieldMask
+	(*SearchRequest_DataStoreSpec)(nil), // 23: google.cloud.discoveryengine.v1beta.SearchRequest.DataStoreSpec
+	(*emptypb.Empty)(nil),               // 24: google.protobuf.Empty
 }
 var file_google_cloud_discoveryengine_v1beta_assistant_service_proto_depIdxs = []int32{
-	17, // 0: google.cloud.discoveryengine.v1beta.StreamAssistRequest.query:type_name -> google.cloud.discoveryengine.v1beta.Query
+	19, // 0: google.cloud.discoveryengine.v1beta.StreamAssistRequest.query:type_name -> google.cloud.discoveryengine.v1beta.Query
 	0,  // 1: google.cloud.discoveryengine.v1beta.StreamAssistRequest.user_metadata:type_name -> google.cloud.discoveryengine.v1beta.AssistUserMetadata
-	9,  // 2: google.cloud.discoveryengine.v1beta.StreamAssistRequest.tools_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec
-	10, // 3: google.cloud.discoveryengine.v1beta.StreamAssistRequest.generation_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.GenerationSpec
-	18, // 4: google.cloud.discoveryengine.v1beta.StreamAssistResponse.answer:type_name -> google.cloud.discoveryengine.v1beta.AssistAnswer
-	15, // 5: google.cloud.discoveryengine.v1beta.StreamAssistResponse.session_info:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistResponse.SessionInfo
-	16, // 6: google.cloud.discoveryengine.v1beta.StreamAssistResponse.invoked_skills:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistResponse.InvokedSkill
-	19, // 7: google.cloud.discoveryengine.v1beta.CreateAssistantRequest.assistant:type_name -> google.cloud.discoveryengine.v1beta.Assistant
-	19, // 8: google.cloud.discoveryengine.v1beta.ListAssistantsResponse.assistants:type_name -> google.cloud.discoveryengine.v1beta.Assistant
-	19, // 9: google.cloud.discoveryengine.v1beta.UpdateAssistantRequest.assistant:type_name -> google.cloud.discoveryengine.v1beta.Assistant
-	20, // 10: google.cloud.discoveryengine.v1beta.UpdateAssistantRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11, // 11: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.vertex_ai_search_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VertexAiSearchSpec
-	12, // 12: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.web_grounding_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.WebGroundingSpec
-	13, // 13: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.image_generation_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.ImageGenerationSpec
-	14, // 14: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.video_generation_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VideoGenerationSpec
-	21, // 15: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VertexAiSearchSpec.data_store_specs:type_name -> google.cloud.discoveryengine.v1beta.SearchRequest.DataStoreSpec
-	1,  // 16: google.cloud.discoveryengine.v1beta.AssistantService.StreamAssist:input_type -> google.cloud.discoveryengine.v1beta.StreamAssistRequest
-	3,  // 17: google.cloud.discoveryengine.v1beta.AssistantService.CreateAssistant:input_type -> google.cloud.discoveryengine.v1beta.CreateAssistantRequest
-	4,  // 18: google.cloud.discoveryengine.v1beta.AssistantService.DeleteAssistant:input_type -> google.cloud.discoveryengine.v1beta.DeleteAssistantRequest
-	8,  // 19: google.cloud.discoveryengine.v1beta.AssistantService.UpdateAssistant:input_type -> google.cloud.discoveryengine.v1beta.UpdateAssistantRequest
-	5,  // 20: google.cloud.discoveryengine.v1beta.AssistantService.GetAssistant:input_type -> google.cloud.discoveryengine.v1beta.GetAssistantRequest
-	6,  // 21: google.cloud.discoveryengine.v1beta.AssistantService.ListAssistants:input_type -> google.cloud.discoveryengine.v1beta.ListAssistantsRequest
-	2,  // 22: google.cloud.discoveryengine.v1beta.AssistantService.StreamAssist:output_type -> google.cloud.discoveryengine.v1beta.StreamAssistResponse
-	19, // 23: google.cloud.discoveryengine.v1beta.AssistantService.CreateAssistant:output_type -> google.cloud.discoveryengine.v1beta.Assistant
-	22, // 24: google.cloud.discoveryengine.v1beta.AssistantService.DeleteAssistant:output_type -> google.protobuf.Empty
-	19, // 25: google.cloud.discoveryengine.v1beta.AssistantService.UpdateAssistant:output_type -> google.cloud.discoveryengine.v1beta.Assistant
-	19, // 26: google.cloud.discoveryengine.v1beta.AssistantService.GetAssistant:output_type -> google.cloud.discoveryengine.v1beta.Assistant
-	7,  // 27: google.cloud.discoveryengine.v1beta.AssistantService.ListAssistants:output_type -> google.cloud.discoveryengine.v1beta.ListAssistantsResponse
-	22, // [22:28] is the sub-list for method output_type
-	16, // [16:22] is the sub-list for method input_type
-	16, // [16:16] is the sub-list for extension type_name
-	16, // [16:16] is the sub-list for extension extendee
-	0,  // [0:16] is the sub-list for field type_name
+	9,  // 2: google.cloud.discoveryengine.v1beta.StreamAssistRequest.agents_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.AgentsSpec
+	10, // 3: google.cloud.discoveryengine.v1beta.StreamAssistRequest.tools_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec
+	11, // 4: google.cloud.discoveryengine.v1beta.StreamAssistRequest.generation_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.GenerationSpec
+	20, // 5: google.cloud.discoveryengine.v1beta.StreamAssistResponse.answer:type_name -> google.cloud.discoveryengine.v1beta.AssistAnswer
+	17, // 6: google.cloud.discoveryengine.v1beta.StreamAssistResponse.session_info:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistResponse.SessionInfo
+	18, // 7: google.cloud.discoveryengine.v1beta.StreamAssistResponse.invoked_skills:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistResponse.InvokedSkill
+	21, // 8: google.cloud.discoveryengine.v1beta.CreateAssistantRequest.assistant:type_name -> google.cloud.discoveryengine.v1beta.Assistant
+	21, // 9: google.cloud.discoveryengine.v1beta.ListAssistantsResponse.assistants:type_name -> google.cloud.discoveryengine.v1beta.Assistant
+	21, // 10: google.cloud.discoveryengine.v1beta.UpdateAssistantRequest.assistant:type_name -> google.cloud.discoveryengine.v1beta.Assistant
+	22, // 11: google.cloud.discoveryengine.v1beta.UpdateAssistantRequest.update_mask:type_name -> google.protobuf.FieldMask
+	12, // 12: google.cloud.discoveryengine.v1beta.StreamAssistRequest.AgentsSpec.agent_specs:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.AgentsSpec.AgentSpec
+	13, // 13: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.vertex_ai_search_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VertexAiSearchSpec
+	14, // 14: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.web_grounding_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.WebGroundingSpec
+	15, // 15: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.image_generation_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.ImageGenerationSpec
+	16, // 16: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.video_generation_spec:type_name -> google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VideoGenerationSpec
+	23, // 17: google.cloud.discoveryengine.v1beta.StreamAssistRequest.ToolsSpec.VertexAiSearchSpec.data_store_specs:type_name -> google.cloud.discoveryengine.v1beta.SearchRequest.DataStoreSpec
+	1,  // 18: google.cloud.discoveryengine.v1beta.AssistantService.StreamAssist:input_type -> google.cloud.discoveryengine.v1beta.StreamAssistRequest
+	3,  // 19: google.cloud.discoveryengine.v1beta.AssistantService.CreateAssistant:input_type -> google.cloud.discoveryengine.v1beta.CreateAssistantRequest
+	4,  // 20: google.cloud.discoveryengine.v1beta.AssistantService.DeleteAssistant:input_type -> google.cloud.discoveryengine.v1beta.DeleteAssistantRequest
+	8,  // 21: google.cloud.discoveryengine.v1beta.AssistantService.UpdateAssistant:input_type -> google.cloud.discoveryengine.v1beta.UpdateAssistantRequest
+	5,  // 22: google.cloud.discoveryengine.v1beta.AssistantService.GetAssistant:input_type -> google.cloud.discoveryengine.v1beta.GetAssistantRequest
+	6,  // 23: google.cloud.discoveryengine.v1beta.AssistantService.ListAssistants:input_type -> google.cloud.discoveryengine.v1beta.ListAssistantsRequest
+	2,  // 24: google.cloud.discoveryengine.v1beta.AssistantService.StreamAssist:output_type -> google.cloud.discoveryengine.v1beta.StreamAssistResponse
+	21, // 25: google.cloud.discoveryengine.v1beta.AssistantService.CreateAssistant:output_type -> google.cloud.discoveryengine.v1beta.Assistant
+	24, // 26: google.cloud.discoveryengine.v1beta.AssistantService.DeleteAssistant:output_type -> google.protobuf.Empty
+	21, // 27: google.cloud.discoveryengine.v1beta.AssistantService.UpdateAssistant:output_type -> google.cloud.discoveryengine.v1beta.Assistant
+	21, // 28: google.cloud.discoveryengine.v1beta.AssistantService.GetAssistant:output_type -> google.cloud.discoveryengine.v1beta.Assistant
+	7,  // 29: google.cloud.discoveryengine.v1beta.AssistantService.ListAssistants:output_type -> google.cloud.discoveryengine.v1beta.ListAssistantsResponse
+	24, // [24:30] is the sub-list for method output_type
+	18, // [18:24] is the sub-list for method input_type
+	18, // [18:18] is the sub-list for extension type_name
+	18, // [18:18] is the sub-list for extension extendee
+	0,  // [0:18] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_discoveryengine_v1beta_assistant_service_proto_init() }
@@ -1286,7 +1403,7 @@ func file_google_cloud_discoveryengine_v1beta_assistant_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDesc), len(file_google_cloud_discoveryengine_v1beta_assistant_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   17,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

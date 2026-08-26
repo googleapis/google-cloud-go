@@ -17908,6 +17908,98 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.ManagedRulesetsClient",
+          "shortName": "ManagedRulesetsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.ManagedRulesetsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ManagedRulesets.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ManagedRulesets",
+            "shortName": "ManagedRulesets"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetManagedRulesetRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.ManagedRuleset",
+        "shortName": "Get"
+      },
+      "description": "Get gets the details for the specified managed ruleset name.",
+      "file": "ManagedRulesetsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ManagedRulesets_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.ManagedRulesetsClient",
+          "shortName": "ManagedRulesetsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.ManagedRulesetsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ManagedRulesets.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ManagedRulesets",
+            "shortName": "ManagedRulesets"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListManagedRulesetsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ManagedRulesetIterator",
+        "shortName": "List"
+      },
+      "description": "List retrieves the list of all the managed rulesets available.",
+      "file": "ManagedRulesetsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ManagedRulesets_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.NetworkAttachmentsClient",
           "shortName": "NetworkAttachmentsClient"
         },

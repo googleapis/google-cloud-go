@@ -80,6 +80,7 @@ type ClusterManagerCallOptions struct {
 	CheckAutopilotCompatibility []gax.CallOption
 	FetchClusterUpgradeInfo     []gax.CallOption
 	FetchNodePoolUpgradeInfo    []gax.CallOption
+	CompleteControlPlaneUpgrade []gax.CallOption
 }
 
 func defaultClusterManagerGRPCClientOptions() []option.ClientOption {
@@ -285,6 +286,7 @@ func defaultClusterManagerCallOptions() *ClusterManagerCallOptions {
 		CheckAutopilotCompatibility: []gax.CallOption{},
 		FetchClusterUpgradeInfo:     []gax.CallOption{},
 		FetchNodePoolUpgradeInfo:    []gax.CallOption{},
+		CompleteControlPlaneUpgrade: []gax.CallOption{},
 	}
 }
 
@@ -467,6 +469,7 @@ func defaultClusterManagerRESTCallOptions() *ClusterManagerCallOptions {
 		CheckAutopilotCompatibility: []gax.CallOption{},
 		FetchClusterUpgradeInfo:     []gax.CallOption{},
 		FetchNodePoolUpgradeInfo:    []gax.CallOption{},
+		CompleteControlPlaneUpgrade: []gax.CallOption{},
 	}
 }
 
@@ -511,6 +514,7 @@ type internalClusterManagerClient interface {
 	CheckAutopilotCompatibility(context.Context, *containerpb.CheckAutopilotCompatibilityRequest, ...gax.CallOption) (*containerpb.CheckAutopilotCompatibilityResponse, error)
 	FetchClusterUpgradeInfo(context.Context, *containerpb.FetchClusterUpgradeInfoRequest, ...gax.CallOption) (*containerpb.ClusterUpgradeInfo, error)
 	FetchNodePoolUpgradeInfo(context.Context, *containerpb.FetchNodePoolUpgradeInfoRequest, ...gax.CallOption) (*containerpb.NodePoolUpgradeInfo, error)
+	CompleteControlPlaneUpgrade(context.Context, *containerpb.CompleteControlPlaneUpgradeRequest, ...gax.CallOption) (*containerpb.Operation, error)
 }
 
 // ClusterManagerClient is a client for interacting with Kubernetes Engine API.
@@ -763,6 +767,12 @@ func (c *ClusterManagerClient) FetchNodePoolUpgradeInfo(ctx context.Context, req
 	return c.internalClient.FetchNodePoolUpgradeInfo(ctx, req, opts...)
 }
 
+// CompleteControlPlaneUpgrade completeControlPlaneUpgrade completes the rollback-safe upgrade by
+// performing the step two upgrade for a specific cluster.
+func (c *ClusterManagerClient) CompleteControlPlaneUpgrade(ctx context.Context, req *containerpb.CompleteControlPlaneUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	return c.internalClient.CompleteControlPlaneUpgrade(ctx, req, opts...)
+}
+
 // clusterManagerGRPCClient is a client for interacting with Kubernetes Engine API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -867,6 +877,7 @@ func NewClusterManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.CheckAutopilotCompatibility = append(client.CallOptions.CheckAutopilotCompatibility, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchClusterUpgradeInfo = append(client.CallOptions.FetchClusterUpgradeInfo, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchNodePoolUpgradeInfo = append(client.CallOptions.FetchNodePoolUpgradeInfo, gax.WithClientMetrics(metrics))
+		client.CallOptions.CompleteControlPlaneUpgrade = append(client.CallOptions.CompleteControlPlaneUpgrade, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -993,6 +1004,7 @@ func NewClusterManagerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.CheckAutopilotCompatibility = append(callOpts.CheckAutopilotCompatibility, gax.WithClientMetrics(metrics))
 		callOpts.FetchClusterUpgradeInfo = append(callOpts.FetchClusterUpgradeInfo, gax.WithClientMetrics(metrics))
 		callOpts.FetchNodePoolUpgradeInfo = append(callOpts.FetchNodePoolUpgradeInfo, gax.WithClientMetrics(metrics))
+		callOpts.CompleteControlPlaneUpgrade = append(callOpts.CompleteControlPlaneUpgrade, gax.WithClientMetrics(metrics))
 	}
 
 	return &ClusterManagerClient{internalClient: c, CallOptions: callOpts}, nil
@@ -1803,6 +1815,27 @@ func (c *clusterManagerGRPCClient) FetchNodePoolUpgradeInfo(ctx context.Context,
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.clusterManagerClient.FetchNodePoolUpgradeInfo, req, settings.GRPC, c.logger, "FetchNodePoolUpgradeInfo")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *clusterManagerGRPCClient) CompleteControlPlaneUpgrade(ctx context.Context, req *containerpb.CompleteControlPlaneUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteControlPlaneUpgrade")
+	}
+	opts = append((*c.CallOptions).CompleteControlPlaneUpgrade[0:len((*c.CallOptions).CompleteControlPlaneUpgrade):len((*c.CallOptions).CompleteControlPlaneUpgrade)], opts...)
+	var resp *containerpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.clusterManagerClient.CompleteControlPlaneUpgrade, req, settings.GRPC, c.logger, "CompleteControlPlaneUpgrade")
 		return err
 	}, opts...)
 	if err != nil {
@@ -3987,6 +4020,67 @@ func (c *clusterManagerRESTClient) FetchNodePoolUpgradeInfo(ctx context.Context,
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchNodePoolUpgradeInfo")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CompleteControlPlaneUpgrade completeControlPlaneUpgrade completes the rollback-safe upgrade by
+// performing the step two upgrade for a specific cluster.
+func (c *clusterManagerRESTClient) CompleteControlPlaneUpgrade(ctx context.Context, req *containerpb.CompleteControlPlaneUpgradeRequest, opts ...gax.CallOption) (*containerpb.Operation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:completeControlPlaneUpgrade", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.container.v1.ClusterManager/CompleteControlPlaneUpgrade")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/clusters/*}:completeControlPlaneUpgrade")
+	}
+	opts = append((*c.CallOptions).CompleteControlPlaneUpgrade[0:len((*c.CallOptions).CompleteControlPlaneUpgrade):len((*c.CallOptions).CompleteControlPlaneUpgrade)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &containerpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CompleteControlPlaneUpgrade")
 		if err != nil {
 			return err
 		}
