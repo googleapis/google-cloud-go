@@ -1271,6 +1271,7 @@ func TestIntegration_DirectConnectivityEnforcedError(t *testing.T) {
 		// Try writing an object and ensure it fails.
 		obj := enforcedClient.Bucket(bucketName).Object("test-object")
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		_, err = w.Write([]byte("hello world"))
 		if closeErr := w.Close(); err == nil {
 			err = closeErr
@@ -1937,6 +1938,7 @@ func TestIntegration_BucketPolicyOnly(t *testing.T) {
 			}
 		}()
 		wc := o.NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 		wc.ContentType = "text/plain"
 		h.mustWrite(wc, []byte("test"))
 		a := o.ACL()
@@ -2027,6 +2029,7 @@ func TestIntegration_UniformBucketLevelAccess(t *testing.T) {
 			}
 		}()
 		wc := o.NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 		wc.ContentType = "text/plain"
 		h.mustWrite(wc, []byte("test"))
 		a := o.ACL()
@@ -2126,6 +2129,7 @@ func TestIntegration_PublicAccessPrevention(t *testing.T) {
 			}
 		}()
 		wc := o.NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 		wc.ContentType = "text/plain"
 		h.mustWrite(wc, []byte("test"))
 		a := o.ACL()
@@ -2263,6 +2267,7 @@ func TestIntegration_ConditionalDelete(t *testing.T) {
 		o := client.Bucket(bucket).Object("conddel")
 
 		wc := o.NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 		wc.ContentType = "text/plain"
 		h.mustWrite(wc, []byte("foo"))
 
@@ -2337,6 +2342,7 @@ func TestIntegration_ObjectsRangeReader(t *testing.T) {
 		contents := []byte("Hello, world this is a range request")
 
 		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		if _, err := w.Write(contents); err != nil {
 			t.Errorf("Failed to write contents: %v", err)
 		}
@@ -2456,6 +2462,7 @@ func TestIntegration_MultiMessageWriteGRPC(t *testing.T) {
 
 		crc32c := crc32.Checksum(content, crc32cTable)
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.ProgressFunc = func(p int64) {
 			t.Logf("%s: committed %d\n", t.Name(), p)
 		}
@@ -2505,6 +2512,7 @@ func TestIntegration_MultiChunkWrite(t *testing.T) {
 		crc32c := crc32.Checksum(content, crc32cTable)
 
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.SendCRC32C = true
 		w.CRC32C = crc32c
 		// Use a 1 MB chunk size.
@@ -2631,6 +2639,7 @@ func TestIntegration_WriterCRC32CValidation(t *testing.T) {
 				})
 
 				w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.ChunkSize = tc.chunkSize
 				w.SendCRC32C = tc.sendCRC32C
 				w.CRC32C = correctCRC32C
@@ -2769,6 +2778,7 @@ func TestIntegration_AppendWriterCRC32CValidation(t *testing.T) {
 				})
 
 				w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.Append = true
 				w.FinalizeOnClose = tc.finalizeOnClose
 				if tc.sendCRC32C {
@@ -2830,6 +2840,7 @@ func TestIntegration_ConditionalDownload(t *testing.T) {
 		defer o.Delete(ctx)
 
 		wc := o.NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 		wc.ContentType = "text/plain"
 		h.mustWrite(wc, []byte("foo"))
 
@@ -3145,6 +3156,7 @@ func TestIntegration_ObjectUpdate(t *testing.T) {
 
 		o := b.Object("update-obj" + uidSpaceObjects.New())
 		w := o.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		_, err := io.Copy(w, bytes.NewReader(randomContents()))
 		if err != nil {
 			t.Fatalf("io.Copy: %v", err)
@@ -3274,6 +3286,7 @@ func TestIntegration_ObjectChecksums(t *testing.T) {
 		}
 		for _, c := range checksumCases {
 			wc := b.Object(c.name + uidSpaceObjects.New()).NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 			for _, data := range c.contents {
 				if _, err := wc.Write(data); err != nil {
 					t.Fatalf("Write(%q) failed with %q", data, err)
@@ -3540,6 +3553,7 @@ func TestIntegration_Copy(t *testing.T) {
 
 		// Create an object to copy from
 		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		c := randomContents()
 		for written := 0; written < minObjectSize; {
 			n, err := w.Write(c)
@@ -3714,6 +3728,7 @@ func TestIntegration_Encoding(t *testing.T) {
 		const zeroCount = 20 << 1 // TODO: should be 20 << 20
 		obj := bkt.Object("gzip-test")
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.ContentEncoding = "gzip"
 		gw := gzip.NewWriter(w)
 		if _, err := io.Copy(gw, io.LimitReader(zeros{}, zeroCount)); err != nil {
@@ -4377,6 +4392,7 @@ func TestIntegration_WriterChunksize(t *testing.T) {
 				t.Cleanup(func() { obj.Delete(ctx) })
 
 				w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.ChunkSize = test.chunksize
 
 				bytesWrittenSoFar := int64(0)
@@ -4516,6 +4532,7 @@ func TestIntegration_WriterAppend(t *testing.T) {
 				obj := bkt.Object(tc.name + uidSpace.New())
 				defer h.mustDeleteObject(obj)
 				w := obj.Retryer(WithPolicy(RetryAlways)).If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.Append = true
 				w.FinalizeOnClose = tc.finalize
 				w.ChunkSize = tc.chunkSize
@@ -4754,6 +4771,7 @@ func TestIntegration_WriterAppendTakeover(t *testing.T) {
 				obj := bkt.Object(tc.name + uidSpace.New()).Retryer(WithPolicy(RetryAlways))
 				defer h.mustDeleteObject(obj)
 				w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.Append = true
 				w.FinalizeOnClose = false
 				if tc.opts != nil && tc.opts.ChunkSize > 0 {
@@ -4892,6 +4910,7 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		// If a takeover is opened, flush or close to the original writer
 		// should fail.
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.Append = true
 		w.ChunkSize = MiB
 		if _, err := w.Write(randomBytes3MiB); err != nil {
@@ -4924,6 +4943,7 @@ func TestIntegration_WriterAppendEdgeCases(t *testing.T) {
 		// Another NewWriter to the unfinalized object should be able to
 		// overwrite the existing object.
 		w2 := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w2.ObjectAttrs.StorageClass = "RAPID" }
 		w2.Append = true
 		if _, err := w2.Write([]byte("hello world")); err != nil {
 			t.Fatalf("w2.Write: %v", err)
@@ -4963,6 +4983,7 @@ func TestIntegration_ZeroSizedObject(t *testing.T) {
 
 		// Check writing it works as expected.
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		if err := w.Close(); err != nil {
 			t.Fatalf("Writer.Close: %v", err)
 		}
@@ -5217,6 +5238,7 @@ func TestIntegration_PerObjectStorageClass(t *testing.T) {
 		// We can also write a new object using a non-default storage class.
 		obj2 := bkt.Object("posc2")
 		w := obj2.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.StorageClass = newStorageClass
 		h.mustWrite(w, []byte("xxx"))
 		if w.Attrs().StorageClass != newStorageClass {
@@ -5240,6 +5262,7 @@ func TestIntegration_NoUnicodeNormalization(t *testing.T) {
 		} {
 			name, err := strconv.Unquote(tst.nameQuoted)
 			w := bkt.Object(name).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 			h.mustWrite(w, []byte(tst.content))
 			if err != nil {
 				t.Fatalf("invalid name: %s: %v", tst.nameQuoted, err)
@@ -5269,6 +5292,7 @@ func TestIntegration_HashesOnUpload(t *testing.T) {
 		crc32c := crc32.Checksum(data, crc32cTable)
 		// The correct CRC should succeed.
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.CRC32C = crc32c
 		w.SendCRC32C = true
 		if err := write(w); err != nil {
@@ -5853,6 +5877,7 @@ func TestIntegration_PublicObject(t *testing.T) {
 		contents := randomContents()
 
 		w := publicObj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		if _, err := w.Write(contents); err != nil {
 			t.Fatalf("writer.Write: %v", err)
 		}
@@ -5884,6 +5909,7 @@ func TestIntegration_PublicObject(t *testing.T) {
 
 		// Test cannot write to read-only object without authentication.
 		wc := publicObjUnauthenticated.NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 		if _, err := wc.Write([]byte("hello")); err != nil {
 			t.Errorf("Write unexpectedly failed with %v", err)
 		}
@@ -5920,6 +5946,7 @@ func TestIntegration_ReadCRC(t *testing.T) {
 			t.Fatalf("closing gzip writer: %v", err)
 		}
 		w := client.Bucket(bucket).Object(gzippedObject).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.ContentEncoding = "gzip"
 		w.ContentType = "text/plain"
 		h.mustWrite(w, buf.Bytes())
@@ -6284,6 +6311,7 @@ func TestIntegration_CustomTime(t *testing.T) {
 		bkt := client.Bucket(bucket)
 		obj := bkt.Object("custom-time-obj")
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		ct := time.Date(2020, 8, 25, 12, 12, 12, 0, time.UTC)
 		w.ObjectAttrs.CustomTime = ct
 		h.mustWrite(w, randomContents())
@@ -6534,6 +6562,7 @@ func TestIntegration_ObjectRetention(t *testing.T) {
 		// Create an object with future retain until time
 		o := b.Object("retention-on-create" + uidSpaceObjects.New())
 		w := o.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.Retention = retentionUnlocked
 		h.mustWrite(w, []byte("contents"))
 		t.Cleanup(func() {
@@ -6831,6 +6860,7 @@ func TestIntegration_ObjectMove(t *testing.T) {
 		// Create source object
 		obj := bkt.Object(srcObj)
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		h.mustWrite(w, randomContents())
 		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj)) })
 
@@ -6854,6 +6884,7 @@ func TestIntegration_ObjectMove(t *testing.T) {
 
 		obj2 := bkt.Object(srcObj2)
 		w2 := obj2.NewWriter(ctx)
+		if rcuBucketName != "" { w2.ObjectAttrs.StorageClass = "RAPID" }
 		h.mustWrite(w2, randomContents())
 		t.Cleanup(func() { h.mustDeleteObject(bkt.Object(dstObj2)) })
 
@@ -6896,6 +6927,7 @@ func TestIntegration_KMS(t *testing.T) {
 
 		write := func(obj *ObjectHandle, setKey bool) {
 			w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 			if setKey {
 				w.KMSKeyName = keyName1
 			}
@@ -7117,6 +7149,7 @@ func TestIntegration_PredefinedACLs(t *testing.T) {
 		// Object creation
 		obj := bkt.Object("private")
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.PredefinedACL = "authenticatedRead"
 		h.mustWrite(w, []byte("hello"))
 		defer h.mustDeleteObject(obj)
@@ -7525,6 +7558,7 @@ func TestIntegration_ReaderCacheControl(t *testing.T) {
 
 		// Write object.
 		w := o.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.CacheControl = cacheControl
 		if _, err := w.Write(randomContents()); err != nil {
 			t.Fatalf("Write for %v failed with %v", o.ObjectName(), err)
@@ -7571,6 +7605,7 @@ func TestIntegration_JSONReaderConditions(t *testing.T) {
 
 		// Write object.
 		w := o.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		if _, err := w.Write(randomContents()); err != nil {
 			t.Fatalf("Write for %v failed with %v", o.ObjectName(), err)
 		}
@@ -7649,6 +7684,7 @@ func TestIntegration_ReaderCancel(t *testing.T) {
 		minObjectSize := 5000000 // 5 Mb
 
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		c := randomContents()
 		for written := 0; written < minObjectSize; {
 			n, err := w.Write(c)
@@ -7760,6 +7796,7 @@ func TestIntegration_NewReaderWithContentEncodingGzip(t *testing.T) {
 
 		// Firstly upload the gzip compressed file.
 		w := obj.If(Conditions{DoesNotExist: true}).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		// Compress and upload the content.
 		gzw := gzip.NewWriter(w)
 		if _, err := gzw.Write(original); err != nil {
@@ -8503,6 +8540,7 @@ func TestIntegration_ObjectPatchCustomContexts(t *testing.T) {
 
 				// Create object with initial contexts.
 				wc := obj.NewWriter(ctx)
+		if rcuBucketName != "" { wc.ObjectAttrs.StorageClass = "RAPID" }
 				wc.Contexts = tc.initialContexts
 				h.mustWrite(wc, []byte("hello"))
 				defer h.mustDeleteObject(obj)
@@ -8553,6 +8591,7 @@ func TestIntegration_ObjectGetListCustomContexts(t *testing.T) {
 			},
 		}
 		wc1 := obj1.NewWriter(ctx)
+		if rcuBucketName != "" { wc1.ObjectAttrs.StorageClass = "RAPID" }
 		wc1.Contexts = contexts1
 		h.mustWrite(wc1, []byte("content1"))
 		defer h.mustDeleteObject(obj1)
@@ -8566,6 +8605,7 @@ func TestIntegration_ObjectGetListCustomContexts(t *testing.T) {
 			},
 		}
 		wc2 := obj2.NewWriter(ctx)
+		if rcuBucketName != "" { wc2.ObjectAttrs.StorageClass = "RAPID" }
 		wc2.Contexts = contexts2
 		h.mustWrite(wc2, []byte("content2"))
 		defer h.mustDeleteObject(obj2)
@@ -9045,6 +9085,7 @@ func writeObject(ctx context.Context, obj *ObjectHandle, contentType string, con
 
 func newWriter(ctx context.Context, obj *ObjectHandle, contentType string, forceEmptyContentType bool) *Writer {
 	w := obj.Retryer(WithPolicy(RetryAlways)).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 	w.ContentType = contentType
 	w.ForceEmptyContentType = forceEmptyContentType
 	w.FinalizeOnClose = true // Default to finalize for appendable objects.
@@ -9516,6 +9557,7 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 				})
 
 				w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.EnableParallelUpload = true
 				w.ParallelUploadConfig = tc.config
 
@@ -9611,6 +9653,7 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 				defer h.mustDeleteObject(obj)
 
 				w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.EnableParallelUpload = true
 				w.ParallelUploadConfig = config
 
@@ -9679,6 +9722,7 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 				})
 
 				w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 				w.EnableParallelUpload = true
 				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 5 << 20, MaxConcurrency: 2}
 				w.SendCRC32C = true
@@ -10032,6 +10076,7 @@ func TestIntegration_Rapid_SingleShotWriteAndIngestOnRead(t *testing.T) {
 
 		// Write the object via single-shot write.
 		w := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 		w.ObjectAttrs.StorageClass = "RAPID"
 		if _, err := w.Write(content); err != nil {
 			t.Fatalf("single-shot write failed: %v", err)
@@ -10118,6 +10163,7 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 
 	// Write an object via the HTTP client to the RCU regional bucket.
 	w := httpClient.Bucket(rcuBucketName).Object(objName).NewWriter(ctx)
+		if rcuBucketName != "" { w.ObjectAttrs.StorageClass = "RAPID" }
 	if _, err := w.Write(content); err != nil {
 		t.Fatalf("httpClient.Write: %v", err)
 	}
@@ -10216,6 +10262,7 @@ func TestIntegration_Rapid_AppendableWrite_ReadUnfinalized_AppendMoreAndRead(t *
 
 		// Step 1: Write first chunk without finalizing the object.
 		w1 := obj.NewWriter(ctx)
+		if rcuBucketName != "" { w1.ObjectAttrs.StorageClass = "RAPID" }
 		w1.ObjectAttrs.StorageClass = "RAPID"
 		w1.Append = true
 		w1.FinalizeOnClose = false
