@@ -249,7 +249,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.81.0
+    version: 1.82.0
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -508,7 +508,7 @@ libraries:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
   - name: compute
-    version: 1.66.0
+    version: 1.67.0
     preview:
       version: 1.66.0-preview.1
       apis:
@@ -540,7 +540,7 @@ libraries:
       - path: google/cloud/confidentialcomputing/v1
       - path: google/cloud/confidentialcomputing/v1alpha1
   - name: config
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/config/v1
   - name: configdelivery
@@ -553,7 +553,7 @@ libraries:
     apis:
       - path: google/cloud/contactcenterinsights/v1
   - name: container
-    version: 1.53.1
+    version: 1.54.0
     apis:
       - path: google/container/v1
   - name: containeranalysis
@@ -664,7 +664,7 @@ libraries:
       - path: google/cloud/dialogflow/cx/v3beta1
       - path: google/cloud/dialogflow/v2beta1
   - name: discoveryengine
-    version: 1.32.0
+    version: 1.33.0
     apis:
       - path: google/cloud/discoveryengine/v1
       - path: google/cloud/discoveryengine/v1beta
@@ -915,7 +915,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.40.0
+    version: 1.41.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
