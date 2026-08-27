@@ -466,6 +466,32 @@ func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
 	})
 }
 
+// TestTableShim_ReadRows_EmptyKeyStillRoutesToSession pins the
+// behavior for SingleRow("") — the classic path would send a
+// SessionReadRowRequest with a zero-length Key, and so must the
+// diverted path. Parity, not correctness of the empty-key request
+// itself, is the point: whatever the server does with an empty key
+// (accept, reject, treat as smallest), both paths must do the same.
+func TestTableShim_ReadRows_EmptyKeyStillRoutesToSession(t *testing.T) {
+	var gotKey []byte
+	sess := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			gotKey = req.GetKey()
+			return &btpb.SessionReadRowResponse{}, nil
+		},
+	}
+	shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+	if err := shim.ReadRows(context.Background(), SingleRow(""), func(Row) bool { return true }); err != nil {
+		t.Fatalf("unexpected err: %v", err)
+	}
+	if sess.readRowCalls != 1 {
+		t.Errorf("sess.readRowCalls = %d, want 1 (empty key must still route session — classic sends the same shape)", sess.readRowCalls)
+	}
+	if len(gotKey) != 0 {
+		t.Errorf("session req.Key = %q, want empty bytes", gotKey)
+	}
+}
+
 // TestTableShim_ReadRows_SingleRowUnimplementedFallsBackToClassic:
 // session ReadRow returns codes.Unimplemented for a single-key
 // ReadRows → the shared TableShim.ReadRow path transparently re-issues

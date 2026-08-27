@@ -174,7 +174,24 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 //
 // By default, the yielded rows will contain all values in all cells.
 // Use RowFilter to limit the cells returned.
-func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) (err error) {
+//
+// When t.divertible is set (populated by Open on Clients with a
+// Diverter), the call routes through the shim so single-row shapes
+// (RowList of length 1, closed range [k,k], or a one-element
+// RowRangeList wrapping such a range) can be diverted to the session
+// data path. Multi-row shapes still land on the classic body.
+// Otherwise it runs the classic body directly.
+func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
+	if t.divertible != nil {
+		return t.divertible.ReadRows(ctx, arg, f, opts...)
+	}
+	return t.readRowsClassic(ctx, arg, f, opts...)
+}
+
+// readRowsClassic is the classic streaming reader — called directly
+// by tableImpl.ReadRows (which bypasses the divertible gate) and by
+// the gate in Table.ReadRows when no divertible shim is wired.
+func (t *Table) readRowsClassic(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) (err error) {
 	ctx = mergeOutgoingMetadata(ctx, t.md)
 	ctx = trace.StartSpan(ctx, "cloud.google.com/go/bigtable.ReadRows")
 	defer func() { trace.EndSpan(ctx, err) }()

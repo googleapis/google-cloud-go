@@ -142,14 +142,17 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 // short-circuit (LimitRows(0) returns nil, negative → errNegativeRowLimit)
 // stays in the ReadRows body it was designed for.
 func (t *TableShim) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
-	if key, ok := singleRowKey(arg); ok && !hasZeroOrNegativeLimit(opts) {
+	if key, ok := singleRowKey(arg); ok && !deferToClassicForLimit(opts) {
 		row, err := t.ReadRow(ctx, key, opts...)
 		if err != nil {
 			return err
 		}
 		if row != nil {
-			// Callback's bool return governs continuation across
-			// multiple rows; with at most one row it has no effect.
+			// Row is nil for row-not-found (protoRowToRow collapses
+			// empty responses to nil) — mirror classic ReadRows, which
+			// does not invoke f on absent keys. f's bool return is
+			// meaningful for multi-row streams; with at most one row
+			// there is no next iteration to gate, so we discard it.
 			f(row)
 		}
 		return nil
@@ -197,10 +200,11 @@ func singleRowRangeKey(r RowRange) (string, bool) {
 	return "", false
 }
 
-// hasZeroOrNegativeLimit reports whether opts contain a LimitRows
-// whose limit is < 1. Only the last LimitRows in opts wins (matching
-// classic ReadRows' loop behavior), so scan back-to-front and stop at
-// the first hit.
+// deferToClassicForLimit reports whether opts contain a LimitRows
+// whose limit is < 1 — the shapes the single-row session dispatch
+// MUST leave to classic. Only the last LimitRows in opts wins
+// (matching classic ReadRows' loop behavior), so scan back-to-front
+// and stop at the first hit.
 //
 // The guard matters: without it a LimitRows(0) that classic would
 // short-circuit into "no dial, return nil" would instead fire a
@@ -208,7 +212,7 @@ func singleRowRangeKey(r RowRange) (string, bool) {
 // LimitRows(<0) that classic would reject with errNegativeRowLimit
 // would silently succeed. Leaving both cases to classic preserves
 // their existing user-visible semantics on the diverted path.
-func hasZeroOrNegativeLimit(opts []ReadOption) bool {
+func deferToClassicForLimit(opts []ReadOption) bool {
 	for i := len(opts) - 1; i >= 0; i-- {
 		if lr, ok := opts[i].(limitRows); ok {
 			return lr.limit < 1

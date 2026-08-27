@@ -88,8 +88,8 @@ Any new pool method that reads `p.picker.Name()` from a method called by `Checko
 | `TableAPI` method | Routable? | Why |
 |---|---|---|
 | `ReadRow` | via Diverter | `SessionReadRow` vRPC exists |
-| `ReadRows` — `arg` is a `RowList` of exactly one key (the shape `SingleRow(k)` produces) | via Diverter | semantically equivalent to `ReadRow`; converted to `SessionReadRowRequest` in the shim |
-| `ReadRows` — anything else (multi-key `RowList`, any `RowRange` / `RowRangeList`, `LimitRows(0)` short-circuit) | always classic | streaming reads not in vRPC surface |
+| `ReadRows` — `arg` addresses exactly one row, i.e. one of: a `RowList` of length 1 (what `SingleRow(k)` returns), a closed-closed `RowRange` with `start == end` (what `NewClosedRange(k, k)` returns), or a `RowRangeList` of length 1 whose sole element is such a range | via Diverter | semantically equivalent to `ReadRow`; converted to `SessionReadRowRequest` in the shim and dispatched through `TableShim.ReadRow` |
+| `ReadRows` — anything else: multi-key `RowList` (including length 0), any non-closed-closed `RowRange` (open, unbounded, or the empty same-start/end shapes `NewRange(k,k)` / `NewOpenRange(k,k)` / `NewOpenClosedRange(k,k)`), any multi-element `RowRangeList` or length-0 `RowRangeList` or one whose sole element is not a single-row range, `LimitRows(<1)` on any single-row shape, or a nil `RowSet` | always classic | streaming reads not in vRPC surface |
 | `Apply` (non-conditional) | via Diverter | `SessionMutateRow` vRPC exists |
 | `Apply` (conditional, `m.isConditional`) | **always classic** | `CheckAndMutateRow` has no vRPC equivalent |
 | `SampleRowKeys` | always classic | no vRPC equivalent |
