@@ -88,15 +88,16 @@ Any new pool method that reads `p.picker.Name()` from a method called by `Checko
 | `TableAPI` method | Routable? | Why |
 |---|---|---|
 | `ReadRow` | via Diverter | `SessionReadRow` vRPC exists |
+| `ReadRows` — `arg` addresses exactly one row, i.e. one of: a `RowList` of length 1 (what `SingleRow(k)` returns), a closed-closed `RowRange` with `start == end` (what `NewClosedRange(k, k)` returns), or a `RowRangeList` of length 1 whose sole element is such a range | via Diverter | semantically equivalent to `ReadRow`; converted to `SessionReadRowRequest` in the shim and dispatched through `TableShim.ReadRow` |
+| `ReadRows` — anything else: multi-key `RowList` (including length 0), any non-closed-closed `RowRange` (open, unbounded, or the empty same-start/end shapes `NewRange(k,k)` / `NewOpenRange(k,k)` / `NewOpenClosedRange(k,k)`), any multi-element `RowRangeList` or length-0 `RowRangeList` or one whose sole element is not a single-row range, `LimitRows(<1)` on any single-row shape, or a nil `RowSet` | always classic | streaming reads not in vRPC surface |
 | `Apply` (non-conditional) | via Diverter | `SessionMutateRow` vRPC exists |
 | `Apply` (conditional, `m.isConditional`) | **always classic** | `CheckAndMutateRow` has no vRPC equivalent |
-| `ReadRows` | always classic | streaming reads not in vRPC surface |
 | `SampleRowKeys` | always classic | no vRPC equivalent |
 | `ApplyBulk` | always classic | no vRPC equivalent |
 | `ApplyReadModifyWrite` | always classic | no vRPC equivalent |
 
-- **Read/write direction determines which of the two session pools is engaged** (`SESSION_POOL_SPEC.md #1`): `ReadRow` → session table's read pool; `Apply` → write pool. The Diverter's decision precedes the pool split — it says "session vs classic", then the direction picks read-pool vs write-pool inside the session side.
-- Response-side plumbing lives in the shim, not the session package: `WithFullReadStats` callbacks fire from `TableShim.ReadRow` after `protoRowToRow` converts the response.
+- **Read/write direction determines which of the two session pools is engaged** (`SESSION_POOL_SPEC.md #1`): `ReadRow` → session table's read pool; `Apply` → write pool. The Diverter's decision precedes the pool split — it says "session vs classic", then the direction picks read-pool vs write-pool inside the session side. Single-key `ReadRows` is a `ReadRow` in disguise and follows the same read-pool routing.
+- Response-side plumbing lives in the shim, not the session package: `WithFullReadStats` callbacks fire from `TableShim.ReadRow` (and from the single-key branch of `TableShim.ReadRows`) after `protoRowToRow` converts the response. `RowFilter` propagates via the same `makeReadSettings` path in both branches; other `ReadOption`s that have no effect on a single-key request (e.g. `ReverseScan`, `LimitRows(N>=1)`) are accepted silently.
 - Errors from either side are surfaced to the caller as-is — the shim does NOT retry a session-side failure on classic. That would violate the retry-oracle contract (`SESSION_SPEC.md #9`): a session `TransportFailure` on a non-idempotent `Apply` is not automatically safe to re-run on classic.
 
 ### 4. Debug views (all `/-z` pages) MUST NOT block hot-path latencies
