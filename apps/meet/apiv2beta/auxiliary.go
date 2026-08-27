@@ -17,9 +17,18 @@
 package meet
 
 import (
+	"iter"
+
 	meetpb "cloud.google.com/go/apps/meet/apiv2beta/meetpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConferenceRecordIterator) All() iter.Seq2[*meetpb.ConferenceRecord, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ConferenceRecordIterator manages a stream of *meetpb.ConferenceRecord.
 type ConferenceRecordIterator struct {
@@ -66,6 +75,12 @@ func (it *ConferenceRecordIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MemberIterator) All() iter.Seq2[*meetpb.Member, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MemberIterator manages a stream of *meetpb.Member.
@@ -115,6 +130,12 @@ func (it *MemberIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ParticipantIterator) All() iter.Seq2[*meetpb.Participant, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ParticipantIterator manages a stream of *meetpb.Participant.
 type ParticipantIterator struct {
 	items    []*meetpb.Participant
@@ -160,6 +181,12 @@ func (it *ParticipantIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ParticipantSessionIterator) All() iter.Seq2[*meetpb.ParticipantSession, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ParticipantSessionIterator manages a stream of *meetpb.ParticipantSession.
@@ -209,6 +236,12 @@ func (it *ParticipantSessionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RecordingIterator) All() iter.Seq2[*meetpb.Recording, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RecordingIterator manages a stream of *meetpb.Recording.
 type RecordingIterator struct {
 	items    []*meetpb.Recording
@@ -256,6 +289,12 @@ func (it *RecordingIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TranscriptEntryIterator) All() iter.Seq2[*meetpb.TranscriptEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TranscriptEntryIterator manages a stream of *meetpb.TranscriptEntry.
 type TranscriptEntryIterator struct {
 	items    []*meetpb.TranscriptEntry
@@ -301,6 +340,12 @@ func (it *TranscriptEntryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TranscriptIterator) All() iter.Seq2[*meetpb.Transcript, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TranscriptIterator manages a stream of *meetpb.Transcript.

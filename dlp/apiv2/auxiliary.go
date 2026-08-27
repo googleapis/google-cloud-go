@@ -17,9 +17,18 @@
 package dlp
 
 import (
+	"iter"
+
 	dlppb "cloud.google.com/go/dlp/apiv2/dlppb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ColumnDataProfileIterator) All() iter.Seq2[*dlppb.ColumnDataProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ColumnDataProfileIterator manages a stream of *dlppb.ColumnDataProfile.
 type ColumnDataProfileIterator struct {
@@ -66,6 +75,12 @@ func (it *ColumnDataProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectionIterator) All() iter.Seq2[*dlppb.Connection, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConnectionIterator manages a stream of *dlppb.Connection.
@@ -115,6 +130,12 @@ func (it *ConnectionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeidentifyTemplateIterator) All() iter.Seq2[*dlppb.DeidentifyTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DeidentifyTemplateIterator manages a stream of *dlppb.DeidentifyTemplate.
 type DeidentifyTemplateIterator struct {
 	items    []*dlppb.DeidentifyTemplate
@@ -160,6 +181,12 @@ func (it *DeidentifyTemplateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiscoveryConfigIterator) All() iter.Seq2[*dlppb.DiscoveryConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DiscoveryConfigIterator manages a stream of *dlppb.DiscoveryConfig.
@@ -209,6 +236,12 @@ func (it *DiscoveryConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DlpJobIterator) All() iter.Seq2[*dlppb.DlpJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DlpJobIterator manages a stream of *dlppb.DlpJob.
 type DlpJobIterator struct {
 	items    []*dlppb.DlpJob
@@ -254,6 +287,12 @@ func (it *DlpJobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FileStoreDataProfileIterator) All() iter.Seq2[*dlppb.FileStoreDataProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FileStoreDataProfileIterator manages a stream of *dlppb.FileStoreDataProfile.
@@ -303,6 +342,12 @@ func (it *FileStoreDataProfileIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InspectTemplateIterator) All() iter.Seq2[*dlppb.InspectTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InspectTemplateIterator manages a stream of *dlppb.InspectTemplate.
 type InspectTemplateIterator struct {
 	items    []*dlppb.InspectTemplate
@@ -348,6 +393,12 @@ func (it *InspectTemplateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobTriggerIterator) All() iter.Seq2[*dlppb.JobTrigger, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // JobTriggerIterator manages a stream of *dlppb.JobTrigger.
@@ -397,6 +448,12 @@ func (it *JobTriggerIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProjectDataProfileIterator) All() iter.Seq2[*dlppb.ProjectDataProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProjectDataProfileIterator manages a stream of *dlppb.ProjectDataProfile.
 type ProjectDataProfileIterator struct {
 	items    []*dlppb.ProjectDataProfile
@@ -444,6 +501,12 @@ func (it *ProjectDataProfileIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoredInfoTypeIterator) All() iter.Seq2[*dlppb.StoredInfoType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StoredInfoTypeIterator manages a stream of *dlppb.StoredInfoType.
 type StoredInfoTypeIterator struct {
 	items    []*dlppb.StoredInfoType
@@ -489,6 +552,12 @@ func (it *StoredInfoTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TableDataProfileIterator) All() iter.Seq2[*dlppb.TableDataProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TableDataProfileIterator manages a stream of *dlppb.TableDataProfile.

@@ -18,11 +18,13 @@ package baremetalsolution
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	baremetalsolutionpb "cloud.google.com/go/baremetalsolution/apiv2/baremetalsolutionpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1018,6 +1020,12 @@ func (op *UpdateVolumeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*baremetalsolutionpb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceIterator manages a stream of *baremetalsolutionpb.Instance.
 type InstanceIterator struct {
 	items    []*baremetalsolutionpb.Instance
@@ -1063,6 +1071,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1112,6 +1126,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LunIterator) All() iter.Seq2[*baremetalsolutionpb.Lun, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LunIterator manages a stream of *baremetalsolutionpb.Lun.
 type LunIterator struct {
 	items    []*baremetalsolutionpb.Lun
@@ -1157,6 +1177,12 @@ func (it *LunIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkIterator) All() iter.Seq2[*baremetalsolutionpb.Network, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NetworkIterator manages a stream of *baremetalsolutionpb.Network.
@@ -1206,6 +1232,12 @@ func (it *NetworkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NfsShareIterator) All() iter.Seq2[*baremetalsolutionpb.NfsShare, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NfsShareIterator manages a stream of *baremetalsolutionpb.NfsShare.
 type NfsShareIterator struct {
 	items    []*baremetalsolutionpb.NfsShare
@@ -1251,6 +1283,12 @@ func (it *NfsShareIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OSImageIterator) All() iter.Seq2[*baremetalsolutionpb.OSImage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OSImageIterator manages a stream of *baremetalsolutionpb.OSImage.
@@ -1300,6 +1338,12 @@ func (it *OSImageIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProvisioningQuotaIterator) All() iter.Seq2[*baremetalsolutionpb.ProvisioningQuota, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProvisioningQuotaIterator manages a stream of *baremetalsolutionpb.ProvisioningQuota.
 type ProvisioningQuotaIterator struct {
 	items    []*baremetalsolutionpb.ProvisioningQuota
@@ -1345,6 +1389,12 @@ func (it *ProvisioningQuotaIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SSHKeyIterator) All() iter.Seq2[*baremetalsolutionpb.SSHKey, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SSHKeyIterator manages a stream of *baremetalsolutionpb.SSHKey.
@@ -1394,6 +1444,12 @@ func (it *SSHKeyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VolumeIterator) All() iter.Seq2[*baremetalsolutionpb.Volume, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VolumeIterator manages a stream of *baremetalsolutionpb.Volume.
 type VolumeIterator struct {
 	items    []*baremetalsolutionpb.Volume
@@ -1439,6 +1495,12 @@ func (it *VolumeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VolumeSnapshotIterator) All() iter.Seq2[*baremetalsolutionpb.VolumeSnapshot, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VolumeSnapshotIterator manages a stream of *baremetalsolutionpb.VolumeSnapshot.

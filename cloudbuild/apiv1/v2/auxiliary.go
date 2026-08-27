@@ -18,11 +18,13 @@ package cloudbuild
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	cloudbuildpb "cloud.google.com/go/cloudbuild/apiv1/v2/cloudbuildpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -463,6 +465,12 @@ func (op *UpdateWorkerPoolOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BuildIterator) All() iter.Seq2[*cloudbuildpb.Build, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BuildIterator manages a stream of *cloudbuildpb.Build.
 type BuildIterator struct {
 	items    []*cloudbuildpb.Build
@@ -510,6 +518,12 @@ func (it *BuildIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BuildTriggerIterator) All() iter.Seq2[*cloudbuildpb.BuildTrigger, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BuildTriggerIterator manages a stream of *cloudbuildpb.BuildTrigger.
 type BuildTriggerIterator struct {
 	items    []*cloudbuildpb.BuildTrigger
@@ -555,6 +569,12 @@ func (it *BuildTriggerIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkerPoolIterator) All() iter.Seq2[*cloudbuildpb.WorkerPool, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkerPoolIterator manages a stream of *cloudbuildpb.WorkerPool.

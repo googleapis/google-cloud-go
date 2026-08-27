@@ -17,10 +17,19 @@
 package cloudtasks
 
 import (
+	"iter"
+
 	cloudtaskspb "cloud.google.com/go/cloudtasks/apiv2/cloudtaskspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
@@ -69,6 +78,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueueIterator) All() iter.Seq2[*cloudtaskspb.Queue, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // QueueIterator manages a stream of *cloudtaskspb.Queue.
 type QueueIterator struct {
 	items    []*cloudtaskspb.Queue
@@ -114,6 +129,12 @@ func (it *QueueIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TaskIterator) All() iter.Seq2[*cloudtaskspb.Task, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TaskIterator manages a stream of *cloudtaskspb.Task.

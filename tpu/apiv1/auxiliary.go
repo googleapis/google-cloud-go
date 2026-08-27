@@ -18,12 +18,14 @@ package tpu
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	tpupb "cloud.google.com/go/tpu/apiv1/tpupb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -333,6 +335,12 @@ func (op *StopNodeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AcceleratorTypeIterator) All() iter.Seq2[*tpupb.AcceleratorType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AcceleratorTypeIterator manages a stream of *tpupb.AcceleratorType.
 type AcceleratorTypeIterator struct {
 	items    []*tpupb.AcceleratorType
@@ -378,6 +386,12 @@ func (it *AcceleratorTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -427,6 +441,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeIterator) All() iter.Seq2[*tpupb.Node, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NodeIterator manages a stream of *tpupb.Node.
 type NodeIterator struct {
 	items    []*tpupb.Node
@@ -474,6 +494,12 @@ func (it *NodeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -519,6 +545,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TensorFlowVersionIterator) All() iter.Seq2[*tpupb.TensorFlowVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TensorFlowVersionIterator manages a stream of *tpupb.TensorFlowVersion.

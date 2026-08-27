@@ -17,10 +17,19 @@
 package scheduler
 
 import (
+	"iter"
+
 	schedulerpb "cloud.google.com/go/scheduler/apiv1/schedulerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*schedulerpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // JobIterator manages a stream of *schedulerpb.Job.
 type JobIterator struct {
@@ -67,6 +76,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.

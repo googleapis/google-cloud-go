@@ -17,9 +17,18 @@
 package issueresolution
 
 import (
+	"iter"
+
 	issueresolutionpb "cloud.google.com/go/shopping/merchant/issueresolution/apiv1/issueresolutionpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AggregateProductStatusIterator) All() iter.Seq2[*issueresolutionpb.AggregateProductStatus, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AggregateProductStatusIterator manages a stream of *issueresolutionpb.AggregateProductStatus.
 type AggregateProductStatusIterator struct {

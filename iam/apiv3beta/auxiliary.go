@@ -18,11 +18,13 @@ package iam
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	iampb "cloud.google.com/go/iam/apiv3beta/iampb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -569,6 +571,12 @@ func (op *UpdatePrincipalAccessBoundaryPolicyOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccessPolicyIterator) All() iter.Seq2[*iampb.AccessPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AccessPolicyIterator manages a stream of *iampb.AccessPolicy.
 type AccessPolicyIterator struct {
 	items    []*iampb.AccessPolicy
@@ -616,6 +624,12 @@ func (it *AccessPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PolicyBindingIterator) All() iter.Seq2[*iampb.PolicyBinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PolicyBindingIterator manages a stream of *iampb.PolicyBinding.
 type PolicyBindingIterator struct {
 	items    []*iampb.PolicyBinding
@@ -661,6 +675,12 @@ func (it *PolicyBindingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PrincipalAccessBoundaryPolicyIterator) All() iter.Seq2[*iampb.PrincipalAccessBoundaryPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PrincipalAccessBoundaryPolicyIterator manages a stream of *iampb.PrincipalAccessBoundaryPolicy.

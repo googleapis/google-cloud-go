@@ -17,9 +17,18 @@
 package products
 
 import (
+	"iter"
+
 	productspb "cloud.google.com/go/shopping/merchant/products/apiv1beta/productspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductIterator) All() iter.Seq2[*productspb.Product, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ProductIterator manages a stream of *productspb.Product.
 type ProductIterator struct {

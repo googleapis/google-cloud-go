@@ -17,9 +17,18 @@
 package datamanager
 
 import (
+	"iter"
+
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PartnerLinkIterator) All() iter.Seq2[*datamanagerpb.PartnerLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // PartnerLinkIterator manages a stream of *datamanagerpb.PartnerLink.
 type PartnerLinkIterator struct {
@@ -66,6 +75,12 @@ func (it *PartnerLinkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListDirectLicenseIterator) All() iter.Seq2[*datamanagerpb.UserListDirectLicense, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserListDirectLicenseIterator manages a stream of *datamanagerpb.UserListDirectLicense.
@@ -115,6 +130,12 @@ func (it *UserListDirectLicenseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListGlobalLicenseCustomerInfoIterator) All() iter.Seq2[*datamanagerpb.UserListGlobalLicenseCustomerInfo, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // UserListGlobalLicenseCustomerInfoIterator manages a stream of *datamanagerpb.UserListGlobalLicenseCustomerInfo.
 type UserListGlobalLicenseCustomerInfoIterator struct {
 	items    []*datamanagerpb.UserListGlobalLicenseCustomerInfo
@@ -162,6 +183,12 @@ func (it *UserListGlobalLicenseCustomerInfoIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListGlobalLicenseIterator) All() iter.Seq2[*datamanagerpb.UserListGlobalLicense, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // UserListGlobalLicenseIterator manages a stream of *datamanagerpb.UserListGlobalLicense.
 type UserListGlobalLicenseIterator struct {
 	items    []*datamanagerpb.UserListGlobalLicense
@@ -207,6 +234,12 @@ func (it *UserListGlobalLicenseIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserListIterator) All() iter.Seq2[*datamanagerpb.UserList, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserListIterator manages a stream of *datamanagerpb.UserList.

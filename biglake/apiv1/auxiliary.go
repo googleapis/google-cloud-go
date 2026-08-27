@@ -17,10 +17,19 @@
 package biglake
 
 import (
+	"iter"
+
 	biglakepb "cloud.google.com/go/biglake/apiv1/biglakepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IcebergCatalogIterator) All() iter.Seq2[*biglakepb.IcebergCatalog, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // IcebergCatalogIterator manages a stream of *biglakepb.IcebergCatalog.
 type IcebergCatalogIterator struct {
@@ -69,6 +78,12 @@ func (it *IcebergCatalogIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListValueIterator) All() iter.Seq2[*structpb.ListValue, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListValueIterator manages a stream of *structpb.ListValue.
 type ListValueIterator struct {
 	items    []*structpb.ListValue
@@ -114,6 +129,12 @@ func (it *ListValueIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TableIdentifierIterator) All() iter.Seq2[*biglakepb.TableIdentifier, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TableIdentifierIterator manages a stream of *biglakepb.TableIdentifier.

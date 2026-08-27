@@ -17,9 +17,18 @@
 package migration
 
 import (
+	"iter"
+
 	migrationpb "cloud.google.com/go/bigquery/migration/apiv2alpha/migrationpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MigrationSubtaskIterator) All() iter.Seq2[*migrationpb.MigrationSubtask, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // MigrationSubtaskIterator manages a stream of *migrationpb.MigrationSubtask.
 type MigrationSubtaskIterator struct {
@@ -66,6 +75,12 @@ func (it *MigrationSubtaskIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MigrationWorkflowIterator) All() iter.Seq2[*migrationpb.MigrationWorkflow, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MigrationWorkflowIterator manages a stream of *migrationpb.MigrationWorkflow.

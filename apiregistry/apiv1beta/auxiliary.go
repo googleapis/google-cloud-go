@@ -17,10 +17,19 @@
 package apiregistry
 
 import (
+	"iter"
+
 	apiregistrypb "cloud.google.com/go/apiregistry/apiv1beta/apiregistrypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
@@ -69,6 +78,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *McpServerIterator) All() iter.Seq2[*apiregistrypb.McpServer, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // McpServerIterator manages a stream of *apiregistrypb.McpServer.
 type McpServerIterator struct {
 	items    []*apiregistrypb.McpServer
@@ -114,6 +129,12 @@ func (it *McpServerIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *McpToolIterator) All() iter.Seq2[*apiregistrypb.McpTool, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // McpToolIterator manages a stream of *apiregistrypb.McpTool.
