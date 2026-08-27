@@ -28,16 +28,19 @@ import (
 // Diverter's SessionLoad ratio. TableShim owns the proto ↔
 // bigtable.Row conversion so the session package can stay proto-native.
 //
-// Methods with no session equivalent (ReadRows, SampleRowKeys,
-// ApplyBulk, ApplyReadModifyWrite) always delegate to classic.
-// Conditional mutations always route to classic — session vRPC does
-// not support the CheckAndMutateRow shape today.
+// Methods with no session equivalent (SampleRowKeys, ApplyBulk,
+// ApplyReadModifyWrite) always delegate to classic. ReadRows delegates
+// to classic for the general multi-row case; the single-key shape
+// (arg is a RowList of length 1 — what SingleRow(k) returns) routes
+// through the session ReadRow path since it is semantically identical
+// to Table.ReadRow. Conditional mutations always route to classic —
+// session vRPC does not support the CheckAndMutateRow shape today.
 //
-// ReadRow and Apply route their session call through
-// session.InterceptUnimplemented: a codes.Unimplemented response falls
-// back to classic, and after enough consecutive Unimplementeds the
-// interceptor's sticky breaker gates useSession() so future calls skip
-// session entirely.
+// ReadRow, single-key ReadRows, and Apply route their session call
+// through session.InterceptUnimplemented: a codes.Unimplemented
+// response falls back to classic, and after enough consecutive
+// Unimplementeds the interceptor's sticky breaker gates useSession()
+// so future calls skip session entirely.
 type TableShim struct {
 	classic       TableAPI
 	session       session.TableAPI
@@ -126,9 +129,44 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 	return err
 }
 
-// ReadRows delegates to classic — session support is not implemented.
+// ReadRows delegates to classic for the general multi-row case. When
+// arg is a RowList of exactly one key — the shape SingleRow(k) returns
+// and what Table.readRowClassic issues under the hood — the call is a
+// ReadRow in disguise, so it dispatches through TableShim.ReadRow.
+// Sharing that entry point means one implementation of session-vs-
+// classic routing, filter / full-read-stats plumbing, and the
+// Unimplemented → classic fallback covers both surfaces.
+//
+// LimitRows(<1) is left to classic so ownership of its no-dial
+// short-circuit (LimitRows(0) returns nil, negative → errNegativeRowLimit)
+// stays in the ReadRows body it was designed for.
 func (t *TableShim) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
+	if keys, ok := arg.(RowList); ok && len(keys) == 1 && !hasZeroOrNegativeLimit(opts) {
+		row, err := t.ReadRow(ctx, keys[0], opts...)
+		if err != nil {
+			return err
+		}
+		if row != nil {
+			// Callback's bool return governs continuation across
+			// multiple rows; with at most one row it has no effect.
+			f(row)
+		}
+		return nil
+	}
 	return t.classic.ReadRows(ctx, arg, f, opts...)
+}
+
+// hasZeroOrNegativeLimit reports whether opts contain a LimitRows
+// whose limit is < 1. Only the last LimitRows in opts wins (matching
+// classic ReadRows' loop behavior), so scan back-to-front and stop at
+// the first hit.
+func hasZeroOrNegativeLimit(opts []ReadOption) bool {
+	for i := len(opts) - 1; i >= 0; i-- {
+		if lr, ok := opts[i].(limitRows); ok {
+			return lr.limit < 1
+		}
+	}
+	return false
 }
 
 // SampleRowKeys delegates to classic.

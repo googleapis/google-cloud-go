@@ -244,21 +244,250 @@ func TestTableShim_Apply_NonConditionalRoutesByDiverter(t *testing.T) {
 	})
 }
 
-// TestTableShim_ReadRows_AlwaysClassic — no session equivalent yet.
-func TestTableShim_ReadRows_AlwaysClassic(t *testing.T) {
-	classicCalled := 0
+// TestTableShim_ReadRows_MultiRowStaysClassic — multi-row scans have
+// no session equivalent and must always delegate to classic even when
+// the diverter says session.
+func TestTableShim_ReadRows_MultiRowStaysClassic(t *testing.T) {
+	cases := []struct {
+		name string
+		arg  RowSet
+	}{
+		{"empty RowRange", RowRange{}},
+		{"unbounded RowRange", InfiniteRange("")},
+		{"prefix RowRange", PrefixRange("a")},
+		{"RowRangeList", RowRangeList{PrefixRange("a"), PrefixRange("b")}},
+		{"RowList len=0", RowList{}},
+		{"RowList len=2", RowList{"a", "b"}},
+		{"nil RowSet", nil},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			classicCalled := 0
+			classic := &mockClassicTable{
+				readRowsFn: func(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
+					classicCalled++
+					return nil
+				},
+			}
+			sess := &mockSessionTable{}
+			shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+			if err := shim.ReadRows(context.Background(), tc.arg, func(Row) bool { return true }); err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
+			if classicCalled != 1 {
+				t.Errorf("classic.ReadRows calls = %d, want 1 (non-single-key must stay classic)", classicCalled)
+			}
+			if sess.readRowCalls != 0 {
+				t.Errorf("sess.readRowCalls = %d, want 0 (session ReadRow reserved for single-key case)", sess.readRowCalls)
+			}
+		})
+	}
+}
+
+// TestTableShim_ReadRows_SingleRowRoutesToSession verifies the
+// single-key RowList shape (what SingleRow(k) returns) is converted
+// into a SessionReadRowRequest and dispatched through the session
+// path, mirroring TableShim.ReadRow.
+func TestTableShim_ReadRows_SingleRowRoutesToSession(t *testing.T) {
+	t.Run("session when SessionLoad=1.0", func(t *testing.T) {
+		var gotKey []byte
+		sess := &mockSessionTable{
+			readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+				gotKey = req.GetKey()
+				return &btpb.SessionReadRowResponse{Row: &btpb.Row{
+					Key: req.GetKey(),
+					Families: []*btpb.Family{{
+						Name: "fam",
+						Columns: []*btpb.Column{{
+							Qualifier: []byte("q"),
+							Cells:     []*btpb.Cell{{Value: []byte("session-value")}},
+						}},
+					}},
+				}}, nil
+			},
+		}
+		classic := &mockClassicTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+
+		var got Row
+		err := shim.ReadRows(context.Background(), SingleRow("r1"), func(r Row) bool {
+			got = r
+			return true
+		})
+		if err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if sess.readRowCalls != 1 {
+			t.Errorf("sess.readRowCalls = %d, want 1", sess.readRowCalls)
+		}
+		if string(gotKey) != "r1" {
+			t.Errorf("session req.Key = %q, want %q", gotKey, "r1")
+		}
+		if got.Key() != "r1" {
+			t.Errorf("callback row.Key() = %q, want r1", got.Key())
+		}
+		if classic.readRowsFn == nil && classic.readRowCalls != 0 {
+			t.Errorf("classic.readRowCalls = %d, want 0 (single-key must go session)", classic.readRowCalls)
+		}
+	})
+
+	t.Run("classic when SessionLoad=0.0 (via TableShim.ReadRow)", func(t *testing.T) {
+		// Single-key ReadRows shares the ReadRow entry point, so with
+		// the diverter off it lands on classic.ReadRow (not
+		// classic.ReadRows). End result on a real tableImpl is
+		// identical since Table.readRowClassic re-enters ReadRows with
+		// LimitRows(1) internally.
+		classic := &mockClassicTable{
+			readRowFn: func(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
+				return Row{"fam": []ReadItem{{Row: row, Column: "fam:q", Value: []byte("classic")}}}, nil
+			},
+		}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(0.0))
+
+		var got Row
+		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(r Row) bool {
+			got = r
+			return true
+		}); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if classic.readRowCalls != 1 {
+			t.Errorf("classic.readRowCalls = %d, want 1 (single-key ReadRows must route through classic.ReadRow when diverter=0)", classic.readRowCalls)
+		}
+		if sess.readRowCalls != 0 {
+			t.Errorf("sess.readRowCalls = %d, want 0 (diverter=0)", sess.readRowCalls)
+		}
+		if got.Key() != "r" {
+			t.Errorf("callback row.Key() = %q, want r", got.Key())
+		}
+	})
+
+	t.Run("row-not-found: callback not invoked", func(t *testing.T) {
+		sess := &mockSessionTable{
+			readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+				return &btpb.SessionReadRowResponse{}, nil // no Row
+			},
+		}
+		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+
+		called := 0
+		err := shim.ReadRows(context.Background(), SingleRow("missing"), func(Row) bool {
+			called++
+			return true
+		})
+		if err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if called != 0 {
+			t.Errorf("callback invoked %d times, want 0 (row not found)", called)
+		}
+	})
+
+	t.Run("RowFilter forwarded to session request", func(t *testing.T) {
+		var gotFilter *btpb.RowFilter
+		sess := &mockSessionTable{
+			readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+				gotFilter = req.GetFilter()
+				return &btpb.SessionReadRowResponse{}, nil
+			},
+		}
+		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+		err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, RowFilter(PassAllFilter()))
+		if err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if gotFilter == nil {
+			t.Errorf("session req.Filter = nil, want RowFilter propagated from opts")
+		}
+	})
+
+	t.Run("LimitRows(0) short-circuits to classic (no session dial)", func(t *testing.T) {
+		classicCalled := 0
+		classic := &mockClassicTable{
+			readRowsFn: func(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
+				classicCalled++
+				return nil
+			},
+		}
+		sess := &mockSessionTable{}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, LimitRows(0)); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if classicCalled != 1 {
+			t.Errorf("classic.ReadRows calls = %d, want 1 (LimitRows(0) must defer to classic short-circuit)", classicCalled)
+		}
+		if sess.readRowCalls != 0 {
+			t.Errorf("sess.readRowCalls = %d, want 0 (LimitRows(0) must NOT dial session)", sess.readRowCalls)
+		}
+	})
+
+	t.Run("LimitRows(N>=1) still routes session", func(t *testing.T) {
+		sess := &mockSessionTable{}
+		shim := NewTableShim(&mockClassicTable{}, sess, btransport.NewDiverter(1.0))
+		if err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true }, LimitRows(1)); err != nil {
+			t.Fatalf("unexpected err: %v", err)
+		}
+		if sess.readRowCalls != 1 {
+			t.Errorf("sess.readRowCalls = %d, want 1 (LimitRows(1) leaves single-key session-eligible)", sess.readRowCalls)
+		}
+	})
+
+	t.Run("session error propagates without classic retry", func(t *testing.T) {
+		wantErr := errors.New("session read failed")
+		classic := &mockClassicTable{}
+		sess := &mockSessionTable{
+			readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+				return nil, wantErr
+			},
+		}
+		shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+		err := shim.ReadRows(context.Background(), SingleRow("r"), func(Row) bool { return true })
+		if !errors.Is(err, wantErr) {
+			t.Errorf("err = %v, want unwrap to %v", err, wantErr)
+		}
+		if classic.readRowCalls != 0 {
+			t.Errorf("classic.readRowCalls = %d, want 0 (non-Unimplemented must not retry on classic)", classic.readRowCalls)
+		}
+	})
+}
+
+// TestTableShim_ReadRows_SingleRowUnimplementedFallsBackToClassic:
+// session ReadRow returns codes.Unimplemented for a single-key
+// ReadRows → the shared TableShim.ReadRow path transparently re-issues
+// on classic.ReadRow (since single-key ReadRows dispatches through
+// TableShim.ReadRow). Mirrors the contract TableShim.ReadRow has.
+func TestTableShim_ReadRows_SingleRowUnimplementedFallsBackToClassic(t *testing.T) {
+	classicRow := Row{"fam": []ReadItem{{Row: "r1", Column: "fam:q", Value: []byte("classic")}}}
 	classic := &mockClassicTable{
-		readRowsFn: func(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
-			classicCalled++
-			return nil
+		readRowFn: func(ctx context.Context, row string, opts ...ReadOption) (Row, error) {
+			return classicRow, nil
 		},
 	}
-	shim := NewTableShim(classic, &mockSessionTable{}, btransport.NewDiverter(1.0))
-	if err := shim.ReadRows(context.Background(), RowRange{}, func(Row) bool { return true }); err != nil {
-		t.Fatalf("unexpected err: %v", err)
+	sess := &mockSessionTable{
+		readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+			return nil, status.Error(codes.Unimplemented, "session backend not implemented on this AFE")
+		},
 	}
-	if classicCalled != 1 {
-		t.Errorf("classic.ReadRows calls = %d, want 1 (ReadRows always goes classic)", classicCalled)
+	shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+
+	var got Row
+	err := shim.ReadRows(context.Background(), SingleRow("r1"), func(r Row) bool {
+		got = r
+		return true
+	})
+	if err != nil {
+		t.Fatalf("ReadRows err = %v, want nil (classic path should succeed after Unimplemented fallback)", err)
+	}
+	if !reflect.DeepEqual(got, classicRow) {
+		t.Errorf("callback got = %v, want classic row %v (fallback must surface classic's result)", got, classicRow)
+	}
+	if sess.readRowCalls != 1 {
+		t.Errorf("sess.readRowCalls = %d, want 1 (single attempt before fallback)", sess.readRowCalls)
+	}
+	if classic.readRowCalls != 1 {
+		t.Errorf("classic.readRowCalls = %d, want 1 (Unimplemented must trigger classic.ReadRow via the shared TableShim.ReadRow path)", classic.readRowCalls)
 	}
 }
 
