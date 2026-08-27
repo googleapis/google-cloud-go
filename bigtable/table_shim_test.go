@@ -259,6 +259,19 @@ func TestTableShim_ReadRows_MultiRowStaysClassic(t *testing.T) {
 		{"RowList len=0", RowList{}},
 		{"RowList len=2", RowList{"a", "b"}},
 		{"nil RowSet", nil},
+		// A same-start/end range only covers one row when BOTH bounds are
+		// closed. The other three bound shapes are all empty ranges and
+		// must stay classic so their empty-result semantics don't change.
+		{"NewRange(k,k) is empty [k,k)", NewRange("k", "k")},
+		{"NewOpenRange(k,k) is empty (k,k)", NewOpenRange("k", "k")},
+		{"NewOpenClosedRange(k,k) is empty (k,k]", NewOpenClosedRange("k", "k")},
+		// RowRangeList of length != 1 stays classic even if every element
+		// is individually a single-row range.
+		{"RowRangeList len=0", RowRangeList{}},
+		{"RowRangeList len=2 both single-row", RowRangeList{NewClosedRange("k", "k"), NewClosedRange("k2", "k2")}},
+		// A single-row range wrapped alongside a wide range doesn't count
+		// as single-row either.
+		{"RowRangeList len=2 mixed", RowRangeList{NewClosedRange("k", "k"), PrefixRange("a")}},
 	}
 	for _, tc := range cases {
 		t.Run(tc.name, func(t *testing.T) {
@@ -1028,6 +1041,64 @@ func TestTableShim_NonUnimplementedError_DoesNotFallBack(t *testing.T) {
 			// Breaker must NOT have tripped — subsequent calls still route session.
 			if shim.unimplemented.Bypass() {
 				t.Errorf("sessionUnimplemented tripped after code=%v; only codes.Unimplemented may trip it", code)
+			}
+		})
+	}
+}
+
+// TestTableShim_ReadRows_SingleRowRangeRoutesToSession pins the divert
+// for closed single-row ranges: NewClosedRange("k","k") and a
+// one-element RowRangeList wrapping the same. Both address exactly one
+// row and are ReadRow in disguise, so under SessionLoad=1.0 they must
+// funnel through TableShim.ReadRow → session and carry the requested
+// key on the SessionReadRowRequest.
+func TestTableShim_ReadRows_SingleRowRangeRoutesToSession(t *testing.T) {
+	cases := []struct {
+		name string
+		arg  RowSet
+	}{
+		{"NewClosedRange(k,k)", NewClosedRange("k", "k")},
+		{"RowRangeList{NewClosedRange(k,k)}", RowRangeList{NewClosedRange("k", "k")}},
+	}
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var gotKey []byte
+			sess := &mockSessionTable{
+				readRowFn: func(ctx context.Context, req *btpb.SessionReadRowRequest) (*btpb.SessionReadRowResponse, error) {
+					gotKey = req.GetKey()
+					return &btpb.SessionReadRowResponse{Row: &btpb.Row{
+						Key: req.GetKey(),
+						Families: []*btpb.Family{{
+							Name: "fam",
+							Columns: []*btpb.Column{{
+								Qualifier: []byte("q"),
+								Cells:     []*btpb.Cell{{Value: []byte("v")}},
+							}},
+						}},
+					}}, nil
+				},
+			}
+			classic := &mockClassicTable{}
+			shim := NewTableShim(classic, sess, btransport.NewDiverter(1.0))
+
+			var got Row
+			if err := shim.ReadRows(context.Background(), tc.arg, func(r Row) bool {
+				got = r
+				return true
+			}); err != nil {
+				t.Fatalf("unexpected err: %v", err)
+			}
+			if sess.readRowCalls != 1 {
+				t.Errorf("sess.readRowCalls = %d, want 1", sess.readRowCalls)
+			}
+			if string(gotKey) != "k" {
+				t.Errorf("session req.Key = %q, want %q", gotKey, "k")
+			}
+			if got.Key() != "k" {
+				t.Errorf("callback row.Key() = %q, want k", got.Key())
+			}
+			if classic.readRowsFn == nil && classic.readRowCalls != 0 {
+				t.Errorf("classic.readRowCalls = %d, want 0 (single-row range must go session)", classic.readRowCalls)
 			}
 		})
 	}

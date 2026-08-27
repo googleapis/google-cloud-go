@@ -130,19 +130,20 @@ func (t *TableShim) Apply(ctx context.Context, row string, m *Mutation, opts ...
 }
 
 // ReadRows delegates to classic for the general multi-row case. When
-// arg is a RowList of exactly one key — the shape SingleRow(k) returns
-// and what Table.readRowClassic issues under the hood — the call is a
-// ReadRow in disguise, so it dispatches through TableShim.ReadRow.
-// Sharing that entry point means one implementation of session-vs-
-// classic routing, filter / full-read-stats plumbing, and the
-// Unimplemented → classic fallback covers both surfaces.
+// arg describes a single row — a RowList of exactly one key (the shape
+// SingleRow(k) returns and what Table.readRowClassic issues under the
+// hood), or a closed range [k,k], or a RowRangeList of one such range —
+// the call is a ReadRow in disguise, so it dispatches through
+// TableShim.ReadRow. Sharing that entry point means one implementation
+// of session-vs-classic routing, filter / full-read-stats plumbing, and
+// the Unimplemented → classic fallback covers both surfaces.
 //
 // LimitRows(<1) is left to classic so ownership of its no-dial
 // short-circuit (LimitRows(0) returns nil, negative → errNegativeRowLimit)
 // stays in the ReadRows body it was designed for.
 func (t *TableShim) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
-	if keys, ok := arg.(RowList); ok && len(keys) == 1 && !hasZeroOrNegativeLimit(opts) {
-		row, err := t.ReadRow(ctx, keys[0], opts...)
+	if key, ok := singleRowKey(arg); ok && !hasZeroOrNegativeLimit(opts) {
+		row, err := t.ReadRow(ctx, key, opts...)
 		if err != nil {
 			return err
 		}
@@ -156,10 +157,57 @@ func (t *TableShim) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, 
 	return t.classic.ReadRows(ctx, arg, f, opts...)
 }
 
+// singleRowKey reports whether arg addresses exactly one row and returns
+// that key. Three shapes qualify:
+//
+//   - RowList of length 1 (what SingleRow(k) returns).
+//   - A closed-closed RowRange [k,k] (NewClosedRange(k,k)) where start
+//     equals end; the range covers exactly one key. Other bound shapes
+//     of a same-start/end pair — [k,k), (k,k], (k,k) — are all empty and
+//     must stay classic so their empty-result semantics are unchanged.
+//   - A RowRangeList of length 1 whose sole element is a single-row
+//     RowRange as above. RowRangeList of length 0 or >1 stays classic.
+//
+// A RowRange or RowRangeList element with an unbounded side is never a
+// single-row case (Unbounded ranges span more than one key).
+func singleRowKey(arg RowSet) (string, bool) {
+	switch v := arg.(type) {
+	case RowList:
+		if len(v) == 1 {
+			return v[0], true
+		}
+	case RowRange:
+		return singleRowRangeKey(v)
+	case RowRangeList:
+		if len(v) == 1 {
+			return singleRowRangeKey(v[0])
+		}
+	}
+	return "", false
+}
+
+// singleRowRangeKey reports whether r covers exactly one key ([k,k])
+// and returns that key. Only rangeClosed on BOTH sides plus start==end
+// qualifies; any open bound or unbounded side, or a mismatched
+// start/end, means the range covers zero or more-than-one keys.
+func singleRowRangeKey(r RowRange) (string, bool) {
+	if r.startBound == rangeClosed && r.endBound == rangeClosed && r.start == r.end {
+		return r.start, true
+	}
+	return "", false
+}
+
 // hasZeroOrNegativeLimit reports whether opts contain a LimitRows
 // whose limit is < 1. Only the last LimitRows in opts wins (matching
 // classic ReadRows' loop behavior), so scan back-to-front and stop at
 // the first hit.
+//
+// The guard matters: without it a LimitRows(0) that classic would
+// short-circuit into "no dial, return nil" would instead fire a
+// session ReadRow and deliver a row through the callback, and a
+// LimitRows(<0) that classic would reject with errNegativeRowLimit
+// would silently succeed. Leaving both cases to classic preserves
+// their existing user-visible semantics on the diverted path.
 func hasZeroOrNegativeLimit(opts []ReadOption) bool {
 	for i := len(opts) - 1; i >= 0; i-- {
 		if lr, ok := opts[i].(limitRows); ok {
