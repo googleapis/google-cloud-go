@@ -151,6 +151,11 @@ libraries:
       - path: google/apps/events/subscriptions/v1
       - path: google/apps/meet/v2beta
       - path: google/apps/events/subscriptions/v1beta
+  - name: apptopology
+    version: 0.0.0
+    apis:
+      - path: google/cloud/apptopology/v1
+    copyright_year: "2026"
   - name: area120
     version: 0.15.0
     apis:
