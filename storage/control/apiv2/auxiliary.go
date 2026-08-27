@@ -18,11 +18,13 @@ package control
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	controlpb "cloud.google.com/go/storage/control/apiv2/controlpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -463,6 +465,12 @@ func (op *UpdateRapidCacheOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnywhereCacheIterator) All() iter.Seq2[*controlpb.AnywhereCache, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AnywhereCacheIterator manages a stream of *controlpb.AnywhereCache.
 type AnywhereCacheIterator struct {
 	items    []*controlpb.AnywhereCache
@@ -508,6 +516,12 @@ func (it *AnywhereCacheIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingSummaryIterator) All() iter.Seq2[*controlpb.FindingSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FindingSummaryIterator manages a stream of *controlpb.FindingSummary.
@@ -557,6 +571,12 @@ func (it *FindingSummaryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FolderIterator) All() iter.Seq2[*controlpb.Folder, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FolderIterator manages a stream of *controlpb.Folder.
 type FolderIterator struct {
 	items    []*controlpb.Folder
@@ -602,6 +622,12 @@ func (it *FolderIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntelligenceFindingIterator) All() iter.Seq2[*controlpb.IntelligenceFinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IntelligenceFindingIterator manages a stream of *controlpb.IntelligenceFinding.
@@ -651,6 +677,12 @@ func (it *IntelligenceFindingIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntelligenceFindingRevisionIterator) All() iter.Seq2[*controlpb.IntelligenceFindingRevision, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // IntelligenceFindingRevisionIterator manages a stream of *controlpb.IntelligenceFindingRevision.
 type IntelligenceFindingRevisionIterator struct {
 	items    []*controlpb.IntelligenceFindingRevision
@@ -698,6 +730,12 @@ func (it *IntelligenceFindingRevisionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ManagedFolderIterator) All() iter.Seq2[*controlpb.ManagedFolder, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ManagedFolderIterator manages a stream of *controlpb.ManagedFolder.
 type ManagedFolderIterator struct {
 	items    []*controlpb.ManagedFolder
@@ -743,6 +781,12 @@ func (it *ManagedFolderIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RapidCacheIterator) All() iter.Seq2[*controlpb.RapidCache, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RapidCacheIterator manages a stream of *controlpb.RapidCache.

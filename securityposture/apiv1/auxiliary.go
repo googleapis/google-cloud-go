@@ -18,12 +18,14 @@ package securityposture
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	securityposturepb "cloud.google.com/go/securityposture/apiv1/securityposturepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -454,6 +456,12 @@ func (op *UpdatePostureOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -499,6 +507,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -548,6 +562,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PostureDeploymentIterator) All() iter.Seq2[*securityposturepb.PostureDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PostureDeploymentIterator manages a stream of *securityposturepb.PostureDeployment.
 type PostureDeploymentIterator struct {
 	items    []*securityposturepb.PostureDeployment
@@ -595,6 +615,12 @@ func (it *PostureDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PostureIterator) All() iter.Seq2[*securityposturepb.Posture, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PostureIterator manages a stream of *securityposturepb.Posture.
 type PostureIterator struct {
 	items    []*securityposturepb.Posture
@@ -640,6 +666,12 @@ func (it *PostureIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PostureTemplateIterator) All() iter.Seq2[*securityposturepb.PostureTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PostureTemplateIterator manages a stream of *securityposturepb.PostureTemplate.

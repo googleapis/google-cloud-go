@@ -17,9 +17,18 @@
 package apigeeconnect
 
 import (
+	"iter"
+
 	apigeeconnectpb "cloud.google.com/go/apigeeconnect/apiv1/apigeeconnectpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectionIterator) All() iter.Seq2[*apigeeconnectpb.Connection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ConnectionIterator manages a stream of *apigeeconnectpb.Connection.
 type ConnectionIterator struct {

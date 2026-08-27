@@ -17,9 +17,18 @@
 package css
 
 import (
+	"iter"
+
 	csspb "cloud.google.com/go/shopping/css/apiv1/csspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountIterator) All() iter.Seq2[*csspb.Account, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AccountIterator manages a stream of *csspb.Account.
 type AccountIterator struct {
@@ -66,6 +75,12 @@ func (it *AccountIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountLabelIterator) All() iter.Seq2[*csspb.AccountLabel, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AccountLabelIterator manages a stream of *csspb.AccountLabel.
@@ -115,6 +130,12 @@ func (it *AccountLabelIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CssProductIterator) All() iter.Seq2[*csspb.CssProduct, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CssProductIterator manages a stream of *csspb.CssProduct.
 type CssProductIterator struct {
 	items    []*csspb.CssProduct
@@ -160,6 +181,12 @@ func (it *CssProductIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QuotaGroupIterator) All() iter.Seq2[*csspb.QuotaGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // QuotaGroupIterator manages a stream of *csspb.QuotaGroup.

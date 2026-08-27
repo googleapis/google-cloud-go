@@ -17,10 +17,19 @@
 package datatransfer
 
 import (
+	"iter"
+
 	datatransferpb "cloud.google.com/go/bigquery/datatransfer/apiv1/datatransferpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataSourceIterator) All() iter.Seq2[*datatransferpb.DataSource, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DataSourceIterator manages a stream of *datatransferpb.DataSource.
 type DataSourceIterator struct {
@@ -67,6 +76,12 @@ func (it *DataSourceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -116,6 +131,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TransferConfigIterator) All() iter.Seq2[*datatransferpb.TransferConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TransferConfigIterator manages a stream of *datatransferpb.TransferConfig.
 type TransferConfigIterator struct {
 	items    []*datatransferpb.TransferConfig
@@ -163,6 +184,12 @@ func (it *TransferConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TransferMessageIterator) All() iter.Seq2[*datatransferpb.TransferMessage, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TransferMessageIterator manages a stream of *datatransferpb.TransferMessage.
 type TransferMessageIterator struct {
 	items    []*datatransferpb.TransferMessage
@@ -208,6 +235,12 @@ func (it *TransferMessageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TransferRunIterator) All() iter.Seq2[*datatransferpb.TransferRun, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TransferRunIterator manages a stream of *datatransferpb.TransferRun.

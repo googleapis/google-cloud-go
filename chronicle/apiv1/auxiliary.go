@@ -18,12 +18,14 @@ package chronicle
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	chroniclepb "cloud.google.com/go/chronicle/apiv1/chroniclepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -91,6 +93,12 @@ func (op *CreateRetrohuntOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAccessLabelIterator) All() iter.Seq2[*chroniclepb.DataAccessLabel, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataAccessLabelIterator manages a stream of *chroniclepb.DataAccessLabel.
 type DataAccessLabelIterator struct {
 	items    []*chroniclepb.DataAccessLabel
@@ -136,6 +144,12 @@ func (it *DataAccessLabelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAccessScopeIterator) All() iter.Seq2[*chroniclepb.DataAccessScope, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataAccessScopeIterator manages a stream of *chroniclepb.DataAccessScope.
@@ -185,6 +199,12 @@ func (it *DataAccessScopeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataTableIterator) All() iter.Seq2[*chroniclepb.DataTable, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataTableIterator manages a stream of *chroniclepb.DataTable.
 type DataTableIterator struct {
 	items    []*chroniclepb.DataTable
@@ -230,6 +250,12 @@ func (it *DataTableIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataTableRowIterator) All() iter.Seq2[*chroniclepb.DataTableRow, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataTableRowIterator manages a stream of *chroniclepb.DataTableRow.
@@ -279,6 +305,12 @@ func (it *DataTableRowIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FeaturedContentNativeDashboardIterator) All() iter.Seq2[*chroniclepb.FeaturedContentNativeDashboard, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FeaturedContentNativeDashboardIterator manages a stream of *chroniclepb.FeaturedContentNativeDashboard.
 type FeaturedContentNativeDashboardIterator struct {
 	items    []*chroniclepb.FeaturedContentNativeDashboard
@@ -324,6 +356,12 @@ func (it *FeaturedContentNativeDashboardIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingsRefinementDeploymentIterator) All() iter.Seq2[*chroniclepb.FindingsRefinementDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FindingsRefinementDeploymentIterator manages a stream of *chroniclepb.FindingsRefinementDeployment.
@@ -373,6 +411,12 @@ func (it *FindingsRefinementDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingsRefinementIterator) All() iter.Seq2[*chroniclepb.FindingsRefinement, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FindingsRefinementIterator manages a stream of *chroniclepb.FindingsRefinement.
 type FindingsRefinementIterator struct {
 	items    []*chroniclepb.FindingsRefinement
@@ -418,6 +462,12 @@ func (it *FindingsRefinementIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NativeDashboardIterator) All() iter.Seq2[*chroniclepb.NativeDashboard, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NativeDashboardIterator manages a stream of *chroniclepb.NativeDashboard.
@@ -467,6 +517,12 @@ func (it *NativeDashboardIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -512,6 +568,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReferenceListIterator) All() iter.Seq2[*chroniclepb.ReferenceList, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReferenceListIterator manages a stream of *chroniclepb.ReferenceList.
@@ -561,6 +623,12 @@ func (it *ReferenceListIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RetrohuntIterator) All() iter.Seq2[*chroniclepb.Retrohunt, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RetrohuntIterator manages a stream of *chroniclepb.Retrohunt.
 type RetrohuntIterator struct {
 	items    []*chroniclepb.Retrohunt
@@ -606,6 +674,12 @@ func (it *RetrohuntIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleDeploymentIterator) All() iter.Seq2[*chroniclepb.RuleDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RuleDeploymentIterator manages a stream of *chroniclepb.RuleDeployment.
@@ -655,6 +729,12 @@ func (it *RuleDeploymentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleExecutionErrorIterator) All() iter.Seq2[*chroniclepb.RuleExecutionError, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RuleExecutionErrorIterator manages a stream of *chroniclepb.RuleExecutionError.
 type RuleExecutionErrorIterator struct {
 	items    []*chroniclepb.RuleExecutionError
@@ -702,6 +782,12 @@ func (it *RuleExecutionErrorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuleIterator) All() iter.Seq2[*chroniclepb.Rule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RuleIterator manages a stream of *chroniclepb.Rule.
 type RuleIterator struct {
 	items    []*chroniclepb.Rule
@@ -747,6 +833,12 @@ func (it *RuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WatchlistIterator) All() iter.Seq2[*chroniclepb.Watchlist, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WatchlistIterator manages a stream of *chroniclepb.Watchlist.

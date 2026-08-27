@@ -17,9 +17,18 @@
 package dataflow
 
 import (
+	"iter"
+
 	dataflowpb "cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*dataflowpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // JobIterator manages a stream of *dataflowpb.Job.
 type JobIterator struct {
@@ -66,6 +75,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobMessageIterator) All() iter.Seq2[*dataflowpb.JobMessage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // JobMessageIterator manages a stream of *dataflowpb.JobMessage.
@@ -115,6 +130,12 @@ func (it *JobMessageIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StageSummaryIterator) All() iter.Seq2[*dataflowpb.StageSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StageSummaryIterator manages a stream of *dataflowpb.StageSummary.
 type StageSummaryIterator struct {
 	items    []*dataflowpb.StageSummary
@@ -160,6 +181,12 @@ func (it *StageSummaryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkerDetailsIterator) All() iter.Seq2[*dataflowpb.WorkerDetails, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkerDetailsIterator manages a stream of *dataflowpb.WorkerDetails.

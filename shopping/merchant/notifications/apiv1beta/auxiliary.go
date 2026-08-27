@@ -17,9 +17,18 @@
 package notifications
 
 import (
+	"iter"
+
 	notificationspb "cloud.google.com/go/shopping/merchant/notifications/apiv1beta/notificationspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NotificationSubscriptionIterator) All() iter.Seq2[*notificationspb.NotificationSubscription, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // NotificationSubscriptionIterator manages a stream of *notificationspb.NotificationSubscription.
 type NotificationSubscriptionIterator struct {

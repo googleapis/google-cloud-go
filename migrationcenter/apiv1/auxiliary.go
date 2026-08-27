@@ -18,12 +18,14 @@ package migrationcenter
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	migrationcenterpb "cloud.google.com/go/migrationcenter/apiv1/migrationcenterpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1401,6 +1403,12 @@ func (op *ValidateImportJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssetIterator) All() iter.Seq2[*migrationcenterpb.Asset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AssetIterator manages a stream of *migrationcenterpb.Asset.
 type AssetIterator struct {
 	items    []*migrationcenterpb.Asset
@@ -1446,6 +1454,12 @@ func (it *AssetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ErrorFrameIterator) All() iter.Seq2[*migrationcenterpb.ErrorFrame, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ErrorFrameIterator manages a stream of *migrationcenterpb.ErrorFrame.
@@ -1495,6 +1509,12 @@ func (it *ErrorFrameIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GroupIterator) All() iter.Seq2[*migrationcenterpb.Group, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GroupIterator manages a stream of *migrationcenterpb.Group.
 type GroupIterator struct {
 	items    []*migrationcenterpb.Group
@@ -1540,6 +1560,12 @@ func (it *GroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImportDataFileIterator) All() iter.Seq2[*migrationcenterpb.ImportDataFile, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ImportDataFileIterator manages a stream of *migrationcenterpb.ImportDataFile.
@@ -1589,6 +1615,12 @@ func (it *ImportDataFileIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImportJobIterator) All() iter.Seq2[*migrationcenterpb.ImportJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ImportJobIterator manages a stream of *migrationcenterpb.ImportJob.
 type ImportJobIterator struct {
 	items    []*migrationcenterpb.ImportJob
@@ -1634,6 +1666,12 @@ func (it *ImportJobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1683,6 +1721,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1728,6 +1772,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PreferenceSetIterator) All() iter.Seq2[*migrationcenterpb.PreferenceSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PreferenceSetIterator manages a stream of *migrationcenterpb.PreferenceSet.
@@ -1777,6 +1827,12 @@ func (it *PreferenceSetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReportConfigIterator) All() iter.Seq2[*migrationcenterpb.ReportConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReportConfigIterator manages a stream of *migrationcenterpb.ReportConfig.
 type ReportConfigIterator struct {
 	items    []*migrationcenterpb.ReportConfig
@@ -1824,6 +1880,12 @@ func (it *ReportConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReportIterator) All() iter.Seq2[*migrationcenterpb.Report, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReportIterator manages a stream of *migrationcenterpb.Report.
 type ReportIterator struct {
 	items    []*migrationcenterpb.Report
@@ -1869,6 +1931,12 @@ func (it *ReportIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SourceIterator) All() iter.Seq2[*migrationcenterpb.Source, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SourceIterator manages a stream of *migrationcenterpb.Source.

@@ -18,12 +18,14 @@ package gkemulticloud
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	gkemulticloudpb "cloud.google.com/go/gkemulticloud/apiv1/gkemulticloudpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -1120,6 +1122,12 @@ func (op *UpdateAzureNodePoolOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AttachedClusterIterator) All() iter.Seq2[*gkemulticloudpb.AttachedCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AttachedClusterIterator manages a stream of *gkemulticloudpb.AttachedCluster.
 type AttachedClusterIterator struct {
 	items    []*gkemulticloudpb.AttachedCluster
@@ -1165,6 +1173,12 @@ func (it *AttachedClusterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AwsClusterIterator) All() iter.Seq2[*gkemulticloudpb.AwsCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AwsClusterIterator manages a stream of *gkemulticloudpb.AwsCluster.
@@ -1214,6 +1228,12 @@ func (it *AwsClusterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AwsNodePoolIterator) All() iter.Seq2[*gkemulticloudpb.AwsNodePool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AwsNodePoolIterator manages a stream of *gkemulticloudpb.AwsNodePool.
 type AwsNodePoolIterator struct {
 	items    []*gkemulticloudpb.AwsNodePool
@@ -1259,6 +1279,12 @@ func (it *AwsNodePoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AzureClientIterator) All() iter.Seq2[*gkemulticloudpb.AzureClient, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AzureClientIterator manages a stream of *gkemulticloudpb.AzureClient.
@@ -1308,6 +1334,12 @@ func (it *AzureClientIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AzureClusterIterator) All() iter.Seq2[*gkemulticloudpb.AzureCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AzureClusterIterator manages a stream of *gkemulticloudpb.AzureCluster.
 type AzureClusterIterator struct {
 	items    []*gkemulticloudpb.AzureCluster
@@ -1355,6 +1387,12 @@ func (it *AzureClusterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AzureNodePoolIterator) All() iter.Seq2[*gkemulticloudpb.AzureNodePool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AzureNodePoolIterator manages a stream of *gkemulticloudpb.AzureNodePool.
 type AzureNodePoolIterator struct {
 	items    []*gkemulticloudpb.AzureNodePool
@@ -1400,6 +1438,12 @@ func (it *AzureNodePoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

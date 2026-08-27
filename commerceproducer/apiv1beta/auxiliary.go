@@ -17,11 +17,20 @@
 package commerceproducer
 
 import (
+	"iter"
+
 	commerceproducerpb "cloud.google.com/go/commerceproducer/apiv1beta/commerceproducerpb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
@@ -68,6 +77,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -117,6 +132,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PrivateOfferDocumentIterator) All() iter.Seq2[*commerceproducerpb.PrivateOfferDocument, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PrivateOfferDocumentIterator manages a stream of *commerceproducerpb.PrivateOfferDocument.
 type PrivateOfferDocumentIterator struct {
 	items    []*commerceproducerpb.PrivateOfferDocument
@@ -162,6 +183,12 @@ func (it *PrivateOfferDocumentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PrivateOfferIterator) All() iter.Seq2[*commerceproducerpb.PrivateOffer, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PrivateOfferIterator manages a stream of *commerceproducerpb.PrivateOffer.
@@ -211,6 +238,12 @@ func (it *PrivateOfferIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*commerceproducerpb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceIterator manages a stream of *commerceproducerpb.Service.
 type ServiceIterator struct {
 	items    []*commerceproducerpb.Service
@@ -256,6 +289,12 @@ func (it *ServiceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SkuGroupIterator) All() iter.Seq2[*commerceproducerpb.SkuGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SkuGroupIterator manages a stream of *commerceproducerpb.SkuGroup.
@@ -305,6 +344,12 @@ func (it *SkuGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SkuIterator) All() iter.Seq2[*commerceproducerpb.Sku, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SkuIterator manages a stream of *commerceproducerpb.Sku.
 type SkuIterator struct {
 	items    []*commerceproducerpb.Sku
@@ -350,6 +395,12 @@ func (it *SkuIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StandardOfferIterator) All() iter.Seq2[*commerceproducerpb.StandardOffer, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StandardOfferIterator manages a stream of *commerceproducerpb.StandardOffer.

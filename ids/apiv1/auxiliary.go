@@ -18,11 +18,13 @@ package ids
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	idspb "cloud.google.com/go/ids/apiv1/idspb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -141,6 +143,12 @@ func (op *DeleteEndpointOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteEndpointOperation) Name() string {
 	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EndpointIterator) All() iter.Seq2[*idspb.Endpoint, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EndpointIterator manages a stream of *idspb.Endpoint.

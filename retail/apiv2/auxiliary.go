@@ -18,12 +18,14 @@ package retail
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	retailpb "cloud.google.com/go/retail/apiv2/retailpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -923,6 +925,12 @@ func (op *TuneModelOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CatalogIterator) All() iter.Seq2[*retailpb.Catalog, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CatalogIterator manages a stream of *retailpb.Catalog.
 type CatalogIterator struct {
 	items    []*retailpb.Catalog
@@ -968,6 +976,12 @@ func (it *CatalogIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ControlIterator) All() iter.Seq2[*retailpb.Control, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ControlIterator manages a stream of *retailpb.Control.
@@ -1017,6 +1031,12 @@ func (it *ControlIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ModelIterator) All() iter.Seq2[*retailpb.Model, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ModelIterator manages a stream of *retailpb.Model.
 type ModelIterator struct {
 	items    []*retailpb.Model
@@ -1062,6 +1082,12 @@ func (it *ModelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1111,6 +1137,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductIterator) All() iter.Seq2[*retailpb.Product, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProductIterator manages a stream of *retailpb.Product.
 type ProductIterator struct {
 	items    []*retailpb.Product
@@ -1158,6 +1190,12 @@ func (it *ProductIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResponse_SearchResultIterator) All() iter.Seq2[*retailpb.SearchResponse_SearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchResponse_SearchResultIterator manages a stream of *retailpb.SearchResponse_SearchResult.
 type SearchResponse_SearchResultIterator struct {
 	items    []*retailpb.SearchResponse_SearchResult
@@ -1203,6 +1241,12 @@ func (it *SearchResponse_SearchResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServingConfigIterator) All() iter.Seq2[*retailpb.ServingConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServingConfigIterator manages a stream of *retailpb.ServingConfig.

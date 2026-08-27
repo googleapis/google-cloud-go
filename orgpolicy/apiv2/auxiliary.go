@@ -17,9 +17,18 @@
 package orgpolicy
 
 import (
+	"iter"
+
 	orgpolicypb "cloud.google.com/go/orgpolicy/apiv2/orgpolicypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConstraintIterator) All() iter.Seq2[*orgpolicypb.Constraint, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ConstraintIterator manages a stream of *orgpolicypb.Constraint.
 type ConstraintIterator struct {
@@ -68,6 +77,12 @@ func (it *ConstraintIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomConstraintIterator) All() iter.Seq2[*orgpolicypb.CustomConstraint, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CustomConstraintIterator manages a stream of *orgpolicypb.CustomConstraint.
 type CustomConstraintIterator struct {
 	items    []*orgpolicypb.CustomConstraint
@@ -113,6 +128,12 @@ func (it *CustomConstraintIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PolicyIterator) All() iter.Seq2[*orgpolicypb.Policy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PolicyIterator manages a stream of *orgpolicypb.Policy.

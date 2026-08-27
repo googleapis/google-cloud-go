@@ -18,12 +18,14 @@ package discoveryengine
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	discoveryenginepb "cloud.google.com/go/discoveryengine/apiv1alpha/discoveryenginepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -1903,6 +1905,12 @@ func (op *UpdateTargetSiteOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChunkIterator) All() iter.Seq2[*discoveryenginepb.Chunk, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ChunkIterator manages a stream of *discoveryenginepb.Chunk.
 type ChunkIterator struct {
 	items    []*discoveryenginepb.Chunk
@@ -1948,6 +1956,12 @@ func (it *ChunkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ControlIterator) All() iter.Seq2[*discoveryenginepb.Control, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ControlIterator manages a stream of *discoveryenginepb.Control.
@@ -1997,6 +2011,12 @@ func (it *ControlIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*discoveryenginepb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConversationIterator manages a stream of *discoveryenginepb.Conversation.
 type ConversationIterator struct {
 	items    []*discoveryenginepb.Conversation
@@ -2042,6 +2062,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataStoreIterator) All() iter.Seq2[*discoveryenginepb.DataStore, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataStoreIterator manages a stream of *discoveryenginepb.DataStore.
@@ -2091,6 +2117,12 @@ func (it *DataStoreIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentIterator) All() iter.Seq2[*discoveryenginepb.Document, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DocumentIterator manages a stream of *discoveryenginepb.Document.
 type DocumentIterator struct {
 	items    []*discoveryenginepb.Document
@@ -2136,6 +2168,12 @@ func (it *DocumentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EngineIterator) All() iter.Seq2[*discoveryenginepb.Engine, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EngineIterator manages a stream of *discoveryenginepb.Engine.
@@ -2185,6 +2223,12 @@ func (it *EngineIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationIterator) All() iter.Seq2[*discoveryenginepb.Evaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EvaluationIterator manages a stream of *discoveryenginepb.Evaluation.
 type EvaluationIterator struct {
 	items    []*discoveryenginepb.Evaluation
@@ -2230,6 +2274,12 @@ func (it *EvaluationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FileMetadataIterator) All() iter.Seq2[*discoveryenginepb.FileMetadata, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FileMetadataIterator manages a stream of *discoveryenginepb.FileMetadata.
@@ -2279,6 +2329,12 @@ func (it *FileMetadataIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListEvaluationResultsResponse_EvaluationResultIterator) All() iter.Seq2[*discoveryenginepb.ListEvaluationResultsResponse_EvaluationResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListEvaluationResultsResponse_EvaluationResultIterator manages a stream of *discoveryenginepb.ListEvaluationResultsResponse_EvaluationResult.
 type ListEvaluationResultsResponse_EvaluationResultIterator struct {
 	items    []*discoveryenginepb.ListEvaluationResultsResponse_EvaluationResult
@@ -2324,6 +2380,12 @@ func (it *ListEvaluationResultsResponse_EvaluationResultIterator) takeBuf() inte
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -2373,6 +2435,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SampleQueryIterator) All() iter.Seq2[*discoveryenginepb.SampleQuery, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SampleQueryIterator manages a stream of *discoveryenginepb.SampleQuery.
 type SampleQueryIterator struct {
 	items    []*discoveryenginepb.SampleQuery
@@ -2418,6 +2486,12 @@ func (it *SampleQueryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SampleQuerySetIterator) All() iter.Seq2[*discoveryenginepb.SampleQuerySet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SampleQuerySetIterator manages a stream of *discoveryenginepb.SampleQuerySet.
@@ -2467,6 +2541,12 @@ func (it *SampleQuerySetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SchemaIterator) All() iter.Seq2[*discoveryenginepb.Schema, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SchemaIterator manages a stream of *discoveryenginepb.Schema.
 type SchemaIterator struct {
 	items    []*discoveryenginepb.Schema
@@ -2512,6 +2592,12 @@ func (it *SchemaIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResponse_SearchResultIterator) All() iter.Seq2[*discoveryenginepb.SearchResponse_SearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchResponse_SearchResultIterator manages a stream of *discoveryenginepb.SearchResponse_SearchResult.
@@ -2561,6 +2647,12 @@ func (it *SearchResponse_SearchResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServingConfigIterator) All() iter.Seq2[*discoveryenginepb.ServingConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServingConfigIterator manages a stream of *discoveryenginepb.ServingConfig.
 type ServingConfigIterator struct {
 	items    []*discoveryenginepb.ServingConfig
@@ -2608,6 +2700,12 @@ func (it *ServingConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionIterator) All() iter.Seq2[*discoveryenginepb.Session, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SessionIterator manages a stream of *discoveryenginepb.Session.
 type SessionIterator struct {
 	items    []*discoveryenginepb.Session
@@ -2653,6 +2751,12 @@ func (it *SessionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetSiteIterator) All() iter.Seq2[*discoveryenginepb.TargetSite, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TargetSiteIterator manages a stream of *discoveryenginepb.TargetSite.
