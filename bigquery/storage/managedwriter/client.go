@@ -244,6 +244,9 @@ func (c *Client) resolvePool(ctx context.Context, settings *streamSettings, stre
 	// takes the lock first creates the pool, and the rest find it in the lookup.
 	c.mu.Lock()
 	defer c.mu.Unlock()
+	if c.pools == nil {
+		return nil, fmt.Errorf("client is closed")
+	}
 	if pool, ok := c.pools[loc]; ok {
 		return pool, nil
 	}
