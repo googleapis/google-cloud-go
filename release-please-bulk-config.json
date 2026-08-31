@@ -888,12 +888,12 @@
         }
       ]
     },
-    "developers": {
-      "component": "developers",
+    "developerknowledge": {
+      "component": "developerknowledge",
       "extra-files": [
         {
           "jsonpath": "$.clientLibrary.version",
-          "path": "examples/knowledge/apiv1/snippet_metadata.google.developers.knowledge.v1.json",
+          "path": "examples/apiv1/snippet_metadata.google.developers.knowledge.v1.json",
           "type": "json"
         }
       ]
