@@ -1,3 +1,4 @@
 {
-  "preview/internal/compute": "1.66.0-preview.1"
+  "preview/internal/compute": "1.66.0-preview.1",
+  "compute": "1.40.1"
 }
