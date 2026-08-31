@@ -234,6 +234,16 @@
         }
       ]
     },
+    "apptopology": {
+      "component": "apptopology",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apptopology.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "area120": {
       "component": "area120",
       "extra-files": [
