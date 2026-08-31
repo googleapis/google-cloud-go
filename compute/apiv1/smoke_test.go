@@ -1,4 +1,4 @@
-// Copyright 2023 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -397,6 +397,7 @@ func TestPaginationMapResponse(t *testing.T) {
 }
 
 func TestPaginationMapResponseMaxRes(t *testing.T) {
+	t.Skip("ratelimit pushback errors - b/524324270")
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
 	}
@@ -465,6 +466,7 @@ func TestHeaders(t *testing.T) {
 }
 
 func TestInstanceGroupResize(t *testing.T) {
+	t.Skip("ratelimit pushback errors - b/524324270")
 	// we test a required query-param field set to 0
 	if testing.Short() {
 		t.Skip("skipping smoke test in short mode")
