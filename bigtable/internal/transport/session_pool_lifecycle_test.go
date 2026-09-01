@@ -516,9 +516,8 @@ func TestPoolClose_UnwindsMaintenanceLoops(t *testing.T) {
 			t.Fatalf("iteration %d: Close returned err = %v", i, err)
 		}
 
-		// Close waits on p.maint, so this must already hold; the poll only
-		// absorbs the instant between maint.Done and the goroutine's last
-		// instruction.
+		// Close does not wait on the maintenance loops, so we poll here
+		// to allow them to finish unwinding.
 		if got := awaitMaintenanceLoops(t, baseline); got != baseline {
 			t.Fatalf("iteration %d: after Close, %d maintenance goroutines, want %d "+
 				"— pool maintenance loops outlived Close (leak)", i, got, baseline)
