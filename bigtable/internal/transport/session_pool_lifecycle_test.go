@@ -17,9 +17,13 @@ package internal
 import (
 	"errors"
 	"fmt"
+	"runtime"
+	"strings"
 	"sync"
 	"testing"
 	"time"
+
+	spb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 )
 
 // --- close-reason ledger ---------------------------------------------------
@@ -429,5 +433,121 @@ func TestOnStart_NoOp(t *testing.T) {
 	p.onStart(nil)
 	if got := p.m.sessionsOpened.Load(); got != before {
 		t.Errorf("OnStart mutated sessionsOpened: %d → %d", before, got)
+	}
+}
+
+// --- maintenance-loop lifetime ---------------------------------------------
+
+// countMaintenanceLoops reports how many startMaintenanceLoop goroutines are
+// currently alive process-wide. Matching on the frame name rather than a raw
+// runtime.NumGoroutine delta keeps the assertion immune to unrelated
+// goroutines (readLoops, OTel exporters) that other tests leave running.
+func countMaintenanceLoops() int {
+	buf := make([]byte, 1<<20)
+	for {
+		n := runtime.Stack(buf, true)
+		if n < len(buf) {
+			buf = buf[:n]
+			break
+		}
+		buf = make([]byte, 2*len(buf))
+	}
+	return strings.Count(string(buf), "(*SessionPoolImpl).startMaintenanceLoop.func")
+}
+
+// awaitMaintenanceLoops polls countMaintenanceLoops until it reaches want,
+// returning the last observed value. Close cancels the loops but does not
+// join them, and Start launches them asynchronously, so both directions
+// need a settle window.
+func awaitMaintenanceLoops(t *testing.T, want int) int {
+	t.Helper()
+	deadline := time.Now().Add(10 * time.Second)
+	got := countMaintenanceLoops()
+	for got != want && time.Now().Before(deadline) {
+		time.Sleep(5 * time.Millisecond)
+		got = countMaintenanceLoops()
+	}
+	return got
+}
+
+// TestPoolClose_UnwindsMaintenanceLoops is the regression test for the
+// pool-eviction goroutine leak.
+//
+// Start's three maintenance loops (AFE prune, WaitServerClose sweep, slow
+// metrics) used to select on a ctx handed in by the caller — in production the
+// session Client's process-lifetime BackgroundCtx — while Close only cancelled
+// the pool's own poolCtx. Nothing ever cancelled the loops, so every pool
+// teardown leaked three goroutines, and because each loop closure captures p,
+// each leaked goroutine pinned an entire SessionPoolImpl (metrics ring
+// buffers, sessionList) on the heap. session.TableCache TTL eviction Closes
+// pools continuously, so the leak grew without bound over a process's life.
+//
+// Closing pools in a loop here means a regression shows up as growth, not just
+// a single stuck goroutine.
+func TestPoolClose_UnwindsMaintenanceLoops(t *testing.T) {
+	const (
+		wantPerPool = 3 // prune + stuck-session sweep + slow metrics
+		iterations  = 3
+	)
+
+	baseline := countMaintenanceLoops()
+
+	for i := 0; i < iterations; i++ {
+		factory, closeStreams := newStubStreamFactory()
+		p := NewSessionPoolImpl(
+			uint64(i+1),
+			"maint-loop-pool",
+			factory,
+			&spb.OpenSessionRequest{ProtocolVersion: 1},
+			nil,
+			SessionTypeTable, true,
+		)
+
+		p.Start()
+		if got := awaitMaintenanceLoops(t, baseline+wantPerPool); got != baseline+wantPerPool {
+			t.Fatalf("iteration %d: after Start, %d maintenance goroutines, want %d "+
+				"(test is only meaningful if Start actually launches them)", i, got, baseline+wantPerPool)
+		}
+
+		// Unblock any readLoop parked on fakeStream.Recv first, or Close's
+		// Phase-5 spawns.Wait never returns.
+		closeStreams()
+		if err := p.Close(); err != nil {
+			t.Fatalf("iteration %d: Close returned err = %v", i, err)
+		}
+
+		// Close does not wait on the maintenance loops, so we poll here
+		// to allow them to finish unwinding.
+		if got := awaitMaintenanceLoops(t, baseline); got != baseline {
+			t.Fatalf("iteration %d: after Close, %d maintenance goroutines, want %d "+
+				"— pool maintenance loops outlived Close (leak)", i, got, baseline)
+		}
+	}
+}
+
+// TestPoolStart_AfterClose_LoopsExitImmediately guards the Start-after-Close
+// order. maintCtx is already cancelled by then, so any loop Start launches
+// must fall out on its first select rather than tick against a torn-down
+// pool — leaving the count back at baseline.
+func TestPoolStart_AfterClose_LoopsExitImmediately(t *testing.T) {
+	baseline := countMaintenanceLoops()
+
+	factory, closeStreams := newStubStreamFactory()
+	p := NewSessionPoolImpl(
+		uint64(1),
+		"start-after-close-pool",
+		factory,
+		&spb.OpenSessionRequest{ProtocolVersion: 1},
+		nil,
+		SessionTypeTable, true,
+	)
+	closeStreams()
+	if err := p.Close(); err != nil {
+		t.Fatalf("Close returned err = %v", err)
+	}
+
+	p.Start()
+	if got := awaitMaintenanceLoops(t, baseline); got != baseline {
+		t.Errorf("Start after Close launched maintenance loops: %d goroutines, want %d", got, baseline)
 	}
 }
