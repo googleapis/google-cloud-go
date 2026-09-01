@@ -114,7 +114,7 @@ func (p *Pacemaker) recordTick(ctx context.Context, scheduled, now time.Time) {
 	if delay < 0 {
 		delay = 0
 	}
-	p.histogram.Record(ctx, float64(delay.Nanoseconds())/1e3, p.attrs)
+	p.histogram.Record(ctx, float64(delay)/float64(time.Microsecond), p.attrs)
 }
 
 // Stop acts as a cleanup method. no-op
