@@ -645,7 +645,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 	logicalMethod := methodName
 	if state != nil {
 		logicalMethod = state.method
-		state.target = target
+		state.setTarget(target)
 	}
 	attemptAttrs := make([]attribute.KeyValue, 0, 5)
 	attemptAttrs = append(attemptAttrs,
@@ -848,7 +848,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 	if rt.metrics != nil {
 		state := metricsStateFromContext(req.Context())
 		if state != nil {
-			state.target = req.URL.Host
+			state.setTarget(req.URL.Host)
 		}
 		// Record attempt.
 		attemptAttrs := make([]attribute.KeyValue, 0, 4)
@@ -1196,12 +1196,31 @@ func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribut
 }
 
 type metricsState struct {
+	mu        sync.Mutex
 	method    string
 	startTime time.Time
 	metrics   *clientMetrics
 	isHTTP    bool
 	target    string
 	record    func(error)
+}
+
+func (s *metricsState) setTarget(t string) {
+	if s == nil {
+		return
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	s.target = t
+}
+
+func (s *metricsState) getTarget() string {
+	if s == nil {
+		return ""
+	}
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.target
 }
 
 func contextWithMetricsState(ctx context.Context, state *metricsState) context.Context {
@@ -1244,7 +1263,7 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 
 			attrs := []attribute.KeyValue{
 				attribute.String("rpc.method", method),
-				attribute.String("server.address", stripPort(state.target)),
+				attribute.String("server.address", stripPort(state.getTarget())),
 				attribute.String("error.type", errorType),
 			}
 			opts := metric.WithAttributes(injectAPIMethod(ctx, attrs)...)

@@ -415,7 +415,7 @@ func (r *Reader) Close() error {
 	if r.metricsState != nil {
 		if r.metricsState.metrics != nil {
 			if total := atomic.SwapInt64(&r.bytesRead, 0); total > 0 {
-				r.metricsState.metrics.responseBodySize.Record(r.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(r.metricsState.target))))
+				r.metricsState.metrics.responseBodySize.Record(r.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(r.metricsState.getTarget()))))
 			}
 		}
 		if r.metricsState.record != nil {
