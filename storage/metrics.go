@@ -352,7 +352,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 
 	if isOtelDebugMetricsEnabled(config) {
 		networkBytesSent, err = meter.Int64Counter(
-			"gcp.storage.client.network.egress_bytes_count",
+			"gcp.storage.client.network.bytes.sent",
 			metric.WithDescription("Total physical bytes sent over the wire socket (gRPC only)."),
 			metric.WithUnit("By"),
 		)
@@ -361,7 +361,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		}
 
 		networkBytesReceived, err = meter.Int64Counter(
-			"gcp.storage.client.network.ingress_bytes_count",
+			"gcp.storage.client.network.bytes.received",
 			metric.WithDescription("Total physical bytes received over the wire socket (gRPC only)."),
 			metric.WithUnit("By"),
 		)
@@ -387,7 +387,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 			return nil, nil, err
 		}
 		activeRequests, err = meter.Int64UpDownCounter(
-			"gcp.storage.client.active_requests",
+			"gcp.storage.client.request.active",
 			metric.WithDescription("Number of active GCS client requests"),
 			metric.WithUnit("1"),
 		)

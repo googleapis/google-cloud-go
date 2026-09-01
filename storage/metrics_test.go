@@ -899,14 +899,14 @@ func TestGRPCMetricsStatsHandler(t *testing.T) {
 	var ingress, egress int64
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "gcp.storage.client.network.ingress_bytes_count" {
+			if m.Name == "gcp.storage.client.network.bytes.received" {
 				sum := m.Data.(metricdata.Sum[int64])
 				ingress = sum.DataPoints[0].Value
 				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
 					t.Errorf("expected rpc.method ReadObject")
 				}
 			}
-			if m.Name == "gcp.storage.client.network.egress_bytes_count" {
+			if m.Name == "gcp.storage.client.network.bytes.sent" {
 				sum := m.Data.(metricdata.Sum[int64])
 				egress = sum.DataPoints[0].Value
 				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
