@@ -1196,12 +1196,11 @@ func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribut
 }
 
 type metricsState struct {
-	mu        sync.Mutex
+	target    atomic.Pointer[string]
 	method    string
 	startTime time.Time
 	metrics   *clientMetrics
 	isHTTP    bool
-	target    string
 	record    func(error)
 }
 
@@ -1209,18 +1208,17 @@ func (s *metricsState) setTarget(t string) {
 	if s == nil {
 		return
 	}
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	s.target = t
+	s.target.Store(&t)
 }
 
 func (s *metricsState) getTarget() string {
 	if s == nil {
 		return ""
 	}
-	s.mu.Lock()
-	defer s.mu.Unlock()
-	return s.target
+	if p := s.target.Load(); p != nil {
+		return *p
+	}
+	return ""
 }
 
 func contextWithMetricsState(ctx context.Context, state *metricsState) context.Context {
