@@ -186,11 +186,11 @@ func TestServerTimestampIsTruncated(t *testing.T) {
 
 	// On a millis table, the generated timestamp must be millis-aligned.
 	s, name := newGranularityServer(t, btapb.Table_MILLIS)
-	before := time.Now().UnixNano() / 1e3
+	before := time.Now().UnixMicro()
 	if _, err := s.MutateRow(ctx, setCell(name, -1)); err != nil {
 		t.Fatalf("MutateRow(ServerTime): %v", err)
 	}
-	after := time.Now().UnixNano() / 1e3
+	after := time.Now().UnixMicro()
 	got := readCellTimestamps(t, s, name)
 	if len(got) != 1 {
 		t.Fatalf("stored timestamps = %v, want one cell", got)

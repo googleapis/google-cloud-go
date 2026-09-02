@@ -1222,11 +1222,9 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 			if cf.valueType == nil || cf.valueType.GetAggregateType() == nil {
 				return fmt.Errorf("illegal attempt to use AddToCell on non-aggregate cell")
 			}
+			// The timestamp must be non-negative and match the table's
+			// granularity.
 			ts := add.Timestamp.GetRawTimestampMicros()
-			if ts < 0 {
-				return fmt.Errorf("AddToCell must set timestamp >= 0")
-			}
-			// The timestamp must match the table's granularity.
 			if !tbl.validTimestamp(ts) {
 				return tbl.invalidTimestampError(ts)
 			}
@@ -1255,11 +1253,9 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 			if cf.valueType == nil || cf.valueType.GetAggregateType() == nil {
 				return fmt.Errorf("illegal attempt to use MergeToCell on non-aggregate cell")
 			}
+			// The timestamp must be non-negative and match the table's
+			// granularity.
 			ts := add.Timestamp.GetRawTimestampMicros()
-			if ts < 0 {
-				return fmt.Errorf("MergeToCell must set timestamp >= 0")
-			}
-			// The timestamp must match the table's granularity.
 			if !tbl.validTimestamp(ts) {
 				return tbl.invalidTimestampError(ts)
 			}
@@ -1297,7 +1293,7 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 						return tbl.invalidTimestampError(tsr.EndTimestampMicros)
 					}
 					if tsr.StartTimestampMicros >= tsr.EndTimestampMicros && tsr.EndTimestampMicros != 0 {
-						return fmt.Errorf("inverted or invalid timestamp range [%d, %d]", tsr.StartTimestampMicros, tsr.EndTimestampMicros)
+						return status.Errorf(codes.InvalidArgument, "inverted or invalid timestamp range [%d, %d]", tsr.StartTimestampMicros, tsr.EndTimestampMicros)
 					}
 
 					// Find half-open interval to remove.
@@ -1695,7 +1691,7 @@ func (t *table) invalidTimestampError(ts int64) error {
 // It is used for server-side (client-unspecified) timestamps, which are
 // truncated rather than rejected.
 func (t *table) newTimestamp() int64 {
-	ts := time.Now().UnixNano() / 1e3
+	ts := time.Now().UnixMicro()
 	unit := t.timestampUnit()
 	return ts - ts%unit
 }
