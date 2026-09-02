@@ -1793,7 +1793,7 @@ type TieredStorageRule_IncludeIfOlderThan struct {
 
 func (*TieredStorageRule_IncludeIfOlderThan) isTieredStorageRule_Rule() {}
 
-// Represents a protobuf schema.
+// Represents a collection of protobuf schemas.
 type ProtoSchema struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Contains a protobuf-serialized
@@ -1855,6 +1855,56 @@ func (x *ProtoSchema) GetProtoDescriptors() []byte {
 	return nil
 }
 
+// Represents a collection of Avro schemas.
+type AvroSchema struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The Avro schemas in JSON format.
+	// Each element must be the content of a valid, self-contained Avro schema
+	// file (.avsc), as described in https://avro.apache.org/docs/1.8.1/spec.html.
+	// Use repeated elements to include multiple Avro schema files in a single
+	// bundle.
+	JsonSchemas   []string `protobuf:"bytes,1,rep,name=json_schemas,json=jsonSchemas,proto3" json:"json_schemas,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AvroSchema) Reset() {
+	*x = AvroSchema{}
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AvroSchema) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AvroSchema) ProtoMessage() {}
+
+func (x *AvroSchema) ProtoReflect() protoreflect.Message {
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AvroSchema.ProtoReflect.Descriptor instead.
+func (*AvroSchema) Descriptor() ([]byte, []int) {
+	return file_google_bigtable_admin_v2_table_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *AvroSchema) GetJsonSchemas() []string {
+	if x != nil {
+		return x.JsonSchemas
+	}
+	return nil
+}
+
 // A named collection of related schemas.
 type SchemaBundle struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1868,6 +1918,7 @@ type SchemaBundle struct {
 	// Types that are valid to be assigned to Type:
 	//
 	//	*SchemaBundle_ProtoSchema
+	//	*SchemaBundle_AvroSchema
 	Type isSchemaBundle_Type `protobuf_oneof:"type"`
 	// Optional. The etag for this schema bundle.
 	// This may be sent on update and delete requests to ensure the
@@ -1880,7 +1931,7 @@ type SchemaBundle struct {
 
 func (x *SchemaBundle) Reset() {
 	*x = SchemaBundle{}
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[13]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1892,7 +1943,7 @@ func (x *SchemaBundle) String() string {
 func (*SchemaBundle) ProtoMessage() {}
 
 func (x *SchemaBundle) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[13]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1905,7 +1956,7 @@ func (x *SchemaBundle) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SchemaBundle.ProtoReflect.Descriptor instead.
 func (*SchemaBundle) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_admin_v2_table_proto_rawDescGZIP(), []int{13}
+	return file_google_bigtable_admin_v2_table_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *SchemaBundle) GetName() string {
@@ -1931,6 +1982,15 @@ func (x *SchemaBundle) GetProtoSchema() *ProtoSchema {
 	return nil
 }
 
+func (x *SchemaBundle) GetAvroSchema() *AvroSchema {
+	if x != nil {
+		if x, ok := x.Type.(*SchemaBundle_AvroSchema); ok {
+			return x.AvroSchema
+		}
+	}
+	return nil
+}
+
 func (x *SchemaBundle) GetEtag() string {
 	if x != nil {
 		return x.Etag
@@ -1947,7 +2007,14 @@ type SchemaBundle_ProtoSchema struct {
 	ProtoSchema *ProtoSchema `protobuf:"bytes,2,opt,name=proto_schema,json=protoSchema,proto3,oneof"`
 }
 
+type SchemaBundle_AvroSchema struct {
+	// Optional. Schema for Avros.
+	AvroSchema *AvroSchema `protobuf:"bytes,6,opt,name=avro_schema,json=avroSchema,proto3,oneof"`
+}
+
 func (*SchemaBundle_ProtoSchema) isSchemaBundle_Type() {}
+
+func (*SchemaBundle_AvroSchema) isSchemaBundle_Type() {}
 
 // The state of a table's data in a particular cluster.
 type Table_ClusterState struct {
@@ -1966,7 +2033,7 @@ type Table_ClusterState struct {
 
 func (x *Table_ClusterState) Reset() {
 	*x = Table_ClusterState{}
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[14]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1978,7 +2045,7 @@ func (x *Table_ClusterState) String() string {
 func (*Table_ClusterState) ProtoMessage() {}
 
 func (x *Table_ClusterState) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[14]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2029,7 +2096,7 @@ type Table_AutomatedBackupPolicy struct {
 
 func (x *Table_AutomatedBackupPolicy) Reset() {
 	*x = Table_AutomatedBackupPolicy{}
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[15]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2041,7 +2108,7 @@ func (x *Table_AutomatedBackupPolicy) String() string {
 func (*Table_AutomatedBackupPolicy) ProtoMessage() {}
 
 func (x *Table_AutomatedBackupPolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[15]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2095,7 +2162,7 @@ type AuthorizedView_FamilySubsets struct {
 
 func (x *AuthorizedView_FamilySubsets) Reset() {
 	*x = AuthorizedView_FamilySubsets{}
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[18]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2107,7 +2174,7 @@ func (x *AuthorizedView_FamilySubsets) String() string {
 func (*AuthorizedView_FamilySubsets) ProtoMessage() {}
 
 func (x *AuthorizedView_FamilySubsets) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[18]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2152,7 +2219,7 @@ type AuthorizedView_SubsetView struct {
 
 func (x *AuthorizedView_SubsetView) Reset() {
 	*x = AuthorizedView_SubsetView{}
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[19]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2164,7 +2231,7 @@ func (x *AuthorizedView_SubsetView) String() string {
 func (*AuthorizedView_SubsetView) ProtoMessage() {}
 
 func (x *AuthorizedView_SubsetView) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[19]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2205,7 +2272,7 @@ type GcRule_Intersection struct {
 
 func (x *GcRule_Intersection) Reset() {
 	*x = GcRule_Intersection{}
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[21]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2217,7 +2284,7 @@ func (x *GcRule_Intersection) String() string {
 func (*GcRule_Intersection) ProtoMessage() {}
 
 func (x *GcRule_Intersection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[21]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2251,7 +2318,7 @@ type GcRule_Union struct {
 
 func (x *GcRule_Union) Reset() {
 	*x = GcRule_Union{}
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[22]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2263,7 +2330,7 @@ func (x *GcRule_Union) String() string {
 func (*GcRule_Union) ProtoMessage() {}
 
 func (x *GcRule_Union) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[22]
+	mi := &file_google_bigtable_admin_v2_table_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2451,10 +2518,15 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"\x15include_if_older_than\x18\x01 \x01(\v2\x19.google.protobuf.DurationH\x00R\x12includeIfOlderThanB\x06\n" +
 	"\x04rule\"?\n" +
 	"\vProtoSchema\x120\n" +
-	"\x11proto_descriptors\x18\x02 \x01(\fB\x03\xe0A\x02R\x10protoDescriptors\"\xb9\x02\n" +
+	"\x11proto_descriptors\x18\x02 \x01(\fB\x03\xe0A\x02R\x10protoDescriptors\"4\n" +
+	"\n" +
+	"AvroSchema\x12&\n" +
+	"\fjson_schemas\x18\x01 \x03(\tB\x03\xe0A\x02R\vjsonSchemas\"\x87\x03\n" +
 	"\fSchemaBundle\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12J\n" +
-	"\fproto_schema\x18\x02 \x01(\v2%.google.bigtable.admin.v2.ProtoSchemaH\x00R\vprotoSchema\x12\x17\n" +
+	"\fproto_schema\x18\x02 \x01(\v2%.google.bigtable.admin.v2.ProtoSchemaH\x00R\vprotoSchema\x12L\n" +
+	"\vavro_schema\x18\x06 \x01(\v2$.google.bigtable.admin.v2.AvroSchemaB\x03\xe0A\x01H\x00R\n" +
+	"avroSchema\x12\x17\n" +
 	"\x04etag\x18\x03 \x01(\tB\x03\xe0A\x01R\x04etag:\xa2\x01\xeaA\x9e\x01\n" +
 	")bigtableadmin.googleapis.com/SchemaBundle\x12Tprojects/{project}/instances/{instance}/tables/{table}/schemaBundles/{schema_bundle}*\rschemaBundles2\fschemaBundleB\x06\n" +
 	"\x04type*D\n" +
@@ -2479,7 +2551,7 @@ func file_google_bigtable_admin_v2_table_proto_rawDescGZIP() []byte {
 }
 
 var file_google_bigtable_admin_v2_table_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
-var file_google_bigtable_admin_v2_table_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
+var file_google_bigtable_admin_v2_table_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_bigtable_admin_v2_table_proto_goTypes = []any{
 	(RestoreSourceType)(0),                   // 0: google.bigtable.admin.v2.RestoreSourceType
 	(Table_TimestampGranularity)(0),          // 1: google.bigtable.admin.v2.Table.TimestampGranularity
@@ -2503,73 +2575,75 @@ var file_google_bigtable_admin_v2_table_proto_goTypes = []any{
 	(*TieredStorageConfig)(nil),              // 19: google.bigtable.admin.v2.TieredStorageConfig
 	(*TieredStorageRule)(nil),                // 20: google.bigtable.admin.v2.TieredStorageRule
 	(*ProtoSchema)(nil),                      // 21: google.bigtable.admin.v2.ProtoSchema
-	(*SchemaBundle)(nil),                     // 22: google.bigtable.admin.v2.SchemaBundle
-	(*Table_ClusterState)(nil),               // 23: google.bigtable.admin.v2.Table.ClusterState
-	(*Table_AutomatedBackupPolicy)(nil),      // 24: google.bigtable.admin.v2.Table.AutomatedBackupPolicy
-	nil,                                      // 25: google.bigtable.admin.v2.Table.ClusterStatesEntry
-	nil,                                      // 26: google.bigtable.admin.v2.Table.ColumnFamiliesEntry
-	(*AuthorizedView_FamilySubsets)(nil),     // 27: google.bigtable.admin.v2.AuthorizedView.FamilySubsets
-	(*AuthorizedView_SubsetView)(nil),        // 28: google.bigtable.admin.v2.AuthorizedView.SubsetView
-	nil,                                      // 29: google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry
-	(*GcRule_Intersection)(nil),              // 30: google.bigtable.admin.v2.GcRule.Intersection
-	(*GcRule_Union)(nil),                     // 31: google.bigtable.admin.v2.GcRule.Union
-	(*durationpb.Duration)(nil),              // 32: google.protobuf.Duration
-	(*Type_Struct)(nil),                      // 33: google.bigtable.admin.v2.Type.Struct
-	(*Type)(nil),                             // 34: google.bigtable.admin.v2.Type
-	(*status.Status)(nil),                    // 35: google.rpc.Status
-	(*timestamppb.Timestamp)(nil),            // 36: google.protobuf.Timestamp
+	(*AvroSchema)(nil),                       // 22: google.bigtable.admin.v2.AvroSchema
+	(*SchemaBundle)(nil),                     // 23: google.bigtable.admin.v2.SchemaBundle
+	(*Table_ClusterState)(nil),               // 24: google.bigtable.admin.v2.Table.ClusterState
+	(*Table_AutomatedBackupPolicy)(nil),      // 25: google.bigtable.admin.v2.Table.AutomatedBackupPolicy
+	nil,                                      // 26: google.bigtable.admin.v2.Table.ClusterStatesEntry
+	nil,                                      // 27: google.bigtable.admin.v2.Table.ColumnFamiliesEntry
+	(*AuthorizedView_FamilySubsets)(nil),     // 28: google.bigtable.admin.v2.AuthorizedView.FamilySubsets
+	(*AuthorizedView_SubsetView)(nil),        // 29: google.bigtable.admin.v2.AuthorizedView.SubsetView
+	nil,                                      // 30: google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry
+	(*GcRule_Intersection)(nil),              // 31: google.bigtable.admin.v2.GcRule.Intersection
+	(*GcRule_Union)(nil),                     // 32: google.bigtable.admin.v2.GcRule.Union
+	(*durationpb.Duration)(nil),              // 33: google.protobuf.Duration
+	(*Type_Struct)(nil),                      // 34: google.bigtable.admin.v2.Type.Struct
+	(*Type)(nil),                             // 35: google.bigtable.admin.v2.Type
+	(*status.Status)(nil),                    // 36: google.rpc.Status
+	(*timestamppb.Timestamp)(nil),            // 37: google.protobuf.Timestamp
 }
 var file_google_bigtable_admin_v2_table_proto_depIdxs = []int32{
 	0,  // 0: google.bigtable.admin.v2.RestoreInfo.source_type:type_name -> google.bigtable.admin.v2.RestoreSourceType
 	18, // 1: google.bigtable.admin.v2.RestoreInfo.backup_info:type_name -> google.bigtable.admin.v2.BackupInfo
-	32, // 2: google.bigtable.admin.v2.ChangeStreamConfig.retention_period:type_name -> google.protobuf.Duration
-	25, // 3: google.bigtable.admin.v2.Table.cluster_states:type_name -> google.bigtable.admin.v2.Table.ClusterStatesEntry
-	26, // 4: google.bigtable.admin.v2.Table.column_families:type_name -> google.bigtable.admin.v2.Table.ColumnFamiliesEntry
+	33, // 2: google.bigtable.admin.v2.ChangeStreamConfig.retention_period:type_name -> google.protobuf.Duration
+	26, // 3: google.bigtable.admin.v2.Table.cluster_states:type_name -> google.bigtable.admin.v2.Table.ClusterStatesEntry
+	27, // 4: google.bigtable.admin.v2.Table.column_families:type_name -> google.bigtable.admin.v2.Table.ColumnFamiliesEntry
 	1,  // 5: google.bigtable.admin.v2.Table.granularity:type_name -> google.bigtable.admin.v2.Table.TimestampGranularity
 	9,  // 6: google.bigtable.admin.v2.Table.restore_info:type_name -> google.bigtable.admin.v2.RestoreInfo
 	10, // 7: google.bigtable.admin.v2.Table.change_stream_config:type_name -> google.bigtable.admin.v2.ChangeStreamConfig
-	24, // 8: google.bigtable.admin.v2.Table.automated_backup_policy:type_name -> google.bigtable.admin.v2.Table.AutomatedBackupPolicy
+	25, // 8: google.bigtable.admin.v2.Table.automated_backup_policy:type_name -> google.bigtable.admin.v2.Table.AutomatedBackupPolicy
 	19, // 9: google.bigtable.admin.v2.Table.tiered_storage_config:type_name -> google.bigtable.admin.v2.TieredStorageConfig
-	33, // 10: google.bigtable.admin.v2.Table.row_key_schema:type_name -> google.bigtable.admin.v2.Type.Struct
-	28, // 11: google.bigtable.admin.v2.AuthorizedView.subset_view:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView
+	34, // 10: google.bigtable.admin.v2.Table.row_key_schema:type_name -> google.bigtable.admin.v2.Type.Struct
+	29, // 11: google.bigtable.admin.v2.AuthorizedView.subset_view:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView
 	14, // 12: google.bigtable.admin.v2.ColumnFamily.gc_rule:type_name -> google.bigtable.admin.v2.GcRule
-	34, // 13: google.bigtable.admin.v2.ColumnFamily.value_type:type_name -> google.bigtable.admin.v2.Type
-	32, // 14: google.bigtable.admin.v2.GcRule.max_age:type_name -> google.protobuf.Duration
-	30, // 15: google.bigtable.admin.v2.GcRule.intersection:type_name -> google.bigtable.admin.v2.GcRule.Intersection
-	31, // 16: google.bigtable.admin.v2.GcRule.union:type_name -> google.bigtable.admin.v2.GcRule.Union
+	35, // 13: google.bigtable.admin.v2.ColumnFamily.value_type:type_name -> google.bigtable.admin.v2.Type
+	33, // 14: google.bigtable.admin.v2.GcRule.max_age:type_name -> google.protobuf.Duration
+	31, // 15: google.bigtable.admin.v2.GcRule.intersection:type_name -> google.bigtable.admin.v2.GcRule.Intersection
+	32, // 16: google.bigtable.admin.v2.GcRule.union:type_name -> google.bigtable.admin.v2.GcRule.Union
 	5,  // 17: google.bigtable.admin.v2.EncryptionInfo.encryption_type:type_name -> google.bigtable.admin.v2.EncryptionInfo.EncryptionType
-	35, // 18: google.bigtable.admin.v2.EncryptionInfo.encryption_status:type_name -> google.rpc.Status
+	36, // 18: google.bigtable.admin.v2.EncryptionInfo.encryption_status:type_name -> google.rpc.Status
 	11, // 19: google.bigtable.admin.v2.Snapshot.source_table:type_name -> google.bigtable.admin.v2.Table
-	36, // 20: google.bigtable.admin.v2.Snapshot.create_time:type_name -> google.protobuf.Timestamp
-	36, // 21: google.bigtable.admin.v2.Snapshot.delete_time:type_name -> google.protobuf.Timestamp
+	37, // 20: google.bigtable.admin.v2.Snapshot.create_time:type_name -> google.protobuf.Timestamp
+	37, // 21: google.bigtable.admin.v2.Snapshot.delete_time:type_name -> google.protobuf.Timestamp
 	6,  // 22: google.bigtable.admin.v2.Snapshot.state:type_name -> google.bigtable.admin.v2.Snapshot.State
-	36, // 23: google.bigtable.admin.v2.Backup.expire_time:type_name -> google.protobuf.Timestamp
-	36, // 24: google.bigtable.admin.v2.Backup.start_time:type_name -> google.protobuf.Timestamp
-	36, // 25: google.bigtable.admin.v2.Backup.end_time:type_name -> google.protobuf.Timestamp
+	37, // 23: google.bigtable.admin.v2.Backup.expire_time:type_name -> google.protobuf.Timestamp
+	37, // 24: google.bigtable.admin.v2.Backup.start_time:type_name -> google.protobuf.Timestamp
+	37, // 25: google.bigtable.admin.v2.Backup.end_time:type_name -> google.protobuf.Timestamp
 	7,  // 26: google.bigtable.admin.v2.Backup.state:type_name -> google.bigtable.admin.v2.Backup.State
 	15, // 27: google.bigtable.admin.v2.Backup.encryption_info:type_name -> google.bigtable.admin.v2.EncryptionInfo
 	8,  // 28: google.bigtable.admin.v2.Backup.backup_type:type_name -> google.bigtable.admin.v2.Backup.BackupType
-	36, // 29: google.bigtable.admin.v2.Backup.hot_to_standard_time:type_name -> google.protobuf.Timestamp
-	36, // 30: google.bigtable.admin.v2.BackupInfo.start_time:type_name -> google.protobuf.Timestamp
-	36, // 31: google.bigtable.admin.v2.BackupInfo.end_time:type_name -> google.protobuf.Timestamp
+	37, // 29: google.bigtable.admin.v2.Backup.hot_to_standard_time:type_name -> google.protobuf.Timestamp
+	37, // 30: google.bigtable.admin.v2.BackupInfo.start_time:type_name -> google.protobuf.Timestamp
+	37, // 31: google.bigtable.admin.v2.BackupInfo.end_time:type_name -> google.protobuf.Timestamp
 	20, // 32: google.bigtable.admin.v2.TieredStorageConfig.infrequent_access:type_name -> google.bigtable.admin.v2.TieredStorageRule
-	32, // 33: google.bigtable.admin.v2.TieredStorageRule.include_if_older_than:type_name -> google.protobuf.Duration
+	33, // 33: google.bigtable.admin.v2.TieredStorageRule.include_if_older_than:type_name -> google.protobuf.Duration
 	21, // 34: google.bigtable.admin.v2.SchemaBundle.proto_schema:type_name -> google.bigtable.admin.v2.ProtoSchema
-	3,  // 35: google.bigtable.admin.v2.Table.ClusterState.replication_state:type_name -> google.bigtable.admin.v2.Table.ClusterState.ReplicationState
-	15, // 36: google.bigtable.admin.v2.Table.ClusterState.encryption_info:type_name -> google.bigtable.admin.v2.EncryptionInfo
-	32, // 37: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.retention_period:type_name -> google.protobuf.Duration
-	32, // 38: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.frequency:type_name -> google.protobuf.Duration
-	23, // 39: google.bigtable.admin.v2.Table.ClusterStatesEntry.value:type_name -> google.bigtable.admin.v2.Table.ClusterState
-	13, // 40: google.bigtable.admin.v2.Table.ColumnFamiliesEntry.value:type_name -> google.bigtable.admin.v2.ColumnFamily
-	29, // 41: google.bigtable.admin.v2.AuthorizedView.SubsetView.family_subsets:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry
-	27, // 42: google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry.value:type_name -> google.bigtable.admin.v2.AuthorizedView.FamilySubsets
-	14, // 43: google.bigtable.admin.v2.GcRule.Intersection.rules:type_name -> google.bigtable.admin.v2.GcRule
-	14, // 44: google.bigtable.admin.v2.GcRule.Union.rules:type_name -> google.bigtable.admin.v2.GcRule
-	45, // [45:45] is the sub-list for method output_type
-	45, // [45:45] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	22, // 35: google.bigtable.admin.v2.SchemaBundle.avro_schema:type_name -> google.bigtable.admin.v2.AvroSchema
+	3,  // 36: google.bigtable.admin.v2.Table.ClusterState.replication_state:type_name -> google.bigtable.admin.v2.Table.ClusterState.ReplicationState
+	15, // 37: google.bigtable.admin.v2.Table.ClusterState.encryption_info:type_name -> google.bigtable.admin.v2.EncryptionInfo
+	33, // 38: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.retention_period:type_name -> google.protobuf.Duration
+	33, // 39: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.frequency:type_name -> google.protobuf.Duration
+	24, // 40: google.bigtable.admin.v2.Table.ClusterStatesEntry.value:type_name -> google.bigtable.admin.v2.Table.ClusterState
+	13, // 41: google.bigtable.admin.v2.Table.ColumnFamiliesEntry.value:type_name -> google.bigtable.admin.v2.ColumnFamily
+	30, // 42: google.bigtable.admin.v2.AuthorizedView.SubsetView.family_subsets:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry
+	28, // 43: google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry.value:type_name -> google.bigtable.admin.v2.AuthorizedView.FamilySubsets
+	14, // 44: google.bigtable.admin.v2.GcRule.Intersection.rules:type_name -> google.bigtable.admin.v2.GcRule
+	14, // 45: google.bigtable.admin.v2.GcRule.Union.rules:type_name -> google.bigtable.admin.v2.GcRule
+	46, // [46:46] is the sub-list for method output_type
+	46, // [46:46] is the sub-list for method input_type
+	46, // [46:46] is the sub-list for extension type_name
+	46, // [46:46] is the sub-list for extension extendee
+	0,  // [0:46] is the sub-list for field type_name
 }
 
 func init() { file_google_bigtable_admin_v2_table_proto_init() }
@@ -2596,8 +2670,9 @@ func file_google_bigtable_admin_v2_table_proto_init() {
 	file_google_bigtable_admin_v2_table_proto_msgTypes[11].OneofWrappers = []any{
 		(*TieredStorageRule_IncludeIfOlderThan)(nil),
 	}
-	file_google_bigtable_admin_v2_table_proto_msgTypes[13].OneofWrappers = []any{
+	file_google_bigtable_admin_v2_table_proto_msgTypes[14].OneofWrappers = []any{
 		(*SchemaBundle_ProtoSchema)(nil),
+		(*SchemaBundle_AvroSchema)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2605,7 +2680,7 @@ func file_google_bigtable_admin_v2_table_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_bigtable_admin_v2_table_proto_rawDesc), len(file_google_bigtable_admin_v2_table_proto_rawDesc)),
 			NumEnums:      9,
-			NumMessages:   23,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

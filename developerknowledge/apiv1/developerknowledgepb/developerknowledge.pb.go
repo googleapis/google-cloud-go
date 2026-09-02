@@ -627,7 +627,53 @@ func (x *BatchGetDocumentsResponse) GetDocuments() []*Document {
 type AnswerQueryRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The query to answer.
-	Query         string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	Query string `protobuf:"bytes,1,opt,name=query,proto3" json:"query,omitempty"`
+	// Optional. Applies a strict filter to the search results used to ground the
+	// answer. The expression supports a subset of the syntax described at
+	// https://google.aip.dev/160.
+	//
+	// Supported fields for filtering:
+	//
+	//   - `content_length_bytes` (INTEGER): The length of the `Document.content`
+	//     field in bytes.
+	//   - `data_source` (STRING): The source of the document, e.g.
+	//     `docs.cloud.google.com`. See
+	//     https://developers.google.com/knowledge/reference/corpus-reference for
+	//     the complete list of data sources in the corpus.
+	//   - `update_time` (TIMESTAMP): The timestamp of when the document was last
+	//     meaningfully updated. A meaningful update is one that changes document's
+	//     markdown content or metadata.
+	//   - `uri` (STRING): The document URI, e.g.
+	//     `https://docs.cloud.google.com/bigquery/docs/tables`.
+	//
+	// INTEGER fields support `=`, `<`, `<=`, `>`, and `>=` operators.
+	//
+	// STRING fields support `=` (equals) and `!=` (not equals) operators for
+	// **exact match** on the whole string. Partial match, prefix match, and
+	// regexp match are not supported.
+	//
+	// TIMESTAMP fields support `=`, `<`, `<=`, `>`, and `>=` operators.
+	// Timestamps must be in RFC-3339 format, e.g., `"2025-01-01T00:00:00Z"`.
+	//
+	// You can combine expressions using `AND`, `OR`, and `NOT` (or `-`) logical
+	// operators. `OR` has higher precedence than `AND`. Use parentheses for
+	// explicit precedence grouping.
+	//
+	// Examples:
+	//
+	//   - Filter by `Document.content_length_bytes`:
+	//     `content_length_bytes < 50000`
+	//   - `data_source = "docs.cloud.google.com" OR data_source =
+	//     "firebase.google.com"`
+	//   - `data_source != "firebase.google.com"`
+	//   - `update_time < "2024-01-01T00:00:00Z"`
+	//   - `update_time >= "2025-01-22T00:00:00Z" AND (data_source =
+	//     "developer.chrome.com" OR data_source = "web.dev")`
+	//   - `uri = "https://docs.cloud.google.com/release-notes"`
+	//
+	// The `filter` string must not exceed 500 characters; values longer than 500
+	// characters will result in an `INVALID_ARGUMENT` error.
+	Filter        string `protobuf:"bytes,2,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -665,6 +711,13 @@ func (*AnswerQueryRequest) Descriptor() ([]byte, []int) {
 func (x *AnswerQueryRequest) GetQuery() string {
 	if x != nil {
 		return x.Query
+	}
+	return ""
+}
+
+func (x *AnswerQueryRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
 	}
 	return ""
 }
@@ -1157,9 +1210,10 @@ const file_google_developers_knowledge_v1_developerknowledge_proto_rawDesc = "" 
 	"*developerknowledge.googleapis.com/DocumentR\x05names\x12E\n" +
 	"\x04view\x18\x02 \x01(\x0e2,.google.developers.knowledge.v1.DocumentViewB\x03\xe0A\x01R\x04view\"c\n" +
 	"\x19BatchGetDocumentsResponse\x12F\n" +
-	"\tdocuments\x18\x01 \x03(\v2(.google.developers.knowledge.v1.DocumentR\tdocuments\"/\n" +
+	"\tdocuments\x18\x01 \x03(\v2(.google.developers.knowledge.v1.DocumentR\tdocuments\"L\n" +
 	"\x12AnswerQueryRequest\x12\x19\n" +
-	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\"U\n" +
+	"\x05query\x18\x01 \x01(\tB\x03\xe0A\x02R\x05query\x12\x1b\n" +
+	"\x06filter\x18\x02 \x01(\tB\x03\xe0A\x01R\x06filter\"U\n" +
 	"\x13AnswerQueryResponse\x12>\n" +
 	"\x06answer\x18\x01 \x01(\v2&.google.developers.knowledge.v1.AnswerR\x06answer\"\xd0\x05\n" +
 	"\x06Answer\x12\x1f\n" +
