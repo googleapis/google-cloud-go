@@ -1,5 +1,19 @@
 # Changes
 
+## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.53.0...bigtable/v1.54.0) (2026-09-02)
+
+
+### Features
+
+* **bigtable:** Serve grpc.health.v1.Health from the accelerator daemon ([#20446](https://github.com/googleapis/google-cloud-go/issues/20446)) ([5fba38a](https://github.com/googleapis/google-cloud-go/commit/5fba38a8372781d0b3b52c64577318b0a93f0d46))
+* Update API sources and regenerate ([#20459](https://github.com/googleapis/google-cloud-go/issues/20459)) ([5426e32](https://github.com/googleapis/google-cloud-go/commit/5426e32154fdced65087675b6c37aba66436ac47))
+
+
+### Bug Fixes
+
+* **bigtable:** Measure real scheduling delay in pacemaker_delays ([#20445](https://github.com/googleapis/google-cloud-go/issues/20445)) ([e1304d6](https://github.com/googleapis/google-cloud-go/commit/e1304d63e0280aa7571aca294b9b5c5cf3d4c7f4))
+* **bigtable:** Scope session pool maintenance loops to the pool, not the client ([#20444](https://github.com/googleapis/google-cloud-go/issues/20444)) ([7457e6e](https://github.com/googleapis/google-cloud-go/commit/7457e6e23ef1affc15c2341bacb050d6dd2b1586))
+
 ## [1.53.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.52.0...bigtable/v1.53.0) (2026-08-27)
 
 

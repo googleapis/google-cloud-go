@@ -1,6 +1,6 @@
 {
   "agentplatform": "0.21.0",
-  "bigtable": "1.53.0",
+  "bigtable": "1.54.0",
   "pubsub": "1.51.1",
   "pubsub/v2": "2.7.0",
   "pubsublite": "1.10.0",
