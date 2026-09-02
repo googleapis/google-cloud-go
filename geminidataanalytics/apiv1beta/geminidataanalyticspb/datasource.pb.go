@@ -139,7 +139,7 @@ func (x SpannerDatabaseReference_Engine) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SpannerDatabaseReference_Engine.Descriptor instead.
 func (SpannerDatabaseReference_Engine) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{9, 0}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{13, 0}
 }
 
 // The database engine.
@@ -192,7 +192,7 @@ func (x CloudSqlDatabaseReference_Engine) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use CloudSqlDatabaseReference_Engine.Descriptor instead.
 func (CloudSqlDatabaseReference_Engine) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{11, 0}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{15, 0}
 }
 
 // A collection of references to datasources.
@@ -208,6 +208,8 @@ type DatasourceReferences struct {
 	//	*DatasourceReferences_Alloydb
 	//	*DatasourceReferences_SpannerReference
 	//	*DatasourceReferences_CloudSqlReference
+	//	*DatasourceReferences_BigtableReference
+	//	*DatasourceReferences_FirestoreReference
 	References    isDatasourceReferences_References `protobuf_oneof:"references"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -304,6 +306,24 @@ func (x *DatasourceReferences) GetCloudSqlReference() *CloudSqlReference {
 	return nil
 }
 
+func (x *DatasourceReferences) GetBigtableReference() *BigtableReference {
+	if x != nil {
+		if x, ok := x.References.(*DatasourceReferences_BigtableReference); ok {
+			return x.BigtableReference
+		}
+	}
+	return nil
+}
+
+func (x *DatasourceReferences) GetFirestoreReference() *FirestoreReference {
+	if x != nil {
+		if x, ok := x.References.(*DatasourceReferences_FirestoreReference); ok {
+			return x.FirestoreReference
+		}
+	}
+	return nil
+}
+
 type isDatasourceReferences_References interface {
 	isDatasourceReferences_References()
 }
@@ -341,6 +361,16 @@ type DatasourceReferences_CloudSqlReference struct {
 	CloudSqlReference *CloudSqlReference `protobuf:"bytes,10,opt,name=cloud_sql_reference,json=cloudSqlReference,proto3,oneof"`
 }
 
+type DatasourceReferences_BigtableReference struct {
+	// Reference to a Bigtable instance.
+	BigtableReference *BigtableReference `protobuf:"bytes,11,opt,name=bigtable_reference,json=bigtableReference,proto3,oneof"`
+}
+
+type DatasourceReferences_FirestoreReference struct {
+	// Reference to a Firestore database.
+	FirestoreReference *FirestoreReference `protobuf:"bytes,13,opt,name=firestore_reference,json=firestoreReference,proto3,oneof"`
+}
+
 func (*DatasourceReferences_Bq) isDatasourceReferences_References() {}
 
 func (*DatasourceReferences_Studio) isDatasourceReferences_References() {}
@@ -352,6 +382,10 @@ func (*DatasourceReferences_Alloydb) isDatasourceReferences_References() {}
 func (*DatasourceReferences_SpannerReference) isDatasourceReferences_References() {}
 
 func (*DatasourceReferences_CloudSqlReference) isDatasourceReferences_References() {}
+
+func (*DatasourceReferences_BigtableReference) isDatasourceReferences_References() {}
+
+func (*DatasourceReferences_FirestoreReference) isDatasourceReferences_References() {}
 
 // Message representing references to BigQuery tables and property graphs.
 // At least one of `table_references`, `property_graph_references`, or
@@ -365,8 +399,10 @@ type BigQueryTableReferences struct {
 	// not both. When using property graphs, a maximum of one graph reference is
 	// supported.
 	PropertyGraphReferences []*BigQueryPropertyGraphReference `protobuf:"bytes,2,rep,name=property_graph_references,json=propertyGraphReferences,proto3" json:"property_graph_references,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Parameters for retrieving data from Agent Context.
+	AgentContextReference *AgentContextReference `protobuf:"bytes,4,opt,name=agent_context_reference,json=agentContextReference,proto3" json:"agent_context_reference,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
 }
 
 func (x *BigQueryTableReferences) Reset() {
@@ -409,6 +445,13 @@ func (x *BigQueryTableReferences) GetTableReferences() []*BigQueryTableReference
 func (x *BigQueryTableReferences) GetPropertyGraphReferences() []*BigQueryPropertyGraphReference {
 	if x != nil {
 		return x.PropertyGraphReferences
+	}
+	return nil
+}
+
+func (x *BigQueryTableReferences) GetAgentContextReference() *AgentContextReference {
+	if x != nil {
+		return x.AgentContextReference
 	}
 	return nil
 }
@@ -817,6 +860,268 @@ func (x *AlloyDbDatabaseReference) GetDatabaseTableReferences() []*DatabaseTable
 	return nil
 }
 
+// Message representing reference to a Bigtable instance and agent context.
+type BigtableReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Singular proto that supports specifying which database and tables
+	// to include.
+	DatabaseReference *BigtableDatabaseReference `protobuf:"bytes,1,opt,name=database_reference,json=databaseReference,proto3" json:"database_reference,omitempty"`
+	// Optional. Parameters for retrieving data from Agent Context.
+	AgentContextReference *AgentContextReference `protobuf:"bytes,2,opt,name=agent_context_reference,json=agentContextReference,proto3" json:"agent_context_reference,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *BigtableReference) Reset() {
+	*x = BigtableReference{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[8]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigtableReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigtableReference) ProtoMessage() {}
+
+func (x *BigtableReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[8]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigtableReference.ProtoReflect.Descriptor instead.
+func (*BigtableReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{8}
+}
+
+func (x *BigtableReference) GetDatabaseReference() *BigtableDatabaseReference {
+	if x != nil {
+		return x.DatabaseReference
+	}
+	return nil
+}
+
+func (x *BigtableReference) GetAgentContextReference() *AgentContextReference {
+	if x != nil {
+		return x.AgentContextReference
+	}
+	return nil
+}
+
+// Message representing reference to Bigtable database.
+type BigtableDatabaseReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The project the instance belongs to.
+	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// Required. The instance id.
+	InstanceId string `protobuf:"bytes,2,opt,name=instance_id,json=instanceId,proto3" json:"instance_id,omitempty"`
+	// Optional. The table ids. Denotes all tables if unset.
+	TableIds []string `protobuf:"bytes,3,rep,name=table_ids,json=tableIds,proto3" json:"table_ids,omitempty"`
+	// Optional. References to tables within the database. Each reference
+	// specifies a table and can optionally include the table's schema to provide
+	// context for the query.
+	DatabaseTableReferences []*DatabaseTableReference `protobuf:"bytes,4,rep,name=database_table_references,json=databaseTableReferences,proto3" json:"database_table_references,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *BigtableDatabaseReference) Reset() {
+	*x = BigtableDatabaseReference{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BigtableDatabaseReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BigtableDatabaseReference) ProtoMessage() {}
+
+func (x *BigtableDatabaseReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BigtableDatabaseReference.ProtoReflect.Descriptor instead.
+func (*BigtableDatabaseReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *BigtableDatabaseReference) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
+func (x *BigtableDatabaseReference) GetInstanceId() string {
+	if x != nil {
+		return x.InstanceId
+	}
+	return ""
+}
+
+func (x *BigtableDatabaseReference) GetTableIds() []string {
+	if x != nil {
+		return x.TableIds
+	}
+	return nil
+}
+
+func (x *BigtableDatabaseReference) GetDatabaseTableReferences() []*DatabaseTableReference {
+	if x != nil {
+		return x.DatabaseTableReferences
+	}
+	return nil
+}
+
+// Message representing reference to a Firestore database and agent context.
+type FirestoreReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Singular proto that supports specifying which database and tables
+	// to include.
+	DatabaseReference *FirestoreDatabaseReference `protobuf:"bytes,1,opt,name=database_reference,json=databaseReference,proto3" json:"database_reference,omitempty"`
+	// Optional. Parameters for retrieving data from Agent Context.
+	AgentContextReference *AgentContextReference `protobuf:"bytes,2,opt,name=agent_context_reference,json=agentContextReference,proto3" json:"agent_context_reference,omitempty"`
+	unknownFields         protoimpl.UnknownFields
+	sizeCache             protoimpl.SizeCache
+}
+
+func (x *FirestoreReference) Reset() {
+	*x = FirestoreReference{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FirestoreReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FirestoreReference) ProtoMessage() {}
+
+func (x *FirestoreReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FirestoreReference.ProtoReflect.Descriptor instead.
+func (*FirestoreReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *FirestoreReference) GetDatabaseReference() *FirestoreDatabaseReference {
+	if x != nil {
+		return x.DatabaseReference
+	}
+	return nil
+}
+
+func (x *FirestoreReference) GetAgentContextReference() *AgentContextReference {
+	if x != nil {
+		return x.AgentContextReference
+	}
+	return nil
+}
+
+// Message representing a reference to a single Firestore database.
+type FirestoreDatabaseReference struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Project the firestore database belongs to.
+	ProjectId string `protobuf:"bytes,1,opt,name=project_id,json=projectId,proto3" json:"project_id,omitempty"`
+	// Required. The database id.
+	DatabaseId string `protobuf:"bytes,2,opt,name=database_id,json=databaseId,proto3" json:"database_id,omitempty"`
+	// Optional. The collection ids. Denotes all collections if unset.
+	CollectionIds []string `protobuf:"bytes,3,rep,name=collection_ids,json=collectionIds,proto3" json:"collection_ids,omitempty"`
+	// Optional. References to collections within the database. Each reference
+	// specifies a collection and can optionally include the collection's schema
+	// to provide context for the query.
+	DatabaseTableReferences []*DatabaseTableReference `protobuf:"bytes,4,rep,name=database_table_references,json=databaseTableReferences,proto3" json:"database_table_references,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *FirestoreDatabaseReference) Reset() {
+	*x = FirestoreDatabaseReference{}
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FirestoreDatabaseReference) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FirestoreDatabaseReference) ProtoMessage() {}
+
+func (x *FirestoreDatabaseReference) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FirestoreDatabaseReference.ProtoReflect.Descriptor instead.
+func (*FirestoreDatabaseReference) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *FirestoreDatabaseReference) GetProjectId() string {
+	if x != nil {
+		return x.ProjectId
+	}
+	return ""
+}
+
+func (x *FirestoreDatabaseReference) GetDatabaseId() string {
+	if x != nil {
+		return x.DatabaseId
+	}
+	return ""
+}
+
+func (x *FirestoreDatabaseReference) GetCollectionIds() []string {
+	if x != nil {
+		return x.CollectionIds
+	}
+	return nil
+}
+
+func (x *FirestoreDatabaseReference) GetDatabaseTableReferences() []*DatabaseTableReference {
+	if x != nil {
+		return x.DatabaseTableReferences
+	}
+	return nil
+}
+
 // Message representing reference to a Spanner database and agent context.
 // Only supported for the `QueryData` method.
 type SpannerReference struct {
@@ -832,7 +1137,7 @@ type SpannerReference struct {
 
 func (x *SpannerReference) Reset() {
 	*x = SpannerReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -844,7 +1149,7 @@ func (x *SpannerReference) String() string {
 func (*SpannerReference) ProtoMessage() {}
 
 func (x *SpannerReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[8]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -857,7 +1162,7 @@ func (x *SpannerReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpannerReference.ProtoReflect.Descriptor instead.
 func (*SpannerReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *SpannerReference) GetDatabaseReference() *SpannerDatabaseReference {
@@ -906,7 +1211,7 @@ type SpannerDatabaseReference struct {
 
 func (x *SpannerDatabaseReference) Reset() {
 	*x = SpannerDatabaseReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -918,7 +1223,7 @@ func (x *SpannerDatabaseReference) String() string {
 func (*SpannerDatabaseReference) ProtoMessage() {}
 
 func (x *SpannerDatabaseReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[9]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -931,7 +1236,7 @@ func (x *SpannerDatabaseReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SpannerDatabaseReference.ProtoReflect.Descriptor instead.
 func (*SpannerDatabaseReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *SpannerDatabaseReference) GetEngine() SpannerDatabaseReference_Engine {
@@ -1005,7 +1310,7 @@ type CloudSqlReference struct {
 
 func (x *CloudSqlReference) Reset() {
 	*x = CloudSqlReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1017,7 +1322,7 @@ func (x *CloudSqlReference) String() string {
 func (*CloudSqlReference) ProtoMessage() {}
 
 func (x *CloudSqlReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[10]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1030,7 +1335,7 @@ func (x *CloudSqlReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudSqlReference.ProtoReflect.Descriptor instead.
 func (*CloudSqlReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *CloudSqlReference) GetDatabaseReference() *CloudSqlDatabaseReference {
@@ -1072,7 +1377,7 @@ type CloudSqlDatabaseReference struct {
 
 func (x *CloudSqlDatabaseReference) Reset() {
 	*x = CloudSqlDatabaseReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1084,7 +1389,7 @@ func (x *CloudSqlDatabaseReference) String() string {
 func (*CloudSqlDatabaseReference) ProtoMessage() {}
 
 func (x *CloudSqlDatabaseReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[11]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1097,7 +1402,7 @@ func (x *CloudSqlDatabaseReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloudSqlDatabaseReference.ProtoReflect.Descriptor instead.
 func (*CloudSqlDatabaseReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *CloudSqlDatabaseReference) GetEngine() CloudSqlDatabaseReference_Engine {
@@ -1170,7 +1475,7 @@ type LookerExploreReferences struct {
 
 func (x *LookerExploreReferences) Reset() {
 	*x = LookerExploreReferences{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1182,7 +1487,7 @@ func (x *LookerExploreReferences) String() string {
 func (*LookerExploreReferences) ProtoMessage() {}
 
 func (x *LookerExploreReferences) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[12]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1195,7 +1500,7 @@ func (x *LookerExploreReferences) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookerExploreReferences.ProtoReflect.Descriptor instead.
 func (*LookerExploreReferences) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *LookerExploreReferences) GetExploreReferences() []*LookerExploreReference {
@@ -1241,7 +1546,7 @@ type LookerExploreReference struct {
 
 func (x *LookerExploreReference) Reset() {
 	*x = LookerExploreReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[13]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1253,7 +1558,7 @@ func (x *LookerExploreReference) String() string {
 func (*LookerExploreReference) ProtoMessage() {}
 
 func (x *LookerExploreReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[13]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1266,7 +1571,7 @@ func (x *LookerExploreReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use LookerExploreReference.ProtoReflect.Descriptor instead.
 func (*LookerExploreReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *LookerExploreReference) GetInstance() isLookerExploreReference_Instance {
@@ -1348,7 +1653,7 @@ type BigQueryPropertyGraphReference struct {
 
 func (x *BigQueryPropertyGraphReference) Reset() {
 	*x = BigQueryPropertyGraphReference{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[14]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1360,7 +1665,7 @@ func (x *BigQueryPropertyGraphReference) String() string {
 func (*BigQueryPropertyGraphReference) ProtoMessage() {}
 
 func (x *BigQueryPropertyGraphReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[14]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1373,7 +1678,7 @@ func (x *BigQueryPropertyGraphReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BigQueryPropertyGraphReference.ProtoReflect.Descriptor instead.
 func (*BigQueryPropertyGraphReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *BigQueryPropertyGraphReference) GetProjectId() string {
@@ -1411,7 +1716,7 @@ type PrivateLookerInstanceInfo struct {
 
 func (x *PrivateLookerInstanceInfo) Reset() {
 	*x = PrivateLookerInstanceInfo{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[15]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1423,7 +1728,7 @@ func (x *PrivateLookerInstanceInfo) String() string {
 func (*PrivateLookerInstanceInfo) ProtoMessage() {}
 
 func (x *PrivateLookerInstanceInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[15]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1436,7 +1741,7 @@ func (x *PrivateLookerInstanceInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PrivateLookerInstanceInfo.ProtoReflect.Descriptor instead.
 func (*PrivateLookerInstanceInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *PrivateLookerInstanceInfo) GetLookerInstanceId() string {
@@ -1466,7 +1771,9 @@ type Datasource struct {
 	//	*Datasource_AlloyDbReference
 	//	*Datasource_SpannerReference
 	//	*Datasource_CloudSqlReference
+	//	*Datasource_BigtableReference
 	//	*Datasource_BigqueryPropertyGraphReference
+	//	*Datasource_FirestoreReference
 	Reference isDatasource_Reference `protobuf_oneof:"reference"`
 	// Optional. The schema of the datasource.
 	Schema *Schema `protobuf:"bytes,7,opt,name=schema,proto3" json:"schema,omitempty"`
@@ -1483,7 +1790,7 @@ type Datasource struct {
 
 func (x *Datasource) Reset() {
 	*x = Datasource{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[16]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1495,7 +1802,7 @@ func (x *Datasource) String() string {
 func (*Datasource) ProtoMessage() {}
 
 func (x *Datasource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[16]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1508,7 +1815,7 @@ func (x *Datasource) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Datasource.ProtoReflect.Descriptor instead.
 func (*Datasource) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *Datasource) GetReference() isDatasource_Reference {
@@ -1572,10 +1879,28 @@ func (x *Datasource) GetCloudSqlReference() *CloudSqlReference {
 	return nil
 }
 
+func (x *Datasource) GetBigtableReference() *BigtableReference {
+	if x != nil {
+		if x, ok := x.Reference.(*Datasource_BigtableReference); ok {
+			return x.BigtableReference
+		}
+	}
+	return nil
+}
+
 func (x *Datasource) GetBigqueryPropertyGraphReference() *BigQueryPropertyGraphReference {
 	if x != nil {
 		if x, ok := x.Reference.(*Datasource_BigqueryPropertyGraphReference); ok {
 			return x.BigqueryPropertyGraphReference
+		}
+	}
+	return nil
+}
+
+func (x *Datasource) GetFirestoreReference() *FirestoreReference {
+	if x != nil {
+		if x, ok := x.Reference.(*Datasource_FirestoreReference); ok {
+			return x.FirestoreReference
 		}
 	}
 	return nil
@@ -1629,9 +1954,19 @@ type Datasource_CloudSqlReference struct {
 	CloudSqlReference *CloudSqlReference `protobuf:"bytes,14,opt,name=cloud_sql_reference,json=cloudSqlReference,proto3,oneof"`
 }
 
+type Datasource_BigtableReference struct {
+	// A reference to a Bigtable instance.
+	BigtableReference *BigtableReference `protobuf:"bytes,15,opt,name=bigtable_reference,json=bigtableReference,proto3,oneof"`
+}
+
 type Datasource_BigqueryPropertyGraphReference struct {
 	// A reference to a BigQuery property graph.
 	BigqueryPropertyGraphReference *BigQueryPropertyGraphReference `protobuf:"bytes,16,opt,name=bigquery_property_graph_reference,json=bigqueryPropertyGraphReference,proto3,oneof"`
+}
+
+type Datasource_FirestoreReference struct {
+	// A reference to a Firestore database.
+	FirestoreReference *FirestoreReference `protobuf:"bytes,17,opt,name=firestore_reference,json=firestoreReference,proto3,oneof"`
 }
 
 func (*Datasource_BigqueryTableReference) isDatasource_Reference() {}
@@ -1646,7 +1981,11 @@ func (*Datasource_SpannerReference) isDatasource_Reference() {}
 
 func (*Datasource_CloudSqlReference) isDatasource_Reference() {}
 
+func (*Datasource_BigtableReference) isDatasource_Reference() {}
+
 func (*Datasource_BigqueryPropertyGraphReference) isDatasource_Reference() {}
+
+func (*Datasource_FirestoreReference) isDatasource_Reference() {}
 
 // The schema of a Datasource or QueryResult instance.
 type Schema struct {
@@ -1678,7 +2017,7 @@ type Schema struct {
 
 func (x *Schema) Reset() {
 	*x = Schema{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[17]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1690,7 +2029,7 @@ func (x *Schema) String() string {
 func (*Schema) ProtoMessage() {}
 
 func (x *Schema) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[17]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1703,7 +2042,7 @@ func (x *Schema) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Schema.ProtoReflect.Descriptor instead.
 func (*Schema) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *Schema) GetFields() []*Field {
@@ -1783,7 +2122,7 @@ type Field struct {
 
 func (x *Field) Reset() {
 	*x = Field{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[18]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1795,7 +2134,7 @@ func (x *Field) String() string {
 func (*Field) ProtoMessage() {}
 
 func (x *Field) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[18]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1808,7 +2147,7 @@ func (x *Field) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Field.ProtoReflect.Descriptor instead.
 func (*Field) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *Field) GetName() string {
@@ -1900,7 +2239,7 @@ type DataFilter struct {
 
 func (x *DataFilter) Reset() {
 	*x = DataFilter{}
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[19]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1912,7 +2251,7 @@ func (x *DataFilter) String() string {
 func (*DataFilter) ProtoMessage() {}
 
 func (x *DataFilter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[19]
+	mi := &file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1925,7 +2264,7 @@ func (x *DataFilter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DataFilter.ProtoReflect.Descriptor instead.
 func (*DataFilter) Descriptor() ([]byte, []int) {
-	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *DataFilter) GetField() string {
@@ -1953,7 +2292,7 @@ var File_google_cloud_geminidataanalytics_v1beta_datasource_proto protoreflect.F
 
 const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = "" +
 	"\n" +
-	"8google/cloud/geminidataanalytics/v1beta/datasource.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a;google/cloud/geminidataanalytics/v1beta/agent_context.proto\x1a9google/cloud/geminidataanalytics/v1beta/credentials.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xe2\x04\n" +
+	"8google/cloud/geminidataanalytics/v1beta/datasource.proto\x12'google.cloud.geminidataanalytics.v1beta\x1a\x1fgoogle/api/field_behavior.proto\x1a;google/cloud/geminidataanalytics/v1beta/agent_context.proto\x1a9google/cloud/geminidataanalytics/v1beta/credentials.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xbf\x06\n" +
 	"\x14DatasourceReferences\x12R\n" +
 	"\x02bq\x18\x01 \x01(\v2@.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferencesH\x00R\x02bq\x12]\n" +
 	"\x06studio\x18\x02 \x01(\v2C.google.cloud.geminidataanalytics.v1beta.StudioDatasourceReferencesH\x00R\x06studio\x12Z\n" +
@@ -1961,12 +2300,15 @@ const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = ""
 	"\aalloydb\x18\b \x01(\v29.google.cloud.geminidataanalytics.v1beta.AlloyDbReferenceH\x00R\aalloydb\x12h\n" +
 	"\x11spanner_reference\x18\t \x01(\v29.google.cloud.geminidataanalytics.v1beta.SpannerReferenceH\x00R\x10spannerReference\x12l\n" +
 	"\x13cloud_sql_reference\x18\n" +
-	" \x01(\v2:.google.cloud.geminidataanalytics.v1beta.CloudSqlReferenceH\x00R\x11cloudSqlReferenceB\f\n" +
+	" \x01(\v2:.google.cloud.geminidataanalytics.v1beta.CloudSqlReferenceH\x00R\x11cloudSqlReference\x12k\n" +
+	"\x12bigtable_reference\x18\v \x01(\v2:.google.cloud.geminidataanalytics.v1beta.BigtableReferenceH\x00R\x11bigtableReference\x12n\n" +
+	"\x13firestore_reference\x18\r \x01(\v2;.google.cloud.geminidataanalytics.v1beta.FirestoreReferenceH\x00R\x12firestoreReferenceB\f\n" +
 	"\n" +
-	"references\"\x95\x02\n" +
+	"references\"\x92\x03\n" +
 	"\x17BigQueryTableReferences\x12o\n" +
 	"\x10table_references\x18\x01 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferenceB\x03\xe0A\x01R\x0ftableReferences\x12\x88\x01\n" +
-	"\x19property_graph_references\x18\x02 \x03(\v2G.google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReferenceB\x03\xe0A\x01R\x17propertyGraphReferences\"\xce\x01\n" +
+	"\x19property_graph_references\x18\x02 \x03(\v2G.google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReferenceB\x03\xe0A\x01R\x17propertyGraphReferences\x12{\n" +
+	"\x17agent_context_reference\x18\x04 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\xce\x01\n" +
 	"\x16BigQueryTableReference\x12\"\n" +
 	"\n" +
 	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12\"\n" +
@@ -1995,7 +2337,27 @@ const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = ""
 	"\vdatabase_id\x18\x05 \x01(\tB\x03\xe0A\x02R\n" +
 	"databaseId\x12 \n" +
 	"\ttable_ids\x18\x06 \x03(\tB\x03\xe0A\x01R\btableIds\x12\x80\x01\n" +
-	"\x19database_table_references\x18\a \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\"\x86\x02\n" +
+	"\x19database_table_references\x18\a \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\"\x88\x02\n" +
+	"\x11BigtableReference\x12v\n" +
+	"\x12database_reference\x18\x01 \x01(\v2B.google.cloud.geminidataanalytics.v1beta.BigtableDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
+	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\x8a\x02\n" +
+	"\x19BigtableDatabaseReference\x12\"\n" +
+	"\n" +
+	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12$\n" +
+	"\vinstance_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"instanceId\x12 \n" +
+	"\ttable_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\btableIds\x12\x80\x01\n" +
+	"\x19database_table_references\x18\x04 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\"\x8a\x02\n" +
+	"\x12FirestoreReference\x12w\n" +
+	"\x12database_reference\x18\x01 \x01(\v2C.google.cloud.geminidataanalytics.v1beta.FirestoreDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
+	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\x95\x02\n" +
+	"\x1aFirestoreDatabaseReference\x12\"\n" +
+	"\n" +
+	"project_id\x18\x01 \x01(\tB\x03\xe0A\x02R\tprojectId\x12$\n" +
+	"\vdatabase_id\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"databaseId\x12*\n" +
+	"\x0ecollection_ids\x18\x03 \x03(\tB\x03\xe0A\x01R\rcollectionIds\x12\x80\x01\n" +
+	"\x19database_table_references\x18\x04 \x03(\v2?.google.cloud.geminidataanalytics.v1beta.DatabaseTableReferenceB\x03\xe0A\x01R\x17databaseTableReferences\"\x86\x02\n" +
 	"\x10SpannerReference\x12u\n" +
 	"\x12database_reference\x18\x01 \x01(\v2A.google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReferenceB\x03\xe0A\x02R\x11databaseReference\x12{\n" +
 	"\x17agent_context_reference\x18\x02 \x01(\v2>.google.cloud.geminidataanalytics.v1beta.AgentContextReferenceB\x03\xe0A\x01R\x15agentContextReference\"\x9a\x04\n" +
@@ -2057,7 +2419,7 @@ const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = ""
 	"\x11property_graph_id\x18\x03 \x01(\tB\x03\xe0A\x02R\x0fpropertyGraphId\"\x7f\n" +
 	"\x19PrivateLookerInstanceInfo\x12,\n" +
 	"\x12looker_instance_id\x18\x01 \x01(\tR\x10lookerInstanceId\x124\n" +
-	"\x16service_directory_name\x18\x02 \x01(\tR\x14serviceDirectoryName\"\xb2\a\n" +
+	"\x16service_directory_name\x18\x02 \x01(\tR\x14serviceDirectoryName\"\x8f\t\n" +
 	"\n" +
 	"Datasource\x12{\n" +
 	"\x18bigquery_table_reference\x18\x01 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.BigQueryTableReferenceH\x00R\x16bigqueryTableReference\x122\n" +
@@ -2065,8 +2427,10 @@ const file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc = ""
 	"\x18looker_explore_reference\x18\x04 \x01(\v2?.google.cloud.geminidataanalytics.v1beta.LookerExploreReferenceH\x00R\x16lookerExploreReference\x12i\n" +
 	"\x12alloy_db_reference\x18\f \x01(\v29.google.cloud.geminidataanalytics.v1beta.AlloyDbReferenceH\x00R\x10alloyDbReference\x12h\n" +
 	"\x11spanner_reference\x18\r \x01(\v29.google.cloud.geminidataanalytics.v1beta.SpannerReferenceH\x00R\x10spannerReference\x12l\n" +
-	"\x13cloud_sql_reference\x18\x0e \x01(\v2:.google.cloud.geminidataanalytics.v1beta.CloudSqlReferenceH\x00R\x11cloudSqlReference\x12\x94\x01\n" +
-	"!bigquery_property_graph_reference\x18\x10 \x01(\v2G.google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReferenceH\x00R\x1ebigqueryPropertyGraphReference\x12L\n" +
+	"\x13cloud_sql_reference\x18\x0e \x01(\v2:.google.cloud.geminidataanalytics.v1beta.CloudSqlReferenceH\x00R\x11cloudSqlReference\x12k\n" +
+	"\x12bigtable_reference\x18\x0f \x01(\v2:.google.cloud.geminidataanalytics.v1beta.BigtableReferenceH\x00R\x11bigtableReference\x12\x94\x01\n" +
+	"!bigquery_property_graph_reference\x18\x10 \x01(\v2G.google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReferenceH\x00R\x1ebigqueryPropertyGraphReference\x12n\n" +
+	"\x13firestore_reference\x18\x11 \x01(\v2;.google.cloud.geminidataanalytics.v1beta.FirestoreReferenceH\x00R\x12firestoreReference\x12L\n" +
 	"\x06schema\x18\a \x01(\v2/.google.cloud.geminidataanalytics.v1beta.SchemaB\x03\xe0A\x01R\x06schema\x12A\n" +
 	"\rstruct_schema\x18\n" +
 	" \x01(\v2\x17.google.protobuf.StructB\x03\xe0A\x01R\fstructSchemaB\v\n" +
@@ -2113,7 +2477,7 @@ func file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDescGZIP()
 }
 
 var file_google_cloud_geminidataanalytics_v1beta_datasource_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes = make([]protoimpl.MessageInfo, 20)
+var file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
 var file_google_cloud_geminidataanalytics_v1beta_datasource_proto_goTypes = []any{
 	(DataFilterType)(0),                    // 0: google.cloud.geminidataanalytics.v1beta.DataFilterType
 	(SpannerDatabaseReference_Engine)(0),   // 1: google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.Engine
@@ -2126,66 +2490,81 @@ var file_google_cloud_geminidataanalytics_v1beta_datasource_proto_goTypes = []an
 	(*AlloyDbReference)(nil),               // 8: google.cloud.geminidataanalytics.v1beta.AlloyDbReference
 	(*DatabaseTableReference)(nil),         // 9: google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
 	(*AlloyDbDatabaseReference)(nil),       // 10: google.cloud.geminidataanalytics.v1beta.AlloyDbDatabaseReference
-	(*SpannerReference)(nil),               // 11: google.cloud.geminidataanalytics.v1beta.SpannerReference
-	(*SpannerDatabaseReference)(nil),       // 12: google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference
-	(*CloudSqlReference)(nil),              // 13: google.cloud.geminidataanalytics.v1beta.CloudSqlReference
-	(*CloudSqlDatabaseReference)(nil),      // 14: google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference
-	(*LookerExploreReferences)(nil),        // 15: google.cloud.geminidataanalytics.v1beta.LookerExploreReferences
-	(*LookerExploreReference)(nil),         // 16: google.cloud.geminidataanalytics.v1beta.LookerExploreReference
-	(*BigQueryPropertyGraphReference)(nil), // 17: google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReference
-	(*PrivateLookerInstanceInfo)(nil),      // 18: google.cloud.geminidataanalytics.v1beta.PrivateLookerInstanceInfo
-	(*Datasource)(nil),                     // 19: google.cloud.geminidataanalytics.v1beta.Datasource
-	(*Schema)(nil),                         // 20: google.cloud.geminidataanalytics.v1beta.Schema
-	(*Field)(nil),                          // 21: google.cloud.geminidataanalytics.v1beta.Field
-	(*DataFilter)(nil),                     // 22: google.cloud.geminidataanalytics.v1beta.DataFilter
-	(*AgentContextReference)(nil),          // 23: google.cloud.geminidataanalytics.v1beta.AgentContextReference
-	(*Credentials)(nil),                    // 24: google.cloud.geminidataanalytics.v1beta.Credentials
-	(*structpb.Struct)(nil),                // 25: google.protobuf.Struct
+	(*BigtableReference)(nil),              // 11: google.cloud.geminidataanalytics.v1beta.BigtableReference
+	(*BigtableDatabaseReference)(nil),      // 12: google.cloud.geminidataanalytics.v1beta.BigtableDatabaseReference
+	(*FirestoreReference)(nil),             // 13: google.cloud.geminidataanalytics.v1beta.FirestoreReference
+	(*FirestoreDatabaseReference)(nil),     // 14: google.cloud.geminidataanalytics.v1beta.FirestoreDatabaseReference
+	(*SpannerReference)(nil),               // 15: google.cloud.geminidataanalytics.v1beta.SpannerReference
+	(*SpannerDatabaseReference)(nil),       // 16: google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference
+	(*CloudSqlReference)(nil),              // 17: google.cloud.geminidataanalytics.v1beta.CloudSqlReference
+	(*CloudSqlDatabaseReference)(nil),      // 18: google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference
+	(*LookerExploreReferences)(nil),        // 19: google.cloud.geminidataanalytics.v1beta.LookerExploreReferences
+	(*LookerExploreReference)(nil),         // 20: google.cloud.geminidataanalytics.v1beta.LookerExploreReference
+	(*BigQueryPropertyGraphReference)(nil), // 21: google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReference
+	(*PrivateLookerInstanceInfo)(nil),      // 22: google.cloud.geminidataanalytics.v1beta.PrivateLookerInstanceInfo
+	(*Datasource)(nil),                     // 23: google.cloud.geminidataanalytics.v1beta.Datasource
+	(*Schema)(nil),                         // 24: google.cloud.geminidataanalytics.v1beta.Schema
+	(*Field)(nil),                          // 25: google.cloud.geminidataanalytics.v1beta.Field
+	(*DataFilter)(nil),                     // 26: google.cloud.geminidataanalytics.v1beta.DataFilter
+	(*AgentContextReference)(nil),          // 27: google.cloud.geminidataanalytics.v1beta.AgentContextReference
+	(*Credentials)(nil),                    // 28: google.cloud.geminidataanalytics.v1beta.Credentials
+	(*structpb.Struct)(nil),                // 29: google.protobuf.Struct
 }
 var file_google_cloud_geminidataanalytics_v1beta_datasource_proto_depIdxs = []int32{
 	4,  // 0: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.bq:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryTableReferences
 	6,  // 1: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.studio:type_name -> google.cloud.geminidataanalytics.v1beta.StudioDatasourceReferences
-	15, // 2: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.looker:type_name -> google.cloud.geminidataanalytics.v1beta.LookerExploreReferences
+	19, // 2: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.looker:type_name -> google.cloud.geminidataanalytics.v1beta.LookerExploreReferences
 	8,  // 3: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.alloydb:type_name -> google.cloud.geminidataanalytics.v1beta.AlloyDbReference
-	11, // 4: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.spanner_reference:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerReference
-	13, // 5: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.cloud_sql_reference:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlReference
-	5,  // 6: google.cloud.geminidataanalytics.v1beta.BigQueryTableReferences.table_references:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
-	17, // 7: google.cloud.geminidataanalytics.v1beta.BigQueryTableReferences.property_graph_references:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReference
-	20, // 8: google.cloud.geminidataanalytics.v1beta.BigQueryTableReference.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
-	7,  // 9: google.cloud.geminidataanalytics.v1beta.StudioDatasourceReferences.studio_references:type_name -> google.cloud.geminidataanalytics.v1beta.StudioDatasourceReference
-	10, // 10: google.cloud.geminidataanalytics.v1beta.AlloyDbReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AlloyDbDatabaseReference
-	23, // 11: google.cloud.geminidataanalytics.v1beta.AlloyDbReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
-	20, // 12: google.cloud.geminidataanalytics.v1beta.DatabaseTableReference.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
-	9,  // 13: google.cloud.geminidataanalytics.v1beta.AlloyDbDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
-	12, // 14: google.cloud.geminidataanalytics.v1beta.SpannerReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference
-	23, // 15: google.cloud.geminidataanalytics.v1beta.SpannerReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
-	1,  // 16: google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.engine:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.Engine
-	9,  // 17: google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
-	14, // 18: google.cloud.geminidataanalytics.v1beta.CloudSqlReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference
-	23, // 19: google.cloud.geminidataanalytics.v1beta.CloudSqlReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
-	2,  // 20: google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.engine:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.Engine
-	9,  // 21: google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
-	16, // 22: google.cloud.geminidataanalytics.v1beta.LookerExploreReferences.explore_references:type_name -> google.cloud.geminidataanalytics.v1beta.LookerExploreReference
-	24, // 23: google.cloud.geminidataanalytics.v1beta.LookerExploreReferences.credentials:type_name -> google.cloud.geminidataanalytics.v1beta.Credentials
-	18, // 24: google.cloud.geminidataanalytics.v1beta.LookerExploreReference.private_looker_instance_info:type_name -> google.cloud.geminidataanalytics.v1beta.PrivateLookerInstanceInfo
-	20, // 25: google.cloud.geminidataanalytics.v1beta.LookerExploreReference.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
-	5,  // 26: google.cloud.geminidataanalytics.v1beta.Datasource.bigquery_table_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
-	16, // 27: google.cloud.geminidataanalytics.v1beta.Datasource.looker_explore_reference:type_name -> google.cloud.geminidataanalytics.v1beta.LookerExploreReference
-	8,  // 28: google.cloud.geminidataanalytics.v1beta.Datasource.alloy_db_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AlloyDbReference
-	11, // 29: google.cloud.geminidataanalytics.v1beta.Datasource.spanner_reference:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerReference
-	13, // 30: google.cloud.geminidataanalytics.v1beta.Datasource.cloud_sql_reference:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlReference
-	17, // 31: google.cloud.geminidataanalytics.v1beta.Datasource.bigquery_property_graph_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReference
-	20, // 32: google.cloud.geminidataanalytics.v1beta.Datasource.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
-	25, // 33: google.cloud.geminidataanalytics.v1beta.Datasource.struct_schema:type_name -> google.protobuf.Struct
-	21, // 34: google.cloud.geminidataanalytics.v1beta.Schema.fields:type_name -> google.cloud.geminidataanalytics.v1beta.Field
-	22, // 35: google.cloud.geminidataanalytics.v1beta.Schema.filters:type_name -> google.cloud.geminidataanalytics.v1beta.DataFilter
-	21, // 36: google.cloud.geminidataanalytics.v1beta.Field.subfields:type_name -> google.cloud.geminidataanalytics.v1beta.Field
-	0,  // 37: google.cloud.geminidataanalytics.v1beta.DataFilter.type:type_name -> google.cloud.geminidataanalytics.v1beta.DataFilterType
-	38, // [38:38] is the sub-list for method output_type
-	38, // [38:38] is the sub-list for method input_type
-	38, // [38:38] is the sub-list for extension type_name
-	38, // [38:38] is the sub-list for extension extendee
-	0,  // [0:38] is the sub-list for field type_name
+	15, // 4: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.spanner_reference:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerReference
+	17, // 5: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.cloud_sql_reference:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlReference
+	11, // 6: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.bigtable_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigtableReference
+	13, // 7: google.cloud.geminidataanalytics.v1beta.DatasourceReferences.firestore_reference:type_name -> google.cloud.geminidataanalytics.v1beta.FirestoreReference
+	5,  // 8: google.cloud.geminidataanalytics.v1beta.BigQueryTableReferences.table_references:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
+	21, // 9: google.cloud.geminidataanalytics.v1beta.BigQueryTableReferences.property_graph_references:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReference
+	27, // 10: google.cloud.geminidataanalytics.v1beta.BigQueryTableReferences.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
+	24, // 11: google.cloud.geminidataanalytics.v1beta.BigQueryTableReference.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
+	7,  // 12: google.cloud.geminidataanalytics.v1beta.StudioDatasourceReferences.studio_references:type_name -> google.cloud.geminidataanalytics.v1beta.StudioDatasourceReference
+	10, // 13: google.cloud.geminidataanalytics.v1beta.AlloyDbReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AlloyDbDatabaseReference
+	27, // 14: google.cloud.geminidataanalytics.v1beta.AlloyDbReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
+	24, // 15: google.cloud.geminidataanalytics.v1beta.DatabaseTableReference.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
+	9,  // 16: google.cloud.geminidataanalytics.v1beta.AlloyDbDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
+	12, // 17: google.cloud.geminidataanalytics.v1beta.BigtableReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigtableDatabaseReference
+	27, // 18: google.cloud.geminidataanalytics.v1beta.BigtableReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
+	9,  // 19: google.cloud.geminidataanalytics.v1beta.BigtableDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
+	14, // 20: google.cloud.geminidataanalytics.v1beta.FirestoreReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.FirestoreDatabaseReference
+	27, // 21: google.cloud.geminidataanalytics.v1beta.FirestoreReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
+	9,  // 22: google.cloud.geminidataanalytics.v1beta.FirestoreDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
+	16, // 23: google.cloud.geminidataanalytics.v1beta.SpannerReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference
+	27, // 24: google.cloud.geminidataanalytics.v1beta.SpannerReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
+	1,  // 25: google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.engine:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.Engine
+	9,  // 26: google.cloud.geminidataanalytics.v1beta.SpannerDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
+	18, // 27: google.cloud.geminidataanalytics.v1beta.CloudSqlReference.database_reference:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference
+	27, // 28: google.cloud.geminidataanalytics.v1beta.CloudSqlReference.agent_context_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AgentContextReference
+	2,  // 29: google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.engine:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.Engine
+	9,  // 30: google.cloud.geminidataanalytics.v1beta.CloudSqlDatabaseReference.database_table_references:type_name -> google.cloud.geminidataanalytics.v1beta.DatabaseTableReference
+	20, // 31: google.cloud.geminidataanalytics.v1beta.LookerExploreReferences.explore_references:type_name -> google.cloud.geminidataanalytics.v1beta.LookerExploreReference
+	28, // 32: google.cloud.geminidataanalytics.v1beta.LookerExploreReferences.credentials:type_name -> google.cloud.geminidataanalytics.v1beta.Credentials
+	22, // 33: google.cloud.geminidataanalytics.v1beta.LookerExploreReference.private_looker_instance_info:type_name -> google.cloud.geminidataanalytics.v1beta.PrivateLookerInstanceInfo
+	24, // 34: google.cloud.geminidataanalytics.v1beta.LookerExploreReference.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
+	5,  // 35: google.cloud.geminidataanalytics.v1beta.Datasource.bigquery_table_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryTableReference
+	20, // 36: google.cloud.geminidataanalytics.v1beta.Datasource.looker_explore_reference:type_name -> google.cloud.geminidataanalytics.v1beta.LookerExploreReference
+	8,  // 37: google.cloud.geminidataanalytics.v1beta.Datasource.alloy_db_reference:type_name -> google.cloud.geminidataanalytics.v1beta.AlloyDbReference
+	15, // 38: google.cloud.geminidataanalytics.v1beta.Datasource.spanner_reference:type_name -> google.cloud.geminidataanalytics.v1beta.SpannerReference
+	17, // 39: google.cloud.geminidataanalytics.v1beta.Datasource.cloud_sql_reference:type_name -> google.cloud.geminidataanalytics.v1beta.CloudSqlReference
+	11, // 40: google.cloud.geminidataanalytics.v1beta.Datasource.bigtable_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigtableReference
+	21, // 41: google.cloud.geminidataanalytics.v1beta.Datasource.bigquery_property_graph_reference:type_name -> google.cloud.geminidataanalytics.v1beta.BigQueryPropertyGraphReference
+	13, // 42: google.cloud.geminidataanalytics.v1beta.Datasource.firestore_reference:type_name -> google.cloud.geminidataanalytics.v1beta.FirestoreReference
+	24, // 43: google.cloud.geminidataanalytics.v1beta.Datasource.schema:type_name -> google.cloud.geminidataanalytics.v1beta.Schema
+	29, // 44: google.cloud.geminidataanalytics.v1beta.Datasource.struct_schema:type_name -> google.protobuf.Struct
+	25, // 45: google.cloud.geminidataanalytics.v1beta.Schema.fields:type_name -> google.cloud.geminidataanalytics.v1beta.Field
+	26, // 46: google.cloud.geminidataanalytics.v1beta.Schema.filters:type_name -> google.cloud.geminidataanalytics.v1beta.DataFilter
+	25, // 47: google.cloud.geminidataanalytics.v1beta.Field.subfields:type_name -> google.cloud.geminidataanalytics.v1beta.Field
+	0,  // 48: google.cloud.geminidataanalytics.v1beta.DataFilter.type:type_name -> google.cloud.geminidataanalytics.v1beta.DataFilterType
+	49, // [49:49] is the sub-list for method output_type
+	49, // [49:49] is the sub-list for method input_type
+	49, // [49:49] is the sub-list for extension type_name
+	49, // [49:49] is the sub-list for extension extendee
+	0,  // [0:49] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1beta_datasource_proto_init() }
@@ -2202,19 +2581,23 @@ func file_google_cloud_geminidataanalytics_v1beta_datasource_proto_init() {
 		(*DatasourceReferences_Alloydb)(nil),
 		(*DatasourceReferences_SpannerReference)(nil),
 		(*DatasourceReferences_CloudSqlReference)(nil),
+		(*DatasourceReferences_BigtableReference)(nil),
+		(*DatasourceReferences_FirestoreReference)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[13].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[17].OneofWrappers = []any{
 		(*LookerExploreReference_LookerInstanceUri)(nil),
 		(*LookerExploreReference_PrivateLookerInstanceInfo)(nil),
 	}
-	file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[16].OneofWrappers = []any{
+	file_google_cloud_geminidataanalytics_v1beta_datasource_proto_msgTypes[20].OneofWrappers = []any{
 		(*Datasource_BigqueryTableReference)(nil),
 		(*Datasource_StudioDatasourceId)(nil),
 		(*Datasource_LookerExploreReference)(nil),
 		(*Datasource_AlloyDbReference)(nil),
 		(*Datasource_SpannerReference)(nil),
 		(*Datasource_CloudSqlReference)(nil),
+		(*Datasource_BigtableReference)(nil),
 		(*Datasource_BigqueryPropertyGraphReference)(nil),
+		(*Datasource_FirestoreReference)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
@@ -2222,7 +2605,7 @@ func file_google_cloud_geminidataanalytics_v1beta_datasource_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc), len(file_google_cloud_geminidataanalytics_v1beta_datasource_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   20,
+			NumMessages:   24,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
