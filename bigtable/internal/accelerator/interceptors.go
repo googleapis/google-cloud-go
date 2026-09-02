@@ -52,6 +52,24 @@ func newBigtableServerStub() *bigtableServerStub {
 // was read from stdin (see Server.Start); the shipped daemon always reads one,
 // so auth is disabled only in test mode (WithStdinReader(nil)). Mismatches are
 // rejected with codes.Internal (see checkAuthToken for why not Unauthenticated).
+//
+// "Every RPC" is literal, and deliberately so: unlike the proxy interceptors
+// below, this one does not exempt locally-served services via isProxied, even
+// though the health service is served locally. The two interceptors read the
+// same predicate in opposite safety directions. There, a false means "do not
+// forward this to Bigtable" and an unrecognised method falls through to gRPC's
+// own Unimplemented — a loud, harmless failure. Here, a false would mean "serve
+// this without a token", so an unrecognised method would be served unauthenticated.
+// Since isProxied is a Bigtable-prefix test, every service registered later is
+// unrecognised by construction, and would be un-gated by default rather than by
+// decision.
+//
+// Nothing is lost by gating health, either: the token is not a Bigtable
+// credential but a caller-identity check on the socket, and the only legitimate
+// caller — the process that spawned this daemon — builds its health stub on the
+// same connection as its data RPCs and so already attaches the token. Gating it
+// also means a foreign daemon left on a reused socket path fails our probe
+// closed, rather than answering SERVING for a process we are not using.
 func authUnaryInterceptor(secret string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		if err := checkAuthToken(ctx, secret); err != nil {

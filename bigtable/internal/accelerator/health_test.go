@@ -21,8 +21,11 @@ import (
 	"time"
 
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
 	healthpb "google.golang.org/grpc/health/grpc_health_v1"
+	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/status"
 )
 
 // startHealthTestServer boots a daemon on a temp UDS and returns a client for
@@ -116,6 +119,74 @@ func TestServer_HealthNotServingOnStop(t *testing.T) {
 	if resp.GetStatus() != healthpb.HealthCheckResponse_NOT_SERVING {
 		t.Errorf("status after Stop = %v, want NOT_SERVING", resp.GetStatus())
 	}
+}
+
+// The handshake token gates the health service too, deliberately — see
+// authUnaryInterceptor for why those interceptors do not take the !isProxied
+// short-circuit the proxy interceptors do. This test pins that: the shipped
+// daemon always reads a secret, so this, not the auth-less servers the other
+// tests here use, is how health actually runs in production.
+func TestServer_HealthRequiresAuthToken(t *testing.T) {
+	udsPath := filepath.Join(t.TempDir(), "bt_proxy.sock")
+
+	const secret = "correct-secret-token"
+	server, stdinW := newServerWithSecret(t, udsPath, secret)
+	defer stdinW.Close()
+	defer server.Stop()
+
+	conn, err := grpc.NewClient("unix://"+udsPath, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	if err != nil {
+		t.Fatalf("grpc.NewClient: %v", err)
+	}
+	defer conn.Close()
+	client := healthpb.NewHealthClient(conn)
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+
+	authed := metadata.NewOutgoingContext(ctx, metadata.Pairs("x-accelerator-token", secret))
+
+	// Unary: authUnaryInterceptor. A rejected handshake surfaces as Internal,
+	// not Unauthenticated — see checkAuthToken.
+	t.Run("Check", func(t *testing.T) {
+		if _, err := client.Check(ctx, &healthpb.HealthCheckRequest{}); status.Code(err) != codes.Internal {
+			t.Errorf("without token: got %v, want Internal", status.Code(err))
+		}
+		resp, err := client.Check(authed, &healthpb.HealthCheckRequest{})
+		if err != nil {
+			t.Fatalf("with token: %v", err)
+		}
+		if resp.GetStatus() != healthpb.HealthCheckResponse_SERVING {
+			t.Errorf("status = %v, want SERVING", resp.GetStatus())
+		}
+	})
+
+	// Streaming: authStreamInterceptor. Health/Watch is the only server-streaming
+	// method the daemon serves locally, so without this case the streaming half
+	// of the auth chain is never exercised by any test. Note the rejection lands
+	// on Recv, not on Watch: gRPC does not round-trip to the server until the
+	// stream is read.
+	t.Run("Watch", func(t *testing.T) {
+		stream, err := client.Watch(ctx, &healthpb.HealthCheckRequest{})
+		if err != nil {
+			t.Fatalf("without token, Watch: %v", err)
+		}
+		if _, err := stream.Recv(); status.Code(err) != codes.Internal {
+			t.Errorf("without token, Recv: got %v, want Internal", status.Code(err))
+		}
+
+		stream, err = client.Watch(authed, &healthpb.HealthCheckRequest{})
+		if err != nil {
+			t.Fatalf("with token, Watch: %v", err)
+		}
+		resp, err := stream.Recv()
+		if err != nil {
+			t.Fatalf("with token, Recv: %v", err)
+		}
+		if resp.GetStatus() != healthpb.HealthCheckResponse_SERVING {
+			t.Errorf("status = %v, want SERVING", resp.GetStatus())
+		}
+	})
 }
 
 func TestIsProxied(t *testing.T) {
