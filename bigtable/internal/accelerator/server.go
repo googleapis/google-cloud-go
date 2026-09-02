@@ -35,6 +35,8 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/health"
+	healthpb "google.golang.org/grpc/health/grpc_health_v1"
 )
 
 // defaultHandshakeTimeout bounds how long Start waits for the parent process to
@@ -63,6 +65,7 @@ type Server struct {
 	stdinBuf     *bufio.Reader // wraps stdinReader once in Start(); shared by readSecret + monitorStdin
 	authSecret   string
 	channel      *Channel
+	health       *health.Server
 
 	handshakeTimeout time.Duration // bounds readSecret; defaults to defaultHandshakeTimeout, override with WithHandshakeTimeout.
 }
@@ -181,6 +184,26 @@ func (s *Server) Start() error {
 	// gRPC's registration contract.
 	btpb.RegisterBigtableServer(s.grpcServer, s.service)
 
+	// Register the standard health service. Unlike the Bigtable stub above this
+	// one is served locally -- isProxied keeps the proxy interceptors off it.
+	//
+	// What it is for: the caller needs a way to ask "is the daemon up and
+	// responsive?" that neither consumes a session nor touches the backend. The
+	// latency of a Check is therefore almost entirely this process's own
+	// scheduling delay, which is what makes it a usable starvation signal; the
+	// latency of a real RPC would fold in Bigtable's latency and the network and
+	// tell the caller much less.
+	//
+	// Note the status is a liveness statement, not a load assessment: we report
+	// SERVING whenever the server is up, and leave "is it fast enough?" to the
+	// caller, which can time its own probes. Self-declaring NOT_SERVING under
+	// load would be guesswork against a threshold we cannot pick correctly from
+	// in here, and the client's fallback breaker is permanent -- a daemon that
+	// briefly called itself unhealthy would be abandoned for good.
+	s.health = health.NewServer()
+	healthpb.RegisterHealthServer(s.grpcServer, s.health)
+	s.health.SetServingStatus("", healthpb.HealthCheckResponse_SERVING)
+
 	go func() {
 		// Serve returns ErrServerStopped on a clean GracefulStop/Stop; anything
 		// else means the server fell over after a successful Listen (e.g. the
@@ -214,6 +237,15 @@ func (s *Server) Start() error {
 func (s *Server) Stop() {
 	s.stopOnce.Do(func() {
 		close(s.shutdownChan)
+
+		// Flip to NOT_SERVING before draining so a caller probing mid-shutdown
+		// gets an honest answer instead of a SERVING reply from a server that is
+		// about to stop accepting RPCs. health.Server.Shutdown also latches, so
+		// any Watch stream still open is notified and later SetServingStatus
+		// calls cannot revive it.
+		if s.health != nil {
+			s.health.Shutdown()
+		}
 
 		if s.grpcServer != nil {
 			// GracefulStop blocks until all in-flight RPCs finish. A wedged or
