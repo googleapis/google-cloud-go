@@ -233,7 +233,7 @@ libraries:
     apis:
       - path: google/cloud/baremetalsolution/v2
   - name: batch
-    version: 1.21.0
+    version: 1.22.0
     apis:
       - path: google/cloud/batch/v1
     keep:
@@ -254,7 +254,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.82.0
+    version: 1.83.0
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -540,7 +540,7 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: confidentialcomputing
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/cloud/confidentialcomputing/v1
       - path: google/cloud/confidentialcomputing/v1alpha1
@@ -658,7 +658,7 @@ libraries:
     apis:
       - path: google/cloud/developerconnect/v1
   - name: developerknowledge
-    version: 0.1.0
+    version: 0.2.0
     apis:
       - path: google/developers/knowledge/v1
         go:
@@ -682,7 +682,7 @@ libraries:
       - path: google/cloud/discoveryengine/v1beta
       - path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.36.1
+    version: 1.37.0
     apis:
       - path: google/privacy/dlp/v2
         go:
@@ -773,7 +773,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.4.0
+    version: 1.5.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
