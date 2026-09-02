@@ -79,13 +79,12 @@ golint ./... 2>&1 | (
 ) |
   tee /dev/stderr | (! read)
 
-# TODO: re-enable after go127 migration
-#staticcheck -go 1.25 ./... 2>&1 | (
-#  grep -v SA1019 |
-#    grep -v internal/btree/btree.go |
-#    grep -v httpreplay/internal/proxy/debug.go |
-#    grep -v third_party/pkgsite/synopsis.go
-#) |
-#  tee /dev/stderr | (! read)
+staticcheck -go 1.25 ./... 2>&1 | (
+    grep -v SA1019 |
+    grep -v internal/btree/btree.go |
+    grep -v httpreplay/internal/proxy/debug.go |
+    grep -v third_party/pkgsite/synopsis.go
+) |
+  tee /dev/stderr | (! read)
 
 echo "Done vetting!"
