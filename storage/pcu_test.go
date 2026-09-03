@@ -71,28 +71,28 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			name: "all defaults",
 			in:   &ParallelUploadConfig{},
 			want: &ParallelUploadConfig{
-				PartSize:       defaultPartSize,
+				PartSizeHint:   defaultPartSize,
 				MaxConcurrency: expectedWorkers,
 			},
 		},
 		{
 			name: "user-provided values are respected",
 			in: &ParallelUploadConfig{
-				PartSize:       10 * 1024 * 1024, // 10 MiB
+				PartSizeHint:   10 * 1024 * 1024, // 10 MiB
 				MaxConcurrency: 10,
 			},
 			want: &ParallelUploadConfig{
-				PartSize:       10 * 1024 * 1024,
+				PartSizeHint:   10 * 1024 * 1024,
 				MaxConcurrency: 10,
 			},
 		},
 		{
-			name: "PartSize below minimum is adjusted",
+			name: "PartSizeHint below minimum is adjusted",
 			in: &ParallelUploadConfig{
-				PartSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
+				PartSizeHint: 1024 * 1024, // 1 MiB, below the 8 MiB minimum.
 			},
 			want: &ParallelUploadConfig{
-				PartSize:       minPartSize,
+				PartSizeHint:   minPartSize,
 				MaxConcurrency: expectedWorkers,
 			},
 		},
@@ -424,7 +424,7 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 				c:      &Client{},
 			},
 		},
-		config:   &ParallelUploadConfig{PartSize: 10, MaxConcurrency: 1},
+		config:   &ParallelUploadConfig{PartSizeHint: 10, MaxConcurrency: 1},
 		settings: &pcuSettings{bufferPoolSize: 2},
 		partMap:  make(map[int]*ObjectHandle),
 		doCleanupFn: func(s *pcuState) {
@@ -448,7 +448,7 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 		state.bufferCh <- make([]byte, 10)
 	}
 
-	// Trigger a flush by writing exact PartSize.
+	// Trigger a flush by writing exact part size.
 	n, err := state.write([]byte("0123456789"))
 	if err != nil {
 		t.Fatalf("state.write failed: %v", err)
@@ -554,7 +554,7 @@ func TestPCUState_Write(t *testing.T) {
 				started:  true,
 				bufferCh: make(chan []byte, 5),
 				uploadCh: make(chan uploadTask, 5),
-				config:   &ParallelUploadConfig{PartSize: PartSize},
+				config:   &ParallelUploadConfig{PartSizeHint: PartSize},
 			}
 
 			// Pre-fill buffer pool.
@@ -804,6 +804,10 @@ func TestPCUState_ComposeParts(t *testing.T) {
 			state.composeFn = func(ctx context.Context, c *Composer) (*ObjectAttrs, error) {
 				mu.Lock()
 				defer mu.Unlock()
+
+				if !c.DeleteSourceObjects {
+					t.Errorf("expected DeleteSourceObjects to be true, got false")
+				}
 
 				// If the destination isn't the final object, it's an intermediate.
 				if c.dst.object != "final-dest" {
@@ -1082,11 +1086,11 @@ func TestPCUState_Close(t *testing.T) {
 				t.Errorf("expectCompose %v, but composeCalled was %v", tc.expectCompose, composeCalled)
 			}
 
-			// Wait for background cleanup to execute
+			// Wait for background cleanup to execute if failure is expected.
 			time.Sleep(10 * time.Millisecond)
 			mu.Lock()
-			if !cleanupCalled {
-				t.Errorf("cleanup logic was not executed")
+			if cleanupCalled != tc.expectError {
+				t.Errorf("cleanupCalled = %v; want %v", cleanupCalled, tc.expectError)
 			}
 			mu.Unlock()
 		})
