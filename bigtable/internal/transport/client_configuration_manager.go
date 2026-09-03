@@ -574,6 +574,14 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 	// session_load, channel/session pool sizing, and LB options at zero.
 	if resp.GetSessionConfiguration() == nil {
 		recordDebugTag(tagClientConfigSessionConfigurationNull)
+	} else if resp.GetSessionConfiguration().GetSessionLoad() == 0 {
+		// Distinct from the null case: server sent a populated
+		// SessionClientConfiguration but explicitly set session_load=0
+		// (route 0% through session, 100% through classic). Legitimate
+		// operating point, but worth surfacing so operators can spot
+		// instances/app-profiles that are effectively opted out of the
+		// session data path.
+		recordDebugTag(tagClientConfigSessionLoadZero)
 	}
 
 	m.mu.Lock()

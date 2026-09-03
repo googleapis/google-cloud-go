@@ -174,6 +174,14 @@ const (
 	// whose control-plane config never landed. Distinct from a poll
 	// error (that path emits tagClientConfigPollFailed).
 	tagClientConfigSessionConfigurationNull = "client_config_session_configuration_null"
+	// tagClientConfigSessionLoadZero fires when a successful poll returns
+	// a populated SessionClientConfiguration whose session_load is 0
+	// (explicit "route 0% through session, 100% through classic"). A
+	// legitimate operating point, but worth surfacing so ops can spot
+	// instances/app-profiles effectively opted out of the session data
+	// path. Distinct from the null-config case, which emits
+	// tagClientConfigSessionConfigurationNull.
+	tagClientConfigSessionLoadZero = "client_config_session_load_zero"
 )
 
 var (
