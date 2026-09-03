@@ -1352,3 +1352,87 @@ func (et *emulatorTest) delete() {
 		et.Errorf("deleting test: err: %v, resp: %+v", err, resp)
 	}
 }
+
+func TestRetryConformance_MaxAttempts(t *testing.T) {
+	host := os.Getenv("STORAGE_EMULATOR_HOST")
+	if host == "" {
+		t.Skip("This test must use the testbench emulator; set STORAGE_EMULATOR_HOST to run.")
+	}
+	endpoint, err := url.Parse(host)
+	if err != nil {
+		t.Fatalf("error parsing emulator host: %v", err)
+	}
+
+	ctx := context.Background()
+	client, err := NewClient(ctx)
+	if err != nil {
+		t.Fatalf("storage.NewClient: %v", err)
+	}
+
+	skippedGRPCMethods := []string{"storage.hmacKey.delete", "storage.hmacKey.create", "storage.hmacKey.list", "storage.hmacKey.get", "storage.hmacKey.update", "storage.serviceaccount.get"}
+	skippedHTTPMethods := []string{"storage.appendable.upload"}
+
+	_, _, testFiles := parseFiles(t)
+
+	for _, testFile := range testFiles {
+		for _, retryTest := range testFile.RetryTests {
+			if !retryTest.ExpectSuccess {
+				continue
+			}
+			for _, instructions := range retryTest.Cases {
+				if len(instructions.Instructions) < 2 {
+					continue
+				}
+				for _, method := range retryTest.Methods {
+					methodName := method.Name
+					if method.Group != "" {
+						methodName = method.Group
+					}
+					if len(methods[methodName]) == 0 {
+						continue
+					}
+
+					for i, fn := range methods[methodName] {
+						transports := []string{"http", "grpc"}
+						for _, transport := range transports {
+							testName := fmt.Sprintf("%v-%v-%v-%v-%v", transport, retryTest.Id, instructions.Instructions, methodName, i)
+							t.Run(testName, func(t *testing.T) {
+								if transport == "http" && slices.Contains(skippedHTTPMethods, methodName) {
+									t.Skip("not supported")
+								}
+								if transport == "grpc" && slices.Contains(skippedGRPCMethods, methodName) {
+									t.Skip("not supported")
+								}
+
+								subtest := &emulatorTest{T: t, name: testName, host: endpoint}
+								subtest.create(map[string][]string{
+									method.Name: instructions.Instructions,
+								}, transport)
+								defer subtest.delete()
+
+								subtest.populateResources(ctx, client, method.Resources)
+
+								maxAttempts := 1
+								subtest.transportClient.SetRetry(
+									WithMaxAttempts(maxAttempts),
+									WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}),
+									WithPolicy(RetryAlways),
+								)
+
+								ctx := callctx.SetHeaders(context.Background(), "x-retry-test-id", subtest.id)
+								err = fn(ctx, subtest.transportClient, &subtest.resources, retryTest.PreconditionProvided)
+								if err == nil {
+									t.Fatalf("expected failure due to max attempts exceeded, got success")
+								}
+								expectedSubstr := fmt.Sprintf("retry failed after %d attempts", maxAttempts)
+								if !strings.Contains(err.Error(), expectedSubstr) {
+									t.Errorf("got error %q, want error to contain %q", err.Error(), expectedSubstr)
+								}
+							})
+						}
+					}
+				}
+			}
+		}
+	}
+}
