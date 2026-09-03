@@ -377,10 +377,7 @@ func NewClient(
 	// Instance-scoped headers for GetClientConfiguration — shared by the
 	// DirectAccessChecker's compat probe and ClientConfigurationManager's
 	// steady-state polls so both hit the same-shaped RPC.
-	configMD := metadata.Join(metadata.Pairs(
-		resourcePrefixHeader, fullInstance,
-		requestParamsHeader, fmt.Sprintf("name=%s", url.QueryEscape(fullInstance)),
-	), directAccessMD)
+	configMD := buildConfigMetadata(fullInstance, appProfile, directAccessMD)
 
 	// Session pool bypasses CreateAndStartManagedChannelPool so we can
 	// plug in the session-flavored primer + direct-access checker
@@ -836,6 +833,20 @@ func (sc *sessionClient) perResourceMetadata(fullResourceName, paramKey, paramVa
 		resourcePrefixHeader, fullResourceName,
 		requestParamsHeader, fmt.Sprintf("%s=%s&app_profile_id=%s", paramKey, url.QueryEscape(paramVal), url.QueryEscape(sc.cfg.AppProfile)),
 	), sc.cfg.FeatureFlagsMD)
+}
+
+// buildConfigMetadata builds the metadata attached to every
+// GetClientConfiguration RPC — both the DirectAccessChecker's compat
+// probe and ClientConfigurationManager's steady-state polls. The proto
+// field is instance_name, and Java pairs it with app_profile_id in
+// x-goog-request-params so the RLS router can key on both
+// (Util.composeMetadata + ClientConfigurationManager ctor).
+func buildConfigMetadata(fullInstance, appProfile string, featureFlagsMD metadata.MD) metadata.MD {
+	return metadata.Join(metadata.Pairs(
+		resourcePrefixHeader, fullInstance,
+		requestParamsHeader, fmt.Sprintf("instance_name=%s&app_profile_id=%s",
+			url.QueryEscape(fullInstance), url.QueryEscape(appProfile)),
+	), featureFlagsMD)
 }
 
 // Resource-name composition — duplicated from bigtable.Client to
