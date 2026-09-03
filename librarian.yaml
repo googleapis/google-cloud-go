@@ -1293,7 +1293,7 @@ libraries:
     apis:
       - path: google/cloud/shell/v1
   - name: shopping
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/promotions/v1
