@@ -468,6 +468,7 @@ func (w *Writer) openWriter() (err error) {
 	// Append operations that takeover a specific generation are idempotent.
 	isIdempotent = isIdempotent || w.Append && w.o.gen > 0
 	opts := makeStorageOpts(isIdempotent, w.o.retry, w.o.userProject)
+	recordWriterTraceAttributes(w.ctx, w)
 	params := &openWriterParams{
 		ctx:                  w.ctx,
 		chunkSize:            w.ChunkSize,
