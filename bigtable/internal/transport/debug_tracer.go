@@ -166,14 +166,6 @@ const (
 	// Client configuration polling.
 	tagClientConfigPollFailed     = "client_config_poll_failed"
 	tagClientConfigPollCtxExpired = "client_config_poll_ctx_expired"
-	// tagClientConfigSessionConfigurationNull fires when a successful
-	// GetClientConfiguration response arrives with SessionConfiguration
-	// unset. That leaves session_load, channel/session pool sizing, and
-	// LB options at zero — the manager falls back to the default config,
-	// but the missed signal is worth surfacing so ops can spot instances
-	// whose control-plane config never landed. Distinct from a poll
-	// error (that path emits tagClientConfigPollFailed).
-	tagClientConfigSessionConfigurationNull = "client_config_session_configuration_null"
 )
 
 var (

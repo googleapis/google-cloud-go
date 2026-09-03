@@ -568,14 +568,6 @@ func (m *ClientConfigurationManager) poll(ctx context.Context) {
 
 	btopt.Debugf(m.logger, "bigtable: successfully polled new client configuration. validityDuration: %v", validityDuration(resp))
 
-	// Surface null SessionConfiguration in the debug-tag counter so
-	// operators can spot instances/app-profiles whose control-plane
-	// config never landed — the poll succeeded, but the response left
-	// session_load, channel/session pool sizing, and LB options at zero.
-	if resp.GetSessionConfiguration() == nil {
-		recordDebugTag(tagClientConfigSessionConfigurationNull)
-	}
-
 	m.mu.Lock()
 	// Always refresh the validity window — the server's reply re-affirms
 	// the current config, so we shouldn't later fall back to default just
