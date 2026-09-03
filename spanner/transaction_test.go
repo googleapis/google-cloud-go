@@ -34,7 +34,6 @@ import (
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	gstatus "google.golang.org/grpc/status"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 )
 
@@ -68,7 +67,6 @@ func TestSingle(t *testing.T) {
 
 // Re-using ReadOnlyTransaction: can recover from acquire failure.
 func TestReadOnlyTransaction_RecoverFromFailure(t *testing.T) {
-
 	ctx := context.Background()
 	server, client, teardown := setupMockedTestServer(t)
 	defer teardown()
@@ -77,7 +75,7 @@ func TestReadOnlyTransaction_RecoverFromFailure(t *testing.T) {
 	defer txn.Close()
 
 	// First request will fail.
-	errUsr := gstatus.Error(codes.Unknown, "error")
+	errUsr := status.Error(codes.Unknown, "error")
 	server.TestSpanner.PutExecutionTime(MethodBeginTransaction,
 		SimulatedExecutionTime{
 			Errors: []error{errUsr},
@@ -220,7 +218,6 @@ func TestApply_RetryOnAbort(t *testing.T) {
 			t.Fatalf("transaction tag mismatch\n Got: %v\nWant: %v", g, w)
 		}
 	}
-
 }
 
 // When an error is returned from the closure sent into ReadWriteTransaction, it
@@ -2211,7 +2208,7 @@ func requestsOfType(requests []interface{}, t reflect.Type) []interface{} {
 }
 
 func newAbortedErrorWithMinimalRetryDelay() error {
-	st := gstatus.New(codes.Aborted, "Transaction has been aborted")
+	st := status.New(codes.Aborted, "Transaction has been aborted")
 	retry := &errdetails.RetryInfo{
 		RetryDelay: durationpb.New(time.Nanosecond),
 	}
