@@ -1,5 +1,18 @@
 # Changes
 
+## [1.55.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.54.0...bigtable/v1.55.0) (2026-09-03)
+
+
+### Features
+
+* **bigtable/bttest:** Honor the table's timestamp granularity ([#20456](https://github.com/googleapis/google-cloud-go/issues/20456)) ([0054866](https://github.com/googleapis/google-cloud-go/commit/0054866d52dca8c5d7b0ab7d3de0259e07b88151))
+* **bigtable:** Debug tags for GetClientConfiguration session_configuration state ([#20472](https://github.com/googleapis/google-cloud-go/issues/20472)) ([8e57e4b](https://github.com/googleapis/google-cloud-go/commit/8e57e4b273bfb532772c4fbe4f6058b929d2c1d5))
+
+
+### Bug Fixes
+
+* **bigtable:** Use instance_name instead of name in GetClientConfig ([#20465](https://github.com/googleapis/google-cloud-go/issues/20465)) ([375f198](https://github.com/googleapis/google-cloud-go/commit/375f1983f46b9a236cec76a4cbbd8eee3a068df0))
+
 ## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.53.0...bigtable/v1.54.0) (2026-09-02)
 
 

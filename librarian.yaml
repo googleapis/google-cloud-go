@@ -391,7 +391,7 @@ libraries:
       - README.md
     skip_release: true
   - name: bigtable
-    version: 1.54.0
+    version: 1.55.0
     apis:
       - path: google/bigtable/v2
         go:
@@ -1293,7 +1293,7 @@ libraries:
     apis:
       - path: google/cloud/shell/v1
   - name: shopping
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/promotions/v1
@@ -1308,19 +1308,20 @@ libraries:
       - path: google/shopping/merchant/issueresolution/v1
       - path: google/shopping/merchant/products/v1
       - path: google/shopping/merchant/inventories/v1
-      - path: google/shopping/merchant/notifications/v1beta
+      - path: google/shopping/merchant/loyaltycustomers/v1
       - path: google/shopping/merchant/ordertracking/v1beta
-      - path: google/shopping/merchant/products/v1beta
+      - path: google/shopping/merchant/issueresolution/v1beta
       - path: google/shopping/merchant/accounts/v1beta
       - path: google/shopping/merchant/quota/v1beta
       - path: google/shopping/merchant/promotions/v1beta
       - path: google/shopping/merchant/inventories/v1beta
       - path: google/shopping/merchant/reports/v1beta
-      - path: google/shopping/merchant/issueresolution/v1beta
+      - path: google/shopping/merchant/products/v1beta
       - path: google/shopping/merchant/reviews/v1beta
       - path: google/shopping/merchant/lfp/v1beta
       - path: google/shopping/merchant/datasources/v1beta
       - path: google/shopping/merchant/conversions/v1beta
+      - path: google/shopping/merchant/notifications/v1beta
       - path: google/shopping/merchant/productstudio/v1alpha
       - path: google/shopping/type
         go:
@@ -1367,7 +1368,7 @@ libraries:
       - path: google/cloud/sql/v1beta4
     copyright_year: "2026"
   - name: storage
-    version: 1.66.0
+    version: 1.67.0
     apis:
       - path: google/storage/v2
         go:
