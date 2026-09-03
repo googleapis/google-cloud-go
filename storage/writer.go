@@ -274,7 +274,11 @@ func (w *Writer) wrapWriteError(n int, err error) (int, error) {
 }
 
 func (w *Writer) isGRPCClient() bool {
-	_, ok := w.o.c.tc.(*grpcStorageClient)
+	tc := w.o.c.tc
+	if mc, ok := tc.(*metricsStorageClient); ok {
+		tc = mc.storageClient
+	}
+	_, ok := tc.(*grpcStorageClient)
 	return ok
 }
 
