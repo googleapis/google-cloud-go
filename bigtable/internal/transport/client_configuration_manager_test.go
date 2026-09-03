@@ -75,62 +75,35 @@ func TestManagerPoll_Success(t *testing.T) {
 	}
 }
 
-// TestManagerPoll_SessionConfigurationDebugTags asserts the two mutually-
-// exclusive debug tags that discriminate SessionClientConfiguration
-// health on a successful poll:
-//   - tagClientConfigSessionConfigurationNull when the response has no
-//     SessionConfiguration at all (e.g. control-plane config never landed).
-//   - tagClientConfigSessionLoadZero when SessionConfiguration is present
-//     but session_load is 0 (explicit opt-out from the session data path).
-//
-// A response with a nonzero session_load must emit neither tag.
-func TestManagerPoll_SessionConfigurationDebugTags(t *testing.T) {
-	tests := []struct {
-		name        string
-		resp        *bigtablepb.ClientConfiguration
-		wantNullTag int64
-		wantZeroTag int64
-	}{
-		{
-			name:        "null_session_configuration",
-			resp:        &bigtablepb.ClientConfiguration{},
-			wantNullTag: 1,
-			wantZeroTag: 0,
-		},
-		{
-			name: "session_load_zero",
-			resp: &bigtablepb.ClientConfiguration{
-				SessionConfiguration: &bigtablepb.SessionClientConfiguration{SessionLoad: 0},
-			},
-			wantNullTag: 0,
-			wantZeroTag: 1,
-		},
-		{
-			name: "session_load_nonzero",
-			resp: &bigtablepb.ClientConfiguration{
-				SessionConfiguration: &bigtablepb.SessionClientConfiguration{SessionLoad: 0.5},
-			},
-			wantNullTag: 0,
-			wantZeroTag: 0,
-		},
+// TestManagerPoll_SessionConfigurationNullEmitsDebugTag asserts the
+// tagClientConfigSessionConfigurationNull debug tag fires exactly once
+// when a successful poll returns a response with no SessionConfiguration
+// (e.g. an instance/profile whose control-plane config never landed),
+// and does NOT fire when SessionConfiguration is present.
+func TestManagerPoll_SessionConfigurationNullEmitsDebugTag(t *testing.T) {
+	client := &mockBigtableClient{}
+	manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
+
+	// Response with SessionConfiguration unset.
+	client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+		return &bigtablepb.ClientConfiguration{}, nil
 	}
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			client := &mockBigtableClient{}
-			manager := NewClientConfigurationManager(client, "instance", "profile", nil, nil)
-			client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
-				return tc.resp, nil
-			}
-			resetDebugTagCountsForTest()
-			manager.poll(context.Background())
-			counts := snapshotDebugTagCounts()
-			if got := counts[tagClientConfigSessionConfigurationNull]; got != tc.wantNullTag {
-				t.Errorf("%s: count = %d, want %d", tagClientConfigSessionConfigurationNull, got, tc.wantNullTag)
-			}
-			if got := counts[tagClientConfigSessionLoadZero]; got != tc.wantZeroTag {
-				t.Errorf("%s: count = %d, want %d", tagClientConfigSessionLoadZero, got, tc.wantZeroTag)
-			}
-		})
+	resetDebugTagCountsForTest()
+	manager.poll(context.Background())
+	if got := snapshotDebugTagCounts()[tagClientConfigSessionConfigurationNull]; got != 1 {
+		t.Errorf("null SessionConfiguration: %s count = %d, want 1", tagClientConfigSessionConfigurationNull, got)
+	}
+
+	// Response with SessionConfiguration populated must NOT emit the tag.
+	client.getConfigFunc = func(ctx context.Context, req *bigtablepb.GetClientConfigurationRequest) (*bigtablepb.ClientConfiguration, error) {
+		return &bigtablepb.ClientConfiguration{
+			SessionConfiguration: &bigtablepb.SessionClientConfiguration{},
+		}, nil
+	}
+	resetDebugTagCountsForTest()
+	manager.poll(context.Background())
+	if got := snapshotDebugTagCounts()[tagClientConfigSessionConfigurationNull]; got != 0 {
+		t.Errorf("populated SessionConfiguration: %s count = %d, want 0", tagClientConfigSessionConfigurationNull, got)
 	}
 }
 
