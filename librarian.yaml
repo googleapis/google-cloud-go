@@ -1308,19 +1308,20 @@ libraries:
       - path: google/shopping/merchant/issueresolution/v1
       - path: google/shopping/merchant/products/v1
       - path: google/shopping/merchant/inventories/v1
-      - path: google/shopping/merchant/notifications/v1beta
+      - path: google/shopping/merchant/loyaltycustomers/v1
       - path: google/shopping/merchant/ordertracking/v1beta
-      - path: google/shopping/merchant/products/v1beta
+      - path: google/shopping/merchant/issueresolution/v1beta
       - path: google/shopping/merchant/accounts/v1beta
       - path: google/shopping/merchant/quota/v1beta
       - path: google/shopping/merchant/promotions/v1beta
       - path: google/shopping/merchant/inventories/v1beta
       - path: google/shopping/merchant/reports/v1beta
-      - path: google/shopping/merchant/issueresolution/v1beta
+      - path: google/shopping/merchant/products/v1beta
       - path: google/shopping/merchant/reviews/v1beta
       - path: google/shopping/merchant/lfp/v1beta
       - path: google/shopping/merchant/datasources/v1beta
       - path: google/shopping/merchant/conversions/v1beta
+      - path: google/shopping/merchant/notifications/v1beta
       - path: google/shopping/merchant/productstudio/v1alpha
       - path: google/shopping/type
         go:

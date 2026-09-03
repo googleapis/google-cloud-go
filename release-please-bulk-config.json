@@ -2197,6 +2197,11 @@
         },
         {
           "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/loyaltycustomers/apiv1/snippet_metadata.google.shopping.merchant.loyaltycustomers.v1.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
           "path": "examples/merchant/notifications/apiv1/snippet_metadata.google.shopping.merchant.notifications.v1.json",
           "type": "json"
         },
