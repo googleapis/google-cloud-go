@@ -105,6 +105,8 @@ type txReadOnly struct {
 	clientContext *sppb.RequestOptions_ClientContext
 
 	otConfig *openTelemetryConfig
+
+	prsPool PartialResultSetPool
 }
 
 func (t *txReadOnly) isDefaultInlinedBegin() bool {
@@ -421,6 +423,7 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
 		allowRetryResourceExhaustedWithoutDelay,
+		t.prsPool,
 	)
 }
 
@@ -775,7 +778,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 		t.release,
 		requestIDHeaderProviderFromSpannerClient(client),
 		retryResourceExhausted,
-		allowRetryResourceExhaustedWithoutDelay)
+		allowRetryResourceExhaustedWithoutDelay,
+		t.prsPool,
+	)
 }
 
 func (t *txReadOnly) prepareExecuteSQL(ctx context.Context, stmt Statement, options QueryOptions) (*sppb.ExecuteSqlRequest, *sessionHandle, error) {
