@@ -139,19 +139,19 @@ func TestApplyStorageOpt(t *testing.T) {
 		},
 		{
 			desc: "use gRPC bidi reads",
-			opts: []option.ClientOption{withGRPCBidiReads()},
+			opts: []option.ClientOption{WithGRPCBidiReads()},
 			want: storageConfig{
 				grpcBidiReads: true,
 			},
 		},
 		{
-			desc: "use gRPC zonal bucket APIs",
-			opts: []option.ClientOption{withZonalBucketAPIs()},
+			desc: "use gRPC appendable uploads",
+			opts: []option.ClientOption{WithAppendableUploads()},
 			want: storageConfig{
-				grpcBidiReads:         true,
 				grpcAppendableUploads: true,
 			},
 		},
+
 		{
 			desc: "enforce direct connectivity",
 			opts: []option.ClientOption{withDirectConnectivityEnforced()},
