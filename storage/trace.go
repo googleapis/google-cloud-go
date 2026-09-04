@@ -178,3 +178,14 @@ func getCommonAttributes() []attribute.KeyValue {
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
+
+// startChecksumSpan starts a T5 internal operation span for computing or verifying data checksums.
+func startChecksumSpan(ctx context.Context, checksumType string) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		return ctx, trace.SpanFromContext(ctx)
+	}
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(attribute.String("gcp.storage.checksum.type", checksumType)),
+	}
+	return startSpan(ctx, "Storage.CalculateChecksum", opts...)
+}
