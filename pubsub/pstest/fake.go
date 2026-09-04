@@ -23,11 +23,14 @@
 package pstest
 
 import (
+	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"math/rand"
+	"net/http"
 	"path"
 	"sort"
 	"strings"
@@ -70,6 +73,28 @@ type publishResponse struct {
 	err  error
 }
 
+type pushDeliveryRequest struct {
+	subscription *subscription
+	message      *message
+	attempt      int
+	endpoint     string
+}
+
+// pushMessage and pubsubMessage represent the JSON format sent to push endpoints
+// as documented at https://cloud.google.com/pubsub/docs/push
+type pushMessage struct {
+	Message      *pubsubMessage `json:"message"`
+	Subscription string         `json:"subscription"`
+}
+
+type pubsubMessage struct {
+	Attributes  map[string]string `json:"attributes,omitempty"`
+	Data        []byte            `json:"data,omitempty"`
+	MessageID   string            `json:"message_id,omitempty"`
+	PublishTime string            `json:"publish_time,omitempty"`
+	OrderingKey string            `json:"ordering_key,omitempty"`
+}
+
 // Server is a fake Pub/Sub server.
 type Server struct {
 	srv     *testutil.Server
@@ -105,6 +130,9 @@ type GServer struct {
 	// PublishResponse when publish is called. Otherwise, responses
 	// are generated from the publishResponses channel.
 	autoPublishResponse bool
+
+	// HTTP client for push delivery
+	httpClient *http.Client
 }
 
 // NewServer creates a new fake server running in the current process.
@@ -155,6 +183,9 @@ func initNewServer(address string, callback func(*grpc.Server), opts ...ServerRe
 			publishResponses:    make(chan *publishResponse, 100),
 			autoPublishResponse: true,
 			schemas:             map[string][]*pb.Schema{},
+			httpClient: &http.Client{
+				Timeout: 30 * time.Second,
+			},
 		},
 	}
 	s.GServer.timeNowFunc.Store(time.Now)
@@ -575,7 +606,7 @@ func (s *GServer) CreateSubscription(_ context.Context, ps *pb.Subscription) (*p
 		deadLetterTopic = dlTopic
 	}
 
-	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps)
+	sub := newSubscription(top, &s.mu, s.now, deadLetterTopic, ps, s.httpClient)
 	if ps.Filter != "" {
 		filter, err := parseFilter(ps.Filter)
 		if err != nil {
@@ -919,17 +950,18 @@ func (t *topic) publish(pm *pb.PubsubMessage, m *Message) {
 type subscription struct {
 	topic           *topic
 	deadLetterTopic *topic
-	mu              *sync.Mutex // the server mutex, here for convenience
+	mu              *sync.Mutex
 	proto           *pb.Subscription
 	ackTimeout      time.Duration
-	msgs            map[string]*message // unacked messages by message ID
+	msgs            map[string]*message
 	streams         []*stream
 	done            chan struct{}
 	timeNowFunc     func() time.Time
 	filter          *filtering.Filter
+	httpClient      *http.Client
 }
 
-func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription) *subscription {
+func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, deadLetterTopic *topic, ps *pb.Subscription, httpClient *http.Client) *subscription {
 	at := time.Duration(ps.AckDeadlineSeconds) * time.Second
 	if at == 0 {
 		at = 10 * time.Second
@@ -944,6 +976,7 @@ func newSubscription(t *topic, mu *sync.Mutex, timeNowFunc func() time.Time, dea
 		msgs:            map[string]*message{},
 		done:            make(chan struct{}),
 		timeNowFunc:     timeNowFunc,
+		httpClient:      httpClient,
 	}
 	return sub
 }
@@ -1120,7 +1153,7 @@ func (s *GServer) Seek(ctx context.Context, req *pb.SeekRequest) (*pb.SeekRespon
 			proto: &pb.ReceivedMessage{
 				AckId: m.ID,
 				// This was not preserved!
-				//Message: pm,
+				// Message: pm,
 			},
 			deliveries:  &m.deliveries,
 			acks:        &m.acks,
@@ -1213,7 +1246,45 @@ func (s *subscription) deliver() {
 
 	now := s.timeNowFunc()
 	s.maintainMessages(now)
-	// Try to deliver each remaining message.
+
+	if s.isPushSubscription() {
+		s.deliverPush(now)
+	} else {
+		s.deliverPull(now)
+	}
+}
+
+// deliverPush handles message delivery for push subscriptions.
+func (s *subscription) deliverPush(now time.Time) {
+	filterMsgs(s.msgs, s.filter)
+	for id, m := range orderMsgs(s.msgs, s.proto.EnableMessageOrdering) {
+		if m.outstanding() {
+			continue
+		}
+		if s.deadLetterCandidate(m) {
+			s.ack(id)
+			s.publishToDeadLetter(m)
+			continue
+		}
+
+		(*m.deliveries)++
+		if s.proto.DeadLetterPolicy != nil {
+			m.proto.DeliveryAttempt = int32(*m.deliveries)
+		}
+
+		m.ackDeadline = now.Add(s.ackTimeout)
+
+		s.mu.Unlock()
+		err := s.deliverToPushEndpoint(m, s.proto.PushConfig.PushEndpoint)
+		s.mu.Lock()
+
+		if err == nil {
+			s.ack(id)
+		}
+	}
+}
+
+func (s *subscription) deliverPull(now time.Time) {
 	curIndex := 0
 	filterMsgs(s.msgs, s.filter)
 	for id, m := range orderMsgs(s.msgs, s.proto.EnableMessageOrdering) {
@@ -1537,6 +1608,58 @@ func WithErrorInjection(funcName string, code codes.Code, msg string) ServerReac
 		FuncName: funcName,
 		Reactor:  &errorInjectionReactor{code: code, msg: msg},
 	}
+}
+
+func formatPubsubMessage(msg *pb.ReceivedMessage, subscriptionName string) ([]byte, error) {
+	pushMsg := pushMessage{
+		Message: &pubsubMessage{
+			Attributes:  msg.Message.Attributes,
+			Data:        msg.Message.Data,
+			MessageID:   msg.Message.MessageId,
+			PublishTime: msg.Message.PublishTime.AsTime().Format(time.RFC3339Nano),
+			OrderingKey: msg.Message.OrderingKey,
+		},
+		Subscription: subscriptionName,
+	}
+
+	return json.Marshal(pushMsg)
+}
+
+func (s *subscription) deliverToPushEndpoint(msg *message, endpoint string) error {
+	if endpoint == "" {
+		return nil
+	}
+
+	payload, err := formatPubsubMessage(msg.proto, s.proto.Name)
+	if err != nil {
+		return fmt.Errorf("failed to format message: %w", err)
+	}
+
+	req, err := http.NewRequest(http.MethodPost, endpoint, bytes.NewBuffer(payload))
+	if err != nil {
+		return fmt.Errorf("failed to create request: %w", err)
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+	req.Header.Set("User-Agent", "Google-Cloud-PubSub")
+
+	resp, err := s.httpClient.Do(req)
+	if err != nil {
+		return fmt.Errorf("failed to send request: %w", err)
+	}
+	defer resp.Body.Close()
+
+	if resp.StatusCode >= 200 && resp.StatusCode < 300 {
+		return nil
+	} else if resp.StatusCode >= 400 && resp.StatusCode < 500 {
+		return nil
+	} else {
+		return fmt.Errorf("server error: status %d", resp.StatusCode)
+	}
+}
+
+func (s *subscription) isPushSubscription() bool {
+	return s.proto.PushConfig != nil && s.proto.PushConfig.PushEndpoint != ""
 }
 
 const letters = "abcdef1234567890"
