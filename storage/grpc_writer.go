@@ -29,6 +29,8 @@ import (
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -235,10 +237,20 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			writerRetry = writerRetry.clone()
 			writerRetry.maxRetryDuration = 0
 		}
-		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
+		var runCtx context.Context
+		isResumable := !w.append && !w.forceOneShot
+		if isResumable {
+			runCtx, _ = startResumableInitSpan(w.preRunCtx, "")
+		} else {
+			runCtx = w.preRunCtx
+		}
+		w.streamResult = checkCanceled(run(runCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
 		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name)))
+		if isResumable {
+			endSpan(runCtx, w.streamResult)
+		}
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
@@ -1119,7 +1131,14 @@ func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCB
 
 						var bufChecksum *uint32
 						if !s.disableAutoChecksum {
+							var chkCtx context.Context
+							if len(r.buf) > 0 {
+								chkCtx, _ = startChecksumSpan(ctx, "CRC32C")
+							}
 							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
+							if chkCtx != nil {
+								endSpan(chkCtx, nil)
+							}
 						}
 						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
 							sendCRC32C:          s.sendCRC32C,
@@ -1197,7 +1216,9 @@ type gRPCResumableBidiWriteBufferSender struct {
 	objectAttrs         *ObjectAttrs
 	fullObjectChecksum  func() *uint32
 
-	streamErr error
+	streamErr  error
+	chunkCount int
+	writerCtx  context.Context
 }
 
 func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiWriteBufferSender {
@@ -1216,6 +1237,7 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 			checksum := w.fullObjectChecksum
 			return &checksum
 		},
+		writerCtx: w.preRunCtx,
 	}
 }
 
@@ -1233,6 +1255,9 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 			return
 		}
 		s.upid = upres.GetUploadId()
+		initSpan := trace.SpanFromContext(ctx)
+		initSpan.SetAttributes(attribute.String("gcs.resumable_upload.session_uri", s.upid))
+		endSpan(ctx, nil)
 		s.startWriteRequest = nil
 	} else {
 		q, err := s.raw.QueryWriteStatus(ctx, &storagepb.QueryWriteStatusRequest{UploadId: s.upid}, opts...)
@@ -1244,7 +1269,7 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 		cs.completions <- gRPCBidiWriteCompletion{flushOffset: q.GetPersistedSize()}
 	}
 
-	stream, err := s.raw.BidiWriteObject(ctx, opts...)
+	stream, err := s.raw.BidiWriteObject(s.writerCtx, opts...)
 	if err != nil {
 		s.streamErr = err
 		close(cs.completions)
@@ -1275,9 +1300,24 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 							continue
 						}
 
+						var chunkCtx context.Context
+						if len(r.buf) > 0 {
+							s.chunkCount++
+							chunkCtx, _ = startChunkSpan(s.writerCtx, "Storage.UploadChunk", r.offset, int64(len(r.buf)), withChunkNumber(int64(s.chunkCount)))
+						} else {
+							chunkCtx = s.writerCtx
+						}
+
 						var bufChecksum *uint32
 						if !s.disableAutoChecksum {
+							var chkCtx context.Context
+							if len(r.buf) > 0 {
+								chkCtx, _ = startChecksumSpan(chunkCtx, "CRC32C")
+							}
 							bufChecksum = proto.Uint32(crc32.Checksum(r.buf, crc32cTable))
+							if chkCtx != nil {
+								endSpan(chkCtx, nil)
+							}
 						}
 						objectChecksums := getObjectChecksums(&getObjectChecksumsParams{
 							sendCRC32C:          s.sendCRC32C,
@@ -1293,7 +1333,13 @@ func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRP
 							firstSend = false
 						}
 						if err := stream.Send(req); err != nil {
+							if chunkCtx != nil && len(r.buf) > 0 {
+								endSpan(chunkCtx, err)
+							}
 							return err
+						}
+						if chunkCtx != nil && len(r.buf) > 0 {
+							endSpan(chunkCtx, nil)
 						}
 						if r.finishWrite {
 							stream.CloseSend()
