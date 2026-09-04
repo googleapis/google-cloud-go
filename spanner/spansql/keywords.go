@@ -160,6 +160,10 @@ func init() {
 	funcArgParsers["TOKENIZE_NGRAMS"] = tokenDefinitionArgParser
 	funcArgParsers["TOKENIZE_NUMBER"] = tokenDefinitionArgParser
 	funcArgParsers["TOKENIZE_SUBSTRING"] = tokenDefinitionArgParser
+	// Special case for array functions with lambda arguments
+	funcArgParsers["ARRAY_TRANSFORM"] = lambdaArgParser
+	funcArgParsers["ARRAY_FILTER"] = lambdaArgParser
+	funcArgParsers["ARRAY_INCLUDES"] = lambdaArgParser
 }
 
 var funcNames = []string{
@@ -234,6 +238,7 @@ var funcNames = []string{
 	"RTRIM",
 	"SAFE_CONVERT_BYTES_TO_STRING",
 	"SPLIT",
+	"SPLIT_SUBSTR",
 	"STARTS_WITH",
 	"STRPOS",
 	"SUBSTR",
@@ -256,7 +261,7 @@ var funcNames = []string{
 	"ARRAY_CONCAT",
 	"ARRAY_FIRST", "ARRAY_INCLUDES", "ARRAY_INCLUDES_ALL", "ARRAY_INCLUDES_ANY", "ARRAY_LAST",
 	"ARRAY_LENGTH",
-	"ARRAY_MAX", "ARRAY_MIN", "ARRAY_REVERSE", "ARRAY_SLICE", "ARRAY_TRANSFORM",
+	"ARRAY_MAX", "ARRAY_MIN", "ARRAY_REVERSE", "ARRAY_SLICE", "ARRAY_TRANSFORM", "ARRAY_FILTER",
 	"ARRAY_TO_STRING",
 	"GENERATE_ARRAY", "GENERATE_DATE_ARRAY",
 	"OFFSET", "ORDINAL",
