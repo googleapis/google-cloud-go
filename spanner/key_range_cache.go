@@ -73,6 +73,12 @@ type cachedTablet struct {
 	endpoint atomic.Pointer[cachedTabletEndpointRef]
 }
 
+type tabletFreshnessBaseline struct {
+	incarnation                             []byte
+	serverAddress                           string
+	requiresNewerIncarnationForFirstAddress bool
+}
+
 type eligibleReplica struct {
 	tablet        *cachedTablet
 	endpoint      channelEndpoint
@@ -87,17 +93,14 @@ type routeSelectionState struct {
 	hasUnroutableReplica     bool
 }
 
-func (s routeSelectionState) allCoolingDown() bool {
-	return s.sawMatchingReplica && s.sawCoolingDownReplica && !s.sawNonCoolingDownReplica
-}
-
 type cachedGroup struct {
 	groupUID uint64
 
-	mu         sync.RWMutex
-	generation []byte
-	tablets    []*cachedTablet
-	leaderIdx  int
+	mu                           sync.RWMutex
+	generation                   []byte
+	tablets                      []*cachedTablet
+	leaderIdx                    int
+	freshnessBaselineByTabletUID map[uint64]tabletFreshnessBaseline
 }
 
 type cachedTabletEndpointRef struct {
@@ -179,8 +182,11 @@ func (c *keyRangeCache) setMinEntriesForRandomPick(value int) {
 
 func (c *keyRangeCache) setLifecycleManager(lifecycleManager *endpointLifecycleManager) {
 	c.configMu.Lock()
-	defer c.configMu.Unlock()
 	c.lifecycleManager = lifecycleManager
+	c.configMu.Unlock()
+	if lifecycleManager != nil {
+		lifecycleManager.updateActiveAddresses(activeAddressesInState(c.loadState()))
+	}
 }
 
 func (c *keyRangeCache) recordReplicaLatency(operationUID uint64, address string, latency time.Duration) {
@@ -227,10 +233,15 @@ func cloneCachedGroup(group *cachedGroup) *cachedGroup {
 	group.mu.RLock()
 	defer group.mu.RUnlock()
 	cloned := &cachedGroup{
-		groupUID:   group.groupUID,
-		generation: append([]byte(nil), group.generation...),
-		leaderIdx:  group.leaderIdx,
-		tablets:    make([]*cachedTablet, 0, len(group.tablets)),
+		groupUID:                     group.groupUID,
+		generation:                   append([]byte(nil), group.generation...),
+		leaderIdx:                    group.leaderIdx,
+		tablets:                      make([]*cachedTablet, 0, len(group.tablets)),
+		freshnessBaselineByTabletUID: make(map[uint64]tabletFreshnessBaseline, len(group.freshnessBaselineByTabletUID)),
+	}
+	for tabletUID, baseline := range group.freshnessBaselineByTabletUID {
+		baseline.incarnation = append([]byte(nil), baseline.incarnation...)
+		cloned.freshnessBaselineByTabletUID[tabletUID] = baseline
 	}
 	for _, tablet := range group.tablets {
 		if tablet == nil {
@@ -330,7 +341,9 @@ func (c *keyRangeCache) addRanges(cacheUpdate *sppb.CacheUpdate) {
 	for _, group := range newGroups {
 		builder.unrefGroup(group)
 	}
-	c.state.Store(builder.snapshot())
+	snapshot := builder.snapshot()
+	c.state.Store(snapshot)
+	c.syncLifecycleActiveAddresses(snapshot)
 }
 
 func (c *keyRangeCache) fillRoutingHint(ctx context.Context, preferLeader bool, mode rangeMode, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) channelEndpoint {
@@ -367,8 +380,46 @@ func (c *keyRangeCache) fillRoutingHintWithCooldownTracker(ctx context.Context, 
 func (c *keyRangeCache) clear() {
 	c.updateMu.Lock()
 	defer c.updateMu.Unlock()
-	c.state.Store(&keyRangeCacheState{})
+	state := &keyRangeCacheState{}
+	c.state.Store(state)
 	c.accessCounter.Store(0)
+	c.syncLifecycleActiveAddresses(state)
+}
+
+func (c *keyRangeCache) syncLifecycleActiveAddresses(state *keyRangeCacheState) {
+	c.configMu.RLock()
+	lifecycleManager := c.lifecycleManager
+	c.configMu.RUnlock()
+	if lifecycleManager != nil {
+		lifecycleManager.updateActiveAddresses(activeAddressesInState(state))
+	}
+}
+
+func activeAddressesInState(state *keyRangeCacheState) map[string]struct{} {
+	addresses := make(map[string]struct{})
+	if state == nil {
+		return addresses
+	}
+	groupUIDs := make(map[uint64]struct{})
+	for _, partition := range state.partitions {
+		for _, cachedRange := range partition.ranges {
+			groupUIDs[cachedRange.groupUID] = struct{}{}
+		}
+	}
+	for groupUID := range groupUIDs {
+		group := state.findGroup(groupUID)
+		if group == nil {
+			continue
+		}
+		group.mu.RLock()
+		for _, tablet := range group.tablets {
+			if tablet != nil && tablet.serverAddress != "" {
+				addresses[tablet.serverAddress] = struct{}{}
+			}
+		}
+		group.mu.RUnlock()
+	}
+	return addresses
 }
 
 func (c *keyRangeCache) size() int {
@@ -482,8 +533,10 @@ func (c *keyRangeCache) shrinkTo(newSize int) {
 	defer c.updateMu.Unlock()
 	builder := c.cloneState()
 	if newSize <= 0 {
-		c.state.Store(&keyRangeCacheState{})
+		state := &keyRangeCacheState{}
+		c.state.Store(state)
 		c.accessCounter.Store(0)
+		c.syncLifecycleActiveAddresses(state)
 		return
 	}
 	if newSize >= builder.rangeCount {
@@ -525,7 +578,9 @@ func (c *keyRangeCache) shrinkTo(newSize int) {
 	builder.recordTouchedPartitions(0, len(builder.partitions))
 	builder.partitions = buildRangePartitions(kept)
 	builder.rangeCount = len(allRanges) - numToShrink
-	c.state.Store(builder.snapshot())
+	snapshot := builder.snapshot()
+	c.state.Store(snapshot)
+	c.syncLifecycleActiveAddresses(snapshot)
 }
 
 func (c *keyRangeCache) accessTimeNow() int64 {
@@ -767,9 +822,6 @@ func (b *keyRangeCacheStateBuilder) findGroup(groupUID uint64) *cachedGroup {
 
 func (t *cachedTablet) update(tabletIn *sppb.Tablet) {
 	if tabletIn == nil {
-		return
-	}
-	if t.tabletUID > 0 && bytes.Compare(t.incarnation, tabletIn.GetIncarnation()) > 0 {
 		return
 	}
 	t.tabletUID = tabletIn.GetTabletUid()
@@ -1024,45 +1076,110 @@ func (g *cachedGroup) update(groupIn *sppb.Group) {
 	g.mu.Lock()
 	defer g.mu.Unlock()
 
-	if bytes.Compare(groupIn.GetGeneration(), g.generation) > 0 {
+	generationCmp := bytes.Compare(groupIn.GetGeneration(), g.generation)
+	// Response-carried updates may arrive out of order. Reject the entire stale
+	// group so it cannot restore tablet membership from an older generation.
+	if generationCmp < 0 {
+		return
+	}
+
+	if generationCmp > 0 {
 		g.generation = append([]byte(nil), groupIn.GetGeneration()...)
+		g.freshnessBaselineByTabletUID = make(map[uint64]tabletFreshnessBaseline, len(groupIn.GetTablets()))
 		if idx := int(groupIn.GetLeaderIndex()); idx >= 0 && idx < len(groupIn.GetTablets()) {
 			g.leaderIdx = idx
 		} else {
 			g.leaderIdx = -1
 		}
 	}
-
-	if len(g.tablets) == len(groupIn.GetTablets()) {
-		mismatch := false
-		for i := range g.tablets {
-			if g.tablets[i].tabletUID != groupIn.GetTablets()[i].GetTabletUid() {
-				mismatch = true
-				break
-			}
-		}
-		if !mismatch {
-			for i := range g.tablets {
-				g.tablets[i].update(groupIn.GetTablets()[i])
-			}
-			return
-		}
+	if g.freshnessBaselineByTabletUID == nil {
+		g.freshnessBaselineByTabletUID = make(map[uint64]tabletFreshnessBaseline)
 	}
 
-	tabletByUID := make(map[uint64]*cachedTablet, len(g.tablets))
+	if generationCmp > 0 {
+		g.tablets = make([]*cachedTablet, 0, len(groupIn.GetTablets()))
+		for _, tabletIn := range groupIn.GetTablets() {
+			tablet := &cachedTablet{}
+			tablet.update(tabletIn)
+			g.tablets = append(g.tablets, tablet)
+			g.rememberFreshnessBaselineLocked(tablet)
+		}
+		return
+	}
+
+	g.mergeEqualGenerationTabletsLocked(groupIn)
+}
+
+func (g *cachedGroup) mergeEqualGenerationTabletsLocked(groupIn *sppb.Group) {
+	currentByUID := make(map[uint64]*cachedTablet, len(g.tablets))
 	for _, tablet := range g.tablets {
-		tabletByUID[tablet.tabletUID] = tablet
+		currentByUID[tablet.tabletUID] = tablet
 	}
-	newTablets := make([]*cachedTablet, 0, len(groupIn.GetTablets()))
+
+	tablets := make([]*cachedTablet, 0, len(groupIn.GetTablets()))
 	for _, tabletIn := range groupIn.GetTablets() {
-		tablet := tabletByUID[tabletIn.GetTabletUid()]
-		if tablet == nil {
-			tablet = &cachedTablet{}
+		incoming := &cachedTablet{}
+		incoming.update(tabletIn)
+		previous := currentByUID[incoming.tabletUID]
+		baseline, hasBaseline := g.freshnessBaselineByTabletUID[incoming.tabletUID]
+		incarnationCmp := 1
+		if hasBaseline {
+			incarnationCmp = bytes.Compare(incoming.incarnation, baseline.incarnation)
 		}
-		tablet.update(tabletIn)
-		newTablets = append(newTablets, tablet)
+		makesRoutable := !incoming.skip && incoming.serverAddress != ""
+		hasNewerIncarnation := hasBaseline && len(incoming.incarnation) > 0 && incarnationCmp > 0
+		hasOlderFirstAddress := hasBaseline && baseline.serverAddress == "" && incarnationCmp < 0
+		changesProvenAddress := hasBaseline && baseline.serverAddress != "" && incoming.serverAddress != baseline.serverAddress
+		requiresFreshFirstAddress := hasBaseline && baseline.serverAddress == "" && baseline.requiresNewerIncarnationForFirstAddress
+		latchesFirstAddressFreshness := hasBaseline && baseline.serverAddress == "" && incoming.skip && incoming.serverAddress == "" && incarnationCmp >= 0
+		// Equal-generation availability can flap between frontends. Preserve a
+		// proven address or skip-and-empty state until incarnation advances.
+		refusesStaleAddressChange := makesRoutable && (hasOlderFirstAddress || ((changesProvenAddress || requiresFreshFirstAddress) && !hasNewerIncarnation))
+		if refusesStaleAddressChange {
+			if previous != nil {
+				tablets = append(tablets, previous)
+			}
+			continue
+		}
+
+		if previous != nil {
+			previous.update(tabletIn)
+			incoming = previous
+		}
+		tablets = append(tablets, incoming)
+		if !hasBaseline || makesRoutable || hasNewerIncarnation || latchesFirstAddressFreshness {
+			g.rememberFreshnessBaselineLocked(incoming)
+		}
 	}
-	g.tablets = newTablets
+	g.tablets = tablets
+}
+
+func (g *cachedGroup) rememberFreshnessBaselineLocked(tablet *cachedTablet) {
+	baseline, hasBaseline := g.freshnessBaselineByTabletUID[tablet.tabletUID]
+	incarnationCmp := 1
+	if hasBaseline {
+		incarnationCmp = bytes.Compare(tablet.incarnation, baseline.incarnation)
+	}
+	hasNewerIncarnation := incarnationCmp > 0
+	incarnation := baseline.incarnation
+	if hasNewerIncarnation {
+		incarnation = append([]byte(nil), tablet.incarnation...)
+	}
+	serverAddress := baseline.serverAddress
+	requiresNewerIncarnationForFirstAddress := hasBaseline && baseline.requiresNewerIncarnationForFirstAddress
+	if tablet.serverAddress != "" && incarnationCmp >= 0 {
+		serverAddress = tablet.serverAddress
+		requiresNewerIncarnationForFirstAddress = false
+	} else if hasNewerIncarnation {
+		requiresNewerIncarnationForFirstAddress = tablet.skip
+	} else if serverAddress == "" && tablet.skip && tablet.serverAddress == "" && incarnationCmp == 0 {
+		requiresNewerIncarnationForFirstAddress = true
+	}
+	g.freshnessBaselineByTabletUID[tablet.tabletUID] = tabletFreshnessBaseline{
+		incarnation:                             incarnation,
+		serverAddress:                           serverAddress,
+		requiresNewerIncarnationForFirstAddress: requiresNewerIncarnationForFirstAddress,
+	}
 }
 
 func (g *cachedGroup) hasLeaderLocked() bool {
@@ -1086,9 +1203,9 @@ func (g *cachedGroup) fillRoutingHintWithCooldownTracker(ctx context.Context, en
 	if selected != nil {
 		return selected.pick(hint)
 	}
-	if state.allCoolingDown() {
+	if state.sawCoolingDownReplica {
 		g.mu.RLock()
-		selected = g.selectCoolingDownTabletLocked(endpointCache, deterministicRandom, preferLeader, directedReadOptions, hint)
+		selected = g.selectCoolingDownTabletLocked(endpointCache, preferLeader, directedReadOptions, hint, cooldowns)
 		if selected != nil {
 			g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, selected, directedReadOptions, hint, cooldowns, skippedTabletUIDsFromHint(hint))
 			g.mu.RUnlock()
@@ -1102,11 +1219,11 @@ func (g *cachedGroup) fillRoutingHintWithCooldownTracker(ctx context.Context, en
 	warmPendingEndpoints(ctx, endpointCache, pendingCreations)
 	selected, state = g.fillRoutingHintAttempt(endpointCache, lifecycleManager, deterministicRandom, preferLeader, directedReadOptions, hint, cooldowns, nil)
 	if selected == nil {
-		if !state.allCoolingDown() {
+		if !state.sawCoolingDownReplica {
 			return nil
 		}
 		g.mu.RLock()
-		selected = g.selectCoolingDownTabletLocked(endpointCache, deterministicRandom, preferLeader, directedReadOptions, hint)
+		selected = g.selectCoolingDownTabletLocked(endpointCache, preferLeader, directedReadOptions, hint, cooldowns)
 		if selected == nil {
 			g.mu.RUnlock()
 			return nil
@@ -1189,12 +1306,15 @@ func (g *cachedGroup) selectScoreAwareTabletLocked(endpointCache channelEndpoint
 	return selected.tablet
 }
 
-func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpointCache, deterministicRandom bool, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint) *cachedTablet {
+func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpointCache, preferLeader bool, directedReadOptions *sppb.DirectedReadOptions, hint *sppb.RoutingHint, cooldowns *endpointOverloadCooldownTracker) *cachedTablet {
+	if cooldowns == nil {
+		return nil
+	}
 	hasDirectedReadOptions := directedReadOptions != nil && directedReadOptions.GetReplicas() != nil
 	preferredLeader := g.localLeaderForScoreBiasLocked(hasDirectedReadOptions)
 	candidates := make([]eligibleReplica, 0, len(g.tablets))
 	for _, tablet := range g.tablets {
-		if tablet == nil || !tablet.matches(directedReadOptions) || tablet.skip || tablet.serverAddress == "" {
+		if tablet == nil || !tablet.matches(directedReadOptions) || tablet.skip || tablet.serverAddress == "" || !cooldowns.isCoolingDown(tablet.serverAddress) {
 			continue
 		}
 		endpoint := tablet.getOrLoadEndpointIfPresent(endpointCache)
@@ -1207,11 +1327,29 @@ func (g *cachedGroup) selectCoolingDownTabletLocked(endpointCache channelEndpoin
 			selectionCost: selectionCostForTablet(routingOperationUID(hint), preferLeader, endpoint, tablet, preferredLeader),
 		})
 	}
-	selected := selectEligibleReplica(candidates, deterministicRandom)
-	if selected == nil {
-		return nil
+	sort.SliceStable(candidates, func(i, j int) bool {
+		firstFailure := cooldowns.lastOverloadFailure(candidates[i].tablet.serverAddress)
+		secondFailure := cooldowns.lastOverloadFailure(candidates[j].tablet.serverAddress)
+		if firstFailure.IsZero() && secondFailure.IsZero() {
+			return candidates[i].selectionCost < candidates[j].selectionCost
+		}
+		if firstFailure.IsZero() {
+			return false
+		}
+		if secondFailure.IsZero() {
+			return true
+		}
+		if !firstFailure.Equal(secondFailure) {
+			return firstFailure.Before(secondFailure)
+		}
+		return candidates[i].selectionCost < candidates[j].selectionCost
+	})
+	for _, candidate := range candidates {
+		if cooldowns.tryReserveProbe(candidate.tablet.serverAddress) {
+			return candidate.tablet
+		}
 	}
-	return selected.tablet
+	return nil
 }
 
 func (g *cachedGroup) localLeaderForScoreBiasLocked(hasDirectedReadOptions bool) *cachedTablet {
