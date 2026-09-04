@@ -28,6 +28,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+	"golang.org/x/oauth2"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -177,4 +178,29 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// TracedTokenSource wraps an oauth2.TokenSource to record T5 Auth.RefreshAccessToken
+// internal operation spans whenever an access token is fetched or refreshed.
+type TracedTokenSource struct {
+	base oauth2.TokenSource
+}
+
+// NewTracedTokenSource wraps an existing oauth2.TokenSource with OpenTelemetry T5 Auth tracing.
+func NewTracedTokenSource(base oauth2.TokenSource) oauth2.TokenSource {
+	if base == nil {
+		return nil
+	}
+	return &TracedTokenSource{base: base}
+}
+
+// Token fetches or refreshes an access token while recording a T5 Auth.RefreshAccessToken span.
+func (t *TracedTokenSource) Token() (*oauth2.Token, error) {
+	if !isOTelTracingDevEnabled() {
+		return t.base.Token()
+	}
+	ctx, _ := startSpan(context.Background(), "Auth.RefreshAccessToken")
+	tok, err := t.base.Token()
+	endSpan(ctx, err)
+	return tok, err
 }
