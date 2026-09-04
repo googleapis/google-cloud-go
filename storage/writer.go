@@ -270,7 +270,11 @@ func (w *Writer) wrapWriteError(n int, err error) (int, error) {
 }
 
 func (w *Writer) isGRPCClient() bool {
-	_, ok := w.o.c.tc.(*grpcStorageClient)
+	tc := w.o.c.tc
+	if mc, ok := tc.(*metricsStorageClient); ok {
+		tc = mc.storageClient
+	}
+	_, ok := tc.(*grpcStorageClient)
 	return ok
 }
 
@@ -446,7 +450,7 @@ func (w *Writer) markClosed(err error) error {
 
 	if state := metricsStateFromContext(w.ctx); state != nil {
 		if state.metrics != nil && total > 0 {
-			state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject")))
+			state.metrics.requestBodySize.Record(w.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "WriteObject"), attribute.String("server.address", stripPort(state.getTarget()))))
 		}
 		if state.record != nil {
 			state.record(closingErr)
