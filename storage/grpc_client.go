@@ -25,6 +25,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -1703,6 +1704,13 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
+		if r.stream != nil {
+			for {
+				if err := r.recv(); err != nil {
+					break
+				}
+			}
+		}
 		return 0, io.EOF
 	}
 
@@ -1851,10 +1859,22 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 // Close cancels the read stream's context in order for it to be closed and
 // collected, and frees any currently in use buffers.
 func (r *gRPCReader) Close() error {
+	if r.stream != nil && ((r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange) {
+		if r.cancel != nil {
+			timer := time.AfterFunc(200*time.Millisecond, r.cancel)
+			defer timer.Stop()
+		}
+		for {
+			if err := r.recv(); err != nil {
+				break
+			}
+		}
+	}
 	if r.cancel != nil {
 		r.cancel()
 	}
 
+	r.stream = nil
 	r.currMsg = nil
 	return nil
 }
@@ -1876,7 +1896,7 @@ func (r *gRPCReader) recv() error {
 	err := r.stream.RecvMsg(&databufs)
 	// If we get a mid-stream error on a recv call, reopen the stream.
 	// ABORTED could indicate a redirect so should also trigger a reopen.
-	if err != nil && (r.settings.retry.runShouldRetry(err, nil) || status.Code(err) == codes.Aborted) {
+	if err != nil && ((r.settings != nil && r.settings.retry != nil && r.settings.retry.runShouldRetry(err, nil)) || status.Code(err) == codes.Aborted) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is

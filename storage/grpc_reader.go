@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"github.com/googleapis/gax-go/v2"
@@ -325,6 +326,13 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
+		if r.stream != nil {
+			for {
+				if err := r.recv(); err != nil {
+					break
+				}
+			}
+		}
 		return 0, io.EOF
 	}
 
@@ -492,6 +500,17 @@ func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
 // Close cancels the read stream's context in order for it to be closed and
 // collected, and frees any currently in use buffers.
 func (r *gRPCReadObjectReader) Close() error {
+	if r.stream != nil && (r.size == r.seen || r.zeroRange) {
+		if r.cancel != nil {
+			timer := time.AfterFunc(200*time.Millisecond, r.cancel)
+			defer timer.Stop()
+		}
+		for {
+			if err := r.recv(); err != nil {
+				break
+			}
+		}
+	}
 	if r.cancel != nil {
 		r.cancel()
 	}
@@ -515,7 +534,7 @@ func (r *gRPCReadObjectReader) recv() error {
 	databufs := mem.BufferSlice{}
 	err := r.stream.RecvMsg(&databufs)
 
-	if err != nil && r.settings.retry.runShouldRetry(err, nil) {
+	if err != nil && r.settings != nil && r.settings.retry != nil && r.settings.retry.runShouldRetry(err, nil) {
 		// This will "close" the existing stream and immediately attempt to
 		// reopen the stream, but will backoff if further attempts are necessary.
 		// Reopening the stream Recvs the first message, so if retrying is
