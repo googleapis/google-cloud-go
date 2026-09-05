@@ -178,7 +178,7 @@ func decodeArrayDateReflect(pb *proto3.ListValue) {
 }
 
 func decodeStringArrayWrap(pb *proto3.ListValue) {
-	if _, err := decodeStringArray(pb); err != nil {
+	if _, err := decodeStringArray(internalListValueFromPublic(pb)); err != nil {
 		panic(err)
 	}
 }

@@ -217,10 +217,10 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
-					},
+					}),
 				},
 			},
 			wantTs: trxTs,
@@ -257,10 +257,10 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
-					},
+					}),
 				},
 			},
 			wantTs: trxTs,
@@ -288,24 +288,24 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "foo"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "bar"}},
-					},
+					}),
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "A"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "1"}},
-					},
+					}),
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "B"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "2"}},
-					},
+					}),
 				},
 			},
 			wantTs: trxTs,
@@ -337,10 +337,10 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "Hello"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "World"}},
-					},
+					}),
 				},
 			},
 			wantTs: trxTs,
@@ -383,24 +383,24 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "Hello"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "World"}},
-					},
+					}),
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "is"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "not"}},
-					},
+					}),
 				},
 				{
 					fields: kvMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{Kind: &proto3.Value_StringValue{StringValue: "a"}},
 						{Kind: &proto3.Value_StringValue{StringValue: "question"}},
-					},
+					}),
 				},
 			},
 			wantTs: trxTs,
@@ -429,14 +429,14 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvListMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{
 							Kind: genProtoListValue("foo-1", "foo-2"),
 						},
 						{
 							Kind: genProtoListValue("bar-1", "bar-2"),
 						},
-					},
+					}),
 				},
 			},
 			wantTxID: transactionID{5, 6, 7, 8, 9},
@@ -473,14 +473,14 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvListMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{
 							Kind: genProtoListValue("foo-1", "foo-2"),
 						},
 						{
 							Kind: genProtoListValue("bar-1", "bar-2"),
 						},
-					},
+					}),
 				},
 			},
 			wantTxID: transactionID{5, 6, 7, 8, 9},
@@ -548,7 +548,7 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantF: []*Row{
 				{
 					fields: kvObjectMeta.RowType.Fields,
-					vals: []*proto3.Value{
+					vals: internalValuesFromPublic([]*proto3.Value{
 						{
 							Kind: &proto3.Value_ListValue{
 								ListValue: &proto3.ListValue{
@@ -569,7 +569,7 @@ func TestPartialResultSetDecoder(t *testing.T) {
 								},
 							},
 						},
-					},
+					}),
 				},
 			},
 			wantTxID: transactionID{1, 2, 3, 4, 5},
@@ -582,7 +582,7 @@ nextTest:
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
-			rs, _, err := p.add(v)
+			rs, _, err := p.add(internalPartialResultSetFromOpen(v))
 			if err != nil {
 				t.Errorf("test %d.%d: partialResultSetDecoder.add(%v) = %v; want nil", i, j, v, err)
 				continue nextTest
@@ -880,7 +880,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 						if item == nil {
 							break
 						}
-						q = append(q, item)
+						q = append(q, internalPartialResultSetToOpen(item))
 					}
 					if !testEqual(q, test.queue) {
 						t.Fatalf("PartialResultSets still queued: \n%v\n, want \n%v\n", q, test.queue)
@@ -901,7 +901,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				}
 				// Receive next decoded item.
 				if r.next(&mt) {
-					rs = append(rs, r.get())
+					rs = append(rs, internalPartialResultSetToOpen(r.get()))
 				}
 			}
 		})
@@ -1156,7 +1156,7 @@ func TestRsdBlockingStates(t *testing.T) {
 					st = append(st, rs)
 					if len(st) == hl {
 						lastErr = r.lastErr()
-						q = r.q.dump()
+						q = internalPartialResultSetsToOpen(r.q.dump())
 						close(stateDone)
 					}
 				}
@@ -1181,7 +1181,7 @@ func TestRsdBlockingStates(t *testing.T) {
 						return
 					}
 					mutex.Lock()
-					rs = append(rs, r.get())
+					rs = append(rs, internalPartialResultSetToOpen(r.get()))
 					mutex.Unlock()
 				}
 			}()
@@ -1434,24 +1434,24 @@ func TestResumeToken(t *testing.T) {
 	want := []*Row{
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
+			vals: internalValuesFromPublic([]*proto3.Value{
 				{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
 				{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
-			},
+			}),
 		},
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
+			vals: internalValuesFromPublic([]*proto3.Value{
 				{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
 				{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
-			},
+			}),
 		},
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
+			vals: internalValuesFromPublic([]*proto3.Value{
 				{Kind: &proto3.Value_StringValue{StringValue: keyStr(2)}},
 				{Kind: &proto3.Value_StringValue{StringValue: valStr(2)}},
-			},
+			}),
 		},
 	}
 	if !testEqual(rows, want) {
@@ -1499,17 +1499,17 @@ func TestResumeToken(t *testing.T) {
 	want = []*Row{
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
+			vals: internalValuesFromPublic([]*proto3.Value{
 				{Kind: &proto3.Value_StringValue{StringValue: keyStr(0)}},
 				{Kind: &proto3.Value_StringValue{StringValue: valStr(0)}},
-			},
+			}),
 		},
 		{
 			fields: kvMeta.RowType.Fields,
-			vals: []*proto3.Value{
+			vals: internalValuesFromPublic([]*proto3.Value{
 				{Kind: &proto3.Value_StringValue{StringValue: keyStr(1)}},
 				{Kind: &proto3.Value_StringValue{StringValue: valStr(1)}},
-			},
+			}),
 		},
 	}
 	if !testEqual(rows, want) {
