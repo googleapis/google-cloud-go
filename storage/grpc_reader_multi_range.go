@@ -42,9 +42,10 @@ const (
 	// This should never be hit in practice, but is a safety valve to prevent
 	// unbounded memory usage if the user is adding ranges faster than they
 	// can be processed.
-	mrdAddInternalQueueMaxSize = 50000
-	defaultTargetPendingBytes  = 1 << 30 // 1 GiB
-	defaultTargetPendingRanges = 500
+	mrdAddInternalQueueMaxSize    = 50000
+	defaultTargetPendingBytes     = 1 << 30 // 1 GiB
+	defaultTargetPendingRanges    = 500
+	defaultSessionShutdownTimeout = 200 * time.Millisecond
 )
 
 // --- internalMultiRangeDownloader Interface ---
@@ -1318,7 +1319,7 @@ func (s *bidiReadStreamSession) Shutdown() {
 
 	select {
 	case <-done:
-	case <-time.After(200 * time.Millisecond):
+	case <-time.After(defaultSessionShutdownTimeout):
 		s.cancel()
 		<-done
 	}
