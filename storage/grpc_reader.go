@@ -518,7 +518,7 @@ func drainStreamOnCompletion(cancel context.CancelFunc, stream grpc.ClientStream
 		if err := stream.RecvMsg(&drop); err != nil {
 			break
 		}
-		// Free the raw buffers to prevent memory leaks from the parsing loop
+		// Free the raw buffers to prevent memory leaks from the parsing loop.
 		drop.Free()
 	}
 }

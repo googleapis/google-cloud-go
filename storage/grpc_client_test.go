@@ -956,7 +956,7 @@ func TestBidiReadStreamSessionGracefulShutdown(t *testing.T) {
 		cancel: cancel,
 	}
 
-	// 1. Initial shutdown should close reqC and set manualShutdown.
+	// Initial shutdown should close reqC and set manualShutdown.
 	session.Shutdown()
 
 	if !session.manualShutdown {
@@ -972,7 +972,7 @@ func TestBidiReadStreamSessionGracefulShutdown(t *testing.T) {
 		t.Errorf("expected reqC to be closed and readable")
 	}
 
-	// 2. Calling Shutdown again should be idempotent and not panic.
+	// Calling Shutdown again should be idempotent and not panic.
 	session.Shutdown()
 }
 
