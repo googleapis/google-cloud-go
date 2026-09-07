@@ -326,13 +326,6 @@ func (r *gRPCReadObjectReader) Read(p []byte) (int, error) {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
-		if r.stream != nil {
-			for {
-				if err := r.recv(); err != nil {
-					break
-				}
-			}
-		}
 		return 0, io.EOF
 	}
 
@@ -501,15 +494,7 @@ func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
 // collected, and frees any currently in use buffers.
 func (r *gRPCReadObjectReader) Close() error {
 	if r.stream != nil && (r.size == r.seen || r.zeroRange) {
-		if r.cancel != nil {
-			timer := time.AfterFunc(200*time.Millisecond, r.cancel)
-			defer timer.Stop()
-		}
-		for {
-			if err := r.recv(); err != nil {
-				break
-			}
-		}
+		drainStreamOnCompletion(r.cancel, r.recv)
 	}
 	if r.cancel != nil {
 		r.cancel()
@@ -517,6 +502,20 @@ func (r *gRPCReadObjectReader) Close() error {
 	r.stream = nil
 	r.currMsg = nil
 	return nil
+}
+
+// drainStreamOnCompletion drains remaining messages from an in-flight gRPC read stream
+// up to EOF with a 200ms timeout before cancellation to allow clean HTTP/2 stream teardown.
+func drainStreamOnCompletion(cancel context.CancelFunc, recv func() error) {
+	if cancel != nil {
+		timer := time.AfterFunc(200*time.Millisecond, cancel)
+		defer timer.Stop()
+	}
+	for {
+		if err := recv(); err != nil {
+			break
+		}
+	}
 }
 
 // recv attempts to Recv the next message on the stream and extract the object

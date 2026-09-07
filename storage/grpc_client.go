@@ -25,7 +25,6 @@ import (
 	"os"
 	"strconv"
 	"strings"
-	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -1704,13 +1703,6 @@ func (r *gRPCReader) Read(p []byte) (int, error) {
 		if err := r.runCRCCheck(); err != nil {
 			return 0, err
 		}
-		if r.stream != nil {
-			for {
-				if err := r.recv(); err != nil {
-					break
-				}
-			}
-		}
 		return 0, io.EOF
 	}
 
@@ -1860,15 +1852,7 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 // collected, and frees any currently in use buffers.
 func (r *gRPCReader) Close() error {
 	if r.stream != nil && ((r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange) {
-		if r.cancel != nil {
-			timer := time.AfterFunc(200*time.Millisecond, r.cancel)
-			defer timer.Stop()
-		}
-		for {
-			if err := r.recv(); err != nil {
-				break
-			}
-		}
+		drainStreamOnCompletion(r.cancel, r.recv)
 	}
 	if r.cancel != nil {
 		r.cancel()
