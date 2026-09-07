@@ -493,8 +493,8 @@ func (r *gRPCReadObjectReader) WriteTo(w io.Writer) (int64, error) {
 // Close cancels the read stream's context in order for it to be closed and
 // collected, and frees any currently in use buffers.
 func (r *gRPCReadObjectReader) Close() error {
-	if r.stream != nil && (r.size == r.seen || r.zeroRange) {
-		drainStreamOnCompletion(r.cancel, r.recv)
+	if r.size == r.seen || r.zeroRange {
+		drainStream(r.stream, r.cancel)
 	}
 	if r.cancel != nil {
 		r.cancel()
@@ -504,17 +504,22 @@ func (r *gRPCReadObjectReader) Close() error {
 	return nil
 }
 
-// drainStreamOnCompletion drains remaining messages from an in-flight gRPC read stream
-// up to EOF with a 200ms timeout before cancellation to allow clean HTTP/2 stream teardown.
-func drainStreamOnCompletion(cancel context.CancelFunc, recv func() error) {
+// drainStream cleanly exhausts a finished stream to allow HTTP2 connection reuse.
+func drainStream(stream grpc.ClientStream, cancel context.CancelFunc) {
+	if stream == nil {
+		return
+	}
 	if cancel != nil {
 		timer := time.AfterFunc(200*time.Millisecond, cancel)
 		defer timer.Stop()
 	}
 	for {
-		if err := recv(); err != nil {
+		var drop mem.BufferSlice
+		if err := stream.RecvMsg(&drop); err != nil {
 			break
 		}
+		// Free the raw buffers to prevent memory leaks from the parsing loop
+		drop.Free()
 	}
 }
 
