@@ -4012,10 +4012,6 @@ func TestGRPCRetryReadSuccessNotCancelledEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 	ctx := context.Background()
 
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() {
-		te.Unregister(ctx)
-	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 
 	client := emulatorClients["grpc"]
@@ -4061,7 +4057,7 @@ func TestGRPCRetryReadSuccessNotCancelledEmulated(t *testing.T) {
 				setBidiReads(t, client)
 			}
 
-			// Instruct emulator to return 503 twice on storage.objects.get
+			// Instruct emulator to return 503 twice on storage.objects.get.
 			instructions := map[string][]string{
 				"storage.objects.get": {"return-503", "return-503"},
 			}
