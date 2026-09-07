@@ -1851,8 +1851,8 @@ func (r *gRPCReader) WriteTo(w io.Writer) (int64, error) {
 // Close cancels the read stream's context in order for it to be closed and
 // collected, and frees any currently in use buffers.
 func (r *gRPCReader) Close() error {
-	if (r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange {
-		drainStream(r.stream, r.cancel)
+	if r.stream != nil && ((r.finalized || r.negativeOffset) && r.size == r.seen || r.zeroRange) {
+		drainStreamOnCompletion(r.cancel, r.stream)
 	}
 	if r.cancel != nil {
 		r.cancel()
