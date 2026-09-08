@@ -1101,8 +1101,8 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 		}
 		if m.client != nil && m.client.metrics != nil {
 			ctx := context.WithoutCancel(m.spanCtx)
-			m.client.metrics.bidiClientHandoffDelay.Record(ctx, durationMicros(t7.Sub(result.t6)))
 			if !t4.IsZero() {
+				m.client.metrics.bidiClientHandoffDelay.Record(ctx, durationMicros(t7.Sub(result.t6)))
 				m.client.metrics.bidiEndToEndRangeReadLatency.Record(ctx, durationMicros(t7.Sub(t4)))
 				m.client.metrics.bidiServerNetworkTransitLatency.Record(ctx, durationMicros(result.t5.Sub(t4)))
 			}
