@@ -255,6 +255,8 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 				sdkmetric.NewView(
 					sdkmetric.Instrument{Name: "gcp.storage.client.auth.credential_refresh.duration", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
+				),
+				sdkmetric.NewView(
 					sdkmetric.Instrument{Name: "gcp.storage.client.bidi.stream_open_latency_us", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyMicrosecondsHistogramBoundaries()}},
 				),
@@ -523,12 +525,6 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		networkBytesSent:          networkBytesSent,
 		networkBytesReceived:      networkBytesReceived,
 		stallDuration:             stallDuration,
-		duration:                        duration,
-		operations:                      operations,
-		attempts:                        attempts,
-		requestBodySize:                 requestBodySize,
-		responseBodySize:                responseBodySize,
-		errors:                          errors,
 		bidiStreamOpenLatency:           bidiStreamOpenLatency,
 		bidiNetworkHandshakeLatency:     bidiNetworkHandshakeLatency,
 		bidiServerMetadataLatency:       bidiServerMetadataLatency,

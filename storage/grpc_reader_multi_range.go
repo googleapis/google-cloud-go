@@ -17,8 +17,11 @@ package storage
 import (
 	"container/list"
 	"context"
+
 	"errors"
 	"fmt"
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 	"io"
 	"log"
 	"sync"
@@ -1081,6 +1084,15 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 		mrdStream.updateCapacity(m, 0, -written)
 
 		t7 := time.Now()
+		if !req.t4.IsZero() {
+			span := trace.SpanFromContext(m.spanCtx)
+			span.AddEvent("gcp.storage.client.bidi.read_range", trace.WithAttributes(
+				attribute.Float64("gcp.storage.client.bidi.latency.network_transit_us", float64(result.t5.Sub(req.t4))/float64(time.Microsecond)),
+				attribute.Float64("gcp.storage.client.bidi.latency.sdk_processing_overhead_us", float64(result.t6.Sub(result.t5))/float64(time.Microsecond)),
+				attribute.Float64("gcp.storage.client.bidi.latency.client_handoff_delay_us", float64(t7.Sub(result.t6))/float64(time.Microsecond)),
+				attribute.Float64("gcp.storage.client.bidi.latency.end_to_end_us", float64(t7.Sub(req.t4))/float64(time.Microsecond)),
+			))
+		}
 		if m.client != nil && m.client.metrics != nil {
 			ctx := context.WithoutCancel(m.spanCtx)
 			if !req.t4.IsZero() {
@@ -1441,12 +1453,18 @@ func (s *bidiReadStreamSession) receiveLoop() {
 			t5:      t5,
 			t6:      t6,
 		}:
-			if s.client != nil && s.client.metrics != nil {
-				m := s.client.metrics
-				ctx := context.WithoutCancel(s.managerCtx)
-				if s.firstResp {
-					s.firstResp = false
-					t3 := t5
+			if s.firstResp {
+				s.firstResp = false
+				t3 := t5
+				span := trace.SpanFromContext(s.managerCtx)
+				span.AddEvent("gcp.storage.client.bidi.stream_open", trace.WithAttributes(
+					attribute.Float64("gcp.storage.client.bidi.latency.network_handshake_us", float64(s.t1.Sub(s.t0))/float64(time.Microsecond)),
+					attribute.Float64("gcp.storage.client.bidi.latency.server_metadata_us", float64(t3.Sub(s.t2))/float64(time.Microsecond)),
+					attribute.Float64("gcp.storage.client.bidi.latency.stream_open_us", float64(t3.Sub(s.t0))/float64(time.Microsecond)),
+				))
+				if s.client != nil && s.client.metrics != nil {
+					m := s.client.metrics
+					ctx := context.WithoutCancel(s.managerCtx)
 					m.bidiStreamOpenLatency.Record(ctx, float64(t3.Sub(s.t0))/float64(time.Microsecond))
 					m.bidiNetworkHandshakeLatency.Record(ctx, float64(s.t1.Sub(s.t0))/float64(time.Microsecond))
 					m.bidiServerMetadataLatency.Record(ctx, float64(t3.Sub(s.t2))/float64(time.Microsecond))
