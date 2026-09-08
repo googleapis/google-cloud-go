@@ -1066,11 +1066,9 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 }
 
 func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult, mrdStream *mrdStream, resp *storagepb.BidiReadObjectResponse) {
-	handoffTime := time.Now()
 	if m.client != nil && m.client.metrics != nil {
 		ctx := context.WithoutCancel(m.spanCtx)
 		m.client.metrics.bidiSDKProcessingOverhead.Record(ctx, durationMicros(result.t6.Sub(result.t5)))
-		m.client.metrics.bidiClientHandoffDelay.Record(ctx, durationMicros(handoffTime.Sub(result.t6)))
 	}
 
 	for _, dataRange := range resp.GetObjectDataRanges() {
@@ -1097,12 +1095,13 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			span.AddEvent("gcp.storage.client.bidi.read_range", trace.WithAttributes(
 				attribute.Float64("gcp.storage.client.bidi.latency.network_transit_us", durationMicros(result.t5.Sub(t4))),
 				attribute.Float64("gcp.storage.client.bidi.latency.sdk_processing_overhead_us", durationMicros(result.t6.Sub(result.t5))),
-				attribute.Float64("gcp.storage.client.bidi.latency.client_handoff_delay_us", durationMicros(handoffTime.Sub(result.t6))),
+				attribute.Float64("gcp.storage.client.bidi.latency.client_handoff_delay_us", durationMicros(t7.Sub(result.t6))),
 				attribute.Float64("gcp.storage.client.bidi.latency.end_to_end_us", durationMicros(t7.Sub(t4))),
 			))
 		}
 		if m.client != nil && m.client.metrics != nil {
 			ctx := context.WithoutCancel(m.spanCtx)
+			m.client.metrics.bidiClientHandoffDelay.Record(ctx, durationMicros(t7.Sub(result.t6)))
 			if !t4.IsZero() {
 				m.client.metrics.bidiEndToEndRangeReadLatency.Record(ctx, durationMicros(t7.Sub(t4)))
 				m.client.metrics.bidiServerNetworkTransitLatency.Record(ctx, durationMicros(result.t5.Sub(t4)))
