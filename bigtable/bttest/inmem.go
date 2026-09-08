@@ -1188,6 +1188,7 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 	}
 
 	for _, mut := range muts {
+		origin := mut.TimestampOrigin
 		switch mut := mut.Mutation.(type) {
 		default:
 			return fmt.Errorf("can't handle mutation type %T", mut)
@@ -1198,11 +1199,18 @@ func applyMutations(tbl *table, r *row, muts []*btpb.Mutation, fs map[string]*co
 				return fmt.Errorf("unknown family %q", set.FamilyName)
 			}
 			ts := set.TimestampMicros
-			if ts == -1 { // bigtable.ServerTime
+			switch {
+			case ts == -1: // bigtable.ServerTime
 				// Server-side timestamps are generated, not user-provided, so
 				// they are truncated to the table's granularity instead of
 				// being rejected.
 				ts = tbl.newTimestamp()
+			case origin == btpb.Mutation_CLIENT_AUTO_GENERATED:
+				// The same reasoning, and the contract data.proto states: the
+				// server truncates a client-auto-generated timestamp to the
+				// table's granularity, and rejects only a USER_SPECIFIED one
+				// whose precision does not match it.
+				ts = tbl.truncateTimestamp(ts)
 			}
 			if !tbl.validTimestamp(ts) {
 				return tbl.invalidTimestampError(ts)
@@ -1691,7 +1699,11 @@ func (t *table) invalidTimestampError(ts int64) error {
 // It is used for server-side (client-unspecified) timestamps, which are
 // truncated rather than rejected.
 func (t *table) newTimestamp() int64 {
-	ts := time.Now().UnixMicro()
+	return t.truncateTimestamp(time.Now().UnixMicro())
+}
+
+// truncateTimestamp rounds ts down to the table's granularity.
+func (t *table) truncateTimestamp(ts int64) int64 {
 	unit := t.timestampUnit()
 	return ts - ts%unit
 }
