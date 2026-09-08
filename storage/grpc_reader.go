@@ -504,8 +504,6 @@ func (r *gRPCReadObjectReader) Close() error {
 	return nil
 }
 
-const defaultStreamDrainTimeout = 200 * time.Millisecond
-
 // drainStreamOnCompletion cleanly exhausts a finished stream to allow HTTP2 connection reuse.
 func drainStreamOnCompletion(cancel context.CancelFunc, stream grpc.ClientStream) {
 	if stream == nil {

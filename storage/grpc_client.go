@@ -25,6 +25,7 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
@@ -76,6 +77,10 @@ const (
 	directConnectivityDiagnosticHeaderKey = "direct_connectivity_diagnostic"
 	requestParamsHeaderKey                = "x-goog-request-params"
 	directPathEndpointPrefix              = "google-c2p:///"
+
+	// defaultStreamDrainTimeout is the maximum duration allowed to drain trailing
+	// messages and trailers from a completed gRPC read stream before cancellation.
+	defaultStreamDrainTimeout = 200 * time.Millisecond
 )
 
 // defaultGRPCOptions returns a set of the default client options
