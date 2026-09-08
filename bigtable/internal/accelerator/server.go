@@ -30,7 +30,6 @@ import (
 	"os"
 	"strings"
 	"sync"
-	"syscall"
 	"time"
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
@@ -133,32 +132,15 @@ func (s *Server) Start() error {
 	// sibling shares this path.
 	_ = os.Remove(s.udsPath)
 
-	// Bind under a private umask so the socket is never world-connectable, even
-	// for the instant between creation and the Chmod below. net.Listen -> bind(2)
-	// creates the socket file subject to the process umask; the common default
-	// (022) would leave it group/other accessible during that window, letting any
-	// local process connect before we lock it down. umask is process-global, so
-	// we narrow it only around the bind and restore it immediately after.
-	oldMask := syscall.Umask(0077)
-	l, err := net.Listen("unix", s.udsPath)
-	syscall.Umask(oldMask)
+	// Bind the socket and restrict it to the owning user. How that restriction is
+	// achieved is platform-specific -- see listenUDS in socket_unix.go (umask +
+	// chmod) and socket_windows.go (inherited directory ACL).
+	l, err := listenUDS(s.udsPath)
 	if err != nil {
 		log.Printf("failed to start accelerator: %v", err)
 		return err
 	}
 	s.listener = l
-
-	// Tighten to 0600, dropping the owner-execute bit the 0077 umask leaves at
-	// 0700. The daemon is paired 1:1 with its parent process, so no other user
-	// should be able to issue RPCs against it. Because the umask above already
-	// guaranteed the socket was never group/other accessible, this Chmod is
-	// race-free hardening rather than the sole line of defense.
-	if err := os.Chmod(s.udsPath, 0600); err != nil {
-		_ = l.Close()
-		_ = os.Remove(s.udsPath)
-		log.Printf("failed to chmod accelerator socket: %v", err)
-		return err
-	}
 
 	// Chain the proxy interceptors, which route each RPC through the Channel.
 	// The auth interceptors are prepended only when a secret was read from stdin
@@ -224,8 +206,10 @@ func (s *Server) Start() error {
 	// Skip the parent-PID watchdog when initialPpid is 1: it's ambiguous (orphan
 	// vs. legitimate child of pid 1), and monitorStdin already covers parent
 	// death. When initialPpid is a real parent, any later change to it means the
-	// parent we shadow has died.
-	if initialPpid != 1 {
+	// parent we shadow has died. Also skip it entirely on platforms that don't
+	// reparent orphans (Windows), where the ppid can never change and polling it
+	// is pure cost -- see parentPidWatchdogSupported.
+	if parentPidWatchdogSupported && initialPpid != 1 {
 		go s.monitorParentPid(initialPpid)
 	}
 
