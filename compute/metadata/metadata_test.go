@@ -526,3 +526,36 @@ func (t *headerTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 	req.Header.Set(t.header, t.value)
 	return t.base.RoundTrip(req)
 }
+
+func TestSubscribe_InitialRequestTimeout(t *testing.T) {
+	// Start a test server that accepts connections but never responds,
+	// simulating a stalled metadata server connection on the initial request.
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		<-r.Context().Done()
+	}))
+	defer ts.Close()
+
+	t.Setenv(metadataHostEnv, strings.TrimPrefix(ts.URL, "http://"))
+
+	c := NewWithOptions(&Options{UseDefaultClient: true})
+
+	// Provide a caller context with a timeout longer than the 5-second initial request timeout.
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Second)
+	defer cancel()
+
+	start := time.Now()
+	err := c.SubscribeWithContext(ctx, "instance/attributes/instance-config", func(ctx context.Context, v string, ok bool) error {
+		return nil
+	})
+	elapsed := time.Since(start)
+
+	if err == nil {
+		t.Fatal("SubscribeWithContext() succeeded unexpectedly on stalled connection")
+	}
+	if !errors.Is(err, context.DeadlineExceeded) {
+		t.Fatalf("SubscribeWithContext() returned err = %v, want context.DeadlineExceeded", err)
+	}
+	if ctx.Err() != nil {
+		t.Fatalf("caller context expired (%v) before initial request timed out; took %v", ctx.Err(), elapsed)
+	}
+}
