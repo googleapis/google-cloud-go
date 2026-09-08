@@ -41,7 +41,7 @@ func TestBidiTracing_receiveLoop(t *testing.T) {
 	ch := make(chan mrdSessionResult, 10)
 
 	s := &bidiReadStreamSession{
-		managerCtx: ctx, // Context used for Span extraction
+		managerCtx: ctx,
 		ctx:        ctx,
 		client:     &grpcStorageClient{},
 		firstResp:  true,
@@ -99,21 +99,23 @@ func TestBidiTracing_processDataRanges(t *testing.T) {
 	ctx, span := tracer.Start(context.Background(), "test_read_range")
 
 	m := &multiRangeDownloaderManager{
-		spanCtx: ctx, // Context used for Span extraction
+		spanCtx: ctx,
 		client:  &grpcStorageClient{},
 	}
 
-	req := &rangeRequest{
-		t4: time.Now().Add(-10 * time.Millisecond),
-	}
+	req := &rangeRequest{}
 	mrdStream := &mrdStream{
 		pendingRanges: map[int64]*rangeRequest{
 			1: req,
 		},
 	}
 
+	session := &bidiReadStreamSession{}
+	session.t4Map.Store(int64(1), time.Now().Add(-10*time.Millisecond))
+
 	result := mrdSessionResult{
 		decoder: &readResponseDecoder{},
+		session: session,
 		t5:      time.Now().Add(-5 * time.Millisecond),
 		t6:      time.Now().Add(-2 * time.Millisecond),
 	}

@@ -410,7 +410,6 @@ type rangeRequest struct {
 	readID       int64
 	bytesWritten int64
 	completed    bool
-	t4           time.Time
 }
 
 // Methods implementing internalMultiRangeDownloader
@@ -1066,6 +1065,13 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 }
 
 func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult, mrdStream *mrdStream, resp *storagepb.BidiReadObjectResponse) {
+	if m.client != nil && m.client.metrics != nil {
+		ctx := context.WithoutCancel(m.spanCtx)
+		handoffTime := time.Now()
+		m.client.metrics.bidiSDKProcessingOverhead.Record(ctx, durationMicros(result.t6.Sub(result.t5)))
+		m.client.metrics.bidiClientHandoffDelay.Record(ctx, durationMicros(handoffTime.Sub(result.t6)))
+	}
+
 	for _, dataRange := range resp.GetObjectDataRanges() {
 		readID := dataRange.GetReadRange().GetReadId()
 		req, exists := mrdStream.pendingRanges[readID]
@@ -1073,9 +1079,10 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			continue
 		}
 
+		var t4 time.Time
 		if result.session != nil {
 			if t, ok := result.session.t4Map.LoadAndDelete(readID); ok {
-				req.t4 = t.(time.Time)
+				t4 = t.(time.Time)
 			}
 		}
 
@@ -1084,23 +1091,21 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 		mrdStream.updateCapacity(m, 0, -written)
 
 		t7 := time.Now()
-		if !req.t4.IsZero() {
+		if !t4.IsZero() {
 			span := trace.SpanFromContext(m.spanCtx)
 			span.AddEvent("gcp.storage.client.bidi.read_range", trace.WithAttributes(
-				attribute.Float64("gcp.storage.client.bidi.latency.network_transit_us", float64(result.t5.Sub(req.t4))/float64(time.Microsecond)),
-				attribute.Float64("gcp.storage.client.bidi.latency.sdk_processing_overhead_us", float64(result.t6.Sub(result.t5))/float64(time.Microsecond)),
-				attribute.Float64("gcp.storage.client.bidi.latency.client_handoff_delay_us", float64(t7.Sub(result.t6))/float64(time.Microsecond)),
-				attribute.Float64("gcp.storage.client.bidi.latency.end_to_end_us", float64(t7.Sub(req.t4))/float64(time.Microsecond)),
+				attribute.Float64("gcp.storage.client.bidi.latency.network_transit_us", durationMicros(result.t5.Sub(t4))),
+				attribute.Float64("gcp.storage.client.bidi.latency.sdk_processing_overhead_us", durationMicros(result.t6.Sub(result.t5))),
+				attribute.Float64("gcp.storage.client.bidi.latency.client_handoff_delay_us", durationMicros(t7.Sub(result.t6))),
+				attribute.Float64("gcp.storage.client.bidi.latency.end_to_end_us", durationMicros(t7.Sub(t4))),
 			))
 		}
 		if m.client != nil && m.client.metrics != nil {
 			ctx := context.WithoutCancel(m.spanCtx)
-			if !req.t4.IsZero() {
-				m.client.metrics.bidiEndToEndRangeReadLatency.Record(ctx, float64(t7.Sub(req.t4))/float64(time.Microsecond))
-				m.client.metrics.bidiServerNetworkTransitLatency.Record(ctx, float64(result.t5.Sub(req.t4))/float64(time.Microsecond))
+			if !t4.IsZero() {
+				m.client.metrics.bidiEndToEndRangeReadLatency.Record(ctx, durationMicros(t7.Sub(t4)))
+				m.client.metrics.bidiServerNetworkTransitLatency.Record(ctx, durationMicros(result.t5.Sub(t4)))
 			}
-			m.client.metrics.bidiSDKProcessingOverhead.Record(ctx, float64(result.t6.Sub(result.t5))/float64(time.Microsecond))
-			m.client.metrics.bidiClientHandoffDelay.Record(ctx, float64(t7.Sub(result.t6))/float64(time.Microsecond))
 		}
 
 		if err != nil {
@@ -1458,16 +1463,16 @@ func (s *bidiReadStreamSession) receiveLoop() {
 				t3 := t5
 				span := trace.SpanFromContext(s.managerCtx)
 				span.AddEvent("gcp.storage.client.bidi.stream_open", trace.WithAttributes(
-					attribute.Float64("gcp.storage.client.bidi.latency.network_handshake_us", float64(s.t1.Sub(s.t0))/float64(time.Microsecond)),
-					attribute.Float64("gcp.storage.client.bidi.latency.server_metadata_us", float64(t3.Sub(s.t2))/float64(time.Microsecond)),
-					attribute.Float64("gcp.storage.client.bidi.latency.stream_open_us", float64(t3.Sub(s.t0))/float64(time.Microsecond)),
+					attribute.Float64("gcp.storage.client.bidi.latency.network_handshake_us", durationMicros(s.t1.Sub(s.t0))),
+					attribute.Float64("gcp.storage.client.bidi.latency.server_metadata_us", durationMicros(t3.Sub(s.t2))),
+					attribute.Float64("gcp.storage.client.bidi.latency.stream_open_us", durationMicros(t3.Sub(s.t0))),
 				))
 				if s.client != nil && s.client.metrics != nil {
 					m := s.client.metrics
 					ctx := context.WithoutCancel(s.managerCtx)
-					m.bidiStreamOpenLatency.Record(ctx, float64(t3.Sub(s.t0))/float64(time.Microsecond))
-					m.bidiNetworkHandshakeLatency.Record(ctx, float64(s.t1.Sub(s.t0))/float64(time.Microsecond))
-					m.bidiServerMetadataLatency.Record(ctx, float64(t3.Sub(s.t2))/float64(time.Microsecond))
+					m.bidiStreamOpenLatency.Record(ctx, durationMicros(t3.Sub(s.t0)))
+					m.bidiNetworkHandshakeLatency.Record(ctx, durationMicros(s.t1.Sub(s.t0)))
+					m.bidiServerMetadataLatency.Record(ctx, durationMicros(t3.Sub(s.t2)))
 				}
 			}
 

@@ -505,26 +505,26 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	}
 
 	cm := &clientMetrics{
-		provider:                  provider,
-		rpcClientCallDuration:     rpcDuration,
-		httpClientRequestDuration: httpDuration,
-		duration:                  duration,
-		operations:                operations,
-		attempts:                  attempts,
-		requestBodySize:           requestBodySize,
-		responseBodySize:          responseBodySize,
-		ttfb:                      ttfb,
-		errors:                    errors,
-		activeRequests:            activeRequests,
-		gfeHeaderMissing:          gfeHeaderMissing,
-		dnsLookupDuration:         dnsLookupDuration,
-		tcpConnectDuration:        tcpConnectDuration,
-		tlsHandshakeDuration:      tlsHandshakeDuration,
-		gfeDuration:               gfeDuration,
-		credentialRefreshDuration: credentialRefreshDuration,
-		networkBytesSent:          networkBytesSent,
-		networkBytesReceived:      networkBytesReceived,
-		stallDuration:             stallDuration,
+		provider:                        provider,
+		rpcClientCallDuration:           rpcDuration,
+		httpClientRequestDuration:       httpDuration,
+		duration:                        duration,
+		operations:                      operations,
+		attempts:                        attempts,
+		requestBodySize:                 requestBodySize,
+		responseBodySize:                responseBodySize,
+		ttfb:                            ttfb,
+		errors:                          errors,
+		activeRequests:                  activeRequests,
+		gfeHeaderMissing:                gfeHeaderMissing,
+		dnsLookupDuration:               dnsLookupDuration,
+		tcpConnectDuration:              tcpConnectDuration,
+		tlsHandshakeDuration:            tlsHandshakeDuration,
+		gfeDuration:                     gfeDuration,
+		credentialRefreshDuration:       credentialRefreshDuration,
+		networkBytesSent:                networkBytesSent,
+		networkBytesReceived:            networkBytesReceived,
+		stallDuration:                   stallDuration,
 		bidiStreamOpenLatency:           bidiStreamOpenLatency,
 		bidiNetworkHandshakeLatency:     bidiNetworkHandshakeLatency,
 		bidiServerMetadataLatency:       bidiServerMetadataLatency,
@@ -1789,4 +1789,8 @@ func (cm *clientMetrics) recordStallDuration(ctx context.Context, duration time.
 		attribute.String("server.address", target),
 	}
 	cm.stallDuration.Record(ctx, duration.Seconds(), metric.WithAttributes(attrs...))
+}
+
+func durationMicros(d time.Duration) float64 {
+	return float64(d) / float64(time.Microsecond)
 }
