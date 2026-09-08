@@ -20,12 +20,13 @@ import (
 
 	"errors"
 	"fmt"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"io"
 	"log"
 	"sync"
 	"time"
+
+	"go.opentelemetry.io/otel/attribute"
+	"go.opentelemetry.io/otel/trace"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/grpc"
@@ -1065,9 +1066,9 @@ func (m *multiRangeDownloaderManager) processSessionResult(result mrdSessionResu
 }
 
 func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult, mrdStream *mrdStream, resp *storagepb.BidiReadObjectResponse) {
+	handoffTime := time.Now()
 	if m.client != nil && m.client.metrics != nil {
 		ctx := context.WithoutCancel(m.spanCtx)
-		handoffTime := time.Now()
 		m.client.metrics.bidiSDKProcessingOverhead.Record(ctx, durationMicros(result.t6.Sub(result.t5)))
 		m.client.metrics.bidiClientHandoffDelay.Record(ctx, durationMicros(handoffTime.Sub(result.t6)))
 	}
@@ -1096,7 +1097,7 @@ func (m *multiRangeDownloaderManager) processDataRanges(result mrdSessionResult,
 			span.AddEvent("gcp.storage.client.bidi.read_range", trace.WithAttributes(
 				attribute.Float64("gcp.storage.client.bidi.latency.network_transit_us", durationMicros(result.t5.Sub(t4))),
 				attribute.Float64("gcp.storage.client.bidi.latency.sdk_processing_overhead_us", durationMicros(result.t6.Sub(result.t5))),
-				attribute.Float64("gcp.storage.client.bidi.latency.client_handoff_delay_us", durationMicros(t7.Sub(result.t6))),
+				attribute.Float64("gcp.storage.client.bidi.latency.client_handoff_delay_us", durationMicros(handoffTime.Sub(result.t6))),
 				attribute.Float64("gcp.storage.client.bidi.latency.end_to_end_us", durationMicros(t7.Sub(t4))),
 			))
 		}
