@@ -4587,6 +4587,11 @@
                 "Get"
               ]
             },
+            "GetHealth": {
+              "methods": [
+                "GetHealth"
+              ]
+            },
             "GetVersion": {
               "methods": [
                 "GetVersion"

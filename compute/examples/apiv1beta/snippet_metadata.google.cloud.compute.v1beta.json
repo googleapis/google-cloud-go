@@ -2682,6 +2682,282 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient",
+          "shortName": "DhcpOptionsConfigsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient.Delete",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs.Delete",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs",
+            "shortName": "DhcpOptionsConfigs"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.DeleteDhcpOptionsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes the specified DhcpOptionsConfig in the given location",
+      "file": "DhcpOptionsConfigsClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_DhcpOptionsConfigs_Delete_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient",
+          "shortName": "DhcpOptionsConfigsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs",
+            "shortName": "DhcpOptionsConfigs"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetDhcpOptionsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.DhcpOptionsConfig",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified DhcpOptionsConfig resource in the given location.",
+      "file": "DhcpOptionsConfigsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_DhcpOptionsConfigs_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient",
+          "shortName": "DhcpOptionsConfigsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient.Insert",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs.Insert",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs",
+            "shortName": "DhcpOptionsConfigs"
+          },
+          "shortName": "Insert"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.InsertDhcpOptionsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Insert"
+      },
+      "description": "Insert creates a DhcpOptionsConfig in the specified project in the given location\nusing the parameters that are included in the request.",
+      "file": "DhcpOptionsConfigsClient/Insert/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_DhcpOptionsConfigs_Insert_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Insert Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient",
+          "shortName": "DhcpOptionsConfigsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs",
+            "shortName": "DhcpOptionsConfigs"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListDhcpOptionsConfigsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DhcpOptionsConfigIterator",
+        "shortName": "List"
+      },
+      "description": "List lists the DhcpOptionsConfigs for a project in the given location.",
+      "file": "DhcpOptionsConfigsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_DhcpOptionsConfigs_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient",
+          "shortName": "DhcpOptionsConfigsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient.Patch",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs.Patch",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs",
+            "shortName": "DhcpOptionsConfigs"
+          },
+          "shortName": "Patch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PatchDhcpOptionsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Patch"
+      },
+      "description": "Patch patches the specified DhcpOptionsConfig resource with the data included in\nthe request. This method supports PATCH\nsemantics and usesJSON merge\npatch format and processing rules.",
+      "file": "DhcpOptionsConfigsClient/Patch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_DhcpOptionsConfigs_Patch_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient",
+          "shortName": "DhcpOptionsConfigsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigsClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs.TestIamPermissions",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.DhcpOptionsConfigs",
+            "shortName": "DhcpOptionsConfigs"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.TestIamPermissionsDhcpOptionsConfigRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "DhcpOptionsConfigsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_DhcpOptionsConfigs_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.DiskSettingsClient",
           "shortName": "DiskSettingsClient"
         },
@@ -6864,6 +7140,98 @@
         }
       ],
       "title": "compute TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsClient",
+          "shortName": "GlobalFrontendSettingsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsService.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsService",
+            "shortName": "GlobalFrontendSettingsService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetGlobalFrontendSettingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.GlobalFrontendSettings",
+        "shortName": "Get"
+      },
+      "description": "Get gets the Global Frontend Billing Bundle Settings for a project.",
+      "file": "GlobalFrontendSettingsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_GlobalFrontendSettingsService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsClient",
+          "shortName": "GlobalFrontendSettingsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsClient.Patch",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsService.Patch",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.GlobalFrontendSettingsService",
+            "shortName": "GlobalFrontendSettingsService"
+          },
+          "shortName": "Patch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PatchGlobalFrontendSettingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.GlobalFrontendSettingsPatchResponse",
+        "shortName": "Patch"
+      },
+      "description": "Patch updates the Global Frontend Billing Bundle Settings for a project.",
+      "file": "GlobalFrontendSettingsClient/Patch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_GlobalFrontendSettingsService_Patch_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Patch Sample"
     },
     {
       "clientMethod": {
@@ -12575,6 +12943,52 @@
           "fullName": "google.cloud.compute.v1beta.InstancesClient",
           "shortName": "InstancesClient"
         },
+        "fullName": "google.cloud.compute.v1beta.InstancesClient.GetVmExtensionState",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Instances.GetVmExtensionState",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "GetVmExtensionState"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetVmExtensionStateInstanceRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.VmExtensionState",
+        "shortName": "GetVmExtensionState"
+      },
+      "description": "GetVmExtensionState retrieves details of a specific VM extension state.\nThis is a read-only API.",
+      "file": "InstancesClient/GetVmExtensionState/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Instances_GetVmExtensionState_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetVmExtensionState Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.InstancesClient",
+          "shortName": "InstancesClient"
+        },
         "fullName": "google.cloud.compute.v1beta.InstancesClient.Insert",
         "method": {
           "fullName": "google.cloud.compute.v1beta.Instances.Insert",
@@ -12706,6 +13120,52 @@
         }
       ],
       "title": "compute ListReferrers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.InstancesClient",
+          "shortName": "InstancesClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.InstancesClient.ListVmExtensionStates",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Instances.ListVmExtensionStates",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Instances",
+            "shortName": "Instances"
+          },
+          "shortName": "ListVmExtensionStates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListVmExtensionStatesInstancesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "VmExtensionStateIterator",
+        "shortName": "ListVmExtensionStates"
+      },
+      "description": "ListVmExtensionStates lists all VM extensions states for a specific instance.\nThis is a read-only API.",
+      "file": "InstancesClient/ListVmExtensionStates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Instances_ListVmExtensionStates_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute ListVmExtensionStates Sample"
     },
     {
       "clientMethod": {
@@ -23198,6 +23658,98 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicyClient",
+          "shortName": "OrganizationSnapshotRecycleBinPolicyClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicyClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicy.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicy",
+            "shortName": "OrganizationSnapshotRecycleBinPolicy"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetOrganizationSnapshotRecycleBinPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.SnapshotRecycleBinPolicy",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified SnapshotRecycleBinPolicy.",
+      "file": "OrganizationSnapshotRecycleBinPolicyClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationSnapshotRecycleBinPolicy_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicyClient",
+          "shortName": "OrganizationSnapshotRecycleBinPolicyClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicyClient.Patch",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicy.Patch",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.OrganizationSnapshotRecycleBinPolicy",
+            "shortName": "OrganizationSnapshotRecycleBinPolicy"
+          },
+          "shortName": "Patch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PatchOrganizationSnapshotRecycleBinPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Patch"
+      },
+      "description": "Patch patches the SnapshotRecycleBinPolicy.",
+      "file": "OrganizationSnapshotRecycleBinPolicyClient/Patch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_OrganizationSnapshotRecycleBinPolicy_Patch_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.PacketMirroringsClient",
           "shortName": "PacketMirroringsClient"
         },
@@ -25080,6 +25632,328 @@
         }
       ],
       "title": "compute Withdraw Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient",
+          "shortName": "RecoverableSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient.Delete",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots.Delete",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots",
+            "shortName": "RecoverableSnapshots"
+          },
+          "shortName": "Delete"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.DeleteRecoverableSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Delete"
+      },
+      "description": "Delete deletes the specified RecoverableSnapshot. Deleting a recoverable snapshot\nwill delete the underlying PD snapshot and is irreversible.",
+      "file": "RecoverableSnapshotsClient/Delete/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RecoverableSnapshots_Delete_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Delete Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient",
+          "shortName": "RecoverableSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots",
+            "shortName": "RecoverableSnapshots"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetRecoverableSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.RecoverableSnapshot",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified RecoverableSnapshot resource.",
+      "file": "RecoverableSnapshotsClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RecoverableSnapshots_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient",
+          "shortName": "RecoverableSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots",
+            "shortName": "RecoverableSnapshots"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetIamPolicyRecoverableSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such\npolicy or resource exists.",
+      "file": "RecoverableSnapshotsClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RecoverableSnapshots_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient",
+          "shortName": "RecoverableSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient.List",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots.List",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots",
+            "shortName": "RecoverableSnapshots"
+          },
+          "shortName": "List"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.ListRecoverableSnapshotsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RecoverableSnapshotIterator",
+        "shortName": "List"
+      },
+      "description": "List retrieves a list of all of the RecoverableSnapshots in your project.",
+      "file": "RecoverableSnapshotsClient/List/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RecoverableSnapshots_List_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute List Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient",
+          "shortName": "RecoverableSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient.Recover",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots.Recover",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots",
+            "shortName": "RecoverableSnapshots"
+          },
+          "shortName": "Recover"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.RecoverRecoverableSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Recover"
+      },
+      "description": "Recover recovers the specified RecoverableSnapshot.",
+      "file": "RecoverableSnapshotsClient/Recover/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RecoverableSnapshots_Recover_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Recover Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient",
+          "shortName": "RecoverableSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots",
+            "shortName": "RecoverableSnapshots"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetIamPolicyRecoverableSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource.\nReplaces any existing policy.",
+      "file": "RecoverableSnapshotsClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RecoverableSnapshots_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient",
+          "shortName": "RecoverableSnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RecoverableSnapshotsClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots.TestIamPermissions",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RecoverableSnapshots",
+            "shortName": "RecoverableSnapshots"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.TestIamPermissionsRecoverableSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.TestPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource.",
+      "file": "RecoverableSnapshotsClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RecoverableSnapshots_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute TestIamPermissions Sample"
     },
     {
       "clientMethod": {
@@ -37921,6 +38795,52 @@
           "fullName": "google.cloud.compute.v1beta.ReservationSlotsClient",
           "shortName": "ReservationSlotsClient"
         },
+        "fullName": "google.cloud.compute.v1beta.ReservationSlotsClient.GetHealth",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.ReservationSlots.GetHealth",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.ReservationSlots",
+            "shortName": "ReservationSlots"
+          },
+          "shortName": "GetHealth"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetHealthReservationSlotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "GetHealth"
+      },
+      "description": "GetHealth get health info on a reservation slot.",
+      "file": "ReservationSlotsClient/GetHealth/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_ReservationSlots_GetHealth_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetHealth Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.ReservationSlotsClient",
+          "shortName": "ReservationSlotsClient"
+        },
         "fullName": "google.cloud.compute.v1beta.ReservationSlotsClient.GetVersion",
         "method": {
           "fullName": "google.cloud.compute.v1beta.ReservationSlots.GetVersion",
@@ -42472,6 +43392,98 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyClient",
+          "shortName": "SnapshotRecycleBinPolicyClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyClient.Get",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyService.Get",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyService",
+            "shortName": "SnapshotRecycleBinPolicyService"
+          },
+          "shortName": "Get"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetSnapshotRecycleBinPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.SnapshotRecycleBinPolicy",
+        "shortName": "Get"
+      },
+      "description": "Get returns the specified SnapshotRecycleBinPolicy.",
+      "file": "SnapshotRecycleBinPolicyClient/Get/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_SnapshotRecycleBinPolicyService_Get_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyClient",
+          "shortName": "SnapshotRecycleBinPolicyClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyClient.Patch",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyService.Patch",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.SnapshotRecycleBinPolicyService",
+            "shortName": "SnapshotRecycleBinPolicyService"
+          },
+          "shortName": "Patch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.PatchSnapshotRecycleBinPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "Patch"
+      },
+      "description": "Patch patches the SnapshotRecycleBinPolicy.",
+      "file": "SnapshotRecycleBinPolicyClient/Patch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_SnapshotRecycleBinPolicyService_Patch_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.compute.v1beta.SnapshotSettingsClient",
           "shortName": "SnapshotSettingsClient"
         },
@@ -42698,6 +43710,52 @@
         }
       ],
       "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.SnapshotsClient",
+          "shortName": "SnapshotsClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.SnapshotsClient.GetEffectiveRecycleBinRule",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Snapshots.GetEffectiveRecycleBinRule",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Snapshots",
+            "shortName": "Snapshots"
+          },
+          "shortName": "GetEffectiveRecycleBinRule"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetEffectiveRecycleBinRuleSnapshotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.SnapshotsGetEffectiveRecycleBinRuleResponse",
+        "shortName": "GetEffectiveRecycleBinRule"
+      },
+      "description": "GetEffectiveRecycleBinRule returns the effective recycle bin rule for a snapshot by merging org and\nproject level rules. If no rules are defined at org and project level, the\nstandard default rule is returned.",
+      "file": "SnapshotsClient/GetEffectiveRecycleBinRule/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Snapshots_GetEffectiveRecycleBinRule_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetEffectiveRecycleBinRule Sample"
     },
     {
       "clientMethod": {
