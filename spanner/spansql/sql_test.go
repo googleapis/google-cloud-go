@@ -96,6 +96,7 @@ func TestSQL(t *testing.T) {
 					{Name: "Co", Type: Type{Base: Int64}, Default: IntegerLiteral(1), Position: line(16)},
 					{Name: "Cp", Type: Type{Base: Proto, ProtoRef: "a.b.c"}, Position: line(17)},
 					{Name: "Cq", Type: Type{Base: UUID}, Position: line(18)},
+					{Name: "Cr", Type: Type{Array: true, Base: Proto, ProtoRef: "a.b.c"}, Position: line(19)},
 				},
 				PrimaryKey: []KeyPart{
 					{Column: "Ca"},
@@ -121,6 +122,7 @@ func TestSQL(t *testing.T) {
   Co INT64 DEFAULT (1),
   Cp ` + "`a.b.c`" + `,
   Cq UUID,
+  Cr ARRAY<` + "`a.b.c`" + `>,
 ) PRIMARY KEY(Ca, Cb DESC)`,
 			reparseDDL,
 		},
