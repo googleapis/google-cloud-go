@@ -769,9 +769,9 @@ func (t Type) SQL() string {
 	// If ProtoRef is empty, and Base is an Enum or Proto, we're probably
 	// in an expression where PROTO or ENUM are valid type names, in which
 	// case we can just fall through.
-	if t.Base == Proto || t.Base == Enum && t.ProtoRef != "" {
-		// If ProtoRef is non-empty, backtick-quote that and declare victory.
-		return "`" + t.ProtoRef + "`"
+	if (t.Base == Proto || t.Base == Enum) && t.ProtoRef != "" {
+		// If ProtoRef is non-empty, backtick-quote that.
+		str = "`" + t.ProtoRef + "`"
 	}
 	if t.Len > 0 && (t.Base == String || t.Base == Bytes) {
 		str += "("
