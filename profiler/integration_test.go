@@ -305,7 +305,7 @@ func TestAgentIntegration(t *testing.T) {
 					MachineType: "n1-highmem-2",
 
 					ImageProject: "debian-cloud",
-					ImageFamily:  "debian-11",
+					ImageFamily:  "debian-13",
 				},
 				name:          fmt.Sprintf("profiler-backoff-test-go%s", goVersionName),
 				goVersion:     goVersion,
