@@ -761,9 +761,6 @@ func TestStandardMetricsRecording(t *testing.T) {
 	if err != nil {
 		t.Fatalf("NewMultiRangeDownloader: %v", err)
 	}
-	// override the span context directly on the mocked mrd to use the context from NewMultiRangeDownloader
-	// wait we can't because it's not exported. But we don't need to, the metrics config is inside the context.
-	// Wait, the client wraps it!
 	if err := mrd.Close(); err != nil {
 		t.Fatalf("mrd.Close: %v", err)
 	}
