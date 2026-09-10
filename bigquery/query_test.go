@@ -517,6 +517,24 @@ func TestProbeFastPath(t *testing.T) {
 			},
 		},
 		{
+			// Client default JobCreationMode is used when not set on query
+			inClient: &Client{
+				projectID:    "client-project-id",
+				customConfig: &customClientConfig{jobCreationMode: JobCreationModeOptional},
+			},
+			inCfg: QueryConfig{
+				Q: "foo",
+			},
+			wantReq: &bq.QueryRequest{
+				Query:           "foo",
+				UseLegacySql:    &pfalse,
+				JobCreationMode: string(JobCreationModeOptional),
+				FormatOptions: &bq.DataFormatOptions{
+					UseInt64Timestamp: defaultUseInt64Timestamp,
+				},
+			},
+		},
+		{
 			inCfg: QueryConfig{
 				Q:               "foo",
 				JobCreationMode: JobCreationModeOptional,
