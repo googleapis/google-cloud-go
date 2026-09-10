@@ -62,9 +62,11 @@ type InstancesCallOptions struct {
 	GetSerialPortOutput                []gax.CallOption
 	GetShieldedInstanceIdentity        []gax.CallOption
 	GetShieldedVmIdentity              []gax.CallOption
+	GetVmExtensionState                []gax.CallOption
 	Insert                             []gax.CallOption
 	List                               []gax.CallOption
 	ListReferrers                      []gax.CallOption
+	ListVmExtensionStates              []gax.CallOption
 	PatchPartnerMetadata               []gax.CallOption
 	PerformMaintenance                 []gax.CallOption
 	RemoveResourcePolicies             []gax.CallOption
@@ -250,6 +252,18 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		GetVmExtensionState: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
 		Insert: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
@@ -266,6 +280,18 @@ func defaultInstancesRESTCallOptions() *InstancesCallOptions {
 			}),
 		},
 		ListReferrers: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusGatewayTimeout,
+					http.StatusServiceUnavailable)
+			}),
+		},
+		ListVmExtensionStates: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnHTTPCodes(gax.Backoff{
@@ -406,9 +432,11 @@ type internalInstancesClient interface {
 	GetSerialPortOutput(context.Context, *computepb.GetSerialPortOutputInstanceRequest, ...gax.CallOption) (*computepb.SerialPortOutput, error)
 	GetShieldedInstanceIdentity(context.Context, *computepb.GetShieldedInstanceIdentityInstanceRequest, ...gax.CallOption) (*computepb.ShieldedInstanceIdentity, error)
 	GetShieldedVmIdentity(context.Context, *computepb.GetShieldedVmIdentityInstanceRequest, ...gax.CallOption) (*computepb.ShieldedVmIdentity, error)
+	GetVmExtensionState(context.Context, *computepb.GetVmExtensionStateInstanceRequest, ...gax.CallOption) (*computepb.VmExtensionState, error)
 	Insert(context.Context, *computepb.InsertInstanceRequest, ...gax.CallOption) (*Operation, error)
 	List(context.Context, *computepb.ListInstancesRequest, ...gax.CallOption) *InstanceIterator
 	ListReferrers(context.Context, *computepb.ListReferrersInstancesRequest, ...gax.CallOption) *ReferenceIterator
+	ListVmExtensionStates(context.Context, *computepb.ListVmExtensionStatesInstancesRequest, ...gax.CallOption) *VmExtensionStateIterator
 	PatchPartnerMetadata(context.Context, *computepb.PatchPartnerMetadataInstanceRequest, ...gax.CallOption) (*Operation, error)
 	PerformMaintenance(context.Context, *computepb.PerformMaintenanceInstanceRequest, ...gax.CallOption) (*Operation, error)
 	RemoveResourcePolicies(context.Context, *computepb.RemoveResourcePoliciesInstanceRequest, ...gax.CallOption) (*Operation, error)
@@ -597,6 +625,12 @@ func (c *InstancesClient) GetShieldedVmIdentity(ctx context.Context, req *comput
 	return c.internalClient.GetShieldedVmIdentity(ctx, req, opts...)
 }
 
+// GetVmExtensionState retrieves details of a specific VM extension state.
+// This is a read-only API.
+func (c *InstancesClient) GetVmExtensionState(ctx context.Context, req *computepb.GetVmExtensionStateInstanceRequest, opts ...gax.CallOption) (*computepb.VmExtensionState, error) {
+	return c.internalClient.GetVmExtensionState(ctx, req, opts...)
+}
+
 // Insert creates an instance resource in the specified project using the data
 // included in the request.
 func (c *InstancesClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
@@ -616,6 +650,12 @@ func (c *InstancesClient) List(ctx context.Context, req *computepb.ListInstances
 // referrers to VM instances.
 func (c *InstancesClient) ListReferrers(ctx context.Context, req *computepb.ListReferrersInstancesRequest, opts ...gax.CallOption) *ReferenceIterator {
 	return c.internalClient.ListReferrers(ctx, req, opts...)
+}
+
+// ListVmExtensionStates lists all VM extensions states for a specific instance.
+// This is a read-only API.
+func (c *InstancesClient) ListVmExtensionStates(ctx context.Context, req *computepb.ListVmExtensionStatesInstancesRequest, opts ...gax.CallOption) *VmExtensionStateIterator {
+	return c.internalClient.ListVmExtensionStates(ctx, req, opts...)
 }
 
 // PatchPartnerMetadata patches partner metadata of the specified instance.
@@ -931,9 +971,11 @@ func NewInstancesRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetSerialPortOutput = append(callOpts.GetSerialPortOutput, gax.WithClientMetrics(metrics))
 		callOpts.GetShieldedInstanceIdentity = append(callOpts.GetShieldedInstanceIdentity, gax.WithClientMetrics(metrics))
 		callOpts.GetShieldedVmIdentity = append(callOpts.GetShieldedVmIdentity, gax.WithClientMetrics(metrics))
+		callOpts.GetVmExtensionState = append(callOpts.GetVmExtensionState, gax.WithClientMetrics(metrics))
 		callOpts.Insert = append(callOpts.Insert, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 		callOpts.ListReferrers = append(callOpts.ListReferrers, gax.WithClientMetrics(metrics))
+		callOpts.ListVmExtensionStates = append(callOpts.ListVmExtensionStates, gax.WithClientMetrics(metrics))
 		callOpts.PatchPartnerMetadata = append(callOpts.PatchPartnerMetadata, gax.WithClientMetrics(metrics))
 		callOpts.PerformMaintenance = append(callOpts.PerformMaintenance, gax.WithClientMetrics(metrics))
 		callOpts.RemoveResourcePolicies = append(callOpts.RemoveResourcePolicies, gax.WithClientMetrics(metrics))
@@ -2308,6 +2350,59 @@ func (c *instancesRESTClient) GetShieldedVmIdentity(ctx context.Context, req *co
 	return resp, nil
 }
 
+// GetVmExtensionState retrieves details of a specific VM extension state.
+// This is a read-only API.
+func (c *instancesRESTClient) GetVmExtensionState(ctx context.Context, req *computepb.GetVmExtensionStateInstanceRequest, opts ...gax.CallOption) (*computepb.VmExtensionState, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instances/%v/vmExtensionStates/%v", req.GetProject(), req.GetZone(), req.GetInstance(), req.GetExtensionName())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v&%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "zone", url.QueryEscape(req.GetZone()), "instance", url.QueryEscape(req.GetInstance()), "extension_name", url.QueryEscape(req.GetExtensionName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/zones/%v/instances/%v/vmExtensionStates/%v", req.GetProject(), req.GetZone(), req.GetInstance(), req.GetExtensionName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Instances/GetVmExtensionState")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/zones/{zone}/instances/{instance}/vmExtensionStates/{extension_name}")
+	}
+	opts = append((*c.CallOptions).GetVmExtensionState[0:len((*c.CallOptions).GetVmExtensionState):len((*c.CallOptions).GetVmExtensionState)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.VmExtensionState{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetVmExtensionState")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // Insert creates an instance resource in the specified project using the data
 // included in the request.
 func (c *instancesRESTClient) Insert(ctx context.Context, req *computepb.InsertInstanceRequest, opts ...gax.CallOption) (*Operation, error) {
@@ -2537,6 +2632,93 @@ func (c *instancesRESTClient) ListReferrers(ctx context.Context, req *computepb.
 			httpReq.Header = headers
 
 			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListReferrers")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetItems(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetMaxResults())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// ListVmExtensionStates lists all VM extensions states for a specific instance.
+// This is a read-only API.
+func (c *instancesRESTClient) ListVmExtensionStates(ctx context.Context, req *computepb.ListVmExtensionStatesInstancesRequest, opts ...gax.CallOption) *VmExtensionStateIterator {
+	it := &VmExtensionStateIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*computepb.VmExtensionState, string, error) {
+		resp := &computepb.ListVmExtensionStatesResponse{}
+		if pageToken != "" {
+			req.PageToken = proto.String(pageToken)
+		}
+		if pageSize > math.MaxInt32 {
+			req.MaxResults = proto.Uint32(uint32(math.MaxInt32))
+		} else if pageSize != 0 {
+			req.MaxResults = proto.Uint32(uint32(pageSize))
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/zones/%v/instances/%v/vmExtensionStates", req.GetProject(), req.GetZone(), req.GetInstance())
+
+		params := url.Values{}
+		if req != nil && req.Filter != nil {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req != nil && req.MaxResults != nil {
+			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
+		}
+		if req != nil && req.OrderBy != nil {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req != nil && req.PageToken != nil {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req != nil && req.ReturnPartialSuccess != nil {
+			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListVmExtensionStates")
 			if err != nil {
 				return err
 			}

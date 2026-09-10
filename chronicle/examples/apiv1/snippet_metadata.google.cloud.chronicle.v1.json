@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/chronicle/apiv1",
-    "version": "1.3.0"
+    "version": "1.4.0"
   },
   "snippets": [
     {
@@ -3119,6 +3119,831 @@
         }
       ],
       "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "FeedsClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.CreateFeed",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.CreateFeed",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "CreateFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.CreateFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.Feed",
+        "shortName": "CreateFeed"
+      },
+      "description": "CreateFeed creates a feed.",
+      "file": "FeedsClient/CreateFeed/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_CreateFeed_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle CreateFeed Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.DeleteFeed",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.DeleteFeed",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "DeleteFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.DeleteFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteFeed"
+      },
+      "description": "DeleteFeed deletes a feed.",
+      "file": "FeedsClient/DeleteFeed/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_DeleteFeed_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteFeed Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "FeedsClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.DisableFeed",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.DisableFeed",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "DisableFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.DisableFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.Feed",
+        "shortName": "DisableFeed"
+      },
+      "description": "DisableFeed disable feed for ingestion. Make FeedState ARCHIVED.",
+      "file": "FeedsClient/DisableFeed/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_DisableFeed_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle DisableFeed Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.EnableFeed",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.EnableFeed",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "EnableFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.EnableFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.Feed",
+        "shortName": "EnableFeed"
+      },
+      "description": "EnableFeed enable feed for ingestion.",
+      "file": "FeedsClient/EnableFeed/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_EnableFeed_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle EnableFeed Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.FetchServiceAccountForCustomer",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.FetchServiceAccountForCustomer",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "FetchServiceAccountForCustomer"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.FetchServiceAccountForCustomerRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FeedServiceAccount",
+        "shortName": "FetchServiceAccountForCustomer"
+      },
+      "description": "FetchServiceAccountForCustomer fetch Chronicle's service account used for ingesting data from Cloud\nStorage buckets.",
+      "file": "FeedsClient/FetchServiceAccountForCustomer/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_FetchServiceAccountForCustomer_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle FetchServiceAccountForCustomer Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.GenerateSecret",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.GenerateSecret",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "GenerateSecret"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GenerateSecretRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.GenerateSecretResponse",
+        "shortName": "GenerateSecret"
+      },
+      "description": "GenerateSecret generates a new secret for https push feeds which do not support jwt\ntokens. Secrets once generated should be copied and stored in safe place\nto be used while configuring https push feeds.Please note that you can\nalways generate a new secret again for a feed using this API but it will\ninvalidate the previously generated secret for the feed.",
+      "file": "FeedsClient/GenerateSecret/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_GenerateSecret_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GenerateSecret Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.GetFeed",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.GetFeed",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "GetFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.Feed",
+        "shortName": "GetFeed"
+      },
+      "description": "GetFeed gets a feed.",
+      "file": "FeedsClient/GetFeed/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_GetFeed_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetFeed Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.GetFeedPack",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.GetFeedPack",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "GetFeedPack"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.GetFeedPackRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.FeedPack",
+        "shortName": "GetFeedPack"
+      },
+      "description": "GetFeedPack gets a feed pack.",
+      "file": "FeedsClient/GetFeedPack/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_GetFeedPack_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetFeedPack Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "FeedsClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.ImportPushLogs",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.ImportPushLogs",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "ImportPushLogs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ImportPushLogsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*httpbodypb.HttpBody",
+        "shortName": "ImportPushLogs"
+      },
+      "description": "ImportPushLogs import logs coming from https push feeds.\nAll log entries must be valid UTF-8. A single invalid event will cause the\nentire request to be rejected.",
+      "file": "FeedsClient/ImportPushLogs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_ImportPushLogs_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ImportPushLogs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.ListFeedPacks",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.ListFeedPacks",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "ListFeedPacks"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListFeedPacksRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FeedPackIterator",
+        "shortName": "ListFeedPacks"
+      },
+      "description": "ListFeedPacks lists Packs for which feeds can be configured.",
+      "file": "FeedsClient/ListFeedPacks/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_ListFeedPacks_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListFeedPacks Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.ListFeedSourceTypeSchemas",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.ListFeedSourceTypeSchemas",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "ListFeedSourceTypeSchemas"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListFeedSourceTypeSchemasRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FeedSourceTypeSchemaIterator",
+        "shortName": "ListFeedSourceTypeSchemas"
+      },
+      "description": "ListFeedSourceTypeSchemas list all FeedSourceTypeSchemas.",
+      "file": "FeedsClient/ListFeedSourceTypeSchemas/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_ListFeedSourceTypeSchemas_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListFeedSourceTypeSchemas Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.ListFeeds",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.ListFeeds",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "ListFeeds"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListFeedsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "FeedIterator",
+        "shortName": "ListFeeds"
+      },
+      "description": "ListFeeds lists all feeds for the customer.",
+      "file": "FeedsClient/ListFeeds/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_ListFeeds_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListFeeds Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.ListLogTypeSchemas",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.ListLogTypeSchemas",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "ListLogTypeSchemas"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.ListLogTypeSchemasRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LogTypeSchemaIterator",
+        "shortName": "ListLogTypeSchemas"
+      },
+      "description": "ListLogTypeSchemas list all LogTypeSchemas compatible with a given\nFeedSourceType.",
+      "file": "FeedsClient/ListLogTypeSchemas/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_ListLogTypeSchemas_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListLogTypeSchemas Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "FeedsClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.chronicle.v1.FeedsClient",
+          "shortName": "FeedsClient"
+        },
+        "fullName": "google.cloud.chronicle.v1.FeedsClient.UpdateFeed",
+        "method": {
+          "fullName": "google.cloud.chronicle.v1.FeedsService.UpdateFeed",
+          "service": {
+            "fullName": "google.cloud.chronicle.v1.FeedsService",
+            "shortName": "FeedsService"
+          },
+          "shortName": "UpdateFeed"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chroniclepb.UpdateFeedRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chroniclepb.Feed",
+        "shortName": "UpdateFeed"
+      },
+      "description": "UpdateFeed updates the full feed.",
+      "file": "FeedsClient/UpdateFeed/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chronicle_v1_generated_FeedsService_UpdateFeed_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chronicle UpdateFeed Sample"
     },
     {
       "clientMethod": {

@@ -1,5 +1,18 @@
 # Changes
 
+## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.56.0...bigtable/v1.57.0) (2026-09-10)
+
+
+### Features
+
+* **bigtable:** Build the accelerator daemon for Windows ([#20455](https://github.com/googleapis/google-cloud-go/issues/20455)) ([df55af5](https://github.com/googleapis/google-cloud-go/commit/df55af57867ed03076cba91e3c3a18616711a5e4))
+
+
+### Bug Fixes
+
+* **bigtable/bttest:** Honor timestamp_origin on SetCell ([#20469](https://github.com/googleapis/google-cloud-go/issues/20469)) ([528aaf8](https://github.com/googleapis/google-cloud-go/commit/528aaf81e9366b99e88f39c40acba2ccbd7830cd)), refs [#20468](https://github.com/googleapis/google-cloud-go/issues/20468)
+* **bigtable:** Keep single-key ReadRows on the streaming classic path ([#20506](https://github.com/googleapis/google-cloud-go/issues/20506)) ([2bfdb5d](https://github.com/googleapis/google-cloud-go/commit/2bfdb5d137567b5f339c96b9a330e2d5e9d610fa))
+
 ## [1.56.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.55.0...bigtable/v1.56.0) (2026-09-03)
 
 
