@@ -672,7 +672,7 @@ func (cm *clientMetrics) recordRPC(ctx context.Context, method, target string, d
 	// For unary calls, record TTFB equal to the total attempt latency.
 	isStreaming := methodName == "ReadObject" || methodName == "WriteObject" || methodName == "BidiReadObject" || methodName == "BidiWriteObject"
 	if !isStreaming {
-		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(target))}
+		ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(target))}
 		cm.ttfb.Record(ctx, duration, metric.WithAttributes(injectAPIMethod(ctx, ttfbAttrs)...))
 	}
 }
@@ -898,7 +898,7 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 		isResumableInit := req.Method == "POST" && strings.Contains(req.URL.Path, "/upload/") && req.URL.Query().Get("uploadType") == "resumable"
 		if !isDownload || isResumableInit {
 			duration := time.Since(startTime).Seconds()
-			ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(req.URL.Host))}
+			ttfbAttrs := []attribute.KeyValue{attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(req.URL.Host))}
 			rt.metrics.ttfb.Record(req.Context(), duration, metric.WithAttributes(injectAPIMethod(req.Context(), ttfbAttrs)...))
 		}
 	}
@@ -949,7 +949,7 @@ func (w *wrappedResponseBody) Read(p []byte) (n int, err error) {
 		if state != nil {
 			logicalMethod = state.method
 		}
-		w.metrics.ttfb.Record(w.req.Context(), duration, metric.WithAttributes(attribute.String("rpc.method", logicalMethod)))
+		w.metrics.ttfb.Record(w.req.Context(), duration, metric.WithAttributes(attribute.String("rpc.system.name", "http"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(w.req.URL.Host))))
 	}
 	n, err = w.ReadCloser.Read(p)
 	if err != nil {
@@ -1180,7 +1180,7 @@ func (w *wrappedClientStream) recordTTFB(m interface{}) {
 		if state != nil {
 			logicalMethod = state.method
 		}
-		w.metrics.ttfb.Record(w.ctx, duration, metric.WithAttributes(attribute.String("rpc.method", logicalMethod)))
+		w.metrics.ttfb.Record(w.ctx, duration, metric.WithAttributes(attribute.String("rpc.system.name", "grpc"), attribute.String("rpc.method", logicalMethod), attribute.String("server.address", stripPort(w.target))))
 	}
 }
 
@@ -1209,6 +1209,16 @@ func (s *metricsState) setTarget(t string) {
 		return
 	}
 	s.target.Store(&t)
+}
+
+func (s *metricsState) getSystemName() string {
+	if s == nil {
+		return ""
+	}
+	if s.isHTTP {
+		return "http"
+	}
+	return "grpc"
 }
 
 func (s *metricsState) getTarget() string {
@@ -1260,6 +1270,7 @@ func (cm *clientMetrics) startOperation(ctx context.Context, method string, isHT
 			errorType := computeErrorType(err, isHTTP, 0)
 
 			attrs := []attribute.KeyValue{
+				attribute.String("rpc.system.name", state.getSystemName()),
 				attribute.String("rpc.method", method),
 				attribute.String("server.address", stripPort(state.getTarget())),
 				attribute.String("error.type", errorType),

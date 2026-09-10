@@ -415,7 +415,7 @@ func (r *Reader) Close() error {
 	if r.metricsState != nil {
 		if r.metricsState.metrics != nil {
 			if total := atomic.SwapInt64(&r.bytesRead, 0); total > 0 {
-				r.metricsState.metrics.responseBodySize.Record(r.ctx, total, metric.WithAttributes(attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(r.metricsState.getTarget()))))
+				r.metricsState.metrics.responseBodySize.Record(r.ctx, total, metric.WithAttributes(attribute.String("rpc.system.name", r.metricsState.getSystemName()), attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(r.metricsState.getTarget()))))
 			}
 		}
 		if r.metricsState.record != nil {
@@ -592,7 +592,7 @@ func (mrd *MultiRangeDownloader) Close() error {
 	if state := metricsStateFromContext(mrd.impl.getSpanCtx()); state != nil {
 		if state.metrics != nil {
 			if total := mrd.impl.getBytesRead(); total > 0 {
-				state.metrics.responseBodySize.Record(mrd.impl.getSpanCtx(), total, metric.WithAttributes(attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(state.getTarget()))))
+				state.metrics.responseBodySize.Record(mrd.impl.getSpanCtx(), total, metric.WithAttributes(attribute.String("rpc.system.name", state.getSystemName()), attribute.String("rpc.method", "ReadObject"), attribute.String("server.address", stripPort(state.getTarget()))))
 			}
 		}
 		if state.record != nil {
