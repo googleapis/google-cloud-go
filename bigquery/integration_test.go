@@ -902,7 +902,22 @@ func TestIntegration_SimpleRowResults(t *testing.T) {
 			})
 		}
 	})
-
+	t.Run("query_override", func(t *testing.T) {
+		client.customConfig.jobCreationMode = JobCreationModeRequired
+		for _, tc := range testCases {
+			curCase := tc
+			t.Run(curCase.description, func(t *testing.T) {
+				t.Parallel()
+				q := client.Query(curCase.query)
+				q.JobCreationMode = JobCreationModeOptional
+				it, err := q.Read(ctx)
+				if err != nil {
+					t.Fatalf("%s read error: %v", curCase.description, err)
+				}
+				checkReadAndTotalRows(t, curCase.description, it, curCase.want)
+			})
+		}
+	})
 }
 
 func TestIntegration_QueryIterationPager(t *testing.T) {
