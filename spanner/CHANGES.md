@@ -1,5 +1,12 @@
 # Changes
 
+## [1.95.1](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.95.0...spanner/v1.95.1) (2026-09-10)
+
+
+### Bug Fixes
+
+* **spanner/spansql:** Support ARRAY of PROTO types in DDL ([#20463](https://github.com/googleapis/google-cloud-go/issues/20463)) ([5fe6a28](https://github.com/googleapis/google-cloud-go/commit/5fe6a289c715a06b5addc95415f44fb42a79bdbc))
+
 ## [1.95.0](https://github.com/googleapis/google-cloud-go/compare/spanner/v1.94.0...spanner/v1.95.0) (2026-08-24)
 
 
