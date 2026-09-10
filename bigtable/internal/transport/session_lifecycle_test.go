@@ -658,3 +658,49 @@ func TestHooks_FiredInSpecOrder(t *testing.T) {
 		t.Errorf("hook order = %v, want %v", got, want)
 	}
 }
+
+// TestReadLoop_RecvUnimplemented_StampsCodeOnCloseErr pins the
+// invariant that when the server rejects a session RPC with
+// UNIMPLEMENTED (surfaced via readLoop's Recv, the actual gRPC bidi
+// error path — Send-fail almost never carries a meaningful code), the
+// raw err lands on s.closeErr with the code intact. Downstream layers
+// depend on this:
+//
+//   - SessionPoolImpl.abnormalClose reads s.closeError() into
+//     lastAbnormalCloseErr (session_pool_lifecycle.go:396-398).
+//   - consecutiveFailureError.GRPCStatus (session_pool.go:80-83)
+//     inherits the code, so a waiter woken on breaker-trip sees
+//     status.Code(err) == codes.Unimplemented.
+//   - A future TableShim classic-fallback path dispatches on that
+//     code to short-circuit the session route on server-capability
+//     failures.
+//
+// If any future refactor of handleClose starts wrapping the Recv err
+// (e.g. folding into unavailable() the way the Send-fail branch
+// legitimately does — see Session.Start), the fallback signal
+// silently disappears. This test breaks in that case.
+func TestReadLoop_RecvUnimplemented_StampsCodeOnCloseErr(t *testing.T) {
+	stream := newFakeStream()
+	s := newTestSession(t, stream, SessionHooks{})
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+
+	if err := s.Start(ctx, &spb.OpenSessionRequest{ProtocolVersion: 1}); err != nil {
+		t.Fatalf("Start: %v", err)
+	}
+	// Feed readLoop a synthetic Recv failure carrying Unimplemented —
+	// the wire shape a server that doesn't implement session RPCs would
+	// return on the OpenSessionResponse trailer.
+	recvErr := status.Error(codes.Unimplemented, "server does not implement session RPCs")
+	stream.recv <- recvOp{err: recvErr}
+
+	waitFor(t, time.Second, func() bool { return s.closeError() != nil }, "closeErr populated by handleClose")
+
+	got := s.closeError()
+	if !errors.Is(got, recvErr) {
+		t.Errorf("errors.Is(s.closeError(), recvErr) = false; got %v", got)
+	}
+	if code := status.Code(got); code != codes.Unimplemented {
+		t.Errorf("status.Code(s.closeError()) = %v, want Unimplemented (handleClose must stamp the raw Recv err with the code intact)", code)
+	}
+}
