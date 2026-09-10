@@ -17,9 +17,18 @@
 package delivery
 
 import (
+	"iter"
+
 	deliverypb "cloud.google.com/go/maps/fleetengine/delivery/apiv1/deliverypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeliveryVehicleIterator) All() iter.Seq2[*deliverypb.DeliveryVehicle, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DeliveryVehicleIterator manages a stream of *deliverypb.DeliveryVehicle.
 type DeliveryVehicleIterator struct {
@@ -66,6 +75,12 @@ func (it *DeliveryVehicleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TaskIterator) All() iter.Seq2[*deliverypb.Task, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TaskIterator manages a stream of *deliverypb.Task.

@@ -17,9 +17,18 @@
 package knowledge
 
 import (
+	"iter"
+
 	developerknowledgepb "cloud.google.com/go/developerknowledge/apiv1/developerknowledgepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentChunkIterator) All() iter.Seq2[*developerknowledgepb.DocumentChunk, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DocumentChunkIterator manages a stream of *developerknowledgepb.DocumentChunk.
 type DocumentChunkIterator struct {

@@ -3,6 +3,20 @@
 
 
 
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.82.0...bigquery/v1.83.0) (2026-09-02)
+
+
+### Features
+
+* Update API sources and regenerate ([#20459](https://github.com/googleapis/google-cloud-go/issues/20459)) ([5426e32](https://github.com/googleapis/google-cloud-go/commit/5426e32154fdced65087675b6c37aba66436ac47))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.81.0...bigquery/v1.82.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
 ## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.80.0...bigquery/v1.81.0) (2026-08-20)
 
 

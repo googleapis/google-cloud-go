@@ -18,12 +18,14 @@ package cloudsecuritycompliance
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	cloudsecuritycompliancepb "cloud.google.com/go/cloudsecuritycompliance/apiv1/cloudsecuritycompliancepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -209,6 +211,12 @@ func (op *DeleteFrameworkDeploymentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CloudControlDeploymentIterator) All() iter.Seq2[*cloudsecuritycompliancepb.CloudControlDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CloudControlDeploymentIterator manages a stream of *cloudsecuritycompliancepb.CloudControlDeployment.
 type CloudControlDeploymentIterator struct {
 	items    []*cloudsecuritycompliancepb.CloudControlDeployment
@@ -254,6 +262,12 @@ func (it *CloudControlDeploymentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CloudControlIterator) All() iter.Seq2[*cloudsecuritycompliancepb.CloudControl, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CloudControlIterator manages a stream of *cloudsecuritycompliancepb.CloudControl.
@@ -303,6 +317,12 @@ func (it *CloudControlIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ControlComplianceSummaryIterator) All() iter.Seq2[*cloudsecuritycompliancepb.ControlComplianceSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ControlComplianceSummaryIterator manages a stream of *cloudsecuritycompliancepb.ControlComplianceSummary.
 type ControlComplianceSummaryIterator struct {
 	items    []*cloudsecuritycompliancepb.ControlComplianceSummary
@@ -348,6 +368,12 @@ func (it *ControlComplianceSummaryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingSummaryIterator) All() iter.Seq2[*cloudsecuritycompliancepb.FindingSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FindingSummaryIterator manages a stream of *cloudsecuritycompliancepb.FindingSummary.
@@ -397,6 +423,12 @@ func (it *FindingSummaryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FrameworkAuditIterator) All() iter.Seq2[*cloudsecuritycompliancepb.FrameworkAudit, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FrameworkAuditIterator manages a stream of *cloudsecuritycompliancepb.FrameworkAudit.
 type FrameworkAuditIterator struct {
 	items    []*cloudsecuritycompliancepb.FrameworkAudit
@@ -442,6 +474,12 @@ func (it *FrameworkAuditIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FrameworkComplianceSummaryIterator) All() iter.Seq2[*cloudsecuritycompliancepb.FrameworkComplianceSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FrameworkComplianceSummaryIterator manages a stream of *cloudsecuritycompliancepb.FrameworkComplianceSummary.
@@ -491,6 +529,12 @@ func (it *FrameworkComplianceSummaryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FrameworkDeploymentIterator) All() iter.Seq2[*cloudsecuritycompliancepb.FrameworkDeployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FrameworkDeploymentIterator manages a stream of *cloudsecuritycompliancepb.FrameworkDeployment.
 type FrameworkDeploymentIterator struct {
 	items    []*cloudsecuritycompliancepb.FrameworkDeployment
@@ -536,6 +580,12 @@ func (it *FrameworkDeploymentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FrameworkIterator) All() iter.Seq2[*cloudsecuritycompliancepb.Framework, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FrameworkIterator manages a stream of *cloudsecuritycompliancepb.Framework.
@@ -585,6 +635,12 @@ func (it *FrameworkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -630,6 +686,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

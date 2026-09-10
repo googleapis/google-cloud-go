@@ -18,12 +18,14 @@ package auditmanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	auditmanagerpb "cloud.google.com/go/auditmanager/apiv1/auditmanagerpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -92,6 +94,12 @@ func (op *GenerateAuditReportOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuditReportIterator) All() iter.Seq2[*auditmanagerpb.AuditReport, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AuditReportIterator manages a stream of *auditmanagerpb.AuditReport.
 type AuditReportIterator struct {
 	items    []*auditmanagerpb.AuditReport
@@ -137,6 +145,12 @@ func (it *AuditReportIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ControlIterator) All() iter.Seq2[*auditmanagerpb.Control, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ControlIterator manages a stream of *auditmanagerpb.Control.
@@ -186,6 +200,12 @@ func (it *ControlIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -233,6 +253,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -278,6 +304,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceEnrollmentStatusIterator) All() iter.Seq2[*auditmanagerpb.ResourceEnrollmentStatus, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ResourceEnrollmentStatusIterator manages a stream of *auditmanagerpb.ResourceEnrollmentStatus.

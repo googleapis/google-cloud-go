@@ -1,0 +1,61 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.shopping.merchant.loyaltycustomers.v1",
+        "version": "v1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/shopping/merchant/loyaltycustomers/apiv1",
+    "version": "1.14.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerMatchClient",
+          "shortName": "LoyaltyCustomerMatchClient"
+        },
+        "fullName": "google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerMatchClient.ManageLoyaltyCustomerMatch",
+        "method": {
+          "fullName": "google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerMatchService.ManageLoyaltyCustomerMatch",
+          "service": {
+            "fullName": "google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerMatchService",
+            "shortName": "LoyaltyCustomerMatchService"
+          },
+          "shortName": "ManageLoyaltyCustomerMatch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "loyaltycustomerspb.ManageLoyaltyCustomerMatchRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*loyaltycustomerspb.ManageLoyaltyCustomerMatchResponse",
+        "shortName": "ManageLoyaltyCustomerMatch"
+      },
+      "description": "ManageLoyaltyCustomerMatch manages (inserts, updates, or removes) a customer's loyalty tier\ninformation.\n\nThis method serves as a single interface for all changes to a customer's\nloyalty status. The specific action (insert, update, or remove) is\ndetermined by the current state of the merchant-to-customer association and\nthe `loyalty_tier` value provided in the request.\n\n**Operation Logic: **\n\n* **Upsert (Insert/Update): ** Providing any valid tier other than\n`NON_MEMBER` will associate the customer with that tier. If an association\nalready exists, it will be updated; otherwise, a new one will be created.\n* **Removal: ** Setting `loyalty_tier` to `NON_MEMBER` will remove any\nexisting loyalty association for the customer.\n\n**Privacy Note: ** To protect user privacy, this method consistently returns\na `200 OK` status with a default `LoyaltyCustomer` response if the\ncustomer's identifier cannot be matched to a Google account or if the user\nhas not opted into loyalty personalization.",
+      "file": "LoyaltyCustomerMatchClient/ManageLoyaltyCustomerMatch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "merchantapi_v1_generated_LoyaltyCustomerMatchService_ManageLoyaltyCustomerMatch_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "merchantapi ManageLoyaltyCustomerMatch Sample"
+    }
+  ]
+}

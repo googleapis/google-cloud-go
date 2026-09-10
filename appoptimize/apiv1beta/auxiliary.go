@@ -18,12 +18,14 @@ package appoptimize
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	appoptimizepb "cloud.google.com/go/appoptimize/apiv1beta/appoptimizepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -93,6 +95,12 @@ func (op *CreateReportOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListValueIterator) All() iter.Seq2[*structpb.ListValue, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListValueIterator manages a stream of *structpb.ListValue.
 type ListValueIterator struct {
 	items    []*structpb.ListValue
@@ -138,6 +146,12 @@ func (it *ListValueIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -187,6 +201,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -232,6 +252,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReportIterator) All() iter.Seq2[*appoptimizepb.Report, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReportIterator manages a stream of *appoptimizepb.Report.

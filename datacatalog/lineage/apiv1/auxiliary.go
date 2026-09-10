@@ -18,12 +18,14 @@ package lineage
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	lineagepb "cloud.google.com/go/datacatalog/lineage/apiv1/lineagepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -133,6 +135,12 @@ func (op *DeleteRunOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LineageEventIterator) All() iter.Seq2[*lineagepb.LineageEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LineageEventIterator manages a stream of *lineagepb.LineageEvent.
 type LineageEventIterator struct {
 	items    []*lineagepb.LineageEvent
@@ -178,6 +186,12 @@ func (it *LineageEventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LinkIterator) All() iter.Seq2[*lineagepb.Link, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LinkIterator manages a stream of *lineagepb.Link.
@@ -227,6 +241,12 @@ func (it *LinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -272,6 +292,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProcessIterator) All() iter.Seq2[*lineagepb.Process, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProcessIterator manages a stream of *lineagepb.Process.
@@ -321,6 +347,12 @@ func (it *ProcessIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProcessLinksIterator) All() iter.Seq2[*lineagepb.ProcessLinks, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProcessLinksIterator manages a stream of *lineagepb.ProcessLinks.
 type ProcessLinksIterator struct {
 	items    []*lineagepb.ProcessLinks
@@ -366,6 +398,12 @@ func (it *ProcessLinksIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RunIterator) All() iter.Seq2[*lineagepb.Run, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RunIterator manages a stream of *lineagepb.Run.

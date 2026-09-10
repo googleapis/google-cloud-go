@@ -317,6 +317,60 @@ func (NvidiaAttestation_GpuArchitectureType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_confidentialcomputing_v1_service_proto_rawDescGZIP(), []int{3, 0}
 }
 
+// Platform types supported by Confidential GKE.
+// This enum is not frozen, and new values may be added in the future.
+type VerifyConfidentialGkeRequest_PlatformType int32
+
+const (
+	// Unspecified platform type, defaults to `VIRTUALIZED_CVM`.
+	VerifyConfidentialGkeRequest_PLATFORM_TYPE_UNSPECIFIED VerifyConfidentialGkeRequest_PlatformType = 0
+	// Standard virtualized Confidential GKE VM.
+	VerifyConfidentialGkeRequest_VIRTUALIZED_CVM VerifyConfidentialGkeRequest_PlatformType = 1
+	// Bare Metal host using a vTPM.
+	VerifyConfidentialGkeRequest_BARE_METAL_VTPM VerifyConfidentialGkeRequest_PlatformType = 2
+)
+
+// Enum value maps for VerifyConfidentialGkeRequest_PlatformType.
+var (
+	VerifyConfidentialGkeRequest_PlatformType_name = map[int32]string{
+		0: "PLATFORM_TYPE_UNSPECIFIED",
+		1: "VIRTUALIZED_CVM",
+		2: "BARE_METAL_VTPM",
+	}
+	VerifyConfidentialGkeRequest_PlatformType_value = map[string]int32{
+		"PLATFORM_TYPE_UNSPECIFIED": 0,
+		"VIRTUALIZED_CVM":           1,
+		"BARE_METAL_VTPM":           2,
+	}
+)
+
+func (x VerifyConfidentialGkeRequest_PlatformType) Enum() *VerifyConfidentialGkeRequest_PlatformType {
+	p := new(VerifyConfidentialGkeRequest_PlatformType)
+	*p = x
+	return p
+}
+
+func (x VerifyConfidentialGkeRequest_PlatformType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (VerifyConfidentialGkeRequest_PlatformType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_confidentialcomputing_v1_service_proto_enumTypes[5].Descriptor()
+}
+
+func (VerifyConfidentialGkeRequest_PlatformType) Type() protoreflect.EnumType {
+	return &file_google_cloud_confidentialcomputing_v1_service_proto_enumTypes[5]
+}
+
+func (x VerifyConfidentialGkeRequest_PlatformType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use VerifyConfidentialGkeRequest_PlatformType.Descriptor instead.
+func (VerifyConfidentialGkeRequest_PlatformType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_confidentialcomputing_v1_service_proto_rawDescGZIP(), []int{17, 0}
+}
+
 // A Challenge from the server used to guarantee freshness of attestations
 type Challenge struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1702,7 +1756,10 @@ type VerifyConfidentialGkeRequest struct {
 	// provided Challenge will be consumed, and cannot be used again.
 	Challenge string `protobuf:"bytes,1,opt,name=challenge,proto3" json:"challenge,omitempty"`
 	// Optional. A collection of fields that modify the token output.
-	Options       *VerifyConfidentialGkeRequest_ConfidentialGkeOptions `protobuf:"bytes,3,opt,name=options,proto3" json:"options,omitempty"`
+	Options *VerifyConfidentialGkeRequest_ConfidentialGkeOptions `protobuf:"bytes,3,opt,name=options,proto3" json:"options,omitempty"`
+	// Optional. Optional platform security architecture hint for the verifier
+	// engine. Defaults to `VIRTUALIZED_CVM` behavior if unspecified.
+	PlatformType  VerifyConfidentialGkeRequest_PlatformType `protobuf:"varint,4,opt,name=platform_type,json=platformType,proto3,enum=google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest_PlatformType" json:"platform_type,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1765,6 +1822,13 @@ func (x *VerifyConfidentialGkeRequest) GetOptions() *VerifyConfidentialGkeReques
 		return x.Options
 	}
 	return nil
+}
+
+func (x *VerifyConfidentialGkeRequest) GetPlatformType() VerifyConfidentialGkeRequest_PlatformType {
+	if x != nil {
+		return x.PlatformType
+	}
+	return VerifyConfidentialGkeRequest_PLATFORM_TYPE_UNSPECIFIED
 }
 
 type isVerifyConfidentialGkeRequest_TeeAttestation interface {
@@ -2627,16 +2691,21 @@ const file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc = "" +
 	"\rak_cert_chain\x18\x02 \x03(\fB\x03\xe0A\x01R\vakCertChain\"\x93\x01\n" +
 	"\x1fVerifyConfidentialSpaceResponse\x120\n" +
 	"\x11attestation_token\x18\x01 \x01(\tB\x03\xe0A\x03R\x10attestationToken\x12>\n" +
-	"\x0epartial_errors\x18\x02 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rpartialErrors\"\x9d\x04\n" +
+	"\x0epartial_errors\x18\x02 \x03(\v2\x12.google.rpc.StatusB\x03\xe0A\x03R\rpartialErrors\"\xf2\x05\n" +
 	"\x1cVerifyConfidentialGkeRequest\x12`\n" +
 	"\x0ftpm_attestation\x18\x02 \x01(\v25.google.cloud.confidentialcomputing.v1.TpmAttestationH\x00R\x0etpmAttestation\x12T\n" +
 	"\tchallenge\x18\x01 \x01(\tB6\xe0A\x02\xfaA0\n" +
 	".confidentialcomputing.googleapis.com/ChallengeR\tchallenge\x12y\n" +
-	"\aoptions\x18\x03 \x01(\v2Z.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptionsB\x03\xe0A\x01R\aoptions\x1a\xb6\x01\n" +
+	"\aoptions\x18\x03 \x01(\v2Z.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptionsB\x03\xe0A\x01R\aoptions\x12z\n" +
+	"\rplatform_type\x18\x04 \x01(\x0e2P.google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.PlatformTypeB\x03\xe0A\x01R\fplatformType\x1a\xb6\x01\n" +
 	"\x16ConfidentialGkeOptions\x12\x1f\n" +
 	"\baudience\x18\x01 \x01(\tB\x03\xe0A\x01R\baudience\x12\x19\n" +
 	"\x05nonce\x18\x03 \x03(\tB\x03\xe0A\x01R\x05nonce\x12`\n" +
-	"\x0esignature_type\x18\x04 \x01(\x0e24.google.cloud.confidentialcomputing.v1.SignatureTypeB\x03\xe0A\x01R\rsignatureTypeB\x11\n" +
+	"\x0esignature_type\x18\x04 \x01(\x0e24.google.cloud.confidentialcomputing.v1.SignatureTypeB\x03\xe0A\x01R\rsignatureType\"W\n" +
+	"\fPlatformType\x12\x1d\n" +
+	"\x19PLATFORM_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fVIRTUALIZED_CVM\x10\x01\x12\x13\n" +
+	"\x0fBARE_METAL_VTPM\x10\x02B\x11\n" +
 	"\x0ftee_attestation\"Q\n" +
 	"\x1dVerifyConfidentialGkeResponse\x120\n" +
 	"\x11attestation_token\x18\x01 \x01(\tB\x03\xe0A\x03R\x10attestationToken*\x7f\n" +
@@ -2679,7 +2748,7 @@ func file_google_cloud_confidentialcomputing_v1_service_proto_rawDescGZIP() []by
 	return file_google_cloud_confidentialcomputing_v1_service_proto_rawDescData
 }
 
-var file_google_cloud_confidentialcomputing_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 5)
+var file_google_cloud_confidentialcomputing_v1_service_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_google_cloud_confidentialcomputing_v1_service_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
 var file_google_cloud_confidentialcomputing_v1_service_proto_goTypes = []any{
 	(SigningAlgorithm)(0),                                          // 0: google.cloud.confidentialcomputing.v1.SigningAlgorithm
@@ -2687,95 +2756,97 @@ var file_google_cloud_confidentialcomputing_v1_service_proto_goTypes = []any{
 	(SignatureType)(0),                                             // 2: google.cloud.confidentialcomputing.v1.SignatureType
 	(TokenProfile)(0),                                              // 3: google.cloud.confidentialcomputing.v1.TokenProfile
 	(NvidiaAttestation_GpuArchitectureType)(0),                     // 4: google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuArchitectureType
-	(*Challenge)(nil),                                              // 5: google.cloud.confidentialcomputing.v1.Challenge
-	(*CreateChallengeRequest)(nil),                                 // 6: google.cloud.confidentialcomputing.v1.CreateChallengeRequest
-	(*VerifyAttestationRequest)(nil),                               // 7: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest
-	(*NvidiaAttestation)(nil),                                      // 8: google.cloud.confidentialcomputing.v1.NvidiaAttestation
-	(*TdxCcelAttestation)(nil),                                     // 9: google.cloud.confidentialcomputing.v1.TdxCcelAttestation
-	(*SevSnpAttestation)(nil),                                      // 10: google.cloud.confidentialcomputing.v1.SevSnpAttestation
-	(*VerifyAttestationResponse)(nil),                              // 11: google.cloud.confidentialcomputing.v1.VerifyAttestationResponse
-	(*GcpCredentials)(nil),                                         // 12: google.cloud.confidentialcomputing.v1.GcpCredentials
-	(*TokenOptions)(nil),                                           // 13: google.cloud.confidentialcomputing.v1.TokenOptions
-	(*AwsPrincipalTagsOptions)(nil),                                // 14: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions
-	(*TpmAttestation)(nil),                                         // 15: google.cloud.confidentialcomputing.v1.TpmAttestation
-	(*ConfidentialSpaceInfo)(nil),                                  // 16: google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfo
-	(*SignedEntity)(nil),                                           // 17: google.cloud.confidentialcomputing.v1.SignedEntity
-	(*ContainerImageSignature)(nil),                                // 18: google.cloud.confidentialcomputing.v1.ContainerImageSignature
-	(*VerifyConfidentialSpaceRequest)(nil),                         // 19: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest
-	(*GceShieldedIdentity)(nil),                                    // 20: google.cloud.confidentialcomputing.v1.GceShieldedIdentity
-	(*VerifyConfidentialSpaceResponse)(nil),                        // 21: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceResponse
-	(*VerifyConfidentialGkeRequest)(nil),                           // 22: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest
-	(*VerifyConfidentialGkeResponse)(nil),                          // 23: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeResponse
-	(*NvidiaAttestation_GpuInfo)(nil),                              // 24: google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
-	(*NvidiaAttestation_SwitchInfo)(nil),                           // 25: google.cloud.confidentialcomputing.v1.NvidiaAttestation.SwitchInfo
-	(*NvidiaAttestation_SinglePassthroughAttestation)(nil),         // 26: google.cloud.confidentialcomputing.v1.NvidiaAttestation.SinglePassthroughAttestation
-	(*NvidiaAttestation_ProtectedPcieAttestation)(nil),             // 27: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation
-	(*NvidiaAttestation_MultiGpuSecurePassthroughAttestation)(nil), // 28: google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestation
-	(*AwsPrincipalTagsOptions_AllowedPrincipalTags)(nil),           // 29: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags
-	(*AwsPrincipalTagsOptions_AllowedPrincipalTags_ContainerImageSignatures)(nil), // 30: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.ContainerImageSignatures
-	(*TpmAttestation_Quote)(nil), // 31: google.cloud.confidentialcomputing.v1.TpmAttestation.Quote
-	nil,                          // 32: google.cloud.confidentialcomputing.v1.TpmAttestation.Quote.PcrValuesEntry
-	(*VerifyConfidentialSpaceRequest_ConfidentialSpaceOptions)(nil), // 33: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions
-	(*VerifyConfidentialGkeRequest_ConfidentialGkeOptions)(nil),     // 34: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptions
-	(*timestamppb.Timestamp)(nil),                                   // 35: google.protobuf.Timestamp
-	(*status.Status)(nil),                                           // 36: google.rpc.Status
+	(VerifyConfidentialGkeRequest_PlatformType)(0),                 // 5: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.PlatformType
+	(*Challenge)(nil),                                              // 6: google.cloud.confidentialcomputing.v1.Challenge
+	(*CreateChallengeRequest)(nil),                                 // 7: google.cloud.confidentialcomputing.v1.CreateChallengeRequest
+	(*VerifyAttestationRequest)(nil),                               // 8: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest
+	(*NvidiaAttestation)(nil),                                      // 9: google.cloud.confidentialcomputing.v1.NvidiaAttestation
+	(*TdxCcelAttestation)(nil),                                     // 10: google.cloud.confidentialcomputing.v1.TdxCcelAttestation
+	(*SevSnpAttestation)(nil),                                      // 11: google.cloud.confidentialcomputing.v1.SevSnpAttestation
+	(*VerifyAttestationResponse)(nil),                              // 12: google.cloud.confidentialcomputing.v1.VerifyAttestationResponse
+	(*GcpCredentials)(nil),                                         // 13: google.cloud.confidentialcomputing.v1.GcpCredentials
+	(*TokenOptions)(nil),                                           // 14: google.cloud.confidentialcomputing.v1.TokenOptions
+	(*AwsPrincipalTagsOptions)(nil),                                // 15: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions
+	(*TpmAttestation)(nil),                                         // 16: google.cloud.confidentialcomputing.v1.TpmAttestation
+	(*ConfidentialSpaceInfo)(nil),                                  // 17: google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfo
+	(*SignedEntity)(nil),                                           // 18: google.cloud.confidentialcomputing.v1.SignedEntity
+	(*ContainerImageSignature)(nil),                                // 19: google.cloud.confidentialcomputing.v1.ContainerImageSignature
+	(*VerifyConfidentialSpaceRequest)(nil),                         // 20: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest
+	(*GceShieldedIdentity)(nil),                                    // 21: google.cloud.confidentialcomputing.v1.GceShieldedIdentity
+	(*VerifyConfidentialSpaceResponse)(nil),                        // 22: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceResponse
+	(*VerifyConfidentialGkeRequest)(nil),                           // 23: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest
+	(*VerifyConfidentialGkeResponse)(nil),                          // 24: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeResponse
+	(*NvidiaAttestation_GpuInfo)(nil),                              // 25: google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
+	(*NvidiaAttestation_SwitchInfo)(nil),                           // 26: google.cloud.confidentialcomputing.v1.NvidiaAttestation.SwitchInfo
+	(*NvidiaAttestation_SinglePassthroughAttestation)(nil),         // 27: google.cloud.confidentialcomputing.v1.NvidiaAttestation.SinglePassthroughAttestation
+	(*NvidiaAttestation_ProtectedPcieAttestation)(nil),             // 28: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation
+	(*NvidiaAttestation_MultiGpuSecurePassthroughAttestation)(nil), // 29: google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestation
+	(*AwsPrincipalTagsOptions_AllowedPrincipalTags)(nil),           // 30: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags
+	(*AwsPrincipalTagsOptions_AllowedPrincipalTags_ContainerImageSignatures)(nil), // 31: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.ContainerImageSignatures
+	(*TpmAttestation_Quote)(nil), // 32: google.cloud.confidentialcomputing.v1.TpmAttestation.Quote
+	nil,                          // 33: google.cloud.confidentialcomputing.v1.TpmAttestation.Quote.PcrValuesEntry
+	(*VerifyConfidentialSpaceRequest_ConfidentialSpaceOptions)(nil), // 34: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions
+	(*VerifyConfidentialGkeRequest_ConfidentialGkeOptions)(nil),     // 35: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptions
+	(*timestamppb.Timestamp)(nil),                                   // 36: google.protobuf.Timestamp
+	(*status.Status)(nil),                                           // 37: google.rpc.Status
 }
 var file_google_cloud_confidentialcomputing_v1_service_proto_depIdxs = []int32{
-	35, // 0: google.cloud.confidentialcomputing.v1.Challenge.create_time:type_name -> google.protobuf.Timestamp
-	35, // 1: google.cloud.confidentialcomputing.v1.Challenge.expire_time:type_name -> google.protobuf.Timestamp
-	5,  // 2: google.cloud.confidentialcomputing.v1.CreateChallengeRequest.challenge:type_name -> google.cloud.confidentialcomputing.v1.Challenge
-	9,  // 3: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.td_ccel:type_name -> google.cloud.confidentialcomputing.v1.TdxCcelAttestation
-	10, // 4: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.sev_snp_attestation:type_name -> google.cloud.confidentialcomputing.v1.SevSnpAttestation
-	8,  // 5: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.nvidia_attestation:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation
-	12, // 6: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.gcp_credentials:type_name -> google.cloud.confidentialcomputing.v1.GcpCredentials
-	15, // 7: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.tpm_attestation:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation
-	16, // 8: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.confidential_space_info:type_name -> google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfo
-	13, // 9: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.token_options:type_name -> google.cloud.confidentialcomputing.v1.TokenOptions
-	26, // 10: google.cloud.confidentialcomputing.v1.NvidiaAttestation.spt:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.SinglePassthroughAttestation
-	27, // 11: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ppcie:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation
-	28, // 12: google.cloud.confidentialcomputing.v1.NvidiaAttestation.mpt:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestation
-	36, // 13: google.cloud.confidentialcomputing.v1.VerifyAttestationResponse.partial_errors:type_name -> google.rpc.Status
-	14, // 14: google.cloud.confidentialcomputing.v1.TokenOptions.aws_principal_tags_options:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions
+	36, // 0: google.cloud.confidentialcomputing.v1.Challenge.create_time:type_name -> google.protobuf.Timestamp
+	36, // 1: google.cloud.confidentialcomputing.v1.Challenge.expire_time:type_name -> google.protobuf.Timestamp
+	6,  // 2: google.cloud.confidentialcomputing.v1.CreateChallengeRequest.challenge:type_name -> google.cloud.confidentialcomputing.v1.Challenge
+	10, // 3: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.td_ccel:type_name -> google.cloud.confidentialcomputing.v1.TdxCcelAttestation
+	11, // 4: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.sev_snp_attestation:type_name -> google.cloud.confidentialcomputing.v1.SevSnpAttestation
+	9,  // 5: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.nvidia_attestation:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation
+	13, // 6: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.gcp_credentials:type_name -> google.cloud.confidentialcomputing.v1.GcpCredentials
+	16, // 7: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.tpm_attestation:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation
+	17, // 8: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.confidential_space_info:type_name -> google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfo
+	14, // 9: google.cloud.confidentialcomputing.v1.VerifyAttestationRequest.token_options:type_name -> google.cloud.confidentialcomputing.v1.TokenOptions
+	27, // 10: google.cloud.confidentialcomputing.v1.NvidiaAttestation.spt:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.SinglePassthroughAttestation
+	28, // 11: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ppcie:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation
+	29, // 12: google.cloud.confidentialcomputing.v1.NvidiaAttestation.mpt:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestation
+	37, // 13: google.cloud.confidentialcomputing.v1.VerifyAttestationResponse.partial_errors:type_name -> google.rpc.Status
+	15, // 14: google.cloud.confidentialcomputing.v1.TokenOptions.aws_principal_tags_options:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions
 	1,  // 15: google.cloud.confidentialcomputing.v1.TokenOptions.token_type:type_name -> google.cloud.confidentialcomputing.v1.TokenType
-	29, // 16: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.allowed_principal_tags:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags
-	31, // 17: google.cloud.confidentialcomputing.v1.TpmAttestation.quotes:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation.Quote
-	17, // 18: google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfo.signed_entities:type_name -> google.cloud.confidentialcomputing.v1.SignedEntity
-	18, // 19: google.cloud.confidentialcomputing.v1.SignedEntity.container_image_signatures:type_name -> google.cloud.confidentialcomputing.v1.ContainerImageSignature
+	30, // 16: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.allowed_principal_tags:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags
+	32, // 17: google.cloud.confidentialcomputing.v1.TpmAttestation.quotes:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation.Quote
+	18, // 18: google.cloud.confidentialcomputing.v1.ConfidentialSpaceInfo.signed_entities:type_name -> google.cloud.confidentialcomputing.v1.SignedEntity
+	19, // 19: google.cloud.confidentialcomputing.v1.SignedEntity.container_image_signatures:type_name -> google.cloud.confidentialcomputing.v1.ContainerImageSignature
 	0,  // 20: google.cloud.confidentialcomputing.v1.ContainerImageSignature.sig_alg:type_name -> google.cloud.confidentialcomputing.v1.SigningAlgorithm
-	9,  // 21: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.td_ccel:type_name -> google.cloud.confidentialcomputing.v1.TdxCcelAttestation
-	15, // 22: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.tpm_attestation:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation
-	12, // 23: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.gcp_credentials:type_name -> google.cloud.confidentialcomputing.v1.GcpCredentials
-	17, // 24: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.signed_entities:type_name -> google.cloud.confidentialcomputing.v1.SignedEntity
-	20, // 25: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.gce_shielded_identity:type_name -> google.cloud.confidentialcomputing.v1.GceShieldedIdentity
-	33, // 26: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.options:type_name -> google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions
-	8,  // 27: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.nvidia_attestation:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation
-	36, // 28: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceResponse.partial_errors:type_name -> google.rpc.Status
-	15, // 29: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.tpm_attestation:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation
-	34, // 30: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.options:type_name -> google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptions
-	4,  // 31: google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo.gpu_architecture_type:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuArchitectureType
-	24, // 32: google.cloud.confidentialcomputing.v1.NvidiaAttestation.SinglePassthroughAttestation.gpu_quote:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
-	24, // 33: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation.gpu_quotes:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
-	25, // 34: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation.switch_quotes:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.SwitchInfo
-	24, // 35: google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestation.gpu_quotes:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
-	30, // 36: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.container_image_signatures:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.ContainerImageSignatures
-	32, // 37: google.cloud.confidentialcomputing.v1.TpmAttestation.Quote.pcr_values:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation.Quote.PcrValuesEntry
-	14, // 38: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions.aws_principal_tags_options:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions
-	3,  // 39: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions.token_profile:type_name -> google.cloud.confidentialcomputing.v1.TokenProfile
-	2,  // 40: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions.signature_type:type_name -> google.cloud.confidentialcomputing.v1.SignatureType
-	2,  // 41: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptions.signature_type:type_name -> google.cloud.confidentialcomputing.v1.SignatureType
-	6,  // 42: google.cloud.confidentialcomputing.v1.ConfidentialComputing.CreateChallenge:input_type -> google.cloud.confidentialcomputing.v1.CreateChallengeRequest
-	7,  // 43: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyAttestation:input_type -> google.cloud.confidentialcomputing.v1.VerifyAttestationRequest
-	19, // 44: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialSpace:input_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest
-	22, // 45: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialGke:input_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest
-	5,  // 46: google.cloud.confidentialcomputing.v1.ConfidentialComputing.CreateChallenge:output_type -> google.cloud.confidentialcomputing.v1.Challenge
-	11, // 47: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyAttestation:output_type -> google.cloud.confidentialcomputing.v1.VerifyAttestationResponse
-	21, // 48: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialSpace:output_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceResponse
-	23, // 49: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialGke:output_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeResponse
-	46, // [46:50] is the sub-list for method output_type
-	42, // [42:46] is the sub-list for method input_type
-	42, // [42:42] is the sub-list for extension type_name
-	42, // [42:42] is the sub-list for extension extendee
-	0,  // [0:42] is the sub-list for field type_name
+	10, // 21: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.td_ccel:type_name -> google.cloud.confidentialcomputing.v1.TdxCcelAttestation
+	16, // 22: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.tpm_attestation:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation
+	13, // 23: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.gcp_credentials:type_name -> google.cloud.confidentialcomputing.v1.GcpCredentials
+	18, // 24: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.signed_entities:type_name -> google.cloud.confidentialcomputing.v1.SignedEntity
+	21, // 25: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.gce_shielded_identity:type_name -> google.cloud.confidentialcomputing.v1.GceShieldedIdentity
+	34, // 26: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.options:type_name -> google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions
+	9,  // 27: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.nvidia_attestation:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation
+	37, // 28: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceResponse.partial_errors:type_name -> google.rpc.Status
+	16, // 29: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.tpm_attestation:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation
+	35, // 30: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.options:type_name -> google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptions
+	5,  // 31: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.platform_type:type_name -> google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.PlatformType
+	4,  // 32: google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo.gpu_architecture_type:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuArchitectureType
+	25, // 33: google.cloud.confidentialcomputing.v1.NvidiaAttestation.SinglePassthroughAttestation.gpu_quote:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
+	25, // 34: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation.gpu_quotes:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
+	26, // 35: google.cloud.confidentialcomputing.v1.NvidiaAttestation.ProtectedPcieAttestation.switch_quotes:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.SwitchInfo
+	25, // 36: google.cloud.confidentialcomputing.v1.NvidiaAttestation.MultiGpuSecurePassthroughAttestation.gpu_quotes:type_name -> google.cloud.confidentialcomputing.v1.NvidiaAttestation.GpuInfo
+	31, // 37: google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.container_image_signatures:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions.AllowedPrincipalTags.ContainerImageSignatures
+	33, // 38: google.cloud.confidentialcomputing.v1.TpmAttestation.Quote.pcr_values:type_name -> google.cloud.confidentialcomputing.v1.TpmAttestation.Quote.PcrValuesEntry
+	15, // 39: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions.aws_principal_tags_options:type_name -> google.cloud.confidentialcomputing.v1.AwsPrincipalTagsOptions
+	3,  // 40: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions.token_profile:type_name -> google.cloud.confidentialcomputing.v1.TokenProfile
+	2,  // 41: google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest.ConfidentialSpaceOptions.signature_type:type_name -> google.cloud.confidentialcomputing.v1.SignatureType
+	2,  // 42: google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest.ConfidentialGkeOptions.signature_type:type_name -> google.cloud.confidentialcomputing.v1.SignatureType
+	7,  // 43: google.cloud.confidentialcomputing.v1.ConfidentialComputing.CreateChallenge:input_type -> google.cloud.confidentialcomputing.v1.CreateChallengeRequest
+	8,  // 44: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyAttestation:input_type -> google.cloud.confidentialcomputing.v1.VerifyAttestationRequest
+	20, // 45: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialSpace:input_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceRequest
+	23, // 46: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialGke:input_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeRequest
+	6,  // 47: google.cloud.confidentialcomputing.v1.ConfidentialComputing.CreateChallenge:output_type -> google.cloud.confidentialcomputing.v1.Challenge
+	12, // 48: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyAttestation:output_type -> google.cloud.confidentialcomputing.v1.VerifyAttestationResponse
+	22, // 49: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialSpace:output_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialSpaceResponse
+	24, // 50: google.cloud.confidentialcomputing.v1.ConfidentialComputing.VerifyConfidentialGke:output_type -> google.cloud.confidentialcomputing.v1.VerifyConfidentialGkeResponse
+	47, // [47:51] is the sub-list for method output_type
+	43, // [43:47] is the sub-list for method input_type
+	43, // [43:43] is the sub-list for extension type_name
+	43, // [43:43] is the sub-list for extension extendee
+	0,  // [0:43] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_confidentialcomputing_v1_service_proto_init() }
@@ -2811,7 +2882,7 @@ func file_google_cloud_confidentialcomputing_v1_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc), len(file_google_cloud_confidentialcomputing_v1_service_proto_rawDesc)),
-			NumEnums:      5,
+			NumEnums:      6,
 			NumMessages:   30,
 			NumExtensions: 0,
 			NumServices:   1,

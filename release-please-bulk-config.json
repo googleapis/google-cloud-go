@@ -234,6 +234,16 @@
         }
       ]
     },
+    "apptopology": {
+      "component": "apptopology",
+      "extra-files": [
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1/snippet_metadata.google.cloud.apptopology.v1.json",
+          "type": "json"
+        }
+      ]
+    },
     "area120": {
       "component": "area120",
       "extra-files": [
@@ -878,12 +888,12 @@
         }
       ]
     },
-    "developers": {
-      "component": "developers",
+    "developerknowledge": {
+      "component": "developerknowledge",
       "extra-files": [
         {
           "jsonpath": "$.clientLibrary.version",
-          "path": "examples/knowledge/apiv1/snippet_metadata.google.developers.knowledge.v1.json",
+          "path": "examples/apiv1/snippet_metadata.google.developers.knowledge.v1.json",
           "type": "json"
         }
       ]
@@ -2183,6 +2193,11 @@
         {
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/merchant/lfp/apiv1beta/snippet_metadata.google.shopping.merchant.lfp.v1beta.json",
+          "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/merchant/loyaltycustomers/apiv1/snippet_metadata.google.shopping.merchant.loyaltycustomers.v1.json",
           "type": "json"
         },
         {

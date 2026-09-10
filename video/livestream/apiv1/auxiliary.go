@@ -18,12 +18,14 @@ package livestream
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	livestreampb "cloud.google.com/go/video/livestream/apiv1/livestreampb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1125,6 +1127,12 @@ func (op *UpdatePoolOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssetIterator) All() iter.Seq2[*livestreampb.Asset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AssetIterator manages a stream of *livestreampb.Asset.
 type AssetIterator struct {
 	items    []*livestreampb.Asset
@@ -1170,6 +1178,12 @@ func (it *AssetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChannelIterator) All() iter.Seq2[*livestreampb.Channel, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ChannelIterator manages a stream of *livestreampb.Channel.
@@ -1219,6 +1233,12 @@ func (it *ChannelIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClipIterator) All() iter.Seq2[*livestreampb.Clip, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ClipIterator manages a stream of *livestreampb.Clip.
 type ClipIterator struct {
 	items    []*livestreampb.Clip
@@ -1264,6 +1284,12 @@ func (it *ClipIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DvrSessionIterator) All() iter.Seq2[*livestreampb.DvrSession, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DvrSessionIterator manages a stream of *livestreampb.DvrSession.
@@ -1313,6 +1339,12 @@ func (it *DvrSessionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EventIterator) All() iter.Seq2[*livestreampb.Event, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EventIterator manages a stream of *livestreampb.Event.
 type EventIterator struct {
 	items    []*livestreampb.Event
@@ -1358,6 +1390,12 @@ func (it *EventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InputIterator) All() iter.Seq2[*livestreampb.Input, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InputIterator manages a stream of *livestreampb.Input.
@@ -1407,6 +1445,12 @@ func (it *InputIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1452,6 +1496,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

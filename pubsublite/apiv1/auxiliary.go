@@ -18,12 +18,14 @@ package pubsublite
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	pubsublitepb "cloud.google.com/go/pubsublite/apiv1/pubsublitepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -88,6 +90,12 @@ func (op *SeekSubscriptionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -133,6 +141,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PartitionCursorIterator) All() iter.Seq2[*pubsublitepb.PartitionCursor, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PartitionCursorIterator manages a stream of *pubsublitepb.PartitionCursor.
@@ -182,6 +196,12 @@ func (it *PartitionCursorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationIterator) All() iter.Seq2[*pubsublitepb.Reservation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReservationIterator manages a stream of *pubsublitepb.Reservation.
 type ReservationIterator struct {
 	items    []*pubsublitepb.Reservation
@@ -227,6 +247,12 @@ func (it *ReservationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.
@@ -276,6 +302,12 @@ func (it *StringIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubscriptionIterator) All() iter.Seq2[*pubsublitepb.Subscription, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SubscriptionIterator manages a stream of *pubsublitepb.Subscription.
 type SubscriptionIterator struct {
 	items    []*pubsublitepb.Subscription
@@ -321,6 +353,12 @@ func (it *SubscriptionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TopicIterator) All() iter.Seq2[*pubsublitepb.Topic, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TopicIterator manages a stream of *pubsublitepb.Topic.

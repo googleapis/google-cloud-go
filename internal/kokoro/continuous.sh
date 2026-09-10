@@ -228,7 +228,8 @@ else
   testAllModules
 fi
 
-if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"continuous"* ]] || [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
+# Only invoke flakybot for nightly, where tests are invoked regularly.
+if [[ $KOKORO_BUILD_ARTIFACTS_SUBDIR = *"nightly"* ]]; then
   chmod +x $KOKORO_GFILE_DIR/linux_amd64/flakybot
   $KOKORO_GFILE_DIR/linux_amd64/flakybot -logs_dir=$GOCLOUD_HOME \
     -repo=googleapis/google-cloud-go \

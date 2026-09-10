@@ -12,19 +12,19 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 language: go
-version: v0.39.0
+version: v0.42.0
 repo: googleapis/google-cloud-go
 sources:
   discovery:
     commit: 1c6496fb0cf9fa04a35e24e8af871c58298ae37e
     sha256: c3cd1ca564a28485970bdf348cac9bcde65d45792a5c2df1c179654d3ad8b877
   googleapis:
-    commit: 63425cf2c0ad42419f704d89ea3477e0ef0b548f
-    sha256: 1f2c2d14c6ea0647991226b1fcdbcf85e80914168548630d0e21b2d4a761854a
+    commit: 5cbe99334de40143f64b32e805dd8cfe38ef11d5
+    sha256: d7703651093e08c99568de99792c2372cb595ab739d01dd6d75254563ab4d7bf
 tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
-      version: v0.62.1-0.20260709201106-57751a315691
+      version: v0.64.0
     - name: golang.org/x/tools/cmd/goimports
       version: v0.44.0
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
@@ -151,6 +151,11 @@ libraries:
       - path: google/apps/events/subscriptions/v1
       - path: google/apps/meet/v2beta
       - path: google/apps/events/subscriptions/v1beta
+  - name: apptopology
+    version: 0.1.0
+    apis:
+      - path: google/cloud/apptopology/v1
+    copyright_year: "2026"
   - name: area120
     version: 0.15.0
     apis:
@@ -228,7 +233,7 @@ libraries:
     apis:
       - path: google/cloud/baremetalsolution/v2
   - name: batch
-    version: 1.21.0
+    version: 1.22.0
     apis:
       - path: google/cloud/batch/v1
     keep:
@@ -249,7 +254,7 @@ libraries:
       - path: google/cloud/biglake/hive/v1beta
     copyright_year: "2026"
   - name: bigquery
-    version: 1.81.0
+    version: 1.83.0
     apis:
       - path: google/cloud/bigquery/migration/v2
         go:
@@ -386,7 +391,7 @@ libraries:
       - README.md
     skip_release: true
   - name: bigtable
-    version: 1.52.0
+    version: 1.56.0
     apis:
       - path: google/bigtable/v2
         go:
@@ -508,7 +513,7 @@ libraries:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
   - name: compute
-    version: 1.66.0
+    version: 1.67.0
     preview:
       version: 1.66.0-preview.1
       apis:
@@ -535,12 +540,12 @@ libraries:
       - internal/version.go
     skip_release: true
   - name: confidentialcomputing
-    version: 1.17.0
+    version: 1.18.0
     apis:
       - path: google/cloud/confidentialcomputing/v1
       - path: google/cloud/confidentialcomputing/v1alpha1
   - name: config
-    version: 1.12.0
+    version: 1.13.0
     apis:
       - path: google/cloud/config/v1
   - name: configdelivery
@@ -553,7 +558,7 @@ libraries:
     apis:
       - path: google/cloud/contactcenterinsights/v1
   - name: container
-    version: 1.53.1
+    version: 1.54.0
     apis:
       - path: google/container/v1
   - name: containeranalysis
@@ -652,6 +657,13 @@ libraries:
     version: 1.1.0
     apis:
       - path: google/cloud/developerconnect/v1
+  - name: developerknowledge
+    version: 0.2.0
+    apis:
+      - path: google/developers/knowledge/v1
+        go:
+          import_path: developerknowledge/apiv1
+    copyright_year: "2026"
   - name: devicestreaming
     version: 1.0.0
     apis:
@@ -664,13 +676,13 @@ libraries:
       - path: google/cloud/dialogflow/cx/v3beta1
       - path: google/cloud/dialogflow/v2beta1
   - name: discoveryengine
-    version: 1.32.0
+    version: 1.33.0
     apis:
       - path: google/cloud/discoveryengine/v1
       - path: google/cloud/discoveryengine/v1beta
       - path: google/cloud/discoveryengine/v1alpha
   - name: dlp
-    version: 1.36.1
+    version: 1.37.0
     apis:
       - path: google/privacy/dlp/v2
         go:
@@ -761,7 +773,7 @@ libraries:
       - path: google/cloud/functions/v1
       - path: google/cloud/functions/v2beta
   - name: geminidataanalytics
-    version: 1.4.0
+    version: 1.5.0
     apis:
       - path: google/cloud/geminidataanalytics/v1
       - path: google/cloud/geminidataanalytics/v1beta
@@ -915,7 +927,7 @@ libraries:
       - path: google/cloud/managedkafka/v1
       - path: google/cloud/managedkafka/schemaregistry/v1
   - name: maps
-    version: 1.40.0
+    version: 1.41.0
     apis:
       - path: google/maps/geocode/v4
       - path: google/maps/routing/v2
@@ -1110,7 +1122,7 @@ libraries:
     go:
       nested_module: v2
   - name: pubsub/v2
-    version: 2.6.2
+    version: 2.7.0
     apis:
       - path: google/pubsub/v1
         go:
@@ -1281,7 +1293,7 @@ libraries:
     apis:
       - path: google/cloud/shell/v1
   - name: shopping
-    version: 1.13.0
+    version: 1.14.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/promotions/v1
@@ -1296,19 +1308,20 @@ libraries:
       - path: google/shopping/merchant/issueresolution/v1
       - path: google/shopping/merchant/products/v1
       - path: google/shopping/merchant/inventories/v1
-      - path: google/shopping/merchant/notifications/v1beta
+      - path: google/shopping/merchant/loyaltycustomers/v1
       - path: google/shopping/merchant/ordertracking/v1beta
-      - path: google/shopping/merchant/products/v1beta
+      - path: google/shopping/merchant/issueresolution/v1beta
       - path: google/shopping/merchant/accounts/v1beta
       - path: google/shopping/merchant/quota/v1beta
       - path: google/shopping/merchant/promotions/v1beta
       - path: google/shopping/merchant/inventories/v1beta
       - path: google/shopping/merchant/reports/v1beta
-      - path: google/shopping/merchant/issueresolution/v1beta
+      - path: google/shopping/merchant/products/v1beta
       - path: google/shopping/merchant/reviews/v1beta
       - path: google/shopping/merchant/lfp/v1beta
       - path: google/shopping/merchant/datasources/v1beta
       - path: google/shopping/merchant/conversions/v1beta
+      - path: google/shopping/merchant/notifications/v1beta
       - path: google/shopping/merchant/productstudio/v1alpha
       - path: google/shopping/type
         go:
@@ -1355,7 +1368,7 @@ libraries:
       - path: google/cloud/sql/v1beta4
     copyright_year: "2026"
   - name: storage
-    version: 1.65.1
+    version: 1.67.1
     apis:
       - path: google/storage/v2
         go:

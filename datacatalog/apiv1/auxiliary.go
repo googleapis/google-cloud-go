@@ -18,12 +18,14 @@ package datacatalog
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	datacatalogpb "cloud.google.com/go/datacatalog/apiv1/datacatalogpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -155,6 +157,12 @@ func (op *ReconcileTagsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryGroupIterator) All() iter.Seq2[*datacatalogpb.EntryGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EntryGroupIterator manages a stream of *datacatalogpb.EntryGroup.
 type EntryGroupIterator struct {
 	items    []*datacatalogpb.EntryGroup
@@ -200,6 +208,12 @@ func (it *EntryGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntryIterator) All() iter.Seq2[*datacatalogpb.Entry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntryIterator manages a stream of *datacatalogpb.Entry.
@@ -249,6 +263,12 @@ func (it *EntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -294,6 +314,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PolicyTagIterator) All() iter.Seq2[*datacatalogpb.PolicyTag, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PolicyTagIterator manages a stream of *datacatalogpb.PolicyTag.
@@ -343,6 +369,12 @@ func (it *PolicyTagIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchCatalogResultIterator) All() iter.Seq2[*datacatalogpb.SearchCatalogResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchCatalogResultIterator manages a stream of *datacatalogpb.SearchCatalogResult.
 type SearchCatalogResultIterator struct {
 	items    []*datacatalogpb.SearchCatalogResult
@@ -390,6 +422,12 @@ func (it *SearchCatalogResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagIterator) All() iter.Seq2[*datacatalogpb.Tag, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TagIterator manages a stream of *datacatalogpb.Tag.
 type TagIterator struct {
 	items    []*datacatalogpb.Tag
@@ -435,6 +473,12 @@ func (it *TagIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TaxonomyIterator) All() iter.Seq2[*datacatalogpb.Taxonomy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TaxonomyIterator manages a stream of *datacatalogpb.Taxonomy.

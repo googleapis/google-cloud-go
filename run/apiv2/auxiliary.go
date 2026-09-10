@@ -18,12 +18,14 @@ package run
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	runpb "cloud.google.com/go/run/apiv2/runpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -1115,6 +1117,12 @@ func (op *UpdateWorkerPoolOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExecutionIterator) All() iter.Seq2[*runpb.Execution, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExecutionIterator manages a stream of *runpb.Execution.
 type ExecutionIterator struct {
 	items    []*runpb.Execution
@@ -1160,6 +1168,12 @@ func (it *ExecutionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*runpb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceIterator manages a stream of *runpb.Instance.
@@ -1209,6 +1223,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*runpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // JobIterator manages a stream of *runpb.Job.
 type JobIterator struct {
 	items    []*runpb.Job
@@ -1254,6 +1274,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1303,6 +1329,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RevisionIterator) All() iter.Seq2[*runpb.Revision, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RevisionIterator manages a stream of *runpb.Revision.
 type RevisionIterator struct {
 	items    []*runpb.Revision
@@ -1348,6 +1380,12 @@ func (it *RevisionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*runpb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceIterator manages a stream of *runpb.Service.
@@ -1397,6 +1435,12 @@ func (it *ServiceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TaskIterator) All() iter.Seq2[*runpb.Task, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TaskIterator manages a stream of *runpb.Task.
 type TaskIterator struct {
 	items    []*runpb.Task
@@ -1442,6 +1486,12 @@ func (it *TaskIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkerPoolIterator) All() iter.Seq2[*runpb.WorkerPool, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkerPoolIterator manages a stream of *runpb.WorkerPool.

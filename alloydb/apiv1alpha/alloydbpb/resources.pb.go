@@ -178,6 +178,8 @@ const (
 	DatabaseVersion_POSTGRES_17 DatabaseVersion = 5
 	// The database version is Postgres 18.
 	DatabaseVersion_POSTGRES_18 DatabaseVersion = 6
+	// The database version is Postgres 19.
+	DatabaseVersion_POSTGRES_19 DatabaseVersion = 7
 )
 
 // Enum value maps for DatabaseVersion.
@@ -190,6 +192,7 @@ var (
 		4: "POSTGRES_16",
 		5: "POSTGRES_17",
 		6: "POSTGRES_18",
+		7: "POSTGRES_19",
 	}
 	DatabaseVersion_value = map[string]int32{
 		"DATABASE_VERSION_UNSPECIFIED": 0,
@@ -199,6 +202,7 @@ var (
 		"POSTGRES_16":                  4,
 		"POSTGRES_17":                  5,
 		"POSTGRES_18":                  6,
+		"POSTGRES_19":                  7,
 	}
 )
 
@@ -6304,7 +6308,7 @@ const file_google_cloud_alloydb_v1alpha_resources_proto_rawDesc = "" +
 	"\vClusterView\x12\x1c\n" +
 	"\x18CLUSTER_VIEW_UNSPECIFIED\x10\x00\x12\x16\n" +
 	"\x12CLUSTER_VIEW_BASIC\x10\x01\x12\"\n" +
-	"\x1eCLUSTER_VIEW_CONTINUOUS_BACKUP\x10\x02*\x9d\x01\n" +
+	"\x1eCLUSTER_VIEW_CONTINUOUS_BACKUP\x10\x02*\xae\x01\n" +
 	"\x0fDatabaseVersion\x12 \n" +
 	"\x1cDATABASE_VERSION_UNSPECIFIED\x10\x00\x12\x13\n" +
 	"\vPOSTGRES_13\x10\x01\x1a\x02\b\x01\x12\x0f\n" +
@@ -6312,7 +6316,8 @@ const file_google_cloud_alloydb_v1alpha_resources_proto_rawDesc = "" +
 	"\vPOSTGRES_15\x10\x03\x12\x0f\n" +
 	"\vPOSTGRES_16\x10\x04\x12\x0f\n" +
 	"\vPOSTGRES_17\x10\x05\x12\x0f\n" +
-	"\vPOSTGRES_18\x10\x06*N\n" +
+	"\vPOSTGRES_18\x10\x06\x12\x0f\n" +
+	"\vPOSTGRES_19\x10\a*N\n" +
 	"\x10SubscriptionType\x12!\n" +
 	"\x1dSUBSCRIPTION_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bSTANDARD\x10\x01\x12\t\n" +

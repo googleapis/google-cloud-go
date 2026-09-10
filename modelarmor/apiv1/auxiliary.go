@@ -17,10 +17,19 @@
 package modelarmor
 
 import (
+	"iter"
+
 	modelarmorpb "cloud.google.com/go/modelarmor/apiv1/modelarmorpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
@@ -67,6 +76,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TemplateIterator) All() iter.Seq2[*modelarmorpb.Template, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TemplateIterator manages a stream of *modelarmorpb.Template.

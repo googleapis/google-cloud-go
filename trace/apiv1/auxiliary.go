@@ -17,9 +17,18 @@
 package trace
 
 import (
+	"iter"
+
 	tracepb "cloud.google.com/go/trace/apiv1/tracepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TraceIterator) All() iter.Seq2[*tracepb.Trace, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // TraceIterator manages a stream of *tracepb.Trace.
 type TraceIterator struct {

@@ -18,12 +18,14 @@ package developerconnect
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	developerconnectpb "cloud.google.com/go/developerconnect/apiv1/developerconnectpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -794,6 +796,12 @@ func (op *UpdateInsightsConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountConnectorIterator) All() iter.Seq2[*developerconnectpb.AccountConnector, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AccountConnectorIterator manages a stream of *developerconnectpb.AccountConnector.
 type AccountConnectorIterator struct {
 	items    []*developerconnectpb.AccountConnector
@@ -839,6 +847,12 @@ func (it *AccountConnectorIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectionIterator) All() iter.Seq2[*developerconnectpb.Connection, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConnectionIterator manages a stream of *developerconnectpb.Connection.
@@ -888,6 +902,12 @@ func (it *ConnectionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentEventIterator) All() iter.Seq2[*developerconnectpb.DeploymentEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DeploymentEventIterator manages a stream of *developerconnectpb.DeploymentEvent.
 type DeploymentEventIterator struct {
 	items    []*developerconnectpb.DeploymentEvent
@@ -933,6 +953,12 @@ func (it *DeploymentEventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GitRepositoryLinkIterator) All() iter.Seq2[*developerconnectpb.GitRepositoryLink, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GitRepositoryLinkIterator manages a stream of *developerconnectpb.GitRepositoryLink.
@@ -982,6 +1008,12 @@ func (it *GitRepositoryLinkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InsightsConfigIterator) All() iter.Seq2[*developerconnectpb.InsightsConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InsightsConfigIterator manages a stream of *developerconnectpb.InsightsConfig.
 type InsightsConfigIterator struct {
 	items    []*developerconnectpb.InsightsConfig
@@ -1027,6 +1059,12 @@ func (it *InsightsConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LinkableGitRepositoryIterator) All() iter.Seq2[*developerconnectpb.LinkableGitRepository, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LinkableGitRepositoryIterator manages a stream of *developerconnectpb.LinkableGitRepository.
@@ -1076,6 +1114,12 @@ func (it *LinkableGitRepositoryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1121,6 +1165,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1170,6 +1220,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StringIterator manages a stream of string.
 type StringIterator struct {
 	items    []string
@@ -1215,6 +1271,12 @@ func (it *StringIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserIterator) All() iter.Seq2[*developerconnectpb.User, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserIterator manages a stream of *developerconnectpb.User.

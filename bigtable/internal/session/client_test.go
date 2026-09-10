@@ -210,6 +210,35 @@ func TestSessionClient_PerResourceMetadata(t *testing.T) {
 	}
 }
 
+// TestBuildConfigMetadata pins the GetClientConfiguration header shape
+// to Java parity: instance_name (not `name`) + app_profile_id, both URL
+// escaped, resource-prefix set to the full instance, feature-flags MD
+// joined in. Regression guard for the missing-app_profile_id bug where
+// RLS routing on the config-poll path silently diverged from Java.
+func TestBuildConfigMetadata(t *testing.T) {
+	ffMD := btransport.MarshalFeatureFlagsMD(btransport.NewFeatureFlagsProto(btransport.FeatureFlagsInput{
+		ClientSideMetricsEnabled: true,
+		EnableDirectAccess:       true,
+	}))
+	md := buildConfigMetadata("projects/p/instances/i", "profile with spaces", ffMD)
+
+	if got := md.Get(resourcePrefixHeader); len(got) != 1 || got[0] != "projects/p/instances/i" {
+		t.Errorf("%s = %v, want single %q", resourcePrefixHeader, got, "projects/p/instances/i")
+	}
+	params := md.Get(requestParamsHeader)
+	if len(params) != 1 {
+		t.Fatalf("%s = %v, want exactly one value", requestParamsHeader, params)
+	}
+	// "/" -> %2F, " " -> "+"; key is instance_name (proto field), not `name`.
+	wantParam := "instance_name=projects%2Fp%2Finstances%2Fi&app_profile_id=profile+with+spaces"
+	if params[0] != wantParam {
+		t.Errorf("%s = %q, want %q", requestParamsHeader, params[0], wantParam)
+	}
+	if len(md.Get(btransport.FeatureFlagsHeader)) != 1 {
+		t.Errorf("feature-flags header missing from buildConfigMetadata output: %v", md)
+	}
+}
+
 // TestSessionClient_FeatureFlags asserts featureFlags() (used to build
 // each OpenSessionRequest.Flags) reflects the config booleans and
 // always ships RetryInfo=true (single source of truth in

@@ -17,9 +17,18 @@
 package hive
 
 import (
+	"iter"
+
 	hivepb "cloud.google.com/go/biglake/hive/apiv1/hivepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HiveCatalogIterator) All() iter.Seq2[*hivepb.HiveCatalog, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // HiveCatalogIterator manages a stream of *hivepb.HiveCatalog.
 type HiveCatalogIterator struct {
@@ -68,6 +77,12 @@ func (it *HiveCatalogIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HiveDatabaseIterator) All() iter.Seq2[*hivepb.HiveDatabase, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HiveDatabaseIterator manages a stream of *hivepb.HiveDatabase.
 type HiveDatabaseIterator struct {
 	items    []*hivepb.HiveDatabase
@@ -113,6 +128,12 @@ func (it *HiveDatabaseIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HiveTableIterator) All() iter.Seq2[*hivepb.HiveTable, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HiveTableIterator manages a stream of *hivepb.HiveTable.

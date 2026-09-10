@@ -17,9 +17,18 @@
 package quota
 
 import (
+	"iter"
+
 	quotapb "cloud.google.com/go/shopping/merchant/quota/apiv1/quotapb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountLimitIterator) All() iter.Seq2[*quotapb.AccountLimit, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AccountLimitIterator manages a stream of *quotapb.AccountLimit.
 type AccountLimitIterator struct {
@@ -66,6 +75,12 @@ func (it *AccountLimitIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QuotaGroupIterator) All() iter.Seq2[*quotapb.QuotaGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // QuotaGroupIterator manages a stream of *quotapb.QuotaGroup.

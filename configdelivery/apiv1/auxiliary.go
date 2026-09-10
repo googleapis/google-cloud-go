@@ -18,12 +18,14 @@ package configdelivery
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	configdeliverypb "cloud.google.com/go/configdelivery/apiv1/configdeliverypb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -944,6 +946,12 @@ func (op *UpdateVariantOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FleetPackageIterator) All() iter.Seq2[*configdeliverypb.FleetPackage, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FleetPackageIterator manages a stream of *configdeliverypb.FleetPackage.
 type FleetPackageIterator struct {
 	items    []*configdeliverypb.FleetPackage
@@ -989,6 +997,12 @@ func (it *FleetPackageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1038,6 +1052,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1083,6 +1103,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReleaseIterator) All() iter.Seq2[*configdeliverypb.Release, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReleaseIterator manages a stream of *configdeliverypb.Release.
@@ -1132,6 +1158,12 @@ func (it *ReleaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceBundleIterator) All() iter.Seq2[*configdeliverypb.ResourceBundle, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ResourceBundleIterator manages a stream of *configdeliverypb.ResourceBundle.
 type ResourceBundleIterator struct {
 	items    []*configdeliverypb.ResourceBundle
@@ -1179,6 +1211,12 @@ func (it *ResourceBundleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutIterator) All() iter.Seq2[*configdeliverypb.Rollout, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RolloutIterator manages a stream of *configdeliverypb.Rollout.
 type RolloutIterator struct {
 	items    []*configdeliverypb.Rollout
@@ -1224,6 +1262,12 @@ func (it *RolloutIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VariantIterator) All() iter.Seq2[*configdeliverypb.Variant, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VariantIterator manages a stream of *configdeliverypb.Variant.

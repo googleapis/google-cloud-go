@@ -852,3 +852,10 @@ func TestHTTPReaderMidStreamRetryCRC(t *testing.T) {
 		}
 	}, option.WithHTTPClient(hc))
 }
+
+func TestMRDRunCallbackNilGuard(t *testing.T) {
+	m := &multiRangeDownloaderManager{}
+	// Calling runCallback with a nil callback should safely return without panicking.
+	m.runCallback(0, 100, nil, nil)
+	m.callbackWg.Wait()
+}

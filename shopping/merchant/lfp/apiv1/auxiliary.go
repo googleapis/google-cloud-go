@@ -17,9 +17,18 @@
 package lfp
 
 import (
+	"iter"
+
 	lfppb "cloud.google.com/go/shopping/merchant/lfp/apiv1/lfppb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LfpStoreIterator) All() iter.Seq2[*lfppb.LfpStore, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LfpStoreIterator manages a stream of *lfppb.LfpStore.
 type LfpStoreIterator struct {

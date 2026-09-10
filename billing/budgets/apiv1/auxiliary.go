@@ -17,9 +17,18 @@
 package budgets
 
 import (
+	"iter"
+
 	budgetspb "cloud.google.com/go/billing/budgets/apiv1/budgetspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BudgetIterator) All() iter.Seq2[*budgetspb.Budget, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // BudgetIterator manages a stream of *budgetspb.Budget.
 type BudgetIterator struct {

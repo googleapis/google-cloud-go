@@ -18,12 +18,14 @@ package config
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	configpb "cloud.google.com/go/config/apiv1/configpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -860,6 +862,12 @@ func (op *UpdateDeploymentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentGroupIterator) All() iter.Seq2[*configpb.DeploymentGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DeploymentGroupIterator manages a stream of *configpb.DeploymentGroup.
 type DeploymentGroupIterator struct {
 	items    []*configpb.DeploymentGroup
@@ -905,6 +913,12 @@ func (it *DeploymentGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentGroupRevisionIterator) All() iter.Seq2[*configpb.DeploymentGroupRevision, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DeploymentGroupRevisionIterator manages a stream of *configpb.DeploymentGroupRevision.
@@ -954,6 +968,12 @@ func (it *DeploymentGroupRevisionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentIterator) All() iter.Seq2[*configpb.Deployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DeploymentIterator manages a stream of *configpb.Deployment.
 type DeploymentIterator struct {
 	items    []*configpb.Deployment
@@ -999,6 +1019,12 @@ func (it *DeploymentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1048,6 +1074,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1093,6 +1125,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PreviewIterator) All() iter.Seq2[*configpb.Preview, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PreviewIterator manages a stream of *configpb.Preview.
@@ -1142,6 +1180,12 @@ func (it *PreviewIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceChangeIterator) All() iter.Seq2[*configpb.ResourceChange, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ResourceChangeIterator manages a stream of *configpb.ResourceChange.
 type ResourceChangeIterator struct {
 	items    []*configpb.ResourceChange
@@ -1187,6 +1231,12 @@ func (it *ResourceChangeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceDriftIterator) All() iter.Seq2[*configpb.ResourceDrift, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ResourceDriftIterator manages a stream of *configpb.ResourceDrift.
@@ -1236,6 +1286,12 @@ func (it *ResourceDriftIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceIterator) All() iter.Seq2[*configpb.Resource, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ResourceIterator manages a stream of *configpb.Resource.
 type ResourceIterator struct {
 	items    []*configpb.Resource
@@ -1283,6 +1339,12 @@ func (it *ResourceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RevisionIterator) All() iter.Seq2[*configpb.Revision, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RevisionIterator manages a stream of *configpb.Revision.
 type RevisionIterator struct {
 	items    []*configpb.Revision
@@ -1328,6 +1390,12 @@ func (it *RevisionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TerraformVersionIterator) All() iter.Seq2[*configpb.TerraformVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TerraformVersionIterator manages a stream of *configpb.TerraformVersion.

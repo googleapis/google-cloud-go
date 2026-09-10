@@ -18,12 +18,14 @@ package cx
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	cxpb "cloud.google.com/go/dialogflow/cx/apiv3beta1/cxpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -1404,6 +1406,12 @@ func (op *UpdateEnvironmentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AgentIterator) All() iter.Seq2[*cxpb.Agent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AgentIterator manages a stream of *cxpb.Agent.
 type AgentIterator struct {
 	items    []*cxpb.Agent
@@ -1449,6 +1457,12 @@ func (it *AgentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChangelogIterator) All() iter.Seq2[*cxpb.Changelog, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ChangelogIterator manages a stream of *cxpb.Changelog.
@@ -1498,6 +1512,12 @@ func (it *ChangelogIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ContinuousTestResultIterator) All() iter.Seq2[*cxpb.ContinuousTestResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ContinuousTestResultIterator manages a stream of *cxpb.ContinuousTestResult.
 type ContinuousTestResultIterator struct {
 	items    []*cxpb.ContinuousTestResult
@@ -1543,6 +1563,12 @@ func (it *ContinuousTestResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*cxpb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversationIterator manages a stream of *cxpb.Conversation.
@@ -1592,6 +1618,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentIterator) All() iter.Seq2[*cxpb.Deployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DeploymentIterator manages a stream of *cxpb.Deployment.
 type DeploymentIterator struct {
 	items    []*cxpb.Deployment
@@ -1637,6 +1669,12 @@ func (it *DeploymentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntityTypeIterator) All() iter.Seq2[*cxpb.EntityType, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EntityTypeIterator manages a stream of *cxpb.EntityType.
@@ -1686,6 +1724,12 @@ func (it *EntityTypeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnvironmentIterator) All() iter.Seq2[*cxpb.Environment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EnvironmentIterator manages a stream of *cxpb.Environment.
 type EnvironmentIterator struct {
 	items    []*cxpb.Environment
@@ -1731,6 +1775,12 @@ func (it *EnvironmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExampleIterator) All() iter.Seq2[*cxpb.Example, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ExampleIterator manages a stream of *cxpb.Example.
@@ -1780,6 +1830,12 @@ func (it *ExampleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExperimentIterator) All() iter.Seq2[*cxpb.Experiment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExperimentIterator manages a stream of *cxpb.Experiment.
 type ExperimentIterator struct {
 	items    []*cxpb.Experiment
@@ -1825,6 +1881,12 @@ func (it *ExperimentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FlowIterator) All() iter.Seq2[*cxpb.Flow, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FlowIterator manages a stream of *cxpb.Flow.
@@ -1874,6 +1936,12 @@ func (it *FlowIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GeneratorIterator) All() iter.Seq2[*cxpb.Generator, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GeneratorIterator manages a stream of *cxpb.Generator.
 type GeneratorIterator struct {
 	items    []*cxpb.Generator
@@ -1919,6 +1987,12 @@ func (it *GeneratorIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntentIterator) All() iter.Seq2[*cxpb.Intent, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IntentIterator manages a stream of *cxpb.Intent.
@@ -1968,6 +2042,12 @@ func (it *IntentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -2013,6 +2093,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -2062,6 +2148,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PageIterator) All() iter.Seq2[*cxpb.Page, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PageIterator manages a stream of *cxpb.Page.
 type PageIterator struct {
 	items    []*cxpb.Page
@@ -2107,6 +2199,12 @@ func (it *PageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PlaybookIterator) All() iter.Seq2[*cxpb.Playbook, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PlaybookIterator manages a stream of *cxpb.Playbook.
@@ -2156,6 +2254,12 @@ func (it *PlaybookIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PlaybookVersionIterator) All() iter.Seq2[*cxpb.PlaybookVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PlaybookVersionIterator manages a stream of *cxpb.PlaybookVersion.
 type PlaybookVersionIterator struct {
 	items    []*cxpb.PlaybookVersion
@@ -2201,6 +2305,12 @@ func (it *PlaybookVersionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecuritySettingsIterator) All() iter.Seq2[*cxpb.SecuritySettings, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SecuritySettingsIterator manages a stream of *cxpb.SecuritySettings.
@@ -2250,6 +2360,12 @@ func (it *SecuritySettingsIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionEntityTypeIterator) All() iter.Seq2[*cxpb.SessionEntityType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SessionEntityTypeIterator manages a stream of *cxpb.SessionEntityType.
 type SessionEntityTypeIterator struct {
 	items    []*cxpb.SessionEntityType
@@ -2295,6 +2411,12 @@ func (it *SessionEntityTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TestCaseIterator) All() iter.Seq2[*cxpb.TestCase, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TestCaseIterator manages a stream of *cxpb.TestCase.
@@ -2344,6 +2466,12 @@ func (it *TestCaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TestCaseResultIterator) All() iter.Seq2[*cxpb.TestCaseResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TestCaseResultIterator manages a stream of *cxpb.TestCaseResult.
 type TestCaseResultIterator struct {
 	items    []*cxpb.TestCaseResult
@@ -2389,6 +2517,12 @@ func (it *TestCaseResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolIterator) All() iter.Seq2[*cxpb.Tool, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ToolIterator manages a stream of *cxpb.Tool.
@@ -2438,6 +2572,12 @@ func (it *ToolIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolVersionIterator) All() iter.Seq2[*cxpb.ToolVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ToolVersionIterator manages a stream of *cxpb.ToolVersion.
 type ToolVersionIterator struct {
 	items    []*cxpb.ToolVersion
@@ -2483,6 +2623,12 @@ func (it *ToolVersionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TransitionRouteGroupIterator) All() iter.Seq2[*cxpb.TransitionRouteGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TransitionRouteGroupIterator manages a stream of *cxpb.TransitionRouteGroup.
@@ -2532,6 +2678,12 @@ func (it *TransitionRouteGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*cxpb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VersionIterator manages a stream of *cxpb.Version.
 type VersionIterator struct {
 	items    []*cxpb.Version
@@ -2577,6 +2729,12 @@ func (it *VersionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WebhookIterator) All() iter.Seq2[*cxpb.Webhook, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WebhookIterator manages a stream of *cxpb.Webhook.

@@ -17,9 +17,18 @@
 package accounts
 
 import (
+	"iter"
+
 	accountspb "cloud.google.com/go/shopping/merchant/accounts/apiv1/accountspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountIssueIterator) All() iter.Seq2[*accountspb.AccountIssue, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AccountIssueIterator manages a stream of *accountspb.AccountIssue.
 type AccountIssueIterator struct {
@@ -66,6 +75,12 @@ func (it *AccountIssueIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountIterator) All() iter.Seq2[*accountspb.Account, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AccountIterator manages a stream of *accountspb.Account.
@@ -115,6 +130,12 @@ func (it *AccountIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountRelationshipIterator) All() iter.Seq2[*accountspb.AccountRelationship, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AccountRelationshipIterator manages a stream of *accountspb.AccountRelationship.
 type AccountRelationshipIterator struct {
 	items    []*accountspb.AccountRelationship
@@ -160,6 +181,12 @@ func (it *AccountRelationshipIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccountServiceIterator) All() iter.Seq2[*accountspb.AccountService, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AccountServiceIterator manages a stream of *accountspb.AccountService.
@@ -209,6 +236,12 @@ func (it *AccountServiceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GbpAccountIterator) All() iter.Seq2[*accountspb.GbpAccount, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GbpAccountIterator manages a stream of *accountspb.GbpAccount.
 type GbpAccountIterator struct {
 	items    []*accountspb.GbpAccount
@@ -254,6 +287,12 @@ func (it *GbpAccountIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LfpProviderIterator) All() iter.Seq2[*accountspb.LfpProvider, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LfpProviderIterator manages a stream of *accountspb.LfpProvider.
@@ -303,6 +342,12 @@ func (it *LfpProviderIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OmnichannelSettingIterator) All() iter.Seq2[*accountspb.OmnichannelSetting, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OmnichannelSettingIterator manages a stream of *accountspb.OmnichannelSetting.
 type OmnichannelSettingIterator struct {
 	items    []*accountspb.OmnichannelSetting
@@ -348,6 +393,12 @@ func (it *OmnichannelSettingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OnlineReturnPolicyIterator) All() iter.Seq2[*accountspb.OnlineReturnPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OnlineReturnPolicyIterator manages a stream of *accountspb.OnlineReturnPolicy.
@@ -397,6 +448,12 @@ func (it *OnlineReturnPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProgramIterator) All() iter.Seq2[*accountspb.Program, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProgramIterator manages a stream of *accountspb.Program.
 type ProgramIterator struct {
 	items    []*accountspb.Program
@@ -444,6 +501,12 @@ func (it *ProgramIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RegionIterator) All() iter.Seq2[*accountspb.Region, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RegionIterator manages a stream of *accountspb.Region.
 type RegionIterator struct {
 	items    []*accountspb.Region
@@ -489,6 +552,12 @@ func (it *RegionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserIterator) All() iter.Seq2[*accountspb.User, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserIterator manages a stream of *accountspb.User.

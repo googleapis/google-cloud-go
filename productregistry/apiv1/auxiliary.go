@@ -17,9 +17,18 @@
 package productregistry
 
 import (
+	"iter"
+
 	productregistrypb "cloud.google.com/go/productregistry/apiv1/productregistrypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LogicalProductIterator) All() iter.Seq2[*productregistrypb.LogicalProduct, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LogicalProductIterator manages a stream of *productregistrypb.LogicalProduct.
 type LogicalProductIterator struct {
@@ -68,6 +77,12 @@ func (it *LogicalProductIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LogicalProductVariantIterator) All() iter.Seq2[*productregistrypb.LogicalProductVariant, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LogicalProductVariantIterator manages a stream of *productregistrypb.LogicalProductVariant.
 type LogicalProductVariantIterator struct {
 	items    []*productregistrypb.LogicalProductVariant
@@ -113,6 +128,12 @@ func (it *LogicalProductVariantIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductSuiteIterator) All() iter.Seq2[*productregistrypb.ProductSuite, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProductSuiteIterator manages a stream of *productregistrypb.ProductSuite.

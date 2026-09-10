@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/compute/apiv1",
-    "version": "1.66.0"
+    "version": "1.67.0"
   },
   "snippets": [
     {
@@ -34418,6 +34418,52 @@
         }
       ],
       "title": "compute Get Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1.ReservationSlotsClient",
+          "shortName": "ReservationSlotsClient"
+        },
+        "fullName": "google.cloud.compute.v1.ReservationSlotsClient.GetHealth",
+        "method": {
+          "fullName": "google.cloud.compute.v1.ReservationSlots.GetHealth",
+          "service": {
+            "fullName": "google.cloud.compute.v1.ReservationSlots",
+            "shortName": "ReservationSlots"
+          },
+          "shortName": "GetHealth"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetHealthReservationSlotRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "GetHealth"
+      },
+      "description": "GetHealth get health info on a reservation slot.",
+      "file": "ReservationSlotsClient/GetHealth/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1_generated_ReservationSlots_GetHealth_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetHealth Sample"
     },
     {
       "clientMethod": {

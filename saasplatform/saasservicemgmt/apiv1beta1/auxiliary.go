@@ -17,10 +17,19 @@
 package saasservicemgmt
 
 import (
+	"iter"
+
 	saasservicemgmtpb "cloud.google.com/go/saasplatform/saasservicemgmt/apiv1beta1/saasservicemgmtpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
@@ -67,6 +76,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReleaseIterator) All() iter.Seq2[*saasservicemgmtpb.Release, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReleaseIterator manages a stream of *saasservicemgmtpb.Release.
@@ -116,6 +131,12 @@ func (it *ReleaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutIterator) All() iter.Seq2[*saasservicemgmtpb.Rollout, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RolloutIterator manages a stream of *saasservicemgmtpb.Rollout.
 type RolloutIterator struct {
 	items    []*saasservicemgmtpb.Rollout
@@ -161,6 +182,12 @@ func (it *RolloutIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutKindIterator) All() iter.Seq2[*saasservicemgmtpb.RolloutKind, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RolloutKindIterator manages a stream of *saasservicemgmtpb.RolloutKind.
@@ -210,6 +237,12 @@ func (it *RolloutKindIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SaasIterator) All() iter.Seq2[*saasservicemgmtpb.Saas, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SaasIterator manages a stream of *saasservicemgmtpb.Saas.
 type SaasIterator struct {
 	items    []*saasservicemgmtpb.Saas
@@ -255,6 +288,12 @@ func (it *SaasIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TenantIterator) All() iter.Seq2[*saasservicemgmtpb.Tenant, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TenantIterator manages a stream of *saasservicemgmtpb.Tenant.
@@ -304,6 +343,12 @@ func (it *TenantIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UnitIterator) All() iter.Seq2[*saasservicemgmtpb.Unit, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // UnitIterator manages a stream of *saasservicemgmtpb.Unit.
 type UnitIterator struct {
 	items    []*saasservicemgmtpb.Unit
@@ -351,6 +396,12 @@ func (it *UnitIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UnitKindIterator) All() iter.Seq2[*saasservicemgmtpb.UnitKind, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // UnitKindIterator manages a stream of *saasservicemgmtpb.UnitKind.
 type UnitKindIterator struct {
 	items    []*saasservicemgmtpb.UnitKind
@@ -396,6 +447,12 @@ func (it *UnitKindIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UnitOperationIterator) All() iter.Seq2[*saasservicemgmtpb.UnitOperation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UnitOperationIterator manages a stream of *saasservicemgmtpb.UnitOperation.

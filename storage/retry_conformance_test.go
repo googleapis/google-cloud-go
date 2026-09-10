@@ -30,7 +30,6 @@ import (
 	"time"
 
 	"cloud.google.com/go/internal/uid"
-	"cloud.google.com/go/storage/experimental"
 	storage_v1_tests "cloud.google.com/go/storage/internal/test/conformance"
 	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
@@ -1303,7 +1302,7 @@ func (et *emulatorTest) create(instructions map[string][]string, transport strin
 		et.Fatalf("HTTP transportClient: %v", err)
 	}
 	if transport == "grpc" {
-		transportClient, err = NewGRPCClient(ctx, experimental.WithGRPCBidiReads())
+		transportClient, err = NewGRPCClient(ctx, WithGRPCBidiReads())
 		if err != nil {
 			et.Fatalf("GRPC transportClient: %v", err)
 		}

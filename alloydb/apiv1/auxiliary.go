@@ -18,12 +18,14 @@ package alloydb
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	alloydbpb "cloud.google.com/go/alloydb/apiv1/alloydbpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1403,6 +1405,12 @@ func (op *UpgradeClusterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*alloydbpb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupIterator manages a stream of *alloydbpb.Backup.
 type BackupIterator struct {
 	items    []*alloydbpb.Backup
@@ -1448,6 +1456,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClusterIterator) All() iter.Seq2[*alloydbpb.Cluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ClusterIterator manages a stream of *alloydbpb.Cluster.
@@ -1497,6 +1511,12 @@ func (it *ClusterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseIterator) All() iter.Seq2[*alloydbpb.Database, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DatabaseIterator manages a stream of *alloydbpb.Database.
 type DatabaseIterator struct {
 	items    []*alloydbpb.Database
@@ -1542,6 +1562,12 @@ func (it *DatabaseIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*alloydbpb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceIterator manages a stream of *alloydbpb.Instance.
@@ -1591,6 +1617,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -1636,6 +1668,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1685,6 +1723,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SupportedDatabaseFlagIterator) All() iter.Seq2[*alloydbpb.SupportedDatabaseFlag, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SupportedDatabaseFlagIterator manages a stream of *alloydbpb.SupportedDatabaseFlag.
 type SupportedDatabaseFlagIterator struct {
 	items    []*alloydbpb.SupportedDatabaseFlag
@@ -1730,6 +1774,12 @@ func (it *SupportedDatabaseFlagIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserIterator) All() iter.Seq2[*alloydbpb.User, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserIterator manages a stream of *alloydbpb.User.
