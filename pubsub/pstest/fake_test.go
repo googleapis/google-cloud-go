@@ -17,11 +17,14 @@ package pstest
 import (
 	"bytes"
 	"context"
+	"encoding/json"
 	"errors"
 	"fmt"
 	"io"
 	"math/rand"
 	"net"
+	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"strings"
 	"sync"
@@ -976,7 +979,7 @@ func TestTryDeliverMessage(t *testing.T) {
 		{availStreamIdx: 3, expectedOutIdx: 2}, // s0, s1 (deleted), s2, s3 becomes s0, s2, s3. So we expect outIdx=2.
 	} {
 		top := newTopic(&pb.Topic{Name: "some-topic"})
-		sub := newSubscription(top, &sync.Mutex{}, time.Now, nil, &pb.Subscription{Name: "some-sub", Topic: "some-topic"})
+		sub := newSubscription(top, &sync.Mutex{}, time.Now, nil, &pb.Subscription{Name: "some-sub", Topic: "some-topic"}, &http.Client{})
 
 		done := make(chan struct{}, 1)
 		done <- struct{}{}
@@ -1770,4 +1773,273 @@ func TestSubscriptionRetention(t *testing.T) {
 
 	s.SetTimeNowFunc(func() time.Time { return start.Add(retentionDuration + 1) })
 	time.Sleep(1 * time.Second)
+}
+
+// TestPushSubscription tests basic push subscription functionality.
+func TestPushSubscription(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, server, cleanup := newFake(ctx, t)
+	defer cleanup()
+
+	var receivedPayloads []string
+	var receivedHeaders []http.Header
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		body, err := io.ReadAll(r.Body)
+		if err != nil {
+			t.Errorf("Failed to read request body: %v", err)
+			w.WriteHeader(http.StatusInternalServerError)
+			return
+		}
+		receivedPayloads = append(receivedPayloads, string(body))
+		receivedHeaders = append(receivedHeaders, r.Header.Clone())
+		w.WriteHeader(http.StatusOK)
+	}))
+	defer mockServer.Close()
+
+	topic := mustCreateTopic(ctx, t, pclient, &pb.Topic{
+		Name: "projects/P/topics/T",
+	})
+	pushConfig := &pb.PushConfig{
+		PushEndpoint: mockServer.URL,
+	}
+	sub := mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              topic.Name,
+		AckDeadlineSeconds: 10,
+		PushConfig:         pushConfig,
+	})
+
+	if sub.PushConfig.PushEndpoint != mockServer.URL {
+		t.Errorf("Expected push endpoint %s, got %s", mockServer.URL, sub.PushConfig.PushEndpoint)
+	}
+	msgData := []byte("test message data")
+	msgAttrs := map[string]string{"key1": "value1", "key2": "value2"}
+	msgID := server.Publish("projects/P/topics/T", msgData, msgAttrs)
+
+	time.Sleep(100 * time.Millisecond)
+	if len(receivedPayloads) != 1 {
+		t.Fatalf("Expected 1 received payload, got %d", len(receivedPayloads))
+	}
+
+	var pushMsg pushMessage
+	if err := json.Unmarshal([]byte(receivedPayloads[0]), &pushMsg); err != nil {
+		t.Fatalf("Failed to unmarshal push message: %v", err)
+	}
+
+	if pushMsg.Message.MessageID != msgID {
+		t.Errorf("Expected message ID %s, got %s", msgID, pushMsg.Message.MessageID)
+	}
+
+	if !bytes.Equal(pushMsg.Message.Data, msgData) {
+		t.Errorf("Expected data %v, got %v", msgData, pushMsg.Message.Data)
+	}
+
+	if !reflect.DeepEqual(pushMsg.Message.Attributes, msgAttrs) {
+		t.Errorf("Expected attributes %v, got %v", msgAttrs, pushMsg.Message.Attributes)
+	}
+
+	if pushMsg.Subscription != sub.Name {
+		t.Errorf("Expected subscription %s, got %s", sub.Name, pushMsg.Subscription)
+	}
+
+	if len(receivedHeaders) != 1 {
+		t.Fatalf("Expected 1 received header set, got %d", len(receivedHeaders))
+	}
+
+	headers := receivedHeaders[0]
+	if headers.Get("Content-Type") != "application/json" {
+		t.Errorf("Expected Content-Type application/json, got %s", headers.Get("Content-Type"))
+	}
+
+	if headers.Get("User-Agent") != "Google-Cloud-PubSub" {
+		t.Errorf("Expected User-Agent Google-Cloud-PubSub, got %s", headers.Get("User-Agent"))
+	}
+
+	messages := server.Messages()
+	if len(messages) != 1 {
+		t.Fatalf("Expected 1 message, got %d", len(messages))
+	}
+	if messages[0].Acks != 1 {
+		t.Errorf("Expected 1 ack, got %d", messages[0].Acks)
+	}
+}
+
+func TestPushSubscriptionRetry(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, server, cleanup := newFake(ctx, t)
+	defer cleanup()
+	var requestCount int
+	var mu sync.Mutex
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		requestCount++
+		count := requestCount
+		mu.Unlock()
+
+		if count <= 1 {
+			w.WriteHeader(http.StatusInternalServerError)
+		} else {
+			w.WriteHeader(http.StatusOK)
+		}
+	}))
+	defer mockServer.Close()
+
+	topic := mustCreateTopic(ctx, t, pclient, &pb.Topic{
+		Name: "projects/P/topics/T",
+	})
+
+	mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              topic.Name,
+		AckDeadlineSeconds: 10,
+		PushConfig: &pb.PushConfig{
+			PushEndpoint: mockServer.URL,
+		},
+	})
+
+	server.Publish("projects/P/topics/T", []byte("retry test"), nil)
+	time.Sleep(12 * time.Second)
+	mu.Lock()
+	finalCount := requestCount
+	mu.Unlock()
+	if finalCount < 2 {
+		t.Errorf("Expected at least 2 requests, got %d", finalCount)
+	}
+
+	messages := server.Messages()
+	if len(messages) != 1 {
+		t.Fatalf("Expected 1 message, got %d", len(messages))
+	}
+	if messages[0].Acks != 1 {
+		t.Errorf("Expected 1 ack, got %d", messages[0].Acks)
+	}
+}
+
+func TestPushSubscriptionClientError(t *testing.T) {
+	ctx := context.Background()
+	pclient, sclient, server, cleanup := newFake(ctx, t)
+	defer cleanup()
+	var requestCount int
+	mockServer := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		requestCount++
+		w.WriteHeader(http.StatusBadRequest)
+	}))
+	defer mockServer.Close()
+
+	topic := mustCreateTopic(ctx, t, pclient, &pb.Topic{
+		Name: "projects/P/topics/T",
+	})
+
+	mustCreateSubscription(ctx, t, sclient, &pb.Subscription{
+		Name:               "projects/P/subscriptions/S",
+		Topic:              topic.Name,
+		AckDeadlineSeconds: 10,
+		PushConfig: &pb.PushConfig{
+			PushEndpoint: mockServer.URL,
+		},
+	})
+
+	server.Publish("projects/P/topics/T", []byte("client error test"), nil)
+	time.Sleep(2 * time.Second)
+	if requestCount != 1 {
+		t.Errorf("Expected exactly 1 request for 4xx error, got %d", requestCount)
+	}
+
+	messages := server.Messages()
+	if len(messages) != 1 {
+		t.Fatalf("Expected 1 message, got %d", len(messages))
+	}
+	if messages[0].Acks != 1 {
+		t.Errorf("Expected 1 ack for 4xx error, got %d", messages[0].Acks)
+	}
+}
+
+func TestPushMessageFormat(t *testing.T) {
+	msg := &pb.ReceivedMessage{
+		AckId: "test-ack-id",
+		Message: &pb.PubsubMessage{
+			MessageId:   "test-msg-id",
+			Data:        []byte("test data"),
+			Attributes:  map[string]string{"attr1": "value1"},
+			PublishTime: timestamppb.New(time.Date(2023, 1, 1, 12, 0, 0, 0, time.UTC)),
+			OrderingKey: "test-ordering-key",
+		},
+	}
+
+	subscriptionName := "projects/test-project/subscriptions/test-sub"
+
+	payload, err := formatPubsubMessage(msg, subscriptionName)
+	if err != nil {
+		t.Fatalf("Failed to format message: %v", err)
+	}
+
+	var pushMsg pushMessage
+	if err := json.Unmarshal(payload, &pushMsg); err != nil {
+		t.Fatalf("Failed to unmarshal formatted message: %v", err)
+	}
+
+	expectedData := []byte("test data")
+	if !bytes.Equal(pushMsg.Message.Data, expectedData) {
+		t.Errorf("Expected data %v, got %v", expectedData, pushMsg.Message.Data)
+	}
+
+	if pushMsg.Message.MessageID != "test-msg-id" {
+		t.Errorf("Expected message ID test-msg-id, got %s", pushMsg.Message.MessageID)
+	}
+
+	if !reflect.DeepEqual(pushMsg.Message.Attributes, map[string]string{"attr1": "value1"}) {
+		t.Errorf("Expected attributes %v, got %v", map[string]string{"attr1": "value1"}, pushMsg.Message.Attributes)
+	}
+
+	if pushMsg.Message.OrderingKey != "test-ordering-key" {
+		t.Errorf("Expected ordering key test-ordering-key, got %s", pushMsg.Message.OrderingKey)
+	}
+
+	if pushMsg.Subscription != subscriptionName {
+		t.Errorf("Expected subscription %s, got %s", subscriptionName, pushMsg.Subscription)
+	}
+
+	expectedTime := "2023-01-01T12:00:00Z"
+	if pushMsg.Message.PublishTime != expectedTime {
+		t.Errorf("Expected publish time %s, got %s", expectedTime, pushMsg.Message.PublishTime)
+	}
+}
+
+func TestIsPushSubscription(t *testing.T) {
+	tests := []struct {
+		name     string
+		config   *pb.PushConfig
+		expected bool
+	}{
+		{
+			name:     "nil push config",
+			config:   nil,
+			expected: false,
+		},
+		{
+			name:     "empty push config",
+			config:   &pb.PushConfig{},
+			expected: false,
+		},
+		{
+			name:     "push config with endpoint",
+			config:   &pb.PushConfig{PushEndpoint: "https://example.com/push"},
+			expected: true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sub := &subscription{
+				proto: &pb.Subscription{
+					PushConfig: tt.config,
+				},
+			}
+
+			result := sub.isPushSubscription()
+			if result != tt.expected {
+				t.Errorf("Expected %v, got %v", tt.expected, result)
+			}
+		})
+	}
 }
