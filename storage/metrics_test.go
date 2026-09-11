@@ -600,6 +600,7 @@ type mockStorageClient struct {
 	storageClient
 	getObjectFn  func(ctx context.Context, params *getObjectParams, opts ...storageOption) (*ObjectAttrs, error)
 	newReaderFn  func(ctx context.Context, params *newRangeReaderParams, opts ...storageOption) (*Reader, error)
+	newMRDFn     func(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error)
 	openWriterFn func(params *openWriterParams, opts ...storageOption) (internalWriter, error)
 }
 
@@ -617,6 +618,26 @@ func (m *mockStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	return nil, nil
 }
 
+type mockInternalMRD struct {
+	bytesRead int64
+	ctx       context.Context
+}
+
+func (m *mockInternalMRD) add(output io.Writer, offset, length int64, callback func(int64, int64, error)) {
+}
+func (m *mockInternalMRD) close(err error) error       { return nil }
+func (m *mockInternalMRD) wait()                       {}
+func (m *mockInternalMRD) getHandle() []byte           { return nil }
+func (m *mockInternalMRD) getPermanentError() error    { return nil }
+func (m *mockInternalMRD) getSpanCtx() context.Context { return m.ctx }
+func (m *mockInternalMRD) getBytesRead() int64         { return m.bytesRead }
+
+func (m *mockStorageClient) NewMultiRangeDownloader(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error) {
+	if m.newMRDFn != nil {
+		return m.newMRDFn(ctx, params, opts...)
+	}
+	return nil, nil
+}
 func (m *mockStorageClient) OpenWriter(params *openWriterParams, opts ...storageOption) (internalWriter, error) {
 	if m.openWriterFn != nil {
 		return m.openWriterFn(params, opts...)
@@ -730,6 +751,20 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Fatalf("Close: %v", err)
 	}
 
+	// Test MultiRangeDownloader
+	mock.newMRDFn = func(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error) {
+		return &MultiRangeDownloader{
+			impl: &mockInternalMRD{bytesRead: 42, ctx: ctx},
+		}, nil
+	}
+	mrd, err := client.Bucket("my-bucket").Object("my-object").NewMultiRangeDownloader(ctx)
+	if err != nil {
+		t.Fatalf("NewMultiRangeDownloader: %v", err)
+	}
+	if err := mrd.Close(); err != nil {
+		t.Fatalf("mrd.Close: %v", err)
+	}
+
 	// Collect metrics.
 	var rm metricdata.ResourceMetrics
 	if err := mr.Collect(ctx, &rm); err != nil {
@@ -749,8 +784,8 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Errorf("metric gcp.client.request.duration not found")
 	} else {
 		hist := m.Data.(metricdata.Histogram[float64])
-		if len(hist.DataPoints) != 3 {
-			t.Errorf("expected 3 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
+		if len(hist.DataPoints) != 4 {
+			t.Errorf("expected 4 datapoints for gcp.client.request.duration, got %d", len(hist.DataPoints))
 		}
 		methods := make(map[string]bool)
 		for _, dp := range hist.DataPoints {
@@ -770,8 +805,8 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Errorf("metric gcp.storage.client.operations not found")
 	} else {
 		sum := m.Data.(metricdata.Sum[int64])
-		if len(sum.DataPoints) != 3 {
-			t.Errorf("expected 3 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
+		if len(sum.DataPoints) != 4 {
+			t.Errorf("expected 4 datapoints for gcp.storage.client.operations, got %d", len(sum.DataPoints))
 		}
 	}
 
@@ -783,9 +818,8 @@ func TestStandardMetricsRecording(t *testing.T) {
 		if len(hist.DataPoints) != 1 {
 			t.Fatalf("expected 1 datapoint for response body size, got %d", len(hist.DataPoints))
 		}
-		dp := hist.DataPoints[0]
-		if dp.Sum != 5 {
-			t.Errorf("expected sum 5, got %d", dp.Sum)
+		if hist.DataPoints[0].Sum != 47 {
+			t.Errorf("expected total sum 47, got %d", hist.DataPoints[0].Sum)
 		}
 	}
 
@@ -899,14 +933,14 @@ func TestGRPCMetricsStatsHandler(t *testing.T) {
 	var ingress, egress int64
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "gcp.storage.client.network.ingress_bytes_count" {
+			if m.Name == "gcp.storage.client.network.bytes.received" {
 				sum := m.Data.(metricdata.Sum[int64])
 				ingress = sum.DataPoints[0].Value
 				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
 					t.Errorf("expected rpc.method ReadObject")
 				}
 			}
-			if m.Name == "gcp.storage.client.network.egress_bytes_count" {
+			if m.Name == "gcp.storage.client.network.bytes.sent" {
 				sum := m.Data.(metricdata.Sum[int64])
 				egress = sum.DataPoints[0].Value
 				if getAttr(sum.DataPoints[0], "rpc.method") != "ReadObject" {
