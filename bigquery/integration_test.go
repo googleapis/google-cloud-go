@@ -137,7 +137,7 @@ func initIntegrationTest() func() {
 		if err != nil {
 			log.Fatal(err)
 		}
-		connectionsClient, err = connection.NewClient(ctx, option.WithHTTPClient(hc))
+		connectionsClient, err = connection.NewClient(ctx)
 		if err != nil {
 			log.Fatal(err)
 		}
