@@ -1,5 +1,12 @@
 # Changes
 
+## [0.20.0](https://github.com/googleapis/google-cloud-go/compare/vertexai/v0.19.0...vertexai/v0.20.0) (2026-09-11)
+
+
+### Features
+
+* **o11y:** Regenerate clients for LRO tracing ([#20107](https://github.com/googleapis/google-cloud-go/issues/20107)) ([779074e](https://github.com/googleapis/google-cloud-go/commit/779074edd267a26520bae459307660953129eb07))
+
 ## [0.19.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.19.0) (2026-04-09)
 
 ## [0.18.0](https://github.com/googleapis/google-cloud-go/releases/tag/vertexai%2Fv0.18.0) (2026-04-02)
