@@ -240,3 +240,31 @@ func TestReadQueryOptions(t *testing.T) {
 		t.Errorf("reading: got:\n%v\nwant:\n%v", pf.calls, want)
 	}
 }
+
+func TestReadQueryIDPropagation(t *testing.T) {
+	c := &Client{projectID: "project-id"}
+	pf := &pageFetcherReadStub{
+		values: [][][]Value{{{1, 2}}},
+	}
+	tr := &bq.TableReference{
+		ProjectId: "project-id",
+		DatasetId: "dataset-id",
+		TableId:   "table-id",
+	}
+	queryJob := &Job{
+		projectID: "project-id",
+		jobID:     "job-id",
+		c:         c,
+		config: &bq.JobConfiguration{
+			Query: &bq.JobConfigurationQuery{DestinationTable: tr},
+		},
+		queryID: "propagated-query-id-123",
+	}
+	it, err := queryJob.read(context.Background(), waitForQueryStub, pf.fetchPage)
+	if err != nil {
+		t.Fatalf("err calling Read: %v", err)
+	}
+	if got := it.QueryID(); got != "propagated-query-id-123" {
+		t.Errorf("it.QueryID() = %q, want %q", got, "propagated-query-id-123")
+	}
+}
