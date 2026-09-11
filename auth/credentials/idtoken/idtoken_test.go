@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"io"
 	"log/slog"
+	"net"
 	"net/http"
 	"net/http/httptest"
 	"os"
@@ -285,6 +286,107 @@ func TestNewCredentials_ImpersonatedAndExternal(t *testing.T) {
 			}
 			if ud != internal.DefaultUniverseDomain {
 				t.Errorf("got %q, want %q", ud, internal.DefaultUniverseDomain)
+			}
+		})
+	}
+}
+
+// TestNewCredentials_ImpersonatedAndExternal_NoClient is a regression test for
+// https://github.com/googleapis/google-cloud-go/issues/19939. When the caller
+// does not provide a client, the generateIdToken request must be authenticated
+// with the base credentials instead of being sent through an unauthenticated
+// default client.
+func TestNewCredentials_ImpersonatedAndExternal_NoClient(t *testing.T) {
+	wantTok, _ := createRS256JWT(t)
+	var gotAuth string
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		w.Header().Set("Content-Type", "application/json")
+		switch {
+		case r.URL.Path == "/subject":
+			w.Write([]byte(`{"id_token": "subject-token"}`))
+		case r.URL.Path == "/sts":
+			w.Write([]byte(`{"access_token": "sts-token", "issued_token_type": "urn:ietf:params:oauth:token-type:access_token", "token_type": "Bearer", "expires_in": 3600}`))
+		case strings.Contains(r.URL.Path, "generateAccessToken"):
+			t.Errorf("unexpected call to generateAccessToken")
+		case strings.Contains(r.URL.Path, "generateIdToken"):
+			gotAuth = r.Header.Get("Authorization")
+			fmt.Fprintf(w, `{"token": %q}`, wantTok)
+		default:
+			t.Errorf("unexpected request to %q", r.URL.Path)
+		}
+	}))
+	defer ts.Close()
+
+	// Route all requests, including the generateIdToken call to the
+	// https://iamcredentials.googleapis.com endpoint, to the local test
+	// server. Both internal.DefaultClient and the authenticated client built
+	// by the impersonate package clone http.DefaultTransport, which preserves
+	// the dial overrides.
+	dial := func(ctx context.Context, network, addr string) (net.Conn, error) {
+		var d net.Dialer
+		return d.DialContext(ctx, "tcp", ts.Listener.Addr().String())
+	}
+	origTransport := http.DefaultTransport
+	http.DefaultTransport = &http.Transport{
+		DialContext:    dial,
+		DialTLSContext: dial,
+	}
+	t.Cleanup(func() { http.DefaultTransport = origTransport })
+
+	externalAccountJSON := fmt.Sprintf(`{
+		"type": "external_account",
+		"audience": "//iam.googleapis.com/projects/123/locations/global/workloadIdentityPools/pool/providers/provider",
+		"subject_token_type": "urn:ietf:params:oauth:token-type:jwt",
+		"service_account_impersonation_url": "https://iamcredentials.googleapis.com/v1/projects/-/serviceAccounts/sa@fake_project.iam.gserviceaccount.com:generateAccessToken",
+		"token_url": "%s/sts",
+		"credential_source": {
+			"url": "%s/subject",
+			"format": {
+				"type": "json",
+				"subject_token_field_name": "id_token"
+			}
+		}
+	}`, ts.URL, ts.URL)
+
+	tests := []struct {
+		name string
+		json []byte
+		// wantAuthPrefix is a prefix because the impersonated service account
+		// case authenticates with a self-signed JWT that is not stable across
+		// runs.
+		wantAuthPrefix string
+	}{
+		{
+			name:           "external account",
+			json:           []byte(externalAccountJSON),
+			wantAuthPrefix: "Bearer sts-token",
+		},
+		{
+			name:           "impersonated service account",
+			json:           readTestFile(t, "../../internal/testdata/imp.json"),
+			wantAuthPrefix: "Bearer ey",
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			gotAuth = ""
+			creds, err := NewCredentials(&Options{
+				Audience:        "aud",
+				CredentialsJSON: tt.json,
+				Logger:          slog.New(slog.NewTextHandler(io.Discard, nil)),
+			})
+			if err != nil {
+				t.Fatal(err)
+			}
+			tok, err := creds.Token(context.Background())
+			if err != nil {
+				t.Fatalf("creds.Token() = %v", err)
+			}
+			if tok.Value != wantTok {
+				t.Errorf("got %q, want %q", tok.Value, wantTok)
+			}
+			if !strings.HasPrefix(gotAuth, tt.wantAuthPrefix) {
+				t.Errorf("generateIdToken Authorization header = %q, want prefix %q", gotAuth, tt.wantAuthPrefix)
 			}
 		})
 	}
