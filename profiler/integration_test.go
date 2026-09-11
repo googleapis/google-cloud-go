@@ -281,7 +281,7 @@ func TestAgentIntegration(t *testing.T) {
 				Name:         fmt.Sprintf("profiler-test-go%s-%s", goVersionName, runID),
 				MachineType:  "n1-standard-1",
 				ImageProject: "debian-cloud",
-				ImageFamily:  "debian-11",
+				ImageFamily:  "debian-12",
 			},
 			name:             fmt.Sprintf("profiler-test-go%s", goVersionName),
 			wantProfileTypes: []string{"CPU", "HEAP", "THREADS", "CONTENTION", "HEAP_ALLOC"},
@@ -305,7 +305,7 @@ func TestAgentIntegration(t *testing.T) {
 					MachineType: "n1-highmem-2",
 
 					ImageProject: "debian-cloud",
-					ImageFamily:  "debian-11",
+					ImageFamily:  "debian-12",
 				},
 				name:          fmt.Sprintf("profiler-backoff-test-go%s", goVersionName),
 				goVersion:     goVersion,
