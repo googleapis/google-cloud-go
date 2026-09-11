@@ -669,7 +669,15 @@ func newAffinityTrackingStream(
 }
 
 func (s *affinityTrackingStream) Recv() (*spannerpb.PartialResultSet, error) {
-	prs, err := s.inner.Recv()
+	prs := new(spannerpb.PartialResultSet)
+	if err := s.RecvMsg(prs); err != nil {
+		return nil, err
+	}
+	return prs, nil
+}
+
+func (s *affinityTrackingStream) RecvMsg(m any) error {
+	err := s.ClientStream.RecvMsg(m)
 	if err != nil {
 		s.finish()
 		s.errorOnce.Do(func() {
@@ -677,30 +685,29 @@ func (s *affinityTrackingStream) Recv() (*spannerpb.PartialResultSet, error) {
 				s.onError(err)
 			}
 		})
-		return nil, err
+		return err
 	}
 	s.latencyOnce.Do(func() {
 		if s.onFirstResponse != nil {
 			s.onFirstResponse()
 		}
 	})
-	// Record transaction metadata from the first PartialResultSet that contains
-	// a transaction ID.
-	if txMeta := prs.GetMetadata().GetTransaction(); txMeta != nil && len(txMeta.GetId()) > 0 {
-		txID := string(txMeta.GetId())
-		s.once.Do(func() {
-			if s.trackReadOnlyBegin {
-				s.router.trackReadOnlyTransaction(txID, s.readOnlyStrong)
-				return
-			}
-			if s.trackAffinity {
-				s.router.setTransactionAffinity(txID, s.affinityEndpoint)
-			}
-		})
+	if prs, ok := m.(*spannerpb.PartialResultSet); ok {
+		if txMeta := prs.GetMetadata().GetTransaction(); txMeta != nil && len(txMeta.GetId()) > 0 {
+			txID := string(txMeta.GetId())
+			s.once.Do(func() {
+				if s.trackReadOnlyBegin {
+					s.router.trackReadOnlyTransaction(txID, s.readOnlyStrong)
+					return
+				}
+				if s.trackAffinity {
+					s.router.setTransactionAffinity(txID, s.affinityEndpoint)
+				}
+			})
+		}
+		s.router.observePartialResultSet(prs)
 	}
-	// Observe cache updates from every PartialResultSet.
-	s.router.observePartialResultSet(prs)
-	return prs, nil
+	return nil
 }
 
 func readOnlyBeginFromSelector(selector *spannerpb.TransactionSelector) (bool, bool) {
