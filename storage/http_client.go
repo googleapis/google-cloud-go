@@ -449,7 +449,7 @@ func (c *httpStorageClient) ListObjects(ctx context.Context, bucket string, q *Q
 		ctx, record := startMetricsOp(it.ctx, "ListObjects", true)
 		defer func() { record(err) }()
 		// Add trace span around List API call within the fetch.
-		ctx, _ = startSpan(ctx, "httpStorageClient.ObjectsListCall")
+		ctx, _ = startSpanWithBucket(ctx, nil, bucket, "httpStorageClient.ObjectsListCall")
 		defer func() { endSpan(ctx, err) }()
 		req := c.raw.Objects.List(bucket)
 		if it.query.SoftDeleted {
