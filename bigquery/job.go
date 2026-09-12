@@ -369,6 +369,9 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint6
 		res, err = call.Do()
 		trace.EndSpan(sCtx, err)
 		if err != nil {
+			if cfg := j.c.customConfig; cfg != nil && cfg.disableJobPollingRetries {
+				return true, err
+			}
 			return !retryableError(err, jobRetryReasons), err
 		}
 		if !res.JobComplete { // GetQueryResults may return early without error; retry.
