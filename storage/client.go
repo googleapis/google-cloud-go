@@ -289,6 +289,8 @@ type openWriterParams struct {
 	// progress callback for reporting upload progress - see `Writer.progress`.
 	// Required.
 	progress func(int64)
+	// onChunkRequest callback for reporting start of chunk upload request.
+	onChunkRequest func()
 	// setObj callback for reporting the resulting object - see `Writer.obj`.
 	// Required.
 	setObj func(*ObjectAttrs)

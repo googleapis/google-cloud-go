@@ -350,3 +350,129 @@ func TestEndSpanEviction(t *testing.T) {
 		})
 	}
 }
+
+func TestStartChunkSpanWithChunkNumber(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	chunkCtx, _ := startChunkSpan(ctx, "Storage.UploadChunk", 262144, 262144, withChunkNumber(2))
+	endSpan(chunkCtx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+	if got, want := gotSpan.Name, "cloud.google.com/go/storage.Storage.UploadChunk"; got != want {
+		t.Errorf("got span name %q, want %q", got, want)
+	}
+
+	wantAttrs := map[string]interface{}{
+		"gcp.storage.chunk.number":   int64(2),
+		"gcp.storage.payload.offset": int64(262144),
+		"gcp.storage.payload.size":   int64(262144),
+	}
+	for k, wantVal := range wantAttrs {
+		found := false
+		for _, a := range gotSpan.Attributes {
+			if string(a.Key) == k {
+				found = true
+				if got := a.Value.AsInt64(); got != wantVal.(int64) {
+					t.Errorf("key %q: got %v, want %v", k, got, wantVal)
+				}
+			}
+		}
+		if !found {
+			t.Errorf("attribute %q not found on span", k)
+		}
+	}
+}
+
+func TestWriterMarkClosedEndsChunkSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	w := &Writer{
+		ctx:       ctx,
+		ChunkSize: 256 * 1024,
+	}
+	_, span := startSpan(ctx, "Storage.UploadChunk")
+	w.curChunkSpan = span
+
+	if err := w.markClosed(nil); err != nil {
+		t.Fatalf("w.markClosed: %v", err)
+	}
+	if w.curChunkSpan != nil {
+		t.Errorf("expected w.curChunkSpan to be nil after markClosed, got %v", w.curChunkSpan)
+	}
+}
+
+func TestStartResumableInitSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	initCtx, _ := startResumableInitSpan(ctx)
+	endSpan(initCtx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+	if got, want := gotSpan.Name, "cloud.google.com/go/storage.Storage.ResumableSessionInit"; got != want {
+		t.Errorf("got span name %q, want %q", got, want)
+	}
+}
+
+func TestStartChunkSpanDevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+
+	chunkCtx, span := startChunkSpan(ctx, "Storage.UploadChunk", 0, 1024, withChunkNumber(1))
+	endSpan(chunkCtx, nil)
+
+	if span.SpanContext().IsValid() {
+		t.Errorf("expected invalid span context when dev tracing is disabled, got %v", span.SpanContext())
+	}
+	spans := te.Spans()
+	if len(spans) > 0 {
+		t.Fatalf("expected 0 ended spans because dev tracing is disabled, but got %d ended spans: %v", len(spans), spans[0].Name)
+	}
+}
+
+func TestDynamicSpanContext(t *testing.T) {
+	type testKey struct{}
+	baseCtx := context.WithValue(context.Background(), testKey{}, "initial-val")
+
+	dynCtx, holder := newDynamicSpanContext(baseCtx)
+	if got, want := dynCtx.Value(testKey{}), "initial-val"; got != want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+
+	type secondKey struct{}
+	updatedCtx := context.WithValue(baseCtx, secondKey{}, "updated-val")
+	holder.Store(updatedCtx)
+
+	if got, want := dynCtx.Value(secondKey{}), "updated-val"; got != want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+	if got, want := dynCtx.Value(testKey{}), "initial-val"; got != want {
+		t.Errorf("got %v, want %v", got, want)
+	}
+}
