@@ -1488,6 +1488,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		},
 		objectMetadata: &metadata,
 		reader: &gRPCReader{
+			ctx:    ctx,
 			stream: res.stream,
 			reopen: reopen,
 			cancel: cancel,
@@ -1647,6 +1648,7 @@ type bidiReadStreamResponse struct {
 
 // gRPCReader is used by storage.Reader if the option WithGRPCBidiReads is passed.
 type gRPCReader struct {
+	ctx             context.Context
 	seen, size      int64
 	zeroRange       bool
 	finalized       bool // if we are reading from a finalized object; in this case, remain and size may be inaccurate
@@ -1678,16 +1680,47 @@ func (r *gRPCReader) updateCRC(b []byte) {
 
 // Checks whether the CRC matches at the conclusion of a read, if CRC checking was enabled.
 func (r *gRPCReader) runCRCCheck() error {
-	if r.checkCRC && r.gotCRC != r.wantCRC {
-		return fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
+	if r.checkCRC {
+		var chkCtx context.Context
+		if r.ctx != nil {
+			chkCtx, _ = startChecksumSpan(r.ctx, "CRC32C")
+		} else if r.stream != nil {
+			chkCtx, _ = startChecksumSpan(r.stream.Context(), "CRC32C")
+		}
+		var err error
+		if r.gotCRC != r.wantCRC {
+			err = fmt.Errorf("storage: bad CRC on read: got %d, want %d", r.gotCRC, r.wantCRC)
+		}
+		if chkCtx != nil {
+			endSpan(chkCtx, err)
+		}
+		return err
 	}
 	return nil
 }
 
 // checkAndResetChunkCRC verifies the chunk CRC if present, and resets the chunk CRC state.
 func (r *gRPCReader) checkAndResetChunkCRC() error {
-	if r.chunkCRCPresent && r.gotChunkCRC != r.wantChunkCRC {
-		return fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", r.gotChunkCRC, r.wantChunkCRC)
+	if r.chunkCRCPresent {
+		var chkCtx context.Context
+		if !r.checkCRC {
+			if r.ctx != nil {
+				chkCtx, _ = startChecksumSpan(r.ctx, "CRC32C")
+			} else if r.stream != nil {
+				chkCtx, _ = startChecksumSpan(r.stream.Context(), "CRC32C")
+			}
+		}
+		var err error
+		if r.gotChunkCRC != r.wantChunkCRC {
+			err = fmt.Errorf("storage: bad CRC on chunk read: got %d, want %d", r.gotChunkCRC, r.wantChunkCRC)
+		}
+		if chkCtx != nil {
+			endSpan(chkCtx, err)
+		}
+		r.gotChunkCRC = 0
+		r.chunkCRCPresent = false
+		r.wantChunkCRC = 0
+		return err
 	}
 	r.gotChunkCRC = 0
 	r.chunkCRCPresent = false
