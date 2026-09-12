@@ -147,6 +147,13 @@ func (rs *readSession) start() error {
 		ReadSession: &storagepb.ReadSession{
 			Table:      rs.tableID,
 			DataFormat: storagepb.DataFormat_ARROW,
+			ReadOptions: &storagepb.ReadSession_TableReadOptions{
+				OutputFormatSerializationOptions: &storagepb.ReadSession_TableReadOptions_ArrowSerializationOptions{
+					ArrowSerializationOptions: &storagepb.ArrowSerializationOptions{
+						BufferCompression: storagepb.ArrowSerializationOptions_ZSTD,
+					},
+				},
+			},
 		},
 		MaxStreamCount:          maxStreamCount,
 		PreferredMinStreamCount: preferredMinStreamCount,
