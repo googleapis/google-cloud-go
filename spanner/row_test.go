@@ -114,7 +114,7 @@ var (
 				),
 			},
 		},
-		[]*proto3.Value{
+		internalValuesFromPublic([]*proto3.Value{
 			// STRING / STRING ARRAY
 			stringProto("value"),
 			nullProto(),
@@ -167,7 +167,7 @@ var (
 				nullProto(),
 			),
 			nullProto(),
-		},
+		}),
 	}
 )
 
@@ -253,13 +253,13 @@ func TestColumnValues(t *testing.T) {
 							mkField("Col4", stringType()),
 							mkField("Col5", uuidType()),
 						},
-						vals: []*proto3.Value{
+						vals: internalValuesFromPublic([]*proto3.Value{
 							intProto(3),
 							floatProto(33.3),
 							float32Proto(0.3),
 							stringProto("three"),
 							uuidProto(uuid1),
-						},
+						}),
 					},
 					Valid: true,
 				},
@@ -328,7 +328,7 @@ func TestNilDst(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: stringType()},
 				},
-				[]*proto3.Value{stringProto("value")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 			},
 			nil,
 			errDecodeColumn(0, errNilDst(nil)),
@@ -340,7 +340,7 @@ func TestNilDst(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: stringType()},
 				},
-				[]*proto3.Value{stringProto("value")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 			},
 			(*string)(nil),
 			errDecodeColumn(0, errNilDst((*string)(nil))),
@@ -362,9 +362,9 @@ func TestNilDst(t *testing.T) {
 						),
 					},
 				},
-				[]*proto3.Value{listProto(
+				internalValuesFromPublic([]*proto3.Value{listProto(
 					listProto(intProto(3), floatProto(33.3), float32Proto(0.3), uuidProto(uuid1)),
-				)},
+				)}),
 			},
 			(*[]*struct {
 				Col1 int
@@ -551,7 +551,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "Val", Type: stringType()},
 						{Name: "Val", Type: stringType()},
 					},
-					[]*proto3.Value{stringProto("value1"), stringProto("value2")},
+					internalValuesFromPublic([]*proto3.Value{stringProto("value1"), stringProto("value2")}),
 				}
 				return r.ColumnByName("Val", &s)
 			},
@@ -568,7 +568,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "Val", Type: stringType()},
 						{Name: "Val", Type: stringType()},
 					},
-					[]*proto3.Value{stringProto("value1"), stringProto("value2")},
+					internalValuesFromPublic([]*proto3.Value{stringProto("value1"), stringProto("value2")}),
 				}
 				return r.ToStruct(s)
 			},
@@ -589,7 +589,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 					[]*sppb.StructType_Field{
 						{Name: "", Type: stringType()},
 					},
-					[]*proto3.Value{stringProto("value1")},
+					internalValuesFromPublic([]*proto3.Value{stringProto("value1")}),
 				}
 				return r.ToStruct(s)
 			},
@@ -608,7 +608,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 						{Name: "Val", Type: stringType()},
 						{Name: "Val", Type: stringType()},
 					},
-					[]*proto3.Value{stringProto("value1"), stringProto("value2")},
+					internalValuesFromPublic([]*proto3.Value{stringProto("value1"), stringProto("value2")}),
 				}
 				return r.ToStructLenient(s)
 			},
@@ -629,7 +629,7 @@ func TestInvalidColumnRequest(t *testing.T) {
 					[]*sppb.StructType_Field{
 						{Name: "", Type: stringType()},
 					},
-					[]*proto3.Value{stringProto("value1")},
+					internalValuesFromPublic([]*proto3.Value{stringProto("value1")}),
 				}
 				return r.ToStructLenient(s)
 			},
@@ -754,19 +754,19 @@ func TestBrokenRow(t *testing.T) {
 			// A row with no field.
 			&Row{
 				[]*sppb.StructType_Field{},
-				[]*proto3.Value{stringProto("value")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 			},
 			&NullString{"value", true},
 			errFieldsMismatchVals(&Row{
 				[]*sppb.StructType_Field{},
-				[]*proto3.Value{stringProto("value")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 			}),
 		},
 		{
 			// A row with nil field.
 			&Row{
 				[]*sppb.StructType_Field{nil},
-				[]*proto3.Value{stringProto("value")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 			},
 			&NullString{"value", true},
 			errNilColType(0),
@@ -777,7 +777,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: nil},
 				},
-				[]*proto3.Value{listProto(stringProto("value1"), stringProto("value2"))},
+				internalValuesFromPublic([]*proto3.Value{listProto(stringProto("value1"), stringProto("value2"))}),
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errNilSpannerType()),
@@ -788,7 +788,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: &sppb.Type{Code: sppb.TypeCode_ARRAY}},
 				},
-				[]*proto3.Value{listProto(stringProto("value1"), stringProto("value2"))},
+				internalValuesFromPublic([]*proto3.Value{listProto(stringProto("value1"), stringProto("value2"))}),
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errNilArrElemType(&sppb.Type{Code: sppb.TypeCode_ARRAY})),
@@ -799,7 +799,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: intType()},
 				},
-				[]*proto3.Value{nil},
+				internalValuesFromPublic([]*proto3.Value{nil}),
 			},
 			&NullInt64{1, true},
 			errDecodeColumn(0, errNilSrc()),
@@ -810,7 +810,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: intType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}}),
 			},
 			&NullInt64{1, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -821,7 +821,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: intType()},
 				},
-				[]*proto3.Value{floatProto(1.0)},
+				internalValuesFromPublic([]*proto3.Value{floatProto(1.0)}),
 			},
 			&NullInt64{1, true},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "String")),
@@ -832,7 +832,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: intType()},
 				},
-				[]*proto3.Value{stringProto("&1")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("&1")}),
 			},
 			proto.Int64(0),
 			errDecodeColumn(0, errBadEncoding(stringProto("&1"), func() error {
@@ -846,7 +846,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: intType()},
 				},
-				[]*proto3.Value{stringProto("&1")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("&1")}),
 			},
 			&NullInt64{},
 			errDecodeColumn(0, errBadEncoding(stringProto("&1"), func() error {
@@ -860,7 +860,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: stringType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}}),
 			},
 			&NullString{"value", true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -871,7 +871,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: stringType()},
 				},
-				[]*proto3.Value{listProto(stringProto("value"))},
+				internalValuesFromPublic([]*proto3.Value{listProto(stringProto("value"))}),
 			},
 			&NullString{"value", true},
 			errDecodeColumn(0, errSrcVal(listProto(stringProto("value")), "String")),
@@ -882,7 +882,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: floatType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_NumberValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_NumberValue)(nil)}}),
 			},
 			&NullFloat64{1.0, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_NumberValue)(nil)}, "Number")),
@@ -893,7 +893,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: floatType()},
 				},
-				[]*proto3.Value{boolProto(true)},
+				internalValuesFromPublic([]*proto3.Value{boolProto(true)}),
 			},
 			&NullFloat64{1.0, true},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "Number")),
@@ -904,7 +904,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: floatType()},
 				},
-				[]*proto3.Value{stringProto("nan")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("nan")}),
 			},
 			&NullFloat64{},
 			errDecodeColumn(0, errUnexpectedFloat64Str("nan")),
@@ -915,7 +915,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: floatType()},
 				},
-				[]*proto3.Value{stringProto("nan")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("nan")}),
 			},
 			proto.Float64(0),
 			errDecodeColumn(0, errUnexpectedFloat64Str("nan")),
@@ -926,7 +926,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: float32Type()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_NumberValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_NumberValue)(nil)}}),
 			},
 			&NullFloat32{1.0, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_NumberValue)(nil)}, "Number")),
@@ -937,7 +937,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: float32Type()},
 				},
-				[]*proto3.Value{boolProto(true)},
+				internalValuesFromPublic([]*proto3.Value{boolProto(true)}),
 			},
 			&NullFloat32{1.0, true},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "Number")),
@@ -948,7 +948,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: float32Type()},
 				},
-				[]*proto3.Value{stringProto("nan")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("nan")}),
 			},
 			&NullFloat32{},
 			errDecodeColumn(0, errUnexpectedFloat32Str("nan")),
@@ -959,7 +959,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: float32Type()},
 				},
-				[]*proto3.Value{stringProto("nan")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("nan")}),
 			},
 			proto.Float32(0),
 			errDecodeColumn(0, errUnexpectedFloat32Str("nan")),
@@ -970,7 +970,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: bytesType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}}),
 			},
 			&[]byte{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -981,7 +981,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: bytesType()},
 				},
-				[]*proto3.Value{boolProto(false)},
+				internalValuesFromPublic([]*proto3.Value{boolProto(false)}),
 			},
 			&[]byte{},
 			errDecodeColumn(0, errSrcVal(boolProto(false), "String")),
@@ -992,7 +992,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: bytesType()},
 				},
-				[]*proto3.Value{stringProto("&&")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("&&")}),
 			},
 			&[]byte{},
 			errDecodeColumn(0, errBadEncoding(stringProto("&&"), func() error {
@@ -1006,7 +1006,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: boolType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_BoolValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_BoolValue)(nil)}}),
 			},
 			&NullBool{false, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_BoolValue)(nil)}, "Bool")),
@@ -1017,7 +1017,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: boolType()},
 				},
-				[]*proto3.Value{stringProto("false")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("false")}),
 			},
 			&NullBool{false, true},
 			errDecodeColumn(0, errSrcVal(stringProto("false"), "Bool")),
@@ -1028,7 +1028,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: timeType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}}),
 			},
 			&NullTime{time.Now(), true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -1039,7 +1039,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: timeType()},
 				},
-				[]*proto3.Value{boolProto(false)},
+				internalValuesFromPublic([]*proto3.Value{boolProto(false)}),
 			},
 			&NullTime{time.Now(), true},
 			errDecodeColumn(0, errSrcVal(boolProto(false), "String")),
@@ -1050,7 +1050,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: timeType()},
 				},
-				[]*proto3.Value{stringProto("junk")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("junk")}),
 			},
 			&NullTime{time.Now(), true},
 			errDecodeColumn(0, errBadEncoding(stringProto("junk"), func() error {
@@ -1064,7 +1064,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: dateType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}}),
 			},
 			&NullDate{civil.Date{}, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -1075,7 +1075,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: dateType()},
 				},
-				[]*proto3.Value{boolProto(false)},
+				internalValuesFromPublic([]*proto3.Value{boolProto(false)}),
 			},
 			&NullDate{civil.Date{}, true},
 			errDecodeColumn(0, errSrcVal(boolProto(false), "String")),
@@ -1086,7 +1086,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: dateType()},
 				},
-				[]*proto3.Value{stringProto("junk")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("junk")}),
 			},
 			&NullDate{civil.Date{}, true},
 			errDecodeColumn(0, errBadEncoding(stringProto("junk"), func() error {
@@ -1100,7 +1100,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: uuidType()},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_StringValue)(nil)}}),
 			},
 			&NullUUID{uuid1, true},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_StringValue)(nil)}, "String")),
@@ -1111,7 +1111,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: uuidType()},
 				},
-				[]*proto3.Value{boolProto(true)},
+				internalValuesFromPublic([]*proto3.Value{boolProto(true)}),
 			},
 			&NullUUID{uuid1, true},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "String")),
@@ -1122,7 +1122,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: uuidType()},
 				},
-				[]*proto3.Value{stringProto("xyz")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("xyz")}),
 			},
 			&NullUUID{},
 			errDecodeColumn(0, errBadEncoding(stringProto("xyz"), func() error {
@@ -1137,7 +1137,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(intType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1148,7 +1148,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(intType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errNilListValue("INT64")),
@@ -1159,7 +1159,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(intType())},
 				},
-				[]*proto3.Value{bytesProto([]byte("value"))},
+				internalValuesFromPublic([]*proto3.Value{bytesProto([]byte("value"))}),
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errSrcVal(bytesProto([]byte("value")), "List")),
@@ -1170,7 +1170,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(intType())},
 				},
-				[]*proto3.Value{listProto(boolProto(true))},
+				internalValuesFromPublic([]*proto3.Value{listProto(boolProto(true))}),
 			},
 			&[]NullInt64{},
 			errDecodeColumn(0, errDecodeArrayElement(0, boolProto(true),
@@ -1182,7 +1182,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(stringType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1193,7 +1193,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(stringType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errNilListValue("STRING")),
@@ -1204,7 +1204,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(stringType())},
 				},
-				[]*proto3.Value{boolProto(true)},
+				internalValuesFromPublic([]*proto3.Value{boolProto(true)}),
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errSrcVal(boolProto(true), "List")),
@@ -1215,7 +1215,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(stringType())},
 				},
-				[]*proto3.Value{listProto(boolProto(true))},
+				internalValuesFromPublic([]*proto3.Value{listProto(boolProto(true))}),
 			},
 			&[]NullString{},
 			errDecodeColumn(0, errDecodeArrayElement(0, boolProto(true),
@@ -1227,7 +1227,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(floatType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1238,7 +1238,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(floatType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errNilListValue("FLOAT64")),
@@ -1249,7 +1249,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(floatType())},
 				},
-				[]*proto3.Value{stringProto("value")},
+				internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errSrcVal(stringProto("value"), "List")),
@@ -1260,7 +1260,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(floatType())},
 				},
-				[]*proto3.Value{listProto(boolProto(true))},
+				internalValuesFromPublic([]*proto3.Value{listProto(boolProto(true))}),
 			},
 			&[]NullFloat64{},
 			errDecodeColumn(0, errDecodeArrayElement(0, boolProto(true),
@@ -1272,7 +1272,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(bytesType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1283,7 +1283,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(bytesType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errNilListValue("BYTES")),
@@ -1294,7 +1294,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(bytesType())},
 				},
-				[]*proto3.Value{floatProto(1.0)},
+				internalValuesFromPublic([]*proto3.Value{floatProto(1.0)}),
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1305,7 +1305,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(bytesType())},
 				},
-				[]*proto3.Value{listProto(floatProto(1.0))},
+				internalValuesFromPublic([]*proto3.Value{listProto(floatProto(1.0))}),
 			},
 			&[][]byte{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1317,7 +1317,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(boolType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1328,7 +1328,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(boolType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errNilListValue("BOOL")),
@@ -1339,7 +1339,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(boolType())},
 				},
-				[]*proto3.Value{floatProto(1.0)},
+				internalValuesFromPublic([]*proto3.Value{floatProto(1.0)}),
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1350,7 +1350,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(boolType())},
 				},
-				[]*proto3.Value{listProto(floatProto(1.0))},
+				internalValuesFromPublic([]*proto3.Value{listProto(floatProto(1.0))}),
 			},
 			&[]NullBool{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1362,7 +1362,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(timeType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1373,7 +1373,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(timeType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errNilListValue("TIMESTAMP")),
@@ -1384,7 +1384,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(timeType())},
 				},
-				[]*proto3.Value{floatProto(1.0)},
+				internalValuesFromPublic([]*proto3.Value{floatProto(1.0)}),
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1395,7 +1395,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(timeType())},
 				},
-				[]*proto3.Value{listProto(floatProto(1.0))},
+				internalValuesFromPublic([]*proto3.Value{listProto(floatProto(1.0))}),
 			},
 			&[]NullTime{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1407,7 +1407,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(dateType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1418,7 +1418,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(dateType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errNilListValue("DATE")),
@@ -1429,7 +1429,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(dateType())},
 				},
-				[]*proto3.Value{floatProto(1.0)},
+				internalValuesFromPublic([]*proto3.Value{floatProto(1.0)}),
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1440,7 +1440,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(dateType())},
 				},
-				[]*proto3.Value{listProto(floatProto(1.0))},
+				internalValuesFromPublic([]*proto3.Value{listProto(floatProto(1.0))}),
 			},
 			&[]NullDate{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1452,7 +1452,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(uuidType())},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errSrcVal(&proto3.Value{Kind: (*proto3.Value_ListValue)(nil)}, "List")),
@@ -1463,7 +1463,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(uuidType())},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errNilListValue("UUID")),
@@ -1474,7 +1474,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(uuidType())},
 				},
-				[]*proto3.Value{floatProto(1.0)},
+				internalValuesFromPublic([]*proto3.Value{floatProto(1.0)}),
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errSrcVal(floatProto(1.0), "List")),
@@ -1485,7 +1485,7 @@ func TestBrokenRow(t *testing.T) {
 				[]*sppb.StructType_Field{
 					{Name: "Col0", Type: listType(uuidType())},
 				},
-				[]*proto3.Value{listProto(floatProto(1.0))},
+				internalValuesFromPublic([]*proto3.Value{listProto(floatProto(1.0))}),
 			},
 			&[]NullUUID{},
 			errDecodeColumn(0, errDecodeArrayElement(0, floatProto(1.0),
@@ -1501,7 +1501,7 @@ func TestBrokenRow(t *testing.T) {
 						mkField("Col3", stringType()),
 					))},
 				},
-				[]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: (*proto3.Value_ListValue)(nil)}}),
 			},
 			&[]*struct {
 				Col1 int64
@@ -1520,7 +1520,7 @@ func TestBrokenRow(t *testing.T) {
 						mkField("Col3", stringType()),
 					))},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]*struct {
 				Col1 int64
@@ -1544,7 +1544,7 @@ func TestBrokenRow(t *testing.T) {
 						),
 					},
 				},
-				[]*proto3.Value{{Kind: &proto3.Value_ListValue{}}},
+				internalValuesFromPublic([]*proto3.Value{{Kind: &proto3.Value_ListValue{}}}),
 			},
 			&[]NullRow{},
 			errDecodeColumn(0, errNilListValue("STRUCT")),
@@ -1564,7 +1564,7 @@ func TestBrokenRow(t *testing.T) {
 						),
 					},
 				},
-				[]*proto3.Value{bytesProto([]byte("value"))},
+				internalValuesFromPublic([]*proto3.Value{bytesProto([]byte("value"))}),
 			},
 			&[]*struct {
 				Col1 int64
@@ -1588,7 +1588,7 @@ func TestBrokenRow(t *testing.T) {
 						),
 					},
 				},
-				[]*proto3.Value{listProto(bytesProto([]byte("value")))},
+				internalValuesFromPublic([]*proto3.Value{listProto(bytesProto([]byte("value")))}),
 			},
 			&[]NullRow{},
 			errDecodeColumn(0, errNotStructElement(0, bytesProto([]byte("value")))),
@@ -1608,7 +1608,7 @@ func TestBrokenRow(t *testing.T) {
 						),
 					},
 				},
-				[]*proto3.Value{listProto(bytesProto([]byte("value")))},
+				internalValuesFromPublic([]*proto3.Value{listProto(bytesProto([]byte("value")))}),
 			},
 			&[]*struct {
 				Col1 int64
@@ -1626,7 +1626,7 @@ func TestBrokenRow(t *testing.T) {
 						Name: "Col0", Type: listType(&sppb.Type{Code: sppb.TypeCode_STRUCT}),
 					},
 				},
-				[]*proto3.Value{listProto(listProto(intProto(1), floatProto(2.0), stringProto("3")))},
+				internalValuesFromPublic([]*proto3.Value{listProto(listProto(intProto(1), floatProto(2.0), stringProto("3")))}),
 			},
 			&[]*struct {
 				Col1 int64
@@ -1651,7 +1651,7 @@ func TestBrokenRow(t *testing.T) {
 						),
 					},
 				},
-				[]*proto3.Value{listProto(listProto(intProto(1), boolProto(true), stringProto("3")))},
+				internalValuesFromPublic([]*proto3.Value{listProto(listProto(intProto(1), boolProto(true), stringProto("3")))}),
 			},
 			&[]*struct {
 				Col1 int64
@@ -1677,13 +1677,13 @@ func TestBrokenRow(t *testing.T) {
 			),
 		},
 	} {
-		if gotErr := test.row.Column(0, test.dst); !testEqual(gotErr, test.wantErr) {
+		if gotErr := test.row.Column(0, test.dst); !brokenRowErrorEqual(gotErr, test.wantErr, test.row) {
 			t.Errorf("%v: test.row.Column(0) got error %v, want %v", i, gotErr, test.wantErr)
 		}
-		if gotErr := test.row.ColumnByName("Col0", test.dst); !testEqual(gotErr, test.wantErr) {
+		if gotErr := test.row.ColumnByName("Col0", test.dst); !brokenRowErrorEqual(gotErr, test.wantErr, test.row) {
 			t.Errorf("%v: test.row.ColumnByName(%q) got error %v, want %v", i, "Col0", gotErr, test.wantErr)
 		}
-		if gotErr := test.row.Columns(test.dst); !testEqual(gotErr, test.wantErr) {
+		if gotErr := test.row.Columns(test.dst); !brokenRowErrorEqual(gotErr, test.wantErr, test.row) {
 			t.Errorf("%v: test.row.Columns(%T) got error %v, want %v", i, test.dst, gotErr, test.wantErr)
 		}
 	}
@@ -2016,10 +2016,10 @@ func TestToStructEmbedded(t *testing.T) {
 			{Name: "F1", Type: stringType()},
 			{Name: "F2", Type: stringType()},
 		},
-		[]*proto3.Value{
+		internalValuesFromPublic([]*proto3.Value{
 			stringProto("v1"),
 			stringProto("v2"),
-		},
+		}),
 	}
 	var got S2
 	if err := r.ToStruct(&got); err != nil {
@@ -2065,10 +2065,10 @@ func TestToStructWithUnEqualFields(t *testing.T) {
 					{Name: "F1", Type: stringType()},
 					{Name: "F2", Type: stringType()},
 				},
-				[]*proto3.Value{
+				internalValuesFromPublic([]*proto3.Value{
 					stringProto("v1"),
 					stringProto("v2"),
-				},
+				}),
 			},
 			want: &extraField{F1: "v1", F2: "v2", F3: ""},
 		},
@@ -2081,11 +2081,11 @@ func TestToStructWithUnEqualFields(t *testing.T) {
 					{Name: "F2", Type: stringType()},
 					{Name: "F3", Type: stringType()},
 				},
-				[]*proto3.Value{
+				internalValuesFromPublic([]*proto3.Value{
 					stringProto("v1"),
 					stringProto("v2"),
 					stringProto("v3"),
-				},
+				}),
 			},
 			want: &lessField{F1: "v1", F3: "v3"},
 		},
@@ -2108,10 +2108,10 @@ func TestRowToString(t *testing.T) {
 			{Name: "F1", Type: stringType()},
 			{Name: "F2", Type: stringType()},
 		},
-		[]*proto3.Value{
+		internalValuesFromPublic([]*proto3.Value{
 			stringProto("v1"),
 			stringProto("v2"),
-		},
+		}),
 	}
 	got := r.String()
 	want := `{fields: [name:"F1" type:{code:STRING} name:"F2" type:{code:STRING}], values: [string_value:"v1" string_value:"v2"]}`
@@ -2168,7 +2168,7 @@ func TestColumnTypeAndValue(t *testing.T) {
 	}
 	// Test Row.ColumnValue()
 	for i, val := range row.vals {
-		if cv := row.ColumnValue(i); cv != val {
+		if cv := row.ColumnValue(i); !proto.Equal(cv, internalValueToPublic(val)) {
 			t.Errorf("row.ColumnValue(%v) returns %q, want %q", i, cv, val)
 		}
 	}
@@ -2190,12 +2190,12 @@ func TestNewRow(t *testing.T) {
 		wantErr error
 	}{
 		{
-			want: &Row{fields: []*sppb.StructType_Field{}, vals: []*proto3.Value{}},
+			want: &Row{fields: []*sppb.StructType_Field{}, vals: internalValuesFromPublic([]*proto3.Value{})},
 		},
 		{
 			names:  []string{},
 			values: []interface{}{},
-			want:   &Row{fields: []*sppb.StructType_Field{}, vals: []*proto3.Value{}},
+			want:   &Row{fields: []*sppb.StructType_Field{}, vals: internalValuesFromPublic([]*proto3.Value{})},
 		},
 		{
 			names:   []string{"a", "b"},
@@ -2212,11 +2212,11 @@ func TestNewRow(t *testing.T) {
 					{Name: "b", Type: stringType()},
 					{Name: "c", Type: listType(intType())},
 				},
-				[]*proto3.Value{
+				internalValuesFromPublic([]*proto3.Value{
 					intProto(5),
 					stringProto("abc"),
 					listProto(intProto(91), nullProto(), intProto(87)),
-				},
+				}),
 			},
 		},
 	} {
@@ -2328,13 +2328,13 @@ func TestSelectAll(t *testing.T) {
 						[]*sppb.StructType_Field{
 							{Name: "Col0", Type: stringType()},
 						},
-						[]*proto3.Value{stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col0", Type: stringType()},
 						},
-						[]*proto3.Value{stringProto("value2")},
+						internalValuesFromPublic([]*proto3.Value{stringProto("value2")}),
 					},
 					iterator.Done,
 				),
@@ -2350,13 +2350,13 @@ func TestSelectAll(t *testing.T) {
 						[]*sppb.StructType_Field{
 							{Name: "Col0", Type: stringType()},
 						},
-						[]*proto3.Value{stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{stringProto("value")}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
 							{Name: "Col0", Type: stringType()},
 						},
-						[]*proto3.Value{stringProto("value2")},
+						internalValuesFromPublic([]*proto3.Value{stringProto("value2")}),
 					},
 					iterator.Done,
 				),
@@ -2375,7 +2375,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: timeType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2384,7 +2384,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: timeType()},
 						},
-						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+						internalValuesFromPublic([]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))}),
 					},
 					iterator.Done,
 				),
@@ -2405,7 +2405,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2413,7 +2413,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+						internalValuesFromPublic([]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")}),
 					},
 					iterator.Done,
 				),
@@ -2435,7 +2435,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col4", Type: timeType()},
 							{Name: "Col5", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm), stringProto("value2")},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm), stringProto("value2")}),
 					},
 					// failure case
 					iterator.Done,
@@ -2457,7 +2457,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2465,7 +2465,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")},
+						internalValuesFromPublic([]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2")}),
 					},
 					iterator.Done,
 				),
@@ -2488,7 +2488,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(3), floatProto(3.3), stringProto("value3"), stringProto("test3")},
+						internalValuesFromPublic([]*proto3.Value{intProto(3), floatProto(3.3), stringProto("value3"), stringProto("test3")}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2497,7 +2497,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), nullProto(), nullProto()},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), nullProto(), nullProto()}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2506,7 +2506,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), stringProto("test2")},
+						internalValuesFromPublic([]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), stringProto("test2")}),
 					},
 					iterator.Done,
 				),
@@ -2529,7 +2529,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag3", Type: stringType()},
 							{Name: "Tag4", Type: timeType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value"), timeProto(tm)}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2538,7 +2538,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag3", Type: stringType()},
 							{Name: "Tag4", Type: timeType()},
 						},
-						[]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))},
+						internalValuesFromPublic([]*proto3.Value{intProto(2), floatProto(2.2), stringProto("value2"), timeProto(tm.Add(24 * time.Hour))}),
 					},
 					iterator.Done,
 				),
@@ -2560,7 +2560,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: intType()},
 							{Name: "Tag3", Type: intType()},
 						},
-						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+						internalValuesFromPublic([]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2569,7 +2569,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag3", Type: intType()},
 							{Name: "Tag4", Type: intType()},
 						},
-						[]*proto3.Value{intProto(1), intProto(2), intProto(3), intProto(4)},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), intProto(2), intProto(3), intProto(4)}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2578,7 +2578,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: intType()},
 							{Name: "Tag3", Type: intType()},
 						},
-						[]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)},
+						internalValuesFromPublic([]*proto3.Value{intProto(2), intProto(1), intProto(4), intProto(3)}),
 					},
 					iterator.Done,
 				),
@@ -2601,7 +2601,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: timeType()},
 							{Name: "Tag3", Type: stringType()},
 						},
-						[]*proto3.Value{floatProto(1.1), intProto(1), timeProto(tm), stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{floatProto(1.1), intProto(1), timeProto(tm), stringProto("value")}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2610,7 +2610,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Tag4", Type: timeType()},
 							{Name: "Tag3", Type: stringType()},
 						},
-						[]*proto3.Value{floatProto(2.2), intProto(2), timeProto(tm.Add(24 * time.Hour)), stringProto("value2")},
+						internalValuesFromPublic([]*proto3.Value{floatProto(2.2), intProto(2), timeProto(tm.Add(24 * time.Hour)), stringProto("value2")}),
 					},
 					iterator.Done,
 				),
@@ -2631,7 +2631,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col2", Type: floatType()},
 							{Name: "Col3", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")}),
 					},
 					// failure case
 					errors.New("some error"),
@@ -2655,7 +2655,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")}),
 					},
 					// failure case
 					iterator.Done,
@@ -2678,7 +2678,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")}),
 					},
 					// failure case
 					iterator.Done,
@@ -2699,7 +2699,7 @@ func TestSelectAll(t *testing.T) {
 							{Name: "Col3", Type: stringType()},
 							{Name: "Col4", Type: stringType()},
 						},
-						[]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")},
+						internalValuesFromPublic([]*proto3.Value{intProto(1), floatProto(1.1), stringProto("value")}),
 					},
 					// failure case
 					iterator.Done,
@@ -2722,13 +2722,13 @@ func TestSelectAll(t *testing.T) {
 							{Name: "City", Type: stringType()},
 							{Name: "BirthDate", Type: dateType()},
 						},
-						[]*proto3.Value{
+						internalValuesFromPublic([]*proto3.Value{
 							stringProto("Name1"),
 							stringProto("Street1"),
 							stringProto("ZipCode1"),
 							stringProto("City1"),
 							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
-						},
+						}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2738,13 +2738,13 @@ func TestSelectAll(t *testing.T) {
 							{Name: "City", Type: stringType()},
 							{Name: "BirthDate", Type: dateType()},
 						},
-						[]*proto3.Value{
+						internalValuesFromPublic([]*proto3.Value{
 							stringProto("Name2"),
 							stringProto("Street2"),
 							stringProto("ZipCode2"),
 							stringProto("City2"),
 							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
-						},
+						}),
 					},
 					iterator.Done,
 				),
@@ -2765,13 +2765,13 @@ func TestSelectAll(t *testing.T) {
 							{Name: "BirthDate", Type: dateType()},
 							{Name: "ZipCode", Type: stringType()},
 						},
-						[]*proto3.Value{
+						internalValuesFromPublic([]*proto3.Value{
 							stringProto("Name1"),
 							stringProto("City1"),
 							stringProto("Street1"),
 							dateProto(civil.Date{Year: 2000, Month: 11, Day: 14}),
 							stringProto("ZipCode1"),
-						},
+						}),
 					},
 					&Row{
 						[]*sppb.StructType_Field{
@@ -2781,13 +2781,13 @@ func TestSelectAll(t *testing.T) {
 							{Name: "BirthDate", Type: dateType()},
 							{Name: "ZipCode", Type: stringType()},
 						},
-						[]*proto3.Value{
+						internalValuesFromPublic([]*proto3.Value{
 							stringProto("Name2"),
 							stringProto("City2"),
 							stringProto("Street2"),
 							dateProto(civil.Date{Year: 2001, Month: 11, Day: 14}),
 							stringProto("ZipCode2"),
-						},
+						}),
 					},
 					iterator.Done,
 				),

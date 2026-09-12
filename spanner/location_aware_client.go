@@ -670,6 +670,15 @@ func newAffinityTrackingStream(
 
 func (s *affinityTrackingStream) Recv() (*spannerpb.PartialResultSet, error) {
 	prs, err := s.inner.Recv()
+	if err := s.observeRecv(prs, err); err != nil {
+		return nil, err
+	}
+	return prs, nil
+}
+
+// observeRecv records the side effects shared by typed and build-tagged
+// PartialResultSet receive paths.
+func (s *affinityTrackingStream) observeRecv(prs *spannerpb.PartialResultSet, err error) error {
 	if err != nil {
 		s.finish()
 		s.errorOnce.Do(func() {
@@ -677,7 +686,7 @@ func (s *affinityTrackingStream) Recv() (*spannerpb.PartialResultSet, error) {
 				s.onError(err)
 			}
 		})
-		return nil, err
+		return err
 	}
 	s.latencyOnce.Do(func() {
 		if s.onFirstResponse != nil {
@@ -700,7 +709,7 @@ func (s *affinityTrackingStream) Recv() (*spannerpb.PartialResultSet, error) {
 	}
 	// Observe cache updates from every PartialResultSet.
 	s.router.observePartialResultSet(prs)
-	return prs, nil
+	return nil
 }
 
 func readOnlyBeginFromSelector(selector *spannerpb.TransactionSelector) (bool, bool) {

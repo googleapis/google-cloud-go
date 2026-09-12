@@ -1823,13 +1823,13 @@ func TestDecodeValue(t *testing.T) {
 								),
 							),
 						},
-						vals: []*proto3.Value{
+						vals: internalValuesFromPublic([]*proto3.Value{
 							intProto(3),
 							listProto(
 								listProto(floatProto(3.14), stringProto("this")),
 								listProto(floatProto(0.57), stringProto("siht")),
 							),
-						},
+						}),
 					},
 					Valid: true,
 				},
@@ -1847,10 +1847,10 @@ func TestDecodeValue(t *testing.T) {
 								),
 							),
 						},
-						vals: []*proto3.Value{
+						vals: internalValuesFromPublic([]*proto3.Value{
 							nullProto(),
 							nullProto(),
-						},
+						}),
 					},
 					Valid: true,
 				},
@@ -2510,7 +2510,7 @@ func TestDecodeStruct(t *testing.T) {
 			lenient: false,
 		},
 	} {
-		err := decodeStruct(stype, lv, test.ptr, test.lenient)
+		err := decodeStruct(stype, internalListValueFromPublic(lv), test.ptr, test.lenient)
 		if (err != nil) != test.fail {
 			t.Errorf("%s: got error %v, wanted fail: %v", test.desc, err, test.fail)
 		}
@@ -2625,7 +2625,7 @@ func TestDecodeStructWithPointers(t *testing.T) {
 			want: &S1{Str: nil, Int: nil, Bool: nil, Float: nil, Time: nil, Date: nil, StrArray: nil, IntArray: nil, BoolArray: nil, FloatArray: nil, TimeArray: nil, DateArray: nil},
 		},
 	} {
-		err := decodeStruct(stype, lv[i], test.ptr, false)
+		err := decodeStruct(stype, internalListValueFromPublic(lv[i]), test.ptr, false)
 		if (err != nil) != test.fail {
 			t.Errorf("%s: got error %v, wanted fail: %v", test.desc, err, test.fail)
 		}
@@ -2689,7 +2689,7 @@ func TestDecodeStructArray(t *testing.T) {
 			lenient: false,
 		},
 	} {
-		err := decodeStruct(stype, lv, test.ptr, test.lenient)
+		err := decodeStruct(stype, internalListValueFromPublic(lv), test.ptr, test.lenient)
 		if (err != nil) != test.fail {
 			t.Errorf("%s: got error %v, wanted fail: %v", test.desc, err, test.fail)
 		}
