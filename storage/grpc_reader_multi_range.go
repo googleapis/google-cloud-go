@@ -22,6 +22,7 @@ import (
 	"io"
 	"log"
 	"sync"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	"google.golang.org/grpc"
@@ -41,9 +42,10 @@ const (
 	// This should never be hit in practice, but is a safety valve to prevent
 	// unbounded memory usage if the user is adding ranges faster than they
 	// can be processed.
-	mrdAddInternalQueueMaxSize = 50000
-	defaultTargetPendingBytes  = 1 << 30 // 1 GiB
-	defaultTargetPendingRanges = 500
+	mrdAddInternalQueueMaxSize    = 50000
+	defaultTargetPendingBytes     = 1 << 30 // 1 GiB
+	defaultTargetPendingRanges    = 500
+	defaultSessionShutdownTimeout = 200 * time.Millisecond
 )
 
 // --- internalMultiRangeDownloader Interface ---
@@ -157,6 +159,7 @@ func (c *grpcStorageClient) NewMultiRangeDownloader(ctx context.Context, params 
 
 	// Create the manager
 	manager := &multiRangeDownloaderManager{
+		rootCtx:        ctx,
 		ctx:            mCtx,
 		cancel:         cancel,
 		client:         c,
@@ -361,6 +364,7 @@ var (
 // Manages main event loop for MRD commands and processing responses.
 // Spawns bidiStreamSession to deal with actual stream management, retries, etc.
 type multiRangeDownloaderManager struct {
+	rootCtx      context.Context
 	ctx          context.Context
 	cancel       context.CancelFunc
 	client       *grpcStorageClient
@@ -790,7 +794,7 @@ func (m *multiRangeDownloaderManager) createNewSession(id int, readSpec *storage
 }
 
 func (m *multiRangeDownloaderManager) openAndInitializeSession(ctx context.Context, id int, spec *storagepb.BidiReadObjectSpec, waitForResult bool) (*bidiReadStreamSession, mrdSessionResult) {
-	session, err := newBidiReadStreamSession(m.ctx, id, m.sessionResps, m.client, m.settings, m.params, spec)
+	session, err := newBidiReadStreamSession(m.rootCtx, id, m.sessionResps, m.client, m.settings, m.params, spec)
 	if err != nil {
 		return nil, mrdSessionResult{err: err}
 	}
@@ -1297,11 +1301,30 @@ func (s *bidiReadStreamSession) SendRequest(req *storagepb.BidiReadObjectRequest
 }
 func (s *bidiReadStreamSession) Shutdown() {
 	s.mu.Lock()
+	if s.manualShutdown {
+		s.mu.Unlock()
+		return
+	}
 	s.manualShutdown = true
 	s.mu.Unlock()
 
+	// Close reqC to tell sendLoop to exit cleanly and invoke CloseSend()
+	close(s.reqC)
+
+	done := make(chan struct{})
+	go func() {
+		s.wg.Wait()
+		close(done)
+	}()
+
+	select {
+	case <-done:
+	case <-time.After(defaultSessionShutdownTimeout):
+		s.cancel()
+		<-done
+	}
+
 	s.cancel()
-	s.wg.Wait()
 	s.setError(s.ctx.Err())
 }
 func (s *bidiReadStreamSession) setError(err error) {
