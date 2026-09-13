@@ -29,6 +29,7 @@ import (
 	"io"
 	"math/big"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -284,6 +285,54 @@ func TestValidateES256(t *testing.T) {
 				t.Fatalf("got %v, want %v", payload.Audience, testAudience)
 			}
 		})
+	}
+}
+
+// TestValidateES256ShortSignature ensures a malformed ES256 token whose
+// signature decodes to fewer than 2*es256KeySize bytes is rejected with an
+// error instead of panicking with "slice bounds out of range" when the
+// signature is split into its r and s components.
+func TestValidateES256ShortSignature(t *testing.T) {
+	idToken, pk := createES256JWT(t)
+	// Replace the signature segment with one that decodes to a single byte.
+	header, claims, _ := strings.Cut(idToken, ".")
+	claims, _, _ = strings.Cut(claims, ".")
+	shortSig := base64.RawURLEncoding.EncodeToString([]byte{0x00})
+	idToken = fmt.Sprintf("%s.%s.%s", header, claims, shortSig)
+
+	client := &http.Client{
+		Transport: RoundTripFn(func(req *http.Request) *http.Response {
+			cr := certResponse{
+				Keys: []jwk{
+					{
+						Kid: keyID,
+						X:   base64.RawURLEncoding.EncodeToString(pk.X.Bytes()),
+						Y:   base64.RawURLEncoding.EncodeToString(pk.Y.Bytes()),
+					},
+				},
+			}
+			b, err := json.Marshal(&cr)
+			if err != nil {
+				t.Fatalf("unable to marshal response: %v", err)
+			}
+			return &http.Response{
+				StatusCode: 200,
+				Body:       io.NopCloser(bytes.NewReader(b)),
+				Header:     make(http.Header),
+			}
+		}),
+	}
+	oldNow := now
+	defer func() { now = oldNow }()
+	now = beforeExp
+
+	v, err := NewValidator(&ValidatorOptions{Client: client})
+	if err != nil {
+		t.Fatalf("NewValidator(...) = %q, want nil", err)
+	}
+	// Must return an error, not panic.
+	if _, err := v.Validate(context.Background(), idToken, testAudience); err == nil {
+		t.Fatal("Validate(ctx, <short-sig token>, aud) = nil, want error")
 	}
 }
 
