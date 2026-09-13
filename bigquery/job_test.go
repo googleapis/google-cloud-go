@@ -15,12 +15,19 @@
 package bigquery
 
 import (
+	"context"
+	"errors"
+	"fmt"
+	"net/http"
+	"net/http/httptest"
 	"reflect"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	bq "google.golang.org/api/bigquery/v2"
+	"google.golang.org/api/googleapi"
+	"google.golang.org/api/option"
 )
 
 func TestCreateJobRef(t *testing.T) {
@@ -198,5 +205,68 @@ func checkJob(t *testing.T, i int, got, want *bq.Job) {
 	d := testutil.Diff(got, want)
 	if d != "" {
 		t.Errorf("#%d: (got=-, want=+) %s", i, d)
+	}
+}
+
+// waitForQuery polls jobs.getQueryResults, so it must use
+// defaultRetryReasons: transient reasons are retried, while enqueue-only
+// reasons like jobRateLimitExceeded (see jobRetryReasons) must surface
+// immediately instead of retrying until the context deadline.
+func TestWaitForQueryRetryReasons(t *testing.T) {
+	for _, test := range []struct {
+		name         string
+		reason       string
+		wantAttempts int
+		wantErr      bool
+	}{
+		{
+			name:         "jobRateLimitExceeded is not retried",
+			reason:       "jobRateLimitExceeded",
+			wantAttempts: 1,
+			wantErr:      true,
+		},
+		{
+			name:         "rateLimitExceeded is retried",
+			reason:       "rateLimitExceeded",
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			attempts := 0
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				attempts++
+				if attempts >= test.wantAttempts && !test.wantErr {
+					w.Write([]byte(`{"jobReference": {"projectId": "p", "jobId": "j"}, "jobComplete": true, "totalRows": "0"}`))
+					return
+				}
+				w.WriteHeader(http.StatusForbidden)
+				fmt.Fprintf(w, `{"error": {"code": 403, "message": "quota exceeded", "errors": [{"reason": %q, "message": "quota exceeded"}]}}`, test.reason)
+			}))
+			defer ts.Close()
+
+			ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer cancel()
+			client, err := NewClient(ctx, "p", option.WithEndpoint(ts.URL), option.WithoutAuthentication())
+			if err != nil {
+				t.Fatalf("NewClient: %v", err)
+			}
+			defer client.Close()
+
+			job := &Job{c: client, projectID: "p", jobID: "j"}
+			_, _, err = job.waitForQuery(ctx, "p")
+			if gotErr := err != nil; gotErr != test.wantErr {
+				t.Fatalf("waitForQuery: got error %v, want error: %t", err, test.wantErr)
+			}
+			if test.wantErr {
+				var e *googleapi.Error
+				if !errors.As(err, &e) || e.Code != http.StatusForbidden {
+					t.Errorf("waitForQuery: got %v, want a googleapi.Error with code 403", err)
+				}
+			}
+			if attempts != test.wantAttempts {
+				t.Errorf("waitForQuery: got %d attempts, want %d", attempts, test.wantAttempts)
+			}
+		})
 	}
 }

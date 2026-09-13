@@ -369,7 +369,10 @@ func (j *Job) waitForQuery(ctx context.Context, projectID string) (Schema, uint6
 		res, err = call.Do()
 		trace.EndSpan(sCtx, err)
 		if err != nil {
-			return !retryableError(err, jobRetryReasons), err
+			// GetQueryResults is a polling call, not job enqueuing, so use
+			// defaultRetryReasons; jobRetryReasons is enqueue-only (see its
+			// definition in bigquery.go).
+			return !retryableError(err, defaultRetryReasons), err
 		}
 		if !res.JobComplete { // GetQueryResults may return early without error; retry.
 			return false, nil
