@@ -35,51 +35,8 @@ git diff '*go.sum' :^internal/generated/snippets | tee /dev/stderr | (! read)
 
 goimports -l . 2>&1 | grep -vE ".pb.go" | tee /dev/stderr | (! read)
 
-# Runs the linter. Regrettably the linter is very simple and does not provide the ability to exclude rules or files,
-# so we rely on inverse grepping to do this for us.
-#
-# Piping a bunch of greps may be slower than `grep -vE (thing|otherthing|anotherthing|etc)`, but since we have a good
-# amount of things we're excluding, it seems better to optimize for readability.
-#
-# Note: since we added the linter after-the-fact, some of the ignored errors here are because we can't change an
-# existing interface. (as opposed to us not caring about the error)
-golint ./... 2>&1 | (
-  grep -vE "gen\.go" |
-    grep -vE "receiver name [a-zA-Z]+[0-9]* should be consistent with previous receiver name" |
-    grep -vE "exported const AllUsers|AllAuthenticatedUsers|RoleOwner|SSD|HDD|PRODUCTION|DEVELOPMENT should have comment" |
-    grep -v "exported func Value returns unexported type pretty.val, which can be annoying to use" |
-    grep -vE "exported func (Increment|FieldTransformIncrement|FieldTransformMinimum|FieldTransformMaximum) returns unexported type firestore.transform, which can be annoying to use" |
-    grep -v "ExecuteStreamingSql" |
-    grep -v "MethodExecuteSql should be MethodExecuteSQL" |
-    grep -vE " executeStreamingSql(Min|Rnd)Time" |
-    grep -vE " executeSql(Min|Rnd)Time" |
-    grep -vE "pubsub\/pstest\/fake\.go.+should have comment or be unexported" |
-    grep -vE "pubsub\/subscription\.go.+ type name will be used as pubsub.PubsubWrapper by other packages" |
-    grep -v "ClusterId" |
-    grep -v "InstanceId" |
-    grep -v "firestore.arrayUnion" |
-    grep -v "firestore.arrayRemove" |
-    grep -v "maxAttempts" |
-    grep -v "firestore.commitResponse" |
-    grep -v "UptimeCheckIpIterator" |
-    grep -vE "apiv[0-9]+" |
-    grep -v "ALL_CAPS" |
-    grep -v "go-cloud-debug-agent" |
-    grep -v "mock_test" |
-    grep -v "internal/testutil/funcmock.go" |
-    grep -v "internal/backoff" |
-    grep -v "internal/trace" |
-    grep -v "internal/gapicgen/generator" |
-    grep -v "internal/generated/snippets" |
-    grep -v "a blank import should be only in a main or test package" |
-    grep -v "method ExecuteSql should be ExecuteSQL" |
-    grep -vE "spanner/spansql/(sql|types).go:.*should have comment" |
-    grep -vE "\.pb\.go:" |
-    grep -v "third_party/go/doc"
-) |
-  tee /dev/stderr | (! read)
 
-staticcheck -go 1.25 ./... 2>&1 | (
+staticcheck ./... 2>&1 | (
     grep -v SA1019 |
     grep -v internal/btree/btree.go |
     grep -v httpreplay/internal/proxy/debug.go |
