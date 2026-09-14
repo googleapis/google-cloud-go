@@ -751,7 +751,7 @@ func TestStandardMetricsRecording(t *testing.T) {
 		t.Fatalf("Close: %v", err)
 	}
 
-	// Test MultiRangeDownloader
+	// Test MultiRangeDownloader.
 	mock.newMRDFn = func(ctx context.Context, params *newMultiRangeDownloaderParams, opts ...storageOption) (*MultiRangeDownloader, error) {
 		return &MultiRangeDownloader{
 			impl: &mockInternalMRD{bytesRead: 42, ctx: ctx},
