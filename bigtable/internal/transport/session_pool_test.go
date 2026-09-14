@@ -37,7 +37,7 @@ func newStubStreamFactory() (factory func(context.Context) (Stream, error), clos
 	var mu sync.Mutex
 	var streams []*fakeStream
 	var closed bool
-	factory = func(_ context.Context) (Stream, error) {
+	factory = func(ctx context.Context) (Stream, error) {
 		mu.Lock()
 		defer mu.Unlock()
 		if closed {
@@ -47,7 +47,15 @@ func newStubStreamFactory() (factory func(context.Context) (Stream, error), clos
 			// that leaks its readLoop past p.Close.
 			return nil, errors.New("newStubStreamFactory: closed")
 		}
-		s := newFakeStream()
+		// Bind the dial ctx into the stream so its Recv unblocks with
+		// ctx.Err() when the caller cancels dialCtx — matching real gRPC
+		// stream cancellation semantics. Without this, a Close/cancel
+		// race where the poolCtx.Done→closeStreams bridge hasn't run yet
+		// leaves the stream's Recv parked and Close's Phase-5 spawns.Wait
+		// deadlocks. dialCtx in production is derived from poolCtx, so
+		// this makes readLoop always unblock on Close regardless of the
+		// bridge's scheduling.
+		s := newFakeStream().bindCtx(ctx)
 		streams = append(streams, s)
 		return s, nil
 	}

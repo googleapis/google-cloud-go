@@ -1,5 +1,12 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/visionai/v1.1.0...visionai/v1.2.0) (2026-09-10)
+
+
+### Features
+
+* Update API sources and regenerate ([#20502](https://github.com/googleapis/google-cloud-go/issues/20502)) ([95479e9](https://github.com/googleapis/google-cloud-go/commit/95479e9b74215f969b04d3ebfd01b8f98f11f5ed))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/visionai/v1.0.0...visionai/v1.1.0) (2026-07-13)
 
 

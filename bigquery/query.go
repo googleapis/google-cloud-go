@@ -425,6 +425,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			jobID:     resp.JobReference.JobId,
 			location:  resp.JobReference.Location,
 			projectID: resp.JobReference.ProjectId,
+			queryID:   resp.QueryId,
 		}
 	}
 

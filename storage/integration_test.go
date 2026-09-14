@@ -1357,7 +1357,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			}
 			expectedSums := []string{
 				"gcp.storage.client.operations",
-				"gcp.storage.client.active_requests",
+				"gcp.storage.client.request.active",
 			}
 			expectedNetworkMetrics := []string{
 				"gcp.storage.client.network.tcp.connect.duration",
