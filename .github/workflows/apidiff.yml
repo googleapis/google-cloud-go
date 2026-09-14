@@ -13,14 +13,14 @@ jobs:
   scan_changes:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         ref: main
         persist-credentials: false
     - name: Get main commit
       id: main
       run: echo "hash=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         persist-credentials: false
     - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16 # v6
@@ -60,7 +60,7 @@ jobs:
         go-version: '1.26.x'
     - name: Install latest apidiff
       run: go install golang.org/x/exp/cmd/apidiff@latest
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         ref: main
         persist-credentials: false
@@ -82,7 +82,7 @@ jobs:
         name: ${{ steps.baseline.outputs.pkg }}
         path: ${{ matrix.changed }}/${{ steps.baseline.outputs.pkg }}
         retention-days: 1
-    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6
+    - uses: actions/checkout@df4cb1c069e1874edd31b4311f1884172cec0e10 # v6.0.3
       with:
         persist-credentials: false
     - name: Download baseline package data
