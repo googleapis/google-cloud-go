@@ -25,6 +25,15 @@ import (
 	"google.golang.org/api/option"
 )
 
+// fakeBufferPool is a no-op [experimental.BufferPool] used to verify option plumbing.
+type fakeBufferPool struct{}
+
+func (p *fakeBufferPool) Get(maxSize int) ([]byte, error) {
+	return nil, nil
+}
+
+func (p *fakeBufferPool) Put(buf []byte) {}
+
 func TestApplyStorageOpt(t *testing.T) {
 	for _, test := range []struct {
 		desc string
@@ -157,6 +166,20 @@ func TestApplyStorageOpt(t *testing.T) {
 			opts: []option.ClientOption{withDirectConnectivityEnforced()},
 			want: storageConfig{
 				grpcDirectPathEnforced: true,
+			},
+		},
+		{
+			desc: "set parallel uploads global memory limit",
+			opts: []option.ClientOption{experimental.WithParallelUploadsGlobalMemoryLimit(64 * 1024 * 1024)},
+			want: storageConfig{
+				parallelUploadsGlobalMemoryLimit: 64 * 1024 * 1024,
+			},
+		},
+		{
+			desc: "set buffer pool",
+			opts: []option.ClientOption{experimental.WithBufferPool(&fakeBufferPool{})},
+			want: storageConfig{
+				bufferPool: &fakeBufferPool{},
 			},
 		},
 	} {
