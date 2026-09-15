@@ -1,6 +1,6 @@
 module cloud.google.com/go/spanner/benchmarks
 
-go 1.25.0
+go 1.26.0
 
 exclude google.golang.org/grpc v1.71.0
 
