@@ -25,15 +25,6 @@ import (
 	"google.golang.org/api/option"
 )
 
-// fakeBufferPool is a no-op [experimental.BufferPool] used to verify option plumbing.
-type fakeBufferPool struct{}
-
-func (p *fakeBufferPool) Get(maxSize int) ([]byte, error) {
-	return nil, nil
-}
-
-func (p *fakeBufferPool) Put(buf []byte) {}
-
 func TestApplyStorageOpt(t *testing.T) {
 	for _, test := range []struct {
 		desc string
@@ -175,13 +166,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				parallelUploadsGlobalMemoryLimit: 64 * 1024 * 1024,
 			},
 		},
-		{
-			desc: "set buffer pool",
-			opts: []option.ClientOption{experimental.WithBufferPool(&fakeBufferPool{})},
-			want: storageConfig{
-				bufferPool: &fakeBufferPool{},
-			},
-		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
@@ -270,5 +254,20 @@ func TestGetDynamicReadReqIncreaseRateFromEnv(t *testing.T) {
 				t.Errorf("getDynamicReadReqIncreaseRateFromEnv() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestSetBufferPool(t *testing.T) {
+	pool := &struct{ experimental.BufferPool }{}
+	want := storageConfig{
+		bufferPool: pool,
+	}
+	var got storageConfig
+	opt := experimental.WithBufferPool(pool)
+	if storageOpt, ok := opt.(storageClientOption); ok {
+		storageOpt.ApplyStorageOpt(&got)
+	}
+	if got.bufferPool != want.bufferPool {
+		t.Errorf("TestSetBufferPool: bufferPool want=%v, got=%v", want.bufferPool, got.bufferPool)
 	}
 }

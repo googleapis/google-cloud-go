@@ -104,17 +104,6 @@ func WithOtelDebugMetrics() option.ClientOption {
 	return internal.WithOtelDebugMetrics.(func() option.ClientOption)()
 }
 
-// This interface is not supported at the moment.
-type BufferPool interface {
-	// Get retrieves a single chunk of memory. It returns a slice that is
-	// optimally sized by the pool, guaranteeing that len(buf) <= maxSize.
-	// It returns an error if the underlying allocation fails.
-	Get(maxSize int) ([]byte, error)
-
-	// Put returns a previously acquired buffer to the pool.
-	Put(buf []byte)
-}
-
 // WithParallelUploadsGlobalMemoryLimit provides an [option.ClientOption] that may
 // be passed to [cloud.google.com/go/storage.NewGRPCClient].
 // It sets the global memory limit in bytes shared across parallel uploads.

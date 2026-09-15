@@ -437,6 +437,8 @@ func (w *Writer) Close() error {
 }
 
 // Abort is unimplemented and always returns an error.
+//
+// This is experimental and its signature can change in the future.
 func (w *Writer) Abort() error {
 	return errMethodNotSupported
 }
