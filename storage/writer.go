@@ -436,6 +436,13 @@ func (w *Writer) Close() error {
 	return w.markClosed(nil)
 }
 
+// Abort is unimplemented and always returns an error.
+//
+// This is experimental and its signature can change in the future.
+func (w *Writer) Abort() error {
+	return errMethodNotSupported
+}
+
 // markClosed marks the Writer as closed, records any closing error on Writer.err,
 // and records request body size metrics and trace span completion.
 func (w *Writer) markClosed(err error) error {
