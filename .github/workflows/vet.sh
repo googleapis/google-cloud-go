@@ -30,8 +30,8 @@ done
 
 # Documentation for the :^ pathspec can be found at:
 # https://git-scm.com/docs/gitglossary#Documentation/gitglossary.txt-aiddefpathspecapathspec
-git diff '*go.mod' :^internal/generated/snippets | tee /dev/stderr | (! read)
-git diff '*go.sum' :^internal/generated/snippets | tee /dev/stderr | (! read)
+git diff '*go.mod'  | tee /dev/stderr | (! read)
+git diff '*go.sum'  | tee /dev/stderr | (! read)
 
 goimports -l . 2>&1 | grep -vE ".pb.go" | tee /dev/stderr | (! read)
 
