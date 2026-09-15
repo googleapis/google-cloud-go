@@ -159,6 +159,13 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcDirectPathEnforced: true,
 			},
 		},
+		{
+			desc: "set parallel uploads global memory limit",
+			opts: []option.ClientOption{experimental.WithParallelUploadsGlobalMemoryLimit(64 * 1024 * 1024)},
+			want: storageConfig{
+				parallelUploadsGlobalMemoryLimit: 64 * 1024 * 1024,
+			},
+		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
@@ -247,5 +254,20 @@ func TestGetDynamicReadReqIncreaseRateFromEnv(t *testing.T) {
 				t.Errorf("getDynamicReadReqIncreaseRateFromEnv() = %v, want %v", got, tt.want)
 			}
 		})
+	}
+}
+
+func TestSetBufferPool(t *testing.T) {
+	pool := &struct{ experimental.BufferPool }{}
+	want := storageConfig{
+		bufferPool: pool,
+	}
+	var got storageConfig
+	opt := experimental.WithBufferPool(pool)
+	if storageOpt, ok := opt.(storageClientOption); ok {
+		storageOpt.ApplyStorageOpt(&got)
+	}
+	if got.bufferPool != want.bufferPool {
+		t.Errorf("TestSetBufferPool: bufferPool want=%v, got=%v", want.bufferPool, got.bufferPool)
 	}
 }
