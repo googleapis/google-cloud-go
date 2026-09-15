@@ -232,7 +232,7 @@ func (tr *GCETestRunner) StartInstance(ctx context.Context, inst *InstanceConfig
 		imageProject = "debian-cloud"
 	}
 	if imageFamily == "" {
-		imageFamily = "debian-11"
+		imageFamily = "debian-13"
 	}
 	img, err := tr.ComputeService.Images.GetFromFamily(imageProject, imageFamily).Context(ctx).Do()
 	if err != nil {
