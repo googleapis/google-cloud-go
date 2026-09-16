@@ -516,7 +516,7 @@ libraries:
   - name: compute
     version: 1.68.0
     preview:
-      version: 1.66.0-preview.1
+      version: 1.69.0-preview.1
       apis:
         - path: google/cloud/compute/v1
     apis:
