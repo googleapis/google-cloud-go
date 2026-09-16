@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -239,6 +239,114 @@ func (Gateway_State) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_apigateway_v1_apigateway_proto_rawDescGZIP(), []int{2, 0}
 }
 
+// Streaming mode for a Gateway.
+// This enum is frozen. No values are expected to be added in the future.
+type Gateway_StreamingMode int32
+
+const (
+	// Lets the service select the streaming mode.
+	Gateway_STREAMING_MODE_UNSPECIFIED Gateway_StreamingMode = 0
+	// Enables streaming. The gateway supports Server-Sent Events (SSE), HTTP/2
+	// streaming, HTTP chunked transfer, WebSockets, and gRPC bidirectional
+	// streaming.
+	Gateway_STREAMING_MODE_ENABLED Gateway_StreamingMode = 1
+)
+
+// Enum value maps for Gateway_StreamingMode.
+var (
+	Gateway_StreamingMode_name = map[int32]string{
+		0: "STREAMING_MODE_UNSPECIFIED",
+		1: "STREAMING_MODE_ENABLED",
+	}
+	Gateway_StreamingMode_value = map[string]int32{
+		"STREAMING_MODE_UNSPECIFIED": 0,
+		"STREAMING_MODE_ENABLED":     1,
+	}
+)
+
+func (x Gateway_StreamingMode) Enum() *Gateway_StreamingMode {
+	p := new(Gateway_StreamingMode)
+	*p = x
+	return p
+}
+
+func (x Gateway_StreamingMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Gateway_StreamingMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[3].Descriptor()
+}
+
+func (Gateway_StreamingMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[3]
+}
+
+func (x Gateway_StreamingMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Gateway_StreamingMode.Descriptor instead.
+func (Gateway_StreamingMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_apigateway_v1_apigateway_proto_rawDescGZIP(), []int{2, 1}
+}
+
+// The streaming mode a Gateway is served with.
+// This enum is frozen. No values are expected to be added in the future.
+type Gateway_EffectiveStreamingMode int32
+
+const (
+	// Indicates that the service has not resolved a mode. Every gateway
+	// returned by `GetGateway` and `ListGateways` carries a resolved mode, so
+	// this value should not be returned under normal circumstances.
+	Gateway_EFFECTIVE_STREAMING_MODE_UNSPECIFIED Gateway_EffectiveStreamingMode = 0
+	// Indicates that the gateway does not support streaming.
+	Gateway_EFFECTIVE_STREAMING_MODE_DISABLED Gateway_EffectiveStreamingMode = 1
+	// Indicates that the gateway supports streaming.
+	Gateway_EFFECTIVE_STREAMING_MODE_ENABLED Gateway_EffectiveStreamingMode = 2
+)
+
+// Enum value maps for Gateway_EffectiveStreamingMode.
+var (
+	Gateway_EffectiveStreamingMode_name = map[int32]string{
+		0: "EFFECTIVE_STREAMING_MODE_UNSPECIFIED",
+		1: "EFFECTIVE_STREAMING_MODE_DISABLED",
+		2: "EFFECTIVE_STREAMING_MODE_ENABLED",
+	}
+	Gateway_EffectiveStreamingMode_value = map[string]int32{
+		"EFFECTIVE_STREAMING_MODE_UNSPECIFIED": 0,
+		"EFFECTIVE_STREAMING_MODE_DISABLED":    1,
+		"EFFECTIVE_STREAMING_MODE_ENABLED":     2,
+	}
+)
+
+func (x Gateway_EffectiveStreamingMode) Enum() *Gateway_EffectiveStreamingMode {
+	p := new(Gateway_EffectiveStreamingMode)
+	*p = x
+	return p
+}
+
+func (x Gateway_EffectiveStreamingMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Gateway_EffectiveStreamingMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[4].Descriptor()
+}
+
+func (Gateway_EffectiveStreamingMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[4]
+}
+
+func (x Gateway_EffectiveStreamingMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Gateway_EffectiveStreamingMode.Descriptor instead.
+func (Gateway_EffectiveStreamingMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_apigateway_v1_apigateway_proto_rawDescGZIP(), []int{2, 2}
+}
+
 // Enum to control which fields should be included in the response.
 type GetApiConfigRequest_ConfigView int32
 
@@ -275,11 +383,11 @@ func (x GetApiConfigRequest_ConfigView) String() string {
 }
 
 func (GetApiConfigRequest_ConfigView) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[3].Descriptor()
+	return file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[5].Descriptor()
 }
 
 func (GetApiConfigRequest_ConfigView) Type() protoreflect.EnumType {
-	return &file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[3]
+	return &file_google_cloud_apigateway_v1_apigateway_proto_enumTypes[5]
 }
 
 func (x GetApiConfigRequest_ConfigView) Number() protoreflect.EnumNumber {
@@ -414,8 +522,8 @@ type ApiConfig struct {
 	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
 	// Optional. Display name.
 	DisplayName string `protobuf:"bytes,5,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
-	// Immutable. The Google Cloud IAM Service Account that Gateways serving this config
-	// should use to authenticate to other services. This may either be the
+	// Immutable. The Google Cloud IAM Service Account that Gateways serving this
+	// config should use to authenticate to other services. This may either be the
 	// Service Account's email
 	// (`{ACCOUNT_ID}@{PROJECT}.iam.gserviceaccount.com`) or its full resource
 	// name (`projects/{PROJECT}/accounts/{UNIQUE_ID}`). This is most often used
@@ -430,11 +538,11 @@ type ApiConfig struct {
 	// Optional. OpenAPI specification documents. If specified, grpc_services and
 	// managed_service_configs must not be included.
 	OpenapiDocuments []*ApiConfig_OpenApiDocument `protobuf:"bytes,9,rep,name=openapi_documents,json=openapiDocuments,proto3" json:"openapi_documents,omitempty"`
-	// Optional. gRPC service definition files. If specified, openapi_documents must
-	// not be included.
+	// Optional. gRPC service definition files. If specified, openapi_documents
+	// must not be included.
 	GrpcServices []*ApiConfig_GrpcServiceDefinition `protobuf:"bytes,10,rep,name=grpc_services,json=grpcServices,proto3" json:"grpc_services,omitempty"`
-	// Optional. Service Configuration files. At least one must be included when using gRPC
-	// service definitions. See
+	// Optional. Service Configuration files. At least one must be included when
+	// using gRPC service definitions. See
 	// https://cloud.google.com/endpoints/docs/grpc/grpc-service-config#service_configuration_overview
 	// for the expected file contents.
 	//
@@ -580,11 +688,21 @@ type Gateway struct {
 	ApiConfig string `protobuf:"bytes,6,opt,name=api_config,json=apiConfig,proto3" json:"api_config,omitempty"`
 	// Output only. The current state of the Gateway.
 	State Gateway_State `protobuf:"varint,7,opt,name=state,proto3,enum=google.cloud.apigateway.v1.Gateway_State" json:"state,omitempty"`
-	// Output only. The default API Gateway host name of the form
-	// `{gateway_id}-{hash}.{region_code}.gateway.dev`.
+	// Output only. The default hostname that serves traffic for this Gateway.
 	DefaultHostname string `protobuf:"bytes,9,opt,name=default_hostname,json=defaultHostname,proto3" json:"default_hostname,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Immutable. Requests streaming for a new gateway. An attempt to
+	// change it on update is rejected. If unset, the service selects the mode.
+	// This field records only what was requested and is never modified by the
+	// service; read `effective_streaming_mode` for the mode the gateway is served
+	// with.
+	StreamingMode Gateway_StreamingMode `protobuf:"varint,11,opt,name=streaming_mode,json=streamingMode,proto3,enum=google.cloud.apigateway.v1.Gateway_StreamingMode" json:"streaming_mode,omitempty"`
+	// Output only. The streaming mode this gateway is actually served with, which
+	// the service resolves at creation from `streaming_mode`, the referenced API
+	// Config, and the platform default at the time. Read this rather than
+	// `streaming_mode` to determine whether a gateway supports streaming.
+	EffectiveStreamingMode Gateway_EffectiveStreamingMode `protobuf:"varint,12,opt,name=effective_streaming_mode,json=effectiveStreamingMode,proto3,enum=google.cloud.apigateway.v1.Gateway_EffectiveStreamingMode" json:"effective_streaming_mode,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *Gateway) Reset() {
@@ -671,6 +789,20 @@ func (x *Gateway) GetDefaultHostname() string {
 		return x.DefaultHostname
 	}
 	return ""
+}
+
+func (x *Gateway) GetStreamingMode() Gateway_StreamingMode {
+	if x != nil {
+		return x.StreamingMode
+	}
+	return Gateway_STREAMING_MODE_UNSPECIFIED
+}
+
+func (x *Gateway) GetEffectiveStreamingMode() Gateway_EffectiveStreamingMode {
+	if x != nil {
+		return x.EffectiveStreamingMode
+	}
+	return Gateway_EFFECTIVE_STREAMING_MODE_UNSPECIFIED
 }
 
 // Request message for ApiGatewayService.ListGateways
@@ -873,8 +1005,8 @@ type CreateGatewayRequest struct {
 	// Required. Parent resource of the Gateway, of the form:
 	// `projects/*/locations/*`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Identifier to assign to the Gateway. Must be unique within scope of
-	// the parent resource.
+	// Required. Identifier to assign to the Gateway. Must be unique within scope
+	// of the parent resource.
 	GatewayId string `protobuf:"bytes,2,opt,name=gateway_id,json=gatewayId,proto3" json:"gateway_id,omitempty"`
 	// Required. Gateway resource.
 	Gateway       *Gateway `protobuf:"bytes,3,opt,name=gateway,proto3" json:"gateway,omitempty"`
@@ -1615,8 +1747,8 @@ type CreateApiConfigRequest struct {
 	// Required. Parent resource of the API Config, of the form:
 	// `projects/*/locations/global/apis/*`
 	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
-	// Required. Identifier to assign to the API Config. Must be unique within scope of
-	// the parent resource.
+	// Required. Identifier to assign to the API Config. Must be unique within
+	// scope of the parent resource.
 	ApiConfigId string `protobuf:"bytes,2,opt,name=api_config_id,json=apiConfigId,proto3" json:"api_config_id,omitempty"`
 	// Required. API resource.
 	ApiConfig     *ApiConfig `protobuf:"bytes,3,opt,name=api_config,json=apiConfig,proto3" json:"api_config,omitempty"`
@@ -1796,12 +1928,15 @@ type OperationMetadata struct {
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
+	// have
+	// [google.longrunning.Operation.error][google.longrunning.Operation.error]
+	// value with a [google.rpc.Status.code][google.rpc.Status.code] of 1,
 	// corresponding to `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
 	// Output only. API version used to start the operation.
 	ApiVersion string `protobuf:"bytes,7,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
-	// Output only. Diagnostics generated during processing of configuration source files.
+	// Output only. Diagnostics generated during processing of configuration
+	// source files.
 	Diagnostics   []*OperationMetadata_Diagnostic `protobuf:"bytes,8,rep,name=diagnostics,proto3" json:"diagnostics,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2006,8 +2141,8 @@ type ApiConfig_GrpcServiceDefinition struct {
 	//
 	// $ protoc --include_imports --include_source_info test.proto -o out.pb
 	FileDescriptorSet *ApiConfig_File `protobuf:"bytes,1,opt,name=file_descriptor_set,json=fileDescriptorSet,proto3" json:"file_descriptor_set,omitempty"`
-	// Optional. Uncompiled proto files associated with the descriptor set, used for
-	// display purposes (server-side compilation is not supported). These
+	// Optional. Uncompiled proto files associated with the descriptor set, used
+	// for display purposes (server-side compilation is not supported). These
 	// should match the inputs to 'protoc' command used to generate
 	// file_descriptor_set.
 	Source        []*ApiConfig_File `protobuf:"bytes,2,rep,name=source,proto3" json:"source,omitempty"`
@@ -2182,7 +2317,7 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\bUPDATING\x10\x05\x12\x0e\n" +
 	"\n" +
 	"ACTIVATING\x10\x06:m\xeaAj\n" +
-	"#apigateway.googleapis.com/ApiConfig\x12Cprojects/{project}/locations/global/apis/{api}/configs/{api_config}\"\xdf\x05\n" +
+	"#apigateway.googleapis.com/ApiConfig\x12Cprojects/{project}/locations/global/apis/{api}/configs/{api_config}\"\x9b\t\n" +
 	"\aGateway\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -2195,7 +2330,9 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"api_config\x18\x06 \x01(\tB+\xe0A\x02\xfaA%\n" +
 	"#apigateway.googleapis.com/ApiConfigR\tapiConfig\x12D\n" +
 	"\x05state\x18\a \x01(\x0e2).google.cloud.apigateway.v1.Gateway.StateB\x03\xe0A\x03R\x05state\x12.\n" +
-	"\x10default_hostname\x18\t \x01(\tB\x03\xe0A\x03R\x0fdefaultHostname\x1a9\n" +
+	"\x10default_hostname\x18\t \x01(\tB\x03\xe0A\x03R\x0fdefaultHostname\x12`\n" +
+	"\x0estreaming_mode\x18\v \x01(\x0e21.google.cloud.apigateway.v1.Gateway.StreamingModeB\x06\xe0A\x05\xe0A\x01R\rstreamingMode\x12y\n" +
+	"\x18effective_streaming_mode\x18\f \x01(\x0e2:.google.cloud.apigateway.v1.Gateway.EffectiveStreamingModeB\x03\xe0A\x03R\x16effectiveStreamingMode\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"`\n" +
@@ -2207,7 +2344,14 @@ const file_google_cloud_apigateway_v1_apigateway_proto_rawDesc = "" +
 	"\n" +
 	"\x06FAILED\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\f\n" +
-	"\bUPDATING\x10\x05:b\xeaA_\n" +
+	"\bUPDATING\x10\x05\"K\n" +
+	"\rStreamingMode\x12\x1e\n" +
+	"\x1aSTREAMING_MODE_UNSPECIFIED\x10\x00\x12\x1a\n" +
+	"\x16STREAMING_MODE_ENABLED\x10\x01\"\x8f\x01\n" +
+	"\x16EffectiveStreamingMode\x12(\n" +
+	"$EFFECTIVE_STREAMING_MODE_UNSPECIFIED\x10\x00\x12%\n" +
+	"!EFFECTIVE_STREAMING_MODE_DISABLED\x10\x01\x12$\n" +
+	" EFFECTIVE_STREAMING_MODE_ENABLED\x10\x02:b\xeaA_\n" +
 	"!apigateway.googleapis.com/Gateway\x12:projects/{project}/locations/{location}/gateways/{gateway}\"\xc7\x01\n" +
 	"\x13ListGatewaysRequest\x12A\n" +
 	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
@@ -2332,85 +2476,89 @@ func file_google_cloud_apigateway_v1_apigateway_proto_rawDescGZIP() []byte {
 	return file_google_cloud_apigateway_v1_apigateway_proto_rawDescData
 }
 
-var file_google_cloud_apigateway_v1_apigateway_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
+var file_google_cloud_apigateway_v1_apigateway_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
 var file_google_cloud_apigateway_v1_apigateway_proto_msgTypes = make([]protoimpl.MessageInfo, 29)
 var file_google_cloud_apigateway_v1_apigateway_proto_goTypes = []any{
 	(Api_State)(0),                          // 0: google.cloud.apigateway.v1.Api.State
 	(ApiConfig_State)(0),                    // 1: google.cloud.apigateway.v1.ApiConfig.State
 	(Gateway_State)(0),                      // 2: google.cloud.apigateway.v1.Gateway.State
-	(GetApiConfigRequest_ConfigView)(0),     // 3: google.cloud.apigateway.v1.GetApiConfigRequest.ConfigView
-	(*Api)(nil),                             // 4: google.cloud.apigateway.v1.Api
-	(*ApiConfig)(nil),                       // 5: google.cloud.apigateway.v1.ApiConfig
-	(*Gateway)(nil),                         // 6: google.cloud.apigateway.v1.Gateway
-	(*ListGatewaysRequest)(nil),             // 7: google.cloud.apigateway.v1.ListGatewaysRequest
-	(*ListGatewaysResponse)(nil),            // 8: google.cloud.apigateway.v1.ListGatewaysResponse
-	(*GetGatewayRequest)(nil),               // 9: google.cloud.apigateway.v1.GetGatewayRequest
-	(*CreateGatewayRequest)(nil),            // 10: google.cloud.apigateway.v1.CreateGatewayRequest
-	(*UpdateGatewayRequest)(nil),            // 11: google.cloud.apigateway.v1.UpdateGatewayRequest
-	(*DeleteGatewayRequest)(nil),            // 12: google.cloud.apigateway.v1.DeleteGatewayRequest
-	(*ListApisRequest)(nil),                 // 13: google.cloud.apigateway.v1.ListApisRequest
-	(*ListApisResponse)(nil),                // 14: google.cloud.apigateway.v1.ListApisResponse
-	(*GetApiRequest)(nil),                   // 15: google.cloud.apigateway.v1.GetApiRequest
-	(*CreateApiRequest)(nil),                // 16: google.cloud.apigateway.v1.CreateApiRequest
-	(*UpdateApiRequest)(nil),                // 17: google.cloud.apigateway.v1.UpdateApiRequest
-	(*DeleteApiRequest)(nil),                // 18: google.cloud.apigateway.v1.DeleteApiRequest
-	(*ListApiConfigsRequest)(nil),           // 19: google.cloud.apigateway.v1.ListApiConfigsRequest
-	(*ListApiConfigsResponse)(nil),          // 20: google.cloud.apigateway.v1.ListApiConfigsResponse
-	(*GetApiConfigRequest)(nil),             // 21: google.cloud.apigateway.v1.GetApiConfigRequest
-	(*CreateApiConfigRequest)(nil),          // 22: google.cloud.apigateway.v1.CreateApiConfigRequest
-	(*UpdateApiConfigRequest)(nil),          // 23: google.cloud.apigateway.v1.UpdateApiConfigRequest
-	(*DeleteApiConfigRequest)(nil),          // 24: google.cloud.apigateway.v1.DeleteApiConfigRequest
-	(*OperationMetadata)(nil),               // 25: google.cloud.apigateway.v1.OperationMetadata
-	nil,                                     // 26: google.cloud.apigateway.v1.Api.LabelsEntry
-	(*ApiConfig_File)(nil),                  // 27: google.cloud.apigateway.v1.ApiConfig.File
-	(*ApiConfig_OpenApiDocument)(nil),       // 28: google.cloud.apigateway.v1.ApiConfig.OpenApiDocument
-	(*ApiConfig_GrpcServiceDefinition)(nil), // 29: google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition
-	nil,                                     // 30: google.cloud.apigateway.v1.ApiConfig.LabelsEntry
-	nil,                                     // 31: google.cloud.apigateway.v1.Gateway.LabelsEntry
-	(*OperationMetadata_Diagnostic)(nil),    // 32: google.cloud.apigateway.v1.OperationMetadata.Diagnostic
-	(*timestamppb.Timestamp)(nil),           // 33: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),           // 34: google.protobuf.FieldMask
+	(Gateway_StreamingMode)(0),              // 3: google.cloud.apigateway.v1.Gateway.StreamingMode
+	(Gateway_EffectiveStreamingMode)(0),     // 4: google.cloud.apigateway.v1.Gateway.EffectiveStreamingMode
+	(GetApiConfigRequest_ConfigView)(0),     // 5: google.cloud.apigateway.v1.GetApiConfigRequest.ConfigView
+	(*Api)(nil),                             // 6: google.cloud.apigateway.v1.Api
+	(*ApiConfig)(nil),                       // 7: google.cloud.apigateway.v1.ApiConfig
+	(*Gateway)(nil),                         // 8: google.cloud.apigateway.v1.Gateway
+	(*ListGatewaysRequest)(nil),             // 9: google.cloud.apigateway.v1.ListGatewaysRequest
+	(*ListGatewaysResponse)(nil),            // 10: google.cloud.apigateway.v1.ListGatewaysResponse
+	(*GetGatewayRequest)(nil),               // 11: google.cloud.apigateway.v1.GetGatewayRequest
+	(*CreateGatewayRequest)(nil),            // 12: google.cloud.apigateway.v1.CreateGatewayRequest
+	(*UpdateGatewayRequest)(nil),            // 13: google.cloud.apigateway.v1.UpdateGatewayRequest
+	(*DeleteGatewayRequest)(nil),            // 14: google.cloud.apigateway.v1.DeleteGatewayRequest
+	(*ListApisRequest)(nil),                 // 15: google.cloud.apigateway.v1.ListApisRequest
+	(*ListApisResponse)(nil),                // 16: google.cloud.apigateway.v1.ListApisResponse
+	(*GetApiRequest)(nil),                   // 17: google.cloud.apigateway.v1.GetApiRequest
+	(*CreateApiRequest)(nil),                // 18: google.cloud.apigateway.v1.CreateApiRequest
+	(*UpdateApiRequest)(nil),                // 19: google.cloud.apigateway.v1.UpdateApiRequest
+	(*DeleteApiRequest)(nil),                // 20: google.cloud.apigateway.v1.DeleteApiRequest
+	(*ListApiConfigsRequest)(nil),           // 21: google.cloud.apigateway.v1.ListApiConfigsRequest
+	(*ListApiConfigsResponse)(nil),          // 22: google.cloud.apigateway.v1.ListApiConfigsResponse
+	(*GetApiConfigRequest)(nil),             // 23: google.cloud.apigateway.v1.GetApiConfigRequest
+	(*CreateApiConfigRequest)(nil),          // 24: google.cloud.apigateway.v1.CreateApiConfigRequest
+	(*UpdateApiConfigRequest)(nil),          // 25: google.cloud.apigateway.v1.UpdateApiConfigRequest
+	(*DeleteApiConfigRequest)(nil),          // 26: google.cloud.apigateway.v1.DeleteApiConfigRequest
+	(*OperationMetadata)(nil),               // 27: google.cloud.apigateway.v1.OperationMetadata
+	nil,                                     // 28: google.cloud.apigateway.v1.Api.LabelsEntry
+	(*ApiConfig_File)(nil),                  // 29: google.cloud.apigateway.v1.ApiConfig.File
+	(*ApiConfig_OpenApiDocument)(nil),       // 30: google.cloud.apigateway.v1.ApiConfig.OpenApiDocument
+	(*ApiConfig_GrpcServiceDefinition)(nil), // 31: google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition
+	nil,                                     // 32: google.cloud.apigateway.v1.ApiConfig.LabelsEntry
+	nil,                                     // 33: google.cloud.apigateway.v1.Gateway.LabelsEntry
+	(*OperationMetadata_Diagnostic)(nil),    // 34: google.cloud.apigateway.v1.OperationMetadata.Diagnostic
+	(*timestamppb.Timestamp)(nil),           // 35: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),           // 36: google.protobuf.FieldMask
 }
 var file_google_cloud_apigateway_v1_apigateway_proto_depIdxs = []int32{
-	33, // 0: google.cloud.apigateway.v1.Api.create_time:type_name -> google.protobuf.Timestamp
-	33, // 1: google.cloud.apigateway.v1.Api.update_time:type_name -> google.protobuf.Timestamp
-	26, // 2: google.cloud.apigateway.v1.Api.labels:type_name -> google.cloud.apigateway.v1.Api.LabelsEntry
+	35, // 0: google.cloud.apigateway.v1.Api.create_time:type_name -> google.protobuf.Timestamp
+	35, // 1: google.cloud.apigateway.v1.Api.update_time:type_name -> google.protobuf.Timestamp
+	28, // 2: google.cloud.apigateway.v1.Api.labels:type_name -> google.cloud.apigateway.v1.Api.LabelsEntry
 	0,  // 3: google.cloud.apigateway.v1.Api.state:type_name -> google.cloud.apigateway.v1.Api.State
-	33, // 4: google.cloud.apigateway.v1.ApiConfig.create_time:type_name -> google.protobuf.Timestamp
-	33, // 5: google.cloud.apigateway.v1.ApiConfig.update_time:type_name -> google.protobuf.Timestamp
-	30, // 6: google.cloud.apigateway.v1.ApiConfig.labels:type_name -> google.cloud.apigateway.v1.ApiConfig.LabelsEntry
+	35, // 4: google.cloud.apigateway.v1.ApiConfig.create_time:type_name -> google.protobuf.Timestamp
+	35, // 5: google.cloud.apigateway.v1.ApiConfig.update_time:type_name -> google.protobuf.Timestamp
+	32, // 6: google.cloud.apigateway.v1.ApiConfig.labels:type_name -> google.cloud.apigateway.v1.ApiConfig.LabelsEntry
 	1,  // 7: google.cloud.apigateway.v1.ApiConfig.state:type_name -> google.cloud.apigateway.v1.ApiConfig.State
-	28, // 8: google.cloud.apigateway.v1.ApiConfig.openapi_documents:type_name -> google.cloud.apigateway.v1.ApiConfig.OpenApiDocument
-	29, // 9: google.cloud.apigateway.v1.ApiConfig.grpc_services:type_name -> google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition
-	27, // 10: google.cloud.apigateway.v1.ApiConfig.managed_service_configs:type_name -> google.cloud.apigateway.v1.ApiConfig.File
-	33, // 11: google.cloud.apigateway.v1.Gateway.create_time:type_name -> google.protobuf.Timestamp
-	33, // 12: google.cloud.apigateway.v1.Gateway.update_time:type_name -> google.protobuf.Timestamp
-	31, // 13: google.cloud.apigateway.v1.Gateway.labels:type_name -> google.cloud.apigateway.v1.Gateway.LabelsEntry
+	30, // 8: google.cloud.apigateway.v1.ApiConfig.openapi_documents:type_name -> google.cloud.apigateway.v1.ApiConfig.OpenApiDocument
+	31, // 9: google.cloud.apigateway.v1.ApiConfig.grpc_services:type_name -> google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition
+	29, // 10: google.cloud.apigateway.v1.ApiConfig.managed_service_configs:type_name -> google.cloud.apigateway.v1.ApiConfig.File
+	35, // 11: google.cloud.apigateway.v1.Gateway.create_time:type_name -> google.protobuf.Timestamp
+	35, // 12: google.cloud.apigateway.v1.Gateway.update_time:type_name -> google.protobuf.Timestamp
+	33, // 13: google.cloud.apigateway.v1.Gateway.labels:type_name -> google.cloud.apigateway.v1.Gateway.LabelsEntry
 	2,  // 14: google.cloud.apigateway.v1.Gateway.state:type_name -> google.cloud.apigateway.v1.Gateway.State
-	6,  // 15: google.cloud.apigateway.v1.ListGatewaysResponse.gateways:type_name -> google.cloud.apigateway.v1.Gateway
-	6,  // 16: google.cloud.apigateway.v1.CreateGatewayRequest.gateway:type_name -> google.cloud.apigateway.v1.Gateway
-	34, // 17: google.cloud.apigateway.v1.UpdateGatewayRequest.update_mask:type_name -> google.protobuf.FieldMask
-	6,  // 18: google.cloud.apigateway.v1.UpdateGatewayRequest.gateway:type_name -> google.cloud.apigateway.v1.Gateway
-	4,  // 19: google.cloud.apigateway.v1.ListApisResponse.apis:type_name -> google.cloud.apigateway.v1.Api
-	4,  // 20: google.cloud.apigateway.v1.CreateApiRequest.api:type_name -> google.cloud.apigateway.v1.Api
-	34, // 21: google.cloud.apigateway.v1.UpdateApiRequest.update_mask:type_name -> google.protobuf.FieldMask
-	4,  // 22: google.cloud.apigateway.v1.UpdateApiRequest.api:type_name -> google.cloud.apigateway.v1.Api
-	5,  // 23: google.cloud.apigateway.v1.ListApiConfigsResponse.api_configs:type_name -> google.cloud.apigateway.v1.ApiConfig
-	3,  // 24: google.cloud.apigateway.v1.GetApiConfigRequest.view:type_name -> google.cloud.apigateway.v1.GetApiConfigRequest.ConfigView
-	5,  // 25: google.cloud.apigateway.v1.CreateApiConfigRequest.api_config:type_name -> google.cloud.apigateway.v1.ApiConfig
-	34, // 26: google.cloud.apigateway.v1.UpdateApiConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	5,  // 27: google.cloud.apigateway.v1.UpdateApiConfigRequest.api_config:type_name -> google.cloud.apigateway.v1.ApiConfig
-	33, // 28: google.cloud.apigateway.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	33, // 29: google.cloud.apigateway.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	32, // 30: google.cloud.apigateway.v1.OperationMetadata.diagnostics:type_name -> google.cloud.apigateway.v1.OperationMetadata.Diagnostic
-	27, // 31: google.cloud.apigateway.v1.ApiConfig.OpenApiDocument.document:type_name -> google.cloud.apigateway.v1.ApiConfig.File
-	27, // 32: google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition.file_descriptor_set:type_name -> google.cloud.apigateway.v1.ApiConfig.File
-	27, // 33: google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition.source:type_name -> google.cloud.apigateway.v1.ApiConfig.File
-	34, // [34:34] is the sub-list for method output_type
-	34, // [34:34] is the sub-list for method input_type
-	34, // [34:34] is the sub-list for extension type_name
-	34, // [34:34] is the sub-list for extension extendee
-	0,  // [0:34] is the sub-list for field type_name
+	3,  // 15: google.cloud.apigateway.v1.Gateway.streaming_mode:type_name -> google.cloud.apigateway.v1.Gateway.StreamingMode
+	4,  // 16: google.cloud.apigateway.v1.Gateway.effective_streaming_mode:type_name -> google.cloud.apigateway.v1.Gateway.EffectiveStreamingMode
+	8,  // 17: google.cloud.apigateway.v1.ListGatewaysResponse.gateways:type_name -> google.cloud.apigateway.v1.Gateway
+	8,  // 18: google.cloud.apigateway.v1.CreateGatewayRequest.gateway:type_name -> google.cloud.apigateway.v1.Gateway
+	36, // 19: google.cloud.apigateway.v1.UpdateGatewayRequest.update_mask:type_name -> google.protobuf.FieldMask
+	8,  // 20: google.cloud.apigateway.v1.UpdateGatewayRequest.gateway:type_name -> google.cloud.apigateway.v1.Gateway
+	6,  // 21: google.cloud.apigateway.v1.ListApisResponse.apis:type_name -> google.cloud.apigateway.v1.Api
+	6,  // 22: google.cloud.apigateway.v1.CreateApiRequest.api:type_name -> google.cloud.apigateway.v1.Api
+	36, // 23: google.cloud.apigateway.v1.UpdateApiRequest.update_mask:type_name -> google.protobuf.FieldMask
+	6,  // 24: google.cloud.apigateway.v1.UpdateApiRequest.api:type_name -> google.cloud.apigateway.v1.Api
+	7,  // 25: google.cloud.apigateway.v1.ListApiConfigsResponse.api_configs:type_name -> google.cloud.apigateway.v1.ApiConfig
+	5,  // 26: google.cloud.apigateway.v1.GetApiConfigRequest.view:type_name -> google.cloud.apigateway.v1.GetApiConfigRequest.ConfigView
+	7,  // 27: google.cloud.apigateway.v1.CreateApiConfigRequest.api_config:type_name -> google.cloud.apigateway.v1.ApiConfig
+	36, // 28: google.cloud.apigateway.v1.UpdateApiConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	7,  // 29: google.cloud.apigateway.v1.UpdateApiConfigRequest.api_config:type_name -> google.cloud.apigateway.v1.ApiConfig
+	35, // 30: google.cloud.apigateway.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	35, // 31: google.cloud.apigateway.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	34, // 32: google.cloud.apigateway.v1.OperationMetadata.diagnostics:type_name -> google.cloud.apigateway.v1.OperationMetadata.Diagnostic
+	29, // 33: google.cloud.apigateway.v1.ApiConfig.OpenApiDocument.document:type_name -> google.cloud.apigateway.v1.ApiConfig.File
+	29, // 34: google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition.file_descriptor_set:type_name -> google.cloud.apigateway.v1.ApiConfig.File
+	29, // 35: google.cloud.apigateway.v1.ApiConfig.GrpcServiceDefinition.source:type_name -> google.cloud.apigateway.v1.ApiConfig.File
+	36, // [36:36] is the sub-list for method output_type
+	36, // [36:36] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_apigateway_v1_apigateway_proto_init() }
@@ -2423,7 +2571,7 @@ func file_google_cloud_apigateway_v1_apigateway_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_apigateway_v1_apigateway_proto_rawDesc), len(file_google_cloud_apigateway_v1_apigateway_proto_rawDesc)),
-			NumEnums:      4,
+			NumEnums:      6,
 			NumMessages:   29,
 			NumExtensions: 0,
 			NumServices:   0,
