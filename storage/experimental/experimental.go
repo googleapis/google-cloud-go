@@ -82,6 +82,32 @@ type ReadStallTimeoutConfig struct {
 	TargetPercentile float64
 }
 
+// WithGRPCBidiReads provides an [option.ClientOption] that may be passed to
+// [cloud.google.com/go/storage.NewGRPCClient].
+// It enables the client to use bi-directional gRPC APIs for downloads rather than the
+// server streaming API. In particular, it allows users to use the
+// [cloud.google.com/go/storage.MultiRangeDownloader]
+// surface, which requires bi-directional streaming.
+//
+// The bi-directional API is in private preview; please contact your account manager if
+// interested.
+func WithGRPCBidiReads() option.ClientOption {
+	return internal.WithGRPCBidiReads.(func() option.ClientOption)()
+}
+
+// WithZonalBucketAPIs provides an [option.ClientOption] that may be passed to
+// [cloud.google.com/go/storage.NewGRPCClient].
+// It enables the client to use bi-directional gRPC APIs for downloads rather than the
+// server streaming API (same as [WithGRPCBidiReads]) as well as appendable
+// object semantics for uploads. By setting this option, both upload and download
+// paths will use zonal bucket compatible APIs by default.
+//
+// Zonal buckets and rapid storage is in private preview; please contact your
+// account manager if interested.
+func WithZonalBucketAPIs() option.ClientOption {
+	return internal.WithZonalBucketAPIs.(func() option.ClientOption)()
+}
+
 // WithDirectConnectivityEnforced provides an [option.ClientOption] that may be passed to
 // [cloud.google.com/go/storage.NewGRPCClient].
 // It sets the gRPC client to use direct path connectivity for all requests and may fail
@@ -102,22 +128,4 @@ func WithOtelMetrics() option.ClientOption {
 // It enables debug client-side OpenTelemetry metrics.
 func WithOtelDebugMetrics() option.ClientOption {
 	return internal.WithOtelDebugMetrics.(func() option.ClientOption)()
-}
-
-// WithParallelUploadsGlobalMemoryLimit provides an [option.ClientOption] that may
-// be passed to [cloud.google.com/go/storage.NewGRPCClient].
-// It sets the global memory limit in bytes shared across parallel uploads.
-//
-// This option is not supported at the moment.
-func WithParallelUploadsGlobalMemoryLimit(limit int64) option.ClientOption {
-	return internal.WithParallelUploadsGlobalMemoryLimit.(func(int64) option.ClientOption)(limit)
-}
-
-// WithBufferPool provides an [option.ClientOption] that may be passed to
-// [cloud.google.com/go/storage.NewGRPCClient].
-// It sets the buffer pool used to allocate memory for parallel uploads.
-//
-// This option is not supported at the moment.
-func WithBufferPool(pool BufferPool) option.ClientOption {
-	return internal.WithBufferPool.(func(BufferPool) option.ClientOption)(pool)
 }
