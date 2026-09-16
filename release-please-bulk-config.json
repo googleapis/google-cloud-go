@@ -348,6 +348,11 @@
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv1/snippet_metadata.google.cloud.backupdr.v1.json",
           "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta/snippet_metadata.google.cloud.backupdr.v1beta.json",
+          "type": "json"
         }
       ]
     },

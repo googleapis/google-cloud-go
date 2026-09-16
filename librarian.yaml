@@ -228,6 +228,7 @@ libraries:
     version: 1.16.0
     apis:
       - path: google/cloud/backupdr/v1
+      - path: google/cloud/backupdr/v1beta
   - name: baremetalsolution
     version: 1.10.0
     apis:
