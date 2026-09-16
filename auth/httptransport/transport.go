@@ -533,6 +533,19 @@ func (t *authTransport) RoundTrip(req *http.Request) (*http.Response, error) {
 			}
 		}()
 	}
+
+	// Prevent bearer token leakage on cross-host redirects. Go's http.Client
+	// strips the Authorization header before calling the RoundTripper for a
+	// redirect to a different host, but this transport would unconditionally
+	// re-inject it. If req.Response is set, this call is a redirect; skip
+	// auth injection when the destination host differs from the previous hop.
+	if prev := req.Response; prev != nil && prev.Request != nil {
+		if !strings.EqualFold(prev.Request.URL.Host, req.URL.Host) {
+			reqBodyClosed = true
+			return t.base.RoundTrip(req)
+		}
+	}
+
 	token, err := t.creds.Token(req.Context())
 	if err != nil {
 		return nil, err
