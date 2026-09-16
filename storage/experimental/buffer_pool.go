@@ -18,8 +18,12 @@ package experimental
 type BufferPool interface {
 	// Get retrieves a single chunk of memory. It returns a slice that is
 	// optimally sized by the pool, guaranteeing that len(buf) <= maxSize.
-	// It returns an error if the underlying allocation fails.
+	// It blocks/waits if the pool's memory budget is currently exhausted.
 	Get(maxSize int) ([]byte, error)
+
+	// TryGet retrieves a chunk of memory up to maxSize bytes.
+	// It is non-blocking and returns an error if memory is unavailable.
+	TryGet(maxSize int) ([]byte, error)
 
 	// Put returns a previously acquired buffer to the pool.
 	Put(buf []byte)
