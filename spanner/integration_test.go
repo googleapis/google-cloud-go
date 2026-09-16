@@ -2169,19 +2169,25 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 		t.Fatalf("failed to drop testing database %v: %v", dbPath, err)
 	}
 
-	// Now, send the query.
-	iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
-	defer iter.Stop()
-	_, err := iter.Next()
-	if err == nil || err == iterator.Done {
-		t.Errorf("client sends query to removed database successfully, want it to fail")
-	} else {
-		t.Logf("Query after drop returned error: %v", err)
-		if got := ErrCode(err); got != codes.NotFound {
-			t.Errorf("query to removed database returned error code %v, want %v (err: %v)", got, codes.NotFound, err)
+	// Wait until the drop takes effect and queries fail with Database not found.
+	for {
+		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+		_, err := iter.Next()
+		iter.Stop()
+		if err != nil && err != iterator.Done {
+			t.Logf("Query after drop returned error: %v", err)
+			if got := ErrCode(err); got != codes.NotFound {
+				t.Errorf("query to removed database returned error code %v, want %v (err: %v)", got, codes.NotFound, err)
+			}
+			if !strings.Contains(err.Error(), "Database not found") {
+				t.Errorf("expected error to indicate 'Database not found', got: %v", err)
+			}
+			break
 		}
-		if !strings.Contains(err.Error(), "Database not found") {
-			t.Errorf("expected error to indicate 'Database not found', got: %v", err)
+		select {
+		case <-ctx.Done():
+			t.Fatalf("timeout waiting for database drop to take effect: %v", ctx.Err())
+		case <-time.After(time.Second):
 		}
 	}
 	verifyDirectPathRemoteAddress(t)
@@ -2211,6 +2217,9 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	if _, err := op.Wait(ctx); err != nil {
 		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
 	}
+	defer func() {
+		_ = databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath})
+	}()
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
 			Database: dbPath,
@@ -2257,7 +2266,7 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 		}
 		select {
 		case <-ctx.Done():
-			t.Fatalf("timeout waiting for recreated database to be reachable: %v", ctx.Err())
+			t.Fatalf("context expired while verifying that original client remains invalid: %v", ctx.Err())
 		case <-time.After(time.Second):
 		}
 	}
@@ -2269,11 +2278,20 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	}
 	defer newClient.Close()
 
-	iter = newClient.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
-	_, err = iter.Next()
-	iter.Stop()
-	if err != nil && err != iterator.Done {
-		t.Fatalf("newly created client failed to query the recreated database: %v", err)
+	// Retry sending the query on the new client until any negative location
+	// caches expire and the recreated database is reachable.
+	for {
+		iter := newClient.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+		_, err := iter.Next()
+		iter.Stop()
+		if err == nil || err == iterator.Done {
+			break
+		}
+		select {
+		case <-ctx.Done():
+			t.Fatalf("timeout waiting for recreated database to be reachable on new client: %v (last err: %v)", ctx.Err(), err)
+		case <-time.After(time.Second):
+		}
 	}
 	verifyDirectPathRemoteAddress(t)
 }
