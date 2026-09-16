@@ -2147,7 +2147,7 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	// tracking the failure via b/441255724 for Spanner Omni
 	skipSpannerOmniTest(t)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Minute)
 	defer cancel()
 	// Create a client with MinOpened=0 to prevent the session pool maintainer
 	// from repeatedly trying to create sessions for the invalid database.
@@ -2155,12 +2155,14 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	defer cleanup()
 
 	// Wait for multiplexed session to be established on this database before dropping it.
+	var origSessionID string
 	waitFor(t, func() error {
 		client.sm.mu.Lock()
 		defer client.sm.mu.Unlock()
 		if client.sm.multiplexedSession == nil {
 			return errInvalidSession
 		}
+		origSessionID = client.sm.multiplexedSession.getID()
 		return nil
 	})
 
@@ -2169,25 +2171,47 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 		t.Fatalf("failed to drop testing database %v: %v", dbPath, err)
 	}
 
-	// Wait until the drop takes effect and queries fail with Database not found.
+	// Wait until the database drop takes effect across all gRPC channels and backend endpoints.
+	// When load balancing across multiple channels or DirectPath endpoints, backends may briefly
+	// serve cached metadata after DropDatabase before returning Database not found.
+	dropTime := time.Now()
+	minPostDropPropagation := 60 * time.Second
+	minConsecutiveNotFound := 20
+	pollInterval := 500 * time.Millisecond
+	if isEmulatorEnvSet() {
+		minPostDropPropagation = 0
+		minConsecutiveNotFound = 4
+		pollInterval = 100 * time.Millisecond
+	}
+	consecutiveNotFound := 0
 	for {
 		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
 		_, err := iter.Next()
 		iter.Stop()
 		if err != nil && err != iterator.Done {
-			t.Logf("Query after drop returned error: %v", err)
-			if got := ErrCode(err); got != codes.NotFound {
-				t.Errorf("query to removed database returned error code %v, want %v (err: %v)", got, codes.NotFound, err)
+			if got := ErrCode(err); got == codes.NotFound && strings.Contains(err.Error(), "Database not found") {
+				consecutiveNotFound++
+				if consecutiveNotFound == 1 {
+					t.Logf("First Database not found observed after %v: %v", time.Since(dropTime).Round(time.Millisecond), err)
+				}
+				if consecutiveNotFound >= minConsecutiveNotFound && time.Since(dropTime) >= minPostDropPropagation {
+					t.Logf("DropDatabase propagated across all channels after %v (%d consecutive NotFound errors)", time.Since(dropTime).Round(time.Millisecond), consecutiveNotFound)
+					break
+				}
+			} else {
+				t.Logf("Query after drop returned unexpected error (resetting counter): %v", err)
+				consecutiveNotFound = 0
 			}
-			if !strings.Contains(err.Error(), "Database not found") {
-				t.Errorf("expected error to indicate 'Database not found', got: %v", err)
+		} else {
+			if consecutiveNotFound > 0 {
+				t.Logf("Query after drop succeeded on a channel with stale cache after %d NotFound errors; resetting counter", consecutiveNotFound)
 			}
-			break
+			consecutiveNotFound = 0
 		}
 		select {
 		case <-ctx.Done():
-			t.Fatalf("timeout waiting for database drop to take effect: %v", ctx.Err())
-		case <-time.After(time.Second):
+			t.Fatalf("timeout waiting for database drop to propagate across all channels: %v", ctx.Err())
+		case <-time.After(pollInterval):
 		}
 	}
 	verifyDirectPathRemoteAddress(t)
@@ -2218,7 +2242,9 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
 	}
 	defer func() {
-		_ = databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath})
+		cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cleanupCancel()
+		_ = databaseAdmin.DropDatabase(cleanupCtx, &adminpb.DropDatabaseRequest{Database: dbPath})
 	}()
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
@@ -2244,6 +2270,16 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	// (or Session not found when running against the emulator).
 	deadline := time.Now().Add(30 * time.Second)
 	for attempt := 0; time.Now().Before(deadline); attempt++ {
+		client.sm.mu.Lock()
+		currSessionID := ""
+		if client.sm.multiplexedSession != nil {
+			currSessionID = client.sm.multiplexedSession.getID()
+		}
+		client.sm.mu.Unlock()
+		if currSessionID != origSessionID {
+			t.Fatalf("attempt %d: multiplexed session ID changed from %q to %q", attempt, origSessionID, currSessionID)
+		}
+
 		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
 		_, err := iter.Next()
 		iter.Stop()
