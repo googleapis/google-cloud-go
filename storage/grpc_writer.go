@@ -703,7 +703,10 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		if !ok {
 			return w.streamSender.err()
 		}
-		w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
+		// Clamped for the same reason as in the multi-buffer path below: a
+		// completion handled during the send can leave w.bufBaseOffset ahead
+		// of sentOffset, and the resulting index is used to reslice w.buf.
+		w.bufUnsentIdx = min(max(int(sentOffset-w.bufBaseOffset), 0), len(w.buf))
 		c.markDone()
 		return nil
 	}
@@ -795,10 +798,16 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 			ackOutstanding = false
 		}
 	}
-	toCopyIn := cmdBuf[int(w.bufBaseOffset-offset):]
+	// handleCompletion may have advanced w.bufBaseOffset past everything this
+	// attempt sent: after a reconnect the first completion reports the bytes
+	// QueryWriteStatus found durably written by an earlier, aborted attempt.
+	// Clamp the indices derived from it. A skip beyond cmdBuf means the
+	// service already holds all of it, so there is nothing left to stage.
+	skip := min(max(int(w.bufBaseOffset-offset), 0), len(cmdBuf))
+	toCopyIn := cmdBuf[skip:]
 	w.buf = w.buf[:len(toCopyIn)]
 	copy(w.buf, toCopyIn)
-	w.bufUnsentIdx = int(sentOffset - w.bufBaseOffset)
+	w.bufUnsentIdx = min(max(int(sentOffset-w.bufBaseOffset), 0), len(w.buf))
 	c.markDone()
 	return nil
 }
