@@ -569,6 +569,52 @@
           "fullName": "google.cloud.compute.v1beta.AdviceClient",
           "shortName": "AdviceClient"
         },
+        "fullName": "google.cloud.compute.v1beta.AdviceClient.CalendarModeExtension",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Advice.CalendarModeExtension",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Advice",
+            "shortName": "Advice"
+          },
+          "shortName": "CalendarModeExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.CalendarModeExtensionAdviceRpcRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.CalendarModeExtensionAdviceResponse",
+        "shortName": "CalendarModeExtension"
+      },
+      "description": "CalendarModeExtension advises on whether extending an existing future reservation is possible\nbased on the desired extension end time. If capacity isn't available for\nthe entire requested duration, the method recommends the longest possible\nextension.",
+      "file": "AdviceClient/CalendarModeExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Advice_CalendarModeExtension_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute CalendarModeExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.AdviceClient",
+          "shortName": "AdviceClient"
+        },
         "fullName": "google.cloud.compute.v1beta.AdviceClient.Capacity",
         "method": {
           "fullName": "google.cloud.compute.v1beta.Advice.Capacity",
@@ -36725,6 +36771,52 @@
           "fullName": "google.cloud.compute.v1beta.RegionSslPoliciesClient",
           "shortName": "RegionSslPoliciesClient"
         },
+        "fullName": "google.cloud.compute.v1beta.RegionSslPoliciesClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RegionSslPolicies.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RegionSslPolicies",
+            "shortName": "RegionSslPolicies"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetIamPolicyRegionSslPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such\npolicy or resource exists.",
+      "file": "RegionSslPoliciesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RegionSslPolicies_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RegionSslPoliciesClient",
+          "shortName": "RegionSslPoliciesClient"
+        },
         "fullName": "google.cloud.compute.v1beta.RegionSslPoliciesClient.Insert",
         "method": {
           "fullName": "google.cloud.compute.v1beta.RegionSslPolicies.Insert",
@@ -36902,6 +36994,52 @@
         }
       ],
       "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.RegionSslPoliciesClient",
+          "shortName": "RegionSslPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.RegionSslPoliciesClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.RegionSslPolicies.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.RegionSslPolicies",
+            "shortName": "RegionSslPolicies"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetIamPolicyRegionSslPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource.\nReplaces any existing policy.",
+      "file": "RegionSslPoliciesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_RegionSslPolicies_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetIamPolicy Sample"
     },
     {
       "clientMethod": {
@@ -44499,6 +44637,52 @@
           "fullName": "google.cloud.compute.v1beta.SslPoliciesClient",
           "shortName": "SslPoliciesClient"
         },
+        "fullName": "google.cloud.compute.v1beta.SslPoliciesClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.SslPolicies.GetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.SslPolicies",
+            "shortName": "SslPolicies"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.GetIamPolicySslPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. May be empty if no such\npolicy or resource exists.",
+      "file": "SslPoliciesClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_SslPolicies_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.SslPoliciesClient",
+          "shortName": "SslPoliciesClient"
+        },
         "fullName": "google.cloud.compute.v1beta.SslPoliciesClient.Insert",
         "method": {
           "fullName": "google.cloud.compute.v1beta.SslPolicies.Insert",
@@ -44676,6 +44860,52 @@
         }
       ],
       "title": "compute Patch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.SslPoliciesClient",
+          "shortName": "SslPoliciesClient"
+        },
+        "fullName": "google.cloud.compute.v1beta.SslPoliciesClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.SslPolicies.SetIamPolicy",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.SslPolicies",
+            "shortName": "SslPolicies"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetIamPolicySslPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*computepb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource.\nReplaces any existing policy.",
+      "file": "SslPoliciesClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_SslPolicies_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetIamPolicy Sample"
     },
     {
       "clientMethod": {

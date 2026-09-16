@@ -88,6 +88,11 @@
                 "CalendarMode"
               ]
             },
+            "CalendarModeExtension": {
+              "methods": [
+                "CalendarModeExtension"
+              ]
+            },
             "Capacity": {
               "methods": [
                 "Capacity"
@@ -4882,6 +4887,11 @@
                 "Get"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "Insert": {
               "methods": [
                 "Insert"
@@ -4900,6 +4910,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "TestIamPermissions": {
@@ -5943,6 +5958,11 @@
                 "Get"
               ]
             },
+            "GetIamPolicy": {
+              "methods": [
+                "GetIamPolicy"
+              ]
+            },
             "Insert": {
               "methods": [
                 "Insert"
@@ -5961,6 +5981,11 @@
             "Patch": {
               "methods": [
                 "Patch"
+              ]
+            },
+            "SetIamPolicy": {
+              "methods": [
+                "SetIamPolicy"
               ]
             },
             "TestIamPermissions": {

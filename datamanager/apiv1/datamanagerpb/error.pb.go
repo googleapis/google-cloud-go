@@ -316,6 +316,11 @@ const (
 	// The remove as of time must be in the past or present. Future timestamps are
 	// not permitted for removing audience members.
 	ErrorReason_INVALID_REMOVE_AS_OF_TIME ErrorReason = 125
+	// Request status is only available for approximately 50 days after the API
+	// receives a request.
+	ErrorReason_REQUEST_TOO_OLD ErrorReason = 126
+	// The conversion action was created too recently.
+	ErrorReason_CONVERSION_ACTION_TOO_RECENTLY_CREATED ErrorReason = 127
 )
 
 // Enum value maps for ErrorReason.
@@ -446,6 +451,8 @@ var (
 		123: "INSIGHTS_MISSING_FOR_DIMENSION",
 		124: "REQUIRED_PREREQUISITE_LINK_MISSING",
 		125: "INVALID_REMOVE_AS_OF_TIME",
+		126: "REQUEST_TOO_OLD",
+		127: "CONVERSION_ACTION_TOO_RECENTLY_CREATED",
 	}
 	ErrorReason_value = map[string]int32{
 		"ERROR_REASON_UNSPECIFIED":                              0,
@@ -573,6 +580,8 @@ var (
 		"INSIGHTS_MISSING_FOR_DIMENSION":                                 123,
 		"REQUIRED_PREREQUISITE_LINK_MISSING":                             124,
 		"INVALID_REMOVE_AS_OF_TIME":                                      125,
+		"REQUEST_TOO_OLD":                                                126,
+		"CONVERSION_ACTION_TOO_RECENTLY_CREATED":                         127,
 	}
 )
 
@@ -607,7 +616,7 @@ var File_google_ads_datamanager_v1_error_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"\n" +
-	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\xc2\"\n" +
+	"%google/ads/datamanager/v1/error.proto\x12\x19google.ads.datamanager.v1*\x83#\n" +
 	"\vErrorReason\x12\x1c\n" +
 	"\x18ERROR_REASON_UNSPECIFIED\x10\x00\x12\x12\n" +
 	"\x0eINTERNAL_ERROR\x10\x01\x12\x15\n" +
@@ -734,7 +743,9 @@ const file_google_ads_datamanager_v1_error_proto_rawDesc = "" +
 	"'BASELINE_LOCATION_AUTO_DETECTION_FAILED\x10z\x12\"\n" +
 	"\x1eINSIGHTS_MISSING_FOR_DIMENSION\x10{\x12&\n" +
 	"\"REQUIRED_PREREQUISITE_LINK_MISSING\x10|\x12\x1d\n" +
-	"\x19INVALID_REMOVE_AS_OF_TIME\x10}B\xc7\x01\n" +
+	"\x19INVALID_REMOVE_AS_OF_TIME\x10}\x12\x13\n" +
+	"\x0fREQUEST_TOO_OLD\x10~\x12*\n" +
+	"&CONVERSION_ACTION_TOO_RECENTLY_CREATED\x10\x7fB\xc7\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\n" +
 	"ErrorProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 

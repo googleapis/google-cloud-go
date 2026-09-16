@@ -39,14 +39,18 @@ var newAdviceClientHook clientHook
 
 // AdviceCallOptions contains the retry settings for each method of AdviceClient.
 type AdviceCallOptions struct {
-	CalendarMode    []gax.CallOption
-	Capacity        []gax.CallOption
-	CapacityHistory []gax.CallOption
+	CalendarMode          []gax.CallOption
+	CalendarModeExtension []gax.CallOption
+	Capacity              []gax.CallOption
+	CapacityHistory       []gax.CallOption
 }
 
 func defaultAdviceRESTCallOptions() *AdviceCallOptions {
 	return &AdviceCallOptions{
 		CalendarMode: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+		},
+		CalendarModeExtension: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 		},
 		Capacity: []gax.CallOption{
@@ -64,6 +68,7 @@ type internalAdviceClient interface {
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
 	CalendarMode(context.Context, *computepb.CalendarModeAdviceRpcRequest, ...gax.CallOption) (*computepb.CalendarModeAdviceResponse, error)
+	CalendarModeExtension(context.Context, *computepb.CalendarModeExtensionAdviceRpcRequest, ...gax.CallOption) (*computepb.CalendarModeExtensionAdviceResponse, error)
 	Capacity(context.Context, *computepb.CapacityAdviceRpcRequest, ...gax.CallOption) (*computepb.CapacityAdviceResponse, error)
 	CapacityHistory(context.Context, *computepb.CapacityHistoryAdviceRequest, ...gax.CallOption) (*computepb.CapacityHistoryResponse, error)
 }
@@ -109,6 +114,14 @@ func (c *AdviceClient) Connection() *grpc.ClientConn {
 // resources.
 func (c *AdviceClient) CalendarMode(ctx context.Context, req *computepb.CalendarModeAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CalendarModeAdviceResponse, error) {
 	return c.internalClient.CalendarMode(ctx, req, opts...)
+}
+
+// CalendarModeExtension advises on whether extending an existing future reservation is possible
+// based on the desired extension end time. If capacity isn’t available for
+// the entire requested duration, the method recommends the longest possible
+// extension.
+func (c *AdviceClient) CalendarModeExtension(ctx context.Context, req *computepb.CalendarModeExtensionAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CalendarModeExtensionAdviceResponse, error) {
+	return c.internalClient.CalendarModeExtension(ctx, req, opts...)
 }
 
 // Capacity advice on making real-time decisions (such as choosing zone or
@@ -182,6 +195,7 @@ func NewAdviceRESTClient(ctx context.Context, opts ...option.ClientOption) (*Adv
 		)
 
 		callOpts.CalendarMode = append(callOpts.CalendarMode, gax.WithClientMetrics(metrics))
+		callOpts.CalendarModeExtension = append(callOpts.CalendarModeExtension, gax.WithClientMetrics(metrics))
 		callOpts.Capacity = append(callOpts.Capacity, gax.WithClientMetrics(metrics))
 		callOpts.CapacityHistory = append(callOpts.CapacityHistory, gax.WithClientMetrics(metrics))
 	}
@@ -273,6 +287,68 @@ func (c *adviceRESTClient) CalendarMode(ctx context.Context, req *computepb.Cale
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CalendarMode")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// CalendarModeExtension advises on whether extending an existing future reservation is possible
+// based on the desired extension end time. If capacity isn’t available for
+// the entire requested duration, the method recommends the longest possible
+// extension.
+func (c *adviceRESTClient) CalendarModeExtension(ctx context.Context, req *computepb.CalendarModeExtensionAdviceRpcRequest, opts ...gax.CallOption) (*computepb.CalendarModeExtensionAdviceResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true}
+	body := req.GetCalendarModeExtensionAdviceRequestResource()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/advice/calendarModeExtension", req.GetProject(), req.GetRegion())
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v&%s=%v", "project", url.QueryEscape(req.GetProject()), "region", url.QueryEscape(req.GetRegion()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/projects/%v/regions/%v", req.GetProject(), req.GetRegion()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.Advice/CalendarModeExtension")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/projects/{project}/regions/{region}/advice/calendarModeExtension")
+	}
+	opts = append((*c.CallOptions).CalendarModeExtension[0:len((*c.CallOptions).CalendarModeExtension):len((*c.CallOptions).CalendarModeExtension)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &computepb.CalendarModeExtensionAdviceResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CalendarModeExtension")
 		if err != nil {
 			return err
 		}

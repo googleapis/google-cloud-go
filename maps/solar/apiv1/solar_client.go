@@ -477,6 +477,11 @@ func (c *restClient) FindClosestBuildingInsights(ctx context.Context, req *solar
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if items := req.GetAdditionalInsights(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("additionalInsights", fmt.Sprintf("%v", item))
+		}
+	}
 	if req.GetExactQualityRequired() {
 		params.Add("exactQualityRequired", fmt.Sprintf("%v", req.GetExactQualityRequired()))
 	}

@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -33,6 +34,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -65,23 +67,115 @@ func defaultIngestionGRPCClientOptions() []option.ClientOption {
 
 func defaultIngestionCallOptions() *IngestionCallOptions {
 	return &IngestionCallOptions{
-		IngestAudienceMembers:    []gax.CallOption{},
-		RemoveAudienceMembers:    []gax.CallOption{},
+		IngestAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RemoveAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		RemoveAllAudienceMembers: []gax.CallOption{},
-		IngestEvents:             []gax.CallOption{},
-		IngestAdEvents:           []gax.CallOption{},
-		RetrieveRequestStatus:    []gax.CallOption{},
+		IngestEvents: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		IngestAdEvents: []gax.CallOption{},
+		RetrieveRequestStatus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultIngestionRESTCallOptions() *IngestionCallOptions {
 	return &IngestionCallOptions{
-		IngestAudienceMembers:    []gax.CallOption{},
-		RemoveAudienceMembers:    []gax.CallOption{},
+		IngestAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		RemoveAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 		RemoveAllAudienceMembers: []gax.CallOption{},
-		IngestEvents:             []gax.CallOption{},
-		IngestAdEvents:           []gax.CallOption{},
-		RetrieveRequestStatus:    []gax.CallOption{},
+		IngestEvents: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		IngestAdEvents: []gax.CallOption{},
+		RetrieveRequestStatus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 	}
 }
 

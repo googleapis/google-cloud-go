@@ -1,0 +1,1759 @@
+{
+  "clientLibrary": {
+    "apis": [
+      {
+        "id": "google.cloud.networkservices.v1beta1",
+        "version": "v1beta1"
+      }
+    ],
+    "language": "GO",
+    "name": "cloud.google.com/go/networkservices/apiv1beta1",
+    "version": "1.5.0"
+  },
+  "snippets": [
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "DepClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.CreateExtensionBinding",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.CreateExtensionBinding",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "CreateExtensionBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.CreateExtensionBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateExtensionBindingOperation",
+        "shortName": "CreateExtensionBinding"
+      },
+      "description": "CreateExtensionBinding creates a new `ExtensionBinding` resource in a given project and location.",
+      "file": "DepClient/CreateExtensionBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_CreateExtensionBinding_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices CreateExtensionBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.CreateLbRouteExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.CreateLbRouteExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "CreateLbRouteExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.CreateLbRouteExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateLbRouteExtensionOperation",
+        "shortName": "CreateLbRouteExtension"
+      },
+      "description": "CreateLbRouteExtension creates a new `LbRouteExtension` resource in a given project and location.",
+      "file": "DepClient/CreateLbRouteExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_CreateLbRouteExtension_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices CreateLbRouteExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.CreateLbTrafficExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.CreateLbTrafficExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "CreateLbTrafficExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.CreateLbTrafficExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateLbTrafficExtensionOperation",
+        "shortName": "CreateLbTrafficExtension"
+      },
+      "description": "CreateLbTrafficExtension creates a new `LbTrafficExtension` resource in a given project and\nlocation.",
+      "file": "DepClient/CreateLbTrafficExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_CreateLbTrafficExtension_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices CreateLbTrafficExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.DeleteExtensionBinding",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.DeleteExtensionBinding",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "DeleteExtensionBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.DeleteExtensionBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteExtensionBindingOperation",
+        "shortName": "DeleteExtensionBinding"
+      },
+      "description": "DeleteExtensionBinding deletes the specified `ExtensionBinding` resource.",
+      "file": "DepClient/DeleteExtensionBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_DeleteExtensionBinding_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices DeleteExtensionBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.DeleteLbRouteExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.DeleteLbRouteExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "DeleteLbRouteExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.DeleteLbRouteExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteLbRouteExtensionOperation",
+        "shortName": "DeleteLbRouteExtension"
+      },
+      "description": "DeleteLbRouteExtension deletes the specified `LbRouteExtension` resource.",
+      "file": "DepClient/DeleteLbRouteExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_DeleteLbRouteExtension_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices DeleteLbRouteExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.DeleteLbTrafficExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.DeleteLbTrafficExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "DeleteLbTrafficExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.DeleteLbTrafficExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteLbTrafficExtensionOperation",
+        "shortName": "DeleteLbTrafficExtension"
+      },
+      "description": "DeleteLbTrafficExtension deletes the specified `LbTrafficExtension` resource.",
+      "file": "DepClient/DeleteLbTrafficExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_DeleteLbTrafficExtension_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices DeleteLbTrafficExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "DepClient/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.GetExtensionBinding",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.GetExtensionBinding",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "GetExtensionBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.GetExtensionBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networkservicespb.ExtensionBinding",
+        "shortName": "GetExtensionBinding"
+      },
+      "description": "GetExtensionBinding gets details of the specified `ExtensionBinding` resource.",
+      "file": "DepClient/GetExtensionBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_GetExtensionBinding_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetExtensionBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "DepClient/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.GetLbRouteExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.GetLbRouteExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "GetLbRouteExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.GetLbRouteExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networkservicespb.LbRouteExtension",
+        "shortName": "GetLbRouteExtension"
+      },
+      "description": "GetLbRouteExtension gets details of the specified `LbRouteExtension` resource.",
+      "file": "DepClient/GetLbRouteExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_GetLbRouteExtension_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetLbRouteExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.GetLbTrafficExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.GetLbTrafficExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "GetLbTrafficExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.GetLbTrafficExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networkservicespb.LbTrafficExtension",
+        "shortName": "GetLbTrafficExtension"
+      },
+      "description": "GetLbTrafficExtension gets details of the specified `LbTrafficExtension` resource.",
+      "file": "DepClient/GetLbTrafficExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_GetLbTrafficExtension_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetLbTrafficExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "DepClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "DepClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.ListExtensionBindings",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.ListExtensionBindings",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "ListExtensionBindings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.ListExtensionBindingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "ExtensionBindingIterator",
+        "shortName": "ListExtensionBindings"
+      },
+      "description": "ListExtensionBindings lists `ExtensionBinding` resources in a given project and location.",
+      "file": "DepClient/ListExtensionBindings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_ListExtensionBindings_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListExtensionBindings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.ListLbRouteExtensions",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.ListLbRouteExtensions",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "ListLbRouteExtensions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.ListLbRouteExtensionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LbRouteExtensionIterator",
+        "shortName": "ListLbRouteExtensions"
+      },
+      "description": "ListLbRouteExtensions lists `LbRouteExtension` resources in a given project and location.",
+      "file": "DepClient/ListLbRouteExtensions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_ListLbRouteExtensions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListLbRouteExtensions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.ListLbTrafficExtensions",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.ListLbTrafficExtensions",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "ListLbTrafficExtensions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.ListLbTrafficExtensionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LbTrafficExtensionIterator",
+        "shortName": "ListLbTrafficExtensions"
+      },
+      "description": "ListLbTrafficExtensions lists `LbTrafficExtension` resources in a given project and location.",
+      "file": "DepClient/ListLbTrafficExtensions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_ListLbTrafficExtensions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListLbTrafficExtensions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "DepClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "DepClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "DepClient/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "DepClient/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.UpdateExtensionBinding",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.UpdateExtensionBinding",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "UpdateExtensionBinding"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.UpdateExtensionBindingRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateExtensionBindingOperation",
+        "shortName": "UpdateExtensionBinding"
+      },
+      "description": "UpdateExtensionBinding updates the parameters of the specified `ExtensionBinding` resource.",
+      "file": "DepClient/UpdateExtensionBinding/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_UpdateExtensionBinding_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices UpdateExtensionBinding Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.UpdateLbRouteExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.UpdateLbRouteExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "UpdateLbRouteExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.UpdateLbRouteExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateLbRouteExtensionOperation",
+        "shortName": "UpdateLbRouteExtension"
+      },
+      "description": "UpdateLbRouteExtension updates the parameters of the specified `LbRouteExtension` resource.",
+      "file": "DepClient/UpdateLbRouteExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_UpdateLbRouteExtension_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices UpdateLbRouteExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepClient",
+          "shortName": "DepClient"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.DepClient.UpdateLbTrafficExtension",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.DepService.UpdateLbTrafficExtension",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.DepService",
+            "shortName": "DepService"
+          },
+          "shortName": "UpdateLbTrafficExtension"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.UpdateLbTrafficExtensionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateLbTrafficExtensionOperation",
+        "shortName": "UpdateLbTrafficExtension"
+      },
+      "description": "UpdateLbTrafficExtension updates the parameters of the specified `LbTrafficExtension` resource.",
+      "file": "DepClient/UpdateLbTrafficExtension/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_DepService_UpdateLbTrafficExtension_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices UpdateLbTrafficExtension Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.CreateEndpointPolicy",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.NetworkServices.CreateEndpointPolicy",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "CreateEndpointPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.CreateEndpointPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CreateEndpointPolicyOperation",
+        "shortName": "CreateEndpointPolicy"
+      },
+      "description": "CreateEndpointPolicy creates a new EndpointPolicy in a given project and location.",
+      "file": "Client/CreateEndpointPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_CreateEndpointPolicy_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices CreateEndpointPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.DeleteEndpointPolicy",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.NetworkServices.DeleteEndpointPolicy",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "DeleteEndpointPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.DeleteEndpointPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "DeleteEndpointPolicyOperation",
+        "shortName": "DeleteEndpointPolicy"
+      },
+      "description": "DeleteEndpointPolicy deletes a single EndpointPolicy.",
+      "file": "Client/DeleteEndpointPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_DeleteEndpointPolicy_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices DeleteEndpointPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.DeleteOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.DeleteOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "DeleteOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.DeleteOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteOperation"
+      },
+      "description": "DeleteOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/DeleteOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_DeleteOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices DeleteOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.GetEndpointPolicy",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.NetworkServices.GetEndpointPolicy",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "GetEndpointPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.GetEndpointPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*networkservicespb.EndpointPolicy",
+        "shortName": "GetEndpointPolicy"
+      },
+      "description": "GetEndpointPolicy gets details of a single EndpointPolicy.",
+      "file": "Client/GetEndpointPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_GetEndpointPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetEndpointPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.GetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.GetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "GetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.GetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "GetIamPolicy"
+      },
+      "description": "GetIamPolicy gets the access control policy for a resource. Returns an empty policy\nif the resource exists and does not have a policy set.",
+      "file": "Client/GetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_GetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "Client/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "Client/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.ListEndpointPolicies",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.NetworkServices.ListEndpointPolicies",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "ListEndpointPolicies"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.ListEndpointPoliciesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "EndpointPolicyIterator",
+        "shortName": "ListEndpointPolicies"
+      },
+      "description": "ListEndpointPolicies lists EndpointPolicies in a given project and location.",
+      "file": "Client/ListEndpointPolicies/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_ListEndpointPolicies_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListEndpointPolicies Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "Client/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "Client/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.SetIamPolicy",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.SetIamPolicy",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "SetIamPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.SetIamPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.Policy",
+        "shortName": "SetIamPolicy"
+      },
+      "description": "SetIamPolicy sets the access control policy on the specified resource. Replaces\nany existing policy.\n\nCan return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED`\nerrors.",
+      "file": "Client/SetIamPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_SetIamPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.TestIamPermissions",
+        "method": {
+          "fullName": "google.iam.v1.IAMPolicy.TestIamPermissions",
+          "service": {
+            "fullName": "google.iam.v1.IAMPolicy",
+            "shortName": "IAMPolicy"
+          },
+          "shortName": "TestIamPermissions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "iampb.TestIamPermissionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*iampb.TestIamPermissionsResponse",
+        "shortName": "TestIamPermissions"
+      },
+      "description": "TestIamPermissions returns permissions that a caller has on the specified resource. If the\nresource does not exist, this will return an empty set of\npermissions, not a `NOT_FOUND` error.\n\nNote: This operation is designed to be used for building\npermission-aware UIs and command-line tools, not for authorization\nchecking. This operation may \"fail open\" without warning.",
+      "file": "Client/TestIamPermissions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_TestIamPermissions_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices TestIamPermissions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.networkservices.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.networkservices.v1beta1.Client.UpdateEndpointPolicy",
+        "method": {
+          "fullName": "google.cloud.networkservices.v1beta1.NetworkServices.UpdateEndpointPolicy",
+          "service": {
+            "fullName": "google.cloud.networkservices.v1beta1.NetworkServices",
+            "shortName": "NetworkServices"
+          },
+          "shortName": "UpdateEndpointPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "networkservicespb.UpdateEndpointPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "UpdateEndpointPolicyOperation",
+        "shortName": "UpdateEndpointPolicy"
+      },
+      "description": "UpdateEndpointPolicy updates the parameters of a single EndpointPolicy.",
+      "file": "Client/UpdateEndpointPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "networkservices_v1beta1_generated_NetworkServices_UpdateEndpointPolicy_sync",
+      "segments": [
+        {
+          "end": 60,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "networkservices UpdateEndpointPolicy Sample"
+    }
+  ]
+}

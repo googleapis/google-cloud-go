@@ -108,13 +108,14 @@ type IngestAudienceMembersRequest struct {
 	// Optional. For testing purposes. If `true`, the request is validated but not
 	// executed. Only errors are returned, not results.
 	ValidateOnly bool `protobuf:"varint,4,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	// Optional. Required for [UserData][google.ads.datamanager.v1.UserData]
-	// uploads. The encoding type of the user identifiers. For hashed user
-	// identifiers, this is the encoding type of the hashed string. For encrypted
-	// hashed user identifiers, this is the encoding type of the outer encrypted
-	// string, but not necessarily the inner hashed string, meaning the inner
-	// hashed string could be encoded in a different way than the outer encrypted
-	// string. For non `UserData` uploads, this field is ignored.
+	// Optional. Must be provided for
+	// [UserData][google.ads.datamanager.v1.UserData] uploads. The encoding type
+	// of the user identifiers. For hashed user identifiers, this is the encoding
+	// type of the hashed string. For encrypted hashed user identifiers, this is
+	// the encoding type of the outer encrypted string, but not necessarily the
+	// inner hashed string, meaning the inner hashed string could be encoded in a
+	// different way than the outer encrypted string. For non `UserData` uploads,
+	// this field is ignored.
 	Encoding Encoding `protobuf:"varint,5,opt,name=encoding,proto3,enum=google.ads.datamanager.v1.Encoding" json:"encoding,omitempty"`
 	// Optional. Encryption information for
 	// [UserData][google.ads.datamanager.v1.UserData] uploads. If not set, it's
@@ -274,10 +275,10 @@ type RemoveAudienceMembersRequest struct {
 	// Optional. For testing purposes. If `true`, the request is validated but not
 	// executed. Only errors are returned, not results.
 	ValidateOnly bool `protobuf:"varint,3,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	// Optional. Required for [UserData][google.ads.datamanager.v1.UserData]
-	// uploads. The encoding type of the user identifiers. Applies to only the
-	// outer encoding for encrypted user identifiers. For non `UserData` uploads,
-	// this field is ignored.
+	// Optional. Must be provided for
+	// [UserData][google.ads.datamanager.v1.UserData] uploads. The encoding type
+	// of the user identifiers. Applies to only the outer encoding for encrypted
+	// user identifiers. For non `UserData` uploads, this field is ignored.
 	Encoding Encoding `protobuf:"varint,4,opt,name=encoding,proto3,enum=google.ads.datamanager.v1.Encoding" json:"encoding,omitempty"`
 	// Optional. Encryption information for
 	// [UserData][google.ads.datamanager.v1.UserData] uploads. If not set, it's
@@ -533,13 +534,14 @@ type IngestEventsRequest struct {
 	// Optional. For testing purposes. If `true`, the request is validated but not
 	// executed. Only errors are returned, not results.
 	ValidateOnly bool `protobuf:"varint,4,opt,name=validate_only,json=validateOnly,proto3" json:"validate_only,omitempty"`
-	// Optional. Required for [UserData][google.ads.datamanager.v1.UserData]
-	// uploads. The encoding type of the user identifiers. For hashed user
-	// identifiers, this is the encoding type of the hashed string. For encrypted
-	// hashed user identifiers, this is the encoding type of the outer encrypted
-	// string, but not necessarily the inner hashed string, meaning the inner
-	// hashed string could be encoded in a different way than the outer encrypted
-	// string. For non `UserData` uploads, this field is ignored.
+	// Optional. Must be provided for
+	// [UserData][google.ads.datamanager.v1.UserData] uploads. The encoding type
+	// of the user identifiers. For hashed user identifiers, this is the encoding
+	// type of the hashed string. For encrypted hashed user identifiers, this is
+	// the encoding type of the outer encrypted string, but not necessarily the
+	// inner hashed string, meaning the inner hashed string could be encoded in a
+	// different way than the outer encrypted string. For non `UserData` uploads,
+	// this field is ignored.
 	Encoding Encoding `protobuf:"varint,5,opt,name=encoding,proto3,enum=google.ads.datamanager.v1.Encoding" json:"encoding,omitempty"`
 	// Optional. Encryption information for
 	// [UserData][google.ads.datamanager.v1.UserData] uploads. If not set, it's
@@ -683,8 +685,9 @@ type IngestAdEventsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Required (at least 1). A list of ad events.
 	AdEvents []*AdEvent `protobuf:"bytes,1,rep,name=ad_events,json=adEvents,proto3" json:"ad_events,omitempty"`
-	// Required. Information about encryption keys which are used to encrypt the
-	// data.
+	// Optional. Information about encryption keys which are used to encrypt the
+	// data. This field must be provided when ad events contain
+	// [UserData][google.ads.datamanager.v1.UserData].
 	EncryptionInfo *EncryptionInfo `protobuf:"bytes,2,opt,name=encryption_info,json=encryptionInfo,proto3" json:"encryption_info,omitempty"`
 	// Optional. If true, the request is validated, but not executed.
 	//
@@ -925,7 +928,7 @@ const file_google_ads_datamanager_v1_ingestion_service_proto_rawDesc = "" +
 	"\x0efield_warnings\x18\x02 \x03(\v2'.google.ads.datamanager.v1.FieldWarningR\rfieldWarnings\"\xe2\x01\n" +
 	"\x15IngestAdEventsRequest\x12D\n" +
 	"\tad_events\x18\x01 \x03(\v2\".google.ads.datamanager.v1.AdEventB\x03\xe0A\x02R\badEvents\x12W\n" +
-	"\x0fencryption_info\x18\x02 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x02R\x0eencryptionInfo\x12*\n" +
+	"\x0fencryption_info\x18\x02 \x01(\v2).google.ads.datamanager.v1.EncryptionInfoB\x03\xe0A\x01R\x0eencryptionInfo\x12*\n" +
 	"\rvalidate_only\x18\x03 \x01(\bB\x05\xe0A\x01\x18\x01R\fvalidateOnly\"\x18\n" +
 	"\x16IngestAdEventsResponse\"B\n" +
 	"\x1cRetrieveRequestStatusRequest\x12\"\n" +

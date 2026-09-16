@@ -201,6 +201,52 @@
           "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient",
           "shortName": "ConferenceRecordsClient"
         },
+        "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient.GetSmartNote",
+        "method": {
+          "fullName": "google.apps.meet.v2beta.ConferenceRecordsService.GetSmartNote",
+          "service": {
+            "fullName": "google.apps.meet.v2beta.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "GetSmartNote"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "meetpb.GetSmartNoteRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*meetpb.SmartNote",
+        "shortName": "GetSmartNote"
+      },
+      "description": "GetSmartNote gets smart notes by smart note ID.",
+      "file": "ConferenceRecordsClient/GetSmartNote/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "meet_v2beta_generated_ConferenceRecordsService_GetSmartNote_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "meet GetSmartNote Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient.GetTranscript",
         "method": {
           "fullName": "google.apps.meet.v2beta.ConferenceRecordsService.GetTranscript",
@@ -273,7 +319,7 @@
         "resultType": "*meetpb.TranscriptEntry",
         "shortName": "GetTranscriptEntry"
       },
-      "description": "GetTranscriptEntry gets a `TranscriptEntry` resource by entry ID.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
+      "description": "GetTranscriptEntry gets a `TranscriptEntry` resource by entry ID.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when 1) we have interleaved speakers within milliseconds, or\n2) the Google Docs transcript file is modified after generation.",
       "file": "ConferenceRecordsClient/GetTranscriptEntry/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -477,6 +523,52 @@
           "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient",
           "shortName": "ConferenceRecordsClient"
         },
+        "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient.ListSmartNotes",
+        "method": {
+          "fullName": "google.apps.meet.v2beta.ConferenceRecordsService.ListSmartNotes",
+          "service": {
+            "fullName": "google.apps.meet.v2beta.ConferenceRecordsService",
+            "shortName": "ConferenceRecordsService"
+          },
+          "shortName": "ListSmartNotes"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "meetpb.ListSmartNotesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SmartNoteIterator",
+        "shortName": "ListSmartNotes"
+      },
+      "description": "ListSmartNotes lists the set of smart notes from the conference record. By default,\nordered by start time and in ascending order.",
+      "file": "ConferenceRecordsClient/ListSmartNotes/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "meet_v2beta_generated_ConferenceRecordsService_ListSmartNotes_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "meet ListSmartNotes Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient",
+          "shortName": "ConferenceRecordsClient"
+        },
         "fullName": "google.apps.meet.v2beta.ConferenceRecordsClient.ListTranscriptEntries",
         "method": {
           "fullName": "google.apps.meet.v2beta.ConferenceRecordsService.ListTranscriptEntries",
@@ -503,7 +595,7 @@
         "resultType": "TranscriptEntryIterator",
         "shortName": "ListTranscriptEntries"
       },
-      "description": "ListTranscriptEntries lists the structured transcript entries per transcript. By default, ordered\nby start time and in ascending order.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when the Google Docs transcript file is modified after generation.",
+      "description": "ListTranscriptEntries lists the structured transcript entries per transcript. By default, ordered\nby start time and in ascending order.\n\nNote: The transcript entries returned by the Google Meet API might not\nmatch the transcription found in the Google Docs transcript file. This can\noccur when 1) we have interleaved speakers within milliseconds, or\n2) the Google Docs transcript file is modified after generation.",
       "file": "ConferenceRecordsClient/ListTranscriptEntries/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -569,6 +661,52 @@
           "fullName": "google.apps.meet.v2beta.SpacesClient",
           "shortName": "SpacesClient"
         },
+        "fullName": "google.apps.meet.v2beta.SpacesClient.BatchUpdateMembers",
+        "method": {
+          "fullName": "google.apps.meet.v2beta.SpacesService.BatchUpdateMembers",
+          "service": {
+            "fullName": "google.apps.meet.v2beta.SpacesService",
+            "shortName": "SpacesService"
+          },
+          "shortName": "BatchUpdateMembers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "meetpb.BatchUpdateMembersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*meetpb.BatchUpdateMembersResponse",
+        "shortName": "BatchUpdateMembers"
+      },
+      "description": "BatchUpdateMembers updates members of one space within a batch.",
+      "file": "SpacesClient/BatchUpdateMembers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "meet_v2beta_generated_SpacesService_BatchUpdateMembers_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "meet BatchUpdateMembers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.apps.meet.v2beta.SpacesClient",
+          "shortName": "SpacesClient"
+        },
         "fullName": "google.apps.meet.v2beta.SpacesClient.ConnectActiveConference",
         "method": {
           "fullName": "google.apps.meet.v2beta.SpacesService.ConnectActiveConference",
@@ -595,7 +733,7 @@
         "resultType": "*meetpb.ConnectActiveConferenceResponse",
         "shortName": "ConnectActiveConference"
       },
-      "description": "ConnectActiveConference [Developer Preview](https: //developers.google.com/workspace/preview): \nBroker a WebRTC connection to the active conference of a space.\n\nOn success, clients must use the resulting SDP (Session Description\nProtocol) answer to establish a WebRTC connection. Once connected,\nadditional functionality is available across WebRTC data channels.\n\nSee [Meet Media API\noverview](https: //developers.google.com/meet/media-api/guides/overview) for\nmore details about this connection.",
+      "description": "ConnectActiveConference [Developer Preview](https: //developers.google.com/workspace/preview): \nBroker a WebRTC connection to the active conference of a space.\n\nOn success, clients must use the resulting SDP (Session Description\nProtocol) answer to establish a WebRTC connection. Once connected,\nadditional functionality is available across WebRTC data channels.\n\nSee [Meet Media API\noverview](https: //developers.google.com/workspace/meet/media-api/guides/overview)\nfor more details about this connection.",
       "file": "SpacesClient/ConnectActiveConference/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -641,7 +779,7 @@
         "resultType": "*meetpb.Member",
         "shortName": "CreateMember"
       },
-      "description": "CreateMember [Developer Preview](https: //developers.google.com/workspace/preview): \nCreate a member.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted, this API response will default to\n\"name,email,role,user\".",
+      "description": "CreateMember creates a member.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted, this API response will default to\n\"name,email,role,user\".",
       "file": "SpacesClient/CreateMember/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -732,7 +870,7 @@
         ],
         "shortName": "DeleteMember"
       },
-      "description": "DeleteMember [Developer Preview](https: //developers.google.com/workspace/preview): \nDelete the member who was previously assigned roles in the space.",
+      "description": "DeleteMember deletes the member who was previously assigned roles in the space.",
       "file": "SpacesClient/DeleteMember/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -777,7 +915,7 @@
         ],
         "shortName": "EndActiveConference"
       },
-      "description": "EndActiveConference ends an active conference (if there's one).\n\nFor an example, see [End active\nconference](https: //developers.google.com/meet/api/guides/meeting-spaces#end-active-conference).",
+      "description": "EndActiveConference ends an active conference (if there's one).\n\nFor an example, see [End active\nconference](https: //developers.google.com/workspace/meet/api/guides/meeting-spaces#end-active-conference).",
       "file": "SpacesClient/EndActiveConference/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -823,7 +961,7 @@
         "resultType": "*meetpb.Member",
         "shortName": "GetMember"
       },
-      "description": "GetMember [Developer Preview](https: //developers.google.com/workspace/preview): \nGet a member.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted, this API response will default to\n\"name,email,role,user\".",
+      "description": "GetMember gets a member.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted, this API response will default to\n\"name,email,role,user\".",
       "file": "SpacesClient/GetMember/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -869,7 +1007,7 @@
         "resultType": "*meetpb.Space",
         "shortName": "GetSpace"
       },
-      "description": "GetSpace gets details about a meeting space.\n\nFor an example, see [Get a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#get-meeting-space).",
+      "description": "GetSpace gets details about a meeting space.\n\nFor an example, see [Get a meeting\nspace](https: //developers.google.com/workspace/meet/api/guides/meeting-spaces#get-meeting-space).",
       "file": "SpacesClient/GetSpace/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -915,7 +1053,7 @@
         "resultType": "MemberIterator",
         "shortName": "ListMembers"
       },
-      "description": "ListMembers [Developer Preview](https: //developers.google.com/workspace/preview): \nList members.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted this API response will default to\n\"name,email,role,user\".",
+      "description": "ListMembers lists members.\n\nThis API supports the `fields` parameter in\n[SystemParameterContext](https: //cloud.google.com/apis/docs/system-parameters).\nWhen the `fields` parameter is omitted this API response will default to\n\"name,email,role,user\".",
       "file": "SpacesClient/ListMembers/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -928,6 +1066,52 @@
         }
       ],
       "title": "meet ListMembers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.apps.meet.v2beta.SpacesClient",
+          "shortName": "SpacesClient"
+        },
+        "fullName": "google.apps.meet.v2beta.SpacesClient.UpdateMember",
+        "method": {
+          "fullName": "google.apps.meet.v2beta.SpacesService.UpdateMember",
+          "service": {
+            "fullName": "google.apps.meet.v2beta.SpacesService",
+            "shortName": "SpacesService"
+          },
+          "shortName": "UpdateMember"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "meetpb.UpdateMemberRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*meetpb.Member",
+        "shortName": "UpdateMember"
+      },
+      "description": "UpdateMember updates a member.",
+      "file": "SpacesClient/UpdateMember/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "meet_v2beta_generated_SpacesService_UpdateMember_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "meet UpdateMember Sample"
     },
     {
       "clientMethod": {
@@ -961,7 +1145,7 @@
         "resultType": "*meetpb.Space",
         "shortName": "UpdateSpace"
       },
-      "description": "UpdateSpace updates details about a meeting space.\n\nFor an example, see [Update a meeting\nspace](https: //developers.google.com/meet/api/guides/meeting-spaces#update-meeting-space).",
+      "description": "UpdateSpace updates details about a meeting space.\n\nFor an example, see [Update a meeting\nspace](https: //developers.google.com/workspace/meet/api/guides/meeting-spaces#update-meeting-space).",
       "file": "SpacesClient/UpdateSpace/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
