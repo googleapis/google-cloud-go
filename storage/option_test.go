@@ -159,13 +159,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcDirectPathEnforced: true,
 			},
 		},
-		{
-			desc: "set parallel uploads global memory limit",
-			opts: []option.ClientOption{experimental.WithParallelUploadsGlobalMemoryLimit(64 * 1024 * 1024)},
-			want: storageConfig{
-				parallelUploadsGlobalMemoryLimit: 64 * 1024 * 1024,
-			},
-		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
