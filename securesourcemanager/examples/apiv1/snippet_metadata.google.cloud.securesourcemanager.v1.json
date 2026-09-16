@@ -981,6 +981,52 @@
           "fullName": "google.cloud.securesourcemanager.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.securesourcemanager.v1.Client.FetchRefs",
+        "method": {
+          "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.FetchRefs",
+          "service": {
+            "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager",
+            "shortName": "SecureSourceManager"
+          },
+          "shortName": "FetchRefs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "securesourcemanagerpb.FetchRefsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "RefIterator",
+        "shortName": "FetchRefs"
+      },
+      "description": "FetchRefs fetches git references from a repository.",
+      "file": "Client/FetchRefs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "securesourcemanager_v1_generated_SecureSourceManager_FetchRefs_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "securesourcemanager FetchRefs Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.securesourcemanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.securesourcemanager.v1.Client.FetchTree",
         "method": {
           "fullName": "google.cloud.securesourcemanager.v1.SecureSourceManager.FetchTree",

@@ -35,6 +35,10 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
+	AuditManager_CreateAuditSchedule_FullMethodName            = "/google.cloud.auditmanager.v1.AuditManager/CreateAuditSchedule"
+	AuditManager_UpdateAuditSchedule_FullMethodName            = "/google.cloud.auditmanager.v1.AuditManager/UpdateAuditSchedule"
+	AuditManager_GetAuditSchedule_FullMethodName               = "/google.cloud.auditmanager.v1.AuditManager/GetAuditSchedule"
+	AuditManager_ListAuditSchedules_FullMethodName             = "/google.cloud.auditmanager.v1.AuditManager/ListAuditSchedules"
 	AuditManager_EnrollResource_FullMethodName                 = "/google.cloud.auditmanager.v1.AuditManager/EnrollResource"
 	AuditManager_GenerateAuditScopeReport_FullMethodName       = "/google.cloud.auditmanager.v1.AuditManager/GenerateAuditScopeReport"
 	AuditManager_GenerateAuditReport_FullMethodName            = "/google.cloud.auditmanager.v1.AuditManager/GenerateAuditReport"
@@ -49,6 +53,14 @@ const (
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type AuditManagerClient interface {
+	// Creates a new audit schedule in a given project and location.
+	CreateAuditSchedule(ctx context.Context, in *CreateAuditScheduleRequest, opts ...grpc.CallOption) (*AuditSchedule, error)
+	// Updates an existing audit schedule.
+	UpdateAuditSchedule(ctx context.Context, in *UpdateAuditScheduleRequest, opts ...grpc.CallOption) (*AuditSchedule, error)
+	// Gets details of a single audit schedule.
+	GetAuditSchedule(ctx context.Context, in *GetAuditScheduleRequest, opts ...grpc.CallOption) (*AuditSchedule, error)
+	// Lists audit schedules in a given project and location.
+	ListAuditSchedules(ctx context.Context, in *ListAuditSchedulesRequest, opts ...grpc.CallOption) (*ListAuditSchedulesResponse, error)
 	// Adds your project, folder, or organization to Audit
 	// Manager. This method creates the Audit Manager service agent in your
 	// workload and grants required permissions to the service agent.
@@ -89,6 +101,42 @@ type auditManagerClient struct {
 
 func NewAuditManagerClient(cc grpc.ClientConnInterface) AuditManagerClient {
 	return &auditManagerClient{cc}
+}
+
+func (c *auditManagerClient) CreateAuditSchedule(ctx context.Context, in *CreateAuditScheduleRequest, opts ...grpc.CallOption) (*AuditSchedule, error) {
+	out := new(AuditSchedule)
+	err := c.cc.Invoke(ctx, AuditManager_CreateAuditSchedule_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *auditManagerClient) UpdateAuditSchedule(ctx context.Context, in *UpdateAuditScheduleRequest, opts ...grpc.CallOption) (*AuditSchedule, error) {
+	out := new(AuditSchedule)
+	err := c.cc.Invoke(ctx, AuditManager_UpdateAuditSchedule_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *auditManagerClient) GetAuditSchedule(ctx context.Context, in *GetAuditScheduleRequest, opts ...grpc.CallOption) (*AuditSchedule, error) {
+	out := new(AuditSchedule)
+	err := c.cc.Invoke(ctx, AuditManager_GetAuditSchedule_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *auditManagerClient) ListAuditSchedules(ctx context.Context, in *ListAuditSchedulesRequest, opts ...grpc.CallOption) (*ListAuditSchedulesResponse, error) {
+	out := new(ListAuditSchedulesResponse)
+	err := c.cc.Invoke(ctx, AuditManager_ListAuditSchedules_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
 }
 
 func (c *auditManagerClient) EnrollResource(ctx context.Context, in *EnrollResourceRequest, opts ...grpc.CallOption) (*Enrollment, error) {
@@ -167,6 +215,14 @@ func (c *auditManagerClient) ListControls(ctx context.Context, in *ListControlsR
 // All implementations should embed UnimplementedAuditManagerServer
 // for forward compatibility
 type AuditManagerServer interface {
+	// Creates a new audit schedule in a given project and location.
+	CreateAuditSchedule(context.Context, *CreateAuditScheduleRequest) (*AuditSchedule, error)
+	// Updates an existing audit schedule.
+	UpdateAuditSchedule(context.Context, *UpdateAuditScheduleRequest) (*AuditSchedule, error)
+	// Gets details of a single audit schedule.
+	GetAuditSchedule(context.Context, *GetAuditScheduleRequest) (*AuditSchedule, error)
+	// Lists audit schedules in a given project and location.
+	ListAuditSchedules(context.Context, *ListAuditSchedulesRequest) (*ListAuditSchedulesResponse, error)
 	// Adds your project, folder, or organization to Audit
 	// Manager. This method creates the Audit Manager service agent in your
 	// workload and grants required permissions to the service agent.
@@ -205,6 +261,18 @@ type AuditManagerServer interface {
 type UnimplementedAuditManagerServer struct {
 }
 
+func (UnimplementedAuditManagerServer) CreateAuditSchedule(context.Context, *CreateAuditScheduleRequest) (*AuditSchedule, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateAuditSchedule not implemented")
+}
+func (UnimplementedAuditManagerServer) UpdateAuditSchedule(context.Context, *UpdateAuditScheduleRequest) (*AuditSchedule, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateAuditSchedule not implemented")
+}
+func (UnimplementedAuditManagerServer) GetAuditSchedule(context.Context, *GetAuditScheduleRequest) (*AuditSchedule, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAuditSchedule not implemented")
+}
+func (UnimplementedAuditManagerServer) ListAuditSchedules(context.Context, *ListAuditSchedulesRequest) (*ListAuditSchedulesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAuditSchedules not implemented")
+}
 func (UnimplementedAuditManagerServer) EnrollResource(context.Context, *EnrollResourceRequest) (*Enrollment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method EnrollResource not implemented")
 }
@@ -239,6 +307,78 @@ type UnsafeAuditManagerServer interface {
 
 func RegisterAuditManagerServer(s grpc.ServiceRegistrar, srv AuditManagerServer) {
 	s.RegisterService(&AuditManager_ServiceDesc, srv)
+}
+
+func _AuditManager_CreateAuditSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateAuditScheduleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditManagerServer).CreateAuditSchedule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuditManager_CreateAuditSchedule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditManagerServer).CreateAuditSchedule(ctx, req.(*CreateAuditScheduleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuditManager_UpdateAuditSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateAuditScheduleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditManagerServer).UpdateAuditSchedule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuditManager_UpdateAuditSchedule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditManagerServer).UpdateAuditSchedule(ctx, req.(*UpdateAuditScheduleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuditManager_GetAuditSchedule_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuditScheduleRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditManagerServer).GetAuditSchedule(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuditManager_GetAuditSchedule_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditManagerServer).GetAuditSchedule(ctx, req.(*GetAuditScheduleRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _AuditManager_ListAuditSchedules_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAuditSchedulesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AuditManagerServer).ListAuditSchedules(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AuditManager_ListAuditSchedules_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AuditManagerServer).ListAuditSchedules(ctx, req.(*ListAuditSchedulesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
 }
 
 func _AuditManager_EnrollResource_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
@@ -392,6 +532,22 @@ var AuditManager_ServiceDesc = grpc.ServiceDesc{
 	ServiceName: "google.cloud.auditmanager.v1.AuditManager",
 	HandlerType: (*AuditManagerServer)(nil),
 	Methods: []grpc.MethodDesc{
+		{
+			MethodName: "CreateAuditSchedule",
+			Handler:    _AuditManager_CreateAuditSchedule_Handler,
+		},
+		{
+			MethodName: "UpdateAuditSchedule",
+			Handler:    _AuditManager_UpdateAuditSchedule_Handler,
+		},
+		{
+			MethodName: "GetAuditSchedule",
+			Handler:    _AuditManager_GetAuditSchedule_Handler,
+		},
+		{
+			MethodName: "ListAuditSchedules",
+			Handler:    _AuditManager_ListAuditSchedules_Handler,
+		},
 		{
 			MethodName: "EnrollResource",
 			Handler:    _AuditManager_EnrollResource_Handler,
