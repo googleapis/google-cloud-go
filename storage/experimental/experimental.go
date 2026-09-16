@@ -104,15 +104,6 @@ func WithOtelDebugMetrics() option.ClientOption {
 	return internal.WithOtelDebugMetrics.(func() option.ClientOption)()
 }
 
-// WithParallelUploadsGlobalMemoryLimit provides an [option.ClientOption] that may
-// be passed to [cloud.google.com/go/storage.NewGRPCClient].
-// It sets the global memory limit in bytes shared across parallel uploads.
-//
-// This option is not supported at the moment.
-func WithParallelUploadsGlobalMemoryLimit(limit int64) option.ClientOption {
-	return internal.WithParallelUploadsGlobalMemoryLimit.(func(int64) option.ClientOption)(limit)
-}
-
 // WithBufferPool provides an [option.ClientOption] that may be passed to
 // [cloud.google.com/go/storage.NewGRPCClient].
 // It sets the buffer pool used to allocate memory for parallel uploads.

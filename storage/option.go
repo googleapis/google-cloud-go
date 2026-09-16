@@ -44,7 +44,6 @@ func init() {
 	storageinternal.WithDirectConnectivityEnforced = withDirectConnectivityEnforced
 	storageinternal.WithOtelMetrics = withOtelMetrics
 	storageinternal.WithOtelDebugMetrics = withOtelDebugMetrics
-	storageinternal.WithParallelUploadsGlobalMemoryLimit = withParallelUploadsGlobalMemoryLimit
 	storageinternal.WithBufferPool = withBufferPool
 }
 
@@ -93,7 +92,6 @@ type storageConfig struct {
 	grpcBidiReads                    bool
 	grpcAppendableUploads            bool
 	grpcDirectPathEnforced           bool
-	parallelUploadsGlobalMemoryLimit int64
 	bufferPool                       experimental.BufferPool
 }
 
@@ -341,24 +339,6 @@ type withOtelDebugMetricsConfig struct {
 
 func (w *withOtelDebugMetricsConfig) ApplyStorageOpt(c *storageConfig) {
 	c.enableOtelDebugMetrics = true
-}
-
-// withParallelUploadsGlobalMemoryLimit sets the global memory limit in bytes
-// shared across parallel uploads. It backs
-// [cloud.google.com/go/storage/experimental.WithParallelUploadsGlobalMemoryLimit].
-//
-// This option is not supported at the moment.
-func withParallelUploadsGlobalMemoryLimit(limit int64) option.ClientOption {
-	return &withParallelUploadsGlobalMemoryLimitConfig{limit: limit}
-}
-
-type withParallelUploadsGlobalMemoryLimitConfig struct {
-	internaloption.EmbeddableAdapter
-	limit int64
-}
-
-func (w *withParallelUploadsGlobalMemoryLimitConfig) ApplyStorageOpt(c *storageConfig) {
-	c.parallelUploadsGlobalMemoryLimit = w.limit
 }
 
 // withBufferPool sets the buffer pool used to allocate memory for parallel
