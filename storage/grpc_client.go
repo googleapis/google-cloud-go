@@ -30,6 +30,7 @@ import (
 	"cloud.google.com/go/iam/apiv1/iampb"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
+	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 
 	"google.golang.org/api/iterator"
@@ -122,12 +123,13 @@ func defaultGRPCOptions() []option.ClientOption {
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
 // storageClient interface.
 type grpcStorageClient struct {
-	raw            *gapic.Client
-	settings       *settings
-	config         *storageConfig
-	dpDiag         string
-	metrics        *clientMetrics
-	metricsCleanup func()
+	raw                        *gapic.Client
+	settings                   *settings
+	config                     *storageConfig
+	dynamicReadReqStallTimeout *bucketDelayManager
+	dpDiag                     string
+	metrics                    *clientMetrics
+	metricsCleanup             func()
 
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
@@ -199,11 +201,26 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		}()
 	}
 
+	var bd *bucketDelayManager
+	if config.readStallTimeoutConfig != nil {
+		drrstConfig := config.readStallTimeoutConfig
+		bd, err = newBucketDelayManager(
+			drrstConfig.TargetPercentile,
+			getDynamicReadReqIncreaseRateFromEnv(),
+			getDynamicReadReqInitialTimeoutSecFromEnv(drrstConfig.Min),
+			drrstConfig.Min,
+			defaultDynamicReqdReqMaxTimeout)
+		if err != nil {
+			return nil, fmt.Errorf("creating dynamic-delay: %w", err)
+		}
+	}
+
 	c := &grpcStorageClient{
-		settings:       s,
-		config:         &config,
-		metrics:        clientMetrics,
-		metricsCleanup: metricsCleanup,
+		settings:                   s,
+		config:                     &config,
+		metrics:                    clientMetrics,
+		metricsCleanup:             metricsCleanup,
+		dynamicReadReqStallTimeout: bd,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
@@ -1272,6 +1289,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader")
 	defer func() { endSpan(ctx, err) }()
 
+	requestID := uuid.New()
 	s := callSettings(c.settings, opts...)
 
 	s.gax = append(s.gax, gax.WithGRPCOptions(
@@ -1331,7 +1349,7 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 		var err error
 		var decoder *readResponseDecoder
 
-		err = run(cc, func(ctx context.Context) error {
+		openStream := func(ctx context.Context) error {
 			var databufs mem.BufferSlice
 			openAndSendReq := func() error {
 				databufs = mem.BufferSlice{}
@@ -1389,6 +1407,16 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 			}
 			err = decoder.readFullObjectResponse()
 			return err
+		}
+
+		err = run(cc, func(ctx context.Context) error {
+			decoder = nil
+			return executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, openStream, func() {
+				if decoder != nil && decoder.databufs != nil {
+					decoder.databufs.Free()
+					decoder = nil
+				}
+			})
 		}, s.retry, s.idempotent, withOperation("ReadObject"), withBucket(params.bucket), withObject(params.object))
 		if err != nil {
 			// Close the stream context we just created to ensure we don't leak
