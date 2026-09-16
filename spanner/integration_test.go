@@ -2142,9 +2142,8 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 }
 
 // Test client recovery on database recreation.
-func TestIntegration_DbRemovalRecovery(t *testing.T) {
+func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	t.Parallel()
-	t.Skip("Flaky test, skipping for now (b/514205001)")
 	// tracking the failure via b/441255724 for Spanner Omni
 	skipSpannerOmniTest(t)
 
@@ -2154,23 +2153,16 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	// from repeatedly trying to create sessions for the invalid database.
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, statements[testDialect][singerDDLStatements])
 	defer cleanup()
-	if isMultiplexEnabled {
-		// TODO: confirm that this is the valid scenario for multiplexed sessions, and what's expected behavior.
-		// wait for the multiplexed session to be created.
-		waitFor(t, func() error {
-			client.sm.mu.Lock()
-			defer client.sm.mu.Unlock()
-			if client.sm.multiplexedSession == nil {
-				return errInvalidSession
-			}
-			return nil
-		})
-		// Close the multiplexed session to prevent the session pool maintainer
-		// from repeatedly trying to use sessions for the invalid database.
+
+	// Wait for multiplexed session to be established on this database before dropping it.
+	waitFor(t, func() error {
 		client.sm.mu.Lock()
-		client.sm.multiplexedSession = nil
-		client.sm.mu.Unlock()
-	}
+		defer client.sm.mu.Unlock()
+		if client.sm.multiplexedSession == nil {
+			return errInvalidSession
+		}
+		return nil
+	})
 
 	// Drop the testing database.
 	if err := databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
@@ -2180,8 +2172,17 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	// Now, send the query.
 	iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
 	defer iter.Stop()
-	if _, err := iter.Next(); err == nil {
+	_, err := iter.Next()
+	if err == nil || err == iterator.Done {
 		t.Errorf("client sends query to removed database successfully, want it to fail")
+	} else {
+		t.Logf("Query after drop returned error: %v", err)
+		if got := ErrCode(err); got != codes.NotFound {
+			t.Errorf("query to removed database returned error code %v, want %v (err: %v)", got, codes.NotFound, err)
+		}
+		if !strings.Contains(err.Error(), "Database not found") {
+			t.Errorf("expected error to indicate 'Database not found', got: %v", err)
+		}
 	}
 	verifyDirectPathRemoteAddress(t)
 
@@ -2230,23 +2231,49 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 		}
 	}
 
-	// Now, send the query again.
-	// In real Cloud Spanner, after dropping and recreating a database, GFE location/directory
-	// cache propagation across all zones and workers can take up to several minutes.
-	// Retry sending the query until the context deadline.
-	for {
+	// The original client must not recover; queries should fail with Database not found
+	// (or Session not found when running against the emulator).
+	deadline := time.Now().Add(30 * time.Second)
+	for attempt := 0; time.Now().Before(deadline); attempt++ {
 		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
 		_, err := iter.Next()
 		iter.Stop()
+		t.Logf("Attempt %d after recreate returned error: %v", attempt, err)
 		if err == nil || err == iterator.Done {
-			break
+			t.Fatalf("attempt %d: client silently reconnected to the recreated database, want permanent failure", attempt)
 		}
-
+		if got := ErrCode(err); got != codes.NotFound {
+			t.Errorf("attempt %d: got error code %v, want %v (err: %v)", attempt, got, codes.NotFound, err)
+		}
+		errStr := err.Error()
+		if isEmulatorEnvSet() {
+			if !strings.Contains(errStr, "Session not found") {
+				t.Errorf("attempt %d: expected error to indicate 'Session not found' on emulator, got %v", attempt, err)
+			}
+		} else {
+			if !strings.Contains(errStr, "Database not found") {
+				t.Errorf("attempt %d: expected error to indicate 'Database not found', got %v", attempt, err)
+			}
+		}
 		select {
 		case <-ctx.Done():
 			t.Fatalf("timeout waiting for recreated database to be reachable: %v", ctx.Err())
 		case <-time.After(time.Second):
 		}
+	}
+
+	// A newly created client must be able to use the recreated database.
+	newClient, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}})
+	if err != nil {
+		t.Fatalf("failed to create new client for recreated database: %v", err)
+	}
+	defer newClient.Close()
+
+	iter = newClient.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+	_, err = iter.Next()
+	iter.Stop()
+	if err != nil && err != iterator.Done {
+		t.Fatalf("newly created client failed to query the recreated database: %v", err)
 	}
 	verifyDirectPathRemoteAddress(t)
 }
