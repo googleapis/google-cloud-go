@@ -1626,6 +1626,11 @@
           "jsonpath": "$.clientLibrary.version",
           "path": "examples/apiv1/snippet_metadata.google.cloud.networkservices.v1.json",
           "type": "json"
+        },
+        {
+          "jsonpath": "$.clientLibrary.version",
+          "path": "examples/apiv1beta1/snippet_metadata.google.cloud.networkservices.v1beta1.json",
+          "type": "json"
         }
       ]
     },

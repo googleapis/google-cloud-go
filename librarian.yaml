@@ -1020,6 +1020,7 @@ libraries:
     version: 1.5.0
     apis:
       - path: google/cloud/networkservices/v1
+      - path: google/cloud/networkservices/v1beta1
   - name: notebooks
     version: 1.18.0
     apis:
