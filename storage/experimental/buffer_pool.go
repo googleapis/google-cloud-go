@@ -14,17 +14,28 @@
 
 package experimental
 
+import (
+	"context"
+	"errors"
+)
+
+// ErrPoolFull is returned by BufferPool.TryGet when the pool's memory budget is exhausted.
+var ErrPoolFull = errors.New("storage: buffer pool is full")
+
 // This interface is not supported at the moment.
 type BufferPool interface {
 	// Get retrieves a single chunk of memory. It returns a slice that is
 	// optimally sized by the pool, guaranteeing that len(buf) <= maxSize.
-	// It blocks/waits if the pool's memory budget is currently exhausted.
-	Get(maxSize int) ([]byte, error)
+	// It blocks until the required memory becomes available or the context is cancelled.
+	Get(ctx context.Context, maxSize int) ([]byte, error)
 
 	// TryGet retrieves a chunk of memory up to maxSize bytes.
-	// It is non-blocking and returns an error if memory is unavailable.
+	// It is non-blocking and either returns a memory chunk or fails instantly with an
+	// error (such as [ErrPoolFull]) if memory is unavailable.
 	TryGet(maxSize int) ([]byte, error)
 
 	// Put returns a previously acquired buffer to the pool.
+	// After calling Put, the caller must not retain, read, or write to the buffer.
+	// The exact slice returned by Get or TryGet must be passed back.
 	Put(buf []byte)
 }
