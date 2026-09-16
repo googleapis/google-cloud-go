@@ -13,6 +13,8 @@
 package storage
 
 import (
+	"context"
+	"errors"
 	"fmt"
 	"math"
 	"math/rand"
@@ -22,6 +24,7 @@ import (
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/google/uuid"
 )
 
 func applySamples(numSamples int, expectedValue float64, rnd *rand.Rand, d *dynamicDelay) int {
@@ -382,4 +385,76 @@ func TestBucketDelayManagerMapSize(t *testing.T) {
 	if len(b.delays) != numBuckets {
 		t.Errorf("Expected %d buckets in the map, but got %d", numBuckets, len(b.delays))
 	}
+}
+
+func TestExecuteWithReadStallTimeout(t *testing.T) {
+	requestID := uuid.New()
+
+	t.Run("nil_delay_manager", func(t *testing.T) {
+		executed := false
+		err := executeWithReadStallTimeout(context.Background(), nil, "bucket", requestID, func(ctx context.Context) error {
+			executed = true
+			return nil
+		}, nil)
+		if err != nil {
+			t.Errorf("expected nil error, got %v", err)
+		}
+		if !executed {
+			t.Error("expected openStream to be executed")
+		}
+	})
+
+	t.Run("fast_success", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 100*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		err := executeWithReadStallTimeout(context.Background(), dm, "bucket", requestID, func(ctx context.Context) error {
+			time.Sleep(2 * time.Millisecond)
+			return nil
+		}, nil)
+		if err != nil {
+			t.Errorf("expected nil error, got %v", err)
+		}
+	})
+
+	t.Run("stall_timeout_triggered", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 10*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		initialVal := dm.getValue("bucket")
+		stalled := false
+
+		err := executeWithReadStallTimeout(context.Background(), dm, "bucket", requestID, func(ctx context.Context) error {
+			<-ctx.Done()
+			return ctx.Err()
+		}, func() {
+			stalled = true
+		})
+
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Errorf("expected context.DeadlineExceeded, got %v", err)
+		}
+		if !stalled {
+			t.Error("expected onStall callback to be invoked")
+		}
+		if newVal := dm.getValue("bucket"); newVal <= initialVal {
+			t.Errorf("expected dynamic timeout to increase, initial %v, new %v", initialVal, newVal)
+		}
+	})
+
+	t.Run("outer_context_cancelled", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 100*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		initialVal := dm.getValue("bucket")
+
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel() // Cancel outer context immediately.
+
+		err := executeWithReadStallTimeout(ctx, dm, "bucket", requestID, func(ctx context.Context) error {
+			<-ctx.Done()
+			return ctx.Err()
+		}, nil)
+
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("expected context.Canceled, got %v", err)
+		}
+		if newVal := dm.getValue("bucket"); newVal != initialVal {
+			t.Errorf("expected dynamic timeout NOT to increase on outer context cancellation, initial %v, new %v", initialVal, newVal)
+		}
+	})
 }
