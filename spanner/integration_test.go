@@ -2172,18 +2172,18 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	}
 
 	// Wait until the database drop takes effect across all gRPC channels and backend endpoints.
-	// When load balancing across multiple channels or DirectPath endpoints, backends may briefly
-	// serve cached metadata after DropDatabase before returning Database not found.
-	dropTime := time.Now()
-	minPostDropPropagation := 60 * time.Second
-	minConsecutiveNotFound := 20
+	// With 4 gRPC channels and up to 6 DirectPath subchannels per channel (24 endpoints total),
+	// require at least 48 consecutive Database not found responses (2 full round-robin cycles
+	// across all subchannels) within a maximum of 90s (to accommodate the 60s server-side cache TTL).
+	const minConsecutiveNotFound = 48
 	pollInterval := 500 * time.Millisecond
 	if isEmulatorEnvSet() {
-		minPostDropPropagation = 0
-		minConsecutiveNotFound = 4
 		pollInterval = 100 * time.Millisecond
 	}
+	dropDeadline := time.Now().Add(90 * time.Second)
 	consecutiveNotFound := 0
+	ticker := time.NewTicker(pollInterval)
+	defer ticker.Stop()
 	for {
 		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
 		_, err := iter.Next()
@@ -2191,27 +2191,27 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 		if err != nil && err != iterator.Done {
 			if got := ErrCode(err); got == codes.NotFound && strings.Contains(err.Error(), "Database not found") {
 				consecutiveNotFound++
-				if consecutiveNotFound == 1 {
-					t.Logf("First Database not found observed after %v: %v", time.Since(dropTime).Round(time.Millisecond), err)
-				}
-				if consecutiveNotFound >= minConsecutiveNotFound && time.Since(dropTime) >= minPostDropPropagation {
-					t.Logf("DropDatabase propagated across all channels after %v (%d consecutive NotFound errors)", time.Since(dropTime).Round(time.Millisecond), consecutiveNotFound)
+				if consecutiveNotFound >= minConsecutiveNotFound {
+					t.Logf("DropDatabase propagated across all channels (%d consecutive NotFound errors)", consecutiveNotFound)
 					break
 				}
-			} else {
-				t.Logf("Query after drop returned unexpected error (resetting counter): %v", err)
-				consecutiveNotFound = 0
+				continue
 			}
+			t.Logf("Query after drop returned unexpected error (resetting counter): %v", err)
+			consecutiveNotFound = 0
 		} else {
 			if consecutiveNotFound > 0 {
 				t.Logf("Query after drop succeeded on a channel with stale cache after %d NotFound errors; resetting counter", consecutiveNotFound)
 			}
 			consecutiveNotFound = 0
 		}
+		if time.Now().After(dropDeadline) {
+			t.Fatalf("timeout (90s) waiting for %d consecutive Database not found errors after drop (got %d, last err: %v)", minConsecutiveNotFound, consecutiveNotFound, err)
+		}
 		select {
 		case <-ctx.Done():
-			t.Fatalf("timeout waiting for database drop to propagate across all channels: %v", ctx.Err())
-		case <-time.After(pollInterval):
+			t.Fatalf("context done waiting for database drop to propagate across all channels: %v", ctx.Err())
+		case <-ticker.C:
 		}
 	}
 	verifyDirectPathRemoteAddress(t)
@@ -2238,14 +2238,14 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	if err != nil {
 		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
 	}
-	if _, err := op.Wait(ctx); err != nil {
-		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
-	}
 	defer func() {
 		cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		defer cleanupCancel()
 		_ = databaseAdmin.DropDatabase(cleanupCtx, &adminpb.DropDatabaseRequest{Database: dbPath})
 	}()
+	if _, err := op.Wait(ctx); err != nil {
+		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
+	}
 	if testDialect == adminpb.DatabaseDialect_POSTGRESQL {
 		op, err := databaseAdmin.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
 			Database: dbPath,
@@ -2266,10 +2266,35 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 		}
 	}
 
-	// The original client must not recover; queries should fail with Database not found
-	// (or Session not found when running against the emulator).
-	deadline := time.Now().Add(30 * time.Second)
-	for attempt := 0; time.Now().Before(deadline); attempt++ {
+	// Verify that a newly created client is able to query the recreated database.
+	// Doing this first ensures the recreated database is live and reachable before
+	// asserting that the original client permanently fails across all channels.
+	newClient, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}})
+	if err != nil {
+		t.Fatalf("failed to create new client for recreated database: %v", err)
+	}
+	defer newClient.Close()
+
+	newClientTicker := time.NewTicker(pollInterval)
+	defer newClientTicker.Stop()
+	for {
+		iter := newClient.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+		_, err := iter.Next()
+		iter.Stop()
+		if err == nil || err == iterator.Done {
+			break
+		}
+		select {
+		case <-ctx.Done():
+			t.Fatalf("timeout waiting for recreated database to be reachable on new client: %v (last err: %v)", ctx.Err(), err)
+		case <-newClientTicker.C:
+		}
+	}
+
+	// Once the recreated database is confirmed live via newClient, verify across all
+	// channels that the original client does not recover and continues failing with
+	// Database not found (or Session not found when running against the emulator).
+	for attempt := 0; attempt < minConsecutiveNotFound; attempt++ {
 		client.sm.mu.Lock()
 		currSessionID := ""
 		if client.sm.multiplexedSession != nil {
@@ -2299,34 +2324,6 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 			if !strings.Contains(errStr, "Database not found") {
 				t.Errorf("attempt %d: expected error to indicate 'Database not found', got %v", attempt, err)
 			}
-		}
-		select {
-		case <-ctx.Done():
-			t.Fatalf("context expired while verifying that original client remains invalid: %v", ctx.Err())
-		case <-time.After(time.Second):
-		}
-	}
-
-	// A newly created client must be able to use the recreated database.
-	newClient, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}})
-	if err != nil {
-		t.Fatalf("failed to create new client for recreated database: %v", err)
-	}
-	defer newClient.Close()
-
-	// Retry sending the query on the new client until any negative location
-	// caches expire and the recreated database is reachable.
-	for {
-		iter := newClient.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
-		_, err := iter.Next()
-		iter.Stop()
-		if err == nil || err == iterator.Done {
-			break
-		}
-		select {
-		case <-ctx.Done():
-			t.Fatalf("timeout waiting for recreated database to be reachable on new client: %v (last err: %v)", ctx.Err(), err)
-		case <-time.After(time.Second):
 		}
 	}
 	verifyDirectPathRemoteAddress(t)
