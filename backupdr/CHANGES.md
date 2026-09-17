@@ -3,6 +3,13 @@
 
 
 
+## [1.17.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.16.0...backupdr/v1.17.0) (2026-09-17)
+
+
+### Features
+
+* **google/cloud/backupdr/v1beta:** Add backupdr ([#20534](https://github.com/googleapis/google-cloud-go/issues/20534)) ([19651ea](https://github.com/googleapis/google-cloud-go/commit/19651eab31216a6decd2f543d9a186abe97e2ae1))
+
 ## [1.16.0](https://github.com/googleapis/google-cloud-go/compare/backupdr/v1.15.0...backupdr/v1.16.0) (2026-07-23)
 
 
