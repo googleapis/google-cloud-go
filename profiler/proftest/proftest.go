@@ -433,7 +433,7 @@ func parseBenchmarkNumber(line string, numBenchmarks int, benchmarkNumRE *regexp
 	}
 	benchNum, err := strconv.Atoi(m[1])
 	if err != nil {
-		return 0, fmt.Errorf("line %q has invalid benchmark number %q: %w", line, benchNum, err)
+		return 0, fmt.Errorf("line %q has invalid benchmark number %d: %w", line, benchNum, err)
 	}
 	if benchNum < 0 || benchNum >= numBenchmarks {
 		return 0, fmt.Errorf("line %q had invalid benchmark number %d: benchmark number must be between 0 and %d", line, benchNum, numBenchmarks-1)

@@ -270,7 +270,7 @@ func TestRangeReaderRetry(t *testing.T) {
 				t.Errorf("#%d: got %q, want %q", i, got, test.want)
 			}
 			if r.Attrs.Size != int64(len(readData)) {
-				t.Errorf("#%d: got Attrs.Size=%q, want %q", i, r.Attrs.Size, len(readData))
+				t.Errorf("#%d: got Attrs.Size=%d, want %q", i, r.Attrs.Size, len(readData))
 			}
 			wantOffset := test.offset
 			if wantOffset < 0 {
@@ -280,7 +280,7 @@ func TestRangeReaderRetry(t *testing.T) {
 				}
 			}
 			if got := r.Attrs.StartOffset; got != wantOffset {
-				t.Errorf("#%d: got Attrs.Offset=%q, want %q", i, got, wantOffset)
+				t.Errorf("#%d: got Attrs.Offset=%d, want %d", i, got, wantOffset)
 			}
 		}
 		r, err := obj.NewRangeReader(ctx, -100, 10)
@@ -364,7 +364,7 @@ func TestFakeReadCloser(t *testing.T) {
 		}
 		han := f.ReadHandle()
 		if len(han) != 0 {
-			t.Fatalf("i=%d: got len(ReadHandle) %q, want %q", i, han, 0)
+			t.Fatalf("i=%d: got len(ReadHandle) %d, want %d", i, han, 0)
 		}
 	}
 }
