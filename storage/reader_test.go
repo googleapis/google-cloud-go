@@ -270,7 +270,7 @@ func TestRangeReaderRetry(t *testing.T) {
 				t.Errorf("#%d: got %q, want %q", i, got, test.want)
 			}
 			if r.Attrs.Size != int64(len(readData)) {
-				t.Errorf("#%d: got Attrs.Size=%d, want %q", i, r.Attrs.Size, len(readData))
+				t.Errorf("#%d: got Attrs.Size=%d, want %d", i, r.Attrs.Size, len(readData))
 			}
 			wantOffset := test.offset
 			if wantOffset < 0 {
