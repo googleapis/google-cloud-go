@@ -1,6 +1,6 @@
 module cloud.google.com/go/compute
 
-go 1.25.0
+go 1.26.0
 
 require (
 	cloud.google.com/go v0.112.2
