@@ -172,10 +172,16 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 	// Ignore error since header is only being used to record builtin metrics
 	// Failure to record metrics should not fail the operation
 	*headerMD, _ = stream.Header()
+	seen := make([]bool, len(entryErrs))
 	for {
 		res, err := stream.Recv()
 		if err == io.EOF {
 			*trailerMD = stream.Trailer()
+			for i, s := range seen {
+				if !s {
+					entryErrs[i].Err = status.Error(codes.Internal, "bigtable: missing entry result in MutateRows response")
+				}
+			}
 			break
 		}
 		if err != nil {
@@ -185,11 +191,14 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 		}
 
 		for _, entry := range res.Entries {
-			s := entry.Status
-			if s.Code == int32(codes.OK) {
-				entryErrs[entry.Index].Err = nil
-			} else {
-				entryErrs[entry.Index].Err = status.Error(codes.Code(s.Code), s.Message)
+			if entry.Index >= 0 && int(entry.Index) < len(entryErrs) {
+				seen[entry.Index] = true
+				s := entry.Status
+				if s.Code == int32(codes.OK) {
+					entryErrs[entry.Index].Err = nil
+				} else {
+					entryErrs[entry.Index].Err = status.Error(codes.Code(s.Code), s.Message)
+				}
 			}
 		}
 		after(res)

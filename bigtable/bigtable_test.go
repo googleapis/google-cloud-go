@@ -37,6 +37,7 @@ import (
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/option"
 	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	rpcpb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/genproto/googleapis/type/date"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -2411,3 +2412,56 @@ func newUnaryClientInterceptor(prepReqCount *int, respPtrs *[]prepareQueryResp, 
 		return nil
 	}
 }
+
+func TestApplyBulk_MissingEntryResult(t *testing.T) {
+	ctx := context.Background()
+
+	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if strings.HasSuffix(info.FullMethod, "MutateRows") {
+			req := new(btpb.MutateRowsRequest)
+			if err := ss.RecvMsg(req); err != nil {
+				return err
+			}
+			// Return only entries 0 and 2 (omitting entry 1) on an OK stream
+			res := &btpb.MutateRowsResponse{
+				Entries: []*btpb.MutateRowsResponse_Entry{
+					{Index: 0, Status: &rpcpb.Status{Code: int32(codes.OK)}},
+					{Index: 2, Status: &rpcpb.Status{Code: int32(codes.OK)}},
+				},
+			}
+			return ss.SendMsg(res)
+		}
+		return handler(srv, ss)
+	}
+
+	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
+	if err != nil {
+		t.Fatalf("fake server setup: %v", err)
+	}
+	defer cleanup()
+
+	m1 := NewMutation()
+	m1.Set("cf", "col", 1, []byte("v1"))
+	m2 := NewMutation()
+	m2.Set("cf", "col", 1, []byte("v2"))
+	m3 := NewMutation()
+	m3.Set("cf", "col", 1, []byte("v3"))
+
+	errs, err := tbl.ApplyBulk(ctx, []string{"row1", "row2", "row3"}, []*Mutation{m1, m2, m3})
+	if err != nil {
+		t.Fatalf("ApplyBulk returned top-level error: %v, want nil", err)
+	}
+	if len(errs) != 3 {
+		t.Fatalf("ApplyBulk returned %d errors, want 3", len(errs))
+	}
+	if errs[0] != nil {
+		t.Errorf("errs[0] = %v, want nil", errs[0])
+	}
+	if status.Code(errs[1]) != codes.Internal {
+		t.Errorf("status.Code(errs[1]) = %v, want %v (err: %v)", status.Code(errs[1]), codes.Internal, errs[1])
+	}
+	if errs[2] != nil {
+		t.Errorf("errs[2] = %v, want nil", errs[2])
+	}
+}
+
