@@ -364,7 +364,7 @@ func TestFakeReadCloser(t *testing.T) {
 		}
 		han := f.ReadHandle()
 		if len(han) != 0 {
-			t.Fatalf("i=%d: got len(ReadHandle) %d, want %d", i, han, 0)
+			t.Fatalf("i=%d: got len(ReadHandle) %d, want %d", i, len(han), 0)
 		}
 	}
 }
