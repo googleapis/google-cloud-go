@@ -3,6 +3,18 @@
 
 
 
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.83.0...bigquery/v1.84.0) (2026-09-17)
+
+
+### Features
+
+* **bigquery:** Add JobCreationMode to QueryConfig to allow per query override ([#20510](https://github.com/googleapis/google-cloud-go/issues/20510)) ([953f5cc](https://github.com/googleapis/google-cloud-go/commit/953f5ccb679e8628992b6d25dd3190731f434060))
+
+
+### Bug Fixes
+
+* **bigquery:** Plumb query ID on polls ([#20512](https://github.com/googleapis/google-cloud-go/issues/20512)) ([ebb729d](https://github.com/googleapis/google-cloud-go/commit/ebb729d1e6b60156ee1b6c4a2b295a0ed1e77243)), refs [#20435](https://github.com/googleapis/google-cloud-go/issues/20435)
+
 ## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.82.0...bigquery/v1.83.0) (2026-09-02)
 
 
