@@ -1,5 +1,19 @@
 # Changes
 
+## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.57.0...bigtable/v1.58.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
+
+### Bug Fixes
+
+* **various:** Address format directive issues ([#20547](https://github.com/googleapis/google-cloud-go/issues/20547)) ([e2e1047](https://github.com/googleapis/google-cloud-go/commit/e2e104731999b3bfc75ed0b8f2d71844ced3b073))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.56.0...bigtable/v1.57.0) (2026-09-10)
 
 
