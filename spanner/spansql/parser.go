@@ -1244,7 +1244,7 @@ func (p *parser) parseCreateTable() (*CreateTable, *parseError) {
 			Parent:   pname,
 			OnDelete: NoActionOnDelete,
 		}
-		// The ON DELETE clause is optional; it defaults to NoActionOnDelete.
+		// The ON DELETE clause is optional; it defaults to OnDeleteUnspecified.
 		if p.eat("ON", "DELETE") {
 			od, err := p.parseOnDelete()
 			if err != nil {
@@ -2681,8 +2681,8 @@ func (p *parser) parseForeignKey() (ForeignKey, *parseError) {
 	if err != nil {
 		return ForeignKey{}, err
 	}
-	// The ON DELETE clause is optional; it defaults to NoActionOnDelete.
-	fk.OnDelete = NoActionOnDelete
+	// The ON DELETE clause is optional; it defaults to OnDeleteUnspecified.
+	fk.OnDelete = OnDeleteUnspecified
 	if p.eat("ON", "DELETE") {
 		fk.OnDelete, err = p.parseOnDelete()
 		if err != nil {
