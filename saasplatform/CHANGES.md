@@ -1,5 +1,12 @@
 # Changes
 
+## [0.11.0](https://github.com/googleapis/google-cloud-go/compare/saasplatform/v0.10.0...saasplatform/v0.11.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [0.10.0](https://github.com/googleapis/google-cloud-go/compare/saasplatform/v0.9.0...saasplatform/v0.10.0) (2026-07-13)
 
 
