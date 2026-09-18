@@ -39,7 +39,6 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/metric/exemplar"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 
@@ -204,7 +203,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		provider = sdkmetric.NewMeterProvider(
 			sdkmetric.WithReader(reader),
 			sdkmetric.WithResource(res),
-			sdkmetric.WithExemplarFilter(exemplar.TraceBasedFilter),
+			// sdkmetric.WithExemplarFilter(exemplar.TraceBasedFilter),
 			sdkmetric.WithView(
 				sdkmetric.NewView(
 					sdkmetric.Instrument{Name: "rpc.client.call.duration", Kind: sdkmetric.InstrumentKindHistogram},
@@ -747,6 +746,9 @@ func computeURLTemplate(path, host string) string {
 }
 
 func stripPort(host string) string {
+	if !strings.Contains(host, ":") {
+		return host
+	}
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		return h
 	}
@@ -1196,7 +1198,8 @@ func injectAPIMethod(ctx context.Context, attrs []attribute.KeyValue) []attribut
 }
 
 type metricsState struct {
-	target    atomic.Pointer[string]
+	target    string
+	targetMu  sync.RWMutex
 	method    string
 	startTime time.Time
 	metrics   *clientMetrics
@@ -1208,7 +1211,9 @@ func (s *metricsState) setTarget(t string) {
 	if s == nil {
 		return
 	}
-	s.target.Store(&t)
+	s.targetMu.Lock()
+	s.target = t
+	s.targetMu.Unlock()
 }
 
 func (s *metricsState) getSystemName() string {
@@ -1225,10 +1230,9 @@ func (s *metricsState) getTarget() string {
 	if s == nil {
 		return ""
 	}
-	if p := s.target.Load(); p != nil {
-		return *p
-	}
-	return ""
+	s.targetMu.RLock()
+	defer s.targetMu.RUnlock()
+	return s.target
 }
 
 func contextWithMetricsState(ctx context.Context, state *metricsState) context.Context {
