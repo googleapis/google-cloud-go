@@ -93,7 +93,7 @@ import (
 // It is an error to fetch a NULL value into any other type.
 type Row struct {
 	fields []*sppb.StructType_Field
-	vals   []*proto3.Value // keep decoded for now
+	vals   []*internalValue
 }
 
 // String implements fmt.stringer.
@@ -116,7 +116,7 @@ func NewRow(columnNames []string, columnValues []interface{}) (*Row, error) {
 	}
 	r := Row{
 		fields: make([]*sppb.StructType_Field, len(columnValues)),
-		vals:   make([]*proto3.Value, len(columnValues)),
+		vals:   make([]*internalValue, len(columnValues)),
 	}
 	for i := range columnValues {
 		val, typ, err := encodeValue(columnValues[i])
@@ -127,7 +127,7 @@ func NewRow(columnNames []string, columnValues []interface{}) (*Row, error) {
 			Name: columnNames[i],
 			Type: typ,
 		}
-		r.vals[i] = val
+		r.vals[i] = publicValueToInternal(val)
 	}
 	return &r, nil
 }
@@ -193,7 +193,7 @@ func (r *Row) ColumnValue(i int) *proto3.Value {
 	if i < 0 || i >= len(r.vals) {
 		return nil
 	}
-	return r.vals[i]
+	return internalValueToPublic(r.vals[i])
 }
 
 // errColIdxOutOfRange returns error for requested column index is out of the
@@ -239,7 +239,7 @@ func (r *Row) Column(i int, ptr interface{}) error {
 	if r.fields[i] == nil {
 		return errNilColType(i)
 	}
-	if err := decodeValue(r.vals[i], r.fields[i].Type, ptr); err != nil {
+	if err := decodeInternalValue(r.vals[i], r.fields[i].Type, ptr); err != nil {
 		return errDecodeColumn(i, err)
 	}
 	return nil
@@ -349,7 +349,7 @@ func (r *Row) ToStruct(p interface{}) error {
 	// Call decodeStruct directly to decode the row as a typed proto.ListValue.
 	return decodeStruct(
 		&sppb.StructType{Fields: r.fields},
-		&proto3.ListValue{Values: r.vals},
+		internalListValueFromValues(r.vals),
 		p,
 		false,
 	)
@@ -391,7 +391,7 @@ func (r *Row) ToStructLenient(p interface{}) error {
 	// Call decodeStruct directly to decode the row as a typed proto.ListValue.
 	return decodeStruct(
 		&sppb.StructType{Fields: r.fields},
-		&proto3.ListValue{Values: r.vals},
+		internalListValueFromValues(r.vals),
 		p,
 		true,
 	)

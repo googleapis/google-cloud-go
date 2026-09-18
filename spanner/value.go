@@ -1575,7 +1575,7 @@ func errDstNotForNull(dst interface{}) error {
 }
 
 // errBadEncoding returns error for decoding wrongly encoded types.
-func errBadEncoding(v *proto3.Value, err error) error {
+func errBadEncoding(v interface{}, err error) error {
 	return spannerErrorf(codes.FailedPrecondition, "%v wasn't correctly encoded: <%v>", v, err)
 }
 
@@ -1593,7 +1593,7 @@ func errNilNotAllowed(dst interface{}, name string) error {
 	return spannerErrorf(codes.InvalidArgument, "destination %T does not support Null values. Use %s, an array with pointer type elements to read Null values", dst, name)
 }
 
-func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool) error {
+func parseNullTime(v *internalValue, p *NullTime, code sppb.TypeCode, isNull bool) error {
 	if p == nil {
 		return errNilDst(p)
 	}
@@ -1619,7 +1619,7 @@ func parseNullTime(v *proto3.Value, p *NullTime, code sppb.TypeCode, isNull bool
 
 // tryDecodePointerToDecoder attempts to decode a **T where *T implements Decoder
 // Returns (handled, error) - handled=true if this case was processed
-func tryDecodePointerToDecoder(ptr interface{}, t *sppb.Type, v *proto3.Value, isNull bool) (bool, error) {
+func tryDecodePointerToDecoder(ptr interface{}, t *sppb.Type, v *internalValue, isNull bool) (bool, error) {
 	rv := reflect.ValueOf(ptr)
 	if rv.Kind() != reflect.Ptr || rv.Type().Elem().Kind() != reflect.Ptr {
 		return false, nil
@@ -1652,9 +1652,14 @@ func tryDecodePointerToDecoder(ptr interface{}, t *sppb.Type, v *proto3.Value, i
 	return false, nil
 }
 
-// decodeValue decodes a protobuf Value into a pointer to a Go value, as
-// specified by sppb.Type.
+// decodeValue is the public-structpb compatibility entry point used by
+// GenericColumnValue and package tests.
 func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeOptions) error {
+	return decodeInternalValue(publicValueToInternal(v), t, ptr, opts...)
+}
+
+// decodeInternalValue decodes the build-mode internal Value directly.
+func decodeInternalValue(v *internalValue, t *sppb.Type, ptr interface{}, opts ...DecodeOptions) error {
 	if v == nil {
 		return errNilSrc()
 	}
@@ -1681,7 +1686,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		ptr = pve.Interface()
 	}
 
-	_, isNull := v.Kind.(*proto3.Value_NullValue)
+	isNull := internalValueIsNull(v)
 
 	// Do the decoding based on the type of ptr.
 	switch p := ptr.(type) {
@@ -2654,7 +2659,7 @@ func decodeValue(v *proto3.Value, t *sppb.Type, ptr interface{}, opts ...DecodeO
 		}
 		*p = y
 	case *GenericColumnValue:
-		*p = GenericColumnValue{Type: t, Value: v}
+		*p = GenericColumnValue{Type: t, Value: internalValueToPublic(v)}
 	case protoreflect.Enum:
 		if p == nil {
 			return errNilDst(p)
@@ -3333,10 +3338,10 @@ func getDecodableSpannerType(ptr interface{}, isPtr bool) decodableSpannerType {
 // decodeValueToCustomType decodes a protobuf Value into a pointer to a Go
 // value. It must be possible to convert the value to the type pointed to by
 // the pointer.
-func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb.Type, acode sppb.TypeCode, atypeAnnotation sppb.TypeAnnotationCode, ptr interface{}) error {
+func (dsc decodableSpannerType) decodeValueToCustomType(v *internalValue, t *sppb.Type, acode sppb.TypeCode, atypeAnnotation sppb.TypeAnnotationCode, ptr interface{}) error {
 	code := t.Code
 	typeAnnotation := t.TypeAnnotation
-	_, isNull := v.Kind.(*proto3.Value_NullValue)
+	isNull := internalValueIsNull(v)
 	if dsc == spannerTypeInvalid {
 		return errNilDst(ptr)
 	}
@@ -3790,13 +3795,17 @@ func (dsc decodableSpannerType) decodeValueToCustomType(v *proto3.Value, t *sppb
 }
 
 // errSrvVal returns an error for getting a wrong source protobuf value in decoding.
-func errSrcVal(v *proto3.Value, want string) error {
+func errSrcVal(v interface{}, want string) error {
+	if value, ok := v.(*internalValue); ok {
+		return spannerErrorf(codes.FailedPrecondition, "cannot use %s(Kind: %s) as %s Value", internalValueForError(value), internalValueKindName(value), want)
+	}
+	value, _ := v.(*proto3.Value)
 	return spannerErrorf(codes.FailedPrecondition, "cannot use %v(Kind: %T) as %s Value",
-		v, v.GetKind(), want)
+		v, value.GetKind(), want)
 }
 
 // getIntegerFromStringValue returns the integer value of the string value encoded in proto3.Value v
-func getIntegerFromStringValue(v *proto3.Value) (int64, error) {
+func getIntegerFromStringValue(v *internalValue) (int64, error) {
 	x, err := getStringValue(v)
 	if err != nil {
 		return 0, err
@@ -3809,7 +3818,7 @@ func getIntegerFromStringValue(v *proto3.Value) (int64, error) {
 }
 
 // getBytesFromStringValue returns the bytes value of the string value encoded in proto3.Value v
-func getBytesFromStringValue(v *proto3.Value) ([]byte, error) {
+func getBytesFromStringValue(v *internalValue) ([]byte, error) {
 	x, err := getStringValue(v)
 	if err != nil {
 		return nil, err
@@ -3823,43 +3832,46 @@ func getBytesFromStringValue(v *proto3.Value) ([]byte, error) {
 
 // getStringValue returns the string value encoded in proto3.Value v whose
 // kind is proto3.Value_StringValue.
-func getStringValue(v *proto3.Value) (string, error) {
-	if x, ok := v.GetKind().(*proto3.Value_StringValue); ok && x != nil {
-		return x.StringValue, nil
+func getStringValue(v *internalValue) (string, error) {
+	if value, ok := internalGetStringValue(v); ok {
+		return value, nil
 	}
 	return "", errSrcVal(v, "String")
 }
 
 // getBoolValue returns the bool value encoded in proto3.Value v whose
 // kind is proto3.Value_BoolValue.
-func getBoolValue(v *proto3.Value) (bool, error) {
-	if x, ok := v.GetKind().(*proto3.Value_BoolValue); ok && x != nil {
-		return x.BoolValue, nil
+func getBoolValue(v *internalValue) (bool, error) {
+	if value, ok := internalGetBoolValue(v); ok {
+		return value, nil
 	}
 	return false, errSrcVal(v, "Bool")
 }
 
 // getListValue returns the proto3.ListValue contained in proto3.Value v whose
 // kind is proto3.Value_ListValue.
-func getListValue(v *proto3.Value) (*proto3.ListValue, error) {
-	if x, ok := v.GetKind().(*proto3.Value_ListValue); ok && x != nil {
-		return x.ListValue, nil
+func getListValue(v *internalValue) (*internalListValue, error) {
+	if value, ok := internalGetListValue(v); ok {
+		return value, nil
 	}
 	return nil, errSrcVal(v, "List")
 }
 
 // getGenericValue returns the interface{} value encoded in proto3.Value.
-func getGenericValue(t *sppb.Type, v *proto3.Value) (interface{}, error) {
-	switch x := v.GetKind().(type) {
-	case *proto3.Value_NumberValue:
-		return x.NumberValue, nil
-	case *proto3.Value_BoolValue:
-		return x.BoolValue, nil
-	case *proto3.Value_StringValue:
-		return x.StringValue, nil
-	case *proto3.Value_ListValue:
-		return x.ListValue, nil
-	case *proto3.Value_NullValue:
+func getGenericValue(t *sppb.Type, v *internalValue) (interface{}, error) {
+	if internalValueIsNull(v) {
+		return getTypedNil(t)
+	}
+	switch internalValueKindOf(v) {
+	case internalValueNumber:
+		return v.GetNumberValue(), nil
+	case internalValueBool:
+		return v.GetBoolValue(), nil
+	case internalValueString:
+		return v.GetStringValue(), nil
+	case internalValueList:
+		return internalListValueToPublic(v.GetListValue()), nil
+	case internalValueNull:
 		return getTypedNil(t)
 	default:
 		return 0, errSrcVal(v, "Number, Bool, String, List")
@@ -3897,18 +3909,18 @@ func errUnexpectedFloat64Str(s string) error {
 // getFloat64Value returns the float64 value encoded in proto3.Value v whose
 // kind is proto3.Value_NumberValue / proto3.Value_StringValue.
 // Cloud Spanner uses string to encode NaN, Infinity and -Infinity.
-func getFloat64Value(v *proto3.Value) (float64, error) {
-	switch x := v.GetKind().(type) {
-	case *proto3.Value_NumberValue:
-		if x == nil {
+func getFloat64Value(v *internalValue) (float64, error) {
+	switch internalValueKindOf(v) {
+	case internalValueNumber:
+		if value, ok := internalGetNumberValue(v); ok {
+			return value, nil
+		}
+	case internalValueString:
+		value, ok := internalGetStringValue(v)
+		if !ok {
 			break
 		}
-		return x.NumberValue, nil
-	case *proto3.Value_StringValue:
-		if x == nil {
-			break
-		}
-		switch x.StringValue {
+		switch value {
 		case "NaN":
 			return math.NaN(), nil
 		case "Infinity":
@@ -3916,7 +3928,7 @@ func getFloat64Value(v *proto3.Value) (float64, error) {
 		case "-Infinity":
 			return math.Inf(-1), nil
 		default:
-			return 0, errUnexpectedFloat64Str(x.StringValue)
+			return 0, errUnexpectedFloat64Str(value)
 		}
 	}
 	return 0, errSrcVal(v, "Number")
@@ -3931,18 +3943,18 @@ func errUnexpectedFloat32Str(s string) error {
 // getFloat32Value returns the float32 value encoded in proto3.Value v whose
 // kind is proto3.Value_NumberValue / proto3.Value_StringValue.
 // Cloud Spanner uses string to encode NaN, Infinity and -Infinity.
-func getFloat32Value(v *proto3.Value) (float32, error) {
-	switch x := v.GetKind().(type) {
-	case *proto3.Value_NumberValue:
-		if x == nil {
+func getFloat32Value(v *internalValue) (float32, error) {
+	switch internalValueKindOf(v) {
+	case internalValueNumber:
+		if value, ok := internalGetNumberValue(v); ok {
+			return float32(value), nil
+		}
+	case internalValueString:
+		value, ok := internalGetStringValue(v)
+		if !ok {
 			break
 		}
-		return float32(x.NumberValue), nil
-	case *proto3.Value_StringValue:
-		if x == nil {
-			break
-		}
-		switch x.StringValue {
+		switch value {
 		case "NaN":
 			return float32(math.NaN()), nil
 		case "Infinity":
@@ -3950,7 +3962,7 @@ func getFloat32Value(v *proto3.Value) (float32, error) {
 		case "-Infinity":
 			return float32(math.Inf(-1)), nil
 		default:
-			return 0, errUnexpectedFloat32Str(x.StringValue)
+			return 0, errUnexpectedFloat32Str(value)
 		}
 	}
 	return 0, errSrcVal(v, "Number")
@@ -3958,7 +3970,7 @@ func getFloat32Value(v *proto3.Value) (float32, error) {
 
 // getUUIDValue returns the uuid value encoded in proto3.Value v whose
 // kind is proto3.Value_StringValue.
-func getUUIDValue(v *proto3.Value) (uuid.UUID, error) {
+func getUUIDValue(v *internalValue) (uuid.UUID, error) {
 	x, err := getStringValue(v)
 	if err != nil {
 		return uuid.UUID{}, err
@@ -3988,13 +4000,13 @@ func errDecodeArrayElement(i int, v proto.Message, sqlType string, err error) er
 
 // decodeGenericArray decodes proto3.ListValue pb into a slice which type is
 // determined through reflection.
-func decodeGenericArray(tp reflect.Type, pb *proto3.ListValue, t *sppb.Type, sqlType string) (interface{}, error) {
+func decodeGenericArray(tp reflect.Type, pb *internalListValue, t *sppb.Type, sqlType string) (interface{}, error) {
 	if pb == nil {
 		return nil, errNilListValue(sqlType)
 	}
-	a := reflect.MakeSlice(tp, len(pb.Values), len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, t, a.Index(i).Addr().Interface()); err != nil {
+	a := reflect.MakeSlice(tp, len(internalListValues(pb)), len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, t, a.Index(i).Addr().Interface()); err != nil {
 			return nil, errDecodeArrayElement(i, v, "STRING", err)
 		}
 	}
@@ -4002,13 +4014,13 @@ func decodeGenericArray(tp reflect.Type, pb *proto3.ListValue, t *sppb.Type, sql
 }
 
 // decodeNullStringArray decodes proto3.ListValue pb into a NullString slice.
-func decodeNullStringArray(pb *proto3.ListValue) ([]NullString, error) {
+func decodeNullStringArray(pb *internalListValue) ([]NullString, error) {
 	if pb == nil {
 		return nil, errNilListValue("STRING")
 	}
-	a := make([]NullString, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, stringType(), &a[i]); err != nil {
+	a := make([]NullString, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, stringType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "STRING", err)
 		}
 	}
@@ -4016,13 +4028,13 @@ func decodeNullStringArray(pb *proto3.ListValue) ([]NullString, error) {
 }
 
 // decodeStringPointerArray decodes proto3.ListValue pb into a *string slice.
-func decodeStringPointerArray(pb *proto3.ListValue) ([]*string, error) {
+func decodeStringPointerArray(pb *internalListValue) ([]*string, error) {
 	if pb == nil {
 		return nil, errNilListValue("STRING")
 	}
-	a := make([]*string, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, stringType(), &a[i]); err != nil {
+	a := make([]*string, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, stringType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "STRING", err)
 		}
 	}
@@ -4030,14 +4042,14 @@ func decodeStringPointerArray(pb *proto3.ListValue) ([]*string, error) {
 }
 
 // decodeStringArray decodes proto3.ListValue pb into a string slice.
-func decodeStringArray(pb *proto3.ListValue) ([]string, error) {
+func decodeStringArray(pb *internalListValue) ([]string, error) {
 	if pb == nil {
 		return nil, errNilListValue("STRING")
 	}
-	a := make([]string, len(pb.Values))
+	a := make([]string, len(internalListValues(pb)))
 	st := stringType()
-	for i, v := range pb.Values {
-		if err := decodeValue(v, st, &a[i]); err != nil {
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, st, &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "STRING", err)
 		}
 	}
@@ -4045,13 +4057,13 @@ func decodeStringArray(pb *proto3.ListValue) ([]string, error) {
 }
 
 // decodeNullInt64Array decodes proto3.ListValue pb into a NullInt64 slice.
-func decodeNullInt64Array(pb *proto3.ListValue) ([]NullInt64, error) {
+func decodeNullInt64Array(pb *internalListValue) ([]NullInt64, error) {
 	if pb == nil {
 		return nil, errNilListValue("INT64")
 	}
-	a := make([]NullInt64, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, intType(), &a[i]); err != nil {
+	a := make([]NullInt64, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, intType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "INT64", err)
 		}
 	}
@@ -4059,13 +4071,13 @@ func decodeNullInt64Array(pb *proto3.ListValue) ([]NullInt64, error) {
 }
 
 // decodeInt64PointerArray decodes proto3.ListValue pb into a *int64 slice.
-func decodeInt64PointerArray(pb *proto3.ListValue) ([]*int64, error) {
+func decodeInt64PointerArray(pb *internalListValue) ([]*int64, error) {
 	if pb == nil {
 		return nil, errNilListValue("INT64")
 	}
-	a := make([]*int64, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, intType(), &a[i]); err != nil {
+	a := make([]*int64, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, intType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "INT64", err)
 		}
 	}
@@ -4073,13 +4085,13 @@ func decodeInt64PointerArray(pb *proto3.ListValue) ([]*int64, error) {
 }
 
 // decodeInt64Array decodes proto3.ListValue pb into a int64 slice.
-func decodeInt64Array(pb *proto3.ListValue) ([]int64, error) {
+func decodeInt64Array(pb *internalListValue) ([]int64, error) {
 	if pb == nil {
 		return nil, errNilListValue("INT64")
 	}
-	a := make([]int64, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, intType(), &a[i]); err != nil {
+	a := make([]int64, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, intType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "INT64", err)
 		}
 	}
@@ -4087,13 +4099,13 @@ func decodeInt64Array(pb *proto3.ListValue) ([]int64, error) {
 }
 
 // decodeNullBoolArray decodes proto3.ListValue pb into a NullBool slice.
-func decodeNullBoolArray(pb *proto3.ListValue) ([]NullBool, error) {
+func decodeNullBoolArray(pb *internalListValue) ([]NullBool, error) {
 	if pb == nil {
 		return nil, errNilListValue("BOOL")
 	}
-	a := make([]NullBool, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, boolType(), &a[i]); err != nil {
+	a := make([]NullBool, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, boolType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "BOOL", err)
 		}
 	}
@@ -4101,13 +4113,13 @@ func decodeNullBoolArray(pb *proto3.ListValue) ([]NullBool, error) {
 }
 
 // decodeBoolPointerArray decodes proto3.ListValue pb into a *bool slice.
-func decodeBoolPointerArray(pb *proto3.ListValue) ([]*bool, error) {
+func decodeBoolPointerArray(pb *internalListValue) ([]*bool, error) {
 	if pb == nil {
 		return nil, errNilListValue("BOOL")
 	}
-	a := make([]*bool, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, boolType(), &a[i]); err != nil {
+	a := make([]*bool, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, boolType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "BOOL", err)
 		}
 	}
@@ -4115,13 +4127,13 @@ func decodeBoolPointerArray(pb *proto3.ListValue) ([]*bool, error) {
 }
 
 // decodeBoolArray decodes proto3.ListValue pb into a bool slice.
-func decodeBoolArray(pb *proto3.ListValue) ([]bool, error) {
+func decodeBoolArray(pb *internalListValue) ([]bool, error) {
 	if pb == nil {
 		return nil, errNilListValue("BOOL")
 	}
-	a := make([]bool, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, boolType(), &a[i]); err != nil {
+	a := make([]bool, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, boolType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "BOOL", err)
 		}
 	}
@@ -4129,13 +4141,13 @@ func decodeBoolArray(pb *proto3.ListValue) ([]bool, error) {
 }
 
 // decodeNullFloat64Array decodes proto3.ListValue pb into a NullFloat64 slice.
-func decodeNullFloat64Array(pb *proto3.ListValue) ([]NullFloat64, error) {
+func decodeNullFloat64Array(pb *internalListValue) ([]NullFloat64, error) {
 	if pb == nil {
 		return nil, errNilListValue("FLOAT64")
 	}
-	a := make([]NullFloat64, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, floatType(), &a[i]); err != nil {
+	a := make([]NullFloat64, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, floatType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT64", err)
 		}
 	}
@@ -4143,13 +4155,13 @@ func decodeNullFloat64Array(pb *proto3.ListValue) ([]NullFloat64, error) {
 }
 
 // decodeFloat64PointerArray decodes proto3.ListValue pb into a *float slice.
-func decodeFloat64PointerArray(pb *proto3.ListValue) ([]*float64, error) {
+func decodeFloat64PointerArray(pb *internalListValue) ([]*float64, error) {
 	if pb == nil {
 		return nil, errNilListValue("FLOAT64")
 	}
-	a := make([]*float64, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, floatType(), &a[i]); err != nil {
+	a := make([]*float64, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, floatType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT64", err)
 		}
 	}
@@ -4157,13 +4169,13 @@ func decodeFloat64PointerArray(pb *proto3.ListValue) ([]*float64, error) {
 }
 
 // decodeFloat64Array decodes proto3.ListValue pb into a float64 slice.
-func decodeFloat64Array(pb *proto3.ListValue) ([]float64, error) {
+func decodeFloat64Array(pb *internalListValue) ([]float64, error) {
 	if pb == nil {
 		return nil, errNilListValue("FLOAT64")
 	}
-	a := make([]float64, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, floatType(), &a[i]); err != nil {
+	a := make([]float64, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, floatType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT64", err)
 		}
 	}
@@ -4171,13 +4183,13 @@ func decodeFloat64Array(pb *proto3.ListValue) ([]float64, error) {
 }
 
 // decodeNullFloat32Array decodes proto3.ListValue pb into a NullFloat32 slice.
-func decodeNullFloat32Array(pb *proto3.ListValue) ([]NullFloat32, error) {
+func decodeNullFloat32Array(pb *internalListValue) ([]NullFloat32, error) {
 	if pb == nil {
 		return nil, errNilListValue("FLOAT32")
 	}
-	a := make([]NullFloat32, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, float32Type(), &a[i]); err != nil {
+	a := make([]NullFloat32, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, float32Type(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT32", err)
 		}
 	}
@@ -4185,13 +4197,13 @@ func decodeNullFloat32Array(pb *proto3.ListValue) ([]NullFloat32, error) {
 }
 
 // decodeFloat32PointerArray decodes proto3.ListValue pb into a *float32 slice.
-func decodeFloat32PointerArray(pb *proto3.ListValue) ([]*float32, error) {
+func decodeFloat32PointerArray(pb *internalListValue) ([]*float32, error) {
 	if pb == nil {
 		return nil, errNilListValue("FLOAT32")
 	}
-	a := make([]*float32, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, float32Type(), &a[i]); err != nil {
+	a := make([]*float32, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, float32Type(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT32", err)
 		}
 	}
@@ -4199,13 +4211,13 @@ func decodeFloat32PointerArray(pb *proto3.ListValue) ([]*float32, error) {
 }
 
 // decodeFloat32Array decodes proto3.ListValue pb into a float32 slice.
-func decodeFloat32Array(pb *proto3.ListValue) ([]float32, error) {
+func decodeFloat32Array(pb *internalListValue) ([]float32, error) {
 	if pb == nil {
 		return nil, errNilListValue("FLOAT32")
 	}
-	a := make([]float32, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, float32Type(), &a[i]); err != nil {
+	a := make([]float32, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, float32Type(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "FLOAT32", err)
 		}
 	}
@@ -4213,13 +4225,13 @@ func decodeFloat32Array(pb *proto3.ListValue) ([]float32, error) {
 }
 
 // decodeNullNumericArray decodes proto3.ListValue pb into a NullNumeric slice.
-func decodeNullNumericArray(pb *proto3.ListValue) ([]NullNumeric, error) {
+func decodeNullNumericArray(pb *internalListValue) ([]NullNumeric, error) {
 	if pb == nil {
 		return nil, errNilListValue("NUMERIC")
 	}
-	a := make([]NullNumeric, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, numericType(), &a[i]); err != nil {
+	a := make([]NullNumeric, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, numericType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "NUMERIC", err)
 		}
 	}
@@ -4227,13 +4239,13 @@ func decodeNullNumericArray(pb *proto3.ListValue) ([]NullNumeric, error) {
 }
 
 // decodeNullJSONArray decodes proto3.ListValue pb into a NullJSON slice.
-func decodeNullJSONArray(pb *proto3.ListValue) ([]NullJSON, error) {
+func decodeNullJSONArray(pb *internalListValue) ([]NullJSON, error) {
 	if pb == nil {
 		return nil, errNilListValue("JSON")
 	}
-	a := make([]NullJSON, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, jsonType(), &a[i]); err != nil {
+	a := make([]NullJSON, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, jsonType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "JSON", err)
 		}
 	}
@@ -4241,13 +4253,13 @@ func decodeNullJSONArray(pb *proto3.ListValue) ([]NullJSON, error) {
 }
 
 // decodeJsonBArray decodes proto3.ListValue pb into a JsonB slice.
-func decodePGJsonBArray(pb *proto3.ListValue) ([]PGJsonB, error) {
+func decodePGJsonBArray(pb *internalListValue) ([]PGJsonB, error) {
 	if pb == nil {
 		return nil, errNilListValue("PGJSONB")
 	}
-	a := make([]PGJsonB, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, pgJsonbType(), &a[i]); err != nil {
+	a := make([]PGJsonB, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, pgJsonbType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "PGJSONB", err)
 		}
 	}
@@ -4255,13 +4267,13 @@ func decodePGJsonBArray(pb *proto3.ListValue) ([]PGJsonB, error) {
 }
 
 // decodeNullJSONArray decodes proto3.ListValue pb into a NullJSON pointer.
-func decodeNullJSONArrayToNullJSON(pb *proto3.ListValue) (*NullJSON, error) {
+func decodeNullJSONArrayToNullJSON(pb *internalListValue) (*NullJSON, error) {
 	if pb == nil {
 		return nil, errNilListValue("JSON")
 	}
 	strs := []string{}
-	for _, v := range pb.Values {
-		if _, ok := v.Kind.(*proto3.Value_NullValue); ok {
+	for _, v := range internalListValues(pb) {
+		if internalValueIsNull(v) {
 			strs = append(strs, "null")
 		} else {
 			strs = append(strs, v.GetStringValue())
@@ -4277,13 +4289,13 @@ func decodeNullJSONArrayToNullJSON(pb *proto3.ListValue) (*NullJSON, error) {
 }
 
 // decodeNumericPointerArray decodes proto3.ListValue pb into a *big.Rat slice.
-func decodeNumericPointerArray(pb *proto3.ListValue) ([]*big.Rat, error) {
+func decodeNumericPointerArray(pb *internalListValue) ([]*big.Rat, error) {
 	if pb == nil {
 		return nil, errNilListValue("NUMERIC")
 	}
-	a := make([]*big.Rat, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, numericType(), &a[i]); err != nil {
+	a := make([]*big.Rat, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, numericType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "NUMERIC", err)
 		}
 	}
@@ -4291,13 +4303,13 @@ func decodeNumericPointerArray(pb *proto3.ListValue) ([]*big.Rat, error) {
 }
 
 // decodeNumericArray decodes proto3.ListValue pb into a big.Rat slice.
-func decodeNumericArray(pb *proto3.ListValue) ([]big.Rat, error) {
+func decodeNumericArray(pb *internalListValue) ([]big.Rat, error) {
 	if pb == nil {
 		return nil, errNilListValue("NUMERIC")
 	}
-	a := make([]big.Rat, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, numericType(), &a[i]); err != nil {
+	a := make([]big.Rat, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, numericType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "NUMERIC", err)
 		}
 	}
@@ -4305,13 +4317,13 @@ func decodeNumericArray(pb *proto3.ListValue) ([]big.Rat, error) {
 }
 
 // decodePGNumericArray decodes proto3.ListValue pb into a PGNumeric slice.
-func decodePGNumericArray(pb *proto3.ListValue) ([]PGNumeric, error) {
+func decodePGNumericArray(pb *internalListValue) ([]PGNumeric, error) {
 	if pb == nil {
 		return nil, errNilListValue("PGNUMERIC")
 	}
-	a := make([]PGNumeric, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, pgNumericType(), &a[i]); err != nil {
+	a := make([]PGNumeric, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, pgNumericType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "PGNUMERIC", err)
 		}
 	}
@@ -4319,13 +4331,13 @@ func decodePGNumericArray(pb *proto3.ListValue) ([]PGNumeric, error) {
 }
 
 // decodeByteArray decodes proto3.ListValue pb into a slice of byte slice.
-func decodeByteArray(pb *proto3.ListValue) ([][]byte, error) {
+func decodeByteArray(pb *internalListValue) ([][]byte, error) {
 	if pb == nil {
 		return nil, errNilListValue("BYTES")
 	}
-	a := make([][]byte, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, bytesType(), &a[i]); err != nil {
+	a := make([][]byte, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, bytesType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "BYTES", err)
 		}
 	}
@@ -4336,19 +4348,19 @@ func decodeByteArray(pb *proto3.ListValue) ([][]byte, error) {
 // The elements in the array implements proto.Message interface only if the element is a pointer (e.g. *ProtoMessage).
 // However, if the element is a value (e.g. ProtoMessage), then it does not implement proto.Message.
 // Therefore, decodeProtoMessagePtrArray allows decoding of proto message array if the array element is a pointer only.
-func decodeProtoMessagePtrArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value) error {
+func decodeProtoMessagePtrArray(pb *internalListValue, t *sppb.Type, rv reflect.Value) error {
 	if pb == nil {
 		return errNilListValue("PROTO")
 	}
 	etyp := rv.Type().Elem().Elem().Elem()
-	a := reflect.MakeSlice(rv.Type().Elem(), len(pb.Values), len(pb.Values))
-	for i, v := range pb.Values {
-		_, isNull := v.Kind.(*proto3.Value_NullValue)
+	a := reflect.MakeSlice(rv.Type().Elem(), len(internalListValues(pb)), len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		isNull := internalValueIsNull(v)
 		if isNull {
 			continue
 		}
 		msg := reflect.New(etyp).Interface().(proto.Message)
-		if err := decodeValue(v, t, msg); err != nil {
+		if err := decodeInternalValue(v, t, msg); err != nil {
 			return errDecodeArrayElement(i, v, "PROTO", err)
 		}
 		a.Index(i).Set(reflect.ValueOf(msg))
@@ -4358,19 +4370,19 @@ func decodeProtoMessagePtrArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.V
 }
 
 // decodeProtoEnumPtrArray decodes proto3.ListValue pb into a *protoreflect.Enum slice.
-func decodeProtoEnumPtrArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value) error {
+func decodeProtoEnumPtrArray(pb *internalListValue, t *sppb.Type, rv reflect.Value) error {
 	if pb == nil {
 		return errNilListValue("ENUM")
 	}
 	etyp := rv.Type().Elem().Elem().Elem()
-	a := reflect.MakeSlice(rv.Type().Elem(), len(pb.Values), len(pb.Values))
-	for i, v := range pb.Values {
-		_, isNull := v.Kind.(*proto3.Value_NullValue)
+	a := reflect.MakeSlice(rv.Type().Elem(), len(internalListValues(pb)), len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		isNull := internalValueIsNull(v)
 		if isNull {
 			continue
 		}
 		enum := reflect.New(etyp).Interface().(protoreflect.Enum)
-		if err := decodeValue(v, t, enum); err != nil {
+		if err := decodeInternalValue(v, t, enum); err != nil {
 			return errDecodeArrayElement(i, v, "ENUM", err)
 		}
 		a.Index(i).Set(reflect.ValueOf(enum))
@@ -4380,16 +4392,16 @@ func decodeProtoEnumPtrArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Valu
 }
 
 // decodeProtoEnumArray decodes proto3.ListValue pb into a protoreflect.Enum slice.
-func decodeProtoEnumArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value, ptr interface{}) error {
+func decodeProtoEnumArray(pb *internalListValue, t *sppb.Type, rv reflect.Value, ptr interface{}) error {
 	if pb == nil {
 		return errNilListValue("ENUM")
 	}
-	a := reflect.MakeSlice(rv.Type().Elem(), len(pb.Values), len(pb.Values))
+	a := reflect.MakeSlice(rv.Type().Elem(), len(internalListValues(pb)), len(internalListValues(pb)))
 	// decodeValue method can decode only if ENUM is a pointer type.
 	// As the ENUM element in the Array is not a pointer type we cannot use decodeValue method
 	// and hence handle it separately.
-	for i, v := range pb.Values {
-		_, isNull := v.Kind.(*proto3.Value_NullValue)
+	for i, v := range internalListValues(pb) {
+		isNull := internalValueIsNull(v)
 		// As the ENUM elements in the array are value type and not pointer type,
 		// we cannot support NULL values in the array
 		if isNull {
@@ -4410,13 +4422,13 @@ func decodeProtoEnumArray(pb *proto3.ListValue, t *sppb.Type, rv reflect.Value, 
 }
 
 // decodeNullTimeArray decodes proto3.ListValue pb into a NullTime slice.
-func decodeNullTimeArray(pb *proto3.ListValue) ([]NullTime, error) {
+func decodeNullTimeArray(pb *internalListValue) ([]NullTime, error) {
 	if pb == nil {
 		return nil, errNilListValue("TIMESTAMP")
 	}
-	a := make([]NullTime, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, timeType(), &a[i]); err != nil {
+	a := make([]NullTime, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, timeType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "TIMESTAMP", err)
 		}
 	}
@@ -4424,13 +4436,13 @@ func decodeNullTimeArray(pb *proto3.ListValue) ([]NullTime, error) {
 }
 
 // decodeTimePointerArray decodes proto3.ListValue pb into a NullTime slice.
-func decodeTimePointerArray(pb *proto3.ListValue) ([]*time.Time, error) {
+func decodeTimePointerArray(pb *internalListValue) ([]*time.Time, error) {
 	if pb == nil {
 		return nil, errNilListValue("TIMESTAMP")
 	}
-	a := make([]*time.Time, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, timeType(), &a[i]); err != nil {
+	a := make([]*time.Time, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, timeType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "TIMESTAMP", err)
 		}
 	}
@@ -4438,13 +4450,13 @@ func decodeTimePointerArray(pb *proto3.ListValue) ([]*time.Time, error) {
 }
 
 // decodeTimeArray decodes proto3.ListValue pb into a time.Time slice.
-func decodeTimeArray(pb *proto3.ListValue) ([]time.Time, error) {
+func decodeTimeArray(pb *internalListValue) ([]time.Time, error) {
 	if pb == nil {
 		return nil, errNilListValue("TIMESTAMP")
 	}
-	a := make([]time.Time, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, timeType(), &a[i]); err != nil {
+	a := make([]time.Time, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, timeType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "TIMESTAMP", err)
 		}
 	}
@@ -4452,13 +4464,13 @@ func decodeTimeArray(pb *proto3.ListValue) ([]time.Time, error) {
 }
 
 // decodeNullDateArray decodes proto3.ListValue pb into a NullDate slice.
-func decodeNullDateArray(pb *proto3.ListValue) ([]NullDate, error) {
+func decodeNullDateArray(pb *internalListValue) ([]NullDate, error) {
 	if pb == nil {
 		return nil, errNilListValue("DATE")
 	}
-	a := make([]NullDate, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, dateType(), &a[i]); err != nil {
+	a := make([]NullDate, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, dateType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "DATE", err)
 		}
 	}
@@ -4466,13 +4478,13 @@ func decodeNullDateArray(pb *proto3.ListValue) ([]NullDate, error) {
 }
 
 // decodeDatePointerArray decodes proto3.ListValue pb into a *civil.Date slice.
-func decodeDatePointerArray(pb *proto3.ListValue) ([]*civil.Date, error) {
+func decodeDatePointerArray(pb *internalListValue) ([]*civil.Date, error) {
 	if pb == nil {
 		return nil, errNilListValue("DATE")
 	}
-	a := make([]*civil.Date, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, dateType(), &a[i]); err != nil {
+	a := make([]*civil.Date, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, dateType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "DATE", err)
 		}
 	}
@@ -4480,13 +4492,13 @@ func decodeDatePointerArray(pb *proto3.ListValue) ([]*civil.Date, error) {
 }
 
 // decodeDateArray decodes proto3.ListValue pb into a civil.Date slice.
-func decodeDateArray(pb *proto3.ListValue) ([]civil.Date, error) {
+func decodeDateArray(pb *internalListValue) ([]civil.Date, error) {
 	if pb == nil {
 		return nil, errNilListValue("DATE")
 	}
-	a := make([]civil.Date, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, dateType(), &a[i]); err != nil {
+	a := make([]civil.Date, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, dateType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "DATE", err)
 		}
 	}
@@ -4494,13 +4506,13 @@ func decodeDateArray(pb *proto3.ListValue) ([]civil.Date, error) {
 }
 
 // decodeNullUUIDArray decodes proto3.ListValue pb into a NullUUID slice.
-func decodeNullUUIDArray(pb *proto3.ListValue) ([]NullUUID, error) {
+func decodeNullUUIDArray(pb *internalListValue) ([]NullUUID, error) {
 	if pb == nil {
 		return nil, errNilListValue("UUID")
 	}
-	a := make([]NullUUID, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, uuidType(), &a[i]); err != nil {
+	a := make([]NullUUID, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, uuidType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "UUID", err)
 		}
 	}
@@ -4508,13 +4520,13 @@ func decodeNullUUIDArray(pb *proto3.ListValue) ([]NullUUID, error) {
 }
 
 // decodeUUIDPointerArray decodes proto3.ListValue pb into a *uuid.UUID slice.
-func decodeUUIDPointerArray(pb *proto3.ListValue) ([]*uuid.UUID, error) {
+func decodeUUIDPointerArray(pb *internalListValue) ([]*uuid.UUID, error) {
 	if pb == nil {
 		return nil, errNilListValue("UUID")
 	}
-	a := make([]*uuid.UUID, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, uuidType(), &a[i]); err != nil {
+	a := make([]*uuid.UUID, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, uuidType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "UUID", err)
 		}
 	}
@@ -4522,47 +4534,52 @@ func decodeUUIDPointerArray(pb *proto3.ListValue) ([]*uuid.UUID, error) {
 }
 
 // decodeUUIDArray decodes proto3.ListValue pb into a uuid.UUID slice.
-func decodeUUIDArray(pb *proto3.ListValue) ([]uuid.UUID, error) {
+func decodeUUIDArray(pb *internalListValue) ([]uuid.UUID, error) {
 	if pb == nil {
 		return nil, errNilListValue("UUID")
 	}
-	a := make([]uuid.UUID, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, uuidType(), &a[i]); err != nil {
+	a := make([]uuid.UUID, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, uuidType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "UUID", err)
 		}
 	}
 	return a, nil
 }
 
-func errNotStructElement(i int, v *proto3.Value) error {
+func errNotStructElement(i int, v proto.Message) error {
+	if value, ok := v.(*internalValue); ok {
+		return errDecodeArrayElement(i, value, "STRUCT",
+			spannerErrorf(codes.FailedPrecondition, "%s(type: *structpb.Value) doesn't encode Cloud Spanner STRUCT", internalValueForError(value)))
+	}
 	return errDecodeArrayElement(i, v, "STRUCT",
 		spannerErrorf(codes.FailedPrecondition, "%v(type: %T) doesn't encode Cloud Spanner STRUCT", v, v))
 }
 
 // decodeRowArray decodes proto3.ListValue pb into a NullRow slice according to
 // the structural information given in sppb.StructType ty.
-func decodeRowArray(ty *sppb.StructType, pb *proto3.ListValue) ([]NullRow, error) {
+func decodeRowArray(ty *sppb.StructType, pb *internalListValue) ([]NullRow, error) {
 	if pb == nil {
 		return nil, errNilListValue("STRUCT")
 	}
-	a := make([]NullRow, len(pb.Values))
-	for i := range pb.Values {
-		switch v := pb.Values[i].GetKind().(type) {
-		case *proto3.Value_ListValue:
+	a := make([]NullRow, len(internalListValues(pb)))
+	for i := range internalListValues(pb) {
+		v := internalListValues(pb)[i]
+		switch internalValueKindOf(v) {
+		case internalValueList:
 			a[i] = NullRow{
 				Row: Row{
 					fields: ty.Fields,
-					vals:   v.ListValue.Values,
+					vals:   internalListValues(v.GetListValue()),
 				},
 				Valid: true,
 			}
 		// Null elements not currently supported by the server, see
 		// https://cloud.google.com/spanner/docs/query-syntax#using-structs-with-select
-		case *proto3.Value_NullValue:
+		case internalValueNull, internalValueUnset:
 			// no-op, a[i] is NullRow{} already
 		default:
-			return nil, errNotStructElement(i, pb.Values[i])
+			return nil, errNotStructElement(i, internalListValues(pb)[i])
 		}
 	}
 	return a, nil
@@ -4634,7 +4651,7 @@ func WithLenient() DecodeOptions {
 // decodeStruct decodes proto3.ListValue pb into struct referenced by pointer
 // ptr, according to
 // the structural information given in sppb.StructType ty.
-func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, lenient bool) error {
+func decodeStruct(ty *sppb.StructType, pb *internalListValue, ptr interface{}, lenient bool) error {
 	if reflect.ValueOf(ptr).IsNil() {
 		return errNilDst(ptr)
 	}
@@ -4677,7 +4694,7 @@ func decodeStruct(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, le
 		}
 		opts := []DecodeOptions{withLenient{lenient: lenient}}
 		// Try to decode a single field.
-		if err := decodeValue(pb.Values[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), opts...); err != nil {
+		if err := decodeInternalValue(internalListValues(pb)[i], f.Type, v.FieldByIndex(sf.Index).Addr().Interface(), opts...); err != nil {
 			return errDecodeStructField(ty, f.Name, err)
 		}
 		// Mark field f.Name as processed.
@@ -4702,7 +4719,7 @@ func isPtrStructPtrSlice(t reflect.Type) bool {
 // decodeStructArray decodes proto3.ListValue pb into struct slice referenced by
 // pointer ptr, according to the
 // structural information given in a sppb.StructType.
-func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{}, lenient bool) error {
+func decodeStructArray(ty *sppb.StructType, pb *internalListValue, ptr interface{}, lenient bool) error {
 	if pb == nil {
 		return errNilListValue("STRUCT")
 	}
@@ -4711,11 +4728,11 @@ func decodeStructArray(ty *sppb.StructType, pb *proto3.ListValue, ptr interface{
 	// The slice that ptr points to, might be nil at this point.
 	v := reflect.ValueOf(ptr).Elem()
 	// Allocate empty slice.
-	v.Set(reflect.MakeSlice(v.Type(), 0, len(pb.Values)))
-	// Decode every struct in pb.Values.
-	for i, pv := range pb.Values {
+	v.Set(reflect.MakeSlice(v.Type(), 0, len(internalListValues(pb))))
+	// Decode every struct in internalListValues(pb).
+	for i, pv := range internalListValues(pb) {
 		// Check if pv is a NULL value.
-		if _, isNull := pv.Kind.(*proto3.Value_NullValue); isNull {
+		if internalValueIsNull(pv) {
 			// Append a nil pointer to the slice.
 			v.Set(reflect.Append(v, reflect.New(ts).Elem()))
 			continue
@@ -6132,13 +6149,13 @@ func (n NullInterval) GormDataType() string {
 }
 
 // decodeIntervalArray decodes proto3.ListValue pb into a Interval slice.
-func decodeIntervalArray(pb *proto3.ListValue) ([]Interval, error) {
+func decodeIntervalArray(pb *internalListValue) ([]Interval, error) {
 	if pb == nil {
 		return nil, errNilListValue("INTERVAL")
 	}
-	a := make([]Interval, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, intervalType(), &a[i]); err != nil {
+	a := make([]Interval, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, intervalType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "INTERVAL", err)
 		}
 	}
@@ -6146,13 +6163,13 @@ func decodeIntervalArray(pb *proto3.ListValue) ([]Interval, error) {
 }
 
 // decodeNullIntervalArray decodes proto3.ListValue pb into a NullInterval slice.
-func decodeNullIntervalArray(pb *proto3.ListValue) ([]NullInterval, error) {
+func decodeNullIntervalArray(pb *internalListValue) ([]NullInterval, error) {
 	if pb == nil {
 		return nil, errNilListValue("INTERVAL")
 	}
-	a := make([]NullInterval, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, intervalType(), &a[i]); err != nil {
+	a := make([]NullInterval, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, intervalType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "INTERVAL", err)
 		}
 	}
@@ -6160,13 +6177,13 @@ func decodeNullIntervalArray(pb *proto3.ListValue) ([]NullInterval, error) {
 }
 
 // decodeIntervalPointerArray decodes proto3.ListValue pb into a *Interval slice.
-func decodeIntervalPointerArray(pb *proto3.ListValue) ([]*Interval, error) {
+func decodeIntervalPointerArray(pb *internalListValue) ([]*Interval, error) {
 	if pb == nil {
 		return nil, errNilListValue("INTERVAL")
 	}
-	a := make([]*Interval, len(pb.Values))
-	for i, v := range pb.Values {
-		if err := decodeValue(v, intervalType(), &a[i]); err != nil {
+	a := make([]*Interval, len(internalListValues(pb)))
+	for i, v := range internalListValues(pb) {
+		if err := decodeInternalValue(v, intervalType(), &a[i]); err != nil {
 			return nil, errDecodeArrayElement(i, v, "INTERVAL", err)
 		}
 	}
