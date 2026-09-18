@@ -1,5 +1,12 @@
 # Changes
 
+## [1.23.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.22.0...texttospeech/v1.23.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.22.0](https://github.com/googleapis/google-cloud-go/compare/texttospeech/v1.21.0...texttospeech/v1.22.0) (2026-07-13)
 
 

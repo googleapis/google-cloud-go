@@ -1,5 +1,12 @@
 # Changes
 
+## [0.24.0](https://github.com/googleapis/google-cloud-go/compare/auth/v0.23.3...auth/v0.24.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [0.23.3](https://github.com/googleapis/google-cloud-go/compare/auth/v0.23.2...auth/v0.23.3) (2026-09-17)
 
 
