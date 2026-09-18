@@ -747,6 +747,9 @@ func computeURLTemplate(path, host string) string {
 }
 
 func stripPort(host string) string {
+	if !strings.Contains(host, ":") {
+		return host
+	}
 	if h, _, err := net.SplitHostPort(host); err == nil {
 		return h
 	}
