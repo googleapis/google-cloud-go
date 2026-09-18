@@ -1,5 +1,12 @@
 # Changes
 
+## [0.6.0](https://github.com/googleapis/google-cloud-go/compare/grafeas/v0.5.0...grafeas/v0.6.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [0.5.0](https://github.com/googleapis/google-cloud-go/releases/tag/grafeas%2Fv0.5.0) (2026-04-09)
 
 ## [0.4.0](https://github.com/googleapis/google-cloud-go/releases/tag/grafeas%2Fv0.4.0) (2026-04-02)

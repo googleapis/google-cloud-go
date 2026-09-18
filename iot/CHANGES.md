@@ -1,5 +1,12 @@
 # Changes
 
+## [1.14.0](https://github.com/googleapis/google-cloud-go/compare/iot/v1.13.0...iot/v1.14.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.13.0](https://github.com/googleapis/google-cloud-go/releases/tag/iot%2Fv1.13.0) (2026-05-07)
 
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/releases/tag/iot%2Fv1.12.0) (2026-04-30)
