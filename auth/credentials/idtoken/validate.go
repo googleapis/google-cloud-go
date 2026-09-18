@@ -237,6 +237,9 @@ func (v *Validator) validateES256(ctx context.Context, keyID string, hashedConte
 		X:     new(big.Int).SetBytes(dx),
 		Y:     new(big.Int).SetBytes(dy),
 	}
+	if len(sig) != 2*es256KeySize {
+		return fmt.Errorf("idtoken: ES256 signature should be %d bytes, got %d", 2*es256KeySize, len(sig))
+	}
 	r := big.NewInt(0).SetBytes(sig[:es256KeySize])
 	s := big.NewInt(0).SetBytes(sig[es256KeySize:])
 	if valid := ecdsa.Verify(pk, hashedContent, r, s); !valid {
