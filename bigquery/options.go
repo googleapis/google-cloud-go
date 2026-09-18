@@ -21,7 +21,8 @@ import (
 
 // type for collecting custom ClientOption values.
 type customClientConfig struct {
-	jobCreationMode JobCreationMode
+	jobCreationMode       JobCreationMode
+	arrowCompressionCodec ArrowCompressionCodec
 }
 
 type customClientOption interface {
@@ -70,4 +71,33 @@ type applierJobCreationMode struct {
 
 func (s *applierJobCreationMode) ApplyCustomClientOpt(c *customClientConfig) {
 	c.jobCreationMode = s.mode
+}
+
+// ArrowCompressionCodec controls the compression codec used for Arrow buffers in
+// serialized record batches when using the Storage Read API.
+type ArrowCompressionCodec string
+
+const (
+	// ArrowCompressionUnspecified is the default (unspecified) option.
+	ArrowCompressionUnspecified ArrowCompressionCodec = "COMPRESSION_UNSPECIFIED"
+	// ArrowCompressionLZ4Frame indicates LZ4_FRAME compression.
+	ArrowCompressionLZ4Frame ArrowCompressionCodec = "LZ4_FRAME"
+	// ArrowCompressionZSTD indicates ZSTD compression.
+	ArrowCompressionZSTD ArrowCompressionCodec = "ZSTD"
+)
+
+// WithArrowCompression is a ClientOption that governs the compression codec used
+// for Arrow buffers when fetching results via the Storage Read API.
+func WithArrowCompression(codec ArrowCompressionCodec) option.ClientOption {
+	return &applierArrowCompression{codec: codec}
+}
+
+// applier for propagating the custom client option to the config object
+type applierArrowCompression struct {
+	internaloption.EmbeddableAdapter
+	codec ArrowCompressionCodec
+}
+
+func (s *applierArrowCompression) ApplyCustomClientOpt(c *customClientConfig) {
+	c.arrowCompressionCodec = s.codec
 }
