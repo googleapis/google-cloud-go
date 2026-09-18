@@ -3,6 +3,13 @@
 
 
 
+## [1.11.0](https://github.com/googleapis/google-cloud-go/compare/cloudcontrolspartner/v1.10.0...cloudcontrolspartner/v1.11.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudcontrolspartner%2Fv1.10.0) (2026-05-07)
 
 ## [1.9.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudcontrolspartner%2Fv1.9.0) (2026-04-30)
