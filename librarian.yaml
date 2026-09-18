@@ -1139,7 +1139,7 @@ libraries:
       - README.md
     skip_release: true
   - name: pubsublite
-    version: 1.10.0
+    version: 1.11.0
     apis:
       - path: google/cloud/pubsublite/v1
         go:
