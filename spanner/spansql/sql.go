@@ -1244,6 +1244,18 @@ func (a Array) addSQL(sb *strings.Builder) {
 	sb.WriteString("]")
 }
 
+func (l ExprList) SQL() string { return buildSQL(l) }
+func (l ExprList) addSQL(sb *strings.Builder) {
+	addExprList(sb, l, ", ")
+}
+
+func (l Lambda) SQL() string { return buildSQL(l) }
+func (l Lambda) addSQL(sb *strings.Builder) {
+	l.Key.addSQL(sb)
+	sb.WriteString(" -> ")
+	l.Value.addSQL(sb)
+}
+
 func (sl StructLiteral) SQL() string { return buildSQL(sl) }
 func (sl StructLiteral) addSQL(sb *strings.Builder) {
 	sb.WriteString("STRUCT")
