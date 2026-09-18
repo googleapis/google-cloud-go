@@ -204,7 +204,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		provider = sdkmetric.NewMeterProvider(
 			sdkmetric.WithReader(reader),
 			sdkmetric.WithResource(res),
-			sdkmetric.WithExemplarFilter(exemplar.TraceBasedFilter),
+			// sdkmetric.WithExemplarFilter(exemplar.TraceBasedFilter),
 			sdkmetric.WithView(
 				sdkmetric.NewView(
 					sdkmetric.Instrument{Name: "rpc.client.call.duration", Kind: sdkmetric.InstrumentKindHistogram},
