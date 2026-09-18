@@ -1,5 +1,12 @@
 # Changes
 
+## [2.26.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.25.0...dataproc/v2.26.0) (2026-09-18)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [2.25.0](https://github.com/googleapis/google-cloud-go/compare/dataproc/v2.24.0...dataproc/v2.25.0) (2026-07-13)
 
 
