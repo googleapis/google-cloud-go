@@ -2464,4 +2464,3 @@ func TestApplyBulk_MissingEntryResult(t *testing.T) {
 		t.Errorf("errs[2] = %v, want nil", errs[2])
 	}
 }
-

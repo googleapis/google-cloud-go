@@ -194,7 +194,9 @@ func (t *Table) doApplyBulk(ctx context.Context, entryErrs []*entryErr, headerMD
 			if entry.Index >= 0 && int(entry.Index) < len(entryErrs) {
 				seen[entry.Index] = true
 				s := entry.Status
-				if s.Code == int32(codes.OK) {
+				if s == nil {
+					entryErrs[entry.Index].Err = status.Error(codes.Internal, "bigtable: missing status in response entry")
+				} else if s.Code == int32(codes.OK) {
 					entryErrs[entry.Index].Err = nil
 				} else {
 					entryErrs[entry.Index].Err = status.Error(codes.Code(s.Code), s.Message)
