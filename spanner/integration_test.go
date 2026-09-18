@@ -2172,12 +2172,15 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	}
 
 	// Wait until the database drop takes effect across all gRPC channels and backend endpoints.
-	// With 4 gRPC channels and up to 6 DirectPath subchannels per channel (24 endpoints total),
-	// require at least 48 consecutive Database not found responses (2 full round-robin cycles
-	// across all subchannels) within a maximum of 90s (to accommodate the 60s server-side cache TTL).
-	const minConsecutiveNotFound = 48
+	// Backend metadata caches have a 60-second TTL. Waiting at least 60s ensures cached metadata
+	// expires across all endpoints before recreating the database (bypassed on emulator).
+	dropTime := time.Now()
+	minPostDropPropagation := 60 * time.Second
+	minConsecutiveNotFound := 20
 	pollInterval := 500 * time.Millisecond
 	if isEmulatorEnvSet() {
+		minPostDropPropagation = 0
+		minConsecutiveNotFound = 4
 		pollInterval = 100 * time.Millisecond
 	}
 	dropDeadline := time.Now().Add(90 * time.Second)
@@ -2191,14 +2194,14 @@ func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 		if err != nil && err != iterator.Done {
 			if got := ErrCode(err); got == codes.NotFound && strings.Contains(err.Error(), "Database not found") {
 				consecutiveNotFound++
-				if consecutiveNotFound >= minConsecutiveNotFound {
-					t.Logf("DropDatabase propagated across all channels (%d consecutive NotFound errors)", consecutiveNotFound)
+				if consecutiveNotFound >= minConsecutiveNotFound && time.Since(dropTime) >= minPostDropPropagation {
+					t.Logf("DropDatabase propagated across all channels after %v (%d consecutive NotFound errors)", time.Since(dropTime).Round(time.Millisecond), consecutiveNotFound)
 					break
 				}
-				continue
+			} else {
+				t.Logf("Query after drop returned unexpected error (resetting counter): %v", err)
+				consecutiveNotFound = 0
 			}
-			t.Logf("Query after drop returned unexpected error (resetting counter): %v", err)
-			consecutiveNotFound = 0
 		} else {
 			if consecutiveNotFound > 0 {
 				t.Logf("Query after drop succeeded on a channel with stale cache after %d NotFound errors; resetting counter", consecutiveNotFound)
