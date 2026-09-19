@@ -17,12 +17,9 @@ package storage
 import (
 	"context"
 	"fmt"
-	"log"
 	"math"
 	"sync"
 	"time"
-
-	"github.com/google/uuid"
 )
 
 // dynamicDelay dynamically calculates the delay at a fixed percentile, based on
@@ -245,9 +242,8 @@ func executeWithReadStallTimeout(
 	ctx context.Context,
 	dm *bucketDelayManager,
 	bucket string,
-	requestID uuid.UUID,
 	openStream func(ctx context.Context) error,
-	onStall func(),
+	onStall func(stallTimeout time.Duration),
 ) error {
 	if dm == nil {
 		return openStream(ctx)
@@ -282,11 +278,10 @@ func executeWithReadStallTimeout(
 
 	select {
 	case <-timer.C:
-		log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
 		cancel()
 		<-done
 		if onStall != nil {
-			onStall()
+			onStall(stallTimeout)
 		}
 		return context.DeadlineExceeded
 	case <-done:

@@ -21,9 +21,9 @@ import (
 	"fmt"
 	"hash/crc32"
 	"io"
+	"time"
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
-	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding"
@@ -86,7 +86,6 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReaderReadObject")
 	defer func() { endSpan(ctx, err) }()
 
-	requestID := uuid.New()
 	s := callSettings(c.settings, opts...)
 
 	s.gax = append(s.gax, gax.WithGRPCOptions(
@@ -163,7 +162,9 @@ func (c *grpcStorageClient) NewRangeReaderReadObject(ctx context.Context, params
 
 		err = run(cc, func(ctx context.Context) error {
 			decoder = nil
-			return executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, openStream, func() {
+			return executeWithReadStallTimeout(ctx, c.readStallMgr, params.bucket, openStream, func(stallTimeout time.Duration) {
+				target := stripPort(metricsStateFromContext(ctx).getTarget())
+				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
 				if decoder != nil && decoder.databufs != nil {
 					decoder.databufs.Free()
 					decoder = nil

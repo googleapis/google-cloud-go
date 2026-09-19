@@ -33,7 +33,6 @@ import (
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	"cloud.google.com/go/internal/optional"
-	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2/callctx"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/googleapi"
@@ -984,7 +983,6 @@ func (c *httpStorageClient) NewRangeReader(ctx context.Context, params *newRange
 }
 
 func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRangeReaderParams, s *settings) (r *Reader, err error) {
-	requestID := uuid.New()
 	u := &url.URL{
 		Scheme:  c.scheme,
 		Host:    c.xmlHost,
@@ -1017,12 +1015,11 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 			}
 
 			var res *http.Response
-			stallTimeout := c.dynamicReadReqStallTimeout.getValue(params.bucket)
-			err := executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, func(ctx context.Context) error {
+			err := executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, func(ctx context.Context) error {
 				var err error
 				res, err = c.hc.Do(req.WithContext(ctx))
 				return err
-			}, func() {
+			}, func(stallTimeout time.Duration) {
 				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "http", stripPort(req.URL.Host))
 				if res != nil && res.Body != nil {
 					res.Body.Close()

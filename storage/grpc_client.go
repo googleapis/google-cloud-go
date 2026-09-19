@@ -25,12 +25,12 @@ import (
 	"os"
 	"strconv"
 	"strings"
+	"time"
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/iam/apiv1/iampb"
 	gapic "cloud.google.com/go/storage/internal/apiv2"
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
-	"github.com/google/uuid"
 	"github.com/googleapis/gax-go/v2"
 
 	"google.golang.org/api/iterator"
@@ -123,13 +123,13 @@ func defaultGRPCOptions() []option.ClientOption {
 // grpcStorageClient is the gRPC API implementation of the transport-agnostic
 // storageClient interface.
 type grpcStorageClient struct {
-	raw                        *gapic.Client
-	settings                   *settings
-	config                     *storageConfig
-	dynamicReadReqStallTimeout *bucketDelayManager
-	dpDiag                     string
-	metrics                    *clientMetrics
-	metricsCleanup             func()
+	raw            *gapic.Client
+	settings       *settings
+	config         *storageConfig
+	readStallMgr   *bucketDelayManager
+	dpDiag         string
+	metrics        *clientMetrics
+	metricsCleanup func()
 
 	// configFeatureAttributes tracks client-level features that are enabled for this
 	// client instance.
@@ -216,11 +216,11 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	}
 
 	c := &grpcStorageClient{
-		settings:                   s,
-		config:                     &config,
-		metrics:                    clientMetrics,
-		metricsCleanup:             metricsCleanup,
-		dynamicReadReqStallTimeout: bd,
+		settings:       s,
+		config:         &config,
+		metrics:        clientMetrics,
+		metricsCleanup: metricsCleanup,
+		readStallMgr:   bd,
 	}
 	// Add routing interceptors to inject headers.
 	ui, si := c.routingInterceptors()
@@ -1289,7 +1289,6 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 	ctx, _ = startSpan(ctx, "grpcStorageClient.NewRangeReader")
 	defer func() { endSpan(ctx, err) }()
 
-	requestID := uuid.New()
 	s := callSettings(c.settings, opts...)
 
 	s.gax = append(s.gax, gax.WithGRPCOptions(
@@ -1411,7 +1410,9 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 		err = run(cc, func(ctx context.Context) error {
 			decoder = nil
-			return executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, openStream, func() {
+			return executeWithReadStallTimeout(ctx, c.readStallMgr, params.bucket, openStream, func(stallTimeout time.Duration) {
+				target := stripPort(metricsStateFromContext(ctx).getTarget())
+				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
 				if decoder != nil && decoder.databufs != nil {
 					decoder.databufs.Free()
 					decoder = nil
