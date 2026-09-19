@@ -18,6 +18,7 @@ import (
 	"context"
 	"fmt"
 	"net/http"
+	"strings"
 	"testing"
 	"time"
 
@@ -348,5 +349,152 @@ func TestEndSpanEviction(t *testing.T) {
 				t.Errorf("expected bucket to remain in cache")
 			}
 		})
+	}
+}
+
+func TestMetadataRetryBackoffTracing(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	// Test metadata operation (e.g. Bucket.Attrs or ObjectsListCall) experiencing 2 retries.
+	spanName := "Bucket.Attrs"
+	ctx, _ = startSpan(ctx, spanName)
+	testInvID := "123e4567-e89b-12d3-a456-426614174000"
+	recordRetryBackoffEvent(ctx, 1, time.Now().Add(-100*time.Millisecond), testInvID)
+	recordRetryBackoffEvent(ctx, 2, time.Now().Add(-200*time.Millisecond), testInvID)
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 3 {
+		t.Fatalf("expected 3 spans (1 parent metadata span + 2 RetryBackoff child spans), got %d", len(spans))
+	}
+
+	var parentSpan tracetest.SpanStub
+	var backoffCount int
+	for _, s := range spans {
+		if strings.HasSuffix(s.Name, "RetryBackoff") {
+			backoffCount++
+		} else if strings.HasSuffix(s.Name, spanName) {
+			parentSpan = s
+		}
+	}
+	if backoffCount != 2 {
+		t.Errorf("expected 2 RetryBackoff child spans, got %d", backoffCount)
+	}
+	if parentSpan.Name == "" {
+		t.Fatalf("failed to find parent metadata span %q", spanName)
+	}
+	if len(parentSpan.Events) != 2 {
+		t.Fatalf("expected 2 gcp.storage.retry.backoff events on metadata span, got %d", len(parentSpan.Events))
+	}
+	for i, ev := range parentSpan.Events {
+		if ev.Name != "gcp.storage.retry.backoff" {
+			t.Errorf("event %d: got name %q, want %q", i, ev.Name, "gcp.storage.retry.backoff")
+		}
+		foundAttempt, foundInvID := false, false
+		for _, a := range ev.Attributes {
+			if string(a.Key) == "gcp.storage.retry.attempt" {
+				foundAttempt = true
+				if got, want := a.Value.AsInt64(), int64(i+1); got != want {
+					t.Errorf("event %d: gcp.storage.retry.attempt = %d, want %d", i, got, want)
+				}
+			}
+			if string(a.Key) == "gcp.storage.gccl-invocation-id" {
+				foundInvID = true
+				if got, want := a.Value.AsString(), "gccl-invocation-id/"+testInvID; got != want {
+					t.Errorf("event %d: gcp.storage.gccl-invocation-id = %q, want %q", i, got, want)
+				}
+			}
+		}
+		if !foundAttempt {
+			t.Errorf("event %d: gcp.storage.retry.attempt attribute missing", i)
+		}
+		if !foundInvID {
+			t.Errorf("event %d: gcp.storage.gccl-invocation-id attribute missing", i)
+		}
+	}
+}
+
+func TestRecordRetryBackoffEventDevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+
+	ctx, span := tracer().Start(ctx, "Bucket.Attrs")
+	recordRetryBackoffEvent(ctx, 1, time.Now().Add(-100*time.Millisecond), "test-inv-id")
+	span.End()
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	if len(spans[0].Events) > 0 {
+		t.Errorf("expected 0 events when dev tracing is disabled, got %d", len(spans[0].Events))
+	}
+}
+
+func TestRunInvocationIDTracing(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	ctx, _ = startSpan(ctx, "Bucket.Attrs")
+	attempts := 0
+	err := run(ctx, func(c context.Context) error {
+		attempts++
+		if attempts == 1 {
+			return &googleapi.Error{Code: 503}
+		}
+		return nil
+	}, defaultRetry, true)
+
+	if err != nil {
+		t.Fatalf("run failed: %v", err)
+	}
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	var parentSpan tracetest.SpanStub
+	var backoffSpanCount int
+	for _, s := range spans {
+		if strings.HasSuffix(s.Name, "RetryBackoff") {
+			backoffSpanCount++
+		} else if strings.HasSuffix(s.Name, "Bucket.Attrs") {
+			parentSpan = s
+		}
+	}
+
+	if parentSpan.Name == "" {
+		t.Fatalf("Bucket.Attrs parent span not found")
+	}
+	foundInvID := false
+	for _, a := range parentSpan.Attributes {
+		if string(a.Key) == "gcp.storage.gccl-invocation-id" {
+			foundInvID = true
+			if !strings.HasPrefix(a.Value.AsString(), "gccl-invocation-id/") {
+				t.Errorf("gcp.storage.gccl-invocation-id = %q, want prefix gccl-invocation-id/", a.Value.AsString())
+			}
+		}
+	}
+	if !foundInvID {
+		t.Errorf("gcp.storage.gccl-invocation-id attribute not found on parent span")
+	}
+
+	if backoffSpanCount != 1 {
+		t.Errorf("expected 1 RetryBackoff child span, got %d", backoffSpanCount)
+	}
+	if len(parentSpan.Events) != 1 {
+		t.Errorf("expected 1 retry event on parent span, got %d", len(parentSpan.Events))
 	}
 }
