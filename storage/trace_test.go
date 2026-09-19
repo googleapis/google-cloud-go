@@ -350,3 +350,127 @@ func TestEndSpanEviction(t *testing.T) {
 		})
 	}
 }
+
+func TestRecordObjectTraceAttributes(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	spanName := "Object.Attrs"
+	ctx, _ = startSpan(ctx, spanName)
+	recordObjectTraceAttributes(ctx, "data/file.txt")
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+
+	found := false
+	for _, a := range gotSpan.Attributes {
+		if string(a.Key) == "gcp.storage.object.name" {
+			found = true
+			if got := a.Value.AsString(); got != "data/file.txt" {
+				t.Errorf("gcp.storage.object.name: got %v, want %v", got, "data/file.txt")
+			}
+		}
+	}
+	if !found {
+		t.Errorf("attribute gcp.storage.object.name not found on span")
+	}
+}
+
+func TestStartSpanWithBucketFromContext(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	cache := newBucketMetadataCache(10, &mockMetadataFetcher{})
+	cache.put("my-bucket", bucketMetadata{
+		resource: "projects/_/buckets/my-bucket",
+		location: "us-central1",
+	})
+	ctx = context.WithValue(ctx, cacheContextKey, cache)
+
+	ctx, _ = startSpanWithBucket(ctx, nil, "my-bucket", "grpcStorageClient.ObjectsListCall")
+	endSpan(ctx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+
+	wantAttrs := map[string]string{
+		"gcp.resource.destination.id":       "projects/_/buckets/my-bucket",
+		"gcp.resource.destination.location": "us-central1",
+	}
+	for k, v := range wantAttrs {
+		found := false
+		for _, a := range gotSpan.Attributes {
+			if string(a.Key) == k && a.Value.AsString() == v {
+				found = true
+				break
+			}
+		}
+		if !found {
+			t.Errorf("attribute %s=%s not found on span", k, v)
+		}
+	}
+}
+
+func TestRecordObjectTraceAttributes_EmptyAndDisabled(t *testing.T) {
+	t.Run("empty object name", func(t *testing.T) {
+		ctx := context.Background()
+		te := testutil.NewOpenTelemetryTestExporter()
+		t.Cleanup(func() {
+			te.Unregister(ctx)
+		})
+		t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+		ctx, _ = startSpan(ctx, "Object.Attrs")
+		recordObjectTraceAttributes(ctx, "")
+		endSpan(ctx, nil)
+
+		spans := te.Spans()
+		if len(spans) != 1 {
+			t.Fatalf("expected 1 span, got %d", len(spans))
+		}
+		for _, a := range spans[0].Attributes {
+			if string(a.Key) == "gcp.storage.object.name" {
+				t.Errorf("expected no gcp.storage.object.name attribute for empty object name, but found one: %v", a.Value)
+			}
+		}
+	})
+
+	t.Run("dev tracing disabled", func(t *testing.T) {
+		ctx := context.Background()
+		t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+
+		te := testutil.NewOpenTelemetryTestExporter()
+		t.Cleanup(func() {
+			te.Unregister(ctx)
+		})
+
+		ctx, span := tracer().Start(ctx, "Object.Attrs")
+		recordObjectTraceAttributes(ctx, "file.txt")
+		span.End()
+
+		spans := te.Spans()
+		if len(spans) != 1 {
+			t.Fatalf("expected 1 span, got %d", len(spans))
+		}
+		for _, a := range spans[0].Attributes {
+			if string(a.Key) == "gcp.storage.object.name" {
+				t.Errorf("expected no gcp.storage.object.name attribute when dev tracing is disabled, but found: %v", a.Value)
+			}
+		}
+	})
+}
