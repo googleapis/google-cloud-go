@@ -131,43 +131,42 @@ func resolveUniverseDomain(optsUniverseDomain, fileUniverseDomain string) string
 
 func handleServiceAccount(f *credsfile.ServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
-	if opts.UseSelfSignedJWT {
-		return configureSelfSignedJWT(f, opts)
-	} else if ud != "" && ud != internalauth.DefaultUniverseDomain {
-		// For non-GDU universe domains, token exchange is impossible and services
-		// must support self-signed JWTs.
+	// Determine if we should use self-signed JWT.
+	// For non-GDU universe domains, token exchange is impossible, so we must use self-signed JWT.
+	useSelfSigned := opts.UseSelfSignedJWT || (ud != "" && ud != internalauth.DefaultUniverseDomain)
+
+	var tp auth.TokenProvider
+	var err error
+	if useSelfSigned {
 		opts.UseSelfSignedJWT = true
-		return configureSelfSignedJWT(f, opts)
+		tp, err = configureSelfSignedJWT(f, opts)
+	} else {
+		opts2LO := &auth.Options2LO{
+			Email:          f.ClientEmail,
+			PrivateKey:     []byte(f.PrivateKey),
+			PrivateKeyID:   f.PrivateKeyID,
+			Scopes:         opts.scopes(),
+			TokenURL:       f.TokenURL,
+			Subject:        opts.Subject,
+			Client:         opts.client(),
+			Logger:         opts.logger(),
+			UniverseDomain: ud,
+		}
+		if opts2LO.TokenURL == "" {
+			opts2LO.TokenURL = jwtTokenURL
+		}
+		tp, err = auth.New2LOTokenProvider(opts2LO)
 	}
-	opts2LO := &auth.Options2LO{
-		Email:          f.ClientEmail,
-		PrivateKey:     []byte(f.PrivateKey),
-		PrivateKeyID:   f.PrivateKeyID,
-		Scopes:         opts.scopes(),
-		TokenURL:       f.TokenURL,
-		Subject:        opts.Subject,
-		Client:         opts.client(),
-		Logger:         opts.logger(),
-		UniverseDomain: ud,
-	}
-	if opts2LO.TokenURL == "" {
-		opts2LO.TokenURL = jwtTokenURL
-	}
-
-	tp, err := auth.New2LOTokenProvider(opts2LO)
 	if err != nil {
 		return nil, err
 	}
-
-	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
+	saConfig := regionalaccessboundary.NewServiceAccountConfigProvider(f.ClientEmail, ud)
+	wrappedTP, err := regionalaccessboundary.NewProvider(opts.client(), saConfig, opts.logger(), tp)
 	if err != nil {
-		return nil, err
-	}
-	if !regionalAccessBoundaryEnabled {
+		opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
 		return tp, nil
 	}
-	saConfig := regionalaccessboundary.NewServiceAccountConfigProvider(opts2LO.Email, opts2LO.UniverseDomain)
-	return regionalaccessboundary.NewProvider(opts.client(), saConfig, opts.logger(), tp)
+	return wrappedTP, nil
 }
 
 func handleUserCredential(f *credsfile.UserCredentialsFile, opts *DetectOptions) (auth.TokenProvider, error) {
@@ -210,35 +209,33 @@ func handleExternalAccount(f *credsfile.ExternalAccountFile, opts *DetectOptions
 	if err != nil {
 		return nil, err
 	}
-	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
-	if err != nil {
-		return nil, err
-	}
-	if !regionalAccessBoundaryEnabled {
-		return tp, nil
-	}
-
 	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	var configProvider regionalaccessboundary.ConfigProvider
 
 	if f.ServiceAccountImpersonationURL == "" {
 		// No impersonation, this is a direct external account credential.
 		// The Regional Access Boundary is based on the workload/workforce pool.
-		var err error
 		configProvider, err = regionalaccessboundary.NewExternalAccountConfigProvider(f.Audience, ud)
-		if err != nil {
-			return nil, err
-		}
 	} else {
 		// Impersonation is used. The Regional Access Boundary is based on the target service account.
-		targetSAEmail, err := impersonate.ExtractServiceAccountEmail(f.ServiceAccountImpersonationURL)
-		if err != nil {
-			return nil, fmt.Errorf("credentials: could not extract target service account email for Regional Access Boundary: %w", err)
+		var targetSAEmail string
+		targetSAEmail, err = impersonate.ExtractServiceAccountEmail(f.ServiceAccountImpersonationURL)
+		if err == nil {
+			configProvider = regionalaccessboundary.NewServiceAccountConfigProvider(targetSAEmail, ud)
 		}
-		configProvider = regionalaccessboundary.NewServiceAccountConfigProvider(targetSAEmail, ud)
 	}
 
-	return regionalaccessboundary.NewProvider(opts.client(), configProvider, opts.logger(), tp)
+	if err != nil {
+		opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
+		return tp, nil
+	}
+
+	wrappedTP, err := regionalaccessboundary.NewProvider(opts.client(), configProvider, opts.logger(), tp)
+	if err != nil {
+		opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
+		return tp, nil
+	}
+	return wrappedTP, nil
 }
 
 func handleExternalAccountAuthorizedUser(f *credsfile.ExternalAccountAuthorizedUserFile, opts *DetectOptions) (auth.TokenProvider, error) {
@@ -257,20 +254,18 @@ func handleExternalAccountAuthorizedUser(f *credsfile.ExternalAccountAuthorizedU
 	if err != nil {
 		return nil, err
 	}
-	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
-	if err != nil {
-		return nil, err
-	}
-	if !regionalAccessBoundaryEnabled {
-		return tp, nil
-	}
-
 	ud := resolveUniverseDomain(opts.UniverseDomain, f.UniverseDomain)
 	configProvider, err := regionalaccessboundary.NewExternalAccountConfigProvider(f.Audience, ud)
 	if err != nil {
-		return nil, err
+		opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
+		return tp, nil
 	}
-	return regionalaccessboundary.NewProvider(opts.client(), configProvider, opts.logger(), tp)
+	wrappedTP, err := regionalaccessboundary.NewProvider(opts.client(), configProvider, opts.logger(), tp)
+	if err != nil {
+		opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
+		return tp, nil
+	}
+	return wrappedTP, nil
 }
 
 func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
@@ -306,19 +301,18 @@ func handleImpersonatedServiceAccount(f *credsfile.ImpersonatedServiceAccountFil
 	if err != nil {
 		return nil, err
 	}
-	regionalAccessBoundaryEnabled, err := regionalaccessboundary.IsEnabled()
-	if err != nil {
-		return nil, err
-	}
-	if !regionalAccessBoundaryEnabled {
-		return tp, nil
-	}
 	targetSAEmail, err := impersonate.ExtractServiceAccountEmail(f.ServiceAccountImpersonationURL)
 	if err != nil {
-		return nil, fmt.Errorf("credentials: could not extract target service account email for Regional Access Boundary: %w", err)
+		opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
+		return tp, nil
 	}
 	targetSAConfig := regionalaccessboundary.NewServiceAccountConfigProvider(targetSAEmail, ud)
-	return regionalaccessboundary.NewProvider(opts.client(), targetSAConfig, opts.logger(), tp)
+	wrappedTP, err := regionalaccessboundary.NewProvider(opts.client(), targetSAConfig, opts.logger(), tp)
+	if err != nil {
+		opts.logger().Warn("Regional Access Boundary lookup failed to initialize. Allowed locations lookup will be bypassed.", "error", err)
+		return tp, nil
+	}
+	return wrappedTP, nil
 }
 func handleGDCHServiceAccount(f *credsfile.GDCHServiceAccountFile, opts *DetectOptions) (auth.TokenProvider, error) {
 	return gdch.NewTokenProvider(f, &gdch.Options{

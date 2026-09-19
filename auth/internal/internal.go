@@ -185,22 +185,30 @@ func (p StaticProperty) GetProperty(context.Context) (string, error) {
 // ComputeUniverseDomainProvider fetches the credentials universe domain from
 // the google cloud metadata service.
 type ComputeUniverseDomainProvider struct {
-	MetadataClient     *metadata.Client
-	universeDomainOnce sync.Once
-	universeDomain     string
-	universeDomainErr  error
+	MetadataClient *metadata.Client
+	mu             sync.Mutex
+	universeDomain string
+	resolved       bool
 }
 
 // GetProperty fetches the credentials universe domain from the google cloud
 // metadata service.
 func (c *ComputeUniverseDomainProvider) GetProperty(ctx context.Context) (string, error) {
-	c.universeDomainOnce.Do(func() {
-		c.universeDomain, c.universeDomainErr = getMetadataUniverseDomain(ctx, c.MetadataClient)
-	})
-	if c.universeDomainErr != nil {
-		return "", c.universeDomainErr
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	if c.resolved {
+		return c.universeDomain, nil
 	}
-	return c.universeDomain, nil
+	if c.MetadataClient == nil {
+		return "", errors.New("auth: ComputeUniverseDomainProvider not properly initialized (missing MetadataClient)")
+	}
+	ud, err := getMetadataUniverseDomain(ctx, c.MetadataClient)
+	if err != nil {
+		return "", err
+	}
+	c.universeDomain = ud
+	c.resolved = true
+	return ud, nil
 }
 
 // httpGetMetadataUniverseDomain is a package var for unit test substitution.
