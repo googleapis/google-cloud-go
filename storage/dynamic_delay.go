@@ -17,7 +17,6 @@ package storage
 import (
 	"context"
 	"fmt"
-	"log"
 	"math"
 	"sync"
 	"time"
@@ -282,7 +281,6 @@ func executeWithReadStallTimeout(
 
 	select {
 	case <-timer.C:
-		log.Printf("[%s] stalled read-req cancelled after %fs", requestID, stallTimeout.Seconds())
 		cancel()
 		<-done
 		if onStall != nil {

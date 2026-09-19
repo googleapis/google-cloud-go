@@ -415,6 +415,29 @@ func TestExecuteWithReadStallTimeout(t *testing.T) {
 		}
 	})
 
+	t.Run("fast_failure", func(t *testing.T) {
+		dm, _ := newBucketDelayManager(0.99, 1.5, 100*time.Millisecond, 10*time.Millisecond, 10*time.Second)
+		initialVal := dm.getValue("bucket")
+		expectedErr := errors.New("immediate stream error")
+		stalled := false
+
+		err := executeWithReadStallTimeout(context.Background(), dm, "bucket", requestID, func(ctx context.Context) error {
+			return expectedErr
+		}, func() {
+			stalled = true
+		})
+
+		if !errors.Is(err, expectedErr) {
+			t.Errorf("expected error %v, got %v", expectedErr, err)
+		}
+		if stalled {
+			t.Error("expected onStall callback NOT to be invoked")
+		}
+		if newVal := dm.getValue("bucket"); newVal != initialVal {
+			t.Errorf("expected dynamic timeout NOT to change on fast failure, initial %v, new %v", initialVal, newVal)
+		}
+	})
+
 	t.Run("stall_timeout_triggered", func(t *testing.T) {
 		dm, _ := newBucketDelayManager(0.99, 1.5, 10*time.Millisecond, 10*time.Millisecond, 10*time.Second)
 		initialVal := dm.getValue("bucket")

@@ -1411,7 +1411,10 @@ func (c *grpcStorageClient) NewRangeReader(ctx context.Context, params *newRange
 
 		err = run(cc, func(ctx context.Context) error {
 			decoder = nil
+			stallTimeout := c.dynamicReadReqStallTimeout.getValue(params.bucket)
 			return executeWithReadStallTimeout(ctx, c.dynamicReadReqStallTimeout, params.bucket, requestID, openStream, func() {
+				target := stripPort(metricsStateFromContext(ctx).getTarget())
+				c.metrics.recordStallDuration(ctx, stallTimeout, "ReadObject", "grpc", target)
 				if decoder != nil && decoder.databufs != nil {
 					decoder.databufs.Free()
 					decoder = nil
