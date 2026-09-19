@@ -60,7 +60,14 @@ func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 			!w.sendCRC32C &&
 			!md5Provided &&
 			!w.append {
+			var chkCtx context.Context
+			if w.preRunCtx != nil && len(p) > 0 {
+				chkCtx, _ = startChecksumSpan(w.preRunCtx, "CRC32C")
+			}
 			w.fullObjectChecksum = crc32.Update(w.fullObjectChecksum, crc32cTable, p)
+			if chkCtx != nil {
+				endSpan(chkCtx, nil)
+			}
 		}
 		// write command successfully delivered to sender. We no longer own cmd.
 		break

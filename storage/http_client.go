@@ -1094,6 +1094,7 @@ func (c *httpStorageClient) newRangeReaderJSON(ctx context.Context, params *newR
 // the checksum returned by the server.
 type httpInternalWriter struct {
 	*io.PipeWriter
+	ctx                context.Context
 	chunkSize          int
 	checksumDisabled   bool
 	fullObjectChecksum uint32
@@ -1115,7 +1116,14 @@ func (hiw *httpInternalWriter) validateChecksumFromServer() error {
 
 func (hiw *httpInternalWriter) Write(data []byte) (n int, err error) {
 	if !hiw.checksumDisabled && hiw.chunkSize == 0 {
+		var chkCtx context.Context
+		if hiw.ctx != nil && len(data) > 0 {
+			chkCtx, _ = startChecksumSpan(hiw.ctx, "CRC32C")
+		}
 		hiw.fullObjectChecksum = crc32.Update(hiw.fullObjectChecksum, crc32cTable, data)
+		if chkCtx != nil {
+			endSpan(chkCtx, nil)
+		}
 	}
 	return hiw.PipeWriter.Write(data)
 }
@@ -1250,6 +1258,7 @@ func (c *httpStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	}()
 	return &httpInternalWriter{
 		PipeWriter:         pw,
+		ctx:                params.ctx,
 		chunkSize:          params.chunkSize,
 		serverChecksumChan: serverChecksumChan,
 		checksumDisabled:   checksumDisabled,
