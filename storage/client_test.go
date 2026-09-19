@@ -40,12 +40,15 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"github.com/googleapis/gax-go/v2/callctx"
+	"google.golang.org/api/googleapi"
 	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/credentials/insecure"
 	expgrpc "google.golang.org/grpc/experimental"
 	"google.golang.org/grpc/mem"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
@@ -3243,6 +3246,62 @@ func TestRetryMaxDurationEmulated(t *testing.T) {
 	})
 }
 
+// Test that writer errors are wrapped correctly if retry happens until max attempts.
+func TestWriterRetryMaxAttemptsEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
+		if err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		instructions := map[string][]string{"storage.objects.insert": {"return-503", "return-503", "return-503", "return-503", "return-503"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+		config := &retryConfig{maxAttempts: intPointer(3), backoff: &gax.Backoff{Initial: 10 * time.Millisecond}}
+
+		prefix := time.Now().Nanosecond()
+		want := &ObjectAttrs{
+			Bucket:     bucket,
+			Name:       fmt.Sprintf("%d-object-%d", prefix, time.Now().Nanosecond()),
+			Generation: defaultGen,
+		}
+
+		var writeErr error
+		params := &openWriterParams{
+			attrs:     want,
+			bucket:    bucket,
+			chunkSize: googleapi.DefaultUploadChunkSize,
+			ctx:       ctx,
+			donec:     make(chan struct{}),
+			setError:  func(err error) { writeErr = err },
+			progress:  func(_ int64) {}, // no-op
+			setObj:    func(o *ObjectAttrs) {},
+			setSize:   func(int64) {},
+		}
+
+		pw, err := client.OpenWriter(params, idempotent(true), withRetryConfig(config))
+		if err != nil {
+			t.Fatalf("failed to open writer: %v", err)
+		}
+		if _, err := pw.Write([]byte("A")); err != nil {
+			t.Fatalf("failed to write data: %v", err)
+		}
+		if err := pw.Close(); err != nil && writeErr == nil {
+			writeErr = err
+		}
+		<-params.donec
+
+		var ae *apierror.APIError
+		if errors.As(writeErr, &ae) {
+			if ae.GRPCStatus().Code() != codes.Unavailable && ae.HTTPCode() != 503 {
+				t.Errorf("OpenWriter: got unexpected error %v; want 503", writeErr)
+			}
+		}
+		if got, want := writeErr.Error(), "retry failed after 3 attempts"; !strings.Contains(got, want) {
+			t.Errorf("got error: %q, want to contain: %q", got, want)
+		}
+	})
+}
+
 // Test that a timeout returns a DeadlineExceeded error, in spite of DeadlineExceeded being a retryable
 // status when it is returned by the server.
 func TestTimeoutErrorEmulated(t *testing.T) {
@@ -4001,6 +4060,274 @@ func setBidiReads(t *testing.T, client storageClient) {
 		c.config.grpcBidiReads = true
 		t.Cleanup(func() {
 			c.config.grpcBidiReads = false
+		})
+	}
+}
+
+func TestClient_RetryAndHeadersHTTP(t *testing.T) {
+	ctx := context.Background()
+
+	cases := []struct {
+		name         string
+		call         func(ctx context.Context, client *Client) error
+		wantAttempts int
+	}{
+		{
+			name: "Attrs",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").Attrs(ctx)
+				return err
+			},
+			wantAttempts: 2,
+		},
+		{
+			name: "Delete",
+			call: func(ctx context.Context, client *Client) error {
+				return client.Bucket("b").Object("o").Delete(ctx)
+			},
+			wantAttempts: 2,
+		},
+		{
+			name: "Update",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").Update(ctx, ObjectAttrsToUpdate{})
+				return err
+			},
+			wantAttempts: 2,
+		},
+		{
+			name: "Restore",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").Restore(ctx, &RestoreOptions{})
+				return err
+			},
+			wantAttempts: 2,
+		},
+		{
+			name: "CopyTo",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").CopierFrom(client.Bucket("b").Object("o2")).Run(ctx)
+				return err
+			},
+			wantAttempts: 2,
+		},
+		{
+			name: "ComposerFrom",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").ComposerFrom(client.Bucket("b").Object("o2")).Run(ctx)
+				return err
+			},
+			wantAttempts: 2,
+		},
+		{
+			name: "NewReader",
+			call: func(ctx context.Context, client *Client) error {
+				r, err := client.Bucket("b").Object("o").NewReader(ctx)
+				if err == nil {
+					r.Close()
+				}
+				return err
+			},
+			wantAttempts: 2,
+		},
+		{
+			name: "NewWriter",
+			call: func(ctx context.Context, client *Client) error {
+				w := client.Bucket("b").Object("o").NewWriter(ctx)
+				if _, err := w.Write([]byte("data")); err != nil {
+					w.Close()
+					return err
+				}
+				return w.Close()
+			},
+			wantAttempts: 2,
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			mt := &mockTransport{}
+			// Add enough results for the expected attempts plus one spare
+			for i := 0; i < tc.wantAttempts+1; i++ {
+				mt.addResult(&http.Response{StatusCode: 503, Body: bodyReader("Unavailable")}, nil)
+			}
+
+			client := mockClient(t, mt)
+			client.SetRetry(
+				WithMaxAttempts(2),
+				WithBackoff(gax.Backoff{Initial: time.Millisecond}),
+				WithPolicy(RetryAlways),
+			)
+
+			err := tc.call(ctx, client)
+			if err == nil {
+				t.Fatalf("expected error, got nil")
+			}
+
+			if got, want := len(mt.results), 1; got != want {
+				t.Errorf("got remaining results %d, want %d", got, want)
+			}
+
+			req := mt.gotReq
+			if req == nil {
+				t.Fatalf("no request captured")
+			}
+			apiClientHeader := req.Header.Get("X-Goog-Api-Client")
+			if !strings.Contains(apiClientHeader, "gccl-invocation-id/") {
+				t.Errorf("missing gccl-invocation-id in header: %q", apiClientHeader)
+			}
+			wantAttemptStr := fmt.Sprintf("gccl-attempt-count/%d", tc.wantAttempts)
+			if !strings.Contains(apiClientHeader, wantAttemptStr) {
+				t.Errorf("missing/incorrect gccl-attempt-count in header (expected %d): %q", tc.wantAttempts, apiClientHeader)
+			}
+		})
+	}
+}
+
+func TestClient_RetryAndHeadersGRPC(t *testing.T) {
+	ctx := context.Background()
+
+	cases := []struct {
+		name string
+		call func(ctx context.Context, client *Client) error
+	}{
+		{
+			name: "Attrs",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").Attrs(ctx)
+				return err
+			},
+		},
+		{
+			name: "Delete",
+			call: func(ctx context.Context, client *Client) error {
+				return client.Bucket("b").Object("o").Delete(ctx)
+			},
+		},
+		{
+			name: "Update",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").Update(ctx, ObjectAttrsToUpdate{})
+				return err
+			},
+		},
+		{
+			name: "Restore",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").Restore(ctx, &RestoreOptions{})
+				return err
+			},
+		},
+		{
+			name: "CopyTo",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").CopierFrom(client.Bucket("b").Object("o2")).Run(ctx)
+				return err
+			},
+		},
+		{
+			name: "ComposerFrom",
+			call: func(ctx context.Context, client *Client) error {
+				_, err := client.Bucket("b").Object("o").ComposerFrom(client.Bucket("b").Object("o2")).Run(ctx)
+				return err
+			},
+		},
+		{
+			name: "NewReader",
+			call: func(ctx context.Context, client *Client) error {
+				r, err := client.Bucket("b").Object("o").NewReader(ctx)
+				if err == nil {
+					r.Close()
+				}
+				return err
+			},
+		},
+		{
+			name: "NewWriter",
+			call: func(ctx context.Context, client *Client) error {
+				w := client.Bucket("b").Object("o").NewWriter(ctx)
+				if _, err := w.Write([]byte("data")); err != nil {
+					w.Close()
+					return err
+				}
+				return w.Close()
+			},
+		},
+	}
+
+	for _, tc := range cases {
+		t.Run(tc.name, func(t *testing.T) {
+			var gotAttempts int
+			var gotMetadata []metadata.MD
+			var mu sync.Mutex
+
+			unaryInterceptor := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+				mu.Lock()
+				gotAttempts++
+				if md, ok := metadata.FromOutgoingContext(ctx); ok {
+					gotMetadata = append(gotMetadata, md)
+				}
+				mu.Unlock()
+				return status.Error(codes.Unavailable, "Unavailable")
+			}
+
+			streamInterceptor := func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+				mu.Lock()
+				gotAttempts++
+				if md, ok := metadata.FromOutgoingContext(ctx); ok {
+					gotMetadata = append(gotMetadata, md)
+				}
+				mu.Unlock()
+				return nil, status.Error(codes.Unavailable, "Unavailable")
+			}
+
+			client, err := NewGRPCClient(ctx,
+				option.WithoutAuthentication(),
+				option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+				option.WithGRPCDialOption(grpc.WithUnaryInterceptor(unaryInterceptor)),
+				option.WithGRPCDialOption(grpc.WithStreamInterceptor(streamInterceptor)),
+			)
+			if err != nil {
+				t.Fatalf("failed to create gRPC client: %v", err)
+			}
+			defer client.Close()
+
+			client.SetRetry(
+				WithMaxAttempts(2),
+				WithBackoff(gax.Backoff{Initial: time.Millisecond}),
+				WithPolicy(RetryAlways),
+			)
+
+			err = tc.call(ctx, client)
+			if err == nil {
+				t.Fatalf("expected error, got nil")
+			}
+
+			mu.Lock()
+			attempts := gotAttempts
+			mds := gotMetadata
+			mu.Unlock()
+
+			if attempts != 2 {
+				t.Errorf("got attempts %d, want 2", attempts)
+			}
+
+			if len(mds) < 2 {
+				t.Fatalf("got metadata length %d, want at least 2", len(mds))
+			}
+
+			lastMD := mds[len(mds)-1]
+			clientHeaderList := lastMD.Get("x-goog-api-client")
+			if len(clientHeaderList) == 0 {
+				t.Fatalf("missing x-goog-api-client header in metadata")
+			}
+			clientHeader := clientHeaderList[0]
+			if !strings.Contains(clientHeader, "gccl-invocation-id/") {
+				t.Errorf("missing gccl-invocation-id in header: %q", clientHeader)
+			}
+			if !strings.Contains(clientHeader, "gccl-attempt-count/2") {
+				t.Errorf("missing/incorrect gccl-attempt-count in header (expected 2): %q", clientHeader)
+			}
 		})
 	}
 }
