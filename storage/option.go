@@ -42,6 +42,7 @@ func init() {
 	storageinternal.WithMeterProvider = withMeterProvider
 	storageinternal.WithReadStallTimeout = withReadStallTimeout
 	storageinternal.WithDirectConnectivityEnforced = withDirectConnectivityEnforced
+	storageinternal.WithDirectPathXdsOverInterconnect = WithDirectPathXdsOverInterconnect
 	storageinternal.WithOtelMetrics = withOtelMetrics
 	storageinternal.WithOtelDebugMetrics = withOtelDebugMetrics
 }
@@ -78,19 +79,20 @@ func getDynamicReadReqInitialTimeoutSecFromEnv(defaultVal time.Duration) time.Du
 
 // set through storageClientOptions.
 type storageConfig struct {
-	useJSONforReads        bool
-	readAPIWasSet          bool
-	disableClientMetrics   bool
-	enableOtelMetrics      bool
-	enableOtelDebugMetrics bool
-	metricExporter         *metric.Exporter
-	metricInterval         time.Duration
-	meterProvider          *metric.MeterProvider
-	manualReader           *metric.ManualReader
-	readStallTimeoutConfig *experimental.ReadStallTimeoutConfig
-	grpcBidiReads          bool
-	grpcAppendableUploads  bool
-	grpcDirectPathEnforced bool
+	useJSONforReads                   bool
+	readAPIWasSet                     bool
+	disableClientMetrics              bool
+	enableOtelMetrics                 bool
+	enableOtelDebugMetrics            bool
+	metricExporter                    *metric.Exporter
+	metricInterval                    time.Duration
+	meterProvider                     *metric.MeterProvider
+	manualReader                      *metric.ManualReader
+	readStallTimeoutConfig            *experimental.ReadStallTimeoutConfig
+	grpcBidiReads                     bool
+	grpcAppendableUploads             bool
+	grpcDirectPathEnforced            bool
+	grpcDirectPathXdsOverInterconnect bool
 }
 
 // newStorageConfig generates a new storageConfig with all the given
@@ -121,6 +123,26 @@ type withDirectPathEnforced struct {
 
 func (w *withDirectPathEnforced) ApplyStorageOpt(c *storageConfig) {
 	c.grpcDirectPathEnforced = true
+}
+
+// WithDirectPathXdsOverInterconnect provides an [option.ClientOption] that may be
+// passed to [NewGRPCClient].
+//
+// It instructs the client to attempt DirectPath over Google Cloud Interconnect
+// (on-premises xDS name resolution via google-c2p:///storage-direct.googleapis.com?force-xds),
+// bypassing GCE VM BIOS and metadata server locality checks.
+//
+// Note: This option is exclusively supported for gRPC clients.
+func WithDirectPathXdsOverInterconnect() option.ClientOption {
+	return &withDirectPathXdsOverInterconnectConfig{}
+}
+
+type withDirectPathXdsOverInterconnectConfig struct {
+	internaloption.EmbeddableAdapter
+}
+
+func (w *withDirectPathXdsOverInterconnectConfig) ApplyStorageOpt(c *storageConfig) {
+	c.grpcDirectPathXdsOverInterconnect = true
 }
 
 // WithJSONReads is an option that may be passed to [NewClient].

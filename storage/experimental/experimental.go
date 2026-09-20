@@ -90,6 +90,18 @@ func WithDirectConnectivityEnforced() option.ClientOption {
 	return internal.WithDirectConnectivityEnforced.(func() option.ClientOption)()
 }
 
+// WithDirectPathXdsOverInterconnect provides an [option.ClientOption] that may
+// be passed to [cloud.google.com/go/storage.NewGRPCClient].
+//
+// It instructs the client to attempt DirectPath over Google Cloud Interconnect
+// (on-premises xDS name resolution via google-c2p:///storage-direct.googleapis.com?force-xds),
+// bypassing GCE VM BIOS and metadata server locality checks.
+//
+// Note: This option is exclusively supported for gRPC clients.
+func WithDirectPathXdsOverInterconnect() option.ClientOption {
+	return internal.WithDirectPathXdsOverInterconnect.(func() option.ClientOption)()
+}
+
 // WithOtelMetrics provides an [option.ClientOption] that may be passed to
 // [cloud.google.com/go/storage.NewClient] or [cloud.google.com/go/storage.NewGRPCClient].
 // It enables client-side OpenTelemetry metrics.

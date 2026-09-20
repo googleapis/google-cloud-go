@@ -54,7 +54,18 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonEnvVarDisabled
 	}
 
-	res, err := internaloption.NewUnsafeResolver(opts...)
+	cfg := newStorageConfig(opts...)
+	interconnectEnabled := isDirectPathXdsOverInterconnectEnabled(&cfg)
+
+	resolverOpts := opts
+	if interconnectEnabled {
+		resolverOpts = append([]option.ClientOption{
+			internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		}, opts...)
+	}
+
+	res, err := internaloption.NewUnsafeResolver(resolverOpts...)
 	if err != nil {
 		return reasonInternalError
 	}
@@ -72,6 +83,10 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonUnsupportedEndpoint
 	}
 
+	if interconnectEnabled && !isGoogleDefaultUniverseHost(endpoint) {
+		return reasonUnsupportedEndpoint
+	}
+
 	if !res.ResolvedEnableDirectPathXds() {
 		return reasonXDSNotEnabled
 	}
@@ -84,19 +99,23 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonCustomHTTPClient
 	}
 
-	if !metadata.OnGCE() {
+	if !interconnectEnabled && !metadata.OnGCE() {
 		return reasonNotOnGCE
 	}
 
-	return authDiagnostic(res)
+	return authDiagnostic(res, interconnectEnabled)
 }
 
-func authDiagnostic(res *internaloption.UnsafeResolver) string {
+func authDiagnostic(res *internaloption.UnsafeResolver, interconnectEnabled bool) string {
 	if res.ResolvedWithoutAuthentication() {
 		return reasonNoAuth
 	}
 	if res.ResolvedWithAPIKeyIsCustom() {
 		return reasonAPIKey
+	}
+
+	if interconnectEnabled {
+		return reasonUndetermined
 	}
 
 	// Verify that a default service account is attached.
@@ -116,8 +135,10 @@ func isDirectPathCompatible(endpoint string) bool {
 	if endpoint == "" {
 		return false
 	}
-	// DirectPath requires no scheme or the dns:/// scheme specifically.
-	if strings.Contains(endpoint, "://") && !strings.HasPrefix(endpoint, "dns:///") {
+	// DirectPath requires no scheme, dns:///, or google-c2p:///.
+	if strings.Contains(endpoint, "://") &&
+		!strings.HasPrefix(endpoint, "dns:///") &&
+		!strings.HasPrefix(endpoint, directPathEndpointPrefix) {
 		return false
 	}
 	return true
