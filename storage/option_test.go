@@ -263,3 +263,18 @@ func TestGetDynamicReadReqIncreaseRateFromEnv(t *testing.T) {
 		})
 	}
 }
+
+func TestSetBufferPool(t *testing.T) {
+	pool := &struct{ experimental.BufferPool }{}
+	want := storageConfig{
+		bufferPool: pool,
+	}
+	var got storageConfig
+	opt := experimental.WithBufferPool(pool)
+	if storageOpt, ok := opt.(storageClientOption); ok {
+		storageOpt.ApplyStorageOpt(&got)
+	}
+	if got.bufferPool != want.bufferPool {
+		t.Errorf("TestSetBufferPool: bufferPool want=%v, got=%v", want.bufferPool, got.bufferPool)
+	}
+}

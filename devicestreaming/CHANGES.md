@@ -1,5 +1,13 @@
 # Changes
 
+## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/devicestreaming/v1.0.0...devicestreaming/v1.1.0) (2026-09-17)
+
+
+### Features
+
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/devicestreaming%2Fv1.0.0) (2026-05-08)
 
 ## [0.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/devicestreaming%2Fv0.6.0) (2026-05-07)

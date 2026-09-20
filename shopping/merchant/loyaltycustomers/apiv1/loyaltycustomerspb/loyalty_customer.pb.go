@@ -494,9 +494,9 @@ const file_google_shopping_merchant_loyaltycustomers_v1_loyalty_customer_proto_r
 	"\"ManageLoyaltyCustomerMatchResponse\x12h\n" +
 	"\x10loyalty_customer\x18\x01 \x01(\v2=.google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerR\x0floyaltyCustomer2\xf5\x02\n" +
 	"\x1bLoyaltyCustomerMatchService\x12\x8c\x02\n" +
-	"\x1aManageLoyaltyCustomerMatch\x12O.google.shopping.merchant.loyaltycustomers.v1.ManageLoyaltyCustomerMatchRequest\x1aP.google.shopping.merchant.loyaltycustomers.v1.ManageLoyaltyCustomerMatchResponse\"K\x82\xd3\xe4\x93\x02E:\x01*\"@/loyaltyCustomers/v1/{parent=accounts/*}/loyaltyCustomers:manage\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xe9\x01\xeaA8\n" +
+	"\x1aManageLoyaltyCustomerMatch\x12O.google.shopping.merchant.loyaltycustomers.v1.ManageLoyaltyCustomerMatchRequest\x1aP.google.shopping.merchant.loyaltycustomers.v1.ManageLoyaltyCustomerMatchResponse\"K\x82\xd3\xe4\x93\x02E:\x01*\"@/loyaltyCustomers/v1/{parent=accounts/*}/loyaltyCustomers:manage\x1aG\xcaA\x1amerchantapi.googleapis.com\xd2A'https://www.googleapis.com/auth/contentB\xfa\x02\xeaA8\n" +
 	"\"merchantapi.googleapis.com/Account\x12\x12accounts/{account}\n" +
-	"0com.google.shopping.merchant.loyaltycustomers.v1B\x14LoyaltyCustomerProtoP\x01Zbcloud.google.com/go/shopping/merchant/loyaltycustomers/apiv1/loyaltycustomerspb;loyaltycustomerspbb\x06proto3"
+	"0com.google.shopping.merchant.loyaltycustomers.v1B\x14LoyaltyCustomerProtoP\x01Zbcloud.google.com/go/shopping/merchant/loyaltycustomers/apiv1/loyaltycustomerspb;loyaltycustomerspb\xaa\x02,Google.Shopping.Merchant.LoyaltyCustomers.V1\xca\x02,Google\\Shopping\\Merchant\\LoyaltyCustomers\\V1\xea\x020Google::Shopping::Merchant::LoyaltyCustomers::V1b\x06proto3"
 
 var (
 	file_google_shopping_merchant_loyaltycustomers_v1_loyalty_customer_proto_rawDescOnce sync.Once

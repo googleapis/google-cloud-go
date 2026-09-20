@@ -2574,6 +2574,12 @@ type SandboxEnvironmentConnectionInfo struct {
 	SandboxInternalIp string `json:"sandboxInternalIp,omitempty"`
 	// Output only. The routing token for the SandboxEnvironment.
 	RoutingToken string `json:"routingToken,omitempty"`
+	// Output only. The name of the PSC-E service attachment created for
+	// private ingress to this SandboxEnvironment. Only populated when the
+	// template enables private ingress (see
+	// SandboxEnvironmentTemplate.ingress_control_config). VPC-SC customers
+	// use this to create a PSC endpoint in their VPC.
+	ServiceAttachment string `json:"serviceAttachment,omitempty"`
 }
 
 // A sandbox environment.

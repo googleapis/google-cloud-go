@@ -1,5 +1,13 @@
 # Changes
 
+## [1.2.0](https://github.com/googleapis/google-cloud-go/compare/apps/v1.1.0...apps/v1.2.0) (2026-09-17)
+
+
+### Features
+
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
 ## [1.1.0](https://github.com/googleapis/google-cloud-go/compare/apps/v1.0.0...apps/v1.1.0) (2026-07-13)
 
 
