@@ -57,15 +57,7 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 	cfg := newStorageConfig(opts...)
 	interconnectEnabled := isDirectPathXdsOverInterconnectEnabled(&cfg)
 
-	resolverOpts := opts
-	if interconnectEnabled {
-		resolverOpts = append([]option.ClientOption{
-			internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
-			internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		}, opts...)
-	}
-
-	res, err := internaloption.NewUnsafeResolver(resolverOpts...)
+	res, err := internaloption.NewUnsafeResolver(opts...)
 	if err != nil {
 		return reasonInternalError
 	}
@@ -99,23 +91,29 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonCustomHTTPClient
 	}
 
-	if !interconnectEnabled && !metadata.OnGCE() {
+	if interconnectEnabled {
+		if res.ResolvedWithoutAuthentication() {
+			return reasonNoAuth
+		}
+		if res.ResolvedWithAPIKeyIsCustom() {
+			return reasonAPIKey
+		}
+		return reasonUndetermined
+	}
+
+	if !metadata.OnGCE() {
 		return reasonNotOnGCE
 	}
 
-	return authDiagnostic(res, interconnectEnabled)
+	return authDiagnostic(res)
 }
 
-func authDiagnostic(res *internaloption.UnsafeResolver, interconnectEnabled bool) string {
+func authDiagnostic(res *internaloption.UnsafeResolver) string {
 	if res.ResolvedWithoutAuthentication() {
 		return reasonNoAuth
 	}
 	if res.ResolvedWithAPIKeyIsCustom() {
 		return reasonAPIKey
-	}
-
-	if interconnectEnabled {
-		return reasonUndetermined
 	}
 
 	// Verify that a default service account is attached.

@@ -83,12 +83,9 @@ const (
 )
 
 func isDirectPathXdsOverInterconnectEnabled(config *storageConfig) bool {
-	if v, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
-		if v == "true" {
-			return true
-		}
-		if v == "false" {
-			return false
+	if valStr, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
+		if b, err := strconv.ParseBool(valStr); err == nil {
+			return b
 		}
 	}
 	return config != nil && config.grpcDirectPathXdsOverInterconnect
@@ -134,10 +131,7 @@ func isGoogleDefaultUniverseHost(endpoint string) bool {
 	return host == "googleapis.com" || strings.HasSuffix(host, ".googleapis.com")
 }
 
-func configureDirectPathInterconnectOptions(opts []option.ClientOption, config *storageConfig) []option.ClientOption {
-	if !isDirectPathXdsOverInterconnectEnabled(config) {
-		return opts
-	}
+func configureDirectPathInterconnectOptions(opts []option.ClientOption) []option.ClientOption {
 	resolverOpts := append([]option.ClientOption{
 		internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
@@ -251,8 +245,8 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
-	if os.Getenv("STORAGE_EMULATOR_HOST_GRPC") == "" {
-		s.clientOption = configureDirectPathInterconnectOptions(s.clientOption, &config)
+	if os.Getenv("STORAGE_EMULATOR_HOST_GRPC") == "" && isDirectPathXdsOverInterconnectEnabled(&config) {
+		s.clientOption = configureDirectPathInterconnectOptions(s.clientOption)
 	}
 
 	if !config.disableClientMetrics {

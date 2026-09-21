@@ -163,11 +163,12 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 			want: reasonUndetermined,
 		},
 		{
-			name: "interconnect enabled off-GCE with default endpoint bypasses GCE check",
+			name: "interconnect enabled off-GCE with rewritten endpoint bypasses GCE check",
 			opts: []option.ClientOption{
 				internaloption.EnableDirectPath(true),
 				internaloption.EnableDirectPathXds(),
 				WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("storage-direct.googleapis.com:443"),
 			},
 			want: reasonUndetermined,
 		},
@@ -197,6 +198,7 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 				internaloption.EnableDirectPath(true),
 				internaloption.EnableDirectPathXds(),
 				WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("storage-direct.googleapis.com:443"),
 				option.WithoutAuthentication(),
 			},
 			want: reasonNoAuth,

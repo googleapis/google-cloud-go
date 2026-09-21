@@ -36,12 +36,9 @@ const directPathInterconnectInfix = "-direct."
 var logRateLimiter = rate.Sometimes{Interval: 1 * time.Second}
 
 func isDirectPathXdsOverInterconnectUsed(endpoint string, o *Options) bool {
-	if v, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
-		if v == "true" {
-			return true
-		}
-		if v == "false" {
-			return false
+	if valStr, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
+		if b, err := strconv.ParseBool(valStr); err == nil {
+			return b
 		}
 	}
 	if o != nil && o.InternalOptions != nil && o.InternalOptions.EnableDirectPathXdsOverInterconnect {

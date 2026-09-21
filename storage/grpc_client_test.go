@@ -601,17 +601,39 @@ func TestRewriteHost(t *testing.T) {
 	}
 }
 
+func TestIsDirectPathXdsOverInterconnectEnabled(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		envVal string
+		cfgVal bool
+		want   bool
+	}{
+		{name: "option true, env unset", envVal: "", cfgVal: true, want: true},
+		{name: "option false, env unset", envVal: "", cfgVal: false, want: false},
+		{name: "env true overrides option false", envVal: "true", cfgVal: false, want: true},
+		{name: "env 1 overrides option false", envVal: "1", cfgVal: false, want: true},
+		{name: "env false overrides option true", envVal: "false", cfgVal: true, want: false},
+		{name: "env 0 overrides option true", envVal: "0", cfgVal: true, want: false},
+		{name: "invalid env falls back to option true", envVal: "invalid", cfgVal: true, want: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, tc.envVal)
+			cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: tc.cfgVal}
+			if got := isDirectPathXdsOverInterconnectEnabled(cfg); got != tc.want {
+				t.Errorf("isDirectPathXdsOverInterconnectEnabled() = %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
+
 func TestConfigureDirectPathInterconnectOptions(t *testing.T) {
 	baseOpts := []option.ClientOption{
 		internaloption.EnableDirectPath(true),
 		internaloption.EnableDirectPathXds(),
 	}
 
-	t.Run("default endpoint rewritten when option enabled", func(t *testing.T) {
-		t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
-		t.Setenv(directPathDisableEnvVar, "")
-		cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: true}
-		gotOpts := configureDirectPathInterconnectOptions(baseOpts, cfg)
+	t.Run("default endpoint rewritten to storage-direct.googleapis.com:443", func(t *testing.T) {
+		gotOpts := configureDirectPathInterconnectOptions(baseOpts)
 		res, err := internaloption.NewUnsafeResolver(gotOpts...)
 		if err != nil {
 			t.Fatalf("NewUnsafeResolver() unexpected error: %v", err)
@@ -622,56 +644,13 @@ func TestConfigureDirectPathInterconnectOptions(t *testing.T) {
 		}
 		if gotEndpoint != "storage-direct.googleapis.com:443" {
 			t.Errorf("ResolvedGRPCEndpoint() = %q, want %q", gotEndpoint, "storage-direct.googleapis.com:443")
-		}
-	})
-
-	t.Run("env var true enables interconnect when option is false", func(t *testing.T) {
-		t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "true")
-		t.Setenv(directPathDisableEnvVar, "")
-		cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: false}
-		gotOpts := configureDirectPathInterconnectOptions(baseOpts, cfg)
-		res, err := internaloption.NewUnsafeResolver(gotOpts...)
-		if err != nil {
-			t.Fatalf("NewUnsafeResolver() unexpected error: %v", err)
-		}
-		gotEndpoint, err := res.ResolvedGRPCEndpoint()
-		if err != nil {
-			t.Fatalf("ResolvedGRPCEndpoint() unexpected error: %v", err)
-		}
-		if gotEndpoint != "storage-direct.googleapis.com:443" {
-			t.Errorf("ResolvedGRPCEndpoint() = %q, want %q", gotEndpoint, "storage-direct.googleapis.com:443")
-		}
-	})
-
-	t.Run("env var false disables interconnect even when option is true", func(t *testing.T) {
-		t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "false")
-		t.Setenv(directPathDisableEnvVar, "")
-		cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: true}
-		opts := append([]option.ClientOption{
-			internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
-			internaloption.WithDefaultUniverseDomain("googleapis.com"),
-		}, baseOpts...)
-		gotOpts := configureDirectPathInterconnectOptions(opts, cfg)
-		res, err := internaloption.NewUnsafeResolver(gotOpts...)
-		if err != nil {
-			t.Fatalf("NewUnsafeResolver() unexpected error: %v", err)
-		}
-		gotEndpoint, err := res.ResolvedGRPCEndpoint()
-		if err != nil {
-			t.Fatalf("ResolvedGRPCEndpoint() unexpected error: %v", err)
-		}
-		if gotEndpoint != "storage.googleapis.com:443" {
-			t.Errorf("ResolvedGRPCEndpoint() = %q, want %q", gotEndpoint, "storage.googleapis.com:443")
 		}
 	})
 
 	t.Run("custom google-c2p endpoint preserved", func(t *testing.T) {
-		t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
-		t.Setenv(directPathDisableEnvVar, "")
-		cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: true}
 		opts := append([]option.ClientOption{}, baseOpts...)
 		opts = append(opts, option.WithEndpoint("google-c2p:///storage-direct.googleapis.com?force-xds"))
-		gotOpts := configureDirectPathInterconnectOptions(opts, cfg)
+		gotOpts := configureDirectPathInterconnectOptions(opts)
 		res, err := internaloption.NewUnsafeResolver(gotOpts...)
 		if err != nil {
 			t.Fatalf("NewUnsafeResolver() unexpected error: %v", err)
