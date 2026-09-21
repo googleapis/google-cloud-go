@@ -42,7 +42,6 @@ func init() {
 	storageinternal.WithMeterProvider = withMeterProvider
 	storageinternal.WithReadStallTimeout = withReadStallTimeout
 	storageinternal.WithDirectConnectivityEnforced = withDirectConnectivityEnforced
-	storageinternal.WithDirectPathXdsOverInterconnect = WithDirectPathXdsOverInterconnect
 	storageinternal.WithOtelMetrics = withOtelMetrics
 	storageinternal.WithOtelDebugMetrics = withOtelDebugMetrics
 	storageinternal.WithBufferPool = withBufferPool

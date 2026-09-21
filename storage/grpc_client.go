@@ -80,7 +80,6 @@ const (
 	enableDirectPathXdsOverInterconnectEnvVar = "GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS_OVER_INTERCONNECT"
 	defaultStorageHost                        = "storage.googleapis.com"
 	defaultStorageDirectPathHost              = "storage-direct.googleapis.com"
-	directPathInterconnectInfix               = "-direct."
 )
 
 func isDirectPathXdsOverInterconnectEnabled(config *storageConfig) bool {
@@ -136,7 +135,9 @@ func isGoogleDefaultUniverseHost(endpoint string) bool {
 }
 
 func configureDirectPathInterconnectOptions(opts []option.ClientOption, config *storageConfig) []option.ClientOption {
-	enabled := isDirectPathXdsOverInterconnectEnabled(config)
+	if !isDirectPathXdsOverInterconnectEnabled(config) {
+		return opts
+	}
 	resolverOpts := append([]option.ClientOption{
 		internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
 		internaloption.WithDefaultUniverseDomain("googleapis.com"),
@@ -149,49 +150,15 @@ func configureDirectPathInterconnectOptions(opts []option.ClientOption, config *
 	if err != nil || endpoint == "" {
 		endpoint = defaultStorageHost + ":443"
 	}
-	disableDP := strings.EqualFold(os.Getenv(directPathDisableEnvVar), "true")
-	eligible := enabled &&
-		res.ResolvedEnableDirectPath() &&
-		!disableDP &&
-		isGoogleDefaultUniverseHost(endpoint) &&
-		!res.ResolvedWithoutAuthentication() &&
-		!res.ResolvedWithAPIKeyIsCustom()
-
-	if eligible {
-		rewritten := rewriteHost(endpoint, defaultStorageHost, defaultStorageDirectPathHost)
-		if strings.HasPrefix(rewritten, directPathEndpointPrefix) {
-			if !strings.Contains(rewritten, "force-xds") {
-				if strings.Contains(rewritten, "?") {
-					rewritten += "&force-xds"
-				} else {
-					rewritten += "?force-xds"
-				}
-			}
-		} else {
+	rewritten := rewriteHost(endpoint, defaultStorageHost, defaultStorageDirectPathHost)
+	if rewritten != endpoint {
+		if !strings.HasPrefix(rewritten, directPathEndpointPrefix) && !strings.HasPrefix(rewritten, "dns:///") {
 			rewritten = stripScheme(rewritten)
 			if !strings.Contains(rewritten, ":") && !strings.Contains(rewritten, "/") {
 				rewritten += ":443"
 			}
 		}
 		opts = append(opts, option.WithEndpoint(rewritten))
-		cleanHost := strings.TrimPrefix(rewritten, directPathEndpointPrefix)
-		cleanHost = strings.TrimPrefix(cleanHost, "dns:///")
-		if qIdx := strings.Index(cleanHost, "?"); qIdx != -1 {
-			cleanHost = cleanHost[:qIdx]
-		}
-		if colonIdx := strings.Index(cleanHost, ":"); colonIdx != -1 {
-			cleanHost = cleanHost[:colonIdx]
-		}
-		if strings.Contains(cleanHost, directPathInterconnectInfix) {
-			authority := strings.Replace(cleanHost, directPathInterconnectInfix, ".", 1)
-			opts = append(opts, option.WithGRPCDialOption(grpc.WithAuthority(authority)))
-		}
-		return opts
-	}
-
-	if strings.Contains(endpoint, directPathInterconnectInfix) && !strings.HasPrefix(endpoint, directPathEndpointPrefix) {
-		fallback := strings.Replace(endpoint, directPathInterconnectInfix, ".", 1)
-		opts = append(opts, option.WithEndpoint(fallback))
 	}
 	return opts
 }

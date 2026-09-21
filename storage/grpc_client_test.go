@@ -647,28 +647,10 @@ func TestConfigureDirectPathInterconnectOptions(t *testing.T) {
 		t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "false")
 		t.Setenv(directPathDisableEnvVar, "")
 		cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: true}
-		opts := append([]option.ClientOption{}, baseOpts...)
-		opts = append(opts, option.WithEndpoint("storage-direct.googleapis.com:443"))
-		gotOpts := configureDirectPathInterconnectOptions(opts, cfg)
-		res, err := internaloption.NewUnsafeResolver(gotOpts...)
-		if err != nil {
-			t.Fatalf("NewUnsafeResolver() unexpected error: %v", err)
-		}
-		gotEndpoint, err := res.ResolvedGRPCEndpoint()
-		if err != nil {
-			t.Fatalf("ResolvedGRPCEndpoint() unexpected error: %v", err)
-		}
-		if gotEndpoint != "storage.googleapis.com:443" {
-			t.Errorf("ResolvedGRPCEndpoint() = %q, want %q", gotEndpoint, "storage.googleapis.com:443")
-		}
-	})
-
-	t.Run("CloudPath fallback rewrites -direct. back to . when DirectPath disabled", func(t *testing.T) {
-		t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
-		t.Setenv(directPathDisableEnvVar, "true")
-		cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: true}
-		opts := append([]option.ClientOption{}, baseOpts...)
-		opts = append(opts, option.WithEndpoint("storage-direct.googleapis.com:443"))
+		opts := append([]option.ClientOption{
+			internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
+			internaloption.WithDefaultUniverseDomain("googleapis.com"),
+		}, baseOpts...)
 		gotOpts := configureDirectPathInterconnectOptions(opts, cfg)
 		res, err := internaloption.NewUnsafeResolver(gotOpts...)
 		if err != nil {

@@ -166,13 +166,6 @@ func TestApplyStorageOpt(t *testing.T) {
 				grpcDirectPathXdsOverInterconnect: true,
 			},
 		},
-		{
-			desc: "enable experimental DirectPath xDS over Interconnect",
-			opts: []option.ClientOption{experimental.WithDirectPathXdsOverInterconnect()},
-			want: storageConfig{
-				grpcDirectPathXdsOverInterconnect: true,
-			},
-		},
 	} {
 		t.Run(test.desc, func(t *testing.T) {
 			var got storageConfig
