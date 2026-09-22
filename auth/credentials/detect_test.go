@@ -26,6 +26,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -464,6 +465,57 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 	}
 	if want := internal.TokenTypeBearer; tok.Type != want {
 		t.Fatalf("got %q, want %q", tok.Type, want)
+	}
+}
+
+func TestDefaultCredentials_ServiceAccountKeyDisableAsyncRefresh(t *testing.T) {
+	ctx := context.Background()
+	b, err := os.ReadFile("../internal/testdata/sa.json")
+	if err != nil {
+		t.Fatal(err)
+	}
+	f, err := credsfile.ParseServiceAccount(b)
+	if err != nil {
+		t.Fatal(err)
+	}
+	var issued atomic.Int32
+	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		// Expires within the default early refresh window, so the token is
+		// stale as soon as it is cached.
+		resp := &tokResp{
+			AccessToken: fmt.Sprintf("token_%d", issued.Add(1)),
+			TokenType:   internal.TokenTypeBearer,
+			ExpiresIn:   60,
+		}
+		if err := json.NewEncoder(w).Encode(&resp); err != nil {
+			t.Fatal(err)
+		}
+	}))
+	defer ts.Close()
+	f.TokenURL = ts.URL
+	b, err = json.Marshal(f)
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	creds, err := DetectDefault(&DetectOptions{
+		CredentialsJSON:     b,
+		Scopes:              []string{"https://www.googleapis.com/auth/cloud-platform"},
+		DisableAsyncRefresh: true,
+	})
+	if err != nil {
+		t.Fatal(err)
+	}
+	for _, want := range []string{"token_1", "token_2"} {
+		tok, err := creds.Token(ctx)
+		if err != nil {
+			t.Fatalf("creds.Token() = %v", err)
+		}
+		// With a blocking refresh a stale token is replaced before it is
+		// returned instead of being handed out while a refresh runs.
+		if tok.Value != want {
+			t.Fatalf("got %q, want %q", tok.Value, want)
+		}
 	}
 }
 

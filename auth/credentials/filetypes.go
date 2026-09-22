@@ -109,7 +109,8 @@ func fileCredentials(b []byte, opts *DetectOptions) (*auth.Credentials, error) {
 	}
 	return auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: auth.NewCachedTokenProvider(tp, &auth.CachedTokenProviderOptions{
-			ExpireEarly: opts.EarlyTokenRefresh,
+			ExpireEarly:         opts.EarlyTokenRefresh,
+			DisableAsyncRefresh: opts.DisableAsyncRefresh,
 		}),
 		JSON:              b,
 		ProjectIDProvider: internalauth.StaticCredentialsProperty(projectID),
