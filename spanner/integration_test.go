@@ -30,6 +30,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -4250,12 +4251,17 @@ func TestIntegration_ListDatabaseRoles(t *testing.T) {
 		t.Fatalf("cannot list database roles in %v: %v", dbPath, err)
 	}
 	var got []string
+	optional := []string{"spanner_secure_context_reader"}
 	rolePrefix := dbPath + "/databaseRoles/"
 	for _, role := range roles {
 		if !strings.HasPrefix(role.Name, rolePrefix) {
 			t.Fatalf("Role %v does not have prefix %v", role.Name, rolePrefix)
 		}
-		got = append(got, strings.TrimPrefix(role.Name, rolePrefix))
+		roleName := strings.TrimPrefix(role.Name, rolePrefix)
+		if slices.Contains(optional, roleName) {
+			continue
+		}
+		got = append(got, roleName)
 	}
 	want := []string{"a", "public", "spanner_info_reader", "spanner_sys_reader", "z"}
 	if !testEqual(got, want) {
