@@ -186,11 +186,6 @@ func canUseDirectPath(endpoint string, opts *Options, creds *auth.Credentials) b
 // configuration allows the use of direct path. If it does not the provided
 // grpcOpts and endpoint are returned.
 func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials) ([]grpc.DialOption, string, error) {
-	if !isDirectPathXdsOverInterconnectUsed(endpoint, opts) &&
-		strings.Contains(endpoint, directPathInterconnectInfix) &&
-		!strings.HasPrefix(endpoint, "google-c2p:///") {
-		endpoint = strings.Replace(endpoint, directPathInterconnectInfix, ".", 1)
-	}
 	logRateLimiter.Do(func() {
 		logDirectPathMisconfig(endpoint, creds, opts)
 	})
@@ -198,7 +193,7 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 		interconnect := isDirectPathXdsOverInterconnectUsed(endpoint, opts)
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
 		defaultCredetialsOptions := grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds, endpoint: endpoint}}
-		if isDirectPathBoundTokenEnabled(opts.InternalOptions) && isTokenProviderComputeEngine(creds) {
+		if !interconnect && opts != nil && isDirectPathBoundTokenEnabled(opts.InternalOptions) && isTokenProviderComputeEngine(creds) {
 			optsClone := opts.resolveDetectOptions()
 			optsClone.TokenBindingType = credentials.ALTSHardBinding
 			altsCreds, err := credentials.DetectDefault(optsClone)
@@ -220,17 +215,29 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 		if host, _, err := net.SplitHostPort(cleanAddr); err == nil {
 			cleanAddr = host
 		}
-		if interconnect && strings.Contains(cleanAddr, directPathInterconnectInfix) {
-			authority := strings.Replace(cleanAddr, directPathInterconnectInfix, ".", 1)
-			grpcOpts = append(grpcOpts, grpc.WithAuthority(authority))
+		if interconnect {
+			if strings.HasSuffix(cleanAddr, ".googleapis.com") && !strings.Contains(cleanAddr, directPathInterconnectInfix) {
+				authority := cleanAddr
+				cleanAddr = strings.TrimSuffix(cleanAddr, ".googleapis.com") + directPathInterconnectInfix + "googleapis.com"
+				grpcOpts = append(grpcOpts, grpc.WithAuthority(authority))
+			} else if strings.Contains(cleanAddr, directPathInterconnectInfix) {
+				authority := strings.Replace(cleanAddr, directPathInterconnectInfix, ".", 1)
+				grpcOpts = append(grpcOpts, grpc.WithAuthority(authority))
+			}
 		}
 		// Check if google-c2p resolver is enabled for DirectPath
 		if strings.HasPrefix(endpoint, "google-c2p:///") {
-			if interconnect && !strings.Contains(endpoint, "force-xds") {
-				if strings.Contains(endpoint, "?") {
-					endpoint += "&force-xds"
+			if interconnect {
+				rawQuery := ""
+				if qIdx := strings.Index(endpoint, "?"); qIdx != -1 {
+					rawQuery = endpoint[qIdx+1:]
+				}
+				if rawQuery == "" {
+					endpoint = "google-c2p:///" + cleanAddr + "?force-xds"
+				} else if !strings.Contains(rawQuery, "force-xds") {
+					endpoint = "google-c2p:///" + cleanAddr + "?" + rawQuery + "&force-xds"
 				} else {
-					endpoint += "?force-xds"
+					endpoint = "google-c2p:///" + cleanAddr + "?" + rawQuery
 				}
 			}
 		} else if isDirectPathXdsUsed(opts) || interconnect {
@@ -250,8 +257,6 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 				grpc.WithDefaultServiceConfig(`{"loadBalancingConfig":[{"grpclb":{"childPolicy":[{"pick_first":{}}]}}]}`))
 		}
 		// TODO: add support for system parameters (quota project, request reason) via chained interceptor.
-	} else if strings.Contains(endpoint, directPathInterconnectInfix) && !strings.HasPrefix(endpoint, "google-c2p:///") {
-		endpoint = strings.Replace(endpoint, directPathInterconnectInfix, ".", 1)
 	}
 	return grpcOpts, endpoint, nil
 }

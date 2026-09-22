@@ -323,9 +323,6 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 	}
 
 	if opts.APIKey != "" {
-		if strings.Contains(transportCreds.Endpoint, directPathInterconnectInfix) && !strings.HasPrefix(transportCreds.Endpoint, "google-c2p:///") {
-			transportCreds.Endpoint = strings.Replace(transportCreds.Endpoint, directPathInterconnectInfix, ".", 1)
-		}
 		grpcOpts = append(grpcOpts,
 			grpc.WithPerRPCCredentials(&grpcKeyProvider{
 				apiKey:   opts.APIKey,
@@ -386,8 +383,6 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 		if err != nil {
 			return nil, err
 		}
-	} else if strings.Contains(transportCreds.Endpoint, directPathInterconnectInfix) && !strings.HasPrefix(transportCreds.Endpoint, "google-c2p:///") {
-		transportCreds.Endpoint = strings.Replace(transportCreds.Endpoint, directPathInterconnectInfix, ".", 1)
 	}
 
 	// Add tracing, but before the other options, so that clients can override the

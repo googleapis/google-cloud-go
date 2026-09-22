@@ -236,22 +236,43 @@ func TestConfigureDirectPath_Interconnect(t *testing.T) {
 			EnableDirectPath:                    true,
 			EnableDirectPathXds:                 true,
 			EnableDirectPathXdsOverInterconnect: true,
+			AllowHardBoundTokens:                []string{"ALTS"},
 		},
 	}
+	// Use errTP to also verify that configureDirectPath does not synchronously
+	// fetch a token for ALTS hard-bound token probing when interconnect is enabled.
 	creds := auth.NewCredentials(&auth.CredentialsOptions{
-		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
+		TokenProvider: &errTP{},
 	})
 
-	grpcOpts, gotEndpoint, err := configureDirectPath(nil, opts, "storage-direct.googleapis.com:443", creds)
-	if err != nil {
-		t.Fatalf("configureDirectPath() unexpected error: %v", err)
-	}
-	wantEndpoint := "google-c2p:///storage-direct.googleapis.com?force-xds"
-	if gotEndpoint != wantEndpoint {
-		t.Errorf("configureDirectPath() endpoint = %q, want %q", gotEndpoint, wantEndpoint)
-	}
-	if len(grpcOpts) < 2 {
-		t.Errorf("configureDirectPath() len(grpcOpts) = %d, want >= 2 (credentials bundle + WithAuthority)", len(grpcOpts))
+	for _, tc := range []struct {
+		name     string
+		endpoint string
+		want     string
+	}{
+		{
+			name:     "standard googleapis.com endpoint is rewritten to -direct.googleapis.com",
+			endpoint: "storage.googleapis.com:443",
+			want:     "google-c2p:///storage-direct.googleapis.com?force-xds",
+		},
+		{
+			name:     "pre-rewritten -direct.googleapis.com endpoint",
+			endpoint: "storage-direct.googleapis.com:443",
+			want:     "google-c2p:///storage-direct.googleapis.com?force-xds",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			grpcOpts, gotEndpoint, err := configureDirectPath(nil, opts, tc.endpoint, creds)
+			if err != nil {
+				t.Fatalf("configureDirectPath(%q) unexpected error: %v", tc.endpoint, err)
+			}
+			if gotEndpoint != tc.want {
+				t.Errorf("configureDirectPath(%q) endpoint = %q, want %q", tc.endpoint, gotEndpoint, tc.want)
+			}
+			if len(grpcOpts) < 2 {
+				t.Errorf("configureDirectPath(%q) len(grpcOpts) = %d, want >= 2 (credentials bundle + WithAuthority)", tc.endpoint, len(grpcOpts))
+			}
+		})
 	}
 }
 
@@ -270,13 +291,16 @@ func TestConfigureDirectPath_Interconnect_EnvOverride(t *testing.T) {
 				EnableDirectPathXdsOverInterconnect: false,
 			},
 		}
-		_, gotEndpoint, err := configureDirectPath(nil, opts, "storage-direct.googleapis.com:443", creds)
+		grpcOpts, gotEndpoint, err := configureDirectPath(nil, opts, "storage.googleapis.com:443", creds)
 		if err != nil {
 			t.Fatalf("configureDirectPath() unexpected error: %v", err)
 		}
 		wantEndpoint := "google-c2p:///storage-direct.googleapis.com?force-xds"
 		if gotEndpoint != wantEndpoint {
 			t.Errorf("configureDirectPath() endpoint = %q, want %q", gotEndpoint, wantEndpoint)
+		}
+		if len(grpcOpts) < 2 {
+			t.Errorf("configureDirectPath() len(grpcOpts) = %d, want >= 2 (credentials bundle + WithAuthority)", len(grpcOpts))
 		}
 	})
 
@@ -289,7 +313,7 @@ func TestConfigureDirectPath_Interconnect_EnvOverride(t *testing.T) {
 				EnableDirectPathXdsOverInterconnect: true,
 			},
 		}
-		_, gotEndpoint, err := configureDirectPath(nil, opts, "storage-direct.googleapis.com:443", creds)
+		_, gotEndpoint, err := configureDirectPath(nil, opts, "storage.googleapis.com:443", creds)
 		if err != nil {
 			t.Fatalf("configureDirectPath() unexpected error: %v", err)
 		}
@@ -334,6 +358,11 @@ func TestConfigureDirectPath_Interconnect_CustomURI(t *testing.T) {
 			input: "google-c2p:///storage-direct.googleapis.com?foo=bar",
 			want:  "google-c2p:///storage-direct.googleapis.com?foo=bar&force-xds",
 		},
+		{
+			name:  "rewrites google-c2p standard host to -direct and appends force-xds",
+			input: "google-c2p:///storage.googleapis.com",
+			want:  "google-c2p:///storage-direct.googleapis.com?force-xds",
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			_, got, err := configureDirectPath(nil, opts, tc.input, creds)
@@ -347,12 +376,12 @@ func TestConfigureDirectPath_Interconnect_CustomURI(t *testing.T) {
 	}
 }
 
-func TestConfigureDirectPath_Interconnect_FallbackRewritesDirectHost(t *testing.T) {
+func TestConfigureDirectPath_Interconnect_FallbackPreservesEndpoint(t *testing.T) {
 	creds := auth.NewCredentials(&auth.CredentialsOptions{
 		TokenProvider: &staticTP{tok: &auth.Token{Value: "fakeToken"}},
 	})
 
-	t.Run("EnableDirectPath false rewrites -direct. to .", func(t *testing.T) {
+	t.Run("EnableDirectPath false preserves original endpoint", func(t *testing.T) {
 		t.Setenv(disableDirectPathEnvVar, "")
 		opts := &Options{
 			InternalOptions: &InternalOptions{
@@ -361,7 +390,7 @@ func TestConfigureDirectPath_Interconnect_FallbackRewritesDirectHost(t *testing.
 				EnableDirectPathXdsOverInterconnect: true,
 			},
 		}
-		_, got, err := configureDirectPath(nil, opts, "storage-direct.googleapis.com:443", creds)
+		_, got, err := configureDirectPath(nil, opts, "storage.googleapis.com:443", creds)
 		if err != nil {
 			t.Fatalf("configureDirectPath() unexpected error: %v", err)
 		}
@@ -370,7 +399,7 @@ func TestConfigureDirectPath_Interconnect_FallbackRewritesDirectHost(t *testing.
 		}
 	})
 
-	t.Run("GOOGLE_CLOUD_DISABLE_DIRECT_PATH=true rewrites -direct. to .", func(t *testing.T) {
+	t.Run("GOOGLE_CLOUD_DISABLE_DIRECT_PATH=true preserves original endpoint", func(t *testing.T) {
 		t.Setenv(disableDirectPathEnvVar, "true")
 		opts := &Options{
 			InternalOptions: &InternalOptions{
@@ -379,7 +408,7 @@ func TestConfigureDirectPath_Interconnect_FallbackRewritesDirectHost(t *testing.
 				EnableDirectPathXdsOverInterconnect: true,
 			},
 		}
-		_, got, err := configureDirectPath(nil, opts, "storage-direct.googleapis.com:443", creds)
+		_, got, err := configureDirectPath(nil, opts, "storage.googleapis.com:443", creds)
 		if err != nil {
 			t.Fatalf("configureDirectPath() unexpected error: %v", err)
 		}
@@ -388,7 +417,7 @@ func TestConfigureDirectPath_Interconnect_FallbackRewritesDirectHost(t *testing.
 		}
 	})
 
-	t.Run("non-GDU universe domain rewrites -direct. to .", func(t *testing.T) {
+	t.Run("non-GDU universe domain preserves original endpoint", func(t *testing.T) {
 		t.Setenv(disableDirectPathEnvVar, "")
 		opts := &Options{
 			UniverseDomain: "apis-tpclp.goog",
@@ -398,7 +427,7 @@ func TestConfigureDirectPath_Interconnect_FallbackRewritesDirectHost(t *testing.
 				EnableDirectPathXdsOverInterconnect: true,
 			},
 		}
-		_, got, err := configureDirectPath(nil, opts, "storage-direct.apis-tpclp.goog:443", creds)
+		_, got, err := configureDirectPath(nil, opts, "storage.apis-tpclp.goog:443", creds)
 		if err != nil {
 			t.Fatalf("configureDirectPath() unexpected error: %v", err)
 		}

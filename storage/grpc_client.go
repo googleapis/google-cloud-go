@@ -22,7 +22,6 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
-	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -72,90 +71,12 @@ const (
 	// which only does a single read per stream.
 	defaultReadID = 1
 
-	forceDirectConnectivityEnforced           = "ENFORCED"
-	directConnectivityHeaderKey               = "force_direct_connectivity"
-	directConnectivityDiagnosticHeaderKey     = "direct_connectivity_diagnostic"
-	requestParamsHeaderKey                    = "x-goog-request-params"
-	directPathEndpointPrefix                  = "google-c2p:///"
-	enableDirectPathXdsOverInterconnectEnvVar = "GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS_OVER_INTERCONNECT"
-	defaultStorageHost                        = "storage.googleapis.com"
-	defaultStorageDirectPathHost              = "storage-direct.googleapis.com"
+	forceDirectConnectivityEnforced       = "ENFORCED"
+	directConnectivityHeaderKey           = "force_direct_connectivity"
+	directConnectivityDiagnosticHeaderKey = "direct_connectivity_diagnostic"
+	requestParamsHeaderKey                = "x-goog-request-params"
+	directPathEndpointPrefix              = "google-c2p:///"
 )
-
-func isDirectPathXdsOverInterconnectEnabled(config *storageConfig) bool {
-	if valStr, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
-		if b, err := strconv.ParseBool(valStr); err == nil {
-			return b
-		}
-	}
-	return config != nil && config.grpcDirectPathXdsOverInterconnect
-}
-
-// rewriteHost replaces oldHost with newHost after an optional scheme prefix
-// (such as "https://", "dns:///", or "google-c2p:///") only when oldHost is
-// followed by the end of the string or a valid URI delimiter (':', '/', '?', '#').
-func rewriteHost(endpoint, oldHost, newHost string) string {
-	schemePrefix := ""
-	rest := endpoint
-	if idx := strings.Index(endpoint, "://"); idx != -1 {
-		if strings.HasPrefix(endpoint[idx+3:], "/") {
-			schemePrefix = endpoint[:idx+4]
-			rest = endpoint[idx+4:]
-		} else {
-			schemePrefix = endpoint[:idx+3]
-			rest = endpoint[idx+3:]
-		}
-	}
-	if !strings.HasPrefix(rest, oldHost) {
-		return endpoint
-	}
-	rem := rest[len(oldHost):]
-	if rem == "" || rem[0] == ':' || rem[0] == '/' || rem[0] == '?' || rem[0] == '#' {
-		return schemePrefix + newHost + rem
-	}
-	return endpoint
-}
-
-func isGoogleDefaultUniverseHost(endpoint string) bool {
-	host := strings.TrimPrefix(endpoint, directPathEndpointPrefix)
-	host = strings.TrimPrefix(host, "dns:///")
-	host = stripScheme(host)
-	if idx := strings.IndexAny(host, "/?#"); idx != -1 {
-		host = host[:idx]
-	}
-	if h, _, err := net.SplitHostPort(host); err == nil {
-		host = h
-	} else if colonIdx := strings.Index(host, ":"); colonIdx != -1 {
-		host = host[:colonIdx]
-	}
-	return host == "googleapis.com" || strings.HasSuffix(host, ".googleapis.com")
-}
-
-func configureDirectPathInterconnectOptions(opts []option.ClientOption) []option.ClientOption {
-	resolverOpts := append([]option.ClientOption{
-		internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
-		internaloption.WithDefaultUniverseDomain("googleapis.com"),
-	}, opts...)
-	res, err := internaloption.NewUnsafeResolver(resolverOpts...)
-	if err != nil {
-		return opts
-	}
-	endpoint, err := res.ResolvedGRPCEndpoint()
-	if err != nil || endpoint == "" {
-		endpoint = defaultStorageHost + ":443"
-	}
-	rewritten := rewriteHost(endpoint, defaultStorageHost, defaultStorageDirectPathHost)
-	if rewritten != endpoint {
-		if !strings.HasPrefix(rewritten, directPathEndpointPrefix) && !strings.HasPrefix(rewritten, "dns:///") {
-			rewritten = stripScheme(rewritten)
-			if !strings.Contains(rewritten, ":") && !strings.Contains(rewritten, "/") {
-				rewritten += ":443"
-			}
-		}
-		opts = append(opts, option.WithEndpoint(rewritten))
-	}
-	return opts
-}
 
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
@@ -244,9 +165,6 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	config := newStorageConfig(s.clientOption...)
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
-	}
-	if os.Getenv("STORAGE_EMULATOR_HOST_GRPC") == "" && isDirectPathXdsOverInterconnectEnabled(&config) {
-		s.clientOption = configureDirectPathInterconnectOptions(s.clientOption)
 	}
 
 	if !config.disableClientMetrics {
