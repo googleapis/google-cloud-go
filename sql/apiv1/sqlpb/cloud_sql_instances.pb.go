@@ -577,6 +577,60 @@ func (DatabaseInstance_SqlNetworkArchitecture) EnumDescriptor() ([]byte, []int) 
 	return file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDescGZIP(), []int{66, 1}
 }
 
+// State of the integration with Database Center.
+type DatabaseInstance_DatabaseCenterIntegration int32
+
+const (
+	// Default value. The integration state is unspecified. When unspecified,
+	// Database Center integration is enabled by default.
+	DatabaseInstance_DATABASE_CENTER_INTEGRATION_UNSPECIFIED DatabaseInstance_DatabaseCenterIntegration = 0
+	// Database Center integration is enabled.
+	DatabaseInstance_ENABLED DatabaseInstance_DatabaseCenterIntegration = 1
+	// Database Center integration is disabled.
+	DatabaseInstance_DISABLED DatabaseInstance_DatabaseCenterIntegration = 2
+)
+
+// Enum value maps for DatabaseInstance_DatabaseCenterIntegration.
+var (
+	DatabaseInstance_DatabaseCenterIntegration_name = map[int32]string{
+		0: "DATABASE_CENTER_INTEGRATION_UNSPECIFIED",
+		1: "ENABLED",
+		2: "DISABLED",
+	}
+	DatabaseInstance_DatabaseCenterIntegration_value = map[string]int32{
+		"DATABASE_CENTER_INTEGRATION_UNSPECIFIED": 0,
+		"ENABLED":  1,
+		"DISABLED": 2,
+	}
+)
+
+func (x DatabaseInstance_DatabaseCenterIntegration) Enum() *DatabaseInstance_DatabaseCenterIntegration {
+	p := new(DatabaseInstance_DatabaseCenterIntegration)
+	*p = x
+	return p
+}
+
+func (x DatabaseInstance_DatabaseCenterIntegration) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DatabaseInstance_DatabaseCenterIntegration) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[9].Descriptor()
+}
+
+func (DatabaseInstance_DatabaseCenterIntegration) Type() protoreflect.EnumType {
+	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[9]
+}
+
+func (x DatabaseInstance_DatabaseCenterIntegration) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DatabaseInstance_DatabaseCenterIntegration.Descriptor instead.
+func (DatabaseInstance_DatabaseCenterIntegration) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDescGZIP(), []int{66, 2}
+}
+
 // This enum lists all possible states regarding out-of-disk issues.
 type DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState int32
 
@@ -615,11 +669,11 @@ func (x DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) String() string {
 }
 
 func (DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[10].Descriptor()
 }
 
 func (DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[9]
+	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[10]
 }
 
 func (x DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) Number() protoreflect.EnumNumber {
@@ -671,11 +725,11 @@ func (x SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) String() st
 }
 
 func (SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[11].Descriptor()
 }
 
 func (SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[10]
+	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[11]
 }
 
 func (x SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) Number() protoreflect.EnumNumber {
@@ -978,11 +1032,11 @@ func (x SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) String() st
 }
 
 func (SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[12].Descriptor()
 }
 
 func (SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[11]
+	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[12]
 }
 
 func (x SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) Number() protoreflect.EnumNumber {
@@ -1036,11 +1090,11 @@ func (x OnPremisesConfiguration_SslOption) String() string {
 }
 
 func (OnPremisesConfiguration_SslOption) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[13].Descriptor()
 }
 
 func (OnPremisesConfiguration_SslOption) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[12]
+	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[13]
 }
 
 func (x OnPremisesConfiguration_SslOption) Number() protoreflect.EnumNumber {
@@ -1093,11 +1147,11 @@ func (x ExecuteSqlPayload_PartialResultMode) String() string {
 }
 
 func (ExecuteSqlPayload_PartialResultMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[14].Descriptor()
 }
 
 func (ExecuteSqlPayload_PartialResultMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[13]
+	return &file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes[14]
 }
 
 func (x ExecuteSqlPayload_PartialResultMode) Number() protoreflect.EnumNumber {
@@ -1115,7 +1169,9 @@ type SqlInstancesAddServerCaRequest struct {
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1164,13 +1220,22 @@ func (x *SqlInstancesAddServerCaRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesAddServerCaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance add server certificate request.
 type SqlInstancesAddServerCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1219,13 +1284,22 @@ func (x *SqlInstancesAddServerCertificateRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesAddServerCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance add Entra ID certificate request.
 type SqlInstancesAddEntraIdCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1274,6 +1348,13 @@ func (x *SqlInstancesAddEntraIdCertificateRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesAddEntraIdCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance clone request.
 type SqlInstancesCloneRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1281,8 +1362,10 @@ type SqlInstancesCloneRequest struct {
 	// not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the source Cloud SQL instance.
-	Project       string                 `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesCloneRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                 `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesCloneRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1338,6 +1421,13 @@ func (x *SqlInstancesCloneRequest) GetBody() *InstancesCloneRequest {
 	return nil
 }
 
+func (x *SqlInstancesCloneRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance delete request.
 type SqlInstancesDeleteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1354,8 +1444,10 @@ type SqlInstancesDeleteRequest struct {
 	Expiration isSqlInstancesDeleteRequest_Expiration `protobuf_oneof:"expiration"`
 	// Optional. The description of the final backup.
 	FinalBackupDescription string `protobuf:"bytes,5,opt,name=final_backup_description,json=finalBackupDescription,proto3" json:"final_backup_description,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,11,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesDeleteRequest) Reset() {
@@ -1441,6 +1533,13 @@ func (x *SqlInstancesDeleteRequest) GetFinalBackupDescription() string {
 	return ""
 }
 
+func (x *SqlInstancesDeleteRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type isSqlInstancesDeleteRequest_Expiration interface {
 	isSqlInstancesDeleteRequest_Expiration()
 }
@@ -1466,8 +1565,10 @@ type SqlInstancesDemoteMasterRequest struct {
 	// Cloud SQL instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the instance.
-	Project       string                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesDemoteMasterRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesDemoteMasterRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1523,6 +1624,13 @@ func (x *SqlInstancesDemoteMasterRequest) GetBody() *InstancesDemoteMasterReques
 	return nil
 }
 
+func (x *SqlInstancesDemoteMasterRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance demote request.
 type SqlInstancesDemoteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1531,7 +1639,9 @@ type SqlInstancesDemoteRequest struct {
 	// Required. ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Required. The request body.
-	Body          *InstancesDemoteRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesDemoteRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1587,14 +1697,23 @@ func (x *SqlInstancesDemoteRequest) GetBody() *InstancesDemoteRequest {
 	return nil
 }
 
+func (x *SqlInstancesDemoteRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance export request.
 type SqlInstancesExportRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance to be exported.
-	Project       string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesExportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesExportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1650,14 +1769,23 @@ func (x *SqlInstancesExportRequest) GetBody() *InstancesExportRequest {
 	return nil
 }
 
+func (x *SqlInstancesExportRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance failover request.
 type SqlInstancesFailoverRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string                    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesFailoverRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesFailoverRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1713,13 +1841,22 @@ func (x *SqlInstancesFailoverRequest) GetBody() *InstancesFailoverRequest {
 	return nil
 }
 
+func (x *SqlInstancesFailoverRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance get request.
 type SqlInstancesGetRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1768,14 +1905,23 @@ func (x *SqlInstancesGetRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesGetRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance import request.
 type SqlInstancesImportRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesImportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesImportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1831,13 +1977,22 @@ func (x *SqlInstancesImportRequest) GetBody() *InstancesImportRequest {
 	return nil
 }
 
+func (x *SqlInstancesImportRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance insert request.
 type SqlInstancesInsertRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Project ID of the project to which the newly created Cloud SQL instances
 	// should belong.
-	Project       string            `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string            `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1886,6 +2041,13 @@ func (x *SqlInstancesInsertRequest) GetBody() *DatabaseInstance {
 	return nil
 }
 
+func (x *SqlInstancesInsertRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance list request.
 type SqlInstancesListRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1908,7 +2070,9 @@ type SqlInstancesListRequest struct {
 	// results to view.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Project ID of the project for which to list Cloud SQL instances.
-	Project       string `protobuf:"bytes,4,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,4,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1971,13 +2135,22 @@ func (x *SqlInstancesListRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance list server CAs request.
 type SqlInstancesListServerCasRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2026,13 +2199,22 @@ func (x *SqlInstancesListServerCasRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListServerCasRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance list server certificates request.
 type SqlInstancesListServerCertificatesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2081,13 +2263,22 @@ func (x *SqlInstancesListServerCertificatesRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListServerCertificatesRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance list Entra ID certificates request.
 type SqlInstancesListEntraIdCertificatesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2136,6 +2327,13 @@ func (x *SqlInstancesListEntraIdCertificatesRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListEntraIdCertificatesRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance patch request.
 type SqlInstancesPatchRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2150,8 +2348,10 @@ type SqlInstancesPatchRequest struct {
 	// reconcile the PSC networking.
 	ReconcilePscNetworkingForce *bool             `protobuf:"varint,5,opt,name=reconcile_psc_networking_force,json=reconcilePscNetworkingForce,proto3,oneof" json:"reconcile_psc_networking_force,omitempty"`
 	Body                        *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,6,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesPatchRequest) Reset() {
@@ -2219,6 +2419,13 @@ func (x *SqlInstancesPatchRequest) GetBody() *DatabaseInstance {
 	return nil
 }
 
+func (x *SqlInstancesPatchRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance promote replica request.
 type SqlInstancesPromoteReplicaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2232,7 +2439,9 @@ type SqlInstancesPromoteReplicaRequest struct {
 	// DR replica when the original primary instance comes back online.
 	// If set to false or not specified, then the original primary
 	// instance becomes an independent Cloud SQL primary instance.
-	Failover      bool `protobuf:"varint,3,opt,name=failover,proto3" json:"failover,omitempty"`
+	Failover bool `protobuf:"varint,3,opt,name=failover,proto3" json:"failover,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2288,6 +2497,13 @@ func (x *SqlInstancesPromoteReplicaRequest) GetFailover() bool {
 	return false
 }
 
+func (x *SqlInstancesPromoteReplicaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance switchover request.
 type SqlInstancesSwitchoverRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2298,7 +2514,9 @@ type SqlInstancesSwitchoverRequest struct {
 	// Optional. (MySQL and PostgreSQL only) Cloud SQL instance operations
 	// timeout, which is a sum of all database operations. Default value is 10
 	// minutes and can be modified to a maximum value of 24 hours.
-	DbTimeout     *durationpb.Duration `protobuf:"bytes,3,opt,name=db_timeout,json=dbTimeout,proto3" json:"db_timeout,omitempty"`
+	DbTimeout *durationpb.Duration `protobuf:"bytes,3,opt,name=db_timeout,json=dbTimeout,proto3" json:"db_timeout,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2354,6 +2572,13 @@ func (x *SqlInstancesSwitchoverRequest) GetDbTimeout() *durationpb.Duration {
 	return nil
 }
 
+func (x *SqlInstancesSwitchoverRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance reset SSL config request.
 type SqlInstancesResetSslConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2362,7 +2587,9 @@ type SqlInstancesResetSslConfigRequest struct {
 	// Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Optional. Reset SSL mode to use.
-	Mode          SqlInstancesResetSslConfigRequest_ResetSslMode `protobuf:"varint,3,opt,name=mode,proto3,enum=google.cloud.sql.v1.SqlInstancesResetSslConfigRequest_ResetSslMode" json:"mode,omitempty"`
+	Mode SqlInstancesResetSslConfigRequest_ResetSslMode `protobuf:"varint,3,opt,name=mode,proto3,enum=google.cloud.sql.v1.SqlInstancesResetSslConfigRequest_ResetSslMode" json:"mode,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2418,13 +2645,22 @@ func (x *SqlInstancesResetSslConfigRequest) GetMode() SqlInstancesResetSslConfig
 	return SqlInstancesResetSslConfigRequest_RESET_SSL_MODE_UNSPECIFIED
 }
 
+func (x *SqlInstancesResetSslConfigRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance restart request.
 type SqlInstancesRestartRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance to be restarted.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2473,14 +2709,23 @@ func (x *SqlInstancesRestartRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesRestartRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance restore backup request.
 type SqlInstancesRestoreBackupRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string                         `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesRestoreBackupRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                         `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesRestoreBackupRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2536,14 +2781,23 @@ func (x *SqlInstancesRestoreBackupRequest) GetBody() *InstancesRestoreBackupRequ
 	return nil
 }
 
+func (x *SqlInstancesRestoreBackupRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance rotate server CA request.
 type SqlInstancesRotateServerCaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesRotateServerCaRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesRotateServerCaRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2599,6 +2853,13 @@ func (x *SqlInstancesRotateServerCaRequest) GetBody() *InstancesRotateServerCaRe
 	return nil
 }
 
+func (x *SqlInstancesRotateServerCaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance rotate server certificate request.
 type SqlInstancesRotateServerCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2607,7 +2868,9 @@ type SqlInstancesRotateServerCertificateRequest struct {
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Optional. Rotate server certificate request body.
-	Body          *InstancesRotateServerCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesRotateServerCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2663,6 +2926,13 @@ func (x *SqlInstancesRotateServerCertificateRequest) GetBody() *InstancesRotateS
 	return nil
 }
 
+func (x *SqlInstancesRotateServerCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance rotate server certificate request.
 type SqlInstancesRotateEntraIdCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2671,7 +2941,9 @@ type SqlInstancesRotateEntraIdCertificateRequest struct {
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Optional. Rotate Entra ID certificate request body.
-	Body          *InstancesRotateEntraIdCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesRotateEntraIdCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2727,13 +2999,22 @@ func (x *SqlInstancesRotateEntraIdCertificateRequest) GetBody() *InstancesRotate
 	return nil
 }
 
+func (x *SqlInstancesRotateEntraIdCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance start replica request.
 type SqlInstancesStartReplicaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL read replica instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2782,13 +3063,22 @@ func (x *SqlInstancesStartReplicaRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesStartReplicaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance stop replica request.
 type SqlInstancesStopReplicaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL read replica instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2837,14 +3127,23 @@ func (x *SqlInstancesStopReplicaRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesStopReplicaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance truncate log request.
 type SqlInstancesTruncateLogRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the Cloud SQL project.
-	Project       string                       `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesTruncateLogRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                       `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesTruncateLogRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2900,6 +3199,13 @@ func (x *SqlInstancesTruncateLogRequest) GetBody() *InstancesTruncateLogRequest 
 	return nil
 }
 
+func (x *SqlInstancesTruncateLogRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance perform disk shrink request.
 type SqlInstancesPerformDiskShrinkRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2908,7 +3214,9 @@ type SqlInstancesPerformDiskShrinkRequest struct {
 	// Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Perform disk shrink context.
-	Body          *PerformDiskShrinkContext `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *PerformDiskShrinkContext `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2964,14 +3272,23 @@ func (x *SqlInstancesPerformDiskShrinkRequest) GetBody() *PerformDiskShrinkConte
 	return nil
 }
 
+func (x *SqlInstancesPerformDiskShrinkRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance update request.
 type SqlInstancesUpdateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string            `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string            `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3027,14 +3344,23 @@ func (x *SqlInstancesUpdateRequest) GetBody() *DatabaseInstance {
 	return nil
 }
 
+func (x *SqlInstancesUpdateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance reschedule maintenance request.
 type SqlInstancesRescheduleMaintenanceRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the instance.
-	Project       string                                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *SqlInstancesRescheduleMaintenanceRequestBody `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *SqlInstancesRescheduleMaintenanceRequestBody `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3090,6 +3416,13 @@ func (x *SqlInstancesRescheduleMaintenanceRequest) GetBody() *SqlInstancesResche
 	return nil
 }
 
+func (x *SqlInstancesRescheduleMaintenanceRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance reencrypt request.
 type SqlInstancesReencryptRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3098,7 +3431,9 @@ type SqlInstancesReencryptRequest struct {
 	// ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Reencrypt body that users request
-	Body          *InstancesReencryptRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesReencryptRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3152,6 +3487,13 @@ func (x *SqlInstancesReencryptRequest) GetBody() *InstancesReencryptRequest {
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesReencryptRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Database Instance reencrypt request.
@@ -3307,7 +3649,9 @@ type SqlInstancesGetDiskShrinkConfigRequest struct {
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3356,6 +3700,13 @@ func (x *SqlInstancesGetDiskShrinkConfigRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesGetDiskShrinkConfigRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance verify external sync settings request.
 type SqlInstancesVerifyExternalSyncSettingsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3383,8 +3734,10 @@ type SqlInstancesVerifyExternalSyncSettingsRequest struct {
 	// Optional. Migrate only the specified objects from the source instance. If
 	// this field is empty, then migrate all objects.
 	SelectedObjects []*ExternalSyncSelectedObject `protobuf:"bytes,9,rep,name=selected_objects,json=selectedObjects,proto3" json:"selected_objects,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,10,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesVerifyExternalSyncSettingsRequest) Reset() {
@@ -3489,6 +3842,13 @@ func (x *SqlInstancesVerifyExternalSyncSettingsRequest) GetSelectedObjects() []*
 	return nil
 }
 
+func (x *SqlInstancesVerifyExternalSyncSettingsRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type isSqlInstancesVerifyExternalSyncSettingsRequest_SyncConfig interface {
 	isSqlInstancesVerifyExternalSyncSettingsRequest_SyncConfig()
 }
@@ -3528,8 +3888,10 @@ type SqlInstancesStartExternalSyncRequest struct {
 	// If this field is not set and there are both overlapping and additional
 	// databases proposed, an error will be returned.
 	ReplicaOverwriteEnabled bool `protobuf:"varint,9,opt,name=replica_overwrite_enabled,json=replicaOverwriteEnabled,proto3" json:"replica_overwrite_enabled,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,10,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesStartExternalSyncRequest) Reset() {
@@ -3627,6 +3989,13 @@ func (x *SqlInstancesStartExternalSyncRequest) GetReplicaOverwriteEnabled() bool
 	return false
 }
 
+func (x *SqlInstancesStartExternalSyncRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type isSqlInstancesStartExternalSyncRequest_SyncConfig interface {
 	isSqlInstancesStartExternalSyncRequest_SyncConfig()
 }
@@ -3645,7 +4014,9 @@ type SqlInstancesResetReplicaSizeRequest struct {
 	// Cloud SQL read replica instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3694,14 +4065,23 @@ func (x *SqlInstancesResetReplicaSizeRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesResetReplicaSizeRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance create ephemeral certificate request.
 type SqlInstancesCreateEphemeralCertRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the Cloud SQL project.
-	Project       string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *SslCertsCreateEphemeralRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *SslCertsCreateEphemeralRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3755,6 +4135,13 @@ func (x *SqlInstancesCreateEphemeralCertRequest) GetBody() *SslCertsCreateEpheme
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesCreateEphemeralCertRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Database instance clone request.
@@ -4744,7 +5131,9 @@ type SqlInstancesPreCheckMajorVersionUpgradeRequest struct {
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Required. The context for request to perform the pre-check major version
 	// upgrade operation.
-	Body          *InstancesPreCheckMajorVersionUpgradeRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesPreCheckMajorVersionUpgradeRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4798,6 +5187,13 @@ func (x *SqlInstancesPreCheckMajorVersionUpgradeRequest) GetBody() *InstancesPre
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesPreCheckMajorVersionUpgradeRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Instance verify external sync settings response.
@@ -4938,8 +5334,10 @@ type SqlInstancesGetLatestRecoveryTimeRequest struct {
 	// The timestamp used to identify the time when the source instance is
 	// deleted. If this instance is deleted, then you must set the timestamp.
 	SourceInstanceDeletionTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=source_instance_deletion_time,json=sourceInstanceDeletionTime,proto3,oneof" json:"source_instance_deletion_time,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesGetLatestRecoveryTimeRequest) Reset() {
@@ -4991,6 +5389,13 @@ func (x *SqlInstancesGetLatestRecoveryTimeRequest) GetSourceInstanceDeletionTime
 		return x.SourceInstanceDeletionTime
 	}
 	return nil
+}
+
+func (x *SqlInstancesGetLatestRecoveryTimeRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Instance get latest recovery time response.
@@ -5613,8 +6018,11 @@ type DatabaseInstance struct {
 	// Optional. If true, instance metadata is sent to the Database Center. If
 	// false, instance metadata is not sent to the Database Center.
 	DatabaseCenterIntegrationEnabled *wrapperspb.BoolValue `protobuf:"bytes,72,opt,name=database_center_integration_enabled,json=databaseCenterIntegrationEnabled,proto3" json:"database_center_integration_enabled,omitempty"`
-	unknownFields                    protoimpl.UnknownFields
-	sizeCache                        protoimpl.SizeCache
+	// Optional. State of the Database Center integration for this instance.
+	// When unspecified, Database Center integration is enabled by default.
+	DatabaseCenterIntegration *DatabaseInstance_DatabaseCenterIntegration `protobuf:"varint,76,opt,name=database_center_integration,json=databaseCenterIntegration,proto3,enum=google.cloud.sql.v1.DatabaseInstance_DatabaseCenterIntegration,oneof" json:"database_center_integration,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *DatabaseInstance) Reset() {
@@ -6013,6 +6421,13 @@ func (x *DatabaseInstance) GetDatabaseCenterIntegrationEnabled() *wrapperspb.Boo
 		return x.DatabaseCenterIntegrationEnabled
 	}
 	return nil
+}
+
+func (x *DatabaseInstance) GetDatabaseCenterIntegration() DatabaseInstance_DatabaseCenterIntegration {
+	if x != nil && x.DatabaseCenterIntegration != nil {
+		return *x.DatabaseCenterIntegration
+	}
+	return DatabaseInstance_DATABASE_CENTER_INTEGRATION_UNSPECIFIED
 }
 
 // Gemini instance configuration.
@@ -7151,7 +7566,9 @@ type SqlInstancesExecuteSqlRequest struct {
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// The request body.
-	Body          *ExecuteSqlPayload `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *ExecuteSqlPayload `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7205,6 +7622,13 @@ func (x *SqlInstancesExecuteSqlRequest) GetBody() *ExecuteSqlPayload {
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesExecuteSqlRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // The request payload used to execute SQL statements.
@@ -7741,7 +8165,9 @@ type SqlInstancesAcquireSsrsLeaseRequest struct {
 	// project-id).
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Required. The request body.
-	Body          *InstancesAcquireSsrsLeaseRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesAcquireSsrsLeaseRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7795,6 +8221,13 @@ func (x *SqlInstancesAcquireSsrsLeaseRequest) GetBody() *InstancesAcquireSsrsLea
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesAcquireSsrsLeaseRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Response for the acquire SSRS lease request.
@@ -7852,7 +8285,9 @@ type SqlInstancesReleaseSsrsLeaseRequest struct {
 	// characters.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. The project ID that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -7897,6 +8332,13 @@ func (x *SqlInstancesReleaseSsrsLeaseRequest) GetInstance() string {
 func (x *SqlInstancesReleaseSsrsLeaseRequest) GetProject() string {
 	if x != nil {
 		return x.Project
+	}
+	return ""
+}
+
+func (x *SqlInstancesReleaseSsrsLeaseRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
 	}
 	return ""
 }
@@ -8437,142 +8879,174 @@ var File_google_cloud_sql_v1_cloud_sql_instances_proto protoreflect.FileDescript
 
 const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/sql/v1/cloud_sql_instances.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"V\n" +
+	"-google/cloud/sql/v1/cloud_sql_instances.proto\x12\x13google.cloud.sql.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a-google/cloud/sql/v1/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"w\n" +
 	"\x1eSqlInstancesAddServerCaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"_\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x80\x01\n" +
 	"'SqlInstancesAddServerCertificateRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"j\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8b\x01\n" +
 	"(SqlInstancesAddEntraIdCertificateRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"\x9f\x01\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc0\x01\n" +
 	"\x18SqlInstancesCloneRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12C\n" +
-	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1.InstancesCloneRequestB\x03\xe0A\x02R\x04body\"\x81\x03\n" +
+	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1.InstancesCloneRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xa2\x03\n" +
 	"\x19SqlInstancesDeleteRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x123\n" +
 	"\x13enable_final_backup\x18\a \x01(\bH\x01R\x11enableFinalBackup\x88\x01\x01\x128\n" +
 	"\x15final_backup_ttl_days\x18\x04 \x01(\x03B\x03\xe0A\x01H\x00R\x12finalBackupTtlDays\x12Z\n" +
 	"\x18final_backup_expiry_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x00R\x15finalBackupExpiryTime\x12=\n" +
-	"\x18final_backup_description\x18\x05 \x01(\tB\x03\xe0A\x01R\x16finalBackupDescriptionB\f\n" +
+	"\x18final_backup_description\x18\x05 \x01(\tB\x03\xe0A\x01R\x16finalBackupDescription\x12\x1f\n" +
+	"\blocation\x18\v \x01(\tB\x03\xe0A\x01R\blocationB\f\n" +
 	"\n" +
 	"expirationB\x16\n" +
-	"\x14_enable_final_backup\"\x9e\x01\n" +
+	"\x14_enable_final_backup\"\xbf\x01\n" +
 	"\x1fSqlInstancesDemoteMasterRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12E\n" +
-	"\x04body\x18d \x01(\v21.google.cloud.sql.v1.InstancesDemoteMasterRequestR\x04body\"\xa1\x01\n" +
+	"\x04body\x18d \x01(\v21.google.cloud.sql.v1.InstancesDemoteMasterRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc2\x01\n" +
 	"\x19SqlInstancesDemoteRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1.InstancesDemoteRequestB\x03\xe0A\x02R\x04body\"\x92\x01\n" +
+	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1.InstancesDemoteRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb3\x01\n" +
 	"\x19SqlInstancesExportRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12?\n" +
-	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1.InstancesExportRequestR\x04body\"\x96\x01\n" +
+	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1.InstancesExportRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"\xb7\x01\n" +
 	"\x1bSqlInstancesFailoverRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12A\n" +
-	"\x04body\x18d \x01(\v2-.google.cloud.sql.v1.InstancesFailoverRequestR\x04body\"X\n" +
+	"\x04body\x18d \x01(\v2-.google.cloud.sql.v1.InstancesFailoverRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"y\n" +
 	"\x16SqlInstancesGetRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"\x92\x01\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb3\x01\n" +
 	"\x19SqlInstancesImportRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12?\n" +
-	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1.InstancesImportRequestR\x04body\"p\n" +
+	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1.InstancesImportRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x91\x01\n" +
 	"\x19SqlInstancesInsertRequest\x12\x18\n" +
 	"\aproject\x18\x01 \x01(\tR\aproject\x129\n" +
-	"\x04body\x18d \x01(\v2%.google.cloud.sql.v1.DatabaseInstanceR\x04body\"\x8b\x01\n" +
+	"\x04body\x18d \x01(\v2%.google.cloud.sql.v1.DatabaseInstanceR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xac\x01\n" +
 	"\x17SqlInstancesListRequest\x12\x16\n" +
 	"\x06filter\x18\x01 \x01(\tR\x06filter\x12\x1f\n" +
 	"\vmax_results\x18\x02 \x01(\rR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\"X\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"y\n" +
 	" SqlInstancesListServerCasRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"k\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8c\x01\n" +
 	")SqlInstancesListServerCertificatesRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"l\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8d\x01\n" +
 	"*SqlInstancesListEntraIdCertificatesRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"\xde\x02\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xff\x02\n" +
 	"\x18SqlInstancesPatchRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12B\n" +
 	"\x18reconcile_psc_networking\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\x16reconcilePscNetworking\x88\x01\x01\x12M\n" +
 	"\x1ereconcile_psc_networking_force\x18\x05 \x01(\bB\x03\xe0A\x01H\x01R\x1breconcilePscNetworkingForce\x88\x01\x01\x129\n" +
-	"\x04body\x18d \x01(\v2%.google.cloud.sql.v1.DatabaseInstanceR\x04bodyB\x1b\n" +
+	"\x04body\x18d \x01(\v2%.google.cloud.sql.v1.DatabaseInstanceR\x04body\x12\x1f\n" +
+	"\blocation\x18\x06 \x01(\tB\x03\xe0A\x01R\blocationB\x1b\n" +
 	"\x19_reconcile_psc_networkingB!\n" +
-	"\x1f_reconcile_psc_networking_force\"u\n" +
+	"\x1f_reconcile_psc_networking_force\"\x96\x01\n" +
 	"!SqlInstancesPromoteReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1a\n" +
-	"\bfailover\x18\x03 \x01(\bR\bfailover\"\x94\x01\n" +
+	"\bfailover\x18\x03 \x01(\bR\bfailover\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xb5\x01\n" +
 	"\x1dSqlInstancesSwitchoverRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12=\n" +
 	"\n" +
-	"db_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tdbTimeout\"\x87\x02\n" +
+	"db_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tdbTimeout\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xa8\x02\n" +
 	"!SqlInstancesResetSslConfigRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\\\n" +
-	"\x04mode\x18\x03 \x01(\x0e2C.google.cloud.sql.v1.SqlInstancesResetSslConfigRequest.ResetSslModeB\x03\xe0A\x01R\x04mode\"N\n" +
+	"\x04mode\x18\x03 \x01(\x0e2C.google.cloud.sql.v1.SqlInstancesResetSslConfigRequest.ResetSslModeB\x03\xe0A\x01R\x04mode\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"N\n" +
 	"\fResetSslMode\x12\x1e\n" +
 	"\x1aRESET_SSL_MODE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12\x15\n" +
-	"\x11SYNC_FROM_PRIMARY\x10\x02\"R\n" +
+	"\x11SYNC_FROM_PRIMARY\x10\x02\"s\n" +
 	"\x1aSqlInstancesRestartRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xa0\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc1\x01\n" +
 	" SqlInstancesRestoreBackupRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12F\n" +
-	"\x04body\x18d \x01(\v22.google.cloud.sql.v1.InstancesRestoreBackupRequestR\x04body\"\xa2\x01\n" +
+	"\x04body\x18d \x01(\v22.google.cloud.sql.v1.InstancesRestoreBackupRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc3\x01\n" +
 	"!SqlInstancesRotateServerCaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12G\n" +
-	"\x04body\x18d \x01(\v23.google.cloud.sql.v1.InstancesRotateServerCaRequestR\x04body\"\xc3\x01\n" +
+	"\x04body\x18d \x01(\v23.google.cloud.sql.v1.InstancesRotateServerCaRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xe4\x01\n" +
 	"*SqlInstancesRotateServerCertificateRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12U\n" +
-	"\x04body\x18d \x01(\v2<.google.cloud.sql.v1.InstancesRotateServerCertificateRequestB\x03\xe0A\x01R\x04body\"\xc5\x01\n" +
+	"\x04body\x18d \x01(\v2<.google.cloud.sql.v1.InstancesRotateServerCertificateRequestB\x03\xe0A\x01R\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xe6\x01\n" +
 	"+SqlInstancesRotateEntraIdCertificateRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12V\n" +
-	"\x04body\x18d \x01(\v2=.google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequestB\x03\xe0A\x01R\x04body\"W\n" +
+	"\x04body\x18d \x01(\v2=.google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequestB\x03\xe0A\x01R\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"x\n" +
 	"\x1fSqlInstancesStartReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"V\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"w\n" +
 	"\x1eSqlInstancesStopReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\x9c\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xbd\x01\n" +
 	"\x1eSqlInstancesTruncateLogRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v20.google.cloud.sql.v1.InstancesTruncateLogRequestR\x04body\"\x9f\x01\n" +
+	"\x04body\x18d \x01(\v20.google.cloud.sql.v1.InstancesTruncateLogRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc0\x01\n" +
 	"$SqlInstancesPerformDiskShrinkRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12A\n" +
-	"\x04body\x18d \x01(\v2-.google.cloud.sql.v1.PerformDiskShrinkContextR\x04body\"\x8c\x01\n" +
+	"\x04body\x18d \x01(\v2-.google.cloud.sql.v1.PerformDiskShrinkContextR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xad\x01\n" +
 	"\x19SqlInstancesUpdateRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x129\n" +
-	"\x04body\x18d \x01(\v2%.google.cloud.sql.v1.DatabaseInstanceR\x04body\"\xb7\x01\n" +
+	"\x04body\x18d \x01(\v2%.google.cloud.sql.v1.DatabaseInstanceR\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xd8\x01\n" +
 	"(SqlInstancesRescheduleMaintenanceRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12U\n" +
-	"\x04body\x18d \x01(\v2A.google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBodyR\x04body\"\x98\x01\n" +
+	"\x04body\x18d \x01(\v2A.google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBodyR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb9\x01\n" +
 	"\x1cSqlInstancesReencryptRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12B\n" +
-	"\x04body\x18\x03 \x01(\v2..google.cloud.sql.v1.InstancesReencryptRequestR\x04body\"\xac\x01\n" +
+	"\x04body\x18\x03 \x01(\v2..google.cloud.sql.v1.InstancesReencryptRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xac\x01\n" +
 	"\x19InstancesReencryptRequest\x12p\n" +
 	"\x1abackup_reencryption_config\x18\x01 \x01(\v2-.google.cloud.sql.v1.BackupReencryptionConfigH\x00R\x18backupReencryptionConfig\x88\x01\x01B\x1d\n" +
 	"\x1b_backup_reencryption_config\"\x8c\x02\n" +
@@ -8588,10 +9062,11 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\r_backup_limitB\x0e\n" +
 	"\f_backup_type\"8\n" +
 	"\x1aExternalSyncSelectedObject\x12\x1a\n" +
-	"\bdatabase\x18\x01 \x01(\tR\bdatabase\"^\n" +
+	"\bdatabase\x18\x01 \x01(\tR\bdatabase\"\x7f\n" +
 	"&SqlInstancesGetDiskShrinkConfigRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\x93\a\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb4\a\n" +
 	"-SqlInstancesVerifyExternalSyncSettingsRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x124\n" +
@@ -8601,7 +9076,9 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x11mysql_sync_config\x18\x06 \x01(\v2$.google.cloud.sql.v1.MySqlSyncConfigB\x03\xe0A\x01H\x00R\x0fmysqlSyncConfig\x12|\n" +
 	"\x0emigration_type\x18\a \x01(\x0e2P.google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x03\xe0A\x01R\rmigrationType\x12c\n" +
 	"\x13sync_parallel_level\x18\b \x01(\x0e2..google.cloud.sql.v1.ExternalSyncParallelLevelB\x03\xe0A\x01R\x11syncParallelLevel\x12_\n" +
-	"\x10selected_objects\x18\t \x03(\v2/.google.cloud.sql.v1.ExternalSyncSelectedObjectB\x03\xe0A\x01R\x0fselectedObjects\"O\n" +
+	"\x10selected_objects\x18\t \x03(\v2/.google.cloud.sql.v1.ExternalSyncSelectedObjectB\x03\xe0A\x01R\x0fselectedObjects\x12\x1f\n" +
+	"\blocation\x18\n" +
+	" \x01(\tB\x03\xe0A\x01R\blocation\"O\n" +
 	"\x10ExternalSyncMode\x12\"\n" +
 	"\x1eEXTERNAL_SYNC_MODE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -8611,7 +9088,7 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x1aMIGRATION_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aLOGICAL\x10\x01\x12\f\n" +
 	"\bPHYSICAL\x10\x02B\r\n" +
-	"\vsync_config\"\x82\x05\n" +
+	"\vsync_config\"\xa3\x05\n" +
 	"$SqlInstancesStartExternalSyncRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12p\n" +
@@ -8620,15 +9097,19 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x11mysql_sync_config\x18\x06 \x01(\v2$.google.cloud.sql.v1.MySqlSyncConfigH\x00R\x0fmysqlSyncConfig\x12c\n" +
 	"\x13sync_parallel_level\x18\a \x01(\x0e2..google.cloud.sql.v1.ExternalSyncParallelLevelB\x03\xe0A\x01R\x11syncParallelLevel\x12|\n" +
 	"\x0emigration_type\x18\b \x01(\x0e2P.google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x03\xe0A\x01R\rmigrationType\x12?\n" +
-	"\x19replica_overwrite_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x17replicaOverwriteEnabledB\r\n" +
-	"\vsync_config\"[\n" +
+	"\x19replica_overwrite_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x17replicaOverwriteEnabled\x12\x1f\n" +
+	"\blocation\x18\n" +
+	" \x01(\tB\x03\xe0A\x01R\blocationB\r\n" +
+	"\vsync_config\"|\n" +
 	"#SqlInstancesResetReplicaSizeRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xa7\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xc8\x01\n" +
 	"&SqlInstancesCreateEphemeralCertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12G\n" +
-	"\x04body\x18d \x01(\v23.google.cloud.sql.v1.SslCertsCreateEphemeralRequestR\x04body\"d\n" +
+	"\x04body\x18d \x01(\v23.google.cloud.sql.v1.SslCertsCreateEphemeralRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"d\n" +
 	"\x15InstancesCloneRequest\x12K\n" +
 	"\rclone_context\x18\x01 \x01(\v2!.google.cloud.sql.v1.CloneContextB\x03\xe0A\x02R\fcloneContext\"|\n" +
 	"\x1cInstancesDemoteMasterRequest\x12\\\n" +
@@ -8683,11 +9164,12 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x1bInstancesTruncateLogRequest\x12Y\n" +
 	"\x14truncate_log_context\x18\x01 \x01(\v2'.google.cloud.sql.v1.TruncateLogContextR\x12truncateLogContext\"\x8d\x01\n" +
 	" InstancesAcquireSsrsLeaseRequest\x12i\n" +
-	"\x1aacquire_ssrs_lease_context\x18\x01 \x01(\v2,.google.cloud.sql.v1.AcquireSsrsLeaseContextR\x17acquireSsrsLeaseContext\"\xcb\x01\n" +
+	"\x1aacquire_ssrs_lease_context\x18\x01 \x01(\v2,.google.cloud.sql.v1.AcquireSsrsLeaseContextR\x17acquireSsrsLeaseContext\"\xec\x01\n" +
 	".SqlInstancesPreCheckMajorVersionUpgradeRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12Y\n" +
-	"\x04body\x18\x03 \x01(\v2@.google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequestB\x03\xe0A\x02R\x04body\"\xdc\x01\n" +
+	"\x04body\x18\x03 \x01(\v2@.google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xdc\x01\n" +
 	".SqlInstancesVerifyExternalSyncSettingsResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12H\n" +
 	"\x06errors\x18\x02 \x03(\v20.google.cloud.sql.v1.SqlExternalSyncSettingErrorR\x06errors\x12L\n" +
@@ -8695,11 +9177,12 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"'SqlInstancesGetDiskShrinkConfigResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x123\n" +
 	"\x16minimal_target_size_gb\x18\x02 \x01(\x03R\x13minimalTargetSizeGb\x12\x18\n" +
-	"\amessage\x18\x03 \x01(\tR\amessage\"\xe6\x01\n" +
+	"\amessage\x18\x03 \x01(\tR\amessage\"\x87\x02\n" +
 	"(SqlInstancesGetLatestRecoveryTimeRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12b\n" +
-	"\x1dsource_instance_deletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x1asourceInstanceDeletionTime\x88\x01\x01B \n" +
+	"\x1dsource_instance_deletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x1asourceInstanceDeletionTime\x88\x01\x01\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocationB \n" +
 	"\x1e_source_instance_deletion_time\"\xdf\x01\n" +
 	")SqlInstancesGetLatestRecoveryTimeResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12L\n" +
@@ -8748,7 +9231,7 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x11BinLogCoordinates\x12)\n" +
 	"\x11bin_log_file_name\x18\x01 \x01(\tR\x0ebinLogFileName\x12(\n" +
 	"\x10bin_log_position\x18\x02 \x01(\x03R\x0ebinLogPosition\x12\x12\n" +
-	"\x04kind\x18\x03 \x01(\tR\x04kind\"\xb5,\n" +
+	"\x04kind\x18\x03 \x01(\tR\x04kind\"\xc6.\n" +
 	"\x10DatabaseInstance\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12L\n" +
 	"\x05state\x18\x02 \x01(\x0e26.google.cloud.sql.v1.DatabaseInstance.SqlInstanceStateR\x05state\x12R\n" +
@@ -8804,7 +9287,9 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"node_count\x18? \x01(\x05H\tR\tnodeCount\x88\x01\x01\x12O\n" +
 	"\x05nodes\x18@ \x03(\v24.google.cloud.sql.v1.DatabaseInstance.PoolNodeConfigB\x03\xe0A\x03R\x05nodes\x12E\n" +
 	"\tdns_names\x18C \x03(\v2#.google.cloud.sql.v1.DnsNameMappingB\x03\xe0A\x03R\bdnsNames\x12n\n" +
-	"#database_center_integration_enabled\x18H \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R databaseCenterIntegrationEnabled\x1ab\n" +
+	"#database_center_integration_enabled\x18H \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R databaseCenterIntegrationEnabled\x12\x89\x01\n" +
+	"\x1bdatabase_center_integration\x18L \x01(\x0e2?.google.cloud.sql.v1.DatabaseInstance.DatabaseCenterIntegrationB\x03\xe0A\x01H\n" +
+	"R\x19databaseCenterIntegration\x88\x01\x01\x1ab\n" +
 	"\x12SqlFailoverReplica\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x128\n" +
 	"\tavailable\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueR\tavailable\x1a\x8e\x02\n" +
@@ -8856,7 +9341,11 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x16SqlNetworkArchitecture\x12(\n" +
 	"$SQL_NETWORK_ARCHITECTURE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18NEW_NETWORK_ARCHITECTURE\x10\x01\x12\x1c\n" +
-	"\x18OLD_NETWORK_ARCHITECTURE\x10\x02B\x15\n" +
+	"\x18OLD_NETWORK_ARCHITECTURE\x10\x02\"c\n" +
+	"\x19DatabaseCenterIntegration\x12+\n" +
+	"'DATABASE_CENTER_INTEGRATION_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aENABLED\x10\x01\x12\f\n" +
+	"\bDISABLED\x10\x02B\x15\n" +
 	"\x13_out_of_disk_reportB\x1b\n" +
 	"\x19_sql_network_architectureB\x1e\n" +
 	"\x1c_psc_service_attachment_linkB\v\n" +
@@ -8866,7 +9355,8 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x0e_gemini_configB3\n" +
 	"1_switch_transaction_logs_to_cloud_storage_enabledB-\n" +
 	"+_include_replicas_for_major_version_upgradeB\r\n" +
-	"\v_node_count\"\xa3\x04\n" +
+	"\v_node_countB\x1e\n" +
+	"\x1c_database_center_integration\"\xa3\x04\n" +
 	"\x14GeminiInstanceConfig\x12$\n" +
 	"\bentitled\x18\x01 \x01(\bB\x03\xe0A\x03H\x00R\bentitled\x88\x01\x01\x12E\n" +
 	"\x1agoogle_vacuum_mgmt_enabled\x18\x02 \x01(\bB\x03\xe0A\x03H\x01R\x17googleVacuumMgmtEnabled\x88\x01\x01\x12E\n" +
@@ -9027,11 +9517,12 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12n\n" +
 	"\x1bmysql_replica_configuration\x18\x02 \x01(\v2..google.cloud.sql.v1.MySqlReplicaConfigurationR\x19mysqlReplicaConfiguration\x12C\n" +
 	"\x0ffailover_target\x18\x03 \x01(\v2\x1a.google.protobuf.BoolValueR\x0efailoverTarget\x12N\n" +
-	"\x12cascadable_replica\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x11cascadableReplica\"\x9b\x01\n" +
+	"\x12cascadable_replica\x18\x05 \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R\x11cascadableReplica\"\xbc\x01\n" +
 	"\x1dSqlInstancesExecuteSqlRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12:\n" +
-	"\x04body\x18d \x01(\v2&.google.cloud.sql.v1.ExecuteSqlPayloadR\x04body\"\xc8\x04\n" +
+	"\x04body\x18d \x01(\v2&.google.cloud.sql.v1.ExecuteSqlPayloadR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc8\x04\n" +
 	"\x11ExecuteSqlPayload\x12\x17\n" +
 	"\x04user\x18\x01 \x01(\tB\x03\xe0A\x01R\x04user\x12(\n" +
 	"\rsql_statement\x18\x02 \x01(\tB\x03\xe0A\x02R\fsqlStatement\x12\x1f\n" +
@@ -9075,16 +9566,18 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\n" +
 	"null_value\x18\x02 \x01(\bR\tnullValue\"f\n" +
 	"\bMetadata\x12Z\n" +
-	"\x1csql_statement_execution_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x19sqlStatementExecutionTime\"\xb5\x01\n" +
+	"\x1csql_statement_execution_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x19sqlStatementExecutionTime\"\xd6\x01\n" +
 	"#SqlInstancesAcquireSsrsLeaseRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12N\n" +
-	"\x04body\x18d \x01(\v25.google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequestB\x03\xe0A\x02R\x04body\"I\n" +
+	"\x04body\x18d \x01(\v25.google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"I\n" +
 	"$SqlInstancesAcquireSsrsLeaseResponse\x12!\n" +
-	"\foperation_id\x18\x01 \x01(\tR\voperationId\"e\n" +
+	"\foperation_id\x18\x01 \x01(\tR\voperationId\"\x86\x01\n" +
 	"#SqlInstancesReleaseSsrsLeaseRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"I\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"I\n" +
 	"$SqlInstancesReleaseSsrsLeaseResponse\x12!\n" +
 	"\foperation_id\x18\x01 \x01(\tR\voperationId\"\x93\x01\n" +
 	"%SqlInstancesPointInTimeRestoreRequest\x12\x1b\n" +
@@ -9107,7 +9600,7 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\vLEGAL_ISSUE\x10\x03\x12\x15\n" +
 	"\x11OPERATIONAL_ISSUE\x10\x04\x12\x11\n" +
 	"\rKMS_KEY_ISSUE\x10\x05\x12\x11\n" +
-	"\rPROJECT_ABUSE\x10\b2\x99>\n" +
+	"\rPROJECT_ABUSE\x10\b2\xc6>\n" +
 	"\x13SqlInstancesService\x12\xa3\x01\n" +
 	"\vAddServerCa\x123.google.cloud.sql.v1.SqlInstancesAddServerCaRequest\x1a\x1e.google.cloud.sql.v1.Operation\"?\x82\xd3\xe4\x93\x029\"7/v1/projects/{project}/instances/{instance}/addServerCa\x12\xbe\x01\n" +
 	"\x14AddServerCertificate\x12<.google.cloud.sql.v1.SqlInstancesAddServerCertificateRequest\x1a\x1e.google.cloud.sql.v1.Operation\"H\x82\xd3\xe4\x93\x02B\"@/v1/projects/{project}/instances/{instance}/addServerCertificate\x12\xc1\x01\n" +
@@ -9120,8 +9613,10 @@ const file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc = "" +
 	"\bFailover\x120.google.cloud.sql.v1.SqlInstancesFailoverRequest\x1a\x1e.google.cloud.sql.v1.Operation\"B\x82\xd3\xe4\x93\x02<:\x04body\"4/v1/projects/{project}/instances/{instance}/failover\x12\xa3\x01\n" +
 	"\tReencrypt\x121.google.cloud.sql.v1.SqlInstancesReencryptRequest\x1a\x1e.google.cloud.sql.v1.Operation\"C\x82\xd3\xe4\x93\x02=:\x04body\"5/v1/projects/{project}/instances/{instance}/reencrypt\x12\x8e\x01\n" +
 	"\x03Get\x12+.google.cloud.sql.v1.SqlInstancesGetRequest\x1a%.google.cloud.sql.v1.DatabaseInstance\"3\x82\xd3\xe4\x93\x02-\x12+/v1/projects/{project}/instances/{instance}\x12\x9a\x01\n" +
-	"\x06Import\x12..google.cloud.sql.v1.SqlInstancesImportRequest\x1a\x1e.google.cloud.sql.v1.Operation\"@\x82\xd3\xe4\x93\x02::\x04body\"2/v1/projects/{project}/instances/{instance}/import\x12\x88\x01\n" +
-	"\x06Insert\x12..google.cloud.sql.v1.SqlInstancesInsertRequest\x1a\x1e.google.cloud.sql.v1.Operation\".\x82\xd3\xe4\x93\x02(:\x04body\" /v1/projects/{project}/instances\x12\x8a\x01\n" +
+	"\x06Import\x12..google.cloud.sql.v1.SqlInstancesImportRequest\x1a\x1e.google.cloud.sql.v1.Operation\"@\x82\xd3\xe4\x93\x02::\x04body\"2/v1/projects/{project}/instances/{instance}/import\x12\xb5\x01\n" +
+	"\x06Insert\x12..google.cloud.sql.v1.SqlInstancesInsertRequest\x1a\x1e.google.cloud.sql.v1.Operation\"[\x82\xd3\xe4\x93\x02(:\x04body\" /v1/projects/{project}/instances\x8a\xd3\xe4\x93\x02'\x12\t\n" +
+	"\aproject\x12\x1a\n" +
+	"\vbody.region\x12\v{region=**}\x12\x8a\x01\n" +
 	"\x04List\x12,.google.cloud.sql.v1.SqlInstancesListRequest\x1a*.google.cloud.sql.v1.InstancesListResponse\"(\x82\xd3\xe4\x93\x02\"\x12 /v1/projects/{project}/instances\x12\xbe\x01\n" +
 	"\rListServerCas\x125.google.cloud.sql.v1.SqlInstancesListServerCasRequest\x1a3.google.cloud.sql.v1.InstancesListServerCasResponse\"A\x82\xd3\xe4\x93\x02;\x129/v1/projects/{project}/instances/{instance}/listServerCas\x12\xe2\x01\n" +
 	"\x16ListServerCertificates\x12>.google.cloud.sql.v1.SqlInstancesListServerCertificatesRequest\x1a<.google.cloud.sql.v1.InstancesListServerCertificatesResponse\"J\x82\xd3\xe4\x93\x02D\x12B/v1/projects/{project}/instances/{instance}/listServerCertificates\x12\xe6\x01\n" +
@@ -9172,7 +9667,7 @@ func file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDescGZIP() []byte {
 	return file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDescData
 }
 
-var file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes = make([]protoimpl.EnumInfo, 14)
+var file_google_cloud_sql_v1_cloud_sql_instances_proto_enumTypes = make([]protoimpl.EnumInfo, 15)
 var file_google_cloud_sql_v1_cloud_sql_instances_proto_msgTypes = make([]protoimpl.MessageInfo, 103)
 var file_google_cloud_sql_v1_cloud_sql_instances_proto_goTypes = []any{
 	(ExternalSyncParallelLevel)(0),                                      // 0: google.cloud.sql.v1.ExternalSyncParallelLevel
@@ -9184,358 +9679,360 @@ var file_google_cloud_sql_v1_cloud_sql_instances_proto_goTypes = []any{
 	(SqlInstancesVerifyExternalSyncSettingsRequest_MigrationType)(0),    // 6: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationType
 	(DatabaseInstance_SqlInstanceState)(0),                              // 7: google.cloud.sql.v1.DatabaseInstance.SqlInstanceState
 	(DatabaseInstance_SqlNetworkArchitecture)(0),                        // 8: google.cloud.sql.v1.DatabaseInstance.SqlNetworkArchitecture
-	(DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState)(0),          // 9: google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
-	(SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType)(0),    // 10: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
-	(SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType)(0),    // 11: google.cloud.sql.v1.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
-	(OnPremisesConfiguration_SslOption)(0),                              // 12: google.cloud.sql.v1.OnPremisesConfiguration.SslOption
-	(ExecuteSqlPayload_PartialResultMode)(0),                            // 13: google.cloud.sql.v1.ExecuteSqlPayload.PartialResultMode
-	(*SqlInstancesAddServerCaRequest)(nil),                              // 14: google.cloud.sql.v1.SqlInstancesAddServerCaRequest
-	(*SqlInstancesAddServerCertificateRequest)(nil),                     // 15: google.cloud.sql.v1.SqlInstancesAddServerCertificateRequest
-	(*SqlInstancesAddEntraIdCertificateRequest)(nil),                    // 16: google.cloud.sql.v1.SqlInstancesAddEntraIdCertificateRequest
-	(*SqlInstancesCloneRequest)(nil),                                    // 17: google.cloud.sql.v1.SqlInstancesCloneRequest
-	(*SqlInstancesDeleteRequest)(nil),                                   // 18: google.cloud.sql.v1.SqlInstancesDeleteRequest
-	(*SqlInstancesDemoteMasterRequest)(nil),                             // 19: google.cloud.sql.v1.SqlInstancesDemoteMasterRequest
-	(*SqlInstancesDemoteRequest)(nil),                                   // 20: google.cloud.sql.v1.SqlInstancesDemoteRequest
-	(*SqlInstancesExportRequest)(nil),                                   // 21: google.cloud.sql.v1.SqlInstancesExportRequest
-	(*SqlInstancesFailoverRequest)(nil),                                 // 22: google.cloud.sql.v1.SqlInstancesFailoverRequest
-	(*SqlInstancesGetRequest)(nil),                                      // 23: google.cloud.sql.v1.SqlInstancesGetRequest
-	(*SqlInstancesImportRequest)(nil),                                   // 24: google.cloud.sql.v1.SqlInstancesImportRequest
-	(*SqlInstancesInsertRequest)(nil),                                   // 25: google.cloud.sql.v1.SqlInstancesInsertRequest
-	(*SqlInstancesListRequest)(nil),                                     // 26: google.cloud.sql.v1.SqlInstancesListRequest
-	(*SqlInstancesListServerCasRequest)(nil),                            // 27: google.cloud.sql.v1.SqlInstancesListServerCasRequest
-	(*SqlInstancesListServerCertificatesRequest)(nil),                   // 28: google.cloud.sql.v1.SqlInstancesListServerCertificatesRequest
-	(*SqlInstancesListEntraIdCertificatesRequest)(nil),                  // 29: google.cloud.sql.v1.SqlInstancesListEntraIdCertificatesRequest
-	(*SqlInstancesPatchRequest)(nil),                                    // 30: google.cloud.sql.v1.SqlInstancesPatchRequest
-	(*SqlInstancesPromoteReplicaRequest)(nil),                           // 31: google.cloud.sql.v1.SqlInstancesPromoteReplicaRequest
-	(*SqlInstancesSwitchoverRequest)(nil),                               // 32: google.cloud.sql.v1.SqlInstancesSwitchoverRequest
-	(*SqlInstancesResetSslConfigRequest)(nil),                           // 33: google.cloud.sql.v1.SqlInstancesResetSslConfigRequest
-	(*SqlInstancesRestartRequest)(nil),                                  // 34: google.cloud.sql.v1.SqlInstancesRestartRequest
-	(*SqlInstancesRestoreBackupRequest)(nil),                            // 35: google.cloud.sql.v1.SqlInstancesRestoreBackupRequest
-	(*SqlInstancesRotateServerCaRequest)(nil),                           // 36: google.cloud.sql.v1.SqlInstancesRotateServerCaRequest
-	(*SqlInstancesRotateServerCertificateRequest)(nil),                  // 37: google.cloud.sql.v1.SqlInstancesRotateServerCertificateRequest
-	(*SqlInstancesRotateEntraIdCertificateRequest)(nil),                 // 38: google.cloud.sql.v1.SqlInstancesRotateEntraIdCertificateRequest
-	(*SqlInstancesStartReplicaRequest)(nil),                             // 39: google.cloud.sql.v1.SqlInstancesStartReplicaRequest
-	(*SqlInstancesStopReplicaRequest)(nil),                              // 40: google.cloud.sql.v1.SqlInstancesStopReplicaRequest
-	(*SqlInstancesTruncateLogRequest)(nil),                              // 41: google.cloud.sql.v1.SqlInstancesTruncateLogRequest
-	(*SqlInstancesPerformDiskShrinkRequest)(nil),                        // 42: google.cloud.sql.v1.SqlInstancesPerformDiskShrinkRequest
-	(*SqlInstancesUpdateRequest)(nil),                                   // 43: google.cloud.sql.v1.SqlInstancesUpdateRequest
-	(*SqlInstancesRescheduleMaintenanceRequest)(nil),                    // 44: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequest
-	(*SqlInstancesReencryptRequest)(nil),                                // 45: google.cloud.sql.v1.SqlInstancesReencryptRequest
-	(*InstancesReencryptRequest)(nil),                                   // 46: google.cloud.sql.v1.InstancesReencryptRequest
-	(*BackupReencryptionConfig)(nil),                                    // 47: google.cloud.sql.v1.BackupReencryptionConfig
-	(*ExternalSyncSelectedObject)(nil),                                  // 48: google.cloud.sql.v1.ExternalSyncSelectedObject
-	(*SqlInstancesGetDiskShrinkConfigRequest)(nil),                      // 49: google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigRequest
-	(*SqlInstancesVerifyExternalSyncSettingsRequest)(nil),               // 50: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest
-	(*SqlInstancesStartExternalSyncRequest)(nil),                        // 51: google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest
-	(*SqlInstancesResetReplicaSizeRequest)(nil),                         // 52: google.cloud.sql.v1.SqlInstancesResetReplicaSizeRequest
-	(*SqlInstancesCreateEphemeralCertRequest)(nil),                      // 53: google.cloud.sql.v1.SqlInstancesCreateEphemeralCertRequest
-	(*InstancesCloneRequest)(nil),                                       // 54: google.cloud.sql.v1.InstancesCloneRequest
-	(*InstancesDemoteMasterRequest)(nil),                                // 55: google.cloud.sql.v1.InstancesDemoteMasterRequest
-	(*InstancesDemoteRequest)(nil),                                      // 56: google.cloud.sql.v1.InstancesDemoteRequest
-	(*InstancesExportRequest)(nil),                                      // 57: google.cloud.sql.v1.InstancesExportRequest
-	(*InstancesFailoverRequest)(nil),                                    // 58: google.cloud.sql.v1.InstancesFailoverRequest
-	(*SslCertsCreateEphemeralRequest)(nil),                              // 59: google.cloud.sql.v1.SslCertsCreateEphemeralRequest
-	(*InstancesImportRequest)(nil),                                      // 60: google.cloud.sql.v1.InstancesImportRequest
-	(*InstancesPreCheckMajorVersionUpgradeRequest)(nil),                 // 61: google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequest
-	(*InstancesListResponse)(nil),                                       // 62: google.cloud.sql.v1.InstancesListResponse
-	(*InstancesListServerCasResponse)(nil),                              // 63: google.cloud.sql.v1.InstancesListServerCasResponse
-	(*InstancesListServerCertificatesResponse)(nil),                     // 64: google.cloud.sql.v1.InstancesListServerCertificatesResponse
-	(*InstancesListEntraIdCertificatesResponse)(nil),                    // 65: google.cloud.sql.v1.InstancesListEntraIdCertificatesResponse
-	(*InstancesRestoreBackupRequest)(nil),                               // 66: google.cloud.sql.v1.InstancesRestoreBackupRequest
-	(*InstancesRotateServerCaRequest)(nil),                              // 67: google.cloud.sql.v1.InstancesRotateServerCaRequest
-	(*InstancesRotateServerCertificateRequest)(nil),                     // 68: google.cloud.sql.v1.InstancesRotateServerCertificateRequest
-	(*InstancesRotateEntraIdCertificateRequest)(nil),                    // 69: google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequest
-	(*InstancesTruncateLogRequest)(nil),                                 // 70: google.cloud.sql.v1.InstancesTruncateLogRequest
-	(*InstancesAcquireSsrsLeaseRequest)(nil),                            // 71: google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequest
-	(*SqlInstancesPreCheckMajorVersionUpgradeRequest)(nil),              // 72: google.cloud.sql.v1.SqlInstancesPreCheckMajorVersionUpgradeRequest
-	(*SqlInstancesVerifyExternalSyncSettingsResponse)(nil),              // 73: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse
-	(*SqlInstancesGetDiskShrinkConfigResponse)(nil),                     // 74: google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigResponse
-	(*SqlInstancesGetLatestRecoveryTimeRequest)(nil),                    // 75: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeRequest
-	(*SqlInstancesGetLatestRecoveryTimeResponse)(nil),                   // 76: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse
-	(*CloneContext)(nil),                                                // 77: google.cloud.sql.v1.CloneContext
-	(*PointInTimeRestoreContext)(nil),                                   // 78: google.cloud.sql.v1.PointInTimeRestoreContext
-	(*BinLogCoordinates)(nil),                                           // 79: google.cloud.sql.v1.BinLogCoordinates
-	(*DatabaseInstance)(nil),                                            // 80: google.cloud.sql.v1.DatabaseInstance
-	(*GeminiInstanceConfig)(nil),                                        // 81: google.cloud.sql.v1.GeminiInstanceConfig
-	(*ReplicationCluster)(nil),                                          // 82: google.cloud.sql.v1.ReplicationCluster
-	(*AvailableDatabaseVersion)(nil),                                    // 83: google.cloud.sql.v1.AvailableDatabaseVersion
-	(*SqlInstancesRescheduleMaintenanceRequestBody)(nil),                // 84: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody
-	(*DemoteMasterContext)(nil),                                         // 85: google.cloud.sql.v1.DemoteMasterContext
-	(*DemoteContext)(nil),                                               // 86: google.cloud.sql.v1.DemoteContext
-	(*FailoverContext)(nil),                                             // 87: google.cloud.sql.v1.FailoverContext
-	(*RestoreBackupContext)(nil),                                        // 88: google.cloud.sql.v1.RestoreBackupContext
-	(*RotateServerCaContext)(nil),                                       // 89: google.cloud.sql.v1.RotateServerCaContext
-	(*RotateServerCertificateContext)(nil),                              // 90: google.cloud.sql.v1.RotateServerCertificateContext
-	(*RotateEntraIdCertificateContext)(nil),                             // 91: google.cloud.sql.v1.RotateEntraIdCertificateContext
-	(*TruncateLogContext)(nil),                                          // 92: google.cloud.sql.v1.TruncateLogContext
-	(*SqlExternalSyncSettingError)(nil),                                 // 93: google.cloud.sql.v1.SqlExternalSyncSettingError
-	(*SelectedObjects)(nil),                                             // 94: google.cloud.sql.v1.SelectedObjects
-	(*OnPremisesConfiguration)(nil),                                     // 95: google.cloud.sql.v1.OnPremisesConfiguration
-	(*ReplicaConfiguration)(nil),                                        // 96: google.cloud.sql.v1.ReplicaConfiguration
-	(*SqlInstancesExecuteSqlRequest)(nil),                               // 97: google.cloud.sql.v1.SqlInstancesExecuteSqlRequest
-	(*ExecuteSqlPayload)(nil),                                           // 98: google.cloud.sql.v1.ExecuteSqlPayload
-	(*SqlInstancesExecuteSqlResponse)(nil),                              // 99: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse
-	(*QueryResult)(nil),                                                 // 100: google.cloud.sql.v1.QueryResult
-	(*Column)(nil),                                                      // 101: google.cloud.sql.v1.Column
-	(*Row)(nil),                                                         // 102: google.cloud.sql.v1.Row
-	(*Value)(nil),                                                       // 103: google.cloud.sql.v1.Value
-	(*Metadata)(nil),                                                    // 104: google.cloud.sql.v1.Metadata
-	(*SqlInstancesAcquireSsrsLeaseRequest)(nil),                         // 105: google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseRequest
-	(*SqlInstancesAcquireSsrsLeaseResponse)(nil),                        // 106: google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseResponse
-	(*SqlInstancesReleaseSsrsLeaseRequest)(nil),                         // 107: google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseRequest
-	(*SqlInstancesReleaseSsrsLeaseResponse)(nil),                        // 108: google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseResponse
-	(*SqlInstancesPointInTimeRestoreRequest)(nil),                       // 109: google.cloud.sql.v1.SqlInstancesPointInTimeRestoreRequest
-	(*DatabaseInstance_SqlFailoverReplica)(nil),                         // 110: google.cloud.sql.v1.DatabaseInstance.SqlFailoverReplica
-	(*DatabaseInstance_SqlScheduledMaintenance)(nil),                    // 111: google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance
-	(*DatabaseInstance_SqlOutOfDiskReport)(nil),                         // 112: google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport
-	(*DatabaseInstance_PoolNodeConfig)(nil),                             // 113: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig
-	nil,                                                                 // 114: google.cloud.sql.v1.DatabaseInstance.TagsEntry
-	(*SqlInstancesRescheduleMaintenanceRequestBody_Reschedule)(nil),     // 115: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
-	(*SqlInstancesExecuteSqlResponse_Message)(nil),                      // 116: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.Message
-	(*timestamppb.Timestamp)(nil),                                       // 117: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                                         // 118: google.protobuf.Duration
-	(*PerformDiskShrinkContext)(nil),                                    // 119: google.cloud.sql.v1.PerformDiskShrinkContext
-	(*MySqlSyncConfig)(nil),                                             // 120: google.cloud.sql.v1.MySqlSyncConfig
-	(*ExportContext)(nil),                                               // 121: google.cloud.sql.v1.ExportContext
-	(*ImportContext)(nil),                                               // 122: google.cloud.sql.v1.ImportContext
-	(*PreCheckMajorVersionUpgradeContext)(nil),                          // 123: google.cloud.sql.v1.PreCheckMajorVersionUpgradeContext
-	(*ApiWarning)(nil),                                                  // 124: google.cloud.sql.v1.ApiWarning
-	(*SslCert)(nil),                                                     // 125: google.cloud.sql.v1.SslCert
-	(*AcquireSsrsLeaseContext)(nil),                                     // 126: google.cloud.sql.v1.AcquireSsrsLeaseContext
-	(SqlDatabaseVersion)(0),                                             // 127: google.cloud.sql.v1.SqlDatabaseVersion
-	(*Settings)(nil),                                                    // 128: google.cloud.sql.v1.Settings
-	(*wrapperspb.Int64Value)(nil),                                       // 129: google.protobuf.Int64Value
-	(*IpMapping)(nil),                                                   // 130: google.cloud.sql.v1.IpMapping
-	(SqlBackendType)(0),                                                 // 131: google.cloud.sql.v1.SqlBackendType
-	(*DiskEncryptionConfiguration)(nil),                                 // 132: google.cloud.sql.v1.DiskEncryptionConfiguration
-	(*DiskEncryptionStatus)(nil),                                        // 133: google.cloud.sql.v1.DiskEncryptionStatus
-	(*wrapperspb.BoolValue)(nil),                                        // 134: google.protobuf.BoolValue
-	(*DnsNameMapping)(nil),                                              // 135: google.cloud.sql.v1.DnsNameMapping
-	(*DemoteMasterConfiguration)(nil),                                   // 136: google.cloud.sql.v1.DemoteMasterConfiguration
-	(*InstanceReference)(nil),                                           // 137: google.cloud.sql.v1.InstanceReference
-	(*MySqlReplicaConfiguration)(nil),                                   // 138: google.cloud.sql.v1.MySqlReplicaConfiguration
-	(*status.Status)(nil),                                               // 139: google.rpc.Status
-	(*PscAutoConnectionConfig)(nil),                                     // 140: google.cloud.sql.v1.PscAutoConnectionConfig
-	(*Operation)(nil),                                                   // 141: google.cloud.sql.v1.Operation
+	(DatabaseInstance_DatabaseCenterIntegration)(0),                     // 9: google.cloud.sql.v1.DatabaseInstance.DatabaseCenterIntegration
+	(DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState)(0),          // 10: google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
+	(SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType)(0),    // 11: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
+	(SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType)(0),    // 12: google.cloud.sql.v1.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
+	(OnPremisesConfiguration_SslOption)(0),                              // 13: google.cloud.sql.v1.OnPremisesConfiguration.SslOption
+	(ExecuteSqlPayload_PartialResultMode)(0),                            // 14: google.cloud.sql.v1.ExecuteSqlPayload.PartialResultMode
+	(*SqlInstancesAddServerCaRequest)(nil),                              // 15: google.cloud.sql.v1.SqlInstancesAddServerCaRequest
+	(*SqlInstancesAddServerCertificateRequest)(nil),                     // 16: google.cloud.sql.v1.SqlInstancesAddServerCertificateRequest
+	(*SqlInstancesAddEntraIdCertificateRequest)(nil),                    // 17: google.cloud.sql.v1.SqlInstancesAddEntraIdCertificateRequest
+	(*SqlInstancesCloneRequest)(nil),                                    // 18: google.cloud.sql.v1.SqlInstancesCloneRequest
+	(*SqlInstancesDeleteRequest)(nil),                                   // 19: google.cloud.sql.v1.SqlInstancesDeleteRequest
+	(*SqlInstancesDemoteMasterRequest)(nil),                             // 20: google.cloud.sql.v1.SqlInstancesDemoteMasterRequest
+	(*SqlInstancesDemoteRequest)(nil),                                   // 21: google.cloud.sql.v1.SqlInstancesDemoteRequest
+	(*SqlInstancesExportRequest)(nil),                                   // 22: google.cloud.sql.v1.SqlInstancesExportRequest
+	(*SqlInstancesFailoverRequest)(nil),                                 // 23: google.cloud.sql.v1.SqlInstancesFailoverRequest
+	(*SqlInstancesGetRequest)(nil),                                      // 24: google.cloud.sql.v1.SqlInstancesGetRequest
+	(*SqlInstancesImportRequest)(nil),                                   // 25: google.cloud.sql.v1.SqlInstancesImportRequest
+	(*SqlInstancesInsertRequest)(nil),                                   // 26: google.cloud.sql.v1.SqlInstancesInsertRequest
+	(*SqlInstancesListRequest)(nil),                                     // 27: google.cloud.sql.v1.SqlInstancesListRequest
+	(*SqlInstancesListServerCasRequest)(nil),                            // 28: google.cloud.sql.v1.SqlInstancesListServerCasRequest
+	(*SqlInstancesListServerCertificatesRequest)(nil),                   // 29: google.cloud.sql.v1.SqlInstancesListServerCertificatesRequest
+	(*SqlInstancesListEntraIdCertificatesRequest)(nil),                  // 30: google.cloud.sql.v1.SqlInstancesListEntraIdCertificatesRequest
+	(*SqlInstancesPatchRequest)(nil),                                    // 31: google.cloud.sql.v1.SqlInstancesPatchRequest
+	(*SqlInstancesPromoteReplicaRequest)(nil),                           // 32: google.cloud.sql.v1.SqlInstancesPromoteReplicaRequest
+	(*SqlInstancesSwitchoverRequest)(nil),                               // 33: google.cloud.sql.v1.SqlInstancesSwitchoverRequest
+	(*SqlInstancesResetSslConfigRequest)(nil),                           // 34: google.cloud.sql.v1.SqlInstancesResetSslConfigRequest
+	(*SqlInstancesRestartRequest)(nil),                                  // 35: google.cloud.sql.v1.SqlInstancesRestartRequest
+	(*SqlInstancesRestoreBackupRequest)(nil),                            // 36: google.cloud.sql.v1.SqlInstancesRestoreBackupRequest
+	(*SqlInstancesRotateServerCaRequest)(nil),                           // 37: google.cloud.sql.v1.SqlInstancesRotateServerCaRequest
+	(*SqlInstancesRotateServerCertificateRequest)(nil),                  // 38: google.cloud.sql.v1.SqlInstancesRotateServerCertificateRequest
+	(*SqlInstancesRotateEntraIdCertificateRequest)(nil),                 // 39: google.cloud.sql.v1.SqlInstancesRotateEntraIdCertificateRequest
+	(*SqlInstancesStartReplicaRequest)(nil),                             // 40: google.cloud.sql.v1.SqlInstancesStartReplicaRequest
+	(*SqlInstancesStopReplicaRequest)(nil),                              // 41: google.cloud.sql.v1.SqlInstancesStopReplicaRequest
+	(*SqlInstancesTruncateLogRequest)(nil),                              // 42: google.cloud.sql.v1.SqlInstancesTruncateLogRequest
+	(*SqlInstancesPerformDiskShrinkRequest)(nil),                        // 43: google.cloud.sql.v1.SqlInstancesPerformDiskShrinkRequest
+	(*SqlInstancesUpdateRequest)(nil),                                   // 44: google.cloud.sql.v1.SqlInstancesUpdateRequest
+	(*SqlInstancesRescheduleMaintenanceRequest)(nil),                    // 45: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequest
+	(*SqlInstancesReencryptRequest)(nil),                                // 46: google.cloud.sql.v1.SqlInstancesReencryptRequest
+	(*InstancesReencryptRequest)(nil),                                   // 47: google.cloud.sql.v1.InstancesReencryptRequest
+	(*BackupReencryptionConfig)(nil),                                    // 48: google.cloud.sql.v1.BackupReencryptionConfig
+	(*ExternalSyncSelectedObject)(nil),                                  // 49: google.cloud.sql.v1.ExternalSyncSelectedObject
+	(*SqlInstancesGetDiskShrinkConfigRequest)(nil),                      // 50: google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigRequest
+	(*SqlInstancesVerifyExternalSyncSettingsRequest)(nil),               // 51: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest
+	(*SqlInstancesStartExternalSyncRequest)(nil),                        // 52: google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest
+	(*SqlInstancesResetReplicaSizeRequest)(nil),                         // 53: google.cloud.sql.v1.SqlInstancesResetReplicaSizeRequest
+	(*SqlInstancesCreateEphemeralCertRequest)(nil),                      // 54: google.cloud.sql.v1.SqlInstancesCreateEphemeralCertRequest
+	(*InstancesCloneRequest)(nil),                                       // 55: google.cloud.sql.v1.InstancesCloneRequest
+	(*InstancesDemoteMasterRequest)(nil),                                // 56: google.cloud.sql.v1.InstancesDemoteMasterRequest
+	(*InstancesDemoteRequest)(nil),                                      // 57: google.cloud.sql.v1.InstancesDemoteRequest
+	(*InstancesExportRequest)(nil),                                      // 58: google.cloud.sql.v1.InstancesExportRequest
+	(*InstancesFailoverRequest)(nil),                                    // 59: google.cloud.sql.v1.InstancesFailoverRequest
+	(*SslCertsCreateEphemeralRequest)(nil),                              // 60: google.cloud.sql.v1.SslCertsCreateEphemeralRequest
+	(*InstancesImportRequest)(nil),                                      // 61: google.cloud.sql.v1.InstancesImportRequest
+	(*InstancesPreCheckMajorVersionUpgradeRequest)(nil),                 // 62: google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequest
+	(*InstancesListResponse)(nil),                                       // 63: google.cloud.sql.v1.InstancesListResponse
+	(*InstancesListServerCasResponse)(nil),                              // 64: google.cloud.sql.v1.InstancesListServerCasResponse
+	(*InstancesListServerCertificatesResponse)(nil),                     // 65: google.cloud.sql.v1.InstancesListServerCertificatesResponse
+	(*InstancesListEntraIdCertificatesResponse)(nil),                    // 66: google.cloud.sql.v1.InstancesListEntraIdCertificatesResponse
+	(*InstancesRestoreBackupRequest)(nil),                               // 67: google.cloud.sql.v1.InstancesRestoreBackupRequest
+	(*InstancesRotateServerCaRequest)(nil),                              // 68: google.cloud.sql.v1.InstancesRotateServerCaRequest
+	(*InstancesRotateServerCertificateRequest)(nil),                     // 69: google.cloud.sql.v1.InstancesRotateServerCertificateRequest
+	(*InstancesRotateEntraIdCertificateRequest)(nil),                    // 70: google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequest
+	(*InstancesTruncateLogRequest)(nil),                                 // 71: google.cloud.sql.v1.InstancesTruncateLogRequest
+	(*InstancesAcquireSsrsLeaseRequest)(nil),                            // 72: google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequest
+	(*SqlInstancesPreCheckMajorVersionUpgradeRequest)(nil),              // 73: google.cloud.sql.v1.SqlInstancesPreCheckMajorVersionUpgradeRequest
+	(*SqlInstancesVerifyExternalSyncSettingsResponse)(nil),              // 74: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse
+	(*SqlInstancesGetDiskShrinkConfigResponse)(nil),                     // 75: google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigResponse
+	(*SqlInstancesGetLatestRecoveryTimeRequest)(nil),                    // 76: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeRequest
+	(*SqlInstancesGetLatestRecoveryTimeResponse)(nil),                   // 77: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse
+	(*CloneContext)(nil),                                                // 78: google.cloud.sql.v1.CloneContext
+	(*PointInTimeRestoreContext)(nil),                                   // 79: google.cloud.sql.v1.PointInTimeRestoreContext
+	(*BinLogCoordinates)(nil),                                           // 80: google.cloud.sql.v1.BinLogCoordinates
+	(*DatabaseInstance)(nil),                                            // 81: google.cloud.sql.v1.DatabaseInstance
+	(*GeminiInstanceConfig)(nil),                                        // 82: google.cloud.sql.v1.GeminiInstanceConfig
+	(*ReplicationCluster)(nil),                                          // 83: google.cloud.sql.v1.ReplicationCluster
+	(*AvailableDatabaseVersion)(nil),                                    // 84: google.cloud.sql.v1.AvailableDatabaseVersion
+	(*SqlInstancesRescheduleMaintenanceRequestBody)(nil),                // 85: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody
+	(*DemoteMasterContext)(nil),                                         // 86: google.cloud.sql.v1.DemoteMasterContext
+	(*DemoteContext)(nil),                                               // 87: google.cloud.sql.v1.DemoteContext
+	(*FailoverContext)(nil),                                             // 88: google.cloud.sql.v1.FailoverContext
+	(*RestoreBackupContext)(nil),                                        // 89: google.cloud.sql.v1.RestoreBackupContext
+	(*RotateServerCaContext)(nil),                                       // 90: google.cloud.sql.v1.RotateServerCaContext
+	(*RotateServerCertificateContext)(nil),                              // 91: google.cloud.sql.v1.RotateServerCertificateContext
+	(*RotateEntraIdCertificateContext)(nil),                             // 92: google.cloud.sql.v1.RotateEntraIdCertificateContext
+	(*TruncateLogContext)(nil),                                          // 93: google.cloud.sql.v1.TruncateLogContext
+	(*SqlExternalSyncSettingError)(nil),                                 // 94: google.cloud.sql.v1.SqlExternalSyncSettingError
+	(*SelectedObjects)(nil),                                             // 95: google.cloud.sql.v1.SelectedObjects
+	(*OnPremisesConfiguration)(nil),                                     // 96: google.cloud.sql.v1.OnPremisesConfiguration
+	(*ReplicaConfiguration)(nil),                                        // 97: google.cloud.sql.v1.ReplicaConfiguration
+	(*SqlInstancesExecuteSqlRequest)(nil),                               // 98: google.cloud.sql.v1.SqlInstancesExecuteSqlRequest
+	(*ExecuteSqlPayload)(nil),                                           // 99: google.cloud.sql.v1.ExecuteSqlPayload
+	(*SqlInstancesExecuteSqlResponse)(nil),                              // 100: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse
+	(*QueryResult)(nil),                                                 // 101: google.cloud.sql.v1.QueryResult
+	(*Column)(nil),                                                      // 102: google.cloud.sql.v1.Column
+	(*Row)(nil),                                                         // 103: google.cloud.sql.v1.Row
+	(*Value)(nil),                                                       // 104: google.cloud.sql.v1.Value
+	(*Metadata)(nil),                                                    // 105: google.cloud.sql.v1.Metadata
+	(*SqlInstancesAcquireSsrsLeaseRequest)(nil),                         // 106: google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseRequest
+	(*SqlInstancesAcquireSsrsLeaseResponse)(nil),                        // 107: google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseResponse
+	(*SqlInstancesReleaseSsrsLeaseRequest)(nil),                         // 108: google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseRequest
+	(*SqlInstancesReleaseSsrsLeaseResponse)(nil),                        // 109: google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseResponse
+	(*SqlInstancesPointInTimeRestoreRequest)(nil),                       // 110: google.cloud.sql.v1.SqlInstancesPointInTimeRestoreRequest
+	(*DatabaseInstance_SqlFailoverReplica)(nil),                         // 111: google.cloud.sql.v1.DatabaseInstance.SqlFailoverReplica
+	(*DatabaseInstance_SqlScheduledMaintenance)(nil),                    // 112: google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance
+	(*DatabaseInstance_SqlOutOfDiskReport)(nil),                         // 113: google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport
+	(*DatabaseInstance_PoolNodeConfig)(nil),                             // 114: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig
+	nil,                                                                 // 115: google.cloud.sql.v1.DatabaseInstance.TagsEntry
+	(*SqlInstancesRescheduleMaintenanceRequestBody_Reschedule)(nil),     // 116: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
+	(*SqlInstancesExecuteSqlResponse_Message)(nil),                      // 117: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.Message
+	(*timestamppb.Timestamp)(nil),                                       // 118: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),                                         // 119: google.protobuf.Duration
+	(*PerformDiskShrinkContext)(nil),                                    // 120: google.cloud.sql.v1.PerformDiskShrinkContext
+	(*MySqlSyncConfig)(nil),                                             // 121: google.cloud.sql.v1.MySqlSyncConfig
+	(*ExportContext)(nil),                                               // 122: google.cloud.sql.v1.ExportContext
+	(*ImportContext)(nil),                                               // 123: google.cloud.sql.v1.ImportContext
+	(*PreCheckMajorVersionUpgradeContext)(nil),                          // 124: google.cloud.sql.v1.PreCheckMajorVersionUpgradeContext
+	(*ApiWarning)(nil),                                                  // 125: google.cloud.sql.v1.ApiWarning
+	(*SslCert)(nil),                                                     // 126: google.cloud.sql.v1.SslCert
+	(*AcquireSsrsLeaseContext)(nil),                                     // 127: google.cloud.sql.v1.AcquireSsrsLeaseContext
+	(SqlDatabaseVersion)(0),                                             // 128: google.cloud.sql.v1.SqlDatabaseVersion
+	(*Settings)(nil),                                                    // 129: google.cloud.sql.v1.Settings
+	(*wrapperspb.Int64Value)(nil),                                       // 130: google.protobuf.Int64Value
+	(*IpMapping)(nil),                                                   // 131: google.cloud.sql.v1.IpMapping
+	(SqlBackendType)(0),                                                 // 132: google.cloud.sql.v1.SqlBackendType
+	(*DiskEncryptionConfiguration)(nil),                                 // 133: google.cloud.sql.v1.DiskEncryptionConfiguration
+	(*DiskEncryptionStatus)(nil),                                        // 134: google.cloud.sql.v1.DiskEncryptionStatus
+	(*wrapperspb.BoolValue)(nil),                                        // 135: google.protobuf.BoolValue
+	(*DnsNameMapping)(nil),                                              // 136: google.cloud.sql.v1.DnsNameMapping
+	(*DemoteMasterConfiguration)(nil),                                   // 137: google.cloud.sql.v1.DemoteMasterConfiguration
+	(*InstanceReference)(nil),                                           // 138: google.cloud.sql.v1.InstanceReference
+	(*MySqlReplicaConfiguration)(nil),                                   // 139: google.cloud.sql.v1.MySqlReplicaConfiguration
+	(*status.Status)(nil),                                               // 140: google.rpc.Status
+	(*PscAutoConnectionConfig)(nil),                                     // 141: google.cloud.sql.v1.PscAutoConnectionConfig
+	(*Operation)(nil),                                                   // 142: google.cloud.sql.v1.Operation
 }
 var file_google_cloud_sql_v1_cloud_sql_instances_proto_depIdxs = []int32{
-	54,  // 0: google.cloud.sql.v1.SqlInstancesCloneRequest.body:type_name -> google.cloud.sql.v1.InstancesCloneRequest
-	117, // 1: google.cloud.sql.v1.SqlInstancesDeleteRequest.final_backup_expiry_time:type_name -> google.protobuf.Timestamp
-	55,  // 2: google.cloud.sql.v1.SqlInstancesDemoteMasterRequest.body:type_name -> google.cloud.sql.v1.InstancesDemoteMasterRequest
-	56,  // 3: google.cloud.sql.v1.SqlInstancesDemoteRequest.body:type_name -> google.cloud.sql.v1.InstancesDemoteRequest
-	57,  // 4: google.cloud.sql.v1.SqlInstancesExportRequest.body:type_name -> google.cloud.sql.v1.InstancesExportRequest
-	58,  // 5: google.cloud.sql.v1.SqlInstancesFailoverRequest.body:type_name -> google.cloud.sql.v1.InstancesFailoverRequest
-	60,  // 6: google.cloud.sql.v1.SqlInstancesImportRequest.body:type_name -> google.cloud.sql.v1.InstancesImportRequest
-	80,  // 7: google.cloud.sql.v1.SqlInstancesInsertRequest.body:type_name -> google.cloud.sql.v1.DatabaseInstance
-	80,  // 8: google.cloud.sql.v1.SqlInstancesPatchRequest.body:type_name -> google.cloud.sql.v1.DatabaseInstance
-	118, // 9: google.cloud.sql.v1.SqlInstancesSwitchoverRequest.db_timeout:type_name -> google.protobuf.Duration
+	55,  // 0: google.cloud.sql.v1.SqlInstancesCloneRequest.body:type_name -> google.cloud.sql.v1.InstancesCloneRequest
+	118, // 1: google.cloud.sql.v1.SqlInstancesDeleteRequest.final_backup_expiry_time:type_name -> google.protobuf.Timestamp
+	56,  // 2: google.cloud.sql.v1.SqlInstancesDemoteMasterRequest.body:type_name -> google.cloud.sql.v1.InstancesDemoteMasterRequest
+	57,  // 3: google.cloud.sql.v1.SqlInstancesDemoteRequest.body:type_name -> google.cloud.sql.v1.InstancesDemoteRequest
+	58,  // 4: google.cloud.sql.v1.SqlInstancesExportRequest.body:type_name -> google.cloud.sql.v1.InstancesExportRequest
+	59,  // 5: google.cloud.sql.v1.SqlInstancesFailoverRequest.body:type_name -> google.cloud.sql.v1.InstancesFailoverRequest
+	61,  // 6: google.cloud.sql.v1.SqlInstancesImportRequest.body:type_name -> google.cloud.sql.v1.InstancesImportRequest
+	81,  // 7: google.cloud.sql.v1.SqlInstancesInsertRequest.body:type_name -> google.cloud.sql.v1.DatabaseInstance
+	81,  // 8: google.cloud.sql.v1.SqlInstancesPatchRequest.body:type_name -> google.cloud.sql.v1.DatabaseInstance
+	119, // 9: google.cloud.sql.v1.SqlInstancesSwitchoverRequest.db_timeout:type_name -> google.protobuf.Duration
 	3,   // 10: google.cloud.sql.v1.SqlInstancesResetSslConfigRequest.mode:type_name -> google.cloud.sql.v1.SqlInstancesResetSslConfigRequest.ResetSslMode
-	66,  // 11: google.cloud.sql.v1.SqlInstancesRestoreBackupRequest.body:type_name -> google.cloud.sql.v1.InstancesRestoreBackupRequest
-	67,  // 12: google.cloud.sql.v1.SqlInstancesRotateServerCaRequest.body:type_name -> google.cloud.sql.v1.InstancesRotateServerCaRequest
-	68,  // 13: google.cloud.sql.v1.SqlInstancesRotateServerCertificateRequest.body:type_name -> google.cloud.sql.v1.InstancesRotateServerCertificateRequest
-	69,  // 14: google.cloud.sql.v1.SqlInstancesRotateEntraIdCertificateRequest.body:type_name -> google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequest
-	70,  // 15: google.cloud.sql.v1.SqlInstancesTruncateLogRequest.body:type_name -> google.cloud.sql.v1.InstancesTruncateLogRequest
-	119, // 16: google.cloud.sql.v1.SqlInstancesPerformDiskShrinkRequest.body:type_name -> google.cloud.sql.v1.PerformDiskShrinkContext
-	80,  // 17: google.cloud.sql.v1.SqlInstancesUpdateRequest.body:type_name -> google.cloud.sql.v1.DatabaseInstance
-	84,  // 18: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequest.body:type_name -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody
-	46,  // 19: google.cloud.sql.v1.SqlInstancesReencryptRequest.body:type_name -> google.cloud.sql.v1.InstancesReencryptRequest
-	47,  // 20: google.cloud.sql.v1.InstancesReencryptRequest.backup_reencryption_config:type_name -> google.cloud.sql.v1.BackupReencryptionConfig
+	67,  // 11: google.cloud.sql.v1.SqlInstancesRestoreBackupRequest.body:type_name -> google.cloud.sql.v1.InstancesRestoreBackupRequest
+	68,  // 12: google.cloud.sql.v1.SqlInstancesRotateServerCaRequest.body:type_name -> google.cloud.sql.v1.InstancesRotateServerCaRequest
+	69,  // 13: google.cloud.sql.v1.SqlInstancesRotateServerCertificateRequest.body:type_name -> google.cloud.sql.v1.InstancesRotateServerCertificateRequest
+	70,  // 14: google.cloud.sql.v1.SqlInstancesRotateEntraIdCertificateRequest.body:type_name -> google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequest
+	71,  // 15: google.cloud.sql.v1.SqlInstancesTruncateLogRequest.body:type_name -> google.cloud.sql.v1.InstancesTruncateLogRequest
+	120, // 16: google.cloud.sql.v1.SqlInstancesPerformDiskShrinkRequest.body:type_name -> google.cloud.sql.v1.PerformDiskShrinkContext
+	81,  // 17: google.cloud.sql.v1.SqlInstancesUpdateRequest.body:type_name -> google.cloud.sql.v1.DatabaseInstance
+	85,  // 18: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequest.body:type_name -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody
+	47,  // 19: google.cloud.sql.v1.SqlInstancesReencryptRequest.body:type_name -> google.cloud.sql.v1.InstancesReencryptRequest
+	48,  // 20: google.cloud.sql.v1.InstancesReencryptRequest.backup_reencryption_config:type_name -> google.cloud.sql.v1.BackupReencryptionConfig
 	4,   // 21: google.cloud.sql.v1.BackupReencryptionConfig.backup_type:type_name -> google.cloud.sql.v1.BackupReencryptionConfig.BackupType
 	5,   // 22: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.sync_mode:type_name -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.ExternalSyncMode
-	120, // 23: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.mysql_sync_config:type_name -> google.cloud.sql.v1.MySqlSyncConfig
+	121, // 23: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.mysql_sync_config:type_name -> google.cloud.sql.v1.MySqlSyncConfig
 	6,   // 24: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.migration_type:type_name -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationType
 	0,   // 25: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.sync_parallel_level:type_name -> google.cloud.sql.v1.ExternalSyncParallelLevel
-	48,  // 26: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.selected_objects:type_name -> google.cloud.sql.v1.ExternalSyncSelectedObject
+	49,  // 26: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.selected_objects:type_name -> google.cloud.sql.v1.ExternalSyncSelectedObject
 	5,   // 27: google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest.sync_mode:type_name -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.ExternalSyncMode
-	120, // 28: google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest.mysql_sync_config:type_name -> google.cloud.sql.v1.MySqlSyncConfig
+	121, // 28: google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest.mysql_sync_config:type_name -> google.cloud.sql.v1.MySqlSyncConfig
 	0,   // 29: google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest.sync_parallel_level:type_name -> google.cloud.sql.v1.ExternalSyncParallelLevel
 	6,   // 30: google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest.migration_type:type_name -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationType
-	59,  // 31: google.cloud.sql.v1.SqlInstancesCreateEphemeralCertRequest.body:type_name -> google.cloud.sql.v1.SslCertsCreateEphemeralRequest
-	77,  // 32: google.cloud.sql.v1.InstancesCloneRequest.clone_context:type_name -> google.cloud.sql.v1.CloneContext
-	85,  // 33: google.cloud.sql.v1.InstancesDemoteMasterRequest.demote_master_context:type_name -> google.cloud.sql.v1.DemoteMasterContext
-	86,  // 34: google.cloud.sql.v1.InstancesDemoteRequest.demote_context:type_name -> google.cloud.sql.v1.DemoteContext
-	121, // 35: google.cloud.sql.v1.InstancesExportRequest.export_context:type_name -> google.cloud.sql.v1.ExportContext
-	87,  // 36: google.cloud.sql.v1.InstancesFailoverRequest.failover_context:type_name -> google.cloud.sql.v1.FailoverContext
-	122, // 37: google.cloud.sql.v1.InstancesImportRequest.import_context:type_name -> google.cloud.sql.v1.ImportContext
-	123, // 38: google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequest.pre_check_major_version_upgrade_context:type_name -> google.cloud.sql.v1.PreCheckMajorVersionUpgradeContext
-	124, // 39: google.cloud.sql.v1.InstancesListResponse.warnings:type_name -> google.cloud.sql.v1.ApiWarning
-	80,  // 40: google.cloud.sql.v1.InstancesListResponse.items:type_name -> google.cloud.sql.v1.DatabaseInstance
-	125, // 41: google.cloud.sql.v1.InstancesListServerCasResponse.certs:type_name -> google.cloud.sql.v1.SslCert
-	125, // 42: google.cloud.sql.v1.InstancesListServerCertificatesResponse.ca_certs:type_name -> google.cloud.sql.v1.SslCert
-	125, // 43: google.cloud.sql.v1.InstancesListServerCertificatesResponse.server_certs:type_name -> google.cloud.sql.v1.SslCert
-	125, // 44: google.cloud.sql.v1.InstancesListEntraIdCertificatesResponse.certs:type_name -> google.cloud.sql.v1.SslCert
-	88,  // 45: google.cloud.sql.v1.InstancesRestoreBackupRequest.restore_backup_context:type_name -> google.cloud.sql.v1.RestoreBackupContext
-	80,  // 46: google.cloud.sql.v1.InstancesRestoreBackupRequest.restore_instance_settings:type_name -> google.cloud.sql.v1.DatabaseInstance
-	89,  // 47: google.cloud.sql.v1.InstancesRotateServerCaRequest.rotate_server_ca_context:type_name -> google.cloud.sql.v1.RotateServerCaContext
-	90,  // 48: google.cloud.sql.v1.InstancesRotateServerCertificateRequest.rotate_server_certificate_context:type_name -> google.cloud.sql.v1.RotateServerCertificateContext
-	91,  // 49: google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequest.rotate_entra_id_certificate_context:type_name -> google.cloud.sql.v1.RotateEntraIdCertificateContext
-	92,  // 50: google.cloud.sql.v1.InstancesTruncateLogRequest.truncate_log_context:type_name -> google.cloud.sql.v1.TruncateLogContext
-	126, // 51: google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequest.acquire_ssrs_lease_context:type_name -> google.cloud.sql.v1.AcquireSsrsLeaseContext
-	61,  // 52: google.cloud.sql.v1.SqlInstancesPreCheckMajorVersionUpgradeRequest.body:type_name -> google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequest
-	93,  // 53: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse.errors:type_name -> google.cloud.sql.v1.SqlExternalSyncSettingError
-	93,  // 54: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse.warnings:type_name -> google.cloud.sql.v1.SqlExternalSyncSettingError
-	117, // 55: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeRequest.source_instance_deletion_time:type_name -> google.protobuf.Timestamp
-	117, // 56: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse.latest_recovery_time:type_name -> google.protobuf.Timestamp
-	117, // 57: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse.earliest_recovery_time:type_name -> google.protobuf.Timestamp
-	79,  // 58: google.cloud.sql.v1.CloneContext.bin_log_coordinates:type_name -> google.cloud.sql.v1.BinLogCoordinates
-	117, // 59: google.cloud.sql.v1.CloneContext.point_in_time:type_name -> google.protobuf.Timestamp
-	117, // 60: google.cloud.sql.v1.CloneContext.source_instance_deletion_time:type_name -> google.protobuf.Timestamp
-	117, // 61: google.cloud.sql.v1.PointInTimeRestoreContext.point_in_time:type_name -> google.protobuf.Timestamp
-	80,  // 62: google.cloud.sql.v1.PointInTimeRestoreContext.target_instance_settings:type_name -> google.cloud.sql.v1.DatabaseInstance
+	60,  // 31: google.cloud.sql.v1.SqlInstancesCreateEphemeralCertRequest.body:type_name -> google.cloud.sql.v1.SslCertsCreateEphemeralRequest
+	78,  // 32: google.cloud.sql.v1.InstancesCloneRequest.clone_context:type_name -> google.cloud.sql.v1.CloneContext
+	86,  // 33: google.cloud.sql.v1.InstancesDemoteMasterRequest.demote_master_context:type_name -> google.cloud.sql.v1.DemoteMasterContext
+	87,  // 34: google.cloud.sql.v1.InstancesDemoteRequest.demote_context:type_name -> google.cloud.sql.v1.DemoteContext
+	122, // 35: google.cloud.sql.v1.InstancesExportRequest.export_context:type_name -> google.cloud.sql.v1.ExportContext
+	88,  // 36: google.cloud.sql.v1.InstancesFailoverRequest.failover_context:type_name -> google.cloud.sql.v1.FailoverContext
+	123, // 37: google.cloud.sql.v1.InstancesImportRequest.import_context:type_name -> google.cloud.sql.v1.ImportContext
+	124, // 38: google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequest.pre_check_major_version_upgrade_context:type_name -> google.cloud.sql.v1.PreCheckMajorVersionUpgradeContext
+	125, // 39: google.cloud.sql.v1.InstancesListResponse.warnings:type_name -> google.cloud.sql.v1.ApiWarning
+	81,  // 40: google.cloud.sql.v1.InstancesListResponse.items:type_name -> google.cloud.sql.v1.DatabaseInstance
+	126, // 41: google.cloud.sql.v1.InstancesListServerCasResponse.certs:type_name -> google.cloud.sql.v1.SslCert
+	126, // 42: google.cloud.sql.v1.InstancesListServerCertificatesResponse.ca_certs:type_name -> google.cloud.sql.v1.SslCert
+	126, // 43: google.cloud.sql.v1.InstancesListServerCertificatesResponse.server_certs:type_name -> google.cloud.sql.v1.SslCert
+	126, // 44: google.cloud.sql.v1.InstancesListEntraIdCertificatesResponse.certs:type_name -> google.cloud.sql.v1.SslCert
+	89,  // 45: google.cloud.sql.v1.InstancesRestoreBackupRequest.restore_backup_context:type_name -> google.cloud.sql.v1.RestoreBackupContext
+	81,  // 46: google.cloud.sql.v1.InstancesRestoreBackupRequest.restore_instance_settings:type_name -> google.cloud.sql.v1.DatabaseInstance
+	90,  // 47: google.cloud.sql.v1.InstancesRotateServerCaRequest.rotate_server_ca_context:type_name -> google.cloud.sql.v1.RotateServerCaContext
+	91,  // 48: google.cloud.sql.v1.InstancesRotateServerCertificateRequest.rotate_server_certificate_context:type_name -> google.cloud.sql.v1.RotateServerCertificateContext
+	92,  // 49: google.cloud.sql.v1.InstancesRotateEntraIdCertificateRequest.rotate_entra_id_certificate_context:type_name -> google.cloud.sql.v1.RotateEntraIdCertificateContext
+	93,  // 50: google.cloud.sql.v1.InstancesTruncateLogRequest.truncate_log_context:type_name -> google.cloud.sql.v1.TruncateLogContext
+	127, // 51: google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequest.acquire_ssrs_lease_context:type_name -> google.cloud.sql.v1.AcquireSsrsLeaseContext
+	62,  // 52: google.cloud.sql.v1.SqlInstancesPreCheckMajorVersionUpgradeRequest.body:type_name -> google.cloud.sql.v1.InstancesPreCheckMajorVersionUpgradeRequest
+	94,  // 53: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse.errors:type_name -> google.cloud.sql.v1.SqlExternalSyncSettingError
+	94,  // 54: google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse.warnings:type_name -> google.cloud.sql.v1.SqlExternalSyncSettingError
+	118, // 55: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeRequest.source_instance_deletion_time:type_name -> google.protobuf.Timestamp
+	118, // 56: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse.latest_recovery_time:type_name -> google.protobuf.Timestamp
+	118, // 57: google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse.earliest_recovery_time:type_name -> google.protobuf.Timestamp
+	80,  // 58: google.cloud.sql.v1.CloneContext.bin_log_coordinates:type_name -> google.cloud.sql.v1.BinLogCoordinates
+	118, // 59: google.cloud.sql.v1.CloneContext.point_in_time:type_name -> google.protobuf.Timestamp
+	118, // 60: google.cloud.sql.v1.CloneContext.source_instance_deletion_time:type_name -> google.protobuf.Timestamp
+	118, // 61: google.cloud.sql.v1.PointInTimeRestoreContext.point_in_time:type_name -> google.protobuf.Timestamp
+	81,  // 62: google.cloud.sql.v1.PointInTimeRestoreContext.target_instance_settings:type_name -> google.cloud.sql.v1.DatabaseInstance
 	7,   // 63: google.cloud.sql.v1.DatabaseInstance.state:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlInstanceState
-	127, // 64: google.cloud.sql.v1.DatabaseInstance.database_version:type_name -> google.cloud.sql.v1.SqlDatabaseVersion
-	128, // 65: google.cloud.sql.v1.DatabaseInstance.settings:type_name -> google.cloud.sql.v1.Settings
-	110, // 66: google.cloud.sql.v1.DatabaseInstance.failover_replica:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlFailoverReplica
-	129, // 67: google.cloud.sql.v1.DatabaseInstance.max_disk_size:type_name -> google.protobuf.Int64Value
-	129, // 68: google.cloud.sql.v1.DatabaseInstance.current_disk_size:type_name -> google.protobuf.Int64Value
-	130, // 69: google.cloud.sql.v1.DatabaseInstance.ip_addresses:type_name -> google.cloud.sql.v1.IpMapping
-	125, // 70: google.cloud.sql.v1.DatabaseInstance.server_ca_cert:type_name -> google.cloud.sql.v1.SslCert
+	128, // 64: google.cloud.sql.v1.DatabaseInstance.database_version:type_name -> google.cloud.sql.v1.SqlDatabaseVersion
+	129, // 65: google.cloud.sql.v1.DatabaseInstance.settings:type_name -> google.cloud.sql.v1.Settings
+	111, // 66: google.cloud.sql.v1.DatabaseInstance.failover_replica:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlFailoverReplica
+	130, // 67: google.cloud.sql.v1.DatabaseInstance.max_disk_size:type_name -> google.protobuf.Int64Value
+	130, // 68: google.cloud.sql.v1.DatabaseInstance.current_disk_size:type_name -> google.protobuf.Int64Value
+	131, // 69: google.cloud.sql.v1.DatabaseInstance.ip_addresses:type_name -> google.cloud.sql.v1.IpMapping
+	126, // 70: google.cloud.sql.v1.DatabaseInstance.server_ca_cert:type_name -> google.cloud.sql.v1.SslCert
 	1,   // 71: google.cloud.sql.v1.DatabaseInstance.instance_type:type_name -> google.cloud.sql.v1.SqlInstanceType
-	95,  // 72: google.cloud.sql.v1.DatabaseInstance.on_premises_configuration:type_name -> google.cloud.sql.v1.OnPremisesConfiguration
-	96,  // 73: google.cloud.sql.v1.DatabaseInstance.replica_configuration:type_name -> google.cloud.sql.v1.ReplicaConfiguration
-	131, // 74: google.cloud.sql.v1.DatabaseInstance.backend_type:type_name -> google.cloud.sql.v1.SqlBackendType
+	96,  // 72: google.cloud.sql.v1.DatabaseInstance.on_premises_configuration:type_name -> google.cloud.sql.v1.OnPremisesConfiguration
+	97,  // 73: google.cloud.sql.v1.DatabaseInstance.replica_configuration:type_name -> google.cloud.sql.v1.ReplicaConfiguration
+	132, // 74: google.cloud.sql.v1.DatabaseInstance.backend_type:type_name -> google.cloud.sql.v1.SqlBackendType
 	2,   // 75: google.cloud.sql.v1.DatabaseInstance.suspension_reason:type_name -> google.cloud.sql.v1.SqlSuspensionReason
-	132, // 76: google.cloud.sql.v1.DatabaseInstance.disk_encryption_configuration:type_name -> google.cloud.sql.v1.DiskEncryptionConfiguration
-	133, // 77: google.cloud.sql.v1.DatabaseInstance.disk_encryption_status:type_name -> google.cloud.sql.v1.DiskEncryptionStatus
-	111, // 78: google.cloud.sql.v1.DatabaseInstance.scheduled_maintenance:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance
-	134, // 79: google.cloud.sql.v1.DatabaseInstance.satisfies_pzs:type_name -> google.protobuf.BoolValue
-	112, // 80: google.cloud.sql.v1.DatabaseInstance.out_of_disk_report:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport
-	117, // 81: google.cloud.sql.v1.DatabaseInstance.create_time:type_name -> google.protobuf.Timestamp
-	83,  // 82: google.cloud.sql.v1.DatabaseInstance.upgradable_database_versions:type_name -> google.cloud.sql.v1.AvailableDatabaseVersion
+	133, // 76: google.cloud.sql.v1.DatabaseInstance.disk_encryption_configuration:type_name -> google.cloud.sql.v1.DiskEncryptionConfiguration
+	134, // 77: google.cloud.sql.v1.DatabaseInstance.disk_encryption_status:type_name -> google.cloud.sql.v1.DiskEncryptionStatus
+	112, // 78: google.cloud.sql.v1.DatabaseInstance.scheduled_maintenance:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance
+	135, // 79: google.cloud.sql.v1.DatabaseInstance.satisfies_pzs:type_name -> google.protobuf.BoolValue
+	113, // 80: google.cloud.sql.v1.DatabaseInstance.out_of_disk_report:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport
+	118, // 81: google.cloud.sql.v1.DatabaseInstance.create_time:type_name -> google.protobuf.Timestamp
+	84,  // 82: google.cloud.sql.v1.DatabaseInstance.upgradable_database_versions:type_name -> google.cloud.sql.v1.AvailableDatabaseVersion
 	8,   // 83: google.cloud.sql.v1.DatabaseInstance.sql_network_architecture:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlNetworkArchitecture
-	82,  // 84: google.cloud.sql.v1.DatabaseInstance.replication_cluster:type_name -> google.cloud.sql.v1.ReplicationCluster
-	81,  // 85: google.cloud.sql.v1.DatabaseInstance.gemini_config:type_name -> google.cloud.sql.v1.GeminiInstanceConfig
-	134, // 86: google.cloud.sql.v1.DatabaseInstance.satisfies_pzi:type_name -> google.protobuf.BoolValue
-	134, // 87: google.cloud.sql.v1.DatabaseInstance.switch_transaction_logs_to_cloud_storage_enabled:type_name -> google.protobuf.BoolValue
-	134, // 88: google.cloud.sql.v1.DatabaseInstance.include_replicas_for_major_version_upgrade:type_name -> google.protobuf.BoolValue
-	114, // 89: google.cloud.sql.v1.DatabaseInstance.tags:type_name -> google.cloud.sql.v1.DatabaseInstance.TagsEntry
-	113, // 90: google.cloud.sql.v1.DatabaseInstance.nodes:type_name -> google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig
-	135, // 91: google.cloud.sql.v1.DatabaseInstance.dns_names:type_name -> google.cloud.sql.v1.DnsNameMapping
-	134, // 92: google.cloud.sql.v1.DatabaseInstance.database_center_integration_enabled:type_name -> google.protobuf.BoolValue
-	115, // 93: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.reschedule:type_name -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
-	134, // 94: google.cloud.sql.v1.DemoteMasterContext.verify_gtid_consistency:type_name -> google.protobuf.BoolValue
-	136, // 95: google.cloud.sql.v1.DemoteMasterContext.replica_configuration:type_name -> google.cloud.sql.v1.DemoteMasterConfiguration
-	11,  // 96: google.cloud.sql.v1.SqlExternalSyncSettingError.type:type_name -> google.cloud.sql.v1.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
-	137, // 97: google.cloud.sql.v1.OnPremisesConfiguration.source_instance:type_name -> google.cloud.sql.v1.InstanceReference
-	94,  // 98: google.cloud.sql.v1.OnPremisesConfiguration.selected_objects:type_name -> google.cloud.sql.v1.SelectedObjects
-	12,  // 99: google.cloud.sql.v1.OnPremisesConfiguration.ssl_option:type_name -> google.cloud.sql.v1.OnPremisesConfiguration.SslOption
-	138, // 100: google.cloud.sql.v1.ReplicaConfiguration.mysql_replica_configuration:type_name -> google.cloud.sql.v1.MySqlReplicaConfiguration
-	134, // 101: google.cloud.sql.v1.ReplicaConfiguration.failover_target:type_name -> google.protobuf.BoolValue
-	134, // 102: google.cloud.sql.v1.ReplicaConfiguration.cascadable_replica:type_name -> google.protobuf.BoolValue
-	98,  // 103: google.cloud.sql.v1.SqlInstancesExecuteSqlRequest.body:type_name -> google.cloud.sql.v1.ExecuteSqlPayload
-	13,  // 104: google.cloud.sql.v1.ExecuteSqlPayload.partial_result_mode:type_name -> google.cloud.sql.v1.ExecuteSqlPayload.PartialResultMode
-	116, // 105: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.messages:type_name -> google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.Message
-	104, // 106: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.metadata:type_name -> google.cloud.sql.v1.Metadata
-	100, // 107: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.results:type_name -> google.cloud.sql.v1.QueryResult
-	139, // 108: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.status:type_name -> google.rpc.Status
-	101, // 109: google.cloud.sql.v1.QueryResult.columns:type_name -> google.cloud.sql.v1.Column
-	102, // 110: google.cloud.sql.v1.QueryResult.rows:type_name -> google.cloud.sql.v1.Row
-	139, // 111: google.cloud.sql.v1.QueryResult.status:type_name -> google.rpc.Status
-	103, // 112: google.cloud.sql.v1.Row.values:type_name -> google.cloud.sql.v1.Value
-	118, // 113: google.cloud.sql.v1.Metadata.sql_statement_execution_time:type_name -> google.protobuf.Duration
-	71,  // 114: google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseRequest.body:type_name -> google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequest
-	78,  // 115: google.cloud.sql.v1.SqlInstancesPointInTimeRestoreRequest.context:type_name -> google.cloud.sql.v1.PointInTimeRestoreContext
-	134, // 116: google.cloud.sql.v1.DatabaseInstance.SqlFailoverReplica.available:type_name -> google.protobuf.BoolValue
-	117, // 117: google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance.start_time:type_name -> google.protobuf.Timestamp
-	117, // 118: google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance.schedule_deadline_time:type_name -> google.protobuf.Timestamp
-	9,   // 119: google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport.sql_out_of_disk_state:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
-	130, // 120: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.ip_addresses:type_name -> google.cloud.sql.v1.IpMapping
-	7,   // 121: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.state:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlInstanceState
-	135, // 122: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.dns_names:type_name -> google.cloud.sql.v1.DnsNameMapping
-	140, // 123: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.psc_auto_connections:type_name -> google.cloud.sql.v1.PscAutoConnectionConfig
-	10,  // 124: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.reschedule_type:type_name -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
-	117, // 125: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.schedule_time:type_name -> google.protobuf.Timestamp
-	14,  // 126: google.cloud.sql.v1.SqlInstancesService.AddServerCa:input_type -> google.cloud.sql.v1.SqlInstancesAddServerCaRequest
-	15,  // 127: google.cloud.sql.v1.SqlInstancesService.AddServerCertificate:input_type -> google.cloud.sql.v1.SqlInstancesAddServerCertificateRequest
-	16,  // 128: google.cloud.sql.v1.SqlInstancesService.AddEntraIdCertificate:input_type -> google.cloud.sql.v1.SqlInstancesAddEntraIdCertificateRequest
-	17,  // 129: google.cloud.sql.v1.SqlInstancesService.Clone:input_type -> google.cloud.sql.v1.SqlInstancesCloneRequest
-	18,  // 130: google.cloud.sql.v1.SqlInstancesService.Delete:input_type -> google.cloud.sql.v1.SqlInstancesDeleteRequest
-	19,  // 131: google.cloud.sql.v1.SqlInstancesService.DemoteMaster:input_type -> google.cloud.sql.v1.SqlInstancesDemoteMasterRequest
-	20,  // 132: google.cloud.sql.v1.SqlInstancesService.Demote:input_type -> google.cloud.sql.v1.SqlInstancesDemoteRequest
-	21,  // 133: google.cloud.sql.v1.SqlInstancesService.Export:input_type -> google.cloud.sql.v1.SqlInstancesExportRequest
-	22,  // 134: google.cloud.sql.v1.SqlInstancesService.Failover:input_type -> google.cloud.sql.v1.SqlInstancesFailoverRequest
-	45,  // 135: google.cloud.sql.v1.SqlInstancesService.Reencrypt:input_type -> google.cloud.sql.v1.SqlInstancesReencryptRequest
-	23,  // 136: google.cloud.sql.v1.SqlInstancesService.Get:input_type -> google.cloud.sql.v1.SqlInstancesGetRequest
-	24,  // 137: google.cloud.sql.v1.SqlInstancesService.Import:input_type -> google.cloud.sql.v1.SqlInstancesImportRequest
-	25,  // 138: google.cloud.sql.v1.SqlInstancesService.Insert:input_type -> google.cloud.sql.v1.SqlInstancesInsertRequest
-	26,  // 139: google.cloud.sql.v1.SqlInstancesService.List:input_type -> google.cloud.sql.v1.SqlInstancesListRequest
-	27,  // 140: google.cloud.sql.v1.SqlInstancesService.ListServerCas:input_type -> google.cloud.sql.v1.SqlInstancesListServerCasRequest
-	28,  // 141: google.cloud.sql.v1.SqlInstancesService.ListServerCertificates:input_type -> google.cloud.sql.v1.SqlInstancesListServerCertificatesRequest
-	29,  // 142: google.cloud.sql.v1.SqlInstancesService.ListEntraIdCertificates:input_type -> google.cloud.sql.v1.SqlInstancesListEntraIdCertificatesRequest
-	30,  // 143: google.cloud.sql.v1.SqlInstancesService.Patch:input_type -> google.cloud.sql.v1.SqlInstancesPatchRequest
-	31,  // 144: google.cloud.sql.v1.SqlInstancesService.PromoteReplica:input_type -> google.cloud.sql.v1.SqlInstancesPromoteReplicaRequest
-	32,  // 145: google.cloud.sql.v1.SqlInstancesService.Switchover:input_type -> google.cloud.sql.v1.SqlInstancesSwitchoverRequest
-	33,  // 146: google.cloud.sql.v1.SqlInstancesService.ResetSslConfig:input_type -> google.cloud.sql.v1.SqlInstancesResetSslConfigRequest
-	34,  // 147: google.cloud.sql.v1.SqlInstancesService.Restart:input_type -> google.cloud.sql.v1.SqlInstancesRestartRequest
-	35,  // 148: google.cloud.sql.v1.SqlInstancesService.RestoreBackup:input_type -> google.cloud.sql.v1.SqlInstancesRestoreBackupRequest
-	36,  // 149: google.cloud.sql.v1.SqlInstancesService.RotateServerCa:input_type -> google.cloud.sql.v1.SqlInstancesRotateServerCaRequest
-	37,  // 150: google.cloud.sql.v1.SqlInstancesService.RotateServerCertificate:input_type -> google.cloud.sql.v1.SqlInstancesRotateServerCertificateRequest
-	38,  // 151: google.cloud.sql.v1.SqlInstancesService.RotateEntraIdCertificate:input_type -> google.cloud.sql.v1.SqlInstancesRotateEntraIdCertificateRequest
-	39,  // 152: google.cloud.sql.v1.SqlInstancesService.StartReplica:input_type -> google.cloud.sql.v1.SqlInstancesStartReplicaRequest
-	40,  // 153: google.cloud.sql.v1.SqlInstancesService.StopReplica:input_type -> google.cloud.sql.v1.SqlInstancesStopReplicaRequest
-	41,  // 154: google.cloud.sql.v1.SqlInstancesService.TruncateLog:input_type -> google.cloud.sql.v1.SqlInstancesTruncateLogRequest
-	43,  // 155: google.cloud.sql.v1.SqlInstancesService.Update:input_type -> google.cloud.sql.v1.SqlInstancesUpdateRequest
-	53,  // 156: google.cloud.sql.v1.SqlInstancesService.CreateEphemeral:input_type -> google.cloud.sql.v1.SqlInstancesCreateEphemeralCertRequest
-	44,  // 157: google.cloud.sql.v1.SqlInstancesService.RescheduleMaintenance:input_type -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequest
-	50,  // 158: google.cloud.sql.v1.SqlInstancesService.VerifyExternalSyncSettings:input_type -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest
-	51,  // 159: google.cloud.sql.v1.SqlInstancesService.StartExternalSync:input_type -> google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest
-	42,  // 160: google.cloud.sql.v1.SqlInstancesService.PerformDiskShrink:input_type -> google.cloud.sql.v1.SqlInstancesPerformDiskShrinkRequest
-	49,  // 161: google.cloud.sql.v1.SqlInstancesService.GetDiskShrinkConfig:input_type -> google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigRequest
-	52,  // 162: google.cloud.sql.v1.SqlInstancesService.ResetReplicaSize:input_type -> google.cloud.sql.v1.SqlInstancesResetReplicaSizeRequest
-	75,  // 163: google.cloud.sql.v1.SqlInstancesService.GetLatestRecoveryTime:input_type -> google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeRequest
-	97,  // 164: google.cloud.sql.v1.SqlInstancesService.ExecuteSql:input_type -> google.cloud.sql.v1.SqlInstancesExecuteSqlRequest
-	105, // 165: google.cloud.sql.v1.SqlInstancesService.AcquireSsrsLease:input_type -> google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseRequest
-	107, // 166: google.cloud.sql.v1.SqlInstancesService.ReleaseSsrsLease:input_type -> google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseRequest
-	72,  // 167: google.cloud.sql.v1.SqlInstancesService.PreCheckMajorVersionUpgrade:input_type -> google.cloud.sql.v1.SqlInstancesPreCheckMajorVersionUpgradeRequest
-	109, // 168: google.cloud.sql.v1.SqlInstancesService.PointInTimeRestore:input_type -> google.cloud.sql.v1.SqlInstancesPointInTimeRestoreRequest
-	141, // 169: google.cloud.sql.v1.SqlInstancesService.AddServerCa:output_type -> google.cloud.sql.v1.Operation
-	141, // 170: google.cloud.sql.v1.SqlInstancesService.AddServerCertificate:output_type -> google.cloud.sql.v1.Operation
-	141, // 171: google.cloud.sql.v1.SqlInstancesService.AddEntraIdCertificate:output_type -> google.cloud.sql.v1.Operation
-	141, // 172: google.cloud.sql.v1.SqlInstancesService.Clone:output_type -> google.cloud.sql.v1.Operation
-	141, // 173: google.cloud.sql.v1.SqlInstancesService.Delete:output_type -> google.cloud.sql.v1.Operation
-	141, // 174: google.cloud.sql.v1.SqlInstancesService.DemoteMaster:output_type -> google.cloud.sql.v1.Operation
-	141, // 175: google.cloud.sql.v1.SqlInstancesService.Demote:output_type -> google.cloud.sql.v1.Operation
-	141, // 176: google.cloud.sql.v1.SqlInstancesService.Export:output_type -> google.cloud.sql.v1.Operation
-	141, // 177: google.cloud.sql.v1.SqlInstancesService.Failover:output_type -> google.cloud.sql.v1.Operation
-	141, // 178: google.cloud.sql.v1.SqlInstancesService.Reencrypt:output_type -> google.cloud.sql.v1.Operation
-	80,  // 179: google.cloud.sql.v1.SqlInstancesService.Get:output_type -> google.cloud.sql.v1.DatabaseInstance
-	141, // 180: google.cloud.sql.v1.SqlInstancesService.Import:output_type -> google.cloud.sql.v1.Operation
-	141, // 181: google.cloud.sql.v1.SqlInstancesService.Insert:output_type -> google.cloud.sql.v1.Operation
-	62,  // 182: google.cloud.sql.v1.SqlInstancesService.List:output_type -> google.cloud.sql.v1.InstancesListResponse
-	63,  // 183: google.cloud.sql.v1.SqlInstancesService.ListServerCas:output_type -> google.cloud.sql.v1.InstancesListServerCasResponse
-	64,  // 184: google.cloud.sql.v1.SqlInstancesService.ListServerCertificates:output_type -> google.cloud.sql.v1.InstancesListServerCertificatesResponse
-	65,  // 185: google.cloud.sql.v1.SqlInstancesService.ListEntraIdCertificates:output_type -> google.cloud.sql.v1.InstancesListEntraIdCertificatesResponse
-	141, // 186: google.cloud.sql.v1.SqlInstancesService.Patch:output_type -> google.cloud.sql.v1.Operation
-	141, // 187: google.cloud.sql.v1.SqlInstancesService.PromoteReplica:output_type -> google.cloud.sql.v1.Operation
-	141, // 188: google.cloud.sql.v1.SqlInstancesService.Switchover:output_type -> google.cloud.sql.v1.Operation
-	141, // 189: google.cloud.sql.v1.SqlInstancesService.ResetSslConfig:output_type -> google.cloud.sql.v1.Operation
-	141, // 190: google.cloud.sql.v1.SqlInstancesService.Restart:output_type -> google.cloud.sql.v1.Operation
-	141, // 191: google.cloud.sql.v1.SqlInstancesService.RestoreBackup:output_type -> google.cloud.sql.v1.Operation
-	141, // 192: google.cloud.sql.v1.SqlInstancesService.RotateServerCa:output_type -> google.cloud.sql.v1.Operation
-	141, // 193: google.cloud.sql.v1.SqlInstancesService.RotateServerCertificate:output_type -> google.cloud.sql.v1.Operation
-	141, // 194: google.cloud.sql.v1.SqlInstancesService.RotateEntraIdCertificate:output_type -> google.cloud.sql.v1.Operation
-	141, // 195: google.cloud.sql.v1.SqlInstancesService.StartReplica:output_type -> google.cloud.sql.v1.Operation
-	141, // 196: google.cloud.sql.v1.SqlInstancesService.StopReplica:output_type -> google.cloud.sql.v1.Operation
-	141, // 197: google.cloud.sql.v1.SqlInstancesService.TruncateLog:output_type -> google.cloud.sql.v1.Operation
-	141, // 198: google.cloud.sql.v1.SqlInstancesService.Update:output_type -> google.cloud.sql.v1.Operation
-	125, // 199: google.cloud.sql.v1.SqlInstancesService.CreateEphemeral:output_type -> google.cloud.sql.v1.SslCert
-	141, // 200: google.cloud.sql.v1.SqlInstancesService.RescheduleMaintenance:output_type -> google.cloud.sql.v1.Operation
-	73,  // 201: google.cloud.sql.v1.SqlInstancesService.VerifyExternalSyncSettings:output_type -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse
-	141, // 202: google.cloud.sql.v1.SqlInstancesService.StartExternalSync:output_type -> google.cloud.sql.v1.Operation
-	141, // 203: google.cloud.sql.v1.SqlInstancesService.PerformDiskShrink:output_type -> google.cloud.sql.v1.Operation
-	74,  // 204: google.cloud.sql.v1.SqlInstancesService.GetDiskShrinkConfig:output_type -> google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigResponse
-	141, // 205: google.cloud.sql.v1.SqlInstancesService.ResetReplicaSize:output_type -> google.cloud.sql.v1.Operation
-	76,  // 206: google.cloud.sql.v1.SqlInstancesService.GetLatestRecoveryTime:output_type -> google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse
-	99,  // 207: google.cloud.sql.v1.SqlInstancesService.ExecuteSql:output_type -> google.cloud.sql.v1.SqlInstancesExecuteSqlResponse
-	106, // 208: google.cloud.sql.v1.SqlInstancesService.AcquireSsrsLease:output_type -> google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseResponse
-	108, // 209: google.cloud.sql.v1.SqlInstancesService.ReleaseSsrsLease:output_type -> google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseResponse
-	141, // 210: google.cloud.sql.v1.SqlInstancesService.PreCheckMajorVersionUpgrade:output_type -> google.cloud.sql.v1.Operation
-	141, // 211: google.cloud.sql.v1.SqlInstancesService.PointInTimeRestore:output_type -> google.cloud.sql.v1.Operation
-	169, // [169:212] is the sub-list for method output_type
-	126, // [126:169] is the sub-list for method input_type
-	126, // [126:126] is the sub-list for extension type_name
-	126, // [126:126] is the sub-list for extension extendee
-	0,   // [0:126] is the sub-list for field type_name
+	83,  // 84: google.cloud.sql.v1.DatabaseInstance.replication_cluster:type_name -> google.cloud.sql.v1.ReplicationCluster
+	82,  // 85: google.cloud.sql.v1.DatabaseInstance.gemini_config:type_name -> google.cloud.sql.v1.GeminiInstanceConfig
+	135, // 86: google.cloud.sql.v1.DatabaseInstance.satisfies_pzi:type_name -> google.protobuf.BoolValue
+	135, // 87: google.cloud.sql.v1.DatabaseInstance.switch_transaction_logs_to_cloud_storage_enabled:type_name -> google.protobuf.BoolValue
+	135, // 88: google.cloud.sql.v1.DatabaseInstance.include_replicas_for_major_version_upgrade:type_name -> google.protobuf.BoolValue
+	115, // 89: google.cloud.sql.v1.DatabaseInstance.tags:type_name -> google.cloud.sql.v1.DatabaseInstance.TagsEntry
+	114, // 90: google.cloud.sql.v1.DatabaseInstance.nodes:type_name -> google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig
+	136, // 91: google.cloud.sql.v1.DatabaseInstance.dns_names:type_name -> google.cloud.sql.v1.DnsNameMapping
+	135, // 92: google.cloud.sql.v1.DatabaseInstance.database_center_integration_enabled:type_name -> google.protobuf.BoolValue
+	9,   // 93: google.cloud.sql.v1.DatabaseInstance.database_center_integration:type_name -> google.cloud.sql.v1.DatabaseInstance.DatabaseCenterIntegration
+	116, // 94: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.reschedule:type_name -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
+	135, // 95: google.cloud.sql.v1.DemoteMasterContext.verify_gtid_consistency:type_name -> google.protobuf.BoolValue
+	137, // 96: google.cloud.sql.v1.DemoteMasterContext.replica_configuration:type_name -> google.cloud.sql.v1.DemoteMasterConfiguration
+	12,  // 97: google.cloud.sql.v1.SqlExternalSyncSettingError.type:type_name -> google.cloud.sql.v1.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
+	138, // 98: google.cloud.sql.v1.OnPremisesConfiguration.source_instance:type_name -> google.cloud.sql.v1.InstanceReference
+	95,  // 99: google.cloud.sql.v1.OnPremisesConfiguration.selected_objects:type_name -> google.cloud.sql.v1.SelectedObjects
+	13,  // 100: google.cloud.sql.v1.OnPremisesConfiguration.ssl_option:type_name -> google.cloud.sql.v1.OnPremisesConfiguration.SslOption
+	139, // 101: google.cloud.sql.v1.ReplicaConfiguration.mysql_replica_configuration:type_name -> google.cloud.sql.v1.MySqlReplicaConfiguration
+	135, // 102: google.cloud.sql.v1.ReplicaConfiguration.failover_target:type_name -> google.protobuf.BoolValue
+	135, // 103: google.cloud.sql.v1.ReplicaConfiguration.cascadable_replica:type_name -> google.protobuf.BoolValue
+	99,  // 104: google.cloud.sql.v1.SqlInstancesExecuteSqlRequest.body:type_name -> google.cloud.sql.v1.ExecuteSqlPayload
+	14,  // 105: google.cloud.sql.v1.ExecuteSqlPayload.partial_result_mode:type_name -> google.cloud.sql.v1.ExecuteSqlPayload.PartialResultMode
+	117, // 106: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.messages:type_name -> google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.Message
+	105, // 107: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.metadata:type_name -> google.cloud.sql.v1.Metadata
+	101, // 108: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.results:type_name -> google.cloud.sql.v1.QueryResult
+	140, // 109: google.cloud.sql.v1.SqlInstancesExecuteSqlResponse.status:type_name -> google.rpc.Status
+	102, // 110: google.cloud.sql.v1.QueryResult.columns:type_name -> google.cloud.sql.v1.Column
+	103, // 111: google.cloud.sql.v1.QueryResult.rows:type_name -> google.cloud.sql.v1.Row
+	140, // 112: google.cloud.sql.v1.QueryResult.status:type_name -> google.rpc.Status
+	104, // 113: google.cloud.sql.v1.Row.values:type_name -> google.cloud.sql.v1.Value
+	119, // 114: google.cloud.sql.v1.Metadata.sql_statement_execution_time:type_name -> google.protobuf.Duration
+	72,  // 115: google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseRequest.body:type_name -> google.cloud.sql.v1.InstancesAcquireSsrsLeaseRequest
+	79,  // 116: google.cloud.sql.v1.SqlInstancesPointInTimeRestoreRequest.context:type_name -> google.cloud.sql.v1.PointInTimeRestoreContext
+	135, // 117: google.cloud.sql.v1.DatabaseInstance.SqlFailoverReplica.available:type_name -> google.protobuf.BoolValue
+	118, // 118: google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance.start_time:type_name -> google.protobuf.Timestamp
+	118, // 119: google.cloud.sql.v1.DatabaseInstance.SqlScheduledMaintenance.schedule_deadline_time:type_name -> google.protobuf.Timestamp
+	10,  // 120: google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport.sql_out_of_disk_state:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
+	131, // 121: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.ip_addresses:type_name -> google.cloud.sql.v1.IpMapping
+	7,   // 122: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.state:type_name -> google.cloud.sql.v1.DatabaseInstance.SqlInstanceState
+	136, // 123: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.dns_names:type_name -> google.cloud.sql.v1.DnsNameMapping
+	141, // 124: google.cloud.sql.v1.DatabaseInstance.PoolNodeConfig.psc_auto_connections:type_name -> google.cloud.sql.v1.PscAutoConnectionConfig
+	11,  // 125: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.reschedule_type:type_name -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
+	118, // 126: google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.schedule_time:type_name -> google.protobuf.Timestamp
+	15,  // 127: google.cloud.sql.v1.SqlInstancesService.AddServerCa:input_type -> google.cloud.sql.v1.SqlInstancesAddServerCaRequest
+	16,  // 128: google.cloud.sql.v1.SqlInstancesService.AddServerCertificate:input_type -> google.cloud.sql.v1.SqlInstancesAddServerCertificateRequest
+	17,  // 129: google.cloud.sql.v1.SqlInstancesService.AddEntraIdCertificate:input_type -> google.cloud.sql.v1.SqlInstancesAddEntraIdCertificateRequest
+	18,  // 130: google.cloud.sql.v1.SqlInstancesService.Clone:input_type -> google.cloud.sql.v1.SqlInstancesCloneRequest
+	19,  // 131: google.cloud.sql.v1.SqlInstancesService.Delete:input_type -> google.cloud.sql.v1.SqlInstancesDeleteRequest
+	20,  // 132: google.cloud.sql.v1.SqlInstancesService.DemoteMaster:input_type -> google.cloud.sql.v1.SqlInstancesDemoteMasterRequest
+	21,  // 133: google.cloud.sql.v1.SqlInstancesService.Demote:input_type -> google.cloud.sql.v1.SqlInstancesDemoteRequest
+	22,  // 134: google.cloud.sql.v1.SqlInstancesService.Export:input_type -> google.cloud.sql.v1.SqlInstancesExportRequest
+	23,  // 135: google.cloud.sql.v1.SqlInstancesService.Failover:input_type -> google.cloud.sql.v1.SqlInstancesFailoverRequest
+	46,  // 136: google.cloud.sql.v1.SqlInstancesService.Reencrypt:input_type -> google.cloud.sql.v1.SqlInstancesReencryptRequest
+	24,  // 137: google.cloud.sql.v1.SqlInstancesService.Get:input_type -> google.cloud.sql.v1.SqlInstancesGetRequest
+	25,  // 138: google.cloud.sql.v1.SqlInstancesService.Import:input_type -> google.cloud.sql.v1.SqlInstancesImportRequest
+	26,  // 139: google.cloud.sql.v1.SqlInstancesService.Insert:input_type -> google.cloud.sql.v1.SqlInstancesInsertRequest
+	27,  // 140: google.cloud.sql.v1.SqlInstancesService.List:input_type -> google.cloud.sql.v1.SqlInstancesListRequest
+	28,  // 141: google.cloud.sql.v1.SqlInstancesService.ListServerCas:input_type -> google.cloud.sql.v1.SqlInstancesListServerCasRequest
+	29,  // 142: google.cloud.sql.v1.SqlInstancesService.ListServerCertificates:input_type -> google.cloud.sql.v1.SqlInstancesListServerCertificatesRequest
+	30,  // 143: google.cloud.sql.v1.SqlInstancesService.ListEntraIdCertificates:input_type -> google.cloud.sql.v1.SqlInstancesListEntraIdCertificatesRequest
+	31,  // 144: google.cloud.sql.v1.SqlInstancesService.Patch:input_type -> google.cloud.sql.v1.SqlInstancesPatchRequest
+	32,  // 145: google.cloud.sql.v1.SqlInstancesService.PromoteReplica:input_type -> google.cloud.sql.v1.SqlInstancesPromoteReplicaRequest
+	33,  // 146: google.cloud.sql.v1.SqlInstancesService.Switchover:input_type -> google.cloud.sql.v1.SqlInstancesSwitchoverRequest
+	34,  // 147: google.cloud.sql.v1.SqlInstancesService.ResetSslConfig:input_type -> google.cloud.sql.v1.SqlInstancesResetSslConfigRequest
+	35,  // 148: google.cloud.sql.v1.SqlInstancesService.Restart:input_type -> google.cloud.sql.v1.SqlInstancesRestartRequest
+	36,  // 149: google.cloud.sql.v1.SqlInstancesService.RestoreBackup:input_type -> google.cloud.sql.v1.SqlInstancesRestoreBackupRequest
+	37,  // 150: google.cloud.sql.v1.SqlInstancesService.RotateServerCa:input_type -> google.cloud.sql.v1.SqlInstancesRotateServerCaRequest
+	38,  // 151: google.cloud.sql.v1.SqlInstancesService.RotateServerCertificate:input_type -> google.cloud.sql.v1.SqlInstancesRotateServerCertificateRequest
+	39,  // 152: google.cloud.sql.v1.SqlInstancesService.RotateEntraIdCertificate:input_type -> google.cloud.sql.v1.SqlInstancesRotateEntraIdCertificateRequest
+	40,  // 153: google.cloud.sql.v1.SqlInstancesService.StartReplica:input_type -> google.cloud.sql.v1.SqlInstancesStartReplicaRequest
+	41,  // 154: google.cloud.sql.v1.SqlInstancesService.StopReplica:input_type -> google.cloud.sql.v1.SqlInstancesStopReplicaRequest
+	42,  // 155: google.cloud.sql.v1.SqlInstancesService.TruncateLog:input_type -> google.cloud.sql.v1.SqlInstancesTruncateLogRequest
+	44,  // 156: google.cloud.sql.v1.SqlInstancesService.Update:input_type -> google.cloud.sql.v1.SqlInstancesUpdateRequest
+	54,  // 157: google.cloud.sql.v1.SqlInstancesService.CreateEphemeral:input_type -> google.cloud.sql.v1.SqlInstancesCreateEphemeralCertRequest
+	45,  // 158: google.cloud.sql.v1.SqlInstancesService.RescheduleMaintenance:input_type -> google.cloud.sql.v1.SqlInstancesRescheduleMaintenanceRequest
+	51,  // 159: google.cloud.sql.v1.SqlInstancesService.VerifyExternalSyncSettings:input_type -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsRequest
+	52,  // 160: google.cloud.sql.v1.SqlInstancesService.StartExternalSync:input_type -> google.cloud.sql.v1.SqlInstancesStartExternalSyncRequest
+	43,  // 161: google.cloud.sql.v1.SqlInstancesService.PerformDiskShrink:input_type -> google.cloud.sql.v1.SqlInstancesPerformDiskShrinkRequest
+	50,  // 162: google.cloud.sql.v1.SqlInstancesService.GetDiskShrinkConfig:input_type -> google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigRequest
+	53,  // 163: google.cloud.sql.v1.SqlInstancesService.ResetReplicaSize:input_type -> google.cloud.sql.v1.SqlInstancesResetReplicaSizeRequest
+	76,  // 164: google.cloud.sql.v1.SqlInstancesService.GetLatestRecoveryTime:input_type -> google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeRequest
+	98,  // 165: google.cloud.sql.v1.SqlInstancesService.ExecuteSql:input_type -> google.cloud.sql.v1.SqlInstancesExecuteSqlRequest
+	106, // 166: google.cloud.sql.v1.SqlInstancesService.AcquireSsrsLease:input_type -> google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseRequest
+	108, // 167: google.cloud.sql.v1.SqlInstancesService.ReleaseSsrsLease:input_type -> google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseRequest
+	73,  // 168: google.cloud.sql.v1.SqlInstancesService.PreCheckMajorVersionUpgrade:input_type -> google.cloud.sql.v1.SqlInstancesPreCheckMajorVersionUpgradeRequest
+	110, // 169: google.cloud.sql.v1.SqlInstancesService.PointInTimeRestore:input_type -> google.cloud.sql.v1.SqlInstancesPointInTimeRestoreRequest
+	142, // 170: google.cloud.sql.v1.SqlInstancesService.AddServerCa:output_type -> google.cloud.sql.v1.Operation
+	142, // 171: google.cloud.sql.v1.SqlInstancesService.AddServerCertificate:output_type -> google.cloud.sql.v1.Operation
+	142, // 172: google.cloud.sql.v1.SqlInstancesService.AddEntraIdCertificate:output_type -> google.cloud.sql.v1.Operation
+	142, // 173: google.cloud.sql.v1.SqlInstancesService.Clone:output_type -> google.cloud.sql.v1.Operation
+	142, // 174: google.cloud.sql.v1.SqlInstancesService.Delete:output_type -> google.cloud.sql.v1.Operation
+	142, // 175: google.cloud.sql.v1.SqlInstancesService.DemoteMaster:output_type -> google.cloud.sql.v1.Operation
+	142, // 176: google.cloud.sql.v1.SqlInstancesService.Demote:output_type -> google.cloud.sql.v1.Operation
+	142, // 177: google.cloud.sql.v1.SqlInstancesService.Export:output_type -> google.cloud.sql.v1.Operation
+	142, // 178: google.cloud.sql.v1.SqlInstancesService.Failover:output_type -> google.cloud.sql.v1.Operation
+	142, // 179: google.cloud.sql.v1.SqlInstancesService.Reencrypt:output_type -> google.cloud.sql.v1.Operation
+	81,  // 180: google.cloud.sql.v1.SqlInstancesService.Get:output_type -> google.cloud.sql.v1.DatabaseInstance
+	142, // 181: google.cloud.sql.v1.SqlInstancesService.Import:output_type -> google.cloud.sql.v1.Operation
+	142, // 182: google.cloud.sql.v1.SqlInstancesService.Insert:output_type -> google.cloud.sql.v1.Operation
+	63,  // 183: google.cloud.sql.v1.SqlInstancesService.List:output_type -> google.cloud.sql.v1.InstancesListResponse
+	64,  // 184: google.cloud.sql.v1.SqlInstancesService.ListServerCas:output_type -> google.cloud.sql.v1.InstancesListServerCasResponse
+	65,  // 185: google.cloud.sql.v1.SqlInstancesService.ListServerCertificates:output_type -> google.cloud.sql.v1.InstancesListServerCertificatesResponse
+	66,  // 186: google.cloud.sql.v1.SqlInstancesService.ListEntraIdCertificates:output_type -> google.cloud.sql.v1.InstancesListEntraIdCertificatesResponse
+	142, // 187: google.cloud.sql.v1.SqlInstancesService.Patch:output_type -> google.cloud.sql.v1.Operation
+	142, // 188: google.cloud.sql.v1.SqlInstancesService.PromoteReplica:output_type -> google.cloud.sql.v1.Operation
+	142, // 189: google.cloud.sql.v1.SqlInstancesService.Switchover:output_type -> google.cloud.sql.v1.Operation
+	142, // 190: google.cloud.sql.v1.SqlInstancesService.ResetSslConfig:output_type -> google.cloud.sql.v1.Operation
+	142, // 191: google.cloud.sql.v1.SqlInstancesService.Restart:output_type -> google.cloud.sql.v1.Operation
+	142, // 192: google.cloud.sql.v1.SqlInstancesService.RestoreBackup:output_type -> google.cloud.sql.v1.Operation
+	142, // 193: google.cloud.sql.v1.SqlInstancesService.RotateServerCa:output_type -> google.cloud.sql.v1.Operation
+	142, // 194: google.cloud.sql.v1.SqlInstancesService.RotateServerCertificate:output_type -> google.cloud.sql.v1.Operation
+	142, // 195: google.cloud.sql.v1.SqlInstancesService.RotateEntraIdCertificate:output_type -> google.cloud.sql.v1.Operation
+	142, // 196: google.cloud.sql.v1.SqlInstancesService.StartReplica:output_type -> google.cloud.sql.v1.Operation
+	142, // 197: google.cloud.sql.v1.SqlInstancesService.StopReplica:output_type -> google.cloud.sql.v1.Operation
+	142, // 198: google.cloud.sql.v1.SqlInstancesService.TruncateLog:output_type -> google.cloud.sql.v1.Operation
+	142, // 199: google.cloud.sql.v1.SqlInstancesService.Update:output_type -> google.cloud.sql.v1.Operation
+	126, // 200: google.cloud.sql.v1.SqlInstancesService.CreateEphemeral:output_type -> google.cloud.sql.v1.SslCert
+	142, // 201: google.cloud.sql.v1.SqlInstancesService.RescheduleMaintenance:output_type -> google.cloud.sql.v1.Operation
+	74,  // 202: google.cloud.sql.v1.SqlInstancesService.VerifyExternalSyncSettings:output_type -> google.cloud.sql.v1.SqlInstancesVerifyExternalSyncSettingsResponse
+	142, // 203: google.cloud.sql.v1.SqlInstancesService.StartExternalSync:output_type -> google.cloud.sql.v1.Operation
+	142, // 204: google.cloud.sql.v1.SqlInstancesService.PerformDiskShrink:output_type -> google.cloud.sql.v1.Operation
+	75,  // 205: google.cloud.sql.v1.SqlInstancesService.GetDiskShrinkConfig:output_type -> google.cloud.sql.v1.SqlInstancesGetDiskShrinkConfigResponse
+	142, // 206: google.cloud.sql.v1.SqlInstancesService.ResetReplicaSize:output_type -> google.cloud.sql.v1.Operation
+	77,  // 207: google.cloud.sql.v1.SqlInstancesService.GetLatestRecoveryTime:output_type -> google.cloud.sql.v1.SqlInstancesGetLatestRecoveryTimeResponse
+	100, // 208: google.cloud.sql.v1.SqlInstancesService.ExecuteSql:output_type -> google.cloud.sql.v1.SqlInstancesExecuteSqlResponse
+	107, // 209: google.cloud.sql.v1.SqlInstancesService.AcquireSsrsLease:output_type -> google.cloud.sql.v1.SqlInstancesAcquireSsrsLeaseResponse
+	109, // 210: google.cloud.sql.v1.SqlInstancesService.ReleaseSsrsLease:output_type -> google.cloud.sql.v1.SqlInstancesReleaseSsrsLeaseResponse
+	142, // 211: google.cloud.sql.v1.SqlInstancesService.PreCheckMajorVersionUpgrade:output_type -> google.cloud.sql.v1.Operation
+	142, // 212: google.cloud.sql.v1.SqlInstancesService.PointInTimeRestore:output_type -> google.cloud.sql.v1.Operation
+	170, // [170:213] is the sub-list for method output_type
+	127, // [127:170] is the sub-list for method input_type
+	127, // [127:127] is the sub-list for extension type_name
+	127, // [127:127] is the sub-list for extension extendee
+	0,   // [0:127] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_sql_v1_cloud_sql_instances_proto_init() }
@@ -9576,7 +10073,7 @@ func file_google_cloud_sql_v1_cloud_sql_instances_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc), len(file_google_cloud_sql_v1_cloud_sql_instances_proto_rawDesc)),
-			NumEnums:      14,
+			NumEnums:      15,
 			NumMessages:   103,
 			NumExtensions: 0,
 			NumServices:   1,

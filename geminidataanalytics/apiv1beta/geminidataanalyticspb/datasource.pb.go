@@ -394,10 +394,11 @@ type BigQueryTableReferences struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Optional. References to BigQuery tables.
 	TableReferences []*BigQueryTableReference `protobuf:"bytes,1,rep,name=table_references,json=tableReferences,proto3" json:"table_references,omitempty"`
-	// Optional. Preview feature. References to BigQuery property graphs.
-	// Note: Data sources must exclusively use either tables or property graphs,
-	// not both. When using property graphs, a maximum of one graph reference is
-	// supported.
+	// Optional. References to BigQuery graphs.
+	//
+	// Note: "property graph" is the former name for BigQuery Graph. The field and
+	// message names retain the original term for backward compatibility; both
+	// refer to the same resource.
 	PropertyGraphReferences []*BigQueryPropertyGraphReference `protobuf:"bytes,2,rep,name=property_graph_references,json=propertyGraphReferences,proto3" json:"property_graph_references,omitempty"`
 	// Optional. Parameters for retrieving data from Agent Context.
 	AgentContextReference *AgentContextReference `protobuf:"bytes,4,opt,name=agent_context_reference,json=agentContextReference,proto3" json:"agent_context_reference,omitempty"`

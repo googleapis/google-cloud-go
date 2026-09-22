@@ -24,6 +24,8 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 
 	sqlpb "cloud.google.com/go/sql/apiv1/sqlpb"
@@ -1260,7 +1262,19 @@ func (c *sqlInstancesGRPCClient) Import(ctx context.Context, req *sqlpb.SqlInsta
 }
 
 func (c *sqlInstancesGRPCClient) Insert(ctx context.Context, req *sqlpb.SqlInstancesInsertRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
+		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])
+	}
+	if reg := regexp.MustCompile("(?P<region>.*)"); reg.MatchString(req.GetBody().GetRegion()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])) > 0 {
+		routingHeadersMap["region"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1954,6 +1968,9 @@ func (c *sqlInstancesRESTClient) AddServerCa(ctx context.Context, req *sqlpb.Sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2014,6 +2031,9 @@ func (c *sqlInstancesRESTClient) AddServerCertificate(ctx context.Context, req *
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2070,6 +2090,9 @@ func (c *sqlInstancesRESTClient) AddEntraIdCertificate(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2132,6 +2155,9 @@ func (c *sqlInstancesRESTClient) Clone(ctx context.Context, req *sqlpb.SqlInstan
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2202,6 +2228,9 @@ func (c *sqlInstancesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlInsta
 	if req.GetFinalBackupTtlDays() != 0 {
 		params.Add("finalBackupTtlDays", fmt.Sprintf("%v", req.GetFinalBackupTtlDays()))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2264,6 +2293,9 @@ func (c *sqlInstancesRESTClient) DemoteMaster(ctx context.Context, req *sqlpb.Sq
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2326,6 +2358,9 @@ func (c *sqlInstancesRESTClient) Demote(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2388,6 +2423,9 @@ func (c *sqlInstancesRESTClient) Export(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2456,6 +2494,9 @@ func (c *sqlInstancesRESTClient) Failover(ctx context.Context, req *sqlpb.SqlIns
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2517,6 +2558,9 @@ func (c *sqlInstancesRESTClient) Reencrypt(ctx context.Context, req *sqlpb.SqlIn
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2571,6 +2615,9 @@ func (c *sqlInstancesRESTClient) Get(ctx context.Context, req *sqlpb.SqlInstance
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2633,6 +2680,9 @@ func (c *sqlInstancesRESTClient) Import(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2694,11 +2744,26 @@ func (c *sqlInstancesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
+		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])
+	}
+	if reg := regexp.MustCompile("(?P<region>.*)"); reg.MatchString(req.GetBody().GetRegion()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])) > 0 {
+		routingHeadersMap["region"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2763,6 +2828,9 @@ func (c *sqlInstancesRESTClient) List(ctx context.Context, req *sqlpb.SqlInstanc
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetLocation() != "" {
+			params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
 		}
 		if req.GetMaxResults() != 0 {
 			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
@@ -2833,6 +2901,9 @@ func (c *sqlInstancesRESTClient) ListServerCas(ctx context.Context, req *sqlpb.S
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2892,6 +2963,9 @@ func (c *sqlInstancesRESTClient) ListServerCertificates(ctx context.Context, req
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2949,6 +3023,9 @@ func (c *sqlInstancesRESTClient) ListEntraIdCertificates(ctx context.Context, re
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3011,6 +3088,9 @@ func (c *sqlInstancesRESTClient) Patch(ctx context.Context, req *sqlpb.SqlInstan
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 	if req != nil && req.ReconcilePscNetworking != nil {
 		params.Add("reconcilePscNetworking", fmt.Sprintf("%v", req.GetReconcilePscNetworking()))
 	}
@@ -3076,6 +3156,9 @@ func (c *sqlInstancesRESTClient) PromoteReplica(ctx context.Context, req *sqlpb.
 	if req.GetFailover() {
 		params.Add("failover", fmt.Sprintf("%v", req.GetFailover()))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3138,6 +3221,9 @@ func (c *sqlInstancesRESTClient) Switchover(ctx context.Context, req *sqlpb.SqlI
 		}
 		params.Add("dbTimeout", string(field[1:len(field)-1]))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3193,6 +3279,9 @@ func (c *sqlInstancesRESTClient) ResetSslConfig(ctx context.Context, req *sqlpb.
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 	if req.GetMode() != 0 {
 		params.Add("mode", fmt.Sprintf("%v", req.GetMode()))
 	}
@@ -3250,6 +3339,9 @@ func (c *sqlInstancesRESTClient) Restart(ctx context.Context, req *sqlpb.SqlInst
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3312,6 +3404,9 @@ func (c *sqlInstancesRESTClient) RestoreBackup(ctx context.Context, req *sqlpb.S
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3376,6 +3471,9 @@ func (c *sqlInstancesRESTClient) RotateServerCa(ctx context.Context, req *sqlpb.
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3439,6 +3537,9 @@ func (c *sqlInstancesRESTClient) RotateServerCertificate(ctx context.Context, re
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3501,6 +3602,9 @@ func (c *sqlInstancesRESTClient) RotateEntraIdCertificate(ctx context.Context, r
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3555,6 +3659,9 @@ func (c *sqlInstancesRESTClient) StartReplica(ctx context.Context, req *sqlpb.Sq
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3609,6 +3716,9 @@ func (c *sqlInstancesRESTClient) StopReplica(ctx context.Context, req *sqlpb.Sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3671,6 +3781,9 @@ func (c *sqlInstancesRESTClient) TruncateLog(ctx context.Context, req *sqlpb.Sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3733,6 +3846,9 @@ func (c *sqlInstancesRESTClient) Update(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3797,6 +3913,9 @@ func (c *sqlInstancesRESTClient) CreateEphemeral(ctx context.Context, req *sqlpb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3858,6 +3977,9 @@ func (c *sqlInstancesRESTClient) RescheduleMaintenance(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4039,6 +4161,9 @@ func (c *sqlInstancesRESTClient) PerformDiskShrink(ctx context.Context, req *sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4093,6 +4218,9 @@ func (c *sqlInstancesRESTClient) GetDiskShrinkConfig(ctx context.Context, req *s
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4207,6 +4335,9 @@ func (c *sqlInstancesRESTClient) GetLatestRecoveryTime(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 	if req != nil && req.SourceInstanceDeletionTime != nil {
 		field, err := protojson.Marshal(req.GetSourceInstanceDeletionTime())
 		if err != nil {
@@ -4275,6 +4406,9 @@ func (c *sqlInstancesRESTClient) ExecuteSql(ctx context.Context, req *sqlpb.SqlI
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4336,6 +4470,9 @@ func (c *sqlInstancesRESTClient) AcquireSsrsLease(ctx context.Context, req *sqlp
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4390,6 +4527,9 @@ func (c *sqlInstancesRESTClient) ReleaseSsrsLease(ctx context.Context, req *sqlp
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4451,6 +4591,9 @@ func (c *sqlInstancesRESTClient) PreCheckMajorVersionUpgrade(ctx context.Context
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

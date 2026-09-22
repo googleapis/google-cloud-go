@@ -1002,7 +1002,9 @@ type SqlDatabasesDeleteRequest struct {
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1058,6 +1060,13 @@ func (x *SqlDatabasesDeleteRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlDatabasesDeleteRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlDatabasesGetRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of the database in the instance.
@@ -1065,7 +1074,9 @@ type SqlDatabasesGetRequest struct {
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1121,13 +1132,22 @@ func (x *SqlDatabasesGetRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlDatabasesGetRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlDatabasesInsertRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1183,12 +1203,21 @@ func (x *SqlDatabasesInsertRequest) GetBody() *Database {
 	return nil
 }
 
+func (x *SqlDatabasesInsertRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlDatabasesListRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1237,6 +1266,13 @@ func (x *SqlDatabasesListRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlDatabasesListRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlDatabasesUpdateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Name of the database to be updated in the instance.
@@ -1244,8 +1280,10 @@ type SqlDatabasesUpdateRequest struct {
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,2,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string    `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string    `protobuf:"bytes,3,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *Database `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1306,6 +1344,13 @@ func (x *SqlDatabasesUpdateRequest) GetBody() *Database {
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlDatabasesUpdateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 type SqlFlagsListRequest struct {
@@ -1369,7 +1414,9 @@ type SqlInstancesAddServerCaRequest struct {
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1418,13 +1465,22 @@ func (x *SqlInstancesAddServerCaRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesAddServerCaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Request for AddServerCertificate RPC.
 type SqlInstancesAddServerCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1473,13 +1529,22 @@ func (x *SqlInstancesAddServerCertificateRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesAddServerCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Request for AddEntraIdCertificate RPC.
 type SqlInstancesAddEntraIdCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1528,14 +1593,23 @@ func (x *SqlInstancesAddEntraIdCertificateRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesAddEntraIdCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesCloneRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The ID of the Cloud SQL instance to be cloned (source). This does not
 	// include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the source Cloud SQL instance.
-	Project       string                 `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesCloneRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                 `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesCloneRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1591,6 +1665,13 @@ func (x *SqlInstancesCloneRequest) GetBody() *InstancesCloneRequest {
 	return nil
 }
 
+func (x *SqlInstancesCloneRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesDeleteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
@@ -1606,8 +1687,10 @@ type SqlInstancesDeleteRequest struct {
 	Expiration isSqlInstancesDeleteRequest_Expiration `protobuf_oneof:"expiration"`
 	// Optional. The description of the final backup.
 	FinalBackupDescription string `protobuf:"bytes,5,opt,name=final_backup_description,json=finalBackupDescription,proto3" json:"final_backup_description,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,11,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesDeleteRequest) Reset() {
@@ -1693,6 +1776,13 @@ func (x *SqlInstancesDeleteRequest) GetFinalBackupDescription() string {
 	return ""
 }
 
+func (x *SqlInstancesDeleteRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type isSqlInstancesDeleteRequest_Expiration interface {
 	isSqlInstancesDeleteRequest_Expiration()
 }
@@ -1717,8 +1807,10 @@ type SqlInstancesDemoteMasterRequest struct {
 	// Cloud SQL instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the instance.
-	Project       string                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesDemoteMasterRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesDemoteMasterRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1774,6 +1866,13 @@ func (x *SqlInstancesDemoteMasterRequest) GetBody() *InstancesDemoteMasterReques
 	return nil
 }
 
+func (x *SqlInstancesDemoteMasterRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance demote request.
 type SqlInstancesDemoteRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1782,7 +1881,9 @@ type SqlInstancesDemoteRequest struct {
 	// Required. The project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// The request body.
-	Body          *InstancesDemoteRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesDemoteRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1838,13 +1939,22 @@ func (x *SqlInstancesDemoteRequest) GetBody() *InstancesDemoteRequest {
 	return nil
 }
 
+func (x *SqlInstancesDemoteRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesExportRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The Cloud SQL instance ID. This doesn't include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance to be exported.
-	Project       string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesExportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesExportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1900,13 +2010,22 @@ func (x *SqlInstancesExportRequest) GetBody() *InstancesExportRequest {
 	return nil
 }
 
+func (x *SqlInstancesExportRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesFailoverRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string                    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesFailoverRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                    `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesFailoverRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1962,12 +2081,21 @@ func (x *SqlInstancesFailoverRequest) GetBody() *InstancesFailoverRequest {
 	return nil
 }
 
+func (x *SqlInstancesFailoverRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesGetRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Database instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2016,13 +2144,22 @@ func (x *SqlInstancesGetRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesGetRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesImportRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesImportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                  `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesImportRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2078,12 +2215,21 @@ func (x *SqlInstancesImportRequest) GetBody() *InstancesImportRequest {
 	return nil
 }
 
+func (x *SqlInstancesImportRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesInsertRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Project ID of the project to which the newly created Cloud SQL instances
 	// should belong.
-	Project       string            `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string            `protobuf:"bytes,1,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2132,6 +2278,13 @@ func (x *SqlInstancesInsertRequest) GetBody() *DatabaseInstance {
 	return nil
 }
 
+func (x *SqlInstancesInsertRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesListRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// A filter expression that filters resources listed in the response.
@@ -2153,7 +2306,9 @@ type SqlInstancesListRequest struct {
 	// results to view.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
 	// Project ID of the project for which to list Cloud SQL instances.
-	Project       string `protobuf:"bytes,4,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,4,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2216,12 +2371,21 @@ func (x *SqlInstancesListRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesListServerCasRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2270,12 +2434,21 @@ func (x *SqlInstancesListServerCasRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListServerCasRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesListServerCertificatesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2324,13 +2497,22 @@ func (x *SqlInstancesListServerCertificatesRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListServerCertificatesRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Request message for SqlInstancesService.ListEntraIdCertificates.
 type SqlInstancesListEntraIdCertificatesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2379,6 +2561,13 @@ func (x *SqlInstancesListEntraIdCertificatesRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesListEntraIdCertificatesRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesPatchRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
@@ -2392,8 +2581,10 @@ type SqlInstancesPatchRequest struct {
 	// reconcile the PSC networking.
 	ReconcilePscNetworkingForce *bool             `protobuf:"varint,5,opt,name=reconcile_psc_networking_force,json=reconcilePscNetworkingForce,proto3,oneof" json:"reconcile_psc_networking_force,omitempty"`
 	Body                        *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
-	unknownFields               protoimpl.UnknownFields
-	sizeCache                   protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,6,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesPatchRequest) Reset() {
@@ -2461,6 +2652,13 @@ func (x *SqlInstancesPatchRequest) GetBody() *DatabaseInstance {
 	return nil
 }
 
+func (x *SqlInstancesPatchRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesPromoteReplicaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL read replica instance name.
@@ -2473,7 +2671,9 @@ type SqlInstancesPromoteReplicaRequest struct {
 	// DR replica when the original primary instance comes back online.
 	// If set to false or not specified, then the original primary
 	// instance becomes an independent Cloud SQL primary instance.
-	Failover      bool `protobuf:"varint,3,opt,name=failover,proto3" json:"failover,omitempty"`
+	Failover bool `protobuf:"varint,3,opt,name=failover,proto3" json:"failover,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2529,6 +2729,13 @@ func (x *SqlInstancesPromoteReplicaRequest) GetFailover() bool {
 	return false
 }
 
+func (x *SqlInstancesPromoteReplicaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance switchover request.
 type SqlInstancesSwitchoverRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2539,7 +2746,9 @@ type SqlInstancesSwitchoverRequest struct {
 	// Optional. (MySQL and PostgreSQL only) Cloud SQL instance operations
 	// timeout, which is a sum of all database operations. Default value is 10
 	// minutes and can be modified to a maximum value of 24 hours.
-	DbTimeout     *durationpb.Duration `protobuf:"bytes,3,opt,name=db_timeout,json=dbTimeout,proto3" json:"db_timeout,omitempty"`
+	DbTimeout *durationpb.Duration `protobuf:"bytes,3,opt,name=db_timeout,json=dbTimeout,proto3" json:"db_timeout,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2595,6 +2804,13 @@ func (x *SqlInstancesSwitchoverRequest) GetDbTimeout() *durationpb.Duration {
 	return nil
 }
 
+func (x *SqlInstancesSwitchoverRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesResetSslConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
@@ -2602,7 +2818,9 @@ type SqlInstancesResetSslConfigRequest struct {
 	// Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Optional. Reset SSL mode to use.
-	Mode          SqlInstancesResetSslConfigRequest_ResetSslMode `protobuf:"varint,3,opt,name=mode,proto3,enum=google.cloud.sql.v1beta4.SqlInstancesResetSslConfigRequest_ResetSslMode" json:"mode,omitempty"`
+	Mode SqlInstancesResetSslConfigRequest_ResetSslMode `protobuf:"varint,3,opt,name=mode,proto3,enum=google.cloud.sql.v1beta4.SqlInstancesResetSslConfigRequest_ResetSslMode" json:"mode,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2658,12 +2876,21 @@ func (x *SqlInstancesResetSslConfigRequest) GetMode() SqlInstancesResetSslConfig
 	return SqlInstancesResetSslConfigRequest_RESET_SSL_MODE_UNSPECIFIED
 }
 
+func (x *SqlInstancesResetSslConfigRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesRestartRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance to be restarted.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2712,13 +2939,22 @@ func (x *SqlInstancesRestartRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesRestartRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesRestoreBackupRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string                         `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesRestoreBackupRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                         `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesRestoreBackupRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2774,13 +3010,22 @@ func (x *SqlInstancesRestoreBackupRequest) GetBody() *InstancesRestoreBackupRequ
 	return nil
 }
 
+func (x *SqlInstancesRestoreBackupRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesRotateServerCaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesRotateServerCaRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesRotateServerCaRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2836,6 +3081,13 @@ func (x *SqlInstancesRotateServerCaRequest) GetBody() *InstancesRotateServerCaRe
 	return nil
 }
 
+func (x *SqlInstancesRotateServerCaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesRotateServerCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Cloud SQL instance ID. This does not include the project ID.
@@ -2843,7 +3095,9 @@ type SqlInstancesRotateServerCertificateRequest struct {
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Required. Rotate server certificate request body.
-	Body          *InstancesRotateServerCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesRotateServerCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2899,6 +3153,13 @@ func (x *SqlInstancesRotateServerCertificateRequest) GetBody() *InstancesRotateS
 	return nil
 }
 
+func (x *SqlInstancesRotateServerCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Request message for SqlInstancesService.RotateEntraIdCertificate.
 type SqlInstancesRotateEntraIdCertificateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2907,7 +3168,9 @@ type SqlInstancesRotateEntraIdCertificateRequest struct {
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Required. Rotate Entra ID certificate request body.
-	Body          *InstancesRotateEntraIdCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesRotateEntraIdCertificateRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2963,12 +3226,21 @@ func (x *SqlInstancesRotateEntraIdCertificateRequest) GetBody() *InstancesRotate
 	return nil
 }
 
+func (x *SqlInstancesRotateEntraIdCertificateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesStartReplicaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL read replica instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3017,12 +3289,21 @@ func (x *SqlInstancesStartReplicaRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesStartReplicaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesStopReplicaRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL read replica instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3071,13 +3352,22 @@ func (x *SqlInstancesStopReplicaRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesStopReplicaRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesTruncateLogRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the Cloud SQL project.
-	Project       string                       `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *InstancesTruncateLogRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                       `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *InstancesTruncateLogRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3133,13 +3423,22 @@ func (x *SqlInstancesTruncateLogRequest) GetBody() *InstancesTruncateLogRequest 
 	return nil
 }
 
+func (x *SqlInstancesTruncateLogRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type SqlInstancesUpdateRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string            `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string            `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *DatabaseInstance `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3195,6 +3494,13 @@ func (x *SqlInstancesUpdateRequest) GetBody() *DatabaseInstance {
 	return nil
 }
 
+func (x *SqlInstancesUpdateRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance reencrypt request.
 type SqlInstancesReencryptRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3203,7 +3509,9 @@ type SqlInstancesReencryptRequest struct {
 	// ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Reencrypt body that users request
-	Body          *InstancesReencryptRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesReencryptRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3257,6 +3565,13 @@ func (x *SqlInstancesReencryptRequest) GetBody() *InstancesReencryptRequest {
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesReencryptRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Database Instance reencrypt request.
@@ -3365,8 +3680,10 @@ type SqlInstancesRescheduleMaintenanceRequest struct {
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the instance.
-	Project       string                                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *SqlInstancesRescheduleMaintenanceRequestBody `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                                        `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *SqlInstancesRescheduleMaintenanceRequestBody `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3422,6 +3739,13 @@ func (x *SqlInstancesRescheduleMaintenanceRequest) GetBody() *SqlInstancesResche
 	return nil
 }
 
+func (x *SqlInstancesRescheduleMaintenanceRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance perform disk shrink request.
 type SqlInstancesPerformDiskShrinkRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -3430,7 +3754,9 @@ type SqlInstancesPerformDiskShrinkRequest struct {
 	// Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Perform disk shrink context.
-	Body          *PerformDiskShrinkContext `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *PerformDiskShrinkContext `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3484,6 +3810,13 @@ func (x *SqlInstancesPerformDiskShrinkRequest) GetBody() *PerformDiskShrinkConte
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesPerformDiskShrinkRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // The selected object that Cloud SQL migrates.
@@ -3558,8 +3891,10 @@ type SqlInstancesVerifyExternalSyncSettingsRequest struct {
 	// Optional. Migrate only the specified objects from the source instance. If
 	// this field is empty, then migrate all objects.
 	SelectedObjects []*ExternalSyncSelectedObject `protobuf:"bytes,9,rep,name=selected_objects,json=selectedObjects,proto3" json:"selected_objects,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,10,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesVerifyExternalSyncSettingsRequest) Reset() {
@@ -3664,6 +3999,13 @@ func (x *SqlInstancesVerifyExternalSyncSettingsRequest) GetSelectedObjects() []*
 	return nil
 }
 
+func (x *SqlInstancesVerifyExternalSyncSettingsRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type isSqlInstancesVerifyExternalSyncSettingsRequest_SyncConfig interface {
 	isSqlInstancesVerifyExternalSyncSettingsRequest_SyncConfig()
 }
@@ -3702,8 +4044,10 @@ type SqlInstancesStartExternalSyncRequest struct {
 	// If this field is not set and there are both overlapping and additional
 	// databases proposed, an error will be returned.
 	ReplicaOverwriteEnabled bool `protobuf:"varint,9,opt,name=replica_overwrite_enabled,json=replicaOverwriteEnabled,proto3" json:"replica_overwrite_enabled,omitempty"`
-	unknownFields           protoimpl.UnknownFields
-	sizeCache               protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,10,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesStartExternalSyncRequest) Reset() {
@@ -3801,6 +4145,13 @@ func (x *SqlInstancesStartExternalSyncRequest) GetReplicaOverwriteEnabled() bool
 	return false
 }
 
+func (x *SqlInstancesStartExternalSyncRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 type isSqlInstancesStartExternalSyncRequest_SyncConfig interface {
 	isSqlInstancesStartExternalSyncRequest_SyncConfig()
 }
@@ -3819,7 +4170,9 @@ type SqlInstancesResetReplicaSizeRequest struct {
 	// Cloud SQL read replica instance name.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// ID of the project that contains the read replica.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -3864,6 +4217,13 @@ func (x *SqlInstancesResetReplicaSizeRequest) GetInstance() string {
 func (x *SqlInstancesResetReplicaSizeRequest) GetProject() string {
 	if x != nil {
 		return x.Project
+	}
+	return ""
+}
+
+func (x *SqlInstancesResetReplicaSizeRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
 	}
 	return ""
 }
@@ -4082,8 +4442,10 @@ type SqlInstancesCreateEphemeralCertRequest struct {
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the Cloud SQL project.
-	Project       string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
-	Body          *SslCertsCreateEphemeralRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Project string                          `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Body    *SslCertsCreateEphemeralRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4137,6 +4499,13 @@ func (x *SqlInstancesCreateEphemeralCertRequest) GetBody() *SslCertsCreateEpheme
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesCreateEphemeralCertRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 type SqlSslCertsDeleteRequest struct {
@@ -4387,7 +4756,9 @@ type SqlInstancesGetDiskShrinkConfigRequest struct {
 	// Cloud SQL instance ID. This does not include the project ID.
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Project ID of the project that contains the instance.
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4436,6 +4807,13 @@ func (x *SqlInstancesGetDiskShrinkConfigRequest) GetProject() string {
 	return ""
 }
 
+func (x *SqlInstancesGetDiskShrinkConfigRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Instance get latest recovery time request.
 type SqlInstancesGetLatestRecoveryTimeRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4446,8 +4824,10 @@ type SqlInstancesGetLatestRecoveryTimeRequest struct {
 	// The timestamp used to identify the time when the source instance is
 	// deleted. If this instance is deleted, then you must set the timestamp.
 	SourceInstanceDeletionTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=source_instance_deletion_time,json=sourceInstanceDeletionTime,proto3,oneof" json:"source_instance_deletion_time,omitempty"`
-	unknownFields              protoimpl.UnknownFields
-	sizeCache                  protoimpl.SizeCache
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,5,opt,name=location,proto3" json:"location,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SqlInstancesGetLatestRecoveryTimeRequest) Reset() {
@@ -4499,6 +4879,13 @@ func (x *SqlInstancesGetLatestRecoveryTimeRequest) GetSourceInstanceDeletionTime
 		return x.SourceInstanceDeletionTime
 	}
 	return nil
+}
+
+func (x *SqlInstancesGetLatestRecoveryTimeRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Instance get latest recovery time response.
@@ -4573,7 +4960,9 @@ type SqlInstancesExecuteSqlRequest struct {
 	// Required. Project ID of the project that contains the instance.
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// The request body.
-	Body          *ExecuteSqlPayload `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *ExecuteSqlPayload `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4629,6 +5018,13 @@ func (x *SqlInstancesExecuteSqlRequest) GetBody() *ExecuteSqlPayload {
 	return nil
 }
 
+func (x *SqlInstancesExecuteSqlRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Request to release a lease for SSRS.
 type SqlInstancesReleaseSsrsLeaseRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4639,7 +5035,9 @@ type SqlInstancesReleaseSsrsLeaseRequest struct {
 	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
 	// Required. The ID of the project that contains the instance (Example:
 	// project-id).
-	Project       string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -4684,6 +5082,13 @@ func (x *SqlInstancesReleaseSsrsLeaseRequest) GetInstance() string {
 func (x *SqlInstancesReleaseSsrsLeaseRequest) GetProject() string {
 	if x != nil {
 		return x.Project
+	}
+	return ""
+}
+
+func (x *SqlInstancesReleaseSsrsLeaseRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
 	}
 	return ""
 }
@@ -5268,7 +5673,9 @@ type SqlInstancesAcquireSsrsLeaseRequest struct {
 	// project-id).
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// The body for request to acquire an SSRS lease.
-	Body          *InstancesAcquireSsrsLeaseRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesAcquireSsrsLeaseRequest `protobuf:"bytes,100,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,3,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5324,6 +5731,13 @@ func (x *SqlInstancesAcquireSsrsLeaseRequest) GetBody() *InstancesAcquireSsrsLea
 	return nil
 }
 
+func (x *SqlInstancesAcquireSsrsLeaseRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
+}
+
 // Request for Pre-checks for MVU
 type SqlInstancesPreCheckMajorVersionUpgradeRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -5333,7 +5747,9 @@ type SqlInstancesPreCheckMajorVersionUpgradeRequest struct {
 	Project string `protobuf:"bytes,2,opt,name=project,proto3" json:"project,omitempty"`
 	// Required. The context for request to perform the pre-check major version
 	// upgrade operation.
-	Body          *InstancesPreCheckMajorVersionUpgradeRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	Body *InstancesPreCheckMajorVersionUpgradeRequest `protobuf:"bytes,3,opt,name=body,proto3" json:"body,omitempty"`
+	// Optional. Region of the Cloud SQL instance.
+	Location      string `protobuf:"bytes,4,opt,name=location,proto3" json:"location,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -5387,6 +5803,13 @@ func (x *SqlInstancesPreCheckMajorVersionUpgradeRequest) GetBody() *InstancesPre
 		return x.Body
 	}
 	return nil
+}
+
+func (x *SqlInstancesPreCheckMajorVersionUpgradeRequest) GetLocation() string {
+	if x != nil {
+		return x.Location
+	}
+	return ""
 }
 
 // Acquire SSRS lease response.
@@ -5556,7 +5979,7 @@ var File_google_cloud_sql_v1beta4_cloud_sql_proto protoreflect.FileDescriptor
 
 const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\n" +
-	"(google/cloud/sql/v1beta4/cloud_sql.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x94\x01\n" +
+	"(google/cloud/sql/v1beta4/cloud_sql.proto\x12\x18google.cloud.sql.v1beta4\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a2google/cloud/sql/v1beta4/cloud_sql_resources.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x94\x01\n" +
 	"\x13CreateBackupRequest\x12>\n" +
 	"\x06parent\x18\x01 \x01(\tB&\xe0A\x02\xfaA \x12\x1esqladmin.googleapis.com/BackupR\x06parent\x12=\n" +
 	"\x06backup\x18\x02 \x01(\v2 .google.cloud.sql.v1beta4.BackupB\x03\xe0A\x02R\x06backup\"N\n" +
@@ -5598,159 +6021,194 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\"m\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\"\x8e\x01\n" +
 	"\x19SqlDatabasesDeleteRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\"j\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\x8b\x01\n" +
 	"\x16SqlDatabasesGetRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\"\x89\x01\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xaa\x01\n" +
 	"\x19SqlDatabasesInsertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x126\n" +
-	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\"O\n" +
+	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"p\n" +
 	"\x17SqlDatabasesListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xa5\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc6\x01\n" +
 	"\x19SqlDatabasesUpdateRequest\x12\x1a\n" +
 	"\bdatabase\x18\x01 \x01(\tR\bdatabase\x12\x1a\n" +
 	"\binstance\x18\x02 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x03 \x01(\tR\aproject\x126\n" +
-	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\"\xa0\x01\n" +
+	"\x04body\x18d \x01(\v2\".google.cloud.sql.v1beta4.DatabaseR\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xa0\x01\n" +
 	"\x13SqlFlagsListRequest\x12)\n" +
 	"\x10database_version\x18\x01 \x01(\tR\x0fdatabaseVersion\x12O\n" +
 	"\n" +
 	"flag_scope\x18\x03 \x01(\x0e2&.google.cloud.sql.v1beta4.SqlFlagScopeB\x03\xe0A\x01H\x00R\tflagScope\x88\x01\x01B\r\n" +
-	"\v_flag_scope\"V\n" +
+	"\v_flag_scope\"w\n" +
 	"\x1eSqlInstancesAddServerCaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"i\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8a\x01\n" +
 	"'SqlInstancesAddServerCertificateRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"j\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8b\x01\n" +
 	"(SqlInstancesAddEntraIdCertificateRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"\x95\x01\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb6\x01\n" +
 	"\x18SqlInstancesCloneRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12C\n" +
-	"\x04body\x18d \x01(\v2/.google.cloud.sql.v1beta4.InstancesCloneRequestR\x04body\"\x81\x03\n" +
+	"\x04body\x18d \x01(\v2/.google.cloud.sql.v1beta4.InstancesCloneRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xa2\x03\n" +
 	"\x19SqlInstancesDeleteRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x123\n" +
 	"\x13enable_final_backup\x18\a \x01(\bH\x01R\x11enableFinalBackup\x88\x01\x01\x128\n" +
 	"\x15final_backup_ttl_days\x18\x04 \x01(\x03B\x03\xe0A\x01H\x00R\x12finalBackupTtlDays\x12Z\n" +
 	"\x18final_backup_expiry_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01H\x00R\x15finalBackupExpiryTime\x12=\n" +
-	"\x18final_backup_description\x18\x05 \x01(\tB\x03\xe0A\x01R\x16finalBackupDescriptionB\f\n" +
+	"\x18final_backup_description\x18\x05 \x01(\tB\x03\xe0A\x01R\x16finalBackupDescription\x12\x1f\n" +
+	"\blocation\x18\v \x01(\tB\x03\xe0A\x01R\blocationB\f\n" +
 	"\n" +
 	"expirationB\x16\n" +
-	"\x14_enable_final_backup\"\xa3\x01\n" +
+	"\x14_enable_final_backup\"\xc4\x01\n" +
 	"\x1fSqlInstancesDemoteMasterRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12J\n" +
-	"\x04body\x18d \x01(\v26.google.cloud.sql.v1beta4.InstancesDemoteMasterRequestR\x04body\"\xa1\x01\n" +
+	"\x04body\x18d \x01(\v26.google.cloud.sql.v1beta4.InstancesDemoteMasterRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc2\x01\n" +
 	"\x19SqlInstancesDemoteRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesDemoteRequestR\x04body\"\x97\x01\n" +
+	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesDemoteRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb8\x01\n" +
 	"\x19SqlInstancesExportRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesExportRequestR\x04body\"\x9b\x01\n" +
+	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesExportRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"\xbc\x01\n" +
 	"\x1bSqlInstancesFailoverRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12F\n" +
-	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.InstancesFailoverRequestR\x04body\"N\n" +
+	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.InstancesFailoverRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"o\n" +
 	"\x16SqlInstancesGetRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\x97\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb8\x01\n" +
 	"\x19SqlInstancesImportRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12D\n" +
-	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesImportRequestR\x04body\"u\n" +
+	"\x04body\x18d \x01(\v20.google.cloud.sql.v1beta4.InstancesImportRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x96\x01\n" +
 	"\x19SqlInstancesInsertRequest\x12\x18\n" +
 	"\aproject\x18\x01 \x01(\tR\aproject\x12>\n" +
-	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\"\x8b\x01\n" +
+	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xac\x01\n" +
 	"\x17SqlInstancesListRequest\x12\x16\n" +
 	"\x06filter\x18\x01 \x01(\tR\x06filter\x12\x1f\n" +
 	"\vmax_results\x18\x02 \x01(\rR\n" +
 	"maxResults\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x12\x18\n" +
-	"\aproject\x18\x04 \x01(\tR\aproject\"X\n" +
+	"\aproject\x18\x04 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocation\"y\n" +
 	" SqlInstancesListServerCasRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"k\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8c\x01\n" +
 	")SqlInstancesListServerCertificatesRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"l\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x8d\x01\n" +
 	"*SqlInstancesListEntraIdCertificatesRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"\xe3\x02\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x84\x03\n" +
 	"\x18SqlInstancesPatchRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12B\n" +
 	"\x18reconcile_psc_networking\x18\x04 \x01(\bB\x03\xe0A\x01H\x00R\x16reconcilePscNetworking\x88\x01\x01\x12M\n" +
 	"\x1ereconcile_psc_networking_force\x18\x05 \x01(\bB\x03\xe0A\x01H\x01R\x1breconcilePscNetworkingForce\x88\x01\x01\x12>\n" +
-	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04bodyB\x1b\n" +
+	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12\x1f\n" +
+	"\blocation\x18\x06 \x01(\tB\x03\xe0A\x01R\blocationB\x1b\n" +
 	"\x19_reconcile_psc_networkingB!\n" +
-	"\x1f_reconcile_psc_networking_force\"u\n" +
+	"\x1f_reconcile_psc_networking_force\"\x96\x01\n" +
 	"!SqlInstancesPromoteReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1a\n" +
-	"\bfailover\x18\x03 \x01(\bR\bfailover\"\x94\x01\n" +
+	"\bfailover\x18\x03 \x01(\bR\bfailover\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xb5\x01\n" +
 	"\x1dSqlInstancesSwitchoverRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12=\n" +
 	"\n" +
-	"db_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tdbTimeout\"\x8c\x02\n" +
+	"db_timeout\x18\x03 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\tdbTimeout\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xad\x02\n" +
 	"!SqlInstancesResetSslConfigRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12a\n" +
-	"\x04mode\x18\x03 \x01(\x0e2H.google.cloud.sql.v1beta4.SqlInstancesResetSslConfigRequest.ResetSslModeB\x03\xe0A\x01R\x04mode\"N\n" +
+	"\x04mode\x18\x03 \x01(\x0e2H.google.cloud.sql.v1beta4.SqlInstancesResetSslConfigRequest.ResetSslModeB\x03\xe0A\x01R\x04mode\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"N\n" +
 	"\fResetSslMode\x12\x1e\n" +
 	"\x1aRESET_SSL_MODE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12\x15\n" +
-	"\x11SYNC_FROM_PRIMARY\x10\x02\"R\n" +
+	"\x11SYNC_FROM_PRIMARY\x10\x02\"s\n" +
 	"\x1aSqlInstancesRestartRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xa5\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc6\x01\n" +
 	" SqlInstancesRestoreBackupRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12K\n" +
-	"\x04body\x18d \x01(\v27.google.cloud.sql.v1beta4.InstancesRestoreBackupRequestR\x04body\"\xa7\x01\n" +
+	"\x04body\x18d \x01(\v27.google.cloud.sql.v1beta4.InstancesRestoreBackupRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc8\x01\n" +
 	"!SqlInstancesRotateServerCaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12L\n" +
-	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.InstancesRotateServerCaRequestR\x04body\"\xc8\x01\n" +
+	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.InstancesRotateServerCaRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xe9\x01\n" +
 	"*SqlInstancesRotateServerCertificateRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12Z\n" +
-	"\x04body\x18d \x01(\v2A.google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequestB\x03\xe0A\x02R\x04body\"\xca\x01\n" +
+	"\x04body\x18d \x01(\v2A.google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xeb\x01\n" +
 	"+SqlInstancesRotateEntraIdCertificateRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12[\n" +
-	"\x04body\x18d \x01(\v2B.google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequestB\x03\xe0A\x02R\x04body\"W\n" +
+	"\x04body\x18d \x01(\v2B.google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"x\n" +
 	"\x1fSqlInstancesStartReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"V\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"w\n" +
 	"\x1eSqlInstancesStopReplicaRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xa1\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc2\x01\n" +
 	"\x1eSqlInstancesTruncateLogRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12I\n" +
-	"\x04body\x18d \x01(\v25.google.cloud.sql.v1beta4.InstancesTruncateLogRequestR\x04body\"\x91\x01\n" +
+	"\x04body\x18d \x01(\v25.google.cloud.sql.v1beta4.InstancesTruncateLogRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xb2\x01\n" +
 	"\x19SqlInstancesUpdateRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12>\n" +
-	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\"\x9d\x01\n" +
+	"\x04body\x18d \x01(\v2*.google.cloud.sql.v1beta4.DatabaseInstanceR\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xbe\x01\n" +
 	"\x1cSqlInstancesReencryptRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12G\n" +
-	"\x04body\x18\x03 \x01(\v23.google.cloud.sql.v1beta4.InstancesReencryptRequestR\x04body\"\xb1\x01\n" +
+	"\x04body\x18\x03 \x01(\v23.google.cloud.sql.v1beta4.InstancesReencryptRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"\xb1\x01\n" +
 	"\x19InstancesReencryptRequest\x12u\n" +
 	"\x1abackup_reencryption_config\x18\x01 \x01(\v22.google.cloud.sql.v1beta4.BackupReencryptionConfigH\x00R\x18backupReencryptionConfig\x88\x01\x01B\x1d\n" +
 	"\x1b_backup_reencryption_config\"\x91\x02\n" +
@@ -5764,17 +6222,19 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\tAUTOMATED\x10\x01\x12\r\n" +
 	"\tON_DEMAND\x10\x02B\x0f\n" +
 	"\r_backup_limitB\x0e\n" +
-	"\f_backup_type\"\xbc\x01\n" +
+	"\f_backup_type\"\xdd\x01\n" +
 	"(SqlInstancesRescheduleMaintenanceRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12Z\n" +
-	"\x04body\x18d \x01(\v2F.google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBodyR\x04body\"\xa4\x01\n" +
+	"\x04body\x18d \x01(\v2F.google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBodyR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xc5\x01\n" +
 	"$SqlInstancesPerformDiskShrinkRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12F\n" +
-	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.PerformDiskShrinkContextR\x04body\"8\n" +
+	"\x04body\x18d \x01(\v22.google.cloud.sql.v1beta4.PerformDiskShrinkContextR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"8\n" +
 	"\x1aExternalSyncSelectedObject\x12\x1a\n" +
-	"\bdatabase\x18\x01 \x01(\tR\bdatabase\"\xad\a\n" +
+	"\bdatabase\x18\x01 \x01(\tR\bdatabase\"\xce\a\n" +
 	"-SqlInstancesVerifyExternalSyncSettingsRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x124\n" +
@@ -5784,7 +6244,9 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x11mysql_sync_config\x18\x06 \x01(\v2).google.cloud.sql.v1beta4.MySqlSyncConfigB\x03\xe0A\x01H\x00R\x0fmysqlSyncConfig\x12\x81\x01\n" +
 	"\x0emigration_type\x18\a \x01(\x0e2U.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x03\xe0A\x01R\rmigrationType\x12h\n" +
 	"\x13sync_parallel_level\x18\b \x01(\x0e23.google.cloud.sql.v1beta4.ExternalSyncParallelLevelB\x03\xe0A\x01R\x11syncParallelLevel\x12d\n" +
-	"\x10selected_objects\x18\t \x03(\v24.google.cloud.sql.v1beta4.ExternalSyncSelectedObjectB\x03\xe0A\x01R\x0fselectedObjects\"O\n" +
+	"\x10selected_objects\x18\t \x03(\v24.google.cloud.sql.v1beta4.ExternalSyncSelectedObjectB\x03\xe0A\x01R\x0fselectedObjects\x12\x1f\n" +
+	"\blocation\x18\n" +
+	" \x01(\tB\x03\xe0A\x01R\blocation\"O\n" +
 	"\x10ExternalSyncMode\x12\"\n" +
 	"\x1eEXTERNAL_SYNC_MODE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -5794,7 +6256,7 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x1aMIGRATION_TYPE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aLOGICAL\x10\x01\x12\f\n" +
 	"\bPHYSICAL\x10\x02B\r\n" +
-	"\vsync_config\"\x97\x05\n" +
+	"\vsync_config\"\xb8\x05\n" +
 	"$SqlInstancesStartExternalSyncRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12u\n" +
@@ -5803,11 +6265,14 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x11mysql_sync_config\x18\x06 \x01(\v2).google.cloud.sql.v1beta4.MySqlSyncConfigH\x00R\x0fmysqlSyncConfig\x12h\n" +
 	"\x13sync_parallel_level\x18\a \x01(\x0e23.google.cloud.sql.v1beta4.ExternalSyncParallelLevelB\x03\xe0A\x01R\x11syncParallelLevel\x12\x81\x01\n" +
 	"\x0emigration_type\x18\b \x01(\x0e2U.google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsRequest.MigrationTypeB\x03\xe0A\x01R\rmigrationType\x12?\n" +
-	"\x19replica_overwrite_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x17replicaOverwriteEnabledB\r\n" +
-	"\vsync_config\"[\n" +
+	"\x19replica_overwrite_enabled\x18\t \x01(\bB\x03\xe0A\x01R\x17replicaOverwriteEnabled\x12\x1f\n" +
+	"\blocation\x18\n" +
+	" \x01(\tB\x03\xe0A\x01R\blocationB\r\n" +
+	"\vsync_config\"|\n" +
 	"#SqlInstancesResetReplicaSizeRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"r\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"r\n" +
 	"\x17SqlOperationsGetRequest\x12\x1c\n" +
 	"\toperation\x18\x01 \x01(\tR\toperation\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
@@ -5823,11 +6288,12 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x1aSqlOperationsCancelRequest\x12\x1c\n" +
 	"\toperation\x18\x01 \x01(\tR\toperation\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
-	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xac\x01\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xcd\x01\n" +
 	"&SqlInstancesCreateEphemeralCertRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12L\n" +
-	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.SslCertsCreateEphemeralRequestR\x04body\"{\n" +
+	"\x04body\x18d \x01(\v28.google.cloud.sql.v1beta4.SslCertsCreateEphemeralRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"{\n" +
 	"\x18SqlSslCertsDeleteRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12)\n" +
@@ -5842,26 +6308,30 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x04body\x18d \x01(\v2/.google.cloud.sql.v1beta4.SslCertsInsertRequestR\x04body\"N\n" +
 	"\x16SqlSslCertsListRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"^\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\"\x7f\n" +
 	"&SqlInstancesGetDiskShrinkConfigRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
-	"\aproject\x18\x02 \x01(\tR\aproject\"\xe6\x01\n" +
+	"\aproject\x18\x02 \x01(\tR\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x87\x02\n" +
 	"(SqlInstancesGetLatestRecoveryTimeRequest\x12\x1a\n" +
 	"\binstance\x18\x01 \x01(\tR\binstance\x12\x18\n" +
 	"\aproject\x18\x02 \x01(\tR\aproject\x12b\n" +
-	"\x1dsource_instance_deletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x1asourceInstanceDeletionTime\x88\x01\x01B \n" +
+	"\x1dsource_instance_deletion_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\x1asourceInstanceDeletionTime\x88\x01\x01\x12\x1f\n" +
+	"\blocation\x18\x05 \x01(\tB\x03\xe0A\x01R\blocationB \n" +
 	"\x1e_source_instance_deletion_time\"\xdf\x01\n" +
 	")SqlInstancesGetLatestRecoveryTimeResponse\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12L\n" +
 	"\x14latest_recovery_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\x12latestRecoveryTime\x12P\n" +
-	"\x16earliest_recovery_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x14earliestRecoveryTime\"\xa0\x01\n" +
+	"\x16earliest_recovery_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\x14earliestRecoveryTime\"\xc1\x01\n" +
 	"\x1dSqlInstancesExecuteSqlRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12?\n" +
-	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1beta4.ExecuteSqlPayloadR\x04body\"e\n" +
+	"\x04body\x18d \x01(\v2+.google.cloud.sql.v1beta4.ExecuteSqlPayloadR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\x86\x01\n" +
 	"#SqlInstancesReleaseSsrsLeaseRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
-	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\"I\n" +
+	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"I\n" +
 	"$SqlInstancesReleaseSsrsLeaseResponse\x12!\n" +
 	"\foperation_id\x18\x01 \x01(\tR\voperationId\"\xcd\x04\n" +
 	"\x11ExecuteSqlPayload\x12\x17\n" +
@@ -5907,15 +6377,17 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\n" +
 	"null_value\x18\x02 \x01(\bR\tnullValue\"f\n" +
 	"\bMetadata\x12Z\n" +
-	"\x1csql_statement_execution_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x19sqlStatementExecutionTime\"\xb5\x01\n" +
+	"\x1csql_statement_execution_time\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x19sqlStatementExecutionTime\"\xd6\x01\n" +
 	"#SqlInstancesAcquireSsrsLeaseRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12N\n" +
-	"\x04body\x18d \x01(\v2:.google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequestR\x04body\"\xd0\x01\n" +
+	"\x04body\x18d \x01(\v2:.google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequestR\x04body\x12\x1f\n" +
+	"\blocation\x18\x03 \x01(\tB\x03\xe0A\x01R\blocation\"\xf1\x01\n" +
 	".SqlInstancesPreCheckMajorVersionUpgradeRequest\x12\x1f\n" +
 	"\binstance\x18\x01 \x01(\tB\x03\xe0A\x02R\binstance\x12\x1d\n" +
 	"\aproject\x18\x02 \x01(\tB\x03\xe0A\x02R\aproject\x12^\n" +
-	"\x04body\x18\x03 \x01(\v2E.google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequestB\x03\xe0A\x02R\x04body\"_\n" +
+	"\x04body\x18\x03 \x01(\v2E.google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequestB\x03\xe0A\x02R\x04body\x12\x1f\n" +
+	"\blocation\x18\x04 \x01(\tB\x03\xe0A\x01R\blocation\"_\n" +
 	"$SqlInstancesAcquireSsrsLeaseResponse\x12&\n" +
 	"\foperation_id\x18\x01 \x01(\tH\x00R\voperationId\x88\x01\x01B\x0f\n" +
 	"\r_operation_id\"\x98\x01\n" +
@@ -5940,7 +6412,7 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\x05Patch\x123.google.cloud.sql.v1beta4.SqlDatabasesUpdateRequest\x1a#.google.cloud.sql.v1beta4.Operation\"W\x82\xd3\xe4\x93\x02Q:\x04body2I/sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}\x12\xbb\x01\n" +
 	"\x06Update\x123.google.cloud.sql.v1beta4.SqlDatabasesUpdateRequest\x1a#.google.cloud.sql.v1beta4.Operation\"W\x82\xd3\xe4\x93\x02Q:\x04body\x1aI/sql/v1beta4/projects/{project}/instances/{instance}/databases/{database}\x1a|\xcaA\x17sqladmin.googleapis.com\xd2A_https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/sqlservice.admin2\x8f\x02\n" +
 	"\x0fSqlFlagsService\x12~\n" +
-	"\x04List\x12-.google.cloud.sql.v1beta4.SqlFlagsListRequest\x1a+.google.cloud.sql.v1beta4.FlagsListResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/sql/v1beta4/flags\x1a|\xcaA\x17sqladmin.googleapis.com\xd2A_https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/sqlservice.admin2\xcaD\n" +
+	"\x04List\x12-.google.cloud.sql.v1beta4.SqlFlagsListRequest\x1a+.google.cloud.sql.v1beta4.FlagsListResponse\"\x1a\x82\xd3\xe4\x93\x02\x14\x12\x12/sql/v1beta4/flags\x1a|\xcaA\x17sqladmin.googleapis.com\xd2A_https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/sqlservice.admin2\xf7D\n" +
 	"\x13SqlInstancesService\x12\xb6\x01\n" +
 	"\vAddServerCa\x128.google.cloud.sql.v1beta4.SqlInstancesAddServerCaRequest\x1a#.google.cloud.sql.v1beta4.Operation\"H\x82\xd3\xe4\x93\x02B\"@/sql/v1beta4/projects/{project}/instances/{instance}/addServerCa\x12\xd1\x01\n" +
 	"\x14AddServerCertificate\x12A.google.cloud.sql.v1beta4.SqlInstancesAddServerCertificateRequest\x1a#.google.cloud.sql.v1beta4.Operation\"Q\x82\xd3\xe4\x93\x02K\"I/sql/v1beta4/projects/{project}/instances/{instance}/addServerCertificate\x12\xd4\x01\n" +
@@ -5953,8 +6425,10 @@ const file_google_cloud_sql_v1beta4_cloud_sql_proto_rawDesc = "" +
 	"\bFailover\x125.google.cloud.sql.v1beta4.SqlInstancesFailoverRequest\x1a#.google.cloud.sql.v1beta4.Operation\"K\x82\xd3\xe4\x93\x02E:\x04body\"=/sql/v1beta4/projects/{project}/instances/{instance}/failover\x12\xb6\x01\n" +
 	"\tReencrypt\x126.google.cloud.sql.v1beta4.SqlInstancesReencryptRequest\x1a#.google.cloud.sql.v1beta4.Operation\"L\x82\xd3\xe4\x93\x02F:\x04body\">/sql/v1beta4/projects/{project}/instances/{instance}/reencrypt\x12\xa1\x01\n" +
 	"\x03Get\x120.google.cloud.sql.v1beta4.SqlInstancesGetRequest\x1a*.google.cloud.sql.v1beta4.DatabaseInstance\"<\x82\xd3\xe4\x93\x026\x124/sql/v1beta4/projects/{project}/instances/{instance}\x12\xad\x01\n" +
-	"\x06Import\x123.google.cloud.sql.v1beta4.SqlInstancesImportRequest\x1a#.google.cloud.sql.v1beta4.Operation\"I\x82\xd3\xe4\x93\x02C:\x04body\";/sql/v1beta4/projects/{project}/instances/{instance}/import\x12\x9b\x01\n" +
-	"\x06Insert\x123.google.cloud.sql.v1beta4.SqlInstancesInsertRequest\x1a#.google.cloud.sql.v1beta4.Operation\"7\x82\xd3\xe4\x93\x021:\x04body\")/sql/v1beta4/projects/{project}/instances\x12\x9d\x01\n" +
+	"\x06Import\x123.google.cloud.sql.v1beta4.SqlInstancesImportRequest\x1a#.google.cloud.sql.v1beta4.Operation\"I\x82\xd3\xe4\x93\x02C:\x04body\";/sql/v1beta4/projects/{project}/instances/{instance}/import\x12\xc8\x01\n" +
+	"\x06Insert\x123.google.cloud.sql.v1beta4.SqlInstancesInsertRequest\x1a#.google.cloud.sql.v1beta4.Operation\"d\x82\xd3\xe4\x93\x021:\x04body\")/sql/v1beta4/projects/{project}/instances\x8a\xd3\xe4\x93\x02'\x12\t\n" +
+	"\aproject\x12\x1a\n" +
+	"\vbody.region\x12\v{region=**}\x12\x9d\x01\n" +
 	"\x04List\x121.google.cloud.sql.v1beta4.SqlInstancesListRequest\x1a/.google.cloud.sql.v1beta4.InstancesListResponse\"1\x82\xd3\xe4\x93\x02+\x12)/sql/v1beta4/projects/{project}/instances\x12\xd1\x01\n" +
 	"\rListServerCas\x12:.google.cloud.sql.v1beta4.SqlInstancesListServerCasRequest\x1a8.google.cloud.sql.v1beta4.InstancesListServerCasResponse\"J\x82\xd3\xe4\x93\x02D\x12B/sql/v1beta4/projects/{project}/instances/{instance}/listServerCas\x12\xf5\x01\n" +
 	"\x16ListServerCertificates\x12C.google.cloud.sql.v1beta4.SqlInstancesListServerCertificatesRequest\x1aA.google.cloud.sql.v1beta4.InstancesListServerCertificatesResponse\"S\x82\xd3\xe4\x93\x02M\x12K/sql/v1beta4/projects/{project}/instances/{instance}/listServerCertificates\x12\xf9\x01\n" +
