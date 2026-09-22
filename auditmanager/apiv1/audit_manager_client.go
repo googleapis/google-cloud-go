@@ -49,6 +49,10 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
+	CreateAuditSchedule            []gax.CallOption
+	UpdateAuditSchedule            []gax.CallOption
+	GetAuditSchedule               []gax.CallOption
+	ListAuditSchedules             []gax.CallOption
 	EnrollResource                 []gax.CallOption
 	GenerateAuditScopeReport       []gax.CallOption
 	GenerateAuditReport            []gax.CallOption
@@ -82,6 +86,25 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
+		CreateAuditSchedule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuditSchedule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuditSchedule: []gax.CallOption{},
+		ListAuditSchedules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 		EnrollResource: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -162,6 +185,24 @@ func defaultCallOptions() *CallOptions {
 
 func defaultRESTCallOptions() *CallOptions {
 	return &CallOptions{
+		CreateAuditSchedule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		UpdateAuditSchedule: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
+		GetAuditSchedule: []gax.CallOption{},
+		ListAuditSchedules: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    100 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		EnrollResource: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -240,6 +281,10 @@ type internalClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
 	Connection() *grpc.ClientConn
+	CreateAuditSchedule(context.Context, *auditmanagerpb.CreateAuditScheduleRequest, ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error)
+	UpdateAuditSchedule(context.Context, *auditmanagerpb.UpdateAuditScheduleRequest, ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error)
+	GetAuditSchedule(context.Context, *auditmanagerpb.GetAuditScheduleRequest, ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error)
+	ListAuditSchedules(context.Context, *auditmanagerpb.ListAuditSchedulesRequest, ...gax.CallOption) *AuditScheduleIterator
 	EnrollResource(context.Context, *auditmanagerpb.EnrollResourceRequest, ...gax.CallOption) (*auditmanagerpb.Enrollment, error)
 	GenerateAuditScopeReport(context.Context, *auditmanagerpb.GenerateAuditScopeReportRequest, ...gax.CallOption) (*auditmanagerpb.AuditScopeReport, error)
 	GenerateAuditReport(context.Context, *auditmanagerpb.GenerateAuditReportRequest, ...gax.CallOption) (*GenerateAuditReportOperation, error)
@@ -297,24 +342,51 @@ func (c *Client) Connection() *grpc.ClientConn {
 	return c.internalClient.Connection()
 }
 
-// EnrollResource enrolls the customer resource(folder/project/organization) to the audit
-// manager service by creating the audit managers Service Agent in customers
-// workload and granting required permissions to the Service Agent. Please
-// note that if enrollment request is made on the already enrolled workload
-// then enrollment is executed overriding the existing set of destinations.
+// CreateAuditSchedule creates a new audit schedule in a given project and location.
+func (c *Client) CreateAuditSchedule(ctx context.Context, req *auditmanagerpb.CreateAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	return c.internalClient.CreateAuditSchedule(ctx, req, opts...)
+}
+
+// UpdateAuditSchedule updates an existing audit schedule.
+func (c *Client) UpdateAuditSchedule(ctx context.Context, req *auditmanagerpb.UpdateAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	return c.internalClient.UpdateAuditSchedule(ctx, req, opts...)
+}
+
+// GetAuditSchedule gets details of a single audit schedule.
+func (c *Client) GetAuditSchedule(ctx context.Context, req *auditmanagerpb.GetAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	return c.internalClient.GetAuditSchedule(ctx, req, opts...)
+}
+
+// ListAuditSchedules lists audit schedules in a given project and location.
+func (c *Client) ListAuditSchedules(ctx context.Context, req *auditmanagerpb.ListAuditSchedulesRequest, opts ...gax.CallOption) *AuditScheduleIterator {
+	return c.internalClient.ListAuditSchedules(ctx, req, opts...)
+}
+
+// EnrollResource adds your project, folder, or organization to Audit
+// Manager. This method creates the Audit Manager service agent in your
+// workload and grants required permissions to the service agent.
+// If you make this request on a workload that’s already enrolled,
+// then this method overrides the existing set of destinations.
 func (c *Client) EnrollResource(ctx context.Context, req *auditmanagerpb.EnrollResourceRequest, opts ...gax.CallOption) (*auditmanagerpb.Enrollment, error) {
 	return c.internalClient.EnrollResource(ctx, req, opts...)
 }
 
-// GenerateAuditScopeReport generates a demo report highlighting different responsibilities
-// (Google/Customer/ shared) required to be fulfilled for the customer’s
-// workload to be compliant with the given standard.
+// GenerateAuditScopeReport generates an audit scope report for the given standard.
+//
+// The report includes the following:
+//
+//	The technical attributes and constraints that Audit Manager uses to
+//	verify your compliance with a framework.
+//
+//	A list of Google Cloud services and resources that are within the
+//	scope of the framework.
 func (c *Client) GenerateAuditScopeReport(ctx context.Context, req *auditmanagerpb.GenerateAuditScopeReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditScopeReport, error) {
 	return c.internalClient.GenerateAuditScopeReport(ctx, req, opts...)
 }
 
-// GenerateAuditReport register the Audit Report generation requests and returns the OperationId
-// using which the customer can track the report generation progress.
+// GenerateAuditReport registers audit report generation requests. This method returns the
+// operation identifier that you can use to track the report generation
+// progress.
 func (c *Client) GenerateAuditReport(ctx context.Context, req *auditmanagerpb.GenerateAuditReportRequest, opts ...gax.CallOption) (*GenerateAuditReportOperation, error) {
 	return c.internalClient.GenerateAuditReport(ctx, req, opts...)
 }
@@ -325,27 +397,30 @@ func (c *Client) GenerateAuditReportOperation(name string) *GenerateAuditReportO
 	return c.internalClient.GenerateAuditReportOperation(name)
 }
 
-// ListAuditReports lists audit reports in the selected parent scope
+// ListAuditReports lists the audit reports for the organization, folder, or project that you
+// specify as the parent scope.
 func (c *Client) ListAuditReports(ctx context.Context, req *auditmanagerpb.ListAuditReportsRequest, opts ...gax.CallOption) *AuditReportIterator {
 	return c.internalClient.ListAuditReports(ctx, req, opts...)
 }
 
-// GetAuditReport get the overall audit report
+// GetAuditReport gets the full metadata and findings for an audit report.
 func (c *Client) GetAuditReport(ctx context.Context, req *auditmanagerpb.GetAuditReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditReport, error) {
 	return c.internalClient.GetAuditReport(ctx, req, opts...)
 }
 
-// GetResourceEnrollmentStatus get a resource along with its enrollment status.
+// GetResourceEnrollmentStatus gets a resource and its enrollment status.
 func (c *Client) GetResourceEnrollmentStatus(ctx context.Context, req *auditmanagerpb.GetResourceEnrollmentStatusRequest, opts ...gax.CallOption) (*auditmanagerpb.ResourceEnrollmentStatus, error) {
 	return c.internalClient.GetResourceEnrollmentStatus(ctx, req, opts...)
 }
 
-// ListResourceEnrollmentStatuses fetches all resources under the parent along with their enrollment.
+// ListResourceEnrollmentStatuses lists all the folders and projects in an organization or folder, along with
+// their enrollments.
 func (c *Client) ListResourceEnrollmentStatuses(ctx context.Context, req *auditmanagerpb.ListResourceEnrollmentStatusesRequest, opts ...gax.CallOption) *ResourceEnrollmentStatusIterator {
 	return c.internalClient.ListResourceEnrollmentStatuses(ctx, req, opts...)
 }
 
-// ListControls gets controls needed to be implemented to be compliant to a standard.
+// ListControls lists the controls that you must implement to become compliant to a
+// regulatory standard.
 func (c *Client) ListControls(ctx context.Context, req *auditmanagerpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	return c.internalClient.ListControls(ctx, req, opts...)
 }
@@ -356,14 +431,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -467,6 +549,10 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 			}),
 		)
 
+		client.CallOptions.CreateAuditSchedule = append(client.CallOptions.CreateAuditSchedule, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateAuditSchedule = append(client.CallOptions.UpdateAuditSchedule, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetAuditSchedule = append(client.CallOptions.GetAuditSchedule, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListAuditSchedules = append(client.CallOptions.ListAuditSchedules, gax.WithClientMetrics(metrics))
 		client.CallOptions.EnrollResource = append(client.CallOptions.EnrollResource, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateAuditScopeReport = append(client.CallOptions.GenerateAuditScopeReport, gax.WithClientMetrics(metrics))
 		client.CallOptions.GenerateAuditReport = append(client.CallOptions.GenerateAuditReport, gax.WithClientMetrics(metrics))
@@ -587,6 +673,10 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 			}),
 		)
 
+		callOpts.CreateAuditSchedule = append(callOpts.CreateAuditSchedule, gax.WithClientMetrics(metrics))
+		callOpts.UpdateAuditSchedule = append(callOpts.UpdateAuditSchedule, gax.WithClientMetrics(metrics))
+		callOpts.GetAuditSchedule = append(callOpts.GetAuditSchedule, gax.WithClientMetrics(metrics))
+		callOpts.ListAuditSchedules = append(callOpts.ListAuditSchedules, gax.WithClientMetrics(metrics))
 		callOpts.EnrollResource = append(callOpts.EnrollResource, gax.WithClientMetrics(metrics))
 		callOpts.GenerateAuditScopeReport = append(callOpts.GenerateAuditScopeReport, gax.WithClientMetrics(metrics))
 		callOpts.GenerateAuditReport = append(callOpts.GenerateAuditReport, gax.WithClientMetrics(metrics))
@@ -653,6 +743,127 @@ func (c *restClient) Close() error {
 func (c *restClient) Connection() *grpc.ClientConn {
 	return nil
 }
+func (c *gRPCClient) CreateAuditSchedule(ctx context.Context, req *auditmanagerpb.CreateAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/CreateAuditSchedule")
+	}
+	opts = append((*c.CallOptions).CreateAuditSchedule[0:len((*c.CallOptions).CreateAuditSchedule):len((*c.CallOptions).CreateAuditSchedule)], opts...)
+	var resp *auditmanagerpb.AuditSchedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateAuditSchedule, req, settings.GRPC, c.logger, "CreateAuditSchedule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) UpdateAuditSchedule(ctx context.Context, req *auditmanagerpb.UpdateAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "audit_schedule.name", url.QueryEscape(req.GetAuditSchedule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/UpdateAuditSchedule")
+	}
+	opts = append((*c.CallOptions).UpdateAuditSchedule[0:len((*c.CallOptions).UpdateAuditSchedule):len((*c.CallOptions).UpdateAuditSchedule)], opts...)
+	var resp *auditmanagerpb.AuditSchedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateAuditSchedule, req, settings.GRPC, c.logger, "UpdateAuditSchedule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) GetAuditSchedule(ctx context.Context, req *auditmanagerpb.GetAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditSchedule")
+	}
+	opts = append((*c.CallOptions).GetAuditSchedule[0:len((*c.CallOptions).GetAuditSchedule):len((*c.CallOptions).GetAuditSchedule)], opts...)
+	var resp *auditmanagerpb.AuditSchedule
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetAuditSchedule, req, settings.GRPC, c.logger, "GetAuditSchedule")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) ListAuditSchedules(ctx context.Context, req *auditmanagerpb.ListAuditSchedulesRequest, opts ...gax.CallOption) *AuditScheduleIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListAuditSchedules")
+	}
+	opts = append((*c.CallOptions).ListAuditSchedules[0:len((*c.CallOptions).ListAuditSchedules):len((*c.CallOptions).ListAuditSchedules)], opts...)
+	it := &AuditScheduleIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.AuditSchedule, string, error) {
+		resp := &auditmanagerpb.ListAuditSchedulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListAuditSchedules, req, settings.GRPC, c.logger, "ListAuditSchedules")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetAuditSchedules(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
 func (c *gRPCClient) EnrollResource(ctx context.Context, req *auditmanagerpb.EnrollResourceRequest, opts ...gax.CallOption) (*auditmanagerpb.Enrollment, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "scope", url.QueryEscape(req.GetScope()))}
 
@@ -1100,11 +1311,285 @@ func (c *gRPCClient) ListOperations(ctx context.Context, req *longrunningpb.List
 	return it
 }
 
-// EnrollResource enrolls the customer resource(folder/project/organization) to the audit
-// manager service by creating the audit managers Service Agent in customers
-// workload and granting required permissions to the Service Agent. Please
-// note that if enrollment request is made on the already enrolled workload
-// then enrollment is executed overriding the existing set of destinations.
+// CreateAuditSchedule creates a new audit schedule in a given project and location.
+func (c *restClient) CreateAuditSchedule(ctx context.Context, req *auditmanagerpb.CreateAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAuditSchedule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/auditSchedules", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("auditScheduleId", fmt.Sprintf("%v", req.GetAuditScheduleId()))
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/CreateAuditSchedule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/auditSchedules")
+	}
+	opts = append((*c.CallOptions).CreateAuditSchedule[0:len((*c.CallOptions).CreateAuditSchedule):len((*c.CallOptions).CreateAuditSchedule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &auditmanagerpb.AuditSchedule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateAuditSchedule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// UpdateAuditSchedule updates an existing audit schedule.
+func (c *restClient) UpdateAuditSchedule(ctx context.Context, req *auditmanagerpb.UpdateAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetAuditSchedule()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetAuditSchedule().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+	if req.GetValidateOnly() {
+		params.Add("validateOnly", fmt.Sprintf("%v", req.GetValidateOnly()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "audit_schedule.name", url.QueryEscape(req.GetAuditSchedule().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/UpdateAuditSchedule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{audit_schedule.name=projects/*/locations/*/auditSchedules/*}")
+	}
+	opts = append((*c.CallOptions).UpdateAuditSchedule[0:len((*c.CallOptions).UpdateAuditSchedule):len((*c.CallOptions).UpdateAuditSchedule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &auditmanagerpb.AuditSchedule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateAuditSchedule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// GetAuditSchedule gets details of a single audit schedule.
+func (c *restClient) GetAuditSchedule(ctx context.Context, req *auditmanagerpb.GetAuditScheduleRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditSchedule, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditSchedule")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/auditSchedules/*}")
+	}
+	opts = append((*c.CallOptions).GetAuditSchedule[0:len((*c.CallOptions).GetAuditSchedule):len((*c.CallOptions).GetAuditSchedule)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &auditmanagerpb.AuditSchedule{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetAuditSchedule")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ListAuditSchedules lists audit schedules in a given project and location.
+func (c *restClient) ListAuditSchedules(ctx context.Context, req *auditmanagerpb.ListAuditSchedulesRequest, opts ...gax.CallOption) *AuditScheduleIterator {
+	it := &AuditScheduleIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*auditmanagerpb.AuditSchedule, string, error) {
+		resp := &auditmanagerpb.ListAuditSchedulesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/auditSchedules", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListAuditSchedules")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetAuditSchedules(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// EnrollResource adds your project, folder, or organization to Audit
+// Manager. This method creates the Audit Manager service agent in your
+// workload and grants required permissions to the service agent.
+// If you make this request on a workload that’s already enrolled,
+// then this method overrides the existing set of destinations.
 func (c *restClient) EnrollResource(ctx context.Context, req *auditmanagerpb.EnrollResourceRequest, opts ...gax.CallOption) (*auditmanagerpb.Enrollment, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1164,9 +1649,15 @@ func (c *restClient) EnrollResource(ctx context.Context, req *auditmanagerpb.Enr
 	return resp, nil
 }
 
-// GenerateAuditScopeReport generates a demo report highlighting different responsibilities
-// (Google/Customer/ shared) required to be fulfilled for the customer’s
-// workload to be compliant with the given standard.
+// GenerateAuditScopeReport generates an audit scope report for the given standard.
+//
+// The report includes the following:
+//
+//	The technical attributes and constraints that Audit Manager uses to
+//	verify your compliance with a framework.
+//
+//	A list of Google Cloud services and resources that are within the
+//	scope of the framework.
 func (c *restClient) GenerateAuditScopeReport(ctx context.Context, req *auditmanagerpb.GenerateAuditScopeReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditScopeReport, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1226,8 +1717,9 @@ func (c *restClient) GenerateAuditScopeReport(ctx context.Context, req *auditman
 	return resp, nil
 }
 
-// GenerateAuditReport register the Audit Report generation requests and returns the OperationId
-// using which the customer can track the report generation progress.
+// GenerateAuditReport registers audit report generation requests. This method returns the
+// operation identifier that you can use to track the report generation
+// progress.
 func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerpb.GenerateAuditReportRequest, opts ...gax.CallOption) (*GenerateAuditReportOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)
@@ -1294,7 +1786,8 @@ func (c *restClient) GenerateAuditReport(ctx context.Context, req *auditmanagerp
 	}, nil
 }
 
-// ListAuditReports lists audit reports in the selected parent scope
+// ListAuditReports lists the audit reports for the organization, folder, or project that you
+// specify as the parent scope.
 func (c *restClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.ListAuditReportsRequest, opts ...gax.CallOption) *AuditReportIterator {
 	it := &AuditReportIterator{}
 	req = proto.CloneOf(req)
@@ -1372,7 +1865,7 @@ func (c *restClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.L
 	return it
 }
 
-// GetAuditReport get the overall audit report
+// GetAuditReport gets the full metadata and findings for an audit report.
 func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.GetAuditReportRequest, opts ...gax.CallOption) (*auditmanagerpb.AuditReport, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1429,7 +1922,7 @@ func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 	return resp, nil
 }
 
-// GetResourceEnrollmentStatus get a resource along with its enrollment status.
+// GetResourceEnrollmentStatus gets a resource and its enrollment status.
 func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *auditmanagerpb.GetResourceEnrollmentStatusRequest, opts ...gax.CallOption) (*auditmanagerpb.ResourceEnrollmentStatus, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1486,7 +1979,8 @@ func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 	return resp, nil
 }
 
-// ListResourceEnrollmentStatuses fetches all resources under the parent along with their enrollment.
+// ListResourceEnrollmentStatuses lists all the folders and projects in an organization or folder, along with
+// their enrollments.
 func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *auditmanagerpb.ListResourceEnrollmentStatusesRequest, opts ...gax.CallOption) *ResourceEnrollmentStatusIterator {
 	it := &ResourceEnrollmentStatusIterator{}
 	req = proto.CloneOf(req)
@@ -1564,7 +2058,8 @@ func (c *restClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 	return it
 }
 
-// ListControls gets controls needed to be implemented to be compliant to a standard.
+// ListControls lists the controls that you must implement to become compliant to a
+// regulatory standard.
 func (c *restClient) ListControls(ctx context.Context, req *auditmanagerpb.ListControlsRequest, opts ...gax.CallOption) *ControlIterator {
 	it := &ControlIterator{}
 	req = proto.CloneOf(req)
@@ -1697,14 +2192,21 @@ func (c *restClient) GetLocation(ctx context.Context, req *locationpb.GetLocatio
 }
 
 // ListLocations lists information about the supported locations for this service.
-// This method can be called in two ways:
 //
-//	List all public locations: Use the path GET /v1/locations.
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
 //
-//	List project-visible locations: Use the path
-//	GET /v1/projects/{project_id}/locations. This may include public
-//	locations as well as private or other locations specifically visible
-//	to the project.
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *restClient) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	it := &LocationIterator{}
 	req = proto.CloneOf(req)

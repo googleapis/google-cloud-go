@@ -20,6 +20,11 @@
                 "CancelWorkflowInvocation"
               ]
             },
+            "CheckoutWorkspaceBranch": {
+              "methods": [
+                "CheckoutWorkspaceBranch"
+              ]
+            },
             "CommitRepositoryChanges": {
               "methods": [
                 "CommitRepositoryChanges"
@@ -73,6 +78,11 @@
             "CreateWorkspace": {
               "methods": [
                 "CreateWorkspace"
+              ]
+            },
+            "DeleteBranch": {
+              "methods": [
+                "DeleteBranch"
               ]
             },
             "DeleteFolder": {
@@ -130,6 +140,11 @@
                 "DeleteWorkspace"
               ]
             },
+            "FetchCurrentWorkspaceBranch": {
+              "methods": [
+                "FetchCurrentWorkspaceBranch"
+              ]
+            },
             "FetchFileDiff": {
               "methods": [
                 "FetchFileDiff"
@@ -153,6 +168,11 @@
             "FetchRepositoryHistory": {
               "methods": [
                 "FetchRepositoryHistory"
+              ]
+            },
+            "FetchWorkspaceBranches": {
+              "methods": [
+                "FetchWorkspaceBranches"
               ]
             },
             "GetCompilationResult": {
@@ -368,6 +388,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "SyncWorkspaceRefs": {
+              "methods": [
+                "SyncWorkspaceRefs"
               ]
             },
             "TestIamPermissions": {
@@ -425,6 +450,11 @@
                 "CancelWorkflowInvocation"
               ]
             },
+            "CheckoutWorkspaceBranch": {
+              "methods": [
+                "CheckoutWorkspaceBranch"
+              ]
+            },
             "CommitRepositoryChanges": {
               "methods": [
                 "CommitRepositoryChanges"
@@ -478,6 +508,11 @@
             "CreateWorkspace": {
               "methods": [
                 "CreateWorkspace"
+              ]
+            },
+            "DeleteBranch": {
+              "methods": [
+                "DeleteBranch"
               ]
             },
             "DeleteFolder": {
@@ -535,6 +570,11 @@
                 "DeleteWorkspace"
               ]
             },
+            "FetchCurrentWorkspaceBranch": {
+              "methods": [
+                "FetchCurrentWorkspaceBranch"
+              ]
+            },
             "FetchFileDiff": {
               "methods": [
                 "FetchFileDiff"
@@ -558,6 +598,11 @@
             "FetchRepositoryHistory": {
               "methods": [
                 "FetchRepositoryHistory"
+              ]
+            },
+            "FetchWorkspaceBranches": {
+              "methods": [
+                "FetchWorkspaceBranches"
               ]
             },
             "GetCompilationResult": {
@@ -773,6 +818,11 @@
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"
+              ]
+            },
+            "SyncWorkspaceRefs": {
+              "methods": [
+                "SyncWorkspaceRefs"
               ]
             },
             "TestIamPermissions": {

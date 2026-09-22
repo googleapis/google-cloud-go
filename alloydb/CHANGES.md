@@ -3,6 +3,20 @@
 
 
 
+## [1.30.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.29.0...alloydb/v1.30.0) (2026-09-10)
+
+
+### Features
+
+* Update API sources and regenerate ([#20502](https://github.com/googleapis/google-cloud-go/issues/20502)) ([95479e9](https://github.com/googleapis/google-cloud-go/commit/95479e9b74215f969b04d3ebfd01b8f98f11f5ed))
+
+## [1.29.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.28.0...alloydb/v1.29.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
 ## [1.28.0](https://github.com/googleapis/google-cloud-go/compare/alloydb/v1.27.0...alloydb/v1.28.0) (2026-07-13)
 
 

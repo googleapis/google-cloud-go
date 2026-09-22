@@ -1583,8 +1583,9 @@ type SearchSpacesRequest struct {
 	//
 	// When `useAdminAccess` is set to `false`:
 	//
-	// - `create_time DESC`
-	// - `relevance DESC`
+	//   - `create_time DESC`
+	//   - `relevance DESC`
+	//     [Developer Preview](https://developers.google.com/workspace/preview).
 	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

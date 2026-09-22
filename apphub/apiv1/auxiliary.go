@@ -18,12 +18,14 @@ package apphub
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	apphubpb "cloud.google.com/go/apphub/apiv1/apphubpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -688,6 +690,12 @@ func (op *UpdateWorkloadOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApplicationIterator) All() iter.Seq2[*apphubpb.Application, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ApplicationIterator manages a stream of *apphubpb.Application.
 type ApplicationIterator struct {
 	items    []*apphubpb.Application
@@ -733,6 +741,12 @@ func (it *ApplicationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiscoveredServiceIterator) All() iter.Seq2[*apphubpb.DiscoveredService, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DiscoveredServiceIterator manages a stream of *apphubpb.DiscoveredService.
@@ -782,6 +796,12 @@ func (it *DiscoveredServiceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiscoveredWorkloadIterator) All() iter.Seq2[*apphubpb.DiscoveredWorkload, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DiscoveredWorkloadIterator manages a stream of *apphubpb.DiscoveredWorkload.
 type DiscoveredWorkloadIterator struct {
 	items    []*apphubpb.DiscoveredWorkload
@@ -827,6 +847,12 @@ func (it *DiscoveredWorkloadIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -876,6 +902,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -921,6 +953,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*apphubpb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceIterator manages a stream of *apphubpb.Service.
@@ -970,6 +1008,12 @@ func (it *ServiceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceProjectAttachmentIterator) All() iter.Seq2[*apphubpb.ServiceProjectAttachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceProjectAttachmentIterator manages a stream of *apphubpb.ServiceProjectAttachment.
 type ServiceProjectAttachmentIterator struct {
 	items    []*apphubpb.ServiceProjectAttachment
@@ -1015,6 +1059,12 @@ func (it *ServiceProjectAttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkloadIterator) All() iter.Seq2[*apphubpb.Workload, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkloadIterator manages a stream of *apphubpb.Workload.

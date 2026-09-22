@@ -47,6 +47,9 @@ func Example_agentEngineSandboxTemplatesAndSnapshots() {
 			panic(fmt.Sprintf("GetAgentOperation() failed: %+v", err))
 		}
 	}
+	if createOp.Error != nil {
+		panic(fmt.Sprintf("Agent engine creation operation failed: %+v", createOp.Error))
+	}
 	agentEngineName := createOp.Response.Name
 	fmt.Println("Created Agent Engine:", agentEngineName)
 
@@ -62,18 +65,7 @@ func Example_agentEngineSandboxTemplatesAndSnapshots() {
 func sandboxTemplatesExample(ctx context.Context, client *agentplatform.Client, agentEngineName string) {
 	// 1. Create a sandbox environment template.
 	templateOp, err := client.AgentEngines.Sandboxes.Templates.Create(
-		ctx,
-		agentEngineName,
-		"Example Sandbox Template",
-		&types.CreateSandboxEnvironmentTemplateConfig{
-			DefaultContainerEnvironment: &types.SandboxEnvironmentTemplateDefaultContainerEnvironment{
-				DefaultContainerCategory: types.DefaultContainerCategoryComputerUse,
-			},
-			EgressControlConfig: &types.SandboxEnvironmentTemplateEgressControlConfig{
-				InternetAccess: genai.Ptr(true),
-			},
-		},
-	)
+		ctx, agentEngineName, "Example Sandbox Template", computerUseTemplateConfig())
 	if err != nil {
 		panic(fmt.Sprintf("Templates.Create() failed: %+v", err))
 	}
@@ -84,6 +76,9 @@ func sandboxTemplatesExample(ctx context.Context, client *agentplatform.Client, 
 		if err != nil {
 			panic(fmt.Sprintf("GetSandboxEnvironmentTemplateOperation() failed: %+v", err))
 		}
+	}
+	if templateOp.Error != nil {
+		panic(fmt.Sprintf("Template creation operation failed: %+v", templateOp.Error))
 	}
 	templateName := templateOp.Response.Name
 	fmt.Println("Created Sandbox Template:", templateName)
@@ -110,17 +105,42 @@ func sandboxTemplatesExample(ctx context.Context, client *agentplatform.Client, 
 }
 
 // sandboxSnapshotsExample demonstrates the sandbox snapshots submodule.
+//
+// Snapshots can only be taken of template-based (e.g. computer-use) sandboxes,
+// so it first creates a computer-use template, then a sandbox from that
+// template, snapshots the running sandbox, and finally restores a new sandbox
+// from the snapshot.
 func sandboxSnapshotsExample(ctx context.Context, client *agentplatform.Client, agentEngineName string) {
-	// A snapshot captures the state of an existing sandbox, so create one first.
+	// Create a computer-use template to base the source sandbox on.
+	templateOp, err := client.AgentEngines.Sandboxes.Templates.Create(
+		ctx, agentEngineName, "Snapshot Source Template", computerUseTemplateConfig())
+	if err != nil {
+		panic(fmt.Sprintf("Templates.Create() failed: %+v", err))
+	}
+	for !templateOp.Done {
+		time.Sleep(10 * time.Second)
+		templateOp, err = client.AgentEngines.Sandboxes.Templates.GetSandboxEnvironmentTemplateOperation(
+			ctx, templateOp.Name, nil)
+		if err != nil {
+			panic(fmt.Sprintf("GetSandboxEnvironmentTemplateOperation() failed: %+v", err))
+		}
+	}
+	if templateOp.Error != nil {
+		panic(fmt.Sprintf("Template creation operation failed: %+v", templateOp.Error))
+	}
+	templateName := templateOp.Response.Name
+	fmt.Println("Created Sandbox Template:", templateName)
+	defer client.AgentEngines.Sandboxes.Templates.Delete(ctx, templateName, nil)
+
+	// Create a sandbox from the template so it has a snapshottable state.
 	sandboxOp, err := client.AgentEngines.Sandboxes.Create(
 		ctx,
 		agentEngineName,
-		&types.SandboxEnvironmentSpec{
-			CodeExecutionEnvironment: &types.SandboxEnvironmentSpecCodeExecutionEnvironment{
-				MachineConfig: types.MachineConfigVcpu4Ram4gib,
-			},
+		nil, // No spec: the sandbox is created from the template.
+		&types.CreateAgentEngineSandboxConfig{
+			DisplayName:                "Snapshot Source Sandbox",
+			SandboxEnvironmentTemplate: templateName,
 		},
-		nil,
 	)
 	if err != nil {
 		panic(fmt.Sprintf("Sandboxes.Create() failed: %+v", err))
@@ -132,11 +152,14 @@ func sandboxSnapshotsExample(ctx context.Context, client *agentplatform.Client, 
 			panic(fmt.Sprintf("GetSandboxOperation() failed: %+v", err))
 		}
 	}
+	if sandboxOp.Error != nil {
+		panic(fmt.Sprintf("Sandbox creation operation failed: %+v", sandboxOp.Error))
+	}
 	sandboxName := sandboxOp.Response.Name
 	fmt.Println("Created source Sandbox:", sandboxName)
 	defer client.AgentEngines.Sandboxes.Delete(ctx, sandboxName, nil)
 
-	// 1. Create a snapshot of the sandbox.
+	// 1. Create a snapshot of the running sandbox.
 	snapshotOp, err := client.AgentEngines.Sandboxes.Snapshots.Create(
 		ctx,
 		sandboxName,
@@ -156,6 +179,9 @@ func sandboxSnapshotsExample(ctx context.Context, client *agentplatform.Client, 
 			panic(fmt.Sprintf("GetSandboxSnapshotOperation() failed: %+v", err))
 		}
 	}
+	if snapshotOp.Error != nil {
+		panic(fmt.Sprintf("Snapshot creation operation failed: %+v", snapshotOp.Error))
+	}
 	snapshotName := snapshotOp.Response.Name
 	fmt.Println("Created Sandbox Snapshot:", snapshotName)
 
@@ -173,9 +199,49 @@ func sandboxSnapshotsExample(ctx context.Context, client *agentplatform.Client, 
 	}
 	fmt.Println("Snapshots found:", len(listResp.SandboxEnvironmentSnapshots))
 
-	// 4. Delete the snapshot.
+	// 4. Restore a new sandbox from the snapshot.
+	restoreOp, err := client.AgentEngines.Sandboxes.Create(
+		ctx,
+		agentEngineName,
+		nil, // No spec: the sandbox is restored from the snapshot.
+		&types.CreateAgentEngineSandboxConfig{
+			DisplayName:                "Restored Sandbox",
+			SandboxEnvironmentSnapshot: snapshotName,
+		},
+	)
+	if err != nil {
+		panic(fmt.Sprintf("Sandboxes.Create() from snapshot failed: %+v", err))
+	}
+	for !restoreOp.Done {
+		time.Sleep(10 * time.Second)
+		restoreOp, err = client.AgentEngines.Sandboxes.GetSandboxOperation(ctx, restoreOp.Name, nil)
+		if err != nil {
+			panic(fmt.Sprintf("GetSandboxOperation() failed: %+v", err))
+		}
+	}
+	if restoreOp.Error != nil {
+		panic(fmt.Sprintf("Sandbox restore operation failed: %+v", restoreOp.Error))
+	}
+	restoredSandboxName := restoreOp.Response.Name
+	fmt.Println("Restored Sandbox:", restoredSandboxName)
+	defer client.AgentEngines.Sandboxes.Delete(ctx, restoredSandboxName, nil)
+
+	// 5. Delete the snapshot.
 	if _, err := client.AgentEngines.Sandboxes.Snapshots.Delete(ctx, snapshotName, nil); err != nil {
 		panic(fmt.Sprintf("Snapshots.Delete() failed: %+v", err))
 	}
 	fmt.Println("Deleted Sandbox Snapshot.")
+}
+
+// computerUseTemplateConfig returns the config for a computer-use sandbox
+// template with internet access.
+func computerUseTemplateConfig() *types.CreateSandboxEnvironmentTemplateConfig {
+	return &types.CreateSandboxEnvironmentTemplateConfig{
+		DefaultContainerEnvironment: &types.SandboxEnvironmentTemplateDefaultContainerEnvironment{
+			DefaultContainerCategory: types.DefaultContainerCategoryComputerUse,
+		},
+		EgressControlConfig: &types.SandboxEnvironmentTemplateEgressControlConfig{
+			InternetAccess: genai.Ptr(true),
+		},
+	}
 }

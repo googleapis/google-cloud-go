@@ -1,5 +1,12 @@
 # Changes
 
+## [1.51.1](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.51.0...pubsub/v1.51.1) (2026-08-20)
+
+
+### Bug Fixes
+
+* **pubsub:** Update ackID batch size to 1000 ([#20398](https://github.com/googleapis/google-cloud-go/issues/20398)) ([03d5ded](https://github.com/googleapis/google-cloud-go/commit/03d5dede94a1c957216893c8601101f04b7efad0))
+
 ## [1.51.0](https://github.com/googleapis/google-cloud-go/compare/pubsub/v1.50.4...pubsub/v1.51.0) (2026-07-15)
 
 

@@ -355,6 +355,185 @@ func (DBWorkload) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDescGZIP(), []int{3}
 }
 
+// The refresh mode of a refreshable clone.
+type SourceConfig_RefreshableMode int32
+
+const (
+	// Default unspecified value.
+	SourceConfig_REFRESHABLE_MODE_UNSPECIFIED SourceConfig_RefreshableMode = 0
+	// Automatic refresh.
+	SourceConfig_AUTOMATIC SourceConfig_RefreshableMode = 1
+	// Manual refresh.
+	SourceConfig_MANUAL SourceConfig_RefreshableMode = 2
+)
+
+// Enum value maps for SourceConfig_RefreshableMode.
+var (
+	SourceConfig_RefreshableMode_name = map[int32]string{
+		0: "REFRESHABLE_MODE_UNSPECIFIED",
+		1: "AUTOMATIC",
+		2: "MANUAL",
+	}
+	SourceConfig_RefreshableMode_value = map[string]int32{
+		"REFRESHABLE_MODE_UNSPECIFIED": 0,
+		"AUTOMATIC":                    1,
+		"MANUAL":                       2,
+	}
+)
+
+func (x SourceConfig_RefreshableMode) Enum() *SourceConfig_RefreshableMode {
+	p := new(SourceConfig_RefreshableMode)
+	*p = x
+	return p
+}
+
+func (x SourceConfig_RefreshableMode) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SourceConfig_RefreshableMode) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[4].Descriptor()
+}
+
+func (SourceConfig_RefreshableMode) Type() protoreflect.EnumType {
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[4]
+}
+
+func (x SourceConfig_RefreshableMode) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SourceConfig_RefreshableMode.Descriptor instead.
+func (SourceConfig_RefreshableMode) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDescGZIP(), []int{1, 0}
+}
+
+// Specifies the source of the database. For example, a clone or peer from an
+// existing database.
+// This enum may be expanded to include other source types in the future.
+type SourceConfig_SourceType int32
+
+const (
+	// Default unspecified value.
+	SourceConfig_SOURCE_TYPE_UNSPECIFIED SourceConfig_SourceType = 0
+	// Clone database from an existing database specified in
+	// autonomous_database field.
+	SourceConfig_CLONE_DATABASE SourceConfig_SourceType = 1
+	// Create a cross-region disaster recovery peer adb from an existing adb.
+	SourceConfig_CROSS_REGION_DISASTER_RECOVERY SourceConfig_SourceType = 2
+	// Create a refreshable clone from an existing database specified in
+	// autonomous_database field.
+	SourceConfig_CLONE_TO_REFRESHABLE SourceConfig_SourceType = 3
+	// Create clone from the backup resource.
+	SourceConfig_BACKUP_FROM_ID SourceConfig_SourceType = 4
+	// Create clone from backup specified by backup_time
+	// field, or use latest available backup if use_latest_available_backup is
+	// true. The autonomous_database field must specify the source database
+	// to clone from.
+	SourceConfig_BACKUP_FROM_TIMESTAMP SourceConfig_SourceType = 5
+)
+
+// Enum value maps for SourceConfig_SourceType.
+var (
+	SourceConfig_SourceType_name = map[int32]string{
+		0: "SOURCE_TYPE_UNSPECIFIED",
+		1: "CLONE_DATABASE",
+		2: "CROSS_REGION_DISASTER_RECOVERY",
+		3: "CLONE_TO_REFRESHABLE",
+		4: "BACKUP_FROM_ID",
+		5: "BACKUP_FROM_TIMESTAMP",
+	}
+	SourceConfig_SourceType_value = map[string]int32{
+		"SOURCE_TYPE_UNSPECIFIED":        0,
+		"CLONE_DATABASE":                 1,
+		"CROSS_REGION_DISASTER_RECOVERY": 2,
+		"CLONE_TO_REFRESHABLE":           3,
+		"BACKUP_FROM_ID":                 4,
+		"BACKUP_FROM_TIMESTAMP":          5,
+	}
+)
+
+func (x SourceConfig_SourceType) Enum() *SourceConfig_SourceType {
+	p := new(SourceConfig_SourceType)
+	*p = x
+	return p
+}
+
+func (x SourceConfig_SourceType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SourceConfig_SourceType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[5].Descriptor()
+}
+
+func (SourceConfig_SourceType) Type() protoreflect.EnumType {
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[5]
+}
+
+func (x SourceConfig_SourceType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SourceConfig_SourceType.Descriptor instead.
+func (SourceConfig_SourceType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDescGZIP(), []int{1, 1}
+}
+
+// The clone type of the Autonomous Database.
+type SourceConfig_CloneType int32
+
+const (
+	// Default unspecified value.
+	SourceConfig_CLONE_TYPE_UNSPECIFIED SourceConfig_CloneType = 0
+	// Creates a new database with the source database's data and metadata.
+	SourceConfig_FULL SourceConfig_CloneType = 1
+	// Creates a new database that includes all the source database schema
+	// metadata, but none of the source database data.
+	SourceConfig_METADATA SourceConfig_CloneType = 2
+)
+
+// Enum value maps for SourceConfig_CloneType.
+var (
+	SourceConfig_CloneType_name = map[int32]string{
+		0: "CLONE_TYPE_UNSPECIFIED",
+		1: "FULL",
+		2: "METADATA",
+	}
+	SourceConfig_CloneType_value = map[string]int32{
+		"CLONE_TYPE_UNSPECIFIED": 0,
+		"FULL":                   1,
+		"METADATA":               2,
+	}
+)
+
+func (x SourceConfig_CloneType) Enum() *SourceConfig_CloneType {
+	p := new(SourceConfig_CloneType)
+	*p = x
+	return p
+}
+
+func (x SourceConfig_CloneType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SourceConfig_CloneType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[6].Descriptor()
+}
+
+func (SourceConfig_CloneType) Type() protoreflect.EnumType {
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[6]
+}
+
+func (x SourceConfig_CloneType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SourceConfig_CloneType.Descriptor instead.
+func (SourceConfig_CloneType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDescGZIP(), []int{1, 2}
+}
+
 // The editions available for the Autonomous Database.
 type AutonomousDatabaseProperties_DatabaseEdition int32
 
@@ -392,11 +571,11 @@ func (x AutonomousDatabaseProperties_DatabaseEdition) String() string {
 }
 
 func (AutonomousDatabaseProperties_DatabaseEdition) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[4].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[7].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_DatabaseEdition) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[4]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[7]
 }
 
 func (x AutonomousDatabaseProperties_DatabaseEdition) Number() protoreflect.EnumNumber {
@@ -445,11 +624,11 @@ func (x AutonomousDatabaseProperties_LicenseType) String() string {
 }
 
 func (AutonomousDatabaseProperties_LicenseType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[5].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[8].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_LicenseType) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[5]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[8]
 }
 
 func (x AutonomousDatabaseProperties_LicenseType) Number() protoreflect.EnumNumber {
@@ -499,11 +678,11 @@ func (x AutonomousDatabaseProperties_MaintenanceScheduleType) String() string {
 }
 
 func (AutonomousDatabaseProperties_MaintenanceScheduleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[6].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[9].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_MaintenanceScheduleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[6]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[9]
 }
 
 func (x AutonomousDatabaseProperties_MaintenanceScheduleType) Number() protoreflect.EnumNumber {
@@ -556,11 +735,11 @@ func (x AutonomousDatabaseProperties_LocalDisasterRecoveryType) String() string 
 }
 
 func (AutonomousDatabaseProperties_LocalDisasterRecoveryType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[10].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_LocalDisasterRecoveryType) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[7]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[10]
 }
 
 func (x AutonomousDatabaseProperties_LocalDisasterRecoveryType) Number() protoreflect.EnumNumber {
@@ -621,11 +800,11 @@ func (x AutonomousDatabaseProperties_DataSafeState) String() string {
 }
 
 func (AutonomousDatabaseProperties_DataSafeState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[8].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[11].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_DataSafeState) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[8]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[11]
 }
 
 func (x AutonomousDatabaseProperties_DataSafeState) Number() protoreflect.EnumNumber {
@@ -690,11 +869,11 @@ func (x AutonomousDatabaseProperties_DatabaseManagementState) String() string {
 }
 
 func (AutonomousDatabaseProperties_DatabaseManagementState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[9].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[12].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_DatabaseManagementState) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[9]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[12]
 }
 
 func (x AutonomousDatabaseProperties_DatabaseManagementState) Number() protoreflect.EnumNumber {
@@ -743,11 +922,11 @@ func (x AutonomousDatabaseProperties_OpenMode) String() string {
 }
 
 func (AutonomousDatabaseProperties_OpenMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[10].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[13].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_OpenMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[10]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[13]
 }
 
 func (x AutonomousDatabaseProperties_OpenMode) Number() protoreflect.EnumNumber {
@@ -796,11 +975,11 @@ func (x AutonomousDatabaseProperties_PermissionLevel) String() string {
 }
 
 func (AutonomousDatabaseProperties_PermissionLevel) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[11].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[14].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_PermissionLevel) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[11]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[14]
 }
 
 func (x AutonomousDatabaseProperties_PermissionLevel) Number() protoreflect.EnumNumber {
@@ -851,11 +1030,11 @@ func (x AutonomousDatabaseProperties_RefreshableMode) String() string {
 }
 
 func (AutonomousDatabaseProperties_RefreshableMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[12].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[15].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_RefreshableMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[12]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[15]
 }
 
 func (x AutonomousDatabaseProperties_RefreshableMode) Number() protoreflect.EnumNumber {
@@ -904,11 +1083,11 @@ func (x AutonomousDatabaseProperties_RefreshableState) String() string {
 }
 
 func (AutonomousDatabaseProperties_RefreshableState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[16].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_RefreshableState) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[13]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[16]
 }
 
 func (x AutonomousDatabaseProperties_RefreshableState) Number() protoreflect.EnumNumber {
@@ -969,11 +1148,11 @@ func (x AutonomousDatabaseProperties_Role) String() string {
 }
 
 func (AutonomousDatabaseProperties_Role) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[17].Descriptor()
 }
 
 func (AutonomousDatabaseProperties_Role) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[14]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[17]
 }
 
 func (x AutonomousDatabaseProperties_Role) Number() protoreflect.EnumNumber {
@@ -1022,11 +1201,11 @@ func (x EncryptionKey_Provider) String() string {
 }
 
 func (EncryptionKey_Provider) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[18].Descriptor()
 }
 
 func (EncryptionKey_Provider) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[15]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[18]
 }
 
 func (x EncryptionKey_Provider) Number() protoreflect.EnumNumber {
@@ -1087,11 +1266,11 @@ func (x DatabaseConnectionStringProfile_ConsumerGroup) String() string {
 }
 
 func (DatabaseConnectionStringProfile_ConsumerGroup) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[16].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[19].Descriptor()
 }
 
 func (DatabaseConnectionStringProfile_ConsumerGroup) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[16]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[19]
 }
 
 func (x DatabaseConnectionStringProfile_ConsumerGroup) Number() protoreflect.EnumNumber {
@@ -1140,11 +1319,11 @@ func (x DatabaseConnectionStringProfile_HostFormat) String() string {
 }
 
 func (DatabaseConnectionStringProfile_HostFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[17].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[20].Descriptor()
 }
 
 func (DatabaseConnectionStringProfile_HostFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[17]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[20]
 }
 
 func (x DatabaseConnectionStringProfile_HostFormat) Number() protoreflect.EnumNumber {
@@ -1193,11 +1372,11 @@ func (x DatabaseConnectionStringProfile_Protocol) String() string {
 }
 
 func (DatabaseConnectionStringProfile_Protocol) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[18].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[21].Descriptor()
 }
 
 func (DatabaseConnectionStringProfile_Protocol) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[18]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[21]
 }
 
 func (x DatabaseConnectionStringProfile_Protocol) Number() protoreflect.EnumNumber {
@@ -1246,11 +1425,11 @@ func (x DatabaseConnectionStringProfile_SessionMode) String() string {
 }
 
 func (DatabaseConnectionStringProfile_SessionMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[19].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[22].Descriptor()
 }
 
 func (DatabaseConnectionStringProfile_SessionMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[19]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[22]
 }
 
 func (x DatabaseConnectionStringProfile_SessionMode) Number() protoreflect.EnumNumber {
@@ -1303,11 +1482,11 @@ func (x DatabaseConnectionStringProfile_SyntaxFormat) String() string {
 }
 
 func (DatabaseConnectionStringProfile_SyntaxFormat) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[20].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[23].Descriptor()
 }
 
 func (DatabaseConnectionStringProfile_SyntaxFormat) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[20]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[23]
 }
 
 func (x DatabaseConnectionStringProfile_SyntaxFormat) Number() protoreflect.EnumNumber {
@@ -1356,11 +1535,11 @@ func (x DatabaseConnectionStringProfile_TLSAuthentication) String() string {
 }
 
 func (DatabaseConnectionStringProfile_TLSAuthentication) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[21].Descriptor()
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[24].Descriptor()
 }
 
 func (DatabaseConnectionStringProfile_TLSAuthentication) Type() protoreflect.EnumType {
-	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[21]
+	return &file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes[24]
 }
 
 func (x DatabaseConnectionStringProfile_TLSAuthentication) Number() protoreflect.EnumNumber {
@@ -1587,8 +1766,38 @@ type SourceConfig struct {
 	// Optional. This field specifies if the replication of automatic backups is
 	// enabled when creating a Data Guard.
 	AutomaticBackupsReplicationEnabled bool `protobuf:"varint,2,opt,name=automatic_backups_replication_enabled,json=automaticBackupsReplicationEnabled,proto3" json:"automatic_backups_replication_enabled,omitempty"`
-	unknownFields                      protoimpl.UnknownFields
-	sizeCache                          protoimpl.SizeCache
+	// Optional. The source type of the Autonomous Database.
+	SourceType SourceConfig_SourceType `protobuf:"varint,3,opt,name=source_type,json=sourceType,proto3,enum=google.cloud.oracledatabase.v1.SourceConfig_SourceType" json:"source_type,omitempty"`
+	// Optional. The clone type of the Autonomous Database. This field is only
+	// applicable in case of cloning
+	CloneType SourceConfig_CloneType `protobuf:"varint,4,opt,name=clone_type,json=cloneType,proto3,enum=google.cloud.oracledatabase.v1.SourceConfig_CloneType" json:"clone_type,omitempty"`
+	// Optional. The refresh mode of the clone.
+	RefreshableMode SourceConfig_RefreshableMode `protobuf:"varint,5,opt,name=refreshable_mode,json=refreshableMode,proto3,enum=google.cloud.oracledatabase.v1.SourceConfig_RefreshableMode" json:"refreshable_mode,omitempty"`
+	// Optional. The frequency in seconds a refreshable clone is refreshed after
+	// auto-refresh is enabled.
+	AutoRefreshFrequencySeconds int32 `protobuf:"varint,6,opt,name=auto_refresh_frequency_seconds,json=autoRefreshFrequencySeconds,proto3" json:"auto_refresh_frequency_seconds,omitempty"`
+	// Optional. The time, in seconds, the data of the automatic refreshable clone
+	// lags the primary database at the point of refresh.
+	AutoRefreshPointLagSeconds *int32 `protobuf:"varint,7,opt,name=auto_refresh_point_lag_seconds,json=autoRefreshPointLagSeconds,proto3,oneof" json:"auto_refresh_point_lag_seconds,omitempty"`
+	// Optional. The date and time that auto-refreshing will begin for an
+	// Autonomous Database refreshable clone. This value controls only the start
+	// time for the first refresh operation.
+	AutoRefreshStartTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=auto_refresh_start_time,json=autoRefreshStartTime,proto3" json:"auto_refresh_start_time,omitempty"`
+	// Optional. The name of the Autonomous Database Backup resource with the
+	// format:
+	// projects/{project}/locations/{region}/autonomousDatabaseBackups/{autonomous_database_backup}
+	// Required when source_type is BACKUP_FROM_ID.
+	AutonomousDatabaseBackup string `protobuf:"bytes,9,opt,name=autonomous_database_backup,json=autonomousDatabaseBackup,proto3" json:"autonomous_database_backup,omitempty"`
+	// Optional. The timestamp specified for the point-in-time clone of the source
+	// Autonomous Database. This field is only applicable
+	// in case of BACKUP_FROM_TIMESTAMP source type and when
+	// use_latest_available_backup is false.
+	BackupTime *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=backup_time,json=backupTime,proto3" json:"backup_time,omitempty"`
+	// Optional. Clone from latest available backup timestamp. This field is only
+	// applicable in case of BACKUP_FROM_TIMESTAMP source type.
+	UseLatestAvailableBackup bool `protobuf:"varint,11,opt,name=use_latest_available_backup,json=useLatestAvailableBackup,proto3" json:"use_latest_available_backup,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *SourceConfig) Reset() {
@@ -1631,6 +1840,69 @@ func (x *SourceConfig) GetAutonomousDatabase() string {
 func (x *SourceConfig) GetAutomaticBackupsReplicationEnabled() bool {
 	if x != nil {
 		return x.AutomaticBackupsReplicationEnabled
+	}
+	return false
+}
+
+func (x *SourceConfig) GetSourceType() SourceConfig_SourceType {
+	if x != nil {
+		return x.SourceType
+	}
+	return SourceConfig_SOURCE_TYPE_UNSPECIFIED
+}
+
+func (x *SourceConfig) GetCloneType() SourceConfig_CloneType {
+	if x != nil {
+		return x.CloneType
+	}
+	return SourceConfig_CLONE_TYPE_UNSPECIFIED
+}
+
+func (x *SourceConfig) GetRefreshableMode() SourceConfig_RefreshableMode {
+	if x != nil {
+		return x.RefreshableMode
+	}
+	return SourceConfig_REFRESHABLE_MODE_UNSPECIFIED
+}
+
+func (x *SourceConfig) GetAutoRefreshFrequencySeconds() int32 {
+	if x != nil {
+		return x.AutoRefreshFrequencySeconds
+	}
+	return 0
+}
+
+func (x *SourceConfig) GetAutoRefreshPointLagSeconds() int32 {
+	if x != nil && x.AutoRefreshPointLagSeconds != nil {
+		return *x.AutoRefreshPointLagSeconds
+	}
+	return 0
+}
+
+func (x *SourceConfig) GetAutoRefreshStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.AutoRefreshStartTime
+	}
+	return nil
+}
+
+func (x *SourceConfig) GetAutonomousDatabaseBackup() string {
+	if x != nil {
+		return x.AutonomousDatabaseBackup
+	}
+	return ""
+}
+
+func (x *SourceConfig) GetBackupTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.BackupTime
+	}
+	return nil
+}
+
+func (x *SourceConfig) GetUseLatestAvailableBackup() bool {
+	if x != nil {
+		return x.UseLatestAvailableBackup
 	}
 	return false
 }
@@ -1827,8 +2099,12 @@ type AutonomousDatabaseProperties struct {
 	// Optional. This field indicates the maximum data loss limit for an
 	// Autonomous Database, in seconds.
 	LocalAdgAutoFailoverMaxDataLossLimitDuration *int32 `protobuf:"varint,72,opt,name=local_adg_auto_failover_max_data_loss_limit_duration,json=localAdgAutoFailoverMaxDataLossLimitDuration,proto3,oneof" json:"local_adg_auto_failover_max_data_loss_limit_duration,omitempty"`
-	unknownFields                                protoimpl.UnknownFields
-	sizeCache                                    protoimpl.SizeCache
+	// Optional. Indicates if the Autonomous Database is a refreshable clone. This
+	// field is used in update flow to connect / disconnect a refreshable clone
+	// from its source database.
+	RefreshableClone *bool `protobuf:"varint,73,opt,name=refreshable_clone,json=refreshableClone,proto3,oneof" json:"refreshable_clone,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *AutonomousDatabaseProperties) Reset() {
@@ -2316,6 +2592,13 @@ func (x *AutonomousDatabaseProperties) GetLocalAdgAutoFailoverMaxDataLossLimitDu
 		return *x.LocalAdgAutoFailoverMaxDataLossLimitDuration
 	}
 	return 0
+}
+
+func (x *AutonomousDatabaseProperties) GetRefreshableClone() bool {
+	if x != nil && x.RefreshableClone != nil {
+		return *x.RefreshableClone
+	}
+	return false
 }
 
 // The history of the encryption keys used to encrypt the Autonomous Database.
@@ -3045,6 +3328,61 @@ func (x *ScheduledOperationDetails) GetStopTime() *timeofday.TimeOfDay {
 	return nil
 }
 
+// An Autonomous Database refreshable clone
+type AutonomousDatabaseRefreshableClone struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The GCP resource name of the Autonomous Database.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The Google Cloud region where the refreshable clone exists.
+	Region        string `protobuf:"bytes,2,opt,name=region,proto3" json:"region,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AutonomousDatabaseRefreshableClone) Reset() {
+	*x = AutonomousDatabaseRefreshableClone{}
+	mi := &file_google_cloud_oracledatabase_v1_autonomous_database_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AutonomousDatabaseRefreshableClone) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AutonomousDatabaseRefreshableClone) ProtoMessage() {}
+
+func (x *AutonomousDatabaseRefreshableClone) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_oracledatabase_v1_autonomous_database_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AutonomousDatabaseRefreshableClone.ProtoReflect.Descriptor instead.
+func (*AutonomousDatabaseRefreshableClone) Descriptor() ([]byte, []int) {
+	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *AutonomousDatabaseRefreshableClone) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AutonomousDatabaseRefreshableClone) GetRegion() string {
+	if x != nil {
+		return x.Region
+	}
+	return ""
+}
+
 var File_google_cloud_oracledatabase_v1_autonomous_database_proto protoreflect.FileDescriptor
 
 const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = "" +
@@ -3082,11 +3420,44 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\xb2\x01\xeaA\xae\x01\n" +
-	"0oracledatabase.googleapis.com/AutonomousDatabase\x12Qprojects/{project}/locations/{location}/autonomousDatabases/{autonomous_database}*\x13autonomousDatabases2\x12autonomousDatabase\"\xd1\x01\n" +
+	"0oracledatabase.googleapis.com/AutonomousDatabase\x12Qprojects/{project}/locations/{location}/autonomousDatabases/{autonomous_database}*\x13autonomousDatabases2\x12autonomousDatabase\"\xcf\n" +
+	"\n" +
 	"\fSourceConfig\x12i\n" +
 	"\x13autonomous_database\x18\x01 \x01(\tB8\xe0A\x01\xfaA2\n" +
 	"0oracledatabase.googleapis.com/AutonomousDatabaseR\x12autonomousDatabase\x12V\n" +
-	"%automatic_backups_replication_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\"automaticBackupsReplicationEnabled\"\x854\n" +
+	"%automatic_backups_replication_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\"automaticBackupsReplicationEnabled\x12]\n" +
+	"\vsource_type\x18\x03 \x01(\x0e27.google.cloud.oracledatabase.v1.SourceConfig.SourceTypeB\x03\xe0A\x01R\n" +
+	"sourceType\x12Z\n" +
+	"\n" +
+	"clone_type\x18\x04 \x01(\x0e26.google.cloud.oracledatabase.v1.SourceConfig.CloneTypeB\x03\xe0A\x01R\tcloneType\x12l\n" +
+	"\x10refreshable_mode\x18\x05 \x01(\x0e2<.google.cloud.oracledatabase.v1.SourceConfig.RefreshableModeB\x03\xe0A\x01R\x0frefreshableMode\x12H\n" +
+	"\x1eauto_refresh_frequency_seconds\x18\x06 \x01(\x05B\x03\xe0A\x01R\x1bautoRefreshFrequencySeconds\x12L\n" +
+	"\x1eauto_refresh_point_lag_seconds\x18\a \x01(\x05B\x03\xe0A\x01H\x00R\x1aautoRefreshPointLagSeconds\x88\x01\x01\x12V\n" +
+	"\x17auto_refresh_start_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\x14autoRefreshStartTime\x12|\n" +
+	"\x1aautonomous_database_backup\x18\t \x01(\tB>\xe0A\x01\xfaA8\n" +
+	"6oracledatabase.googleapis.com/AutonomousDatabaseBackupR\x18autonomousDatabaseBackup\x12@\n" +
+	"\vbackup_time\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x01R\n" +
+	"backupTime\x12B\n" +
+	"\x1buse_latest_available_backup\x18\v \x01(\bB\x03\xe0A\x01R\x18useLatestAvailableBackup\"N\n" +
+	"\x0fRefreshableMode\x12 \n" +
+	"\x1cREFRESHABLE_MODE_UNSPECIFIED\x10\x00\x12\r\n" +
+	"\tAUTOMATIC\x10\x01\x12\n" +
+	"\n" +
+	"\x06MANUAL\x10\x02\"\xaa\x01\n" +
+	"\n" +
+	"SourceType\x12\x1b\n" +
+	"\x17SOURCE_TYPE_UNSPECIFIED\x10\x00\x12\x12\n" +
+	"\x0eCLONE_DATABASE\x10\x01\x12\"\n" +
+	"\x1eCROSS_REGION_DISASTER_RECOVERY\x10\x02\x12\x18\n" +
+	"\x14CLONE_TO_REFRESHABLE\x10\x03\x12\x12\n" +
+	"\x0eBACKUP_FROM_ID\x10\x04\x12\x19\n" +
+	"\x15BACKUP_FROM_TIMESTAMP\x10\x05\"?\n" +
+	"\tCloneType\x12\x1a\n" +
+	"\x16CLONE_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
+	"\x04FULL\x10\x01\x12\f\n" +
+	"\bMETADATA\x10\x02B!\n" +
+	"\x1f_auto_refresh_point_lag_seconds\"\xd24\n" +
 	"\x1cAutonomousDatabaseProperties\x12\x17\n" +
 	"\x04ocid\x18\x01 \x01(\tB\x03\xe0A\x03R\x04ocid\x12+\n" +
 	"\rcompute_count\x18\x02 \x01(\x02B\x06\xe0A\x01\xe0A\x05R\fcomputeCount\x12,\n" +
@@ -3156,7 +3527,8 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\x1eencryption_key_history_entries\x18E \x03(\v29.google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntryB\x03\xe0A\x03R\x1bencryptionKeyHistoryEntries\x123\n" +
 	"\x13service_agent_email\x18F \x01(\tB\x03\xe0A\x03R\x11serviceAgentEmail\x12A\n" +
 	"\x18local_data_guard_enabled\x18G \x01(\bB\x03\xe0A\x01H\x01R\x15localDataGuardEnabled\x88\x01\x01\x12t\n" +
-	"4local_adg_auto_failover_max_data_loss_limit_duration\x18H \x01(\x05B\x03\xe0A\x01H\x02R,localAdgAutoFailoverMaxDataLossLimitDuration\x88\x01\x01\"a\n" +
+	"4local_adg_auto_failover_max_data_loss_limit_duration\x18H \x01(\x05B\x03\xe0A\x01H\x02R,localAdgAutoFailoverMaxDataLossLimitDuration\x88\x01\x01\x125\n" +
+	"\x11refreshable_clone\x18I \x01(\bB\x03\xe0A\x01H\x03R\x10refreshableClone\x88\x01\x01\"a\n" +
 	"\x0fDatabaseEdition\x12 \n" +
 	"\x1cDATABASE_EDITION_UNSPECIFIED\x10\x00\x12\x14\n" +
 	"\x10STANDARD_EDITION\x10\x01\x12\x16\n" +
@@ -3220,7 +3592,8 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\x10SNAPSHOT_STANDBY\x10\x05B#\n" +
 	"!_are_primary_allowlisted_ips_usedB\x1b\n" +
 	"\x19_local_data_guard_enabledB7\n" +
-	"5_local_adg_auto_failover_max_data_loss_limit_duration\"\xc0\x01\n" +
+	"5_local_adg_auto_failover_max_data_loss_limit_durationB\x14\n" +
+	"\x12_refreshable_clone\"\xc0\x01\n" +
 	"\x19EncryptionKeyHistoryEntry\x12Y\n" +
 	"\x0eencryption_key\x18\x01 \x01(\v2-.google.cloud.oracledatabase.v1.EncryptionKeyB\x03\xe0A\x03R\rencryptionKey\x12H\n" +
 	"\x0factivation_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x0eactivationTime\"\xfa\x01\n" +
@@ -3312,7 +3685,11 @@ const file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc = ""
 	"\vday_of_week\x18\x01 \x01(\x0e2\x16.google.type.DayOfWeekB\x03\xe0A\x03R\tdayOfWeek\x12:\n" +
 	"\n" +
 	"start_time\x18\x04 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x03R\tstartTime\x128\n" +
-	"\tstop_time\x18\x05 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x03R\bstopTime*B\n" +
+	"\tstop_time\x18\x05 \x01(\v2\x16.google.type.TimeOfDayB\x03\xe0A\x03R\bstopTime\"\x8f\x01\n" +
+	"\"AutonomousDatabaseRefreshableClone\x12L\n" +
+	"\x04name\x18\x01 \x01(\tB8\xe0A\x03\xfaA2\n" +
+	"0oracledatabase.googleapis.com/AutonomousDatabaseR\x04name\x12\x1b\n" +
+	"\x06region\x18\x02 \x01(\tB\x03\xe0A\x03R\x06region*B\n" +
 	"\fGenerateType\x12\x1d\n" +
 	"\x19GENERATE_TYPE_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12\n" +
@@ -3374,106 +3751,115 @@ func file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDescGZIP()
 	return file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDescData
 }
 
-var file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes = make([]protoimpl.EnumInfo, 22)
-var file_google_cloud_oracledatabase_v1_autonomous_database_proto_msgTypes = make([]protoimpl.MessageInfo, 13)
+var file_google_cloud_oracledatabase_v1_autonomous_database_proto_enumTypes = make([]protoimpl.EnumInfo, 25)
+var file_google_cloud_oracledatabase_v1_autonomous_database_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_oracledatabase_v1_autonomous_database_proto_goTypes = []any{
-	(GenerateType)(0),            // 0: google.cloud.oracledatabase.v1.GenerateType
-	(State)(0),                   // 1: google.cloud.oracledatabase.v1.State
-	(OperationsInsightsState)(0), // 2: google.cloud.oracledatabase.v1.OperationsInsightsState
-	(DBWorkload)(0),              // 3: google.cloud.oracledatabase.v1.DBWorkload
-	(AutonomousDatabaseProperties_DatabaseEdition)(0),           // 4: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseEdition
-	(AutonomousDatabaseProperties_LicenseType)(0),               // 5: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LicenseType
-	(AutonomousDatabaseProperties_MaintenanceScheduleType)(0),   // 6: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.MaintenanceScheduleType
-	(AutonomousDatabaseProperties_LocalDisasterRecoveryType)(0), // 7: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LocalDisasterRecoveryType
-	(AutonomousDatabaseProperties_DataSafeState)(0),             // 8: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DataSafeState
-	(AutonomousDatabaseProperties_DatabaseManagementState)(0),   // 9: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseManagementState
-	(AutonomousDatabaseProperties_OpenMode)(0),                  // 10: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.OpenMode
-	(AutonomousDatabaseProperties_PermissionLevel)(0),           // 11: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.PermissionLevel
-	(AutonomousDatabaseProperties_RefreshableMode)(0),           // 12: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableMode
-	(AutonomousDatabaseProperties_RefreshableState)(0),          // 13: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableState
-	(AutonomousDatabaseProperties_Role)(0),                      // 14: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.Role
-	(EncryptionKey_Provider)(0),                                 // 15: google.cloud.oracledatabase.v1.EncryptionKey.Provider
-	(DatabaseConnectionStringProfile_ConsumerGroup)(0),          // 16: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.ConsumerGroup
-	(DatabaseConnectionStringProfile_HostFormat)(0),             // 17: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.HostFormat
-	(DatabaseConnectionStringProfile_Protocol)(0),               // 18: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.Protocol
-	(DatabaseConnectionStringProfile_SessionMode)(0),            // 19: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SessionMode
-	(DatabaseConnectionStringProfile_SyntaxFormat)(0),           // 20: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SyntaxFormat
-	(DatabaseConnectionStringProfile_TLSAuthentication)(0),      // 21: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.TLSAuthentication
-	(*AutonomousDatabase)(nil),                                  // 22: google.cloud.oracledatabase.v1.AutonomousDatabase
-	(*SourceConfig)(nil),                                        // 23: google.cloud.oracledatabase.v1.SourceConfig
-	(*AutonomousDatabaseProperties)(nil),                        // 24: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties
-	(*EncryptionKeyHistoryEntry)(nil),                           // 25: google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry
-	(*EncryptionKey)(nil),                                       // 26: google.cloud.oracledatabase.v1.EncryptionKey
-	(*AutonomousDatabaseApex)(nil),                              // 27: google.cloud.oracledatabase.v1.AutonomousDatabaseApex
-	(*AutonomousDatabaseConnectionStrings)(nil),                 // 28: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings
-	(*DatabaseConnectionStringProfile)(nil),                     // 29: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile
-	(*AllConnectionStrings)(nil),                                // 30: google.cloud.oracledatabase.v1.AllConnectionStrings
-	(*AutonomousDatabaseConnectionUrls)(nil),                    // 31: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionUrls
-	(*AutonomousDatabaseStandbySummary)(nil),                    // 32: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary
-	(*ScheduledOperationDetails)(nil),                           // 33: google.cloud.oracledatabase.v1.ScheduledOperationDetails
-	nil,                                                         // 34: google.cloud.oracledatabase.v1.AutonomousDatabase.LabelsEntry
-	(*timestamppb.Timestamp)(nil),                               // 35: google.protobuf.Timestamp
-	(*CustomerContact)(nil),                                     // 36: google.cloud.oracledatabase.v1.CustomerContact
-	(*durationpb.Duration)(nil),                                 // 37: google.protobuf.Duration
-	(dayofweek.DayOfWeek)(0),                                    // 38: google.type.DayOfWeek
-	(*timeofday.TimeOfDay)(nil),                                 // 39: google.type.TimeOfDay
+	(GenerateType)(0),                                           // 0: google.cloud.oracledatabase.v1.GenerateType
+	(State)(0),                                                  // 1: google.cloud.oracledatabase.v1.State
+	(OperationsInsightsState)(0),                                // 2: google.cloud.oracledatabase.v1.OperationsInsightsState
+	(DBWorkload)(0),                                             // 3: google.cloud.oracledatabase.v1.DBWorkload
+	(SourceConfig_RefreshableMode)(0),                           // 4: google.cloud.oracledatabase.v1.SourceConfig.RefreshableMode
+	(SourceConfig_SourceType)(0),                                // 5: google.cloud.oracledatabase.v1.SourceConfig.SourceType
+	(SourceConfig_CloneType)(0),                                 // 6: google.cloud.oracledatabase.v1.SourceConfig.CloneType
+	(AutonomousDatabaseProperties_DatabaseEdition)(0),           // 7: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseEdition
+	(AutonomousDatabaseProperties_LicenseType)(0),               // 8: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LicenseType
+	(AutonomousDatabaseProperties_MaintenanceScheduleType)(0),   // 9: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.MaintenanceScheduleType
+	(AutonomousDatabaseProperties_LocalDisasterRecoveryType)(0), // 10: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LocalDisasterRecoveryType
+	(AutonomousDatabaseProperties_DataSafeState)(0),             // 11: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DataSafeState
+	(AutonomousDatabaseProperties_DatabaseManagementState)(0),   // 12: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseManagementState
+	(AutonomousDatabaseProperties_OpenMode)(0),                  // 13: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.OpenMode
+	(AutonomousDatabaseProperties_PermissionLevel)(0),           // 14: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.PermissionLevel
+	(AutonomousDatabaseProperties_RefreshableMode)(0),           // 15: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableMode
+	(AutonomousDatabaseProperties_RefreshableState)(0),          // 16: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableState
+	(AutonomousDatabaseProperties_Role)(0),                      // 17: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.Role
+	(EncryptionKey_Provider)(0),                                 // 18: google.cloud.oracledatabase.v1.EncryptionKey.Provider
+	(DatabaseConnectionStringProfile_ConsumerGroup)(0),          // 19: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.ConsumerGroup
+	(DatabaseConnectionStringProfile_HostFormat)(0),             // 20: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.HostFormat
+	(DatabaseConnectionStringProfile_Protocol)(0),               // 21: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.Protocol
+	(DatabaseConnectionStringProfile_SessionMode)(0),            // 22: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SessionMode
+	(DatabaseConnectionStringProfile_SyntaxFormat)(0),           // 23: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SyntaxFormat
+	(DatabaseConnectionStringProfile_TLSAuthentication)(0),      // 24: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.TLSAuthentication
+	(*AutonomousDatabase)(nil),                                  // 25: google.cloud.oracledatabase.v1.AutonomousDatabase
+	(*SourceConfig)(nil),                                        // 26: google.cloud.oracledatabase.v1.SourceConfig
+	(*AutonomousDatabaseProperties)(nil),                        // 27: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties
+	(*EncryptionKeyHistoryEntry)(nil),                           // 28: google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry
+	(*EncryptionKey)(nil),                                       // 29: google.cloud.oracledatabase.v1.EncryptionKey
+	(*AutonomousDatabaseApex)(nil),                              // 30: google.cloud.oracledatabase.v1.AutonomousDatabaseApex
+	(*AutonomousDatabaseConnectionStrings)(nil),                 // 31: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings
+	(*DatabaseConnectionStringProfile)(nil),                     // 32: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile
+	(*AllConnectionStrings)(nil),                                // 33: google.cloud.oracledatabase.v1.AllConnectionStrings
+	(*AutonomousDatabaseConnectionUrls)(nil),                    // 34: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionUrls
+	(*AutonomousDatabaseStandbySummary)(nil),                    // 35: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary
+	(*ScheduledOperationDetails)(nil),                           // 36: google.cloud.oracledatabase.v1.ScheduledOperationDetails
+	(*AutonomousDatabaseRefreshableClone)(nil),                  // 37: google.cloud.oracledatabase.v1.AutonomousDatabaseRefreshableClone
+	nil,                           // 38: google.cloud.oracledatabase.v1.AutonomousDatabase.LabelsEntry
+	(*timestamppb.Timestamp)(nil), // 39: google.protobuf.Timestamp
+	(*CustomerContact)(nil),       // 40: google.cloud.oracledatabase.v1.CustomerContact
+	(*durationpb.Duration)(nil),   // 41: google.protobuf.Duration
+	(dayofweek.DayOfWeek)(0),      // 42: google.type.DayOfWeek
+	(*timeofday.TimeOfDay)(nil),   // 43: google.type.TimeOfDay
 }
 var file_google_cloud_oracledatabase_v1_autonomous_database_proto_depIdxs = []int32{
-	24, // 0: google.cloud.oracledatabase.v1.AutonomousDatabase.properties:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties
-	34, // 1: google.cloud.oracledatabase.v1.AutonomousDatabase.labels:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabase.LabelsEntry
-	23, // 2: google.cloud.oracledatabase.v1.AutonomousDatabase.source_config:type_name -> google.cloud.oracledatabase.v1.SourceConfig
-	35, // 3: google.cloud.oracledatabase.v1.AutonomousDatabase.create_time:type_name -> google.protobuf.Timestamp
-	3,  // 4: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.db_workload:type_name -> google.cloud.oracledatabase.v1.DBWorkload
-	4,  // 5: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.db_edition:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseEdition
-	5,  // 6: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.license_type:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LicenseType
-	36, // 7: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.customer_contacts:type_name -> google.cloud.oracledatabase.v1.CustomerContact
-	6,  // 8: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.maintenance_schedule_type:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.MaintenanceScheduleType
-	27, // 9: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.apex_details:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseApex
-	1,  // 10: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.state:type_name -> google.cloud.oracledatabase.v1.State
-	28, // 11: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.connection_strings:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings
-	31, // 12: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.connection_urls:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionUrls
-	37, // 13: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.failed_data_recovery_duration:type_name -> google.protobuf.Duration
-	32, // 14: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.local_standby_db:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary
-	7,  // 15: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.local_disaster_recovery_type:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LocalDisasterRecoveryType
-	8,  // 16: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.data_safe_state:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DataSafeState
-	9,  // 17: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.database_management_state:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseManagementState
-	10, // 18: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.open_mode:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.OpenMode
-	2,  // 19: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.operations_insights_state:type_name -> google.cloud.oracledatabase.v1.OperationsInsightsState
-	11, // 20: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.permission_level:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.PermissionLevel
-	12, // 21: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.refreshable_mode:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableMode
-	13, // 22: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.refreshable_state:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableState
-	14, // 23: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.role:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.Role
-	33, // 24: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.scheduled_operation_details:type_name -> google.cloud.oracledatabase.v1.ScheduledOperationDetails
-	35, // 25: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.next_long_term_backup_time:type_name -> google.protobuf.Timestamp
-	35, // 26: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.data_guard_role_changed_time:type_name -> google.protobuf.Timestamp
-	35, // 27: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.disaster_recovery_role_changed_time:type_name -> google.protobuf.Timestamp
-	35, // 28: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.maintenance_begin_time:type_name -> google.protobuf.Timestamp
-	35, // 29: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.maintenance_end_time:type_name -> google.protobuf.Timestamp
-	26, // 30: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.encryption_key:type_name -> google.cloud.oracledatabase.v1.EncryptionKey
-	25, // 31: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.encryption_key_history_entries:type_name -> google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry
-	26, // 32: google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry.encryption_key:type_name -> google.cloud.oracledatabase.v1.EncryptionKey
-	35, // 33: google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry.activation_time:type_name -> google.protobuf.Timestamp
-	15, // 34: google.cloud.oracledatabase.v1.EncryptionKey.provider:type_name -> google.cloud.oracledatabase.v1.EncryptionKey.Provider
-	30, // 35: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings.all_connection_strings:type_name -> google.cloud.oracledatabase.v1.AllConnectionStrings
-	29, // 36: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings.profiles:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile
-	16, // 37: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.consumer_group:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.ConsumerGroup
-	17, // 38: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.host_format:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.HostFormat
-	18, // 39: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.protocol:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.Protocol
-	19, // 40: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.session_mode:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SessionMode
-	20, // 41: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.syntax_format:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SyntaxFormat
-	21, // 42: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.tls_authentication:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.TLSAuthentication
-	37, // 43: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.lag_time_duration:type_name -> google.protobuf.Duration
-	1,  // 44: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.state:type_name -> google.cloud.oracledatabase.v1.State
-	35, // 45: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.data_guard_role_changed_time:type_name -> google.protobuf.Timestamp
-	35, // 46: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.disaster_recovery_role_changed_time:type_name -> google.protobuf.Timestamp
-	38, // 47: google.cloud.oracledatabase.v1.ScheduledOperationDetails.day_of_week:type_name -> google.type.DayOfWeek
-	39, // 48: google.cloud.oracledatabase.v1.ScheduledOperationDetails.start_time:type_name -> google.type.TimeOfDay
-	39, // 49: google.cloud.oracledatabase.v1.ScheduledOperationDetails.stop_time:type_name -> google.type.TimeOfDay
-	50, // [50:50] is the sub-list for method output_type
-	50, // [50:50] is the sub-list for method input_type
-	50, // [50:50] is the sub-list for extension type_name
-	50, // [50:50] is the sub-list for extension extendee
-	0,  // [0:50] is the sub-list for field type_name
+	27, // 0: google.cloud.oracledatabase.v1.AutonomousDatabase.properties:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties
+	38, // 1: google.cloud.oracledatabase.v1.AutonomousDatabase.labels:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabase.LabelsEntry
+	26, // 2: google.cloud.oracledatabase.v1.AutonomousDatabase.source_config:type_name -> google.cloud.oracledatabase.v1.SourceConfig
+	39, // 3: google.cloud.oracledatabase.v1.AutonomousDatabase.create_time:type_name -> google.protobuf.Timestamp
+	5,  // 4: google.cloud.oracledatabase.v1.SourceConfig.source_type:type_name -> google.cloud.oracledatabase.v1.SourceConfig.SourceType
+	6,  // 5: google.cloud.oracledatabase.v1.SourceConfig.clone_type:type_name -> google.cloud.oracledatabase.v1.SourceConfig.CloneType
+	4,  // 6: google.cloud.oracledatabase.v1.SourceConfig.refreshable_mode:type_name -> google.cloud.oracledatabase.v1.SourceConfig.RefreshableMode
+	39, // 7: google.cloud.oracledatabase.v1.SourceConfig.auto_refresh_start_time:type_name -> google.protobuf.Timestamp
+	39, // 8: google.cloud.oracledatabase.v1.SourceConfig.backup_time:type_name -> google.protobuf.Timestamp
+	3,  // 9: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.db_workload:type_name -> google.cloud.oracledatabase.v1.DBWorkload
+	7,  // 10: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.db_edition:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseEdition
+	8,  // 11: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.license_type:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LicenseType
+	40, // 12: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.customer_contacts:type_name -> google.cloud.oracledatabase.v1.CustomerContact
+	9,  // 13: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.maintenance_schedule_type:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.MaintenanceScheduleType
+	30, // 14: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.apex_details:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseApex
+	1,  // 15: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.state:type_name -> google.cloud.oracledatabase.v1.State
+	31, // 16: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.connection_strings:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings
+	34, // 17: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.connection_urls:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionUrls
+	41, // 18: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.failed_data_recovery_duration:type_name -> google.protobuf.Duration
+	35, // 19: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.local_standby_db:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary
+	10, // 20: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.local_disaster_recovery_type:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.LocalDisasterRecoveryType
+	11, // 21: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.data_safe_state:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DataSafeState
+	12, // 22: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.database_management_state:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.DatabaseManagementState
+	13, // 23: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.open_mode:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.OpenMode
+	2,  // 24: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.operations_insights_state:type_name -> google.cloud.oracledatabase.v1.OperationsInsightsState
+	14, // 25: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.permission_level:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.PermissionLevel
+	15, // 26: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.refreshable_mode:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableMode
+	16, // 27: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.refreshable_state:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.RefreshableState
+	17, // 28: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.role:type_name -> google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.Role
+	36, // 29: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.scheduled_operation_details:type_name -> google.cloud.oracledatabase.v1.ScheduledOperationDetails
+	39, // 30: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.next_long_term_backup_time:type_name -> google.protobuf.Timestamp
+	39, // 31: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.data_guard_role_changed_time:type_name -> google.protobuf.Timestamp
+	39, // 32: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.disaster_recovery_role_changed_time:type_name -> google.protobuf.Timestamp
+	39, // 33: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.maintenance_begin_time:type_name -> google.protobuf.Timestamp
+	39, // 34: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.maintenance_end_time:type_name -> google.protobuf.Timestamp
+	29, // 35: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.encryption_key:type_name -> google.cloud.oracledatabase.v1.EncryptionKey
+	28, // 36: google.cloud.oracledatabase.v1.AutonomousDatabaseProperties.encryption_key_history_entries:type_name -> google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry
+	29, // 37: google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry.encryption_key:type_name -> google.cloud.oracledatabase.v1.EncryptionKey
+	39, // 38: google.cloud.oracledatabase.v1.EncryptionKeyHistoryEntry.activation_time:type_name -> google.protobuf.Timestamp
+	18, // 39: google.cloud.oracledatabase.v1.EncryptionKey.provider:type_name -> google.cloud.oracledatabase.v1.EncryptionKey.Provider
+	33, // 40: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings.all_connection_strings:type_name -> google.cloud.oracledatabase.v1.AllConnectionStrings
+	32, // 41: google.cloud.oracledatabase.v1.AutonomousDatabaseConnectionStrings.profiles:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile
+	19, // 42: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.consumer_group:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.ConsumerGroup
+	20, // 43: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.host_format:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.HostFormat
+	21, // 44: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.protocol:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.Protocol
+	22, // 45: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.session_mode:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SessionMode
+	23, // 46: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.syntax_format:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.SyntaxFormat
+	24, // 47: google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.tls_authentication:type_name -> google.cloud.oracledatabase.v1.DatabaseConnectionStringProfile.TLSAuthentication
+	41, // 48: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.lag_time_duration:type_name -> google.protobuf.Duration
+	1,  // 49: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.state:type_name -> google.cloud.oracledatabase.v1.State
+	39, // 50: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.data_guard_role_changed_time:type_name -> google.protobuf.Timestamp
+	39, // 51: google.cloud.oracledatabase.v1.AutonomousDatabaseStandbySummary.disaster_recovery_role_changed_time:type_name -> google.protobuf.Timestamp
+	42, // 52: google.cloud.oracledatabase.v1.ScheduledOperationDetails.day_of_week:type_name -> google.type.DayOfWeek
+	43, // 53: google.cloud.oracledatabase.v1.ScheduledOperationDetails.start_time:type_name -> google.type.TimeOfDay
+	43, // 54: google.cloud.oracledatabase.v1.ScheduledOperationDetails.stop_time:type_name -> google.type.TimeOfDay
+	55, // [55:55] is the sub-list for method output_type
+	55, // [55:55] is the sub-list for method input_type
+	55, // [55:55] is the sub-list for extension type_name
+	55, // [55:55] is the sub-list for extension extendee
+	0,  // [0:55] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_oracledatabase_v1_autonomous_database_proto_init() }
@@ -3482,14 +3868,15 @@ func file_google_cloud_oracledatabase_v1_autonomous_database_proto_init() {
 		return
 	}
 	file_google_cloud_oracledatabase_v1_common_proto_init()
+	file_google_cloud_oracledatabase_v1_autonomous_database_proto_msgTypes[1].OneofWrappers = []any{}
 	file_google_cloud_oracledatabase_v1_autonomous_database_proto_msgTypes[2].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc), len(file_google_cloud_oracledatabase_v1_autonomous_database_proto_rawDesc)),
-			NumEnums:      22,
-			NumMessages:   13,
+			NumEnums:      25,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

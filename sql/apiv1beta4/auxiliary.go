@@ -17,9 +17,18 @@
 package sql
 
 import (
+	"iter"
+
 	sqlpb "cloud.google.com/go/sql/apiv1beta4/sqlpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApiWarningIterator) All() iter.Seq2[*sqlpb.ApiWarning, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ApiWarningIterator manages a stream of *sqlpb.ApiWarning.
 type ApiWarningIterator struct {
@@ -66,6 +75,12 @@ func (it *ApiWarningIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*sqlpb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupIterator manages a stream of *sqlpb.Backup.
@@ -115,6 +130,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupRunIterator) All() iter.Seq2[*sqlpb.BackupRun, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupRunIterator manages a stream of *sqlpb.BackupRun.
 type BackupRunIterator struct {
 	items    []*sqlpb.BackupRun
@@ -160,6 +181,12 @@ func (it *BackupRunIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*sqlpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *sqlpb.Operation.

@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/dataform/apiv1beta1",
-    "version": "1.3.0"
+    "version": "1.4.0"
   },
   "snippets": [
     {
@@ -101,6 +101,51 @@
         }
       ],
       "title": "dataform CancelWorkflowInvocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.dataform.v1beta1.Client.CheckoutWorkspaceBranch",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.CheckoutWorkspaceBranch",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "CheckoutWorkspaceBranch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.CheckoutWorkspaceBranchRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CheckoutWorkspaceBranch"
+      },
+      "description": "CheckoutWorkspaceBranch checkout a branch in a Workspace.",
+      "file": "Client/CheckoutWorkspaceBranch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_CheckoutWorkspaceBranch_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform CheckoutWorkspaceBranch Sample"
     },
     {
       "clientMethod": {
@@ -614,6 +659,52 @@
           "fullName": "google.cloud.dataform.v1beta1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.dataform.v1beta1.Client.DeleteBranch",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteBranch",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "DeleteBranch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.DeleteBranchRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataformpb.DeleteBranchResponse",
+        "shortName": "DeleteBranch"
+      },
+      "description": "DeleteBranch deletes a branch in a Workspace.",
+      "file": "Client/DeleteBranch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_DeleteBranch_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform DeleteBranch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.dataform.v1beta1.Client.DeleteFolder",
         "method": {
           "fullName": "google.cloud.dataform.v1beta1.Dataform.DeleteFolder",
@@ -1112,6 +1203,52 @@
           "fullName": "google.cloud.dataform.v1beta1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.dataform.v1beta1.Client.FetchCurrentWorkspaceBranch",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchCurrentWorkspaceBranch",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "FetchCurrentWorkspaceBranch"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.FetchCurrentWorkspaceBranchRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataformpb.FetchCurrentWorkspaceBranchResponse",
+        "shortName": "FetchCurrentWorkspaceBranch"
+      },
+      "description": "FetchCurrentWorkspaceBranch fetches the current branch of a Workspace.",
+      "file": "Client/FetchCurrentWorkspaceBranch/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_FetchCurrentWorkspaceBranch_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform FetchCurrentWorkspaceBranch Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.dataform.v1beta1.Client.FetchFileDiff",
         "method": {
           "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchFileDiff",
@@ -1335,6 +1472,52 @@
         }
       ],
       "title": "dataform FetchRepositoryHistory Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.dataform.v1beta1.Client.FetchWorkspaceBranches",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.FetchWorkspaceBranches",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "FetchWorkspaceBranches"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.FetchWorkspaceBranchesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "BranchMetadataIterator",
+        "shortName": "FetchWorkspaceBranches"
+      },
+      "description": "FetchWorkspaceBranches fetches branches in a Workspace.",
+      "file": "Client/FetchWorkspaceBranches/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_FetchWorkspaceBranches_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform FetchWorkspaceBranches Sample"
     },
     {
       "clientMethod": {
@@ -3313,6 +3496,52 @@
         }
       ],
       "title": "dataform SetIamPolicy Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dataform.v1beta1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.dataform.v1beta1.Client.SyncWorkspaceRefs",
+        "method": {
+          "fullName": "google.cloud.dataform.v1beta1.Dataform.SyncWorkspaceRefs",
+          "service": {
+            "fullName": "google.cloud.dataform.v1beta1.Dataform",
+            "shortName": "Dataform"
+          },
+          "shortName": "SyncWorkspaceRefs"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dataformpb.SyncWorkspaceRefsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dataformpb.SyncWorkspaceRefsResponse",
+        "shortName": "SyncWorkspaceRefs"
+      },
+      "description": "SyncWorkspaceRefs syncs the refs of a Workspace.",
+      "file": "Client/SyncWorkspaceRefs/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dataform_v1beta1_generated_Dataform_SyncWorkspaceRefs_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dataform SyncWorkspaceRefs Sample"
     },
     {
       "clientMethod": {

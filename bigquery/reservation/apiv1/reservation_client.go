@@ -74,6 +74,7 @@ type CallOptions struct {
 	GetReservationGroup      []gax.CallOption
 	DeleteReservationGroup   []gax.CallOption
 	ListReservationGroups    []gax.CallOption
+	UpdateReservationGroup   []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -262,6 +263,7 @@ func defaultCallOptions() *CallOptions {
 		GetReservationGroup:    []gax.CallOption{},
 		DeleteReservationGroup: []gax.CallOption{},
 		ListReservationGroups:  []gax.CallOption{},
+		UpdateReservationGroup: []gax.CallOption{},
 	}
 }
 
@@ -426,6 +428,7 @@ func defaultRESTCallOptions() *CallOptions {
 		GetReservationGroup:    []gax.CallOption{},
 		DeleteReservationGroup: []gax.CallOption{},
 		ListReservationGroups:  []gax.CallOption{},
+		UpdateReservationGroup: []gax.CallOption{},
 	}
 }
 
@@ -463,6 +466,7 @@ type internalClient interface {
 	GetReservationGroup(context.Context, *reservationpb.GetReservationGroupRequest, ...gax.CallOption) (*reservationpb.ReservationGroup, error)
 	DeleteReservationGroup(context.Context, *reservationpb.DeleteReservationGroupRequest, ...gax.CallOption) error
 	ListReservationGroups(context.Context, *reservationpb.ListReservationGroupsRequest, ...gax.CallOption) *ReservationGroupIterator
+	UpdateReservationGroup(context.Context, *reservationpb.UpdateReservationGroupRequest, ...gax.CallOption) (*reservationpb.ReservationGroup, error)
 }
 
 // Client is a client for interacting with BigQuery Reservation API.
@@ -859,6 +863,11 @@ func (c *Client) ListReservationGroups(ctx context.Context, req *reservationpb.L
 	return c.internalClient.ListReservationGroups(ctx, req, opts...)
 }
 
+// UpdateReservationGroup updates an existing reservation group resource.
+func (c *Client) UpdateReservationGroup(ctx context.Context, req *reservationpb.UpdateReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	return c.internalClient.UpdateReservationGroup(ctx, req, opts...)
+}
+
 // gRPCClient is a client for interacting with BigQuery Reservation API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
@@ -970,6 +979,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetReservationGroup = append(client.CallOptions.GetReservationGroup, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteReservationGroup = append(client.CallOptions.DeleteReservationGroup, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListReservationGroups = append(client.CallOptions.ListReservationGroups, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateReservationGroup = append(client.CallOptions.UpdateReservationGroup, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -1103,6 +1113,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetReservationGroup = append(callOpts.GetReservationGroup, gax.WithClientMetrics(metrics))
 		callOpts.DeleteReservationGroup = append(callOpts.DeleteReservationGroup, gax.WithClientMetrics(metrics))
 		callOpts.ListReservationGroups = append(callOpts.ListReservationGroups, gax.WithClientMetrics(metrics))
+		callOpts.UpdateReservationGroup = append(callOpts.UpdateReservationGroup, gax.WithClientMetrics(metrics))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
@@ -1991,6 +2002,30 @@ func (c *gRPCClient) ListReservationGroups(ctx context.Context, req *reservation
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *gRPCClient) UpdateReservationGroup(ctx context.Context, req *reservationpb.UpdateReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "reservation_group.name", url.QueryEscape(req.GetReservationGroup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetReservationGroup().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateReservationGroup")
+	}
+	opts = append((*c.CallOptions).UpdateReservationGroup[0:len((*c.CallOptions).UpdateReservationGroup):len((*c.CallOptions).UpdateReservationGroup)], opts...)
+	var resp *reservationpb.ReservationGroup
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateReservationGroup, req, settings.GRPC, c.logger, "UpdateReservationGroup")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateReservation creates a new reservation resource.
@@ -4055,4 +4090,75 @@ func (c *restClient) ListReservationGroups(ctx context.Context, req *reservation
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+// UpdateReservationGroup updates an existing reservation group resource.
+func (c *restClient) UpdateReservationGroup(ctx context.Context, req *reservationpb.UpdateReservationGroupRequest, opts ...gax.CallOption) (*reservationpb.ReservationGroup, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetReservationGroup()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetReservationGroup().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "reservation_group.name", url.QueryEscape(req.GetReservationGroup().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigqueryreservation.googleapis.com/%v", req.GetReservationGroup().GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.reservation.v1.ReservationService/UpdateReservationGroup")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{reservation_group.name=projects/*/locations/*/reservationGroups/*}")
+	}
+	opts = append((*c.CallOptions).UpdateReservationGroup[0:len((*c.CallOptions).UpdateReservationGroup):len((*c.CallOptions).UpdateReservationGroup)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &reservationpb.ReservationGroup{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateReservationGroup")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }

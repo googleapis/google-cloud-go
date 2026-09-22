@@ -2013,7 +2013,7 @@ func TestIteratorStopEarly(t *testing.T) {
 }
 
 func TestIteratorWithError(t *testing.T) {
-	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", "identity", false, false, noop.NewMeterProvider())
+	metricsTracerFactory, err := newBuiltinMetricsTracerFactory(context.Background(), "projects/my-project/instances/my-instance/databases/my-database", "identity", false, false, noop.NewMeterProvider(), nil)
 	if err != nil {
 		t.Fatalf("failed to create metrics tracer factory: %v", err)
 	}

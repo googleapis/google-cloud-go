@@ -58,6 +58,7 @@ const (
 	StorageControl_ListAnywhereCaches_FullMethodName                   = "/google.storage.control.v2.StorageControl/ListAnywhereCaches"
 	StorageControl_CreateRapidCache_FullMethodName                     = "/google.storage.control.v2.StorageControl/CreateRapidCache"
 	StorageControl_UpdateRapidCache_FullMethodName                     = "/google.storage.control.v2.StorageControl/UpdateRapidCache"
+	StorageControl_DisableRapidCache_FullMethodName                    = "/google.storage.control.v2.StorageControl/DisableRapidCache"
 	StorageControl_GetRapidCache_FullMethodName                        = "/google.storage.control.v2.StorageControl/GetRapidCache"
 	StorageControl_ListRapidCaches_FullMethodName                      = "/google.storage.control.v2.StorageControl/ListRapidCaches"
 	StorageControl_GetProjectIntelligenceConfig_FullMethodName         = "/google.storage.control.v2.StorageControl/GetProjectIntelligenceConfig"
@@ -74,6 +75,7 @@ const (
 	StorageControl_SummarizeIntelligenceFindings_FullMethodName        = "/google.storage.control.v2.StorageControl/SummarizeIntelligenceFindings"
 	StorageControl_GetIntelligenceFindingRevision_FullMethodName       = "/google.storage.control.v2.StorageControl/GetIntelligenceFindingRevision"
 	StorageControl_ListIntelligenceFindingRevisions_FullMethodName     = "/google.storage.control.v2.StorageControl/ListIntelligenceFindingRevisions"
+	StorageControl_ViewObjectFullContext_FullMethodName                = "/google.storage.control.v2.StorageControl/ViewObjectFullContext"
 )
 
 // StorageControlClient is the client API for StorageControl service.
@@ -135,6 +137,8 @@ type StorageControlClient interface {
 	CreateRapidCache(ctx context.Context, in *CreateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Updates a Rapid Cache instance.
 	UpdateRapidCache(ctx context.Context, in *UpdateRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Disables a Rapid Cache instance.
+	DisableRapidCache(ctx context.Context, in *DisableRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a Rapid Cache instance.
 	GetRapidCache(ctx context.Context, in *GetRapidCacheRequest, opts ...grpc.CallOption) (*RapidCache, error)
 	// Lists Rapid Cache instances for a given bucket.
@@ -182,6 +186,16 @@ type StorageControlClient interface {
 	GetIntelligenceFindingRevision(ctx context.Context, in *GetIntelligenceFindingRevisionRequest, opts ...grpc.CallOption) (*IntelligenceFindingRevision, error)
 	// Lists all the revisions of an `IntelligenceFinding` resource.
 	ListIntelligenceFindingRevisions(ctx context.Context, in *ListIntelligenceFindingRevisionsRequest, opts ...grpc.CallOption) (*ListIntelligenceFindingRevisionsResponse, error)
+	// Retrieves the full content of an object context, including its key, value,
+	// and any associated extended data for a given context key.
+	//
+	// Object contexts can optionally contain extended data. If an object context
+	// contains extended data, the metadata payload structure will contain only
+	// its type URL. To retrieve the full extended data, call this method.
+	//
+	// Returns the complete representation of the context as an
+	// [`ObjectFullContext`][google.storage.control.v2.ObjectFullContext].
+	ViewObjectFullContext(ctx context.Context, in *ViewObjectFullContextRequest, opts ...grpc.CallOption) (*ObjectFullContext, error)
 }
 
 type storageControlClient struct {
@@ -381,6 +395,15 @@ func (c *storageControlClient) UpdateRapidCache(ctx context.Context, in *UpdateR
 	return out, nil
 }
 
+func (c *storageControlClient) DisableRapidCache(ctx context.Context, in *DisableRapidCacheRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, StorageControl_DisableRapidCache_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *storageControlClient) GetRapidCache(ctx context.Context, in *GetRapidCacheRequest, opts ...grpc.CallOption) (*RapidCache, error) {
 	out := new(RapidCache)
 	err := c.cc.Invoke(ctx, StorageControl_GetRapidCache_FullMethodName, in, out, opts...)
@@ -525,6 +548,15 @@ func (c *storageControlClient) ListIntelligenceFindingRevisions(ctx context.Cont
 	return out, nil
 }
 
+func (c *storageControlClient) ViewObjectFullContext(ctx context.Context, in *ViewObjectFullContextRequest, opts ...grpc.CallOption) (*ObjectFullContext, error) {
+	out := new(ObjectFullContext)
+	err := c.cc.Invoke(ctx, StorageControl_ViewObjectFullContext_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // StorageControlServer is the server API for StorageControl service.
 // All implementations should embed UnimplementedStorageControlServer
 // for forward compatibility
@@ -584,6 +616,8 @@ type StorageControlServer interface {
 	CreateRapidCache(context.Context, *CreateRapidCacheRequest) (*longrunningpb.Operation, error)
 	// Updates a Rapid Cache instance.
 	UpdateRapidCache(context.Context, *UpdateRapidCacheRequest) (*longrunningpb.Operation, error)
+	// Disables a Rapid Cache instance.
+	DisableRapidCache(context.Context, *DisableRapidCacheRequest) (*longrunningpb.Operation, error)
 	// Gets a Rapid Cache instance.
 	GetRapidCache(context.Context, *GetRapidCacheRequest) (*RapidCache, error)
 	// Lists Rapid Cache instances for a given bucket.
@@ -631,6 +665,16 @@ type StorageControlServer interface {
 	GetIntelligenceFindingRevision(context.Context, *GetIntelligenceFindingRevisionRequest) (*IntelligenceFindingRevision, error)
 	// Lists all the revisions of an `IntelligenceFinding` resource.
 	ListIntelligenceFindingRevisions(context.Context, *ListIntelligenceFindingRevisionsRequest) (*ListIntelligenceFindingRevisionsResponse, error)
+	// Retrieves the full content of an object context, including its key, value,
+	// and any associated extended data for a given context key.
+	//
+	// Object contexts can optionally contain extended data. If an object context
+	// contains extended data, the metadata payload structure will contain only
+	// its type URL. To retrieve the full extended data, call this method.
+	//
+	// Returns the complete representation of the context as an
+	// [`ObjectFullContext`][google.storage.control.v2.ObjectFullContext].
+	ViewObjectFullContext(context.Context, *ViewObjectFullContextRequest) (*ObjectFullContext, error)
 }
 
 // UnimplementedStorageControlServer should be embedded to have forward compatible implementations.
@@ -700,6 +744,9 @@ func (UnimplementedStorageControlServer) CreateRapidCache(context.Context, *Crea
 func (UnimplementedStorageControlServer) UpdateRapidCache(context.Context, *UpdateRapidCacheRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method UpdateRapidCache not implemented")
 }
+func (UnimplementedStorageControlServer) DisableRapidCache(context.Context, *DisableRapidCacheRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DisableRapidCache not implemented")
+}
 func (UnimplementedStorageControlServer) GetRapidCache(context.Context, *GetRapidCacheRequest) (*RapidCache, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetRapidCache not implemented")
 }
@@ -747,6 +794,9 @@ func (UnimplementedStorageControlServer) GetIntelligenceFindingRevision(context.
 }
 func (UnimplementedStorageControlServer) ListIntelligenceFindingRevisions(context.Context, *ListIntelligenceFindingRevisionsRequest) (*ListIntelligenceFindingRevisionsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListIntelligenceFindingRevisions not implemented")
+}
+func (UnimplementedStorageControlServer) ViewObjectFullContext(context.Context, *ViewObjectFullContextRequest) (*ObjectFullContext, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ViewObjectFullContext not implemented")
 }
 
 // UnsafeStorageControlServer may be embedded to opt out of forward compatibility for this service.
@@ -1138,6 +1188,24 @@ func _StorageControl_UpdateRapidCache_Handler(srv interface{}, ctx context.Conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageControl_DisableRapidCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DisableRapidCacheRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).DisableRapidCache(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_DisableRapidCache_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).DisableRapidCache(ctx, req.(*DisableRapidCacheRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _StorageControl_GetRapidCache_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetRapidCacheRequest)
 	if err := dec(in); err != nil {
@@ -1426,6 +1494,24 @@ func _StorageControl_ListIntelligenceFindingRevisions_Handler(srv interface{}, c
 	return interceptor(ctx, in, info, handler)
 }
 
+func _StorageControl_ViewObjectFullContext_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ViewObjectFullContextRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(StorageControlServer).ViewObjectFullContext(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: StorageControl_ViewObjectFullContext_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(StorageControlServer).ViewObjectFullContext(ctx, req.(*ViewObjectFullContextRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // StorageControl_ServiceDesc is the grpc.ServiceDesc for StorageControl service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1518,6 +1604,10 @@ var StorageControl_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _StorageControl_UpdateRapidCache_Handler,
 		},
 		{
+			MethodName: "DisableRapidCache",
+			Handler:    _StorageControl_DisableRapidCache_Handler,
+		},
+		{
 			MethodName: "GetRapidCache",
 			Handler:    _StorageControl_GetRapidCache_Handler,
 		},
@@ -1580,6 +1670,10 @@ var StorageControl_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListIntelligenceFindingRevisions",
 			Handler:    _StorageControl_ListIntelligenceFindingRevisions_Handler,
+		},
+		{
+			MethodName: "ViewObjectFullContext",
+			Handler:    _StorageControl_ViewObjectFullContext_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

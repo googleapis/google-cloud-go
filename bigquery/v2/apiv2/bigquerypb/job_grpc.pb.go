@@ -51,10 +51,22 @@ type JobServiceClient interface {
 	// Requests that a job be cancelled. This call will return immediately, and
 	// the client will need to poll for the job status to see if the cancel
 	// completed successfully. Cancelled jobs may still incur costs.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.update` permission on the job resource.
+	// If the user matches the creator of the job, the `bigquery.jobs.create`
+	// permission on the project is required instead.
 	CancelJob(ctx context.Context, in *CancelJobRequest, opts ...grpc.CallOption) (*JobCancelResponse, error)
 	// Returns information about a specific job. Job information is available for
 	// a six month period after creation. Requires that you're the person who ran
 	// the job, or have the Is Owner project role.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.get` permission on the job resource.
+	// If the user matches the creator of the job, the `bigquery.jobs.create`
+	// permission on the project is required instead.
 	GetJob(ctx context.Context, in *GetJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Starts a new asynchronous job.
 	//
@@ -67,20 +79,71 @@ type JobServiceClient interface {
 	//     configuration and a data stream together.  In this case, the Upload URI
 	//     accepts the job configuration and the data as two distinct multipart MIME
 	//     parts.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.create` permission on the project resource.
+	//
+	// Additional permissions are required depending on the job type:
+	//
+	//   - **Load, Export, and Copy jobs**: Generally require data-level
+	//     permissions such as `bigquery.tables.export` or access to external
+	//     storage.
+	//   - **Query jobs**: Permissions are dependent on the SQL statement.
+	//     Complex queries (DDL, DCL) may require additional permissions to
+	//     create reservations, modify IAM policies, or update project settings.
 	InsertJob(ctx context.Context, in *InsertJobRequest, opts ...grpc.CallOption) (*Job, error)
 	// Requests the deletion of the metadata of a job. This call returns when the
 	// job's metadata is deleted.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.delete` permission on the job resource.
 	DeleteJob(ctx context.Context, in *DeleteJobRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all jobs that you started in the specified project. Job information
 	// is available for a six month period after creation. The job list is sorted
 	// in reverse chronological order, by job creation time. Requires the Can View
 	// project role, or the Is Owner project role if you set the allUsers
 	// property.
+	//
+	// # IAM Permissions
+	//
+	// Requires no specific IAM permission(s) to use this method. Users are able
+	// to list the jobs they created.
+	//
+	// Additional access is granted based on the following permissions:
+	//
+	//   - Users with the `bigquery.jobs.listAll` permission can list all jobs with
+	//     all metadata.
+	//   - Users with the `bigquery.jobs.list` permission can list all jobs, but
+	//     with redacted information for jobs they did not create.
 	ListJobs(ctx context.Context, in *ListJobsRequest, opts ...grpc.CallOption) (*JobList, error)
 	// RPC to get the results of a query job.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) to use this method:
+	//
+	//   - `bigquery.jobs.get` on the job.
+	//   - `bigquery.tables.getData` on the destination table.
+	//
+	// If the user matches the creator of the job, the following IAM permission(s)
+	// are required instead:
+	//
+	//   - `bigquery.jobs.create` on the project.
+	//   - `bigquery.tables.getData` on the destination table.
 	GetQueryResults(ctx context.Context, in *GetQueryResultsRequest, opts ...grpc.CallOption) (*GetQueryResultsResponse, error)
 	// Runs a BigQuery SQL query synchronously and returns query results if the
 	// query completes within a specified timeout.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.create` permission on the project resource.
+	//
+	// Data-level permissions are highly dependent on the SQL statement being
+	// executed. While standard queries require data access (such as
+	// `bigquery.tables.getData`), complex operations like DDL or DCL may require
+	// permissions to manage reservations, IAM policies, or project settings.
 	Query(ctx context.Context, in *PostQueryRequest, opts ...grpc.CallOption) (*QueryResponse, error)
 }
 
@@ -162,10 +225,22 @@ type JobServiceServer interface {
 	// Requests that a job be cancelled. This call will return immediately, and
 	// the client will need to poll for the job status to see if the cancel
 	// completed successfully. Cancelled jobs may still incur costs.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.update` permission on the job resource.
+	// If the user matches the creator of the job, the `bigquery.jobs.create`
+	// permission on the project is required instead.
 	CancelJob(context.Context, *CancelJobRequest) (*JobCancelResponse, error)
 	// Returns information about a specific job. Job information is available for
 	// a six month period after creation. Requires that you're the person who ran
 	// the job, or have the Is Owner project role.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.get` permission on the job resource.
+	// If the user matches the creator of the job, the `bigquery.jobs.create`
+	// permission on the project is required instead.
 	GetJob(context.Context, *GetJobRequest) (*Job, error)
 	// Starts a new asynchronous job.
 	//
@@ -178,20 +253,71 @@ type JobServiceServer interface {
 	//     configuration and a data stream together.  In this case, the Upload URI
 	//     accepts the job configuration and the data as two distinct multipart MIME
 	//     parts.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.create` permission on the project resource.
+	//
+	// Additional permissions are required depending on the job type:
+	//
+	//   - **Load, Export, and Copy jobs**: Generally require data-level
+	//     permissions such as `bigquery.tables.export` or access to external
+	//     storage.
+	//   - **Query jobs**: Permissions are dependent on the SQL statement.
+	//     Complex queries (DDL, DCL) may require additional permissions to
+	//     create reservations, modify IAM policies, or update project settings.
 	InsertJob(context.Context, *InsertJobRequest) (*Job, error)
 	// Requests the deletion of the metadata of a job. This call returns when the
 	// job's metadata is deleted.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.delete` permission on the job resource.
 	DeleteJob(context.Context, *DeleteJobRequest) (*emptypb.Empty, error)
 	// Lists all jobs that you started in the specified project. Job information
 	// is available for a six month period after creation. The job list is sorted
 	// in reverse chronological order, by job creation time. Requires the Can View
 	// project role, or the Is Owner project role if you set the allUsers
 	// property.
+	//
+	// # IAM Permissions
+	//
+	// Requires no specific IAM permission(s) to use this method. Users are able
+	// to list the jobs they created.
+	//
+	// Additional access is granted based on the following permissions:
+	//
+	//   - Users with the `bigquery.jobs.listAll` permission can list all jobs with
+	//     all metadata.
+	//   - Users with the `bigquery.jobs.list` permission can list all jobs, but
+	//     with redacted information for jobs they did not create.
 	ListJobs(context.Context, *ListJobsRequest) (*JobList, error)
 	// RPC to get the results of a query job.
+	//
+	// # IAM Permissions
+	//
+	// Requires the following IAM permission(s) to use this method:
+	//
+	//   - `bigquery.jobs.get` on the job.
+	//   - `bigquery.tables.getData` on the destination table.
+	//
+	// If the user matches the creator of the job, the following IAM permission(s)
+	// are required instead:
+	//
+	//   - `bigquery.jobs.create` on the project.
+	//   - `bigquery.tables.getData` on the destination table.
 	GetQueryResults(context.Context, *GetQueryResultsRequest) (*GetQueryResultsResponse, error)
 	// Runs a BigQuery SQL query synchronously and returns query results if the
 	// query completes within a specified timeout.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.jobs.create` permission on the project resource.
+	//
+	// Data-level permissions are highly dependent on the SQL statement being
+	// executed. While standard queries require data access (such as
+	// `bigquery.tables.getData`), complex operations like DDL or DCL may require
+	// permissions to manage reservations, IAM policies, or project settings.
 	Query(context.Context, *PostQueryRequest) (*QueryResponse, error)
 }
 

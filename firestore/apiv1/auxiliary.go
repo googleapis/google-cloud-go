@@ -17,10 +17,19 @@
 package firestore
 
 import (
+	"iter"
+
 	firestorepb "cloud.google.com/go/firestore/apiv1/firestorepb"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CursorIterator) All() iter.Seq2[*firestorepb.Cursor, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // CursorIterator manages a stream of *firestorepb.Cursor.
 type CursorIterator struct {
@@ -67,6 +76,12 @@ func (it *CursorIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentIterator) All() iter.Seq2[*firestorepb.Document, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DocumentIterator manages a stream of *firestorepb.Document.
@@ -116,6 +131,12 @@ func (it *DocumentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -161,6 +182,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.

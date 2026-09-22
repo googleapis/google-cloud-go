@@ -18,12 +18,14 @@ package speech
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	speechpb "cloud.google.com/go/speech/apiv1p1beta1/speechpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -91,6 +93,12 @@ func (op *LongRunningRecognizeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CustomClassIterator) All() iter.Seq2[*speechpb.CustomClass, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CustomClassIterator manages a stream of *speechpb.CustomClass.
 type CustomClassIterator struct {
 	items    []*speechpb.CustomClass
@@ -138,6 +146,12 @@ func (it *CustomClassIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -183,6 +197,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PhraseSetIterator) All() iter.Seq2[*speechpb.PhraseSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PhraseSetIterator manages a stream of *speechpb.PhraseSet.

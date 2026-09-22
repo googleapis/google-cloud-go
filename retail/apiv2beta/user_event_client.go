@@ -261,7 +261,7 @@ func defaultUserEventRESTCallOptions() *UserEventCallOptions {
 	}
 }
 
-// internalUserEventClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+// internalUserEventClient is an interface that defines the methods available from AI Commerce Search API.
 type internalUserEventClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -280,7 +280,7 @@ type internalUserEventClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// UserEventClient is a client for interacting with Vertex AI Search for commerce API.
+// UserEventClient is a client for interacting with AI Commerce Search API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for ingesting end user actions on the customer website.
@@ -409,7 +409,7 @@ func (c *UserEventClient) ListOperations(ctx context.Context, req *longrunningpb
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// userEventGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// userEventGRPCClient is a client for interacting with AI Commerce Search API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type userEventGRPCClient struct {

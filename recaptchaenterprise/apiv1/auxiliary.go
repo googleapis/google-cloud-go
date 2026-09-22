@@ -17,9 +17,18 @@
 package recaptchaenterprise
 
 import (
+	"iter"
+
 	recaptchaenterprisepb "cloud.google.com/go/recaptchaenterprise/v2/apiv1/recaptchaenterprisepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallPolicyIterator) All() iter.Seq2[*recaptchaenterprisepb.FirewallPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // FirewallPolicyIterator manages a stream of *recaptchaenterprisepb.FirewallPolicy.
 type FirewallPolicyIterator struct {
@@ -66,6 +75,12 @@ func (it *FirewallPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IpOverrideDataIterator) All() iter.Seq2[*recaptchaenterprisepb.IpOverrideData, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IpOverrideDataIterator manages a stream of *recaptchaenterprisepb.IpOverrideData.
@@ -115,6 +130,12 @@ func (it *IpOverrideDataIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *KeyIterator) All() iter.Seq2[*recaptchaenterprisepb.Key, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // KeyIterator manages a stream of *recaptchaenterprisepb.Key.
 type KeyIterator struct {
 	items    []*recaptchaenterprisepb.Key
@@ -162,6 +183,12 @@ func (it *KeyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RelatedAccountGroupIterator) All() iter.Seq2[*recaptchaenterprisepb.RelatedAccountGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RelatedAccountGroupIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroup.
 type RelatedAccountGroupIterator struct {
 	items    []*recaptchaenterprisepb.RelatedAccountGroup
@@ -207,6 +234,12 @@ func (it *RelatedAccountGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RelatedAccountGroupMembershipIterator) All() iter.Seq2[*recaptchaenterprisepb.RelatedAccountGroupMembership, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RelatedAccountGroupMembershipIterator manages a stream of *recaptchaenterprisepb.RelatedAccountGroupMembership.

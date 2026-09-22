@@ -288,31 +288,63 @@ func (c *RowAccessPolicyClient) Connection() *grpc.ClientConn {
 }
 
 // ListRowAccessPolicies lists all row access policies on the specified table.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.list permission on the table.
 func (c *RowAccessPolicyClient) ListRowAccessPolicies(ctx context.Context, req *bigquerypb.ListRowAccessPoliciesRequest, opts ...gax.CallOption) *RowAccessPolicyIterator {
 	return c.internalClient.ListRowAccessPolicies(ctx, req, opts...)
 }
 
 // GetRowAccessPolicy gets the specified row access policy by policy ID.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.get permission on the table.
 func (c *RowAccessPolicyClient) GetRowAccessPolicy(ctx context.Context, req *bigquerypb.GetRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return c.internalClient.GetRowAccessPolicy(ctx, req, opts...)
 }
 
 // CreateRowAccessPolicy creates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.create
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *RowAccessPolicyClient) CreateRowAccessPolicy(ctx context.Context, req *bigquerypb.CreateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return c.internalClient.CreateRowAccessPolicy(ctx, req, opts...)
 }
 
 // UpdateRowAccessPolicy updates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.update
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *RowAccessPolicyClient) UpdateRowAccessPolicy(ctx context.Context, req *bigquerypb.UpdateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	return c.internalClient.UpdateRowAccessPolicy(ctx, req, opts...)
 }
 
 // DeleteRowAccessPolicy deletes a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *RowAccessPolicyClient) DeleteRowAccessPolicy(ctx context.Context, req *bigquerypb.DeleteRowAccessPolicyRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteRowAccessPolicy(ctx, req, opts...)
 }
 
 // BatchDeleteRowAccessPolicies deletes provided row access policies.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *RowAccessPolicyClient) BatchDeleteRowAccessPolicies(ctx context.Context, req *bigquerypb.BatchDeleteRowAccessPoliciesRequest, opts ...gax.CallOption) error {
 	return c.internalClient.BatchDeleteRowAccessPolicies(ctx, req, opts...)
 }
@@ -694,6 +726,8 @@ func (c *rowAccessPolicyGRPCClient) BatchDeleteRowAccessPolicies(ctx context.Con
 }
 
 // ListRowAccessPolicies lists all row access policies on the specified table.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.list permission on the table.
 func (c *rowAccessPolicyRESTClient) ListRowAccessPolicies(ctx context.Context, req *bigquerypb.ListRowAccessPoliciesRequest, opts ...gax.CallOption) *RowAccessPolicyIterator {
 	it := &RowAccessPolicyIterator{}
 	req = proto.CloneOf(req)
@@ -771,6 +805,8 @@ func (c *rowAccessPolicyRESTClient) ListRowAccessPolicies(ctx context.Context, r
 }
 
 // GetRowAccessPolicy gets the specified row access policy by policy ID.
+//
+// IAM PermissionsRequires the bigquery.rowAccessPolicies.get permission on the table.
 func (c *rowAccessPolicyRESTClient) GetRowAccessPolicy(ctx context.Context, req *bigquerypb.GetRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -823,6 +859,14 @@ func (c *rowAccessPolicyRESTClient) GetRowAccessPolicy(ctx context.Context, req 
 }
 
 // CreateRowAccessPolicy creates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.create
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *rowAccessPolicyRESTClient) CreateRowAccessPolicy(ctx context.Context, req *bigquerypb.CreateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRowAccessPolicy()
@@ -882,6 +926,14 @@ func (c *rowAccessPolicyRESTClient) CreateRowAccessPolicy(ctx context.Context, r
 }
 
 // UpdateRowAccessPolicy updates a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.update
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
+//
+//	bigquery.tables.getData
 func (c *rowAccessPolicyRESTClient) UpdateRowAccessPolicy(ctx context.Context, req *bigquerypb.UpdateRowAccessPolicyRequest, opts ...gax.CallOption) (*bigquerypb.RowAccessPolicy, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetRowAccessPolicy()
@@ -941,6 +993,12 @@ func (c *rowAccessPolicyRESTClient) UpdateRowAccessPolicy(ctx context.Context, r
 }
 
 // DeleteRowAccessPolicy deletes a row access policy.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *rowAccessPolicyRESTClient) DeleteRowAccessPolicy(ctx context.Context, req *bigquerypb.DeleteRowAccessPolicyRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -985,6 +1043,12 @@ func (c *rowAccessPolicyRESTClient) DeleteRowAccessPolicy(ctx context.Context, r
 }
 
 // BatchDeleteRowAccessPolicies deletes provided row access policies.
+//
+// IAM PermissionsRequires the following IAM permission(s) on the table:
+//
+//	bigquery.rowAccessPolicies.delete
+//
+//	bigquery.rowAccessPolicies.setIamPolicy
 func (c *rowAccessPolicyRESTClient) BatchDeleteRowAccessPolicies(ctx context.Context, req *bigquerypb.BatchDeleteRowAccessPoliciesRequest, opts ...gax.CallOption) error {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	jsonReq, err := m.Marshal(req)

@@ -18,11 +18,13 @@ package subscriptions
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	subscriptionspb "cloud.google.com/go/apps/events/subscriptions/apiv1beta/subscriptionspb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -269,6 +271,12 @@ func (op *UpdateSubscriptionOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateSubscriptionOperation) Name() string {
 	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubscriptionIterator) All() iter.Seq2[*subscriptionspb.Subscription, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SubscriptionIterator manages a stream of *subscriptionspb.Subscription.

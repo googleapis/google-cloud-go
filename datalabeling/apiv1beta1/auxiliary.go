@@ -18,11 +18,13 @@ package datalabeling
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	datalabelingpb "cloud.google.com/go/datalabeling/apiv1beta1/datalabelingpb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -410,6 +412,12 @@ func (op *LabelVideoOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnnotatedDatasetIterator) All() iter.Seq2[*datalabelingpb.AnnotatedDataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AnnotatedDatasetIterator manages a stream of *datalabelingpb.AnnotatedDataset.
 type AnnotatedDatasetIterator struct {
 	items    []*datalabelingpb.AnnotatedDataset
@@ -455,6 +463,12 @@ func (it *AnnotatedDatasetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnnotationSpecSetIterator) All() iter.Seq2[*datalabelingpb.AnnotationSpecSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AnnotationSpecSetIterator manages a stream of *datalabelingpb.AnnotationSpecSet.
@@ -504,6 +518,12 @@ func (it *AnnotationSpecSetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataItemIterator) All() iter.Seq2[*datalabelingpb.DataItem, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataItemIterator manages a stream of *datalabelingpb.DataItem.
 type DataItemIterator struct {
 	items    []*datalabelingpb.DataItem
@@ -549,6 +569,12 @@ func (it *DataItemIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatasetIterator) All() iter.Seq2[*datalabelingpb.Dataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DatasetIterator manages a stream of *datalabelingpb.Dataset.
@@ -598,6 +624,12 @@ func (it *DatasetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationIterator) All() iter.Seq2[*datalabelingpb.Evaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EvaluationIterator manages a stream of *datalabelingpb.Evaluation.
 type EvaluationIterator struct {
 	items    []*datalabelingpb.Evaluation
@@ -643,6 +675,12 @@ func (it *EvaluationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EvaluationJobIterator) All() iter.Seq2[*datalabelingpb.EvaluationJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EvaluationJobIterator manages a stream of *datalabelingpb.EvaluationJob.
@@ -692,6 +730,12 @@ func (it *EvaluationJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExampleIterator) All() iter.Seq2[*datalabelingpb.Example, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExampleIterator manages a stream of *datalabelingpb.Example.
 type ExampleIterator struct {
 	items    []*datalabelingpb.Example
@@ -739,6 +783,12 @@ func (it *ExampleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstructionIterator) All() iter.Seq2[*datalabelingpb.Instruction, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstructionIterator manages a stream of *datalabelingpb.Instruction.
 type InstructionIterator struct {
 	items    []*datalabelingpb.Instruction
@@ -784,6 +834,12 @@ func (it *InstructionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchExampleComparisonsResponse_ExampleComparisonIterator) All() iter.Seq2[*datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchExampleComparisonsResponse_ExampleComparisonIterator manages a stream of *datalabelingpb.SearchExampleComparisonsResponse_ExampleComparison.

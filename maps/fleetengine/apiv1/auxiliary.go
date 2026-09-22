@@ -17,9 +17,18 @@
 package fleetengine
 
 import (
+	"iter"
+
 	fleetenginepb "cloud.google.com/go/maps/fleetengine/apiv1/fleetenginepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TripIterator) All() iter.Seq2[*fleetenginepb.Trip, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // TripIterator manages a stream of *fleetenginepb.Trip.
 type TripIterator struct {
@@ -66,6 +75,12 @@ func (it *TripIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VehicleIterator) All() iter.Seq2[*fleetenginepb.Vehicle, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VehicleIterator manages a stream of *fleetenginepb.Vehicle.

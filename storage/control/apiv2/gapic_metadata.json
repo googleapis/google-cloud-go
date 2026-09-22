@@ -50,6 +50,11 @@
                 "DisableAnywhereCache"
               ]
             },
+            "DisableRapidCache": {
+              "methods": [
+                "DisableRapidCache"
+              ]
+            },
             "GetAnywhereCache": {
               "methods": [
                 "GetAnywhereCache"
@@ -193,6 +198,11 @@
             "UpdateRapidCache": {
               "methods": [
                 "UpdateRapidCache"
+              ]
+            },
+            "ViewObjectFullContext": {
+              "methods": [
+                "ViewObjectFullContext"
               ]
             }
           }
@@ -240,6 +250,11 @@
                 "DisableAnywhereCache"
               ]
             },
+            "DisableRapidCache": {
+              "methods": [
+                "DisableRapidCache"
+              ]
+            },
             "GetAnywhereCache": {
               "methods": [
                 "GetAnywhereCache"
@@ -383,6 +398,11 @@
             "UpdateRapidCache": {
               "methods": [
                 "UpdateRapidCache"
+              ]
+            },
+            "ViewObjectFullContext": {
+              "methods": [
+                "ViewObjectFullContext"
               ]
             }
           }

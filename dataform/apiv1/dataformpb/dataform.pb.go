@@ -5736,6 +5736,10 @@ type CodeCompilationConfig struct {
 	// Optional. The pipeline options which defines the pipeline type and path
 	// within the Git repository.
 	PipelineConfig *PipelineConfig `protobuf:"bytes,12,opt,name=pipeline_config,json=pipelineConfig,proto3" json:"pipeline_config,omitempty"`
+	// Output only. Whether OpenLineage events are emitted for actions in this
+	// workflow. Reflects the `lineage.enabled` setting from
+	// `workflow_settings.yaml`.
+	LineageEnabled *bool `protobuf:"varint,14,opt,name=lineage_enabled,json=lineageEnabled,proto3,oneof" json:"lineage_enabled,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -5845,6 +5849,13 @@ func (x *CodeCompilationConfig) GetPipelineConfig() *PipelineConfig {
 		return x.PipelineConfig
 	}
 	return nil
+}
+
+func (x *CodeCompilationConfig) GetLineageEnabled() bool {
+	if x != nil && x.LineageEnabled != nil {
+		return *x.LineageEnabled
+	}
+	return false
 }
 
 // Metadata about a repository snapshot stored in Google Cloud Storage.
@@ -13361,7 +13372,7 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\raction_target\x18\x04 \x01(\v2 .google.cloud.dataform.v1.TargetB\x03\xe0A\x03R\factionTarget:\xc1\x01\xeaA\xbd\x01\n" +
 	")dataform.googleapis.com/CompilationResult\x12iprojects/{project}/locations/{location}/repositories/{repository}/compilationResults/{compilation_result}*\x12compilationResults2\x11compilationResultB\b\n" +
 	"\x06sourceB\x14\n" +
-	"\x12_internal_metadata\"\x80\x06\n" +
+	"\x12_internal_metadata\"\xc7\x06\n" +
 	"\x15CodeCompilationConfig\x12.\n" +
 	"\x10default_database\x18\x01 \x01(\tB\x03\xe0A\x01R\x0fdefaultDatabase\x12*\n" +
 	"\x0edefault_schema\x18\x02 \x01(\tB\x03\xe0A\x01R\rdefaultSchema\x12.\n" +
@@ -13374,10 +13385,12 @@ const file_google_cloud_dataform_v1_dataform_proto_rawDesc = "" +
 	"\x1dbuiltin_assertion_name_prefix\x18\n" +
 	" \x01(\tB\x03\xe0A\x01R\x1abuiltinAssertionNamePrefix\x12~\n" +
 	" default_notebook_runtime_options\x18\t \x01(\v20.google.cloud.dataform.v1.NotebookRuntimeOptionsB\x03\xe0A\x01R\x1ddefaultNotebookRuntimeOptions\x12V\n" +
-	"\x0fpipeline_config\x18\f \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x03\xe0A\x01R\x0epipelineConfig\x1a7\n" +
+	"\x0fpipeline_config\x18\f \x01(\v2(.google.cloud.dataform.v1.PipelineConfigB\x03\xe0A\x01R\x0epipelineConfig\x121\n" +
+	"\x0flineage_enabled\x18\x0e \x01(\bB\x03\xe0A\x03H\x00R\x0elineageEnabled\x88\x01\x01\x1a7\n" +
 	"\tVarsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
-	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xaf\x01\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x12\n" +
+	"\x10_lineage_enabled\"\xaf\x01\n" +
 	"\x1dGcsRepositorySnapshotMetadata\x12;\n" +
 	"\x17repository_snapshot_uri\x18\x01 \x01(\tB\x03\xe0A\x03R\x15repositorySnapshotUri\x12,\n" +
 	"\x0fcrc32c_checksum\x18\x02 \x01(\tB\x03\xe0A\x03R\x0ecrc32cChecksum\x12#\n" +
@@ -14586,6 +14599,7 @@ func file_google_cloud_dataform_v1_dataform_proto_init() {
 		(*CompilationResult_Workspace)(nil),
 		(*CompilationResult_ReleaseConfig)(nil),
 	}
+	file_google_cloud_dataform_v1_dataform_proto_msgTypes[78].OneofWrappers = []any{}
 	file_google_cloud_dataform_v1_dataform_proto_msgTypes[81].OneofWrappers = []any{
 		(*NotebookRuntimeOptions_GcsOutputBucket)(nil),
 		(*NotebookRuntimeOptions_GcsRepositorySnapshotDestination)(nil),

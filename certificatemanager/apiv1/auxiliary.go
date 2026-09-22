@@ -18,12 +18,14 @@ package certificatemanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	certificatemanagerpb "cloud.google.com/go/certificatemanager/apiv1/certificatemanagerpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1050,6 +1052,12 @@ func (op *UpdateTrustConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateIssuanceConfigIterator) All() iter.Seq2[*certificatemanagerpb.CertificateIssuanceConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CertificateIssuanceConfigIterator manages a stream of *certificatemanagerpb.CertificateIssuanceConfig.
 type CertificateIssuanceConfigIterator struct {
 	items    []*certificatemanagerpb.CertificateIssuanceConfig
@@ -1095,6 +1103,12 @@ func (it *CertificateIssuanceConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateIterator) All() iter.Seq2[*certificatemanagerpb.Certificate, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CertificateIterator manages a stream of *certificatemanagerpb.Certificate.
@@ -1144,6 +1158,12 @@ func (it *CertificateIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateMapEntryIterator) All() iter.Seq2[*certificatemanagerpb.CertificateMapEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CertificateMapEntryIterator manages a stream of *certificatemanagerpb.CertificateMapEntry.
 type CertificateMapEntryIterator struct {
 	items    []*certificatemanagerpb.CertificateMapEntry
@@ -1189,6 +1209,12 @@ func (it *CertificateMapEntryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CertificateMapIterator) All() iter.Seq2[*certificatemanagerpb.CertificateMap, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CertificateMapIterator manages a stream of *certificatemanagerpb.CertificateMap.
@@ -1238,6 +1264,12 @@ func (it *CertificateMapIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DnsAuthorizationIterator) All() iter.Seq2[*certificatemanagerpb.DnsAuthorization, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DnsAuthorizationIterator manages a stream of *certificatemanagerpb.DnsAuthorization.
 type DnsAuthorizationIterator struct {
 	items    []*certificatemanagerpb.DnsAuthorization
@@ -1283,6 +1315,12 @@ func (it *DnsAuthorizationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1332,6 +1370,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1377,6 +1421,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TrustConfigIterator) All() iter.Seq2[*certificatemanagerpb.TrustConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TrustConfigIterator manages a stream of *certificatemanagerpb.TrustConfig.

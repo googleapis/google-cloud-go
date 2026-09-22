@@ -47,7 +47,7 @@ func TestPendingWrite(t *testing.T) {
 	// verify no offset behavior
 	pending := newPendingWrite(ctx, nil, wantReq, nil, "", "")
 	if pending.req.GetOffset() != nil {
-		t.Errorf("request should have no offset, but is present: %q", pending.req.GetOffset().GetValue())
+		t.Errorf("request should have no offset, but is present: %d", pending.req.GetOffset().GetValue())
 	}
 
 	if diff := cmp.Diff(pending.req, wantReq, protocmp.Transform()); diff != "" {

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -155,6 +155,338 @@ func (SpaceConfig_EntryPointAccess) EnumDescriptor() ([]byte, []int) {
 	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 1}
 }
 
+// The moderation mode for a meeting. When the moderation mode is on, the
+// meeting owner has more control over the meeting with features such as
+// co-host management (see message Member) and feature restrictions (see
+// message ModerationRestrictions).
+type SpaceConfig_Moderation int32
+
+const (
+	// Moderation type is not specified. This is used to indicate the user
+	// hasn't specified any value as the user does not intend to update the
+	// state. Users are not allowed to set the value as unspecified.
+	SpaceConfig_MODERATION_UNSPECIFIED SpaceConfig_Moderation = 0
+	// Moderation is off.
+	SpaceConfig_OFF SpaceConfig_Moderation = 1
+	// Moderation is on.
+	SpaceConfig_ON SpaceConfig_Moderation = 2
+)
+
+// Enum value maps for SpaceConfig_Moderation.
+var (
+	SpaceConfig_Moderation_name = map[int32]string{
+		0: "MODERATION_UNSPECIFIED",
+		1: "OFF",
+		2: "ON",
+	}
+	SpaceConfig_Moderation_value = map[string]int32{
+		"MODERATION_UNSPECIFIED": 0,
+		"OFF":                    1,
+		"ON":                     2,
+	}
+)
+
+func (x SpaceConfig_Moderation) Enum() *SpaceConfig_Moderation {
+	p := new(SpaceConfig_Moderation)
+	*p = x
+	return p
+}
+
+func (x SpaceConfig_Moderation) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpaceConfig_Moderation) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_apps_meet_v2_resource_proto_enumTypes[2].Descriptor()
+}
+
+func (SpaceConfig_Moderation) Type() protoreflect.EnumType {
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[2]
+}
+
+func (x SpaceConfig_Moderation) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpaceConfig_Moderation.Descriptor instead.
+func (SpaceConfig_Moderation) EnumDescriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 2}
+}
+
+// Possible states of whether attendance report is enabled for the meeting
+// space.
+type SpaceConfig_AttendanceReportGenerationType int32
+
+const (
+	// Default value specified by user policy.
+	// This should never be returned.
+	SpaceConfig_ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED SpaceConfig_AttendanceReportGenerationType = 0
+	// Attendance report will be generated and sent to drive/email.
+	SpaceConfig_GENERATE_REPORT SpaceConfig_AttendanceReportGenerationType = 1
+	// Attendance report will not be generated.
+	SpaceConfig_DO_NOT_GENERATE SpaceConfig_AttendanceReportGenerationType = 2
+)
+
+// Enum value maps for SpaceConfig_AttendanceReportGenerationType.
+var (
+	SpaceConfig_AttendanceReportGenerationType_name = map[int32]string{
+		0: "ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED",
+		1: "GENERATE_REPORT",
+		2: "DO_NOT_GENERATE",
+	}
+	SpaceConfig_AttendanceReportGenerationType_value = map[string]int32{
+		"ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED": 0,
+		"GENERATE_REPORT": 1,
+		"DO_NOT_GENERATE": 2,
+	}
+)
+
+func (x SpaceConfig_AttendanceReportGenerationType) Enum() *SpaceConfig_AttendanceReportGenerationType {
+	p := new(SpaceConfig_AttendanceReportGenerationType)
+	*p = x
+	return p
+}
+
+func (x SpaceConfig_AttendanceReportGenerationType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpaceConfig_AttendanceReportGenerationType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_apps_meet_v2_resource_proto_enumTypes[3].Descriptor()
+}
+
+func (SpaceConfig_AttendanceReportGenerationType) Type() protoreflect.EnumType {
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[3]
+}
+
+func (x SpaceConfig_AttendanceReportGenerationType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpaceConfig_AttendanceReportGenerationType.Descriptor instead.
+func (SpaceConfig_AttendanceReportGenerationType) EnumDescriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 3}
+}
+
+// Determines who has permission to use a particular feature.
+type SpaceConfig_ModerationRestrictions_RestrictionType int32
+
+const (
+	// Default value specified by user policy.
+	// This should never be returned.
+	SpaceConfig_ModerationRestrictions_RESTRICTION_TYPE_UNSPECIFIED SpaceConfig_ModerationRestrictions_RestrictionType = 0
+	// Meeting owner and co-host have the permission.
+	SpaceConfig_ModerationRestrictions_HOSTS_ONLY SpaceConfig_ModerationRestrictions_RestrictionType = 1
+	// All Participants have permissions.
+	SpaceConfig_ModerationRestrictions_NO_RESTRICTION SpaceConfig_ModerationRestrictions_RestrictionType = 2
+)
+
+// Enum value maps for SpaceConfig_ModerationRestrictions_RestrictionType.
+var (
+	SpaceConfig_ModerationRestrictions_RestrictionType_name = map[int32]string{
+		0: "RESTRICTION_TYPE_UNSPECIFIED",
+		1: "HOSTS_ONLY",
+		2: "NO_RESTRICTION",
+	}
+	SpaceConfig_ModerationRestrictions_RestrictionType_value = map[string]int32{
+		"RESTRICTION_TYPE_UNSPECIFIED": 0,
+		"HOSTS_ONLY":                   1,
+		"NO_RESTRICTION":               2,
+	}
+)
+
+func (x SpaceConfig_ModerationRestrictions_RestrictionType) Enum() *SpaceConfig_ModerationRestrictions_RestrictionType {
+	p := new(SpaceConfig_ModerationRestrictions_RestrictionType)
+	*p = x
+	return p
+}
+
+func (x SpaceConfig_ModerationRestrictions_RestrictionType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpaceConfig_ModerationRestrictions_RestrictionType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_apps_meet_v2_resource_proto_enumTypes[4].Descriptor()
+}
+
+func (SpaceConfig_ModerationRestrictions_RestrictionType) Type() protoreflect.EnumType {
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[4]
+}
+
+func (x SpaceConfig_ModerationRestrictions_RestrictionType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpaceConfig_ModerationRestrictions_RestrictionType.Descriptor instead.
+func (SpaceConfig_ModerationRestrictions_RestrictionType) EnumDescriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 0, 0}
+}
+
+// By default users will join as contributors. Hosts can restrict users to
+// join as viewers.
+// Note: If an explicit role is set for a user in the Member resource, the
+// user will join as that role.
+type SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType int32
+
+const (
+	// Default value specified by user policy.
+	// This should never be returned.
+	SpaceConfig_ModerationRestrictions_DEFAULT_JOIN_AS_VIEWER_TYPE_UNSPECIFIED SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType = 0
+	// Users will by default join as viewers.
+	SpaceConfig_ModerationRestrictions_ON SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType = 1
+	// Users will by default join as contributors.
+	SpaceConfig_ModerationRestrictions_OFF SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType = 2
+)
+
+// Enum value maps for SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType.
+var (
+	SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType_name = map[int32]string{
+		0: "DEFAULT_JOIN_AS_VIEWER_TYPE_UNSPECIFIED",
+		1: "ON",
+		2: "OFF",
+	}
+	SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType_value = map[string]int32{
+		"DEFAULT_JOIN_AS_VIEWER_TYPE_UNSPECIFIED": 0,
+		"ON":  1,
+		"OFF": 2,
+	}
+)
+
+func (x SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType) Enum() *SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType {
+	p := new(SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType)
+	*p = x
+	return p
+}
+
+func (x SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_apps_meet_v2_resource_proto_enumTypes[5].Descriptor()
+}
+
+func (SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType) Type() protoreflect.EnumType {
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[5]
+}
+
+func (x SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType.Descriptor instead.
+func (SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType) EnumDescriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 0, 1}
+}
+
+// Determines whether an artifact can be automatically generated in the
+// meeting space.
+type SpaceConfig_ArtifactConfig_AutoGenerationType int32
+
+const (
+	// Default value specified by user policy.
+	// This should never be returned.
+	SpaceConfig_ArtifactConfig_AUTO_GENERATION_TYPE_UNSPECIFIED SpaceConfig_ArtifactConfig_AutoGenerationType = 0
+	// The artifact is generated automatically.
+	SpaceConfig_ArtifactConfig_ON SpaceConfig_ArtifactConfig_AutoGenerationType = 1
+	// The artifact is not generated automatically.
+	SpaceConfig_ArtifactConfig_OFF SpaceConfig_ArtifactConfig_AutoGenerationType = 2
+)
+
+// Enum value maps for SpaceConfig_ArtifactConfig_AutoGenerationType.
+var (
+	SpaceConfig_ArtifactConfig_AutoGenerationType_name = map[int32]string{
+		0: "AUTO_GENERATION_TYPE_UNSPECIFIED",
+		1: "ON",
+		2: "OFF",
+	}
+	SpaceConfig_ArtifactConfig_AutoGenerationType_value = map[string]int32{
+		"AUTO_GENERATION_TYPE_UNSPECIFIED": 0,
+		"ON":                               1,
+		"OFF":                              2,
+	}
+)
+
+func (x SpaceConfig_ArtifactConfig_AutoGenerationType) Enum() *SpaceConfig_ArtifactConfig_AutoGenerationType {
+	p := new(SpaceConfig_ArtifactConfig_AutoGenerationType)
+	*p = x
+	return p
+}
+
+func (x SpaceConfig_ArtifactConfig_AutoGenerationType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SpaceConfig_ArtifactConfig_AutoGenerationType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_apps_meet_v2_resource_proto_enumTypes[6].Descriptor()
+}
+
+func (SpaceConfig_ArtifactConfig_AutoGenerationType) Type() protoreflect.EnumType {
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[6]
+}
+
+func (x SpaceConfig_ArtifactConfig_AutoGenerationType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SpaceConfig_ArtifactConfig_AutoGenerationType.Descriptor instead.
+func (SpaceConfig_ArtifactConfig_AutoGenerationType) EnumDescriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 1, 0}
+}
+
+// Role of this member in the space.
+type Member_Role int32
+
+const (
+	// This is used to indicate the user hasn't specified any value and the
+	// user’s role will be determined upon joining the meetings between
+	// 'contributor' and 'viewer' role depending on meeting configuration. For
+	// more information about the viewer role, see [Assign View only roles in
+	// Google Meet](https://support.google.com/meet/answer/13658394).
+	Member_ROLE_UNSPECIFIED Member_Role = 0
+	// Co-host role.
+	Member_COHOST Member_Role = 1
+)
+
+// Enum value maps for Member_Role.
+var (
+	Member_Role_name = map[int32]string{
+		0: "ROLE_UNSPECIFIED",
+		1: "COHOST",
+	}
+	Member_Role_value = map[string]int32{
+		"ROLE_UNSPECIFIED": 0,
+		"COHOST":           1,
+	}
+)
+
+func (x Member_Role) Enum() *Member_Role {
+	p := new(Member_Role)
+	*p = x
+	return p
+}
+
+func (x Member_Role) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Member_Role) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_apps_meet_v2_resource_proto_enumTypes[7].Descriptor()
+}
+
+func (Member_Role) Type() protoreflect.EnumType {
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[7]
+}
+
+func (x Member_Role) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Member_Role.Descriptor instead.
+func (Member_Role) EnumDescriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{3, 0}
+}
+
 // Current state of the recording session.
 type Recording_State int32
 
@@ -197,11 +529,11 @@ func (x Recording_State) String() string {
 }
 
 func (Recording_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_apps_meet_v2_resource_proto_enumTypes[2].Descriptor()
+	return file_google_apps_meet_v2_resource_proto_enumTypes[8].Descriptor()
 }
 
 func (Recording_State) Type() protoreflect.EnumType {
-	return &file_google_apps_meet_v2_resource_proto_enumTypes[2]
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[8]
 }
 
 func (x Recording_State) Number() protoreflect.EnumNumber {
@@ -210,7 +542,7 @@ func (x Recording_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Recording_State.Descriptor instead.
 func (Recording_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{9, 0}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{10, 0}
 }
 
 // Current state of the transcript session.
@@ -255,11 +587,11 @@ func (x Transcript_State) String() string {
 }
 
 func (Transcript_State) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_apps_meet_v2_resource_proto_enumTypes[3].Descriptor()
+	return file_google_apps_meet_v2_resource_proto_enumTypes[9].Descriptor()
 }
 
 func (Transcript_State) Type() protoreflect.EnumType {
-	return &file_google_apps_meet_v2_resource_proto_enumTypes[3]
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[9]
 }
 
 func (x Transcript_State) Number() protoreflect.EnumNumber {
@@ -268,7 +600,65 @@ func (x Transcript_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Transcript_State.Descriptor instead.
 func (Transcript_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{11, 0}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{12, 0}
+}
+
+// Current state of the smart notes session.
+type SmartNote_State int32
+
+const (
+	// Default, never used.
+	SmartNote_STATE_UNSPECIFIED SmartNote_State = 0
+	// An active smart notes session has started.
+	SmartNote_STARTED SmartNote_State = 1
+	// This smart notes session has ended, but the smart notes file hasn't been
+	// generated yet.
+	SmartNote_ENDED SmartNote_State = 2
+	// Smart notes file is generated and ready to download.
+	SmartNote_FILE_GENERATED SmartNote_State = 3
+)
+
+// Enum value maps for SmartNote_State.
+var (
+	SmartNote_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "STARTED",
+		2: "ENDED",
+		3: "FILE_GENERATED",
+	}
+	SmartNote_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"STARTED":           1,
+		"ENDED":             2,
+		"FILE_GENERATED":    3,
+	}
+)
+
+func (x SmartNote_State) Enum() *SmartNote_State {
+	p := new(SmartNote_State)
+	*p = x
+	return p
+}
+
+func (x SmartNote_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (SmartNote_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_apps_meet_v2_resource_proto_enumTypes[10].Descriptor()
+}
+
+func (SmartNote_State) Type() protoreflect.EnumType {
+	return &file_google_apps_meet_v2_resource_proto_enumTypes[10]
+}
+
+func (x SmartNote_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use SmartNote_State.Descriptor instead.
+func (SmartNote_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{15, 0}
 }
 
 // Virtual place where conferences are held. Only one active conference can be
@@ -283,7 +673,7 @@ type Space struct {
 	// server-generated ID and is case sensitive. For example, `jQCFfuBOdN5z`.
 	//
 	// For more information, see [How Meet identifies a meeting
-	// space](https://developers.google.com/meet/api/guides/meeting-spaces#identify-meeting-space).
+	// space](https://developers.google.com/workspace/meet/api/guides/meeting-spaces#identify-meeting-space).
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. URI used to join meetings consisting of
 	// `https://meet.google.com/` followed by the `meeting_code`. For example,
@@ -301,6 +691,12 @@ type Space struct {
 	Config *SpaceConfig `protobuf:"bytes,5,opt,name=config,proto3" json:"config,omitempty"`
 	// Active conference, if it exists.
 	ActiveConference *ActiveConference `protobuf:"bytes,6,opt,name=active_conference,json=activeConference,proto3" json:"active_conference,omitempty"`
+	// Output only. All regional phone access methods for this meeting space. Can
+	// be empty.
+	PhoneAccess []*Space_PhoneAccess `protobuf:"bytes,7,rep,name=phone_access,json=phoneAccess,proto3" json:"phone_access,omitempty"`
+	// Output only. The SIP-based access methods that can be used to join the
+	// conference. Can be empty.
+	GatewaySipAccess []*Space_GatewaySipAccess `protobuf:"bytes,8,rep,name=gateway_sip_access,json=gatewaySipAccess,proto3" json:"gateway_sip_access,omitempty"`
 	unknownFields    protoimpl.UnknownFields
 	sizeCache        protoimpl.SizeCache
 }
@@ -370,6 +766,20 @@ func (x *Space) GetActiveConference() *ActiveConference {
 	return nil
 }
 
+func (x *Space) GetPhoneAccess() []*Space_PhoneAccess {
+	if x != nil {
+		return x.PhoneAccess
+	}
+	return nil
+}
+
+func (x *Space) GetGatewaySipAccess() []*Space_GatewaySipAccess {
+	if x != nil {
+		return x.GatewaySipAccess
+	}
+	return nil
+}
+
 // Active conference.
 type ActiveConference struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -429,8 +839,19 @@ type SpaceConfig struct {
 	// meeting space.
 	// Default: EntryPointAccess.ALL
 	EntryPointAccess SpaceConfig_EntryPointAccess `protobuf:"varint,2,opt,name=entry_point_access,json=entryPointAccess,proto3,enum=google.apps.meet.v2.SpaceConfig_EntryPointAccess" json:"entry_point_access,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// The pre-configured moderation mode for the Meeting.
+	// Default: Controlled by the user's policies.
+	Moderation SpaceConfig_Moderation `protobuf:"varint,3,opt,name=moderation,proto3,enum=google.apps.meet.v2.SpaceConfig_Moderation" json:"moderation,omitempty"`
+	// When moderation.ON, these restrictions go into effect for the meeting.
+	// When moderation.OFF, will be reset to default ModerationRestrictions.
+	ModerationRestrictions *SpaceConfig_ModerationRestrictions `protobuf:"bytes,4,opt,name=moderation_restrictions,json=moderationRestrictions,proto3" json:"moderation_restrictions,omitempty"`
+	// Whether attendance report is enabled for the meeting space.
+	AttendanceReportGenerationType SpaceConfig_AttendanceReportGenerationType `protobuf:"varint,6,opt,name=attendance_report_generation_type,json=attendanceReportGenerationType,proto3,enum=google.apps.meet.v2.SpaceConfig_AttendanceReportGenerationType" json:"attendance_report_generation_type,omitempty"`
+	// Configuration pertaining to the auto-generated artifacts that the meeting
+	// supports.
+	ArtifactConfig *SpaceConfig_ArtifactConfig `protobuf:"bytes,7,opt,name=artifact_config,json=artifactConfig,proto3" json:"artifact_config,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *SpaceConfig) Reset() {
@@ -477,6 +898,100 @@ func (x *SpaceConfig) GetEntryPointAccess() SpaceConfig_EntryPointAccess {
 	return SpaceConfig_ENTRY_POINT_ACCESS_UNSPECIFIED
 }
 
+func (x *SpaceConfig) GetModeration() SpaceConfig_Moderation {
+	if x != nil {
+		return x.Moderation
+	}
+	return SpaceConfig_MODERATION_UNSPECIFIED
+}
+
+func (x *SpaceConfig) GetModerationRestrictions() *SpaceConfig_ModerationRestrictions {
+	if x != nil {
+		return x.ModerationRestrictions
+	}
+	return nil
+}
+
+func (x *SpaceConfig) GetAttendanceReportGenerationType() SpaceConfig_AttendanceReportGenerationType {
+	if x != nil {
+		return x.AttendanceReportGenerationType
+	}
+	return SpaceConfig_ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED
+}
+
+func (x *SpaceConfig) GetArtifactConfig() *SpaceConfig_ArtifactConfig {
+	if x != nil {
+		return x.ArtifactConfig
+	}
+	return nil
+}
+
+// Users who are configured to have a role in the space. These users can
+// join the space without knocking.
+type Member struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Resource name of the member.
+	// Format: spaces/{space}/members/{member}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Email for the member. This is required for creating the member.
+	Email string `protobuf:"bytes,2,opt,name=email,proto3" json:"email,omitempty"`
+	// The meeting role assigned to the member.
+	Role          Member_Role `protobuf:"varint,3,opt,name=role,proto3,enum=google.apps.meet.v2.Member_Role" json:"role,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Member) Reset() {
+	*x = Member{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Member) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Member) ProtoMessage() {}
+
+func (x *Member) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Member.ProtoReflect.Descriptor instead.
+func (*Member) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *Member) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Member) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
+func (x *Member) GetRole() Member_Role {
+	if x != nil {
+		return x.Role
+	}
+	return Member_ROLE_UNSPECIFIED
+}
+
 // Single instance of a meeting held in a space.
 type ConferenceRecord struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -501,7 +1016,7 @@ type ConferenceRecord struct {
 
 func (x *ConferenceRecord) Reset() {
 	*x = ConferenceRecord{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[3]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -513,7 +1028,7 @@ func (x *ConferenceRecord) String() string {
 func (*ConferenceRecord) ProtoMessage() {}
 
 func (x *ConferenceRecord) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[3]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -526,7 +1041,7 @@ func (x *ConferenceRecord) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ConferenceRecord.ProtoReflect.Descriptor instead.
 func (*ConferenceRecord) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{3}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{4}
 }
 
 func (x *ConferenceRecord) GetName() string {
@@ -587,7 +1102,7 @@ type Participant struct {
 
 func (x *Participant) Reset() {
 	*x = Participant{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[4]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -599,7 +1114,7 @@ func (x *Participant) String() string {
 func (*Participant) ProtoMessage() {}
 
 func (x *Participant) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[4]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -612,7 +1127,7 @@ func (x *Participant) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Participant.ProtoReflect.Descriptor instead.
 func (*Participant) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{4}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{5}
 }
 
 func (x *Participant) GetUser() isParticipant_User {
@@ -715,7 +1230,7 @@ type ParticipantSession struct {
 
 func (x *ParticipantSession) Reset() {
 	*x = ParticipantSession{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[5]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[6]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -727,7 +1242,7 @@ func (x *ParticipantSession) String() string {
 func (*ParticipantSession) ProtoMessage() {}
 
 func (x *ParticipantSession) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[5]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[6]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -740,7 +1255,7 @@ func (x *ParticipantSession) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ParticipantSession.ProtoReflect.Descriptor instead.
 func (*ParticipantSession) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{5}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{6}
 }
 
 func (x *ParticipantSession) GetName() string {
@@ -783,7 +1298,7 @@ type SignedinUser struct {
 
 func (x *SignedinUser) Reset() {
 	*x = SignedinUser{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[6]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[7]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -795,7 +1310,7 @@ func (x *SignedinUser) String() string {
 func (*SignedinUser) ProtoMessage() {}
 
 func (x *SignedinUser) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[6]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[7]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -808,7 +1323,7 @@ func (x *SignedinUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SignedinUser.ProtoReflect.Descriptor instead.
 func (*SignedinUser) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{6}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{7}
 }
 
 func (x *SignedinUser) GetUser() string {
@@ -836,7 +1351,7 @@ type AnonymousUser struct {
 
 func (x *AnonymousUser) Reset() {
 	*x = AnonymousUser{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[7]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -848,7 +1363,7 @@ func (x *AnonymousUser) String() string {
 func (*AnonymousUser) ProtoMessage() {}
 
 func (x *AnonymousUser) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[7]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -861,7 +1376,7 @@ func (x *AnonymousUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnonymousUser.ProtoReflect.Descriptor instead.
 func (*AnonymousUser) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{7}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *AnonymousUser) GetDisplayName() string {
@@ -883,7 +1398,7 @@ type PhoneUser struct {
 
 func (x *PhoneUser) Reset() {
 	*x = PhoneUser{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[8]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -895,7 +1410,7 @@ func (x *PhoneUser) String() string {
 func (*PhoneUser) ProtoMessage() {}
 
 func (x *PhoneUser) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[8]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -908,7 +1423,7 @@ func (x *PhoneUser) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PhoneUser.ProtoReflect.Descriptor instead.
 func (*PhoneUser) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{8}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *PhoneUser) GetDisplayName() string {
@@ -942,7 +1457,7 @@ type Recording struct {
 
 func (x *Recording) Reset() {
 	*x = Recording{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[9]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -954,7 +1469,7 @@ func (x *Recording) String() string {
 func (*Recording) ProtoMessage() {}
 
 func (x *Recording) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[9]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -967,7 +1482,7 @@ func (x *Recording) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Recording.ProtoReflect.Descriptor instead.
 func (*Recording) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{9}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *Recording) GetDestination() isRecording_Destination {
@@ -1045,7 +1560,7 @@ type DriveDestination struct {
 
 func (x *DriveDestination) Reset() {
 	*x = DriveDestination{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[10]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1057,7 +1572,7 @@ func (x *DriveDestination) String() string {
 func (*DriveDestination) ProtoMessage() {}
 
 func (x *DriveDestination) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[10]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1070,7 +1585,7 @@ func (x *DriveDestination) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DriveDestination.ProtoReflect.Descriptor instead.
 func (*DriveDestination) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{10}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *DriveDestination) GetFile() string {
@@ -1112,7 +1627,7 @@ type Transcript struct {
 
 func (x *Transcript) Reset() {
 	*x = Transcript{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[11]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1124,7 +1639,7 @@ func (x *Transcript) String() string {
 func (*Transcript) ProtoMessage() {}
 
 func (x *Transcript) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[11]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1137,7 +1652,7 @@ func (x *Transcript) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Transcript.ProtoReflect.Descriptor instead.
 func (*Transcript) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{11}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *Transcript) GetDestination() isTranscript_Destination {
@@ -1214,7 +1729,7 @@ type DocsDestination struct {
 
 func (x *DocsDestination) Reset() {
 	*x = DocsDestination{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[12]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1226,7 +1741,7 @@ func (x *DocsDestination) String() string {
 func (*DocsDestination) ProtoMessage() {}
 
 func (x *DocsDestination) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[12]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1239,7 +1754,7 @@ func (x *DocsDestination) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DocsDestination.ProtoReflect.Descriptor instead.
 func (*DocsDestination) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{12}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *DocsDestination) GetDocument() string {
@@ -1280,7 +1795,7 @@ type TranscriptEntry struct {
 
 func (x *TranscriptEntry) Reset() {
 	*x = TranscriptEntry{}
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[13]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1292,7 +1807,7 @@ func (x *TranscriptEntry) String() string {
 func (*TranscriptEntry) ProtoMessage() {}
 
 func (x *TranscriptEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[13]
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1305,7 +1820,7 @@ func (x *TranscriptEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TranscriptEntry.ProtoReflect.Descriptor instead.
 func (*TranscriptEntry) Descriptor() ([]byte, []int) {
-	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{13}
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *TranscriptEntry) GetName() string {
@@ -1350,26 +1865,609 @@ func (x *TranscriptEntry) GetEndTime() *timestamppb.Timestamp {
 	return nil
 }
 
+// Metadata for a smart note generated from a conference. It refers to the notes
+// generated from Take Notes with Gemini during the conference.
+type SmartNote struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Destination of the smart notes.
+	//
+	// Types that are valid to be assigned to Destination:
+	//
+	//	*SmartNote_DocsDestination
+	Destination isSmartNote_Destination `protobuf_oneof:"destination"`
+	// Output only. Identifier. Resource name of the smart notes.
+	// Format: `conferenceRecords/{conference_record}/smartNotes/{smart_note}`,
+	// where `{smart_note}` is a 1:1 mapping to each unique smart notes session
+	// of the conference.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. Current state.
+	State SmartNote_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.apps.meet.v2.SmartNote_State" json:"state,omitempty"`
+	// Output only. Timestamp when the smart notes started.
+	StartTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=start_time,json=startTime,proto3" json:"start_time,omitempty"`
+	// Output only. Timestamp when the smart notes stopped.
+	EndTime       *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=end_time,json=endTime,proto3" json:"end_time,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SmartNote) Reset() {
+	*x = SmartNote{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SmartNote) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SmartNote) ProtoMessage() {}
+
+func (x *SmartNote) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SmartNote.ProtoReflect.Descriptor instead.
+func (*SmartNote) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *SmartNote) GetDestination() isSmartNote_Destination {
+	if x != nil {
+		return x.Destination
+	}
+	return nil
+}
+
+func (x *SmartNote) GetDocsDestination() *DocsDestination {
+	if x != nil {
+		if x, ok := x.Destination.(*SmartNote_DocsDestination); ok {
+			return x.DocsDestination
+		}
+	}
+	return nil
+}
+
+func (x *SmartNote) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *SmartNote) GetState() SmartNote_State {
+	if x != nil {
+		return x.State
+	}
+	return SmartNote_STATE_UNSPECIFIED
+}
+
+func (x *SmartNote) GetStartTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.StartTime
+	}
+	return nil
+}
+
+func (x *SmartNote) GetEndTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.EndTime
+	}
+	return nil
+}
+
+type isSmartNote_Destination interface {
+	isSmartNote_Destination()
+}
+
+type SmartNote_DocsDestination struct {
+	// Output only. The Google Doc destination where the smart notes are saved.
+	DocsDestination *DocsDestination `protobuf:"bytes,5,opt,name=docs_destination,json=docsDestination,proto3,oneof"`
+}
+
+func (*SmartNote_DocsDestination) isSmartNote_Destination() {}
+
+// Phone access contains information required to dial into a conference using
+// a regional phone number and a PIN that is specific to that phone number.
+type Space_PhoneAccess struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The phone number to dial for this meeting space in E.164 format.
+	// Full phone number with a leading '+' character.
+	PhoneNumber string `protobuf:"bytes,1,opt,name=phone_number,json=phoneNumber,proto3" json:"phone_number,omitempty"`
+	// The PIN that users must enter after dialing the given number. The PIN
+	// consists of only decimal digits and the length may vary.
+	Pin string `protobuf:"bytes,2,opt,name=pin,proto3" json:"pin,omitempty"`
+	// The CLDR/ISO 3166 region code for the country associated with this phone
+	// access. To be parsed by the i18n RegionCode utility. Example: "SE" for
+	// Sweden.
+	RegionCode string `protobuf:"bytes,3,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
+	// The BCP 47/LDML language code for the language associated with this phone
+	// access. To be parsed by the i18n LanguageCode utility. Examples: "es-419"
+	// for Latin American Spanish, "fr-CA" for Canadian French.
+	LanguageCode  string `protobuf:"bytes,4,opt,name=language_code,json=languageCode,proto3" json:"language_code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Space_PhoneAccess) Reset() {
+	*x = Space_PhoneAccess{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Space_PhoneAccess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Space_PhoneAccess) ProtoMessage() {}
+
+func (x *Space_PhoneAccess) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Space_PhoneAccess.ProtoReflect.Descriptor instead.
+func (*Space_PhoneAccess) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{0, 0}
+}
+
+func (x *Space_PhoneAccess) GetPhoneNumber() string {
+	if x != nil {
+		return x.PhoneNumber
+	}
+	return ""
+}
+
+func (x *Space_PhoneAccess) GetPin() string {
+	if x != nil {
+		return x.Pin
+	}
+	return ""
+}
+
+func (x *Space_PhoneAccess) GetRegionCode() string {
+	if x != nil {
+		return x.RegionCode
+	}
+	return ""
+}
+
+func (x *Space_PhoneAccess) GetLanguageCode() string {
+	if x != nil {
+		return x.LanguageCode
+	}
+	return ""
+}
+
+// Details how to join the conference through a SIP gateway.
+type Space_GatewaySipAccess struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The Session Initiation Protocol (SIP) URI the conference can be reached
+	// through.
+	//
+	// The string is in one of these formats:
+	//
+	// * "sip:USER_ID@GATEWAY_ADDRESS"
+	// * "sips:USER_ID@GATEWAY_ADDRESS"
+	//
+	// where USER_ID is the 13-digit universal pin (with the future option to
+	// support using a Meet meeting code as well), and GATEWAY_ADDRESS is a
+	// valid address to be resolved using a DNS SRV lookup, or a dotted quad.
+	Uri string `protobuf:"bytes,1,opt,name=uri,proto3" json:"uri,omitempty"`
+	// The permanent numeric code for manual entry on specially configured
+	// devices.
+	SipAccessCode string `protobuf:"bytes,2,opt,name=sip_access_code,json=sipAccessCode,proto3" json:"sip_access_code,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Space_GatewaySipAccess) Reset() {
+	*x = Space_GatewaySipAccess{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Space_GatewaySipAccess) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Space_GatewaySipAccess) ProtoMessage() {}
+
+func (x *Space_GatewaySipAccess) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Space_GatewaySipAccess.ProtoReflect.Descriptor instead.
+func (*Space_GatewaySipAccess) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{0, 1}
+}
+
+func (x *Space_GatewaySipAccess) GetUri() string {
+	if x != nil {
+		return x.Uri
+	}
+	return ""
+}
+
+func (x *Space_GatewaySipAccess) GetSipAccessCode() string {
+	if x != nil {
+		return x.SipAccessCode
+	}
+	return ""
+}
+
+// Defines restrictions for features when the meeting is moderated.
+type SpaceConfig_ModerationRestrictions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Defines who has permission to send chat messages in the meeting space.
+	ChatRestriction SpaceConfig_ModerationRestrictions_RestrictionType `protobuf:"varint,1,opt,name=chat_restriction,json=chatRestriction,proto3,enum=google.apps.meet.v2.SpaceConfig_ModerationRestrictions_RestrictionType" json:"chat_restriction,omitempty"`
+	// Defines who has permission to send reactions in the meeting space.
+	ReactionRestriction SpaceConfig_ModerationRestrictions_RestrictionType `protobuf:"varint,2,opt,name=reaction_restriction,json=reactionRestriction,proto3,enum=google.apps.meet.v2.SpaceConfig_ModerationRestrictions_RestrictionType" json:"reaction_restriction,omitempty"`
+	// Defines who has permission to share their screen in the meeting space.
+	PresentRestriction SpaceConfig_ModerationRestrictions_RestrictionType `protobuf:"varint,3,opt,name=present_restriction,json=presentRestriction,proto3,enum=google.apps.meet.v2.SpaceConfig_ModerationRestrictions_RestrictionType" json:"present_restriction,omitempty"`
+	// Defines whether to restrict the default role assigned to users as viewer.
+	DefaultJoinAsViewerType SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType `protobuf:"varint,4,opt,name=default_join_as_viewer_type,json=defaultJoinAsViewerType,proto3,enum=google.apps.meet.v2.SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType" json:"default_join_as_viewer_type,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *SpaceConfig_ModerationRestrictions) Reset() {
+	*x = SpaceConfig_ModerationRestrictions{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpaceConfig_ModerationRestrictions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpaceConfig_ModerationRestrictions) ProtoMessage() {}
+
+func (x *SpaceConfig_ModerationRestrictions) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpaceConfig_ModerationRestrictions.ProtoReflect.Descriptor instead.
+func (*SpaceConfig_ModerationRestrictions) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *SpaceConfig_ModerationRestrictions) GetChatRestriction() SpaceConfig_ModerationRestrictions_RestrictionType {
+	if x != nil {
+		return x.ChatRestriction
+	}
+	return SpaceConfig_ModerationRestrictions_RESTRICTION_TYPE_UNSPECIFIED
+}
+
+func (x *SpaceConfig_ModerationRestrictions) GetReactionRestriction() SpaceConfig_ModerationRestrictions_RestrictionType {
+	if x != nil {
+		return x.ReactionRestriction
+	}
+	return SpaceConfig_ModerationRestrictions_RESTRICTION_TYPE_UNSPECIFIED
+}
+
+func (x *SpaceConfig_ModerationRestrictions) GetPresentRestriction() SpaceConfig_ModerationRestrictions_RestrictionType {
+	if x != nil {
+		return x.PresentRestriction
+	}
+	return SpaceConfig_ModerationRestrictions_RESTRICTION_TYPE_UNSPECIFIED
+}
+
+func (x *SpaceConfig_ModerationRestrictions) GetDefaultJoinAsViewerType() SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType {
+	if x != nil {
+		return x.DefaultJoinAsViewerType
+	}
+	return SpaceConfig_ModerationRestrictions_DEFAULT_JOIN_AS_VIEWER_TYPE_UNSPECIFIED
+}
+
+// Configuration related to meeting artifacts potentially generated by this
+// meeting space.
+type SpaceConfig_ArtifactConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Configuration for recording.
+	RecordingConfig *SpaceConfig_ArtifactConfig_RecordingConfig `protobuf:"bytes,1,opt,name=recording_config,json=recordingConfig,proto3" json:"recording_config,omitempty"`
+	// Configuration for auto-transcript.
+	TranscriptionConfig *SpaceConfig_ArtifactConfig_TranscriptionConfig `protobuf:"bytes,2,opt,name=transcription_config,json=transcriptionConfig,proto3" json:"transcription_config,omitempty"`
+	// Configuration for auto-smart-notes.
+	SmartNotesConfig *SpaceConfig_ArtifactConfig_SmartNotesConfig `protobuf:"bytes,3,opt,name=smart_notes_config,json=smartNotesConfig,proto3" json:"smart_notes_config,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *SpaceConfig_ArtifactConfig) Reset() {
+	*x = SpaceConfig_ArtifactConfig{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpaceConfig_ArtifactConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpaceConfig_ArtifactConfig) ProtoMessage() {}
+
+func (x *SpaceConfig_ArtifactConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpaceConfig_ArtifactConfig.ProtoReflect.Descriptor instead.
+func (*SpaceConfig_ArtifactConfig) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 1}
+}
+
+func (x *SpaceConfig_ArtifactConfig) GetRecordingConfig() *SpaceConfig_ArtifactConfig_RecordingConfig {
+	if x != nil {
+		return x.RecordingConfig
+	}
+	return nil
+}
+
+func (x *SpaceConfig_ArtifactConfig) GetTranscriptionConfig() *SpaceConfig_ArtifactConfig_TranscriptionConfig {
+	if x != nil {
+		return x.TranscriptionConfig
+	}
+	return nil
+}
+
+func (x *SpaceConfig_ArtifactConfig) GetSmartNotesConfig() *SpaceConfig_ArtifactConfig_SmartNotesConfig {
+	if x != nil {
+		return x.SmartNotesConfig
+	}
+	return nil
+}
+
+// Configuration related to recording in a meeting space.
+type SpaceConfig_ArtifactConfig_RecordingConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Defines whether a meeting space is automatically recorded when someone
+	// with the privilege to record joins the meeting.
+	AutoRecordingGeneration SpaceConfig_ArtifactConfig_AutoGenerationType `protobuf:"varint,2,opt,name=auto_recording_generation,json=autoRecordingGeneration,proto3,enum=google.apps.meet.v2.SpaceConfig_ArtifactConfig_AutoGenerationType" json:"auto_recording_generation,omitempty"`
+	unknownFields           protoimpl.UnknownFields
+	sizeCache               protoimpl.SizeCache
+}
+
+func (x *SpaceConfig_ArtifactConfig_RecordingConfig) Reset() {
+	*x = SpaceConfig_ArtifactConfig_RecordingConfig{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpaceConfig_ArtifactConfig_RecordingConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpaceConfig_ArtifactConfig_RecordingConfig) ProtoMessage() {}
+
+func (x *SpaceConfig_ArtifactConfig_RecordingConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpaceConfig_ArtifactConfig_RecordingConfig.ProtoReflect.Descriptor instead.
+func (*SpaceConfig_ArtifactConfig_RecordingConfig) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 1, 0}
+}
+
+func (x *SpaceConfig_ArtifactConfig_RecordingConfig) GetAutoRecordingGeneration() SpaceConfig_ArtifactConfig_AutoGenerationType {
+	if x != nil {
+		return x.AutoRecordingGeneration
+	}
+	return SpaceConfig_ArtifactConfig_AUTO_GENERATION_TYPE_UNSPECIFIED
+}
+
+// Configuration related to transcription in a meeting space.
+type SpaceConfig_ArtifactConfig_TranscriptionConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Defines whether the content of a meeting is automatically transcribed
+	// when someone with the privilege to transcribe joins the meeting.
+	AutoTranscriptionGeneration SpaceConfig_ArtifactConfig_AutoGenerationType `protobuf:"varint,2,opt,name=auto_transcription_generation,json=autoTranscriptionGeneration,proto3,enum=google.apps.meet.v2.SpaceConfig_ArtifactConfig_AutoGenerationType" json:"auto_transcription_generation,omitempty"`
+	unknownFields               protoimpl.UnknownFields
+	sizeCache                   protoimpl.SizeCache
+}
+
+func (x *SpaceConfig_ArtifactConfig_TranscriptionConfig) Reset() {
+	*x = SpaceConfig_ArtifactConfig_TranscriptionConfig{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[21]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpaceConfig_ArtifactConfig_TranscriptionConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpaceConfig_ArtifactConfig_TranscriptionConfig) ProtoMessage() {}
+
+func (x *SpaceConfig_ArtifactConfig_TranscriptionConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[21]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpaceConfig_ArtifactConfig_TranscriptionConfig.ProtoReflect.Descriptor instead.
+func (*SpaceConfig_ArtifactConfig_TranscriptionConfig) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 1, 1}
+}
+
+func (x *SpaceConfig_ArtifactConfig_TranscriptionConfig) GetAutoTranscriptionGeneration() SpaceConfig_ArtifactConfig_AutoGenerationType {
+	if x != nil {
+		return x.AutoTranscriptionGeneration
+	}
+	return SpaceConfig_ArtifactConfig_AUTO_GENERATION_TYPE_UNSPECIFIED
+}
+
+// Configuration related to smart notes in a meeting space. For
+// more information about smart notes, see ["Take notes for me" in Google
+// Meet](https://support.google.com/meet/answer/14754931).
+type SpaceConfig_ArtifactConfig_SmartNotesConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Defines whether to automatically generate a summary and recap of the
+	// meeting for all invitees in the organization when someone with the
+	// privilege to enable smart notes joins the meeting.
+	AutoSmartNotesGeneration SpaceConfig_ArtifactConfig_AutoGenerationType `protobuf:"varint,2,opt,name=auto_smart_notes_generation,json=autoSmartNotesGeneration,proto3,enum=google.apps.meet.v2.SpaceConfig_ArtifactConfig_AutoGenerationType" json:"auto_smart_notes_generation,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
+}
+
+func (x *SpaceConfig_ArtifactConfig_SmartNotesConfig) Reset() {
+	*x = SpaceConfig_ArtifactConfig_SmartNotesConfig{}
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SpaceConfig_ArtifactConfig_SmartNotesConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SpaceConfig_ArtifactConfig_SmartNotesConfig) ProtoMessage() {}
+
+func (x *SpaceConfig_ArtifactConfig_SmartNotesConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_apps_meet_v2_resource_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SpaceConfig_ArtifactConfig_SmartNotesConfig.ProtoReflect.Descriptor instead.
+func (*SpaceConfig_ArtifactConfig_SmartNotesConfig) Descriptor() ([]byte, []int) {
+	return file_google_apps_meet_v2_resource_proto_rawDescGZIP(), []int{2, 1, 2}
+}
+
+func (x *SpaceConfig_ArtifactConfig_SmartNotesConfig) GetAutoSmartNotesGeneration() SpaceConfig_ArtifactConfig_AutoGenerationType {
+	if x != nil {
+		return x.AutoSmartNotesGeneration
+	}
+	return SpaceConfig_ArtifactConfig_AUTO_GENERATION_TYPE_UNSPECIFIED
+}
+
 var File_google_apps_meet_v2_resource_proto protoreflect.FileDescriptor
 
 const file_google_apps_meet_v2_resource_proto_rawDesc = "" +
 	"\n" +
-	"\"google/apps/meet/v2/resource.proto\x12\x13google.apps.meet.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xac\x02\n" +
+	"\"google/apps/meet/v2/resource.proto\x12\x13google.apps.meet.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xb5\x05\n" +
 	"\x05Space\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12$\n" +
 	"\vmeeting_uri\x18\x02 \x01(\tB\x03\xe0A\x03R\n" +
 	"meetingUri\x12&\n" +
 	"\fmeeting_code\x18\x03 \x01(\tB\x03\xe0A\x03R\vmeetingCode\x128\n" +
 	"\x06config\x18\x05 \x01(\v2 .google.apps.meet.v2.SpaceConfigR\x06config\x12R\n" +
-	"\x11active_conference\x18\x06 \x01(\v2%.google.apps.meet.v2.ActiveConferenceR\x10activeConference:.\xeaA+\n" +
+	"\x11active_conference\x18\x06 \x01(\v2%.google.apps.meet.v2.ActiveConferenceR\x10activeConference\x12N\n" +
+	"\fphone_access\x18\a \x03(\v2&.google.apps.meet.v2.Space.PhoneAccessB\x03\xe0A\x03R\vphoneAccess\x12^\n" +
+	"\x12gateway_sip_access\x18\b \x03(\v2+.google.apps.meet.v2.Space.GatewaySipAccessB\x03\xe0A\x03R\x10gatewaySipAccess\x1a\x88\x01\n" +
+	"\vPhoneAccess\x12!\n" +
+	"\fphone_number\x18\x01 \x01(\tR\vphoneNumber\x12\x10\n" +
+	"\x03pin\x18\x02 \x01(\tR\x03pin\x12\x1f\n" +
+	"\vregion_code\x18\x03 \x01(\tR\n" +
+	"regionCode\x12#\n" +
+	"\rlanguage_code\x18\x04 \x01(\tR\flanguageCode\x1aL\n" +
+	"\x10GatewaySipAccess\x12\x10\n" +
+	"\x03uri\x18\x01 \x01(\tR\x03uri\x12&\n" +
+	"\x0fsip_access_code\x18\x02 \x01(\tR\rsipAccessCode:.\xeaA+\n" +
 	"\x19meet.googleapis.com/Space\x12\x0espaces/{space}\"m\n" +
 	"\x10ActiveConference\x12Y\n" +
 	"\x11conference_record\x18\x01 \x01(\tB,\xe0A\x03\xfaA&\n" +
-	"$meet.googleapis.com/ConferenceRecordR\x10conferenceRecord\"\xe5\x02\n" +
+	"$meet.googleapis.com/ConferenceRecordR\x10conferenceRecord\"\x8e\x14\n" +
 	"\vSpaceConfig\x12L\n" +
 	"\vaccess_type\x18\x01 \x01(\x0e2+.google.apps.meet.v2.SpaceConfig.AccessTypeR\n" +
 	"accessType\x12_\n" +
-	"\x12entry_point_access\x18\x02 \x01(\x0e21.google.apps.meet.v2.SpaceConfig.EntryPointAccessR\x10entryPointAccess\"P\n" +
+	"\x12entry_point_access\x18\x02 \x01(\x0e21.google.apps.meet.v2.SpaceConfig.EntryPointAccessR\x10entryPointAccess\x12K\n" +
+	"\n" +
+	"moderation\x18\x03 \x01(\x0e2+.google.apps.meet.v2.SpaceConfig.ModerationR\n" +
+	"moderation\x12p\n" +
+	"\x17moderation_restrictions\x18\x04 \x01(\v27.google.apps.meet.v2.SpaceConfig.ModerationRestrictionsR\x16moderationRestrictions\x12\x8a\x01\n" +
+	"!attendance_report_generation_type\x18\x06 \x01(\x0e2?.google.apps.meet.v2.SpaceConfig.AttendanceReportGenerationTypeR\x1eattendanceReportGenerationType\x12X\n" +
+	"\x0fartifact_config\x18\a \x01(\v2/.google.apps.meet.v2.SpaceConfig.ArtifactConfigR\x0eartifactConfig\x1a\xc4\x05\n" +
+	"\x16ModerationRestrictions\x12r\n" +
+	"\x10chat_restriction\x18\x01 \x01(\x0e2G.google.apps.meet.v2.SpaceConfig.ModerationRestrictions.RestrictionTypeR\x0fchatRestriction\x12z\n" +
+	"\x14reaction_restriction\x18\x02 \x01(\x0e2G.google.apps.meet.v2.SpaceConfig.ModerationRestrictions.RestrictionTypeR\x13reactionRestriction\x12x\n" +
+	"\x13present_restriction\x18\x03 \x01(\x0e2G.google.apps.meet.v2.SpaceConfig.ModerationRestrictions.RestrictionTypeR\x12presentRestriction\x12\x8d\x01\n" +
+	"\x1bdefault_join_as_viewer_type\x18\x04 \x01(\x0e2O.google.apps.meet.v2.SpaceConfig.ModerationRestrictions.DefaultJoinAsViewerTypeR\x17defaultJoinAsViewerType\"W\n" +
+	"\x0fRestrictionType\x12 \n" +
+	"\x1cRESTRICTION_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"HOSTS_ONLY\x10\x01\x12\x12\n" +
+	"\x0eNO_RESTRICTION\x10\x02\"W\n" +
+	"\x17DefaultJoinAsViewerType\x12+\n" +
+	"'DEFAULT_JOIN_AS_VIEWER_TYPE_UNSPECIFIED\x10\x00\x12\x06\n" +
+	"\x02ON\x10\x01\x12\a\n" +
+	"\x03OFF\x10\x02\x1a\xff\x06\n" +
+	"\x0eArtifactConfig\x12j\n" +
+	"\x10recording_config\x18\x01 \x01(\v2?.google.apps.meet.v2.SpaceConfig.ArtifactConfig.RecordingConfigR\x0frecordingConfig\x12v\n" +
+	"\x14transcription_config\x18\x02 \x01(\v2C.google.apps.meet.v2.SpaceConfig.ArtifactConfig.TranscriptionConfigR\x13transcriptionConfig\x12n\n" +
+	"\x12smart_notes_config\x18\x03 \x01(\v2@.google.apps.meet.v2.SpaceConfig.ArtifactConfig.SmartNotesConfigR\x10smartNotesConfig\x1a\x91\x01\n" +
+	"\x0fRecordingConfig\x12~\n" +
+	"\x19auto_recording_generation\x18\x02 \x01(\x0e2B.google.apps.meet.v2.SpaceConfig.ArtifactConfig.AutoGenerationTypeR\x17autoRecordingGeneration\x1a\x9e\x01\n" +
+	"\x13TranscriptionConfig\x12\x86\x01\n" +
+	"\x1dauto_transcription_generation\x18\x02 \x01(\x0e2B.google.apps.meet.v2.SpaceConfig.ArtifactConfig.AutoGenerationTypeR\x1bautoTranscriptionGeneration\x1a\x96\x01\n" +
+	"\x10SmartNotesConfig\x12\x81\x01\n" +
+	"\x1bauto_smart_notes_generation\x18\x02 \x01(\x0e2B.google.apps.meet.v2.SpaceConfig.ArtifactConfig.AutoGenerationTypeR\x18autoSmartNotesGeneration\"K\n" +
+	"\x12AutoGenerationType\x12$\n" +
+	" AUTO_GENERATION_TYPE_UNSPECIFIED\x10\x00\x12\x06\n" +
+	"\x02ON\x10\x01\x12\a\n" +
+	"\x03OFF\x10\x02\"P\n" +
 	"\n" +
 	"AccessType\x12\x1b\n" +
 	"\x17ACCESS_TYPE_UNSPECIFIED\x10\x00\x12\b\n" +
@@ -1380,7 +2478,25 @@ const file_google_apps_meet_v2_resource_proto_rawDesc = "" +
 	"\x10EntryPointAccess\x12\"\n" +
 	"\x1eENTRY_POINT_ACCESS_UNSPECIFIED\x10\x00\x12\a\n" +
 	"\x03ALL\x10\x01\x12\x14\n" +
-	"\x10CREATOR_APP_ONLY\x10\x02\"\x99\x03\n" +
+	"\x10CREATOR_APP_ONLY\x10\x02\"9\n" +
+	"\n" +
+	"Moderation\x12\x1a\n" +
+	"\x16MODERATION_UNSPECIFIED\x10\x00\x12\a\n" +
+	"\x03OFF\x10\x01\x12\x06\n" +
+	"\x02ON\x10\x02\"}\n" +
+	"\x1eAttendanceReportGenerationType\x121\n" +
+	"-ATTENDANCE_REPORT_GENERATION_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fGENERATE_REPORT\x10\x01\x12\x13\n" +
+	"\x0fDO_NOT_GENERATE\x10\x02\"\xea\x01\n" +
+	"\x06Member\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x14\n" +
+	"\x05email\x18\x02 \x01(\tR\x05email\x124\n" +
+	"\x04role\x18\x03 \x01(\x0e2 .google.apps.meet.v2.Member.RoleR\x04role\"(\n" +
+	"\x04Role\x12\x14\n" +
+	"\x10ROLE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06COHOST\x10\x01:Q\xeaAN\n" +
+	"\x1ameet.googleapis.com/Member\x12\x1fspaces/{space}/members/{member}*\amembers2\x06member\"\x99\x03\n" +
 	"\x10ConferenceRecord\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12>\n" +
 	"\n" +
@@ -1462,7 +2578,22 @@ const file_google_apps_meet_v2_resource_proto_rawDesc = "" +
 	"\n" +
 	"start_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
 	"\bend_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime:\x9d\x01\xeaA\x99\x01\n" +
-	"#meet.googleapis.com/TranscriptEntry\x12NconferenceRecords/{conference_record}/transcripts/{transcript}/entries/{entry}*\x11transcriptEntries2\x0ftranscriptEntryB\xa2\x01\n" +
+	"#meet.googleapis.com/TranscriptEntry\x12NconferenceRecords/{conference_record}/transcripts/{transcript}/entries/{entry}*\x11transcriptEntries2\x0ftranscriptEntry\"\x91\x04\n" +
+	"\tSmartNote\x12V\n" +
+	"\x10docs_destination\x18\x05 \x01(\v2$.google.apps.meet.v2.DocsDestinationB\x03\xe0A\x03H\x00R\x0fdocsDestination\x12\x1a\n" +
+	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12?\n" +
+	"\x05state\x18\x02 \x01(\x0e2$.google.apps.meet.v2.SmartNote.StateB\x03\xe0A\x03R\x05state\x12>\n" +
+	"\n" +
+	"start_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\tstartTime\x12:\n" +
+	"\bend_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\aendTime\"J\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aSTARTED\x10\x01\x12\t\n" +
+	"\x05ENDED\x10\x02\x12\x12\n" +
+	"\x0eFILE_GENERATED\x10\x03:x\xeaAu\n" +
+	"\x1dmeet.googleapis.com/SmartNote\x12=conferenceRecords/{conference_record}/smartNotes/{smart_note}*\n" +
+	"smartNotes2\tsmartNoteB\r\n" +
+	"\vdestinationB\xa2\x01\n" +
 	"\x17com.google.apps.meet.v2B\rResourceProtoP\x01Z1cloud.google.com/go/apps/meet/apiv2/meetpb;meetpb\xaa\x02\x13Google.Apps.Meet.V2\xca\x02\x13Google\\Apps\\Meet\\V2\xea\x02\x16Google::Apps::Meet::V2b\x06proto3"
 
 var (
@@ -1477,59 +2608,96 @@ func file_google_apps_meet_v2_resource_proto_rawDescGZIP() []byte {
 	return file_google_apps_meet_v2_resource_proto_rawDescData
 }
 
-var file_google_apps_meet_v2_resource_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_apps_meet_v2_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
+var file_google_apps_meet_v2_resource_proto_enumTypes = make([]protoimpl.EnumInfo, 11)
+var file_google_apps_meet_v2_resource_proto_msgTypes = make([]protoimpl.MessageInfo, 23)
 var file_google_apps_meet_v2_resource_proto_goTypes = []any{
-	(SpaceConfig_AccessType)(0),       // 0: google.apps.meet.v2.SpaceConfig.AccessType
-	(SpaceConfig_EntryPointAccess)(0), // 1: google.apps.meet.v2.SpaceConfig.EntryPointAccess
-	(Recording_State)(0),              // 2: google.apps.meet.v2.Recording.State
-	(Transcript_State)(0),             // 3: google.apps.meet.v2.Transcript.State
-	(*Space)(nil),                     // 4: google.apps.meet.v2.Space
-	(*ActiveConference)(nil),          // 5: google.apps.meet.v2.ActiveConference
-	(*SpaceConfig)(nil),               // 6: google.apps.meet.v2.SpaceConfig
-	(*ConferenceRecord)(nil),          // 7: google.apps.meet.v2.ConferenceRecord
-	(*Participant)(nil),               // 8: google.apps.meet.v2.Participant
-	(*ParticipantSession)(nil),        // 9: google.apps.meet.v2.ParticipantSession
-	(*SignedinUser)(nil),              // 10: google.apps.meet.v2.SignedinUser
-	(*AnonymousUser)(nil),             // 11: google.apps.meet.v2.AnonymousUser
-	(*PhoneUser)(nil),                 // 12: google.apps.meet.v2.PhoneUser
-	(*Recording)(nil),                 // 13: google.apps.meet.v2.Recording
-	(*DriveDestination)(nil),          // 14: google.apps.meet.v2.DriveDestination
-	(*Transcript)(nil),                // 15: google.apps.meet.v2.Transcript
-	(*DocsDestination)(nil),           // 16: google.apps.meet.v2.DocsDestination
-	(*TranscriptEntry)(nil),           // 17: google.apps.meet.v2.TranscriptEntry
-	(*timestamppb.Timestamp)(nil),     // 18: google.protobuf.Timestamp
+	(SpaceConfig_AccessType)(0),                                     // 0: google.apps.meet.v2.SpaceConfig.AccessType
+	(SpaceConfig_EntryPointAccess)(0),                               // 1: google.apps.meet.v2.SpaceConfig.EntryPointAccess
+	(SpaceConfig_Moderation)(0),                                     // 2: google.apps.meet.v2.SpaceConfig.Moderation
+	(SpaceConfig_AttendanceReportGenerationType)(0),                 // 3: google.apps.meet.v2.SpaceConfig.AttendanceReportGenerationType
+	(SpaceConfig_ModerationRestrictions_RestrictionType)(0),         // 4: google.apps.meet.v2.SpaceConfig.ModerationRestrictions.RestrictionType
+	(SpaceConfig_ModerationRestrictions_DefaultJoinAsViewerType)(0), // 5: google.apps.meet.v2.SpaceConfig.ModerationRestrictions.DefaultJoinAsViewerType
+	(SpaceConfig_ArtifactConfig_AutoGenerationType)(0),              // 6: google.apps.meet.v2.SpaceConfig.ArtifactConfig.AutoGenerationType
+	(Member_Role)(0),                                       // 7: google.apps.meet.v2.Member.Role
+	(Recording_State)(0),                                   // 8: google.apps.meet.v2.Recording.State
+	(Transcript_State)(0),                                  // 9: google.apps.meet.v2.Transcript.State
+	(SmartNote_State)(0),                                   // 10: google.apps.meet.v2.SmartNote.State
+	(*Space)(nil),                                          // 11: google.apps.meet.v2.Space
+	(*ActiveConference)(nil),                               // 12: google.apps.meet.v2.ActiveConference
+	(*SpaceConfig)(nil),                                    // 13: google.apps.meet.v2.SpaceConfig
+	(*Member)(nil),                                         // 14: google.apps.meet.v2.Member
+	(*ConferenceRecord)(nil),                               // 15: google.apps.meet.v2.ConferenceRecord
+	(*Participant)(nil),                                    // 16: google.apps.meet.v2.Participant
+	(*ParticipantSession)(nil),                             // 17: google.apps.meet.v2.ParticipantSession
+	(*SignedinUser)(nil),                                   // 18: google.apps.meet.v2.SignedinUser
+	(*AnonymousUser)(nil),                                  // 19: google.apps.meet.v2.AnonymousUser
+	(*PhoneUser)(nil),                                      // 20: google.apps.meet.v2.PhoneUser
+	(*Recording)(nil),                                      // 21: google.apps.meet.v2.Recording
+	(*DriveDestination)(nil),                               // 22: google.apps.meet.v2.DriveDestination
+	(*Transcript)(nil),                                     // 23: google.apps.meet.v2.Transcript
+	(*DocsDestination)(nil),                                // 24: google.apps.meet.v2.DocsDestination
+	(*TranscriptEntry)(nil),                                // 25: google.apps.meet.v2.TranscriptEntry
+	(*SmartNote)(nil),                                      // 26: google.apps.meet.v2.SmartNote
+	(*Space_PhoneAccess)(nil),                              // 27: google.apps.meet.v2.Space.PhoneAccess
+	(*Space_GatewaySipAccess)(nil),                         // 28: google.apps.meet.v2.Space.GatewaySipAccess
+	(*SpaceConfig_ModerationRestrictions)(nil),             // 29: google.apps.meet.v2.SpaceConfig.ModerationRestrictions
+	(*SpaceConfig_ArtifactConfig)(nil),                     // 30: google.apps.meet.v2.SpaceConfig.ArtifactConfig
+	(*SpaceConfig_ArtifactConfig_RecordingConfig)(nil),     // 31: google.apps.meet.v2.SpaceConfig.ArtifactConfig.RecordingConfig
+	(*SpaceConfig_ArtifactConfig_TranscriptionConfig)(nil), // 32: google.apps.meet.v2.SpaceConfig.ArtifactConfig.TranscriptionConfig
+	(*SpaceConfig_ArtifactConfig_SmartNotesConfig)(nil),    // 33: google.apps.meet.v2.SpaceConfig.ArtifactConfig.SmartNotesConfig
+	(*timestamppb.Timestamp)(nil),                          // 34: google.protobuf.Timestamp
 }
 var file_google_apps_meet_v2_resource_proto_depIdxs = []int32{
-	6,  // 0: google.apps.meet.v2.Space.config:type_name -> google.apps.meet.v2.SpaceConfig
-	5,  // 1: google.apps.meet.v2.Space.active_conference:type_name -> google.apps.meet.v2.ActiveConference
-	0,  // 2: google.apps.meet.v2.SpaceConfig.access_type:type_name -> google.apps.meet.v2.SpaceConfig.AccessType
-	1,  // 3: google.apps.meet.v2.SpaceConfig.entry_point_access:type_name -> google.apps.meet.v2.SpaceConfig.EntryPointAccess
-	18, // 4: google.apps.meet.v2.ConferenceRecord.start_time:type_name -> google.protobuf.Timestamp
-	18, // 5: google.apps.meet.v2.ConferenceRecord.end_time:type_name -> google.protobuf.Timestamp
-	18, // 6: google.apps.meet.v2.ConferenceRecord.expire_time:type_name -> google.protobuf.Timestamp
-	10, // 7: google.apps.meet.v2.Participant.signedin_user:type_name -> google.apps.meet.v2.SignedinUser
-	11, // 8: google.apps.meet.v2.Participant.anonymous_user:type_name -> google.apps.meet.v2.AnonymousUser
-	12, // 9: google.apps.meet.v2.Participant.phone_user:type_name -> google.apps.meet.v2.PhoneUser
-	18, // 10: google.apps.meet.v2.Participant.earliest_start_time:type_name -> google.protobuf.Timestamp
-	18, // 11: google.apps.meet.v2.Participant.latest_end_time:type_name -> google.protobuf.Timestamp
-	18, // 12: google.apps.meet.v2.ParticipantSession.start_time:type_name -> google.protobuf.Timestamp
-	18, // 13: google.apps.meet.v2.ParticipantSession.end_time:type_name -> google.protobuf.Timestamp
-	14, // 14: google.apps.meet.v2.Recording.drive_destination:type_name -> google.apps.meet.v2.DriveDestination
-	2,  // 15: google.apps.meet.v2.Recording.state:type_name -> google.apps.meet.v2.Recording.State
-	18, // 16: google.apps.meet.v2.Recording.start_time:type_name -> google.protobuf.Timestamp
-	18, // 17: google.apps.meet.v2.Recording.end_time:type_name -> google.protobuf.Timestamp
-	16, // 18: google.apps.meet.v2.Transcript.docs_destination:type_name -> google.apps.meet.v2.DocsDestination
-	3,  // 19: google.apps.meet.v2.Transcript.state:type_name -> google.apps.meet.v2.Transcript.State
-	18, // 20: google.apps.meet.v2.Transcript.start_time:type_name -> google.protobuf.Timestamp
-	18, // 21: google.apps.meet.v2.Transcript.end_time:type_name -> google.protobuf.Timestamp
-	18, // 22: google.apps.meet.v2.TranscriptEntry.start_time:type_name -> google.protobuf.Timestamp
-	18, // 23: google.apps.meet.v2.TranscriptEntry.end_time:type_name -> google.protobuf.Timestamp
-	24, // [24:24] is the sub-list for method output_type
-	24, // [24:24] is the sub-list for method input_type
-	24, // [24:24] is the sub-list for extension type_name
-	24, // [24:24] is the sub-list for extension extendee
-	0,  // [0:24] is the sub-list for field type_name
+	13, // 0: google.apps.meet.v2.Space.config:type_name -> google.apps.meet.v2.SpaceConfig
+	12, // 1: google.apps.meet.v2.Space.active_conference:type_name -> google.apps.meet.v2.ActiveConference
+	27, // 2: google.apps.meet.v2.Space.phone_access:type_name -> google.apps.meet.v2.Space.PhoneAccess
+	28, // 3: google.apps.meet.v2.Space.gateway_sip_access:type_name -> google.apps.meet.v2.Space.GatewaySipAccess
+	0,  // 4: google.apps.meet.v2.SpaceConfig.access_type:type_name -> google.apps.meet.v2.SpaceConfig.AccessType
+	1,  // 5: google.apps.meet.v2.SpaceConfig.entry_point_access:type_name -> google.apps.meet.v2.SpaceConfig.EntryPointAccess
+	2,  // 6: google.apps.meet.v2.SpaceConfig.moderation:type_name -> google.apps.meet.v2.SpaceConfig.Moderation
+	29, // 7: google.apps.meet.v2.SpaceConfig.moderation_restrictions:type_name -> google.apps.meet.v2.SpaceConfig.ModerationRestrictions
+	3,  // 8: google.apps.meet.v2.SpaceConfig.attendance_report_generation_type:type_name -> google.apps.meet.v2.SpaceConfig.AttendanceReportGenerationType
+	30, // 9: google.apps.meet.v2.SpaceConfig.artifact_config:type_name -> google.apps.meet.v2.SpaceConfig.ArtifactConfig
+	7,  // 10: google.apps.meet.v2.Member.role:type_name -> google.apps.meet.v2.Member.Role
+	34, // 11: google.apps.meet.v2.ConferenceRecord.start_time:type_name -> google.protobuf.Timestamp
+	34, // 12: google.apps.meet.v2.ConferenceRecord.end_time:type_name -> google.protobuf.Timestamp
+	34, // 13: google.apps.meet.v2.ConferenceRecord.expire_time:type_name -> google.protobuf.Timestamp
+	18, // 14: google.apps.meet.v2.Participant.signedin_user:type_name -> google.apps.meet.v2.SignedinUser
+	19, // 15: google.apps.meet.v2.Participant.anonymous_user:type_name -> google.apps.meet.v2.AnonymousUser
+	20, // 16: google.apps.meet.v2.Participant.phone_user:type_name -> google.apps.meet.v2.PhoneUser
+	34, // 17: google.apps.meet.v2.Participant.earliest_start_time:type_name -> google.protobuf.Timestamp
+	34, // 18: google.apps.meet.v2.Participant.latest_end_time:type_name -> google.protobuf.Timestamp
+	34, // 19: google.apps.meet.v2.ParticipantSession.start_time:type_name -> google.protobuf.Timestamp
+	34, // 20: google.apps.meet.v2.ParticipantSession.end_time:type_name -> google.protobuf.Timestamp
+	22, // 21: google.apps.meet.v2.Recording.drive_destination:type_name -> google.apps.meet.v2.DriveDestination
+	8,  // 22: google.apps.meet.v2.Recording.state:type_name -> google.apps.meet.v2.Recording.State
+	34, // 23: google.apps.meet.v2.Recording.start_time:type_name -> google.protobuf.Timestamp
+	34, // 24: google.apps.meet.v2.Recording.end_time:type_name -> google.protobuf.Timestamp
+	24, // 25: google.apps.meet.v2.Transcript.docs_destination:type_name -> google.apps.meet.v2.DocsDestination
+	9,  // 26: google.apps.meet.v2.Transcript.state:type_name -> google.apps.meet.v2.Transcript.State
+	34, // 27: google.apps.meet.v2.Transcript.start_time:type_name -> google.protobuf.Timestamp
+	34, // 28: google.apps.meet.v2.Transcript.end_time:type_name -> google.protobuf.Timestamp
+	34, // 29: google.apps.meet.v2.TranscriptEntry.start_time:type_name -> google.protobuf.Timestamp
+	34, // 30: google.apps.meet.v2.TranscriptEntry.end_time:type_name -> google.protobuf.Timestamp
+	24, // 31: google.apps.meet.v2.SmartNote.docs_destination:type_name -> google.apps.meet.v2.DocsDestination
+	10, // 32: google.apps.meet.v2.SmartNote.state:type_name -> google.apps.meet.v2.SmartNote.State
+	34, // 33: google.apps.meet.v2.SmartNote.start_time:type_name -> google.protobuf.Timestamp
+	34, // 34: google.apps.meet.v2.SmartNote.end_time:type_name -> google.protobuf.Timestamp
+	4,  // 35: google.apps.meet.v2.SpaceConfig.ModerationRestrictions.chat_restriction:type_name -> google.apps.meet.v2.SpaceConfig.ModerationRestrictions.RestrictionType
+	4,  // 36: google.apps.meet.v2.SpaceConfig.ModerationRestrictions.reaction_restriction:type_name -> google.apps.meet.v2.SpaceConfig.ModerationRestrictions.RestrictionType
+	4,  // 37: google.apps.meet.v2.SpaceConfig.ModerationRestrictions.present_restriction:type_name -> google.apps.meet.v2.SpaceConfig.ModerationRestrictions.RestrictionType
+	5,  // 38: google.apps.meet.v2.SpaceConfig.ModerationRestrictions.default_join_as_viewer_type:type_name -> google.apps.meet.v2.SpaceConfig.ModerationRestrictions.DefaultJoinAsViewerType
+	31, // 39: google.apps.meet.v2.SpaceConfig.ArtifactConfig.recording_config:type_name -> google.apps.meet.v2.SpaceConfig.ArtifactConfig.RecordingConfig
+	32, // 40: google.apps.meet.v2.SpaceConfig.ArtifactConfig.transcription_config:type_name -> google.apps.meet.v2.SpaceConfig.ArtifactConfig.TranscriptionConfig
+	33, // 41: google.apps.meet.v2.SpaceConfig.ArtifactConfig.smart_notes_config:type_name -> google.apps.meet.v2.SpaceConfig.ArtifactConfig.SmartNotesConfig
+	6,  // 42: google.apps.meet.v2.SpaceConfig.ArtifactConfig.RecordingConfig.auto_recording_generation:type_name -> google.apps.meet.v2.SpaceConfig.ArtifactConfig.AutoGenerationType
+	6,  // 43: google.apps.meet.v2.SpaceConfig.ArtifactConfig.TranscriptionConfig.auto_transcription_generation:type_name -> google.apps.meet.v2.SpaceConfig.ArtifactConfig.AutoGenerationType
+	6,  // 44: google.apps.meet.v2.SpaceConfig.ArtifactConfig.SmartNotesConfig.auto_smart_notes_generation:type_name -> google.apps.meet.v2.SpaceConfig.ArtifactConfig.AutoGenerationType
+	45, // [45:45] is the sub-list for method output_type
+	45, // [45:45] is the sub-list for method input_type
+	45, // [45:45] is the sub-list for extension type_name
+	45, // [45:45] is the sub-list for extension extendee
+	0,  // [0:45] is the sub-list for field type_name
 }
 
 func init() { file_google_apps_meet_v2_resource_proto_init() }
@@ -1537,24 +2705,27 @@ func file_google_apps_meet_v2_resource_proto_init() {
 	if File_google_apps_meet_v2_resource_proto != nil {
 		return
 	}
-	file_google_apps_meet_v2_resource_proto_msgTypes[4].OneofWrappers = []any{
+	file_google_apps_meet_v2_resource_proto_msgTypes[5].OneofWrappers = []any{
 		(*Participant_SignedinUser)(nil),
 		(*Participant_AnonymousUser)(nil),
 		(*Participant_PhoneUser)(nil),
 	}
-	file_google_apps_meet_v2_resource_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_apps_meet_v2_resource_proto_msgTypes[10].OneofWrappers = []any{
 		(*Recording_DriveDestination)(nil),
 	}
-	file_google_apps_meet_v2_resource_proto_msgTypes[11].OneofWrappers = []any{
+	file_google_apps_meet_v2_resource_proto_msgTypes[12].OneofWrappers = []any{
 		(*Transcript_DocsDestination)(nil),
+	}
+	file_google_apps_meet_v2_resource_proto_msgTypes[15].OneofWrappers = []any{
+		(*SmartNote_DocsDestination)(nil),
 	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_apps_meet_v2_resource_proto_rawDesc), len(file_google_apps_meet_v2_resource_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   14,
+			NumEnums:      11,
+			NumMessages:   23,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

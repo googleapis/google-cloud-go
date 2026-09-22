@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/container/apiv1",
-    "version": "1.53.1"
+    "version": "1.54.0"
   },
   "snippets": [
     {
@@ -101,6 +101,52 @@
         }
       ],
       "title": "container CheckAutopilotCompatibility Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.container.v1.ClusterManagerClient",
+          "shortName": "ClusterManagerClient"
+        },
+        "fullName": "google.container.v1.ClusterManagerClient.CompleteControlPlaneUpgrade",
+        "method": {
+          "fullName": "google.container.v1.ClusterManager.CompleteControlPlaneUpgrade",
+          "service": {
+            "fullName": "google.container.v1.ClusterManager",
+            "shortName": "ClusterManager"
+          },
+          "shortName": "CompleteControlPlaneUpgrade"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "containerpb.CompleteControlPlaneUpgradeRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*containerpb.Operation",
+        "shortName": "CompleteControlPlaneUpgrade"
+      },
+      "description": "CompleteControlPlaneUpgrade completeControlPlaneUpgrade completes the rollback-safe upgrade by\nperforming the step two upgrade for a specific cluster.",
+      "file": "ClusterManagerClient/CompleteControlPlaneUpgrade/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "container_v1_generated_ClusterManager_CompleteControlPlaneUpgrade_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "container CompleteControlPlaneUpgrade Sample"
     },
     {
       "clientMethod": {

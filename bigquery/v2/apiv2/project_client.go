@@ -140,7 +140,10 @@ func (c *ProjectClient) Connection() *grpc.ClientConn {
 }
 
 // GetServiceAccount rPC to get the service account for a project used for interactions with
-// Google Cloud KMS
+// Google Cloud KMS. Requires the bigquery.jobs.create permission on the
+// project resource. This permission is required to authorize the retrieval
+// of the project’s service identity for technical management tasks like
+// encryption configuration.
 func (c *ProjectClient) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
 	return c.internalClient.GetServiceAccount(ctx, req, opts...)
 }
@@ -372,7 +375,10 @@ func (c *projectGRPCClient) GetServiceAccount(ctx context.Context, req *bigquery
 }
 
 // GetServiceAccount rPC to get the service account for a project used for interactions with
-// Google Cloud KMS
+// Google Cloud KMS. Requires the bigquery.jobs.create permission on the
+// project resource. This permission is required to authorize the retrieval
+// of the project’s service identity for technical management tasks like
+// encryption configuration.
 func (c *projectRESTClient) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

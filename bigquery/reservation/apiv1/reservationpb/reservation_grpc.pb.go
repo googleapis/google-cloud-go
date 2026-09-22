@@ -65,6 +65,7 @@ const (
 	ReservationService_GetReservationGroup_FullMethodName      = "/google.cloud.bigquery.reservation.v1.ReservationService/GetReservationGroup"
 	ReservationService_DeleteReservationGroup_FullMethodName   = "/google.cloud.bigquery.reservation.v1.ReservationService/DeleteReservationGroup"
 	ReservationService_ListReservationGroups_FullMethodName    = "/google.cloud.bigquery.reservation.v1.ReservationService/ListReservationGroups"
+	ReservationService_UpdateReservationGroup_FullMethodName   = "/google.cloud.bigquery.reservation.v1.ReservationService/UpdateReservationGroup"
 )
 
 // ReservationServiceClient is the client API for ReservationService service.
@@ -310,6 +311,8 @@ type ReservationServiceClient interface {
 	DeleteReservationGroup(ctx context.Context, in *DeleteReservationGroupRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Lists all the reservation groups for the project in the specified location.
 	ListReservationGroups(ctx context.Context, in *ListReservationGroupsRequest, opts ...grpc.CallOption) (*ListReservationGroupsResponse, error)
+	// Updates an existing reservation group resource.
+	UpdateReservationGroup(ctx context.Context, in *UpdateReservationGroupRequest, opts ...grpc.CallOption) (*ReservationGroup, error)
 }
 
 type reservationServiceClient struct {
@@ -582,6 +585,15 @@ func (c *reservationServiceClient) ListReservationGroups(ctx context.Context, in
 	return out, nil
 }
 
+func (c *reservationServiceClient) UpdateReservationGroup(ctx context.Context, in *UpdateReservationGroupRequest, opts ...grpc.CallOption) (*ReservationGroup, error) {
+	out := new(ReservationGroup)
+	err := c.cc.Invoke(ctx, ReservationService_UpdateReservationGroup_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ReservationServiceServer is the server API for ReservationService service.
 // All implementations should embed UnimplementedReservationServiceServer
 // for forward compatibility
@@ -825,6 +837,8 @@ type ReservationServiceServer interface {
 	DeleteReservationGroup(context.Context, *DeleteReservationGroupRequest) (*emptypb.Empty, error)
 	// Lists all the reservation groups for the project in the specified location.
 	ListReservationGroups(context.Context, *ListReservationGroupsRequest) (*ListReservationGroupsResponse, error)
+	// Updates an existing reservation group resource.
+	UpdateReservationGroup(context.Context, *UpdateReservationGroupRequest) (*ReservationGroup, error)
 }
 
 // UnimplementedReservationServiceServer should be embedded to have forward compatible implementations.
@@ -917,6 +931,9 @@ func (UnimplementedReservationServiceServer) DeleteReservationGroup(context.Cont
 }
 func (UnimplementedReservationServiceServer) ListReservationGroups(context.Context, *ListReservationGroupsRequest) (*ListReservationGroupsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ListReservationGroups not implemented")
+}
+func (UnimplementedReservationServiceServer) UpdateReservationGroup(context.Context, *UpdateReservationGroupRequest) (*ReservationGroup, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateReservationGroup not implemented")
 }
 
 // UnsafeReservationServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -1452,6 +1469,24 @@ func _ReservationService_ListReservationGroups_Handler(srv interface{}, ctx cont
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ReservationService_UpdateReservationGroup_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateReservationGroupRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ReservationServiceServer).UpdateReservationGroup(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ReservationService_UpdateReservationGroup_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ReservationServiceServer).UpdateReservationGroup(ctx, req.(*UpdateReservationGroupRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ReservationService_ServiceDesc is the grpc.ServiceDesc for ReservationService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -1574,6 +1609,10 @@ var ReservationService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "ListReservationGroups",
 			Handler:    _ReservationService_ListReservationGroups_Handler,
+		},
+		{
+			MethodName: "UpdateReservationGroup",
+			Handler:    _ReservationService_UpdateReservationGroup_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

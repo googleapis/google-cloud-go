@@ -17,9 +17,18 @@
 package spanner
 
 import (
+	"iter"
+
 	spannerpb "cloud.google.com/go/spanner/apiv1/spannerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionIterator) All() iter.Seq2[*spannerpb.Session, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // SessionIterator manages a stream of *spannerpb.Session.
 type SessionIterator struct {

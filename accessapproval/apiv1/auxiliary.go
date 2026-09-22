@@ -17,9 +17,18 @@
 package accessapproval
 
 import (
+	"iter"
+
 	accessapprovalpb "cloud.google.com/go/accessapproval/apiv1/accessapprovalpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApprovalRequestIterator) All() iter.Seq2[*accessapprovalpb.ApprovalRequest, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ApprovalRequestIterator manages a stream of *accessapprovalpb.ApprovalRequest.
 type ApprovalRequestIterator struct {

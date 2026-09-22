@@ -85,7 +85,7 @@ var _ grpc.ClientConnInterface = (*Channel)(nil)
 // mock; package-level state mutation is not parallel-safe.
 var newSessionClient = func(
 	ctx context.Context,
-	project, instance, appProfile string,
+	project, instance, appProfile, clientName string,
 	opts ...option.ClientOption,
 ) (session.Client, error) {
 	// Phase 1 keeps built-in client-side metrics on: a nil MetricsProvider is
@@ -102,7 +102,7 @@ var newSessionClient = func(
 	// this instance exists only to read .Enabled, so shut it down immediately.
 	// The accelerator has no separate classic data path that would use a second
 	// factory, and leaving it running would double-export session's metrics.
-	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, metricsProvider, opts...)
+	factory, err := metrics.NewFactory(ctx, project, instance, appProfile, clientName, metricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -121,7 +121,7 @@ var newSessionClient = func(
 		EnableDirectAccess: true,
 	})
 
-	return session.NewClient(ctx, project, instance, appProfile, metricsProvider, featureFlags, opts...)
+	return session.NewClient(ctx, project, instance, appProfile, clientName, metricsProvider, featureFlags, opts...)
 }
 
 // Channel is an in-process grpc.ClientConnInterface backed by
@@ -147,9 +147,15 @@ type Channel struct {
 // NewChannel constructs an Channel scoped to
 // (project, instance, appProfile). It dials the underlying session.Client,
 // which the Channel owns and closes via Close (below).
+//
+// clientName is stamped as the client_name attribute on exported client-side
+// metrics. The daemon passes its composed user agent here (see ComposeUserAgent),
+// e.g. "python-bigtable/2.1.0 go-acc/v1.38.0", so CSM attributes the metrics to
+// both the calling client library and the daemon build; an empty string keeps
+// the default "go-bigtable/<version>" token.
 func NewChannel(
 	ctx context.Context,
-	project, instance, appProfile string,
+	project, instance, appProfile, clientName string,
 	opts ...option.ClientOption,
 ) (*Channel, error) {
 	// session.NewClient forwards opts straight to gtransport.Dial
@@ -164,7 +170,7 @@ func NewChannel(
 	}
 	opts = append(defaultOpts, opts...)
 
-	sc, err := newSessionClient(ctx, project, instance, appProfile, opts...)
+	sc, err := newSessionClient(ctx, project, instance, appProfile, clientName, opts...)
 	if err != nil {
 		return nil, err
 	}

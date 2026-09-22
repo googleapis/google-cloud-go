@@ -18,12 +18,14 @@ package privilegedaccessmanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	privilegedaccessmanagerpb "cloud.google.com/go/privilegedaccessmanager/apiv1/privilegedaccessmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -284,6 +286,12 @@ func (op *UpdateEntitlementOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntitlementIterator) All() iter.Seq2[*privilegedaccessmanagerpb.Entitlement, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EntitlementIterator manages a stream of *privilegedaccessmanagerpb.Entitlement.
 type EntitlementIterator struct {
 	items    []*privilegedaccessmanagerpb.Entitlement
@@ -329,6 +337,12 @@ func (it *EntitlementIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GrantIterator) All() iter.Seq2[*privilegedaccessmanagerpb.Grant, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GrantIterator manages a stream of *privilegedaccessmanagerpb.Grant.
@@ -378,6 +392,12 @@ func (it *GrantIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -423,6 +443,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

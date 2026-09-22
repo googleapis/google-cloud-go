@@ -17,9 +17,18 @@
 package essentialcontacts
 
 import (
+	"iter"
+
 	essentialcontactspb "cloud.google.com/go/essentialcontacts/apiv1/essentialcontactspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ContactIterator) All() iter.Seq2[*essentialcontactspb.Contact, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ContactIterator manages a stream of *essentialcontactspb.Contact.
 type ContactIterator struct {

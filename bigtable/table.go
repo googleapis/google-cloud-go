@@ -49,24 +49,30 @@ type Table struct {
 	materializedView string
 
 	// divertible, when non-nil, layers session routing on top of the
-	// classic body for the two methods that have session equivalents
-	// (Apply, ReadRow). Populated by Open when c.diverter != nil so
-	// callers that hold a bare *Table transparently participate in the
-	// session/classic split. Nil for classic-only clients — the gate in
-	// Table.Apply / Table.ReadRow short-circuits to the *Classic helper,
-	// preserving the old fast path.
+	// classic body for the methods that have session equivalents:
+	// Apply, ReadRow, and single-row shapes of ReadRows. Populated by
+	// Open when c.diverter != nil so callers that hold a bare *Table
+	// transparently participate in the session/classic split. Nil for
+	// classic-only clients — the gate in Table.Apply / Table.ReadRow /
+	// Table.ReadRows short-circuits to the *Classic helper, preserving
+	// the old fast path.
 	//
 	// The value is a *TableShim whose classic side wraps a *tableImpl
 	// built from a snapshot of this Table with divertible EXPLICITLY
 	// nil-ed. That break in the loop is what prevents infinite
 	// recursion: the shim's classic branch dispatches into tableImpl,
-	// whose Apply/ReadRow overrides land on applyClassic/readRowClassic
-	// directly — not back through the gated Table.Apply/ReadRow.
+	// whose Apply/ReadRow/ReadRows overrides land on applyClassic /
+	// readRowClassic / readRowsClassic directly — not back through the
+	// gated Table.Apply / Table.ReadRow / Table.ReadRows.
 	divertible TableAPI
 }
 
+// ReadRows bypasses the Table.ReadRows divertible gate — a tableImpl
+// used as the classic side of a TableShim would otherwise recurse
+// back through the gate into the shim itself when the shim's classic
+// branch dispatches a single-row ReadRows call. See Table.divertible.
 func (ti *tableImpl) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
-	return ti.Table.ReadRows(ctx, arg, f, opts...)
+	return ti.Table.readRowsClassic(ctx, arg, f, opts...)
 }
 
 // ReadRow bypasses the Table.ReadRow divertible gate — a tableImpl used

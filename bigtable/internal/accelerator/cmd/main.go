@@ -116,7 +116,11 @@ func main() {
 	// publish in identity.json.
 	opts = append(opts, option.WithCredentials(creds))
 
-	channel, err := accelerator.NewChannel(ctx, *project, *instance, *appProfile, opts...)
+	// Pass the composed user agent as the CSM client_name so client-side
+	// metrics are attributed to both the calling client library and the daemon
+	// build, e.g. "python-bigtable/2.1.0 go-acc/v1.38.0". A blank --user-agent
+	// yields the daemon token alone ("go-acc/v1.38.0").
+	channel, err := accelerator.NewChannel(ctx, *project, *instance, *appProfile, accelerator.ComposeUserAgent(*userAgent), opts...)
 	if err != nil {
 		log.Fatalf("failed to construct accelerator channel: %v", err)
 	}

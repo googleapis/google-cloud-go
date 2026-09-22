@@ -73,6 +73,7 @@ type StorageControlCallOptions struct {
 	ListAnywhereCaches                   []gax.CallOption
 	CreateRapidCache                     []gax.CallOption
 	UpdateRapidCache                     []gax.CallOption
+	DisableRapidCache                    []gax.CallOption
 	GetRapidCache                        []gax.CallOption
 	ListRapidCaches                      []gax.CallOption
 	GetProjectIntelligenceConfig         []gax.CallOption
@@ -89,6 +90,7 @@ type StorageControlCallOptions struct {
 	SummarizeIntelligenceFindings        []gax.CallOption
 	GetIntelligenceFindingRevision       []gax.CallOption
 	ListIntelligenceFindingRevisions     []gax.CallOption
+	ViewObjectFullContext                []gax.CallOption
 }
 
 func defaultStorageControlGRPCClientOptions() []option.ClientOption {
@@ -351,6 +353,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 		UpdateRapidCache: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		DisableRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetRapidCache: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -530,6 +535,9 @@ func defaultStorageControlCallOptions() *StorageControlCallOptions {
 					Multiplier: 2.00,
 				})
 			}),
+		},
+		ViewObjectFullContext: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 	}
 }
@@ -764,6 +772,9 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 		UpdateRapidCache: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		DisableRapidCache: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		GetRapidCache: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -933,6 +944,9 @@ func defaultStorageControlRESTCallOptions() *StorageControlCallOptions {
 					http.StatusInternalServerError)
 			}),
 		},
+		ViewObjectFullContext: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 	}
 }
 
@@ -968,6 +982,8 @@ type internalStorageControlClient interface {
 	CreateRapidCacheOperation(name string) *CreateRapidCacheOperation
 	UpdateRapidCache(context.Context, *controlpb.UpdateRapidCacheRequest, ...gax.CallOption) (*UpdateRapidCacheOperation, error)
 	UpdateRapidCacheOperation(name string) *UpdateRapidCacheOperation
+	DisableRapidCache(context.Context, *controlpb.DisableRapidCacheRequest, ...gax.CallOption) (*DisableRapidCacheOperation, error)
+	DisableRapidCacheOperation(name string) *DisableRapidCacheOperation
 	GetRapidCache(context.Context, *controlpb.GetRapidCacheRequest, ...gax.CallOption) (*controlpb.RapidCache, error)
 	ListRapidCaches(context.Context, *controlpb.ListRapidCachesRequest, ...gax.CallOption) *RapidCacheIterator
 	GetProjectIntelligenceConfig(context.Context, *controlpb.GetProjectIntelligenceConfigRequest, ...gax.CallOption) (*controlpb.IntelligenceConfig, error)
@@ -984,6 +1000,7 @@ type internalStorageControlClient interface {
 	SummarizeIntelligenceFindings(context.Context, *controlpb.SummarizeIntelligenceFindingsRequest, ...gax.CallOption) *FindingSummaryIterator
 	GetIntelligenceFindingRevision(context.Context, *controlpb.GetIntelligenceFindingRevisionRequest, ...gax.CallOption) (*controlpb.IntelligenceFindingRevision, error)
 	ListIntelligenceFindingRevisions(context.Context, *controlpb.ListIntelligenceFindingRevisionsRequest, ...gax.CallOption) *IntelligenceFindingRevisionIterator
+	ViewObjectFullContext(context.Context, *controlpb.ViewObjectFullContextRequest, ...gax.CallOption) (*controlpb.ObjectFullContext, error)
 }
 
 // StorageControlClient is a client for interacting with Storage Control API.
@@ -1180,6 +1197,17 @@ func (c *StorageControlClient) UpdateRapidCacheOperation(name string) *UpdateRap
 	return c.internalClient.UpdateRapidCacheOperation(name)
 }
 
+// DisableRapidCache disables a Rapid Cache instance.
+func (c *StorageControlClient) DisableRapidCache(ctx context.Context, req *controlpb.DisableRapidCacheRequest, opts ...gax.CallOption) (*DisableRapidCacheOperation, error) {
+	return c.internalClient.DisableRapidCache(ctx, req, opts...)
+}
+
+// DisableRapidCacheOperation returns a new DisableRapidCacheOperation from a given name.
+// The name must be that of a previously created DisableRapidCacheOperation, possibly from a different process.
+func (c *StorageControlClient) DisableRapidCacheOperation(name string) *DisableRapidCacheOperation {
+	return c.internalClient.DisableRapidCacheOperation(name)
+}
+
 // GetRapidCache gets a Rapid Cache instance.
 func (c *StorageControlClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
 	return c.internalClient.GetRapidCache(ctx, req, opts...)
@@ -1273,6 +1301,19 @@ func (c *StorageControlClient) GetIntelligenceFindingRevision(ctx context.Contex
 // ListIntelligenceFindingRevisions lists all the revisions of an IntelligenceFinding resource.
 func (c *StorageControlClient) ListIntelligenceFindingRevisions(ctx context.Context, req *controlpb.ListIntelligenceFindingRevisionsRequest, opts ...gax.CallOption) *IntelligenceFindingRevisionIterator {
 	return c.internalClient.ListIntelligenceFindingRevisions(ctx, req, opts...)
+}
+
+// ViewObjectFullContext retrieves the full content of an object context, including its key, value,
+// and any associated extended data for a given context key.
+//
+// Object contexts can optionally contain extended data. If an object context
+// contains extended data, the metadata payload structure will contain only
+// its type URL. To retrieve the full extended data, call this method.
+//
+// Returns the complete representation of the context as an
+// [ObjectFullContext][google.storage.control.v2.ObjectFullContext].
+func (c *StorageControlClient) ViewObjectFullContext(ctx context.Context, req *controlpb.ViewObjectFullContextRequest, opts ...gax.CallOption) (*controlpb.ObjectFullContext, error) {
+	return c.internalClient.ViewObjectFullContext(ctx, req, opts...)
 }
 
 // storageControlGRPCClient is a client for interacting with Storage Control API over gRPC transport.
@@ -1369,6 +1410,7 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.ListAnywhereCaches = append(client.CallOptions.ListAnywhereCaches, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateRapidCache = append(client.CallOptions.CreateRapidCache, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateRapidCache = append(client.CallOptions.UpdateRapidCache, gax.WithClientMetrics(metrics))
+		client.CallOptions.DisableRapidCache = append(client.CallOptions.DisableRapidCache, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetRapidCache = append(client.CallOptions.GetRapidCache, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListRapidCaches = append(client.CallOptions.ListRapidCaches, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetProjectIntelligenceConfig = append(client.CallOptions.GetProjectIntelligenceConfig, gax.WithClientMetrics(metrics))
@@ -1385,6 +1427,7 @@ func NewStorageControlClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.SummarizeIntelligenceFindings = append(client.CallOptions.SummarizeIntelligenceFindings, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIntelligenceFindingRevision = append(client.CallOptions.GetIntelligenceFindingRevision, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListIntelligenceFindingRevisions = append(client.CallOptions.ListIntelligenceFindingRevisions, gax.WithClientMetrics(metrics))
+		client.CallOptions.ViewObjectFullContext = append(client.CallOptions.ViewObjectFullContext, gax.WithClientMetrics(metrics))
 	}
 
 	client.internalClient = c
@@ -1512,6 +1555,7 @@ func NewStorageControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.ListAnywhereCaches = append(callOpts.ListAnywhereCaches, gax.WithClientMetrics(metrics))
 		callOpts.CreateRapidCache = append(callOpts.CreateRapidCache, gax.WithClientMetrics(metrics))
 		callOpts.UpdateRapidCache = append(callOpts.UpdateRapidCache, gax.WithClientMetrics(metrics))
+		callOpts.DisableRapidCache = append(callOpts.DisableRapidCache, gax.WithClientMetrics(metrics))
 		callOpts.GetRapidCache = append(callOpts.GetRapidCache, gax.WithClientMetrics(metrics))
 		callOpts.ListRapidCaches = append(callOpts.ListRapidCaches, gax.WithClientMetrics(metrics))
 		callOpts.GetProjectIntelligenceConfig = append(callOpts.GetProjectIntelligenceConfig, gax.WithClientMetrics(metrics))
@@ -1528,6 +1572,7 @@ func NewStorageControlRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.SummarizeIntelligenceFindings = append(callOpts.SummarizeIntelligenceFindings, gax.WithClientMetrics(metrics))
 		callOpts.GetIntelligenceFindingRevision = append(callOpts.GetIntelligenceFindingRevision, gax.WithClientMetrics(metrics))
 		callOpts.ListIntelligenceFindingRevisions = append(callOpts.ListIntelligenceFindingRevisions, gax.WithClientMetrics(metrics))
+		callOpts.ViewObjectFullContext = append(callOpts.ViewObjectFullContext, gax.WithClientMetrics(metrics))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -2421,6 +2466,45 @@ func (c *storageControlGRPCClient) UpdateRapidCache(ctx context.Context, req *co
 	}, nil
 }
 
+func (c *storageControlGRPCClient) DisableRapidCache(ctx context.Context, req *controlpb.DisableRapidCacheRequest, opts ...gax.CallOption) (*DisableRapidCacheOperation, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DisableRapidCache")
+	}
+	opts = append((*c.CallOptions).DisableRapidCache[0:len((*c.CallOptions).DisableRapidCache):len((*c.CallOptions).DisableRapidCache)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.DisableRapidCache, req, settings.GRPC, c.logger, "DisableRapidCache")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.DisableRapidCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DisableRapidCacheOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *storageControlGRPCClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
 	routingHeaders := ""
 	routingHeadersMap := make(map[string]string)
@@ -2960,6 +3044,39 @@ func (c *storageControlGRPCClient) ListIntelligenceFindingRevisions(ctx context.
 	it.pageInfo.Token = req.GetPageToken()
 
 	return it
+}
+
+func (c *storageControlGRPCClient) ViewObjectFullContext(ctx context.Context, req *controlpb.ViewObjectFullContextRequest, opts ...gax.CallOption) (*controlpb.ObjectFullContext, error) {
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ViewObjectFullContext")
+	}
+	opts = append((*c.CallOptions).ViewObjectFullContext[0:len((*c.CallOptions).ViewObjectFullContext):len((*c.CallOptions).ViewObjectFullContext)], opts...)
+	var resp *controlpb.ObjectFullContext
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.storageControlClient.ViewObjectFullContext, req, settings.GRPC, c.logger, "ViewObjectFullContext")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 // CreateFolder creates a new folder. This operation is only applicable to a hierarchical
@@ -4793,6 +4910,82 @@ func (c *storageControlRESTClient) UpdateRapidCache(ctx context.Context, req *co
 	}, nil
 }
 
+// DisableRapidCache disables a Rapid Cache instance.
+func (c *storageControlRESTClient) DisableRapidCache(ctx context.Context, req *controlpb.DisableRapidCacheRequest, opts ...gax.CallOption) (*DisableRapidCacheOperation, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("name", fmt.Sprintf("%v", req.GetName()))
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/DisableRapidCache")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DisableRapidCache")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v2/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*control.DisableRapidCacheOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &DisableRapidCacheOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
 // GetRapidCache gets a Rapid Cache instance.
 func (c *storageControlRESTClient) GetRapidCache(ctx context.Context, req *controlpb.GetRapidCacheRequest, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -5931,6 +6124,84 @@ func (c *storageControlRESTClient) ListIntelligenceFindingRevisions(ctx context.
 	return it
 }
 
+// ViewObjectFullContext retrieves the full content of an object context, including its key, value,
+// and any associated extended data for a given context key.
+//
+// Object contexts can optionally contain extended data. If an object context
+// contains extended data, the metadata payload structure will contain only
+// its type URL. To retrieve the full extended data, call this method.
+//
+// Returns the complete representation of the context as an
+// [ObjectFullContext][google.storage.control.v2.ObjectFullContext].
+func (c *storageControlRESTClient) ViewObjectFullContext(ctx context.Context, req *controlpb.ViewObjectFullContextRequest, opts ...gax.CallOption) (*controlpb.ObjectFullContext, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v2/%v:viewFullContext", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("contextKey", fmt.Sprintf("%v", req.GetContextKey()))
+	if req.GetGeneration() != 0 {
+		params.Add("generation", fmt.Sprintf("%v", req.GetGeneration()))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(?P<bucket>projects/[^/]+/buckets/[^/]+)(?:/.*)?"); reg.MatchString(req.GetName()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])) > 0 {
+		routingHeadersMap["bucket"] = url.QueryEscape(reg.FindStringSubmatch(req.GetName())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//storage.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.storage.control.v2.StorageControl/ViewObjectFullContext")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/buckets/*/objects/**}:viewFullContext")
+	}
+	opts = append((*c.CallOptions).ViewObjectFullContext[0:len((*c.CallOptions).ViewObjectFullContext):len((*c.CallOptions).ViewObjectFullContext)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &controlpb.ObjectFullContext{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ViewObjectFullContext")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
 // CreateAnywhereCacheOperation returns a new CreateAnywhereCacheOperation from a given name.
 // The name must be that of a previously created CreateAnywhereCacheOperation, possibly from a different process.
 func (c *storageControlGRPCClient) CreateAnywhereCacheOperation(name string) *CreateAnywhereCacheOperation {
@@ -5981,6 +6252,24 @@ func (c *storageControlRESTClient) DeleteFolderRecursiveOperation(name string) *
 	override := fmt.Sprintf("/v2/%s", name)
 	return &DeleteFolderRecursiveOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.DeleteFolderRecursiveOperation"),
+		pollPath: override,
+	}
+}
+
+// DisableRapidCacheOperation returns a new DisableRapidCacheOperation from a given name.
+// The name must be that of a previously created DisableRapidCacheOperation, possibly from a different process.
+func (c *storageControlGRPCClient) DisableRapidCacheOperation(name string) *DisableRapidCacheOperation {
+	return &DisableRapidCacheOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.DisableRapidCacheOperation"),
+	}
+}
+
+// DisableRapidCacheOperation returns a new DisableRapidCacheOperation from a given name.
+// The name must be that of a previously created DisableRapidCacheOperation, possibly from a different process.
+func (c *storageControlRESTClient) DisableRapidCacheOperation(name string) *DisableRapidCacheOperation {
+	override := fmt.Sprintf("/v2/%s", name)
+	return &DisableRapidCacheOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*control.DisableRapidCacheOperation"),
 		pollPath: override,
 	}
 }

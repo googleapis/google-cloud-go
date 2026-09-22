@@ -18,12 +18,14 @@ package licensemanager
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	licensemanagerpb "cloud.google.com/go/licensemanager/apiv1/licensemanagerpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -337,6 +339,12 @@ func (op *UpdateConfigurationOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConfigurationIterator) All() iter.Seq2[*licensemanagerpb.Configuration, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConfigurationIterator manages a stream of *licensemanagerpb.Configuration.
 type ConfigurationIterator struct {
 	items    []*licensemanagerpb.Configuration
@@ -382,6 +390,12 @@ func (it *ConfigurationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*licensemanagerpb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceIterator manages a stream of *licensemanagerpb.Instance.
@@ -431,6 +445,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -476,6 +496,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -525,6 +551,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductIterator) All() iter.Seq2[*licensemanagerpb.Product, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProductIterator manages a stream of *licensemanagerpb.Product.
 type ProductIterator struct {
 	items    []*licensemanagerpb.Product
@@ -570,6 +602,12 @@ func (it *ProductIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UsageIterator) All() iter.Seq2[*licensemanagerpb.Usage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UsageIterator manages a stream of *licensemanagerpb.Usage.

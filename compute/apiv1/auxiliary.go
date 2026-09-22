@@ -17,9 +17,18 @@
 package compute
 
 import (
+	"iter"
+
 	computepb "cloud.google.com/go/compute/apiv1/computepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AcceleratorTypeIterator) All() iter.Seq2[*computepb.AcceleratorType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AcceleratorTypeIterator manages a stream of *computepb.AcceleratorType.
 type AcceleratorTypeIterator struct {
@@ -66,6 +75,12 @@ func (it *AcceleratorTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AcceleratorTypesScopedListPairIterator) All() iter.Seq2[AcceleratorTypesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AcceleratorTypesScopedListPair is a holder type for string/*computepb.AcceleratorTypesScopedList map entries
@@ -121,6 +136,12 @@ func (it *AcceleratorTypesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AddressIterator) All() iter.Seq2[*computepb.Address, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AddressIterator manages a stream of *computepb.Address.
 type AddressIterator struct {
 	items    []*computepb.Address
@@ -166,6 +187,12 @@ func (it *AddressIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AddressesScopedListPairIterator) All() iter.Seq2[AddressesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AddressesScopedListPair is a holder type for string/*computepb.AddressesScopedList map entries
@@ -221,6 +248,12 @@ func (it *AddressesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutoscalerIterator) All() iter.Seq2[*computepb.Autoscaler, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AutoscalerIterator manages a stream of *computepb.Autoscaler.
 type AutoscalerIterator struct {
 	items    []*computepb.Autoscaler
@@ -266,6 +299,12 @@ func (it *AutoscalerIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutoscalersScopedListPairIterator) All() iter.Seq2[AutoscalersScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AutoscalersScopedListPair is a holder type for string/*computepb.AutoscalersScopedList map entries
@@ -321,6 +360,12 @@ func (it *AutoscalersScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackendBucketIterator) All() iter.Seq2[*computepb.BackendBucket, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackendBucketIterator manages a stream of *computepb.BackendBucket.
 type BackendBucketIterator struct {
 	items    []*computepb.BackendBucket
@@ -366,6 +411,12 @@ func (it *BackendBucketIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackendBucketsScopedListPairIterator) All() iter.Seq2[BackendBucketsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackendBucketsScopedListPair is a holder type for string/*computepb.BackendBucketsScopedList map entries
@@ -421,6 +472,12 @@ func (it *BackendBucketsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackendServiceIterator) All() iter.Seq2[*computepb.BackendService, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackendServiceIterator manages a stream of *computepb.BackendService.
 type BackendServiceIterator struct {
 	items    []*computepb.BackendService
@@ -466,6 +523,12 @@ func (it *BackendServiceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackendServicesScopedListPairIterator) All() iter.Seq2[BackendServicesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackendServicesScopedListPair is a holder type for string/*computepb.BackendServicesScopedList map entries
@@ -521,6 +584,12 @@ func (it *BackendServicesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BgpRouteIterator) All() iter.Seq2[*computepb.BgpRoute, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BgpRouteIterator manages a stream of *computepb.BgpRoute.
 type BgpRouteIterator struct {
 	items    []*computepb.BgpRoute
@@ -568,6 +637,12 @@ func (it *BgpRouteIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CommitmentIterator) All() iter.Seq2[*computepb.Commitment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CommitmentIterator manages a stream of *computepb.Commitment.
 type CommitmentIterator struct {
 	items    []*computepb.Commitment
@@ -613,6 +688,12 @@ func (it *CommitmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CommitmentsScopedListPairIterator) All() iter.Seq2[CommitmentsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CommitmentsScopedListPair is a holder type for string/*computepb.CommitmentsScopedList map entries
@@ -668,6 +749,12 @@ func (it *CommitmentsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CompositeHealthCheckIterator) All() iter.Seq2[*computepb.CompositeHealthCheck, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CompositeHealthCheckIterator manages a stream of *computepb.CompositeHealthCheck.
 type CompositeHealthCheckIterator struct {
 	items    []*computepb.CompositeHealthCheck
@@ -713,6 +800,12 @@ func (it *CompositeHealthCheckIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CompositeHealthChecksScopedListPairIterator) All() iter.Seq2[CompositeHealthChecksScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CompositeHealthChecksScopedListPair is a holder type for string/*computepb.CompositeHealthChecksScopedList map entries
@@ -768,6 +861,12 @@ func (it *CompositeHealthChecksScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CrossSiteNetworkIterator) All() iter.Seq2[*computepb.CrossSiteNetwork, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CrossSiteNetworkIterator manages a stream of *computepb.CrossSiteNetwork.
 type CrossSiteNetworkIterator struct {
 	items    []*computepb.CrossSiteNetwork
@@ -813,6 +912,12 @@ func (it *CrossSiteNetworkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiskIterator) All() iter.Seq2[*computepb.Disk, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DiskIterator manages a stream of *computepb.Disk.
@@ -862,6 +967,12 @@ func (it *DiskIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiskTypeIterator) All() iter.Seq2[*computepb.DiskType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DiskTypeIterator manages a stream of *computepb.DiskType.
 type DiskTypeIterator struct {
 	items    []*computepb.DiskType
@@ -907,6 +1018,12 @@ func (it *DiskTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DiskTypesScopedListPairIterator) All() iter.Seq2[DiskTypesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DiskTypesScopedListPair is a holder type for string/*computepb.DiskTypesScopedList map entries
@@ -962,6 +1079,12 @@ func (it *DiskTypesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DisksScopedListPairIterator) All() iter.Seq2[DisksScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DisksScopedListPair is a holder type for string/*computepb.DisksScopedList map entries
 type DisksScopedListPair struct {
 	Key   string
@@ -1015,6 +1138,12 @@ func (it *DisksScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExchangedPeeringRouteIterator) All() iter.Seq2[*computepb.ExchangedPeeringRoute, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ExchangedPeeringRouteIterator manages a stream of *computepb.ExchangedPeeringRoute.
 type ExchangedPeeringRouteIterator struct {
 	items    []*computepb.ExchangedPeeringRoute
@@ -1060,6 +1189,12 @@ func (it *ExchangedPeeringRouteIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExternalVpnGatewayIterator) All() iter.Seq2[*computepb.ExternalVpnGateway, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ExternalVpnGatewayIterator manages a stream of *computepb.ExternalVpnGateway.
@@ -1109,6 +1244,12 @@ func (it *ExternalVpnGatewayIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallIterator) All() iter.Seq2[*computepb.Firewall, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FirewallIterator manages a stream of *computepb.Firewall.
 type FirewallIterator struct {
 	items    []*computepb.Firewall
@@ -1154,6 +1295,12 @@ func (it *FirewallIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallPoliciesScopedListPairIterator) All() iter.Seq2[FirewallPoliciesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FirewallPoliciesScopedListPair is a holder type for string/*computepb.FirewallPoliciesScopedList map entries
@@ -1209,6 +1356,12 @@ func (it *FirewallPoliciesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallPolicyIterator) All() iter.Seq2[*computepb.FirewallPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FirewallPolicyIterator manages a stream of *computepb.FirewallPolicy.
 type FirewallPolicyIterator struct {
 	items    []*computepb.FirewallPolicy
@@ -1256,6 +1409,12 @@ func (it *FirewallPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ForwardingRuleIterator) All() iter.Seq2[*computepb.ForwardingRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ForwardingRuleIterator manages a stream of *computepb.ForwardingRule.
 type ForwardingRuleIterator struct {
 	items    []*computepb.ForwardingRule
@@ -1301,6 +1460,12 @@ func (it *ForwardingRuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ForwardingRulesScopedListPairIterator) All() iter.Seq2[ForwardingRulesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ForwardingRulesScopedListPair is a holder type for string/*computepb.ForwardingRulesScopedList map entries
@@ -1356,6 +1521,12 @@ func (it *ForwardingRulesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FutureReservationIterator) All() iter.Seq2[*computepb.FutureReservation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FutureReservationIterator manages a stream of *computepb.FutureReservation.
 type FutureReservationIterator struct {
 	items    []*computepb.FutureReservation
@@ -1401,6 +1572,12 @@ func (it *FutureReservationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FutureReservationsScopedListPairIterator) All() iter.Seq2[FutureReservationsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FutureReservationsScopedListPair is a holder type for string/*computepb.FutureReservationsScopedList map entries
@@ -1456,6 +1633,12 @@ func (it *FutureReservationsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GlobalVmExtensionPolicyIterator) All() iter.Seq2[*computepb.GlobalVmExtensionPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GlobalVmExtensionPolicyIterator manages a stream of *computepb.GlobalVmExtensionPolicy.
 type GlobalVmExtensionPolicyIterator struct {
 	items    []*computepb.GlobalVmExtensionPolicy
@@ -1501,6 +1684,12 @@ func (it *GlobalVmExtensionPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthAggregationPoliciesScopedListPairIterator) All() iter.Seq2[HealthAggregationPoliciesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HealthAggregationPoliciesScopedListPair is a holder type for string/*computepb.HealthAggregationPoliciesScopedList map entries
@@ -1556,6 +1745,12 @@ func (it *HealthAggregationPoliciesScopedListPairIterator) takeBuf() interface{}
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthAggregationPolicyIterator) All() iter.Seq2[*computepb.HealthAggregationPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HealthAggregationPolicyIterator manages a stream of *computepb.HealthAggregationPolicy.
 type HealthAggregationPolicyIterator struct {
 	items    []*computepb.HealthAggregationPolicy
@@ -1601,6 +1796,12 @@ func (it *HealthAggregationPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthCheckIterator) All() iter.Seq2[*computepb.HealthCheck, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HealthCheckIterator manages a stream of *computepb.HealthCheck.
@@ -1650,6 +1851,12 @@ func (it *HealthCheckIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthCheckServiceIterator) All() iter.Seq2[*computepb.HealthCheckService, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HealthCheckServiceIterator manages a stream of *computepb.HealthCheckService.
 type HealthCheckServiceIterator struct {
 	items    []*computepb.HealthCheckService
@@ -1695,6 +1902,12 @@ func (it *HealthCheckServiceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthCheckServicesScopedListPairIterator) All() iter.Seq2[HealthCheckServicesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HealthCheckServicesScopedListPair is a holder type for string/*computepb.HealthCheckServicesScopedList map entries
@@ -1750,6 +1963,12 @@ func (it *HealthCheckServicesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthChecksScopedListPairIterator) All() iter.Seq2[HealthChecksScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HealthChecksScopedListPair is a holder type for string/*computepb.HealthChecksScopedList map entries
 type HealthChecksScopedListPair struct {
 	Key   string
@@ -1803,6 +2022,12 @@ func (it *HealthChecksScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthSourceIterator) All() iter.Seq2[*computepb.HealthSource, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HealthSourceIterator manages a stream of *computepb.HealthSource.
 type HealthSourceIterator struct {
 	items    []*computepb.HealthSource
@@ -1848,6 +2073,12 @@ func (it *HealthSourceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HealthSourcesScopedListPairIterator) All() iter.Seq2[HealthSourcesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // HealthSourcesScopedListPair is a holder type for string/*computepb.HealthSourcesScopedList map entries
@@ -1903,6 +2134,12 @@ func (it *HealthSourcesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HostIterator) All() iter.Seq2[*computepb.Host, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HostIterator manages a stream of *computepb.Host.
 type HostIterator struct {
 	items    []*computepb.Host
@@ -1948,6 +2185,12 @@ func (it *HostIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ImageIterator) All() iter.Seq2[*computepb.Image, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ImageIterator manages a stream of *computepb.Image.
@@ -1997,6 +2240,12 @@ func (it *ImageIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceGroupIterator) All() iter.Seq2[*computepb.InstanceGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceGroupIterator manages a stream of *computepb.InstanceGroup.
 type InstanceGroupIterator struct {
 	items    []*computepb.InstanceGroup
@@ -2042,6 +2291,12 @@ func (it *InstanceGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceGroupManagerIterator) All() iter.Seq2[*computepb.InstanceGroupManager, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceGroupManagerIterator manages a stream of *computepb.InstanceGroupManager.
@@ -2091,6 +2346,12 @@ func (it *InstanceGroupManagerIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceGroupManagerResizeRequestIterator) All() iter.Seq2[*computepb.InstanceGroupManagerResizeRequest, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceGroupManagerResizeRequestIterator manages a stream of *computepb.InstanceGroupManagerResizeRequest.
 type InstanceGroupManagerResizeRequestIterator struct {
 	items    []*computepb.InstanceGroupManagerResizeRequest
@@ -2136,6 +2397,12 @@ func (it *InstanceGroupManagerResizeRequestIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceGroupManagersScopedListPairIterator) All() iter.Seq2[InstanceGroupManagersScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceGroupManagersScopedListPair is a holder type for string/*computepb.InstanceGroupManagersScopedList map entries
@@ -2191,6 +2458,12 @@ func (it *InstanceGroupManagersScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceGroupsScopedListPairIterator) All() iter.Seq2[InstanceGroupsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceGroupsScopedListPair is a holder type for string/*computepb.InstanceGroupsScopedList map entries
 type InstanceGroupsScopedListPair struct {
 	Key   string
@@ -2244,6 +2517,12 @@ func (it *InstanceGroupsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*computepb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceIterator manages a stream of *computepb.Instance.
 type InstanceIterator struct {
 	items    []*computepb.Instance
@@ -2289,6 +2568,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceManagedByIgmErrorIterator) All() iter.Seq2[*computepb.InstanceManagedByIgmError, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceManagedByIgmErrorIterator manages a stream of *computepb.InstanceManagedByIgmError.
@@ -2338,6 +2623,12 @@ func (it *InstanceManagedByIgmErrorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceTemplateIterator) All() iter.Seq2[*computepb.InstanceTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceTemplateIterator manages a stream of *computepb.InstanceTemplate.
 type InstanceTemplateIterator struct {
 	items    []*computepb.InstanceTemplate
@@ -2383,6 +2674,12 @@ func (it *InstanceTemplateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceTemplatesScopedListPairIterator) All() iter.Seq2[InstanceTemplatesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstanceTemplatesScopedListPair is a holder type for string/*computepb.InstanceTemplatesScopedList map entries
@@ -2438,6 +2735,12 @@ func (it *InstanceTemplatesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceWithNamedPortsIterator) All() iter.Seq2[*computepb.InstanceWithNamedPorts, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceWithNamedPortsIterator manages a stream of *computepb.InstanceWithNamedPorts.
 type InstanceWithNamedPortsIterator struct {
 	items    []*computepb.InstanceWithNamedPorts
@@ -2483,6 +2786,12 @@ func (it *InstanceWithNamedPortsIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstancesScopedListPairIterator) All() iter.Seq2[InstancesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstancesScopedListPair is a holder type for string/*computepb.InstancesScopedList map entries
@@ -2538,6 +2847,12 @@ func (it *InstancesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstantSnapshotGroupIterator) All() iter.Seq2[*computepb.InstantSnapshotGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstantSnapshotGroupIterator manages a stream of *computepb.InstantSnapshotGroup.
 type InstantSnapshotGroupIterator struct {
 	items    []*computepb.InstantSnapshotGroup
@@ -2585,6 +2900,12 @@ func (it *InstantSnapshotGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstantSnapshotIterator) All() iter.Seq2[*computepb.InstantSnapshot, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstantSnapshotIterator manages a stream of *computepb.InstantSnapshot.
 type InstantSnapshotIterator struct {
 	items    []*computepb.InstantSnapshot
@@ -2630,6 +2951,12 @@ func (it *InstantSnapshotIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstantSnapshotsScopedListPairIterator) All() iter.Seq2[InstantSnapshotsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InstantSnapshotsScopedListPair is a holder type for string/*computepb.InstantSnapshotsScopedList map entries
@@ -2685,6 +3012,12 @@ func (it *InstantSnapshotsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectAttachmentGroupIterator) All() iter.Seq2[*computepb.InterconnectAttachmentGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InterconnectAttachmentGroupIterator manages a stream of *computepb.InterconnectAttachmentGroup.
 type InterconnectAttachmentGroupIterator struct {
 	items    []*computepb.InterconnectAttachmentGroup
@@ -2732,6 +3065,12 @@ func (it *InterconnectAttachmentGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectAttachmentIterator) All() iter.Seq2[*computepb.InterconnectAttachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InterconnectAttachmentIterator manages a stream of *computepb.InterconnectAttachment.
 type InterconnectAttachmentIterator struct {
 	items    []*computepb.InterconnectAttachment
@@ -2777,6 +3116,12 @@ func (it *InterconnectAttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectAttachmentsScopedListPairIterator) All() iter.Seq2[InterconnectAttachmentsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InterconnectAttachmentsScopedListPair is a holder type for string/*computepb.InterconnectAttachmentsScopedList map entries
@@ -2832,6 +3177,12 @@ func (it *InterconnectAttachmentsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectGroupIterator) All() iter.Seq2[*computepb.InterconnectGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InterconnectGroupIterator manages a stream of *computepb.InterconnectGroup.
 type InterconnectGroupIterator struct {
 	items    []*computepb.InterconnectGroup
@@ -2877,6 +3228,12 @@ func (it *InterconnectGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectIterator) All() iter.Seq2[*computepb.Interconnect, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InterconnectIterator manages a stream of *computepb.Interconnect.
@@ -2926,6 +3283,12 @@ func (it *InterconnectIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectLocationIterator) All() iter.Seq2[*computepb.InterconnectLocation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InterconnectLocationIterator manages a stream of *computepb.InterconnectLocation.
 type InterconnectLocationIterator struct {
 	items    []*computepb.InterconnectLocation
@@ -2971,6 +3334,12 @@ func (it *InterconnectLocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectRemoteLocationIterator) All() iter.Seq2[*computepb.InterconnectRemoteLocation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InterconnectRemoteLocationIterator manages a stream of *computepb.InterconnectRemoteLocation.
@@ -3020,6 +3389,12 @@ func (it *InterconnectRemoteLocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LicenseIterator) All() iter.Seq2[*computepb.License, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LicenseIterator manages a stream of *computepb.License.
 type LicenseIterator struct {
 	items    []*computepb.License
@@ -3065,6 +3440,12 @@ func (it *LicenseIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MachineImageIterator) All() iter.Seq2[*computepb.MachineImage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MachineImageIterator manages a stream of *computepb.MachineImage.
@@ -3114,6 +3495,12 @@ func (it *MachineImageIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MachineTypeIterator) All() iter.Seq2[*computepb.MachineType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MachineTypeIterator manages a stream of *computepb.MachineType.
 type MachineTypeIterator struct {
 	items    []*computepb.MachineType
@@ -3159,6 +3546,12 @@ func (it *MachineTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MachineTypesScopedListPairIterator) All() iter.Seq2[MachineTypesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // MachineTypesScopedListPair is a holder type for string/*computepb.MachineTypesScopedList map entries
@@ -3214,6 +3607,12 @@ func (it *MachineTypesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ManagedInstanceIterator) All() iter.Seq2[*computepb.ManagedInstance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ManagedInstanceIterator manages a stream of *computepb.ManagedInstance.
 type ManagedInstanceIterator struct {
 	items    []*computepb.ManagedInstance
@@ -3259,6 +3658,12 @@ func (it *ManagedInstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NamedSetIterator) All() iter.Seq2[*computepb.NamedSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NamedSetIterator manages a stream of *computepb.NamedSet.
@@ -3308,6 +3713,12 @@ func (it *NamedSetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkAttachmentIterator) All() iter.Seq2[*computepb.NetworkAttachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NetworkAttachmentIterator manages a stream of *computepb.NetworkAttachment.
 type NetworkAttachmentIterator struct {
 	items    []*computepb.NetworkAttachment
@@ -3353,6 +3764,12 @@ func (it *NetworkAttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkAttachmentsScopedListPairIterator) All() iter.Seq2[NetworkAttachmentsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NetworkAttachmentsScopedListPair is a holder type for string/*computepb.NetworkAttachmentsScopedList map entries
@@ -3408,6 +3825,12 @@ func (it *NetworkAttachmentsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkEdgeSecurityServicesScopedListPairIterator) All() iter.Seq2[NetworkEdgeSecurityServicesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NetworkEdgeSecurityServicesScopedListPair is a holder type for string/*computepb.NetworkEdgeSecurityServicesScopedList map entries
 type NetworkEdgeSecurityServicesScopedListPair struct {
 	Key   string
@@ -3461,6 +3884,12 @@ func (it *NetworkEdgeSecurityServicesScopedListPairIterator) takeBuf() interface
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkEndpointGroupIterator) All() iter.Seq2[*computepb.NetworkEndpointGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NetworkEndpointGroupIterator manages a stream of *computepb.NetworkEndpointGroup.
 type NetworkEndpointGroupIterator struct {
 	items    []*computepb.NetworkEndpointGroup
@@ -3506,6 +3935,12 @@ func (it *NetworkEndpointGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkEndpointGroupsScopedListPairIterator) All() iter.Seq2[NetworkEndpointGroupsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NetworkEndpointGroupsScopedListPair is a holder type for string/*computepb.NetworkEndpointGroupsScopedList map entries
@@ -3561,6 +3996,12 @@ func (it *NetworkEndpointGroupsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkEndpointWithHealthStatusIterator) All() iter.Seq2[*computepb.NetworkEndpointWithHealthStatus, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NetworkEndpointWithHealthStatusIterator manages a stream of *computepb.NetworkEndpointWithHealthStatus.
 type NetworkEndpointWithHealthStatusIterator struct {
 	items    []*computepb.NetworkEndpointWithHealthStatus
@@ -3606,6 +4047,12 @@ func (it *NetworkEndpointWithHealthStatusIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkIterator) All() iter.Seq2[*computepb.Network, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NetworkIterator manages a stream of *computepb.Network.
@@ -3655,6 +4102,12 @@ func (it *NetworkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkProfileIterator) All() iter.Seq2[*computepb.NetworkProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NetworkProfileIterator manages a stream of *computepb.NetworkProfile.
 type NetworkProfileIterator struct {
 	items    []*computepb.NetworkProfile
@@ -3700,6 +4153,12 @@ func (it *NetworkProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeGroupIterator) All() iter.Seq2[*computepb.NodeGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NodeGroupIterator manages a stream of *computepb.NodeGroup.
@@ -3749,6 +4208,12 @@ func (it *NodeGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeGroupNodeIterator) All() iter.Seq2[*computepb.NodeGroupNode, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NodeGroupNodeIterator manages a stream of *computepb.NodeGroupNode.
 type NodeGroupNodeIterator struct {
 	items    []*computepb.NodeGroupNode
@@ -3794,6 +4259,12 @@ func (it *NodeGroupNodeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeGroupsScopedListPairIterator) All() iter.Seq2[NodeGroupsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NodeGroupsScopedListPair is a holder type for string/*computepb.NodeGroupsScopedList map entries
@@ -3849,6 +4320,12 @@ func (it *NodeGroupsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeTemplateIterator) All() iter.Seq2[*computepb.NodeTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NodeTemplateIterator manages a stream of *computepb.NodeTemplate.
 type NodeTemplateIterator struct {
 	items    []*computepb.NodeTemplate
@@ -3894,6 +4371,12 @@ func (it *NodeTemplateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeTemplatesScopedListPairIterator) All() iter.Seq2[NodeTemplatesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NodeTemplatesScopedListPair is a holder type for string/*computepb.NodeTemplatesScopedList map entries
@@ -3949,6 +4432,12 @@ func (it *NodeTemplatesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeTypeIterator) All() iter.Seq2[*computepb.NodeType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NodeTypeIterator manages a stream of *computepb.NodeType.
 type NodeTypeIterator struct {
 	items    []*computepb.NodeType
@@ -3994,6 +4483,12 @@ func (it *NodeTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NodeTypesScopedListPairIterator) All() iter.Seq2[NodeTypesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NodeTypesScopedListPair is a holder type for string/*computepb.NodeTypesScopedList map entries
@@ -4049,6 +4544,12 @@ func (it *NodeTypesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NotificationEndpointIterator) All() iter.Seq2[*computepb.NotificationEndpoint, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NotificationEndpointIterator manages a stream of *computepb.NotificationEndpoint.
 type NotificationEndpointIterator struct {
 	items    []*computepb.NotificationEndpoint
@@ -4094,6 +4595,12 @@ func (it *NotificationEndpointIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NotificationEndpointsScopedListPairIterator) All() iter.Seq2[NotificationEndpointsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NotificationEndpointsScopedListPair is a holder type for string/*computepb.NotificationEndpointsScopedList map entries
@@ -4149,6 +4656,12 @@ func (it *NotificationEndpointsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*computepb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *computepb.Operation.
 type OperationIterator struct {
 	items    []*computepb.Operation
@@ -4194,6 +4707,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationsScopedListPairIterator) All() iter.Seq2[OperationsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationsScopedListPair is a holder type for string/*computepb.OperationsScopedList map entries
@@ -4249,6 +4768,12 @@ func (it *OperationsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PacketMirroringIterator) All() iter.Seq2[*computepb.PacketMirroring, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PacketMirroringIterator manages a stream of *computepb.PacketMirroring.
 type PacketMirroringIterator struct {
 	items    []*computepb.PacketMirroring
@@ -4294,6 +4819,12 @@ func (it *PacketMirroringIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PacketMirroringsScopedListPairIterator) All() iter.Seq2[PacketMirroringsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PacketMirroringsScopedListPair is a holder type for string/*computepb.PacketMirroringsScopedList map entries
@@ -4349,6 +4880,12 @@ func (it *PacketMirroringsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PerInstanceConfigIterator) All() iter.Seq2[*computepb.PerInstanceConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PerInstanceConfigIterator manages a stream of *computepb.PerInstanceConfig.
 type PerInstanceConfigIterator struct {
 	items    []*computepb.PerInstanceConfig
@@ -4394,6 +4931,12 @@ func (it *PerInstanceConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PreviewFeatureIterator) All() iter.Seq2[*computepb.PreviewFeature, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PreviewFeatureIterator manages a stream of *computepb.PreviewFeature.
@@ -4443,6 +4986,12 @@ func (it *PreviewFeatureIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProjectIterator) All() iter.Seq2[*computepb.Project, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProjectIterator manages a stream of *computepb.Project.
 type ProjectIterator struct {
 	items    []*computepb.Project
@@ -4488,6 +5037,12 @@ func (it *ProjectIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PublicAdvertisedPrefixIterator) All() iter.Seq2[*computepb.PublicAdvertisedPrefix, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PublicAdvertisedPrefixIterator manages a stream of *computepb.PublicAdvertisedPrefix.
@@ -4537,6 +5092,12 @@ func (it *PublicAdvertisedPrefixIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PublicDelegatedPrefixIterator) All() iter.Seq2[*computepb.PublicDelegatedPrefix, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PublicDelegatedPrefixIterator manages a stream of *computepb.PublicDelegatedPrefix.
 type PublicDelegatedPrefixIterator struct {
 	items    []*computepb.PublicDelegatedPrefix
@@ -4582,6 +5143,12 @@ func (it *PublicDelegatedPrefixIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PublicDelegatedPrefixesScopedListPairIterator) All() iter.Seq2[PublicDelegatedPrefixesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PublicDelegatedPrefixesScopedListPair is a holder type for string/*computepb.PublicDelegatedPrefixesScopedList map entries
@@ -4637,6 +5204,12 @@ func (it *PublicDelegatedPrefixesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReferenceIterator) All() iter.Seq2[*computepb.Reference, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReferenceIterator manages a stream of *computepb.Reference.
 type ReferenceIterator struct {
 	items    []*computepb.Reference
@@ -4682,6 +5255,12 @@ func (it *ReferenceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RegionIterator) All() iter.Seq2[*computepb.Region, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RegionIterator manages a stream of *computepb.Region.
@@ -4731,6 +5310,12 @@ func (it *RegionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReliabilityRiskIterator) All() iter.Seq2[*computepb.ReliabilityRisk, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReliabilityRiskIterator manages a stream of *computepb.ReliabilityRisk.
 type ReliabilityRiskIterator struct {
 	items    []*computepb.ReliabilityRisk
@@ -4776,6 +5361,12 @@ func (it *ReliabilityRiskIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationBlockIterator) All() iter.Seq2[*computepb.ReservationBlock, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReservationBlockIterator manages a stream of *computepb.ReservationBlock.
@@ -4825,6 +5416,12 @@ func (it *ReservationBlockIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationIterator) All() iter.Seq2[*computepb.Reservation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReservationIterator manages a stream of *computepb.Reservation.
 type ReservationIterator struct {
 	items    []*computepb.Reservation
@@ -4870,6 +5467,12 @@ func (it *ReservationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationSlotIterator) All() iter.Seq2[*computepb.ReservationSlot, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReservationSlotIterator manages a stream of *computepb.ReservationSlot.
@@ -4919,6 +5522,12 @@ func (it *ReservationSlotIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationSubBlockIterator) All() iter.Seq2[*computepb.ReservationSubBlock, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ReservationSubBlockIterator manages a stream of *computepb.ReservationSubBlock.
 type ReservationSubBlockIterator struct {
 	items    []*computepb.ReservationSubBlock
@@ -4964,6 +5573,12 @@ func (it *ReservationSubBlockIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReservationsScopedListPairIterator) All() iter.Seq2[ReservationsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReservationsScopedListPair is a holder type for string/*computepb.ReservationsScopedList map entries
@@ -5019,6 +5634,12 @@ func (it *ReservationsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourcePoliciesScopedListPairIterator) All() iter.Seq2[ResourcePoliciesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ResourcePoliciesScopedListPair is a holder type for string/*computepb.ResourcePoliciesScopedList map entries
 type ResourcePoliciesScopedListPair struct {
 	Key   string
@@ -5072,6 +5693,12 @@ func (it *ResourcePoliciesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourcePolicyIterator) All() iter.Seq2[*computepb.ResourcePolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ResourcePolicyIterator manages a stream of *computepb.ResourcePolicy.
 type ResourcePolicyIterator struct {
 	items    []*computepb.ResourcePolicy
@@ -5117,6 +5744,12 @@ func (it *ResourcePolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutIterator) All() iter.Seq2[*computepb.Rollout, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RolloutIterator manages a stream of *computepb.Rollout.
@@ -5166,6 +5799,12 @@ func (it *RolloutIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RolloutPlanIterator) All() iter.Seq2[*computepb.RolloutPlan, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RolloutPlanIterator manages a stream of *computepb.RolloutPlan.
 type RolloutPlanIterator struct {
 	items    []*computepb.RolloutPlan
@@ -5211,6 +5850,12 @@ func (it *RolloutPlanIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RouteIterator) All() iter.Seq2[*computepb.Route, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RouteIterator manages a stream of *computepb.Route.
@@ -5260,6 +5905,12 @@ func (it *RouteIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RoutePolicyIterator) All() iter.Seq2[*computepb.RoutePolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RoutePolicyIterator manages a stream of *computepb.RoutePolicy.
 type RoutePolicyIterator struct {
 	items    []*computepb.RoutePolicy
@@ -5307,6 +5958,12 @@ func (it *RoutePolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RouterIterator) All() iter.Seq2[*computepb.Router, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RouterIterator manages a stream of *computepb.Router.
 type RouterIterator struct {
 	items    []*computepb.Router
@@ -5352,6 +6009,12 @@ func (it *RouterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RoutersScopedListPairIterator) All() iter.Seq2[RoutersScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RoutersScopedListPair is a holder type for string/*computepb.RoutersScopedList map entries
@@ -5407,6 +6070,12 @@ func (it *RoutersScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecurityPoliciesScopedListPairIterator) All() iter.Seq2[SecurityPoliciesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SecurityPoliciesScopedListPair is a holder type for string/*computepb.SecurityPoliciesScopedList map entries
 type SecurityPoliciesScopedListPair struct {
 	Key   string
@@ -5460,6 +6129,12 @@ func (it *SecurityPoliciesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SecurityPolicyIterator) All() iter.Seq2[*computepb.SecurityPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SecurityPolicyIterator manages a stream of *computepb.SecurityPolicy.
 type SecurityPolicyIterator struct {
 	items    []*computepb.SecurityPolicy
@@ -5507,6 +6182,12 @@ func (it *SecurityPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceAttachmentIterator) All() iter.Seq2[*computepb.ServiceAttachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceAttachmentIterator manages a stream of *computepb.ServiceAttachment.
 type ServiceAttachmentIterator struct {
 	items    []*computepb.ServiceAttachment
@@ -5552,6 +6233,12 @@ func (it *ServiceAttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceAttachmentsScopedListPairIterator) All() iter.Seq2[ServiceAttachmentsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceAttachmentsScopedListPair is a holder type for string/*computepb.ServiceAttachmentsScopedList map entries
@@ -5607,6 +6294,12 @@ func (it *ServiceAttachmentsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SnapshotIterator) All() iter.Seq2[*computepb.Snapshot, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SnapshotIterator manages a stream of *computepb.Snapshot.
 type SnapshotIterator struct {
 	items    []*computepb.Snapshot
@@ -5654,6 +6347,12 @@ func (it *SnapshotIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SslCertificateIterator) All() iter.Seq2[*computepb.SslCertificate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SslCertificateIterator manages a stream of *computepb.SslCertificate.
 type SslCertificateIterator struct {
 	items    []*computepb.SslCertificate
@@ -5699,6 +6398,12 @@ func (it *SslCertificateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SslCertificatesScopedListPairIterator) All() iter.Seq2[SslCertificatesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SslCertificatesScopedListPair is a holder type for string/*computepb.SslCertificatesScopedList map entries
@@ -5754,6 +6459,12 @@ func (it *SslCertificatesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SslPoliciesScopedListPairIterator) All() iter.Seq2[SslPoliciesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SslPoliciesScopedListPair is a holder type for string/*computepb.SslPoliciesScopedList map entries
 type SslPoliciesScopedListPair struct {
 	Key   string
@@ -5807,6 +6518,12 @@ func (it *SslPoliciesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SslPolicyIterator) All() iter.Seq2[*computepb.SslPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SslPolicyIterator manages a stream of *computepb.SslPolicy.
 type SslPolicyIterator struct {
 	items    []*computepb.SslPolicy
@@ -5852,6 +6569,12 @@ func (it *SslPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoragePoolDiskIterator) All() iter.Seq2[*computepb.StoragePoolDisk, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StoragePoolDiskIterator manages a stream of *computepb.StoragePoolDisk.
@@ -5901,6 +6624,12 @@ func (it *StoragePoolDiskIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoragePoolIterator) All() iter.Seq2[*computepb.StoragePool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StoragePoolIterator manages a stream of *computepb.StoragePool.
 type StoragePoolIterator struct {
 	items    []*computepb.StoragePool
@@ -5948,6 +6677,12 @@ func (it *StoragePoolIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoragePoolTypeIterator) All() iter.Seq2[*computepb.StoragePoolType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StoragePoolTypeIterator manages a stream of *computepb.StoragePoolType.
 type StoragePoolTypeIterator struct {
 	items    []*computepb.StoragePoolType
@@ -5993,6 +6728,12 @@ func (it *StoragePoolTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoragePoolTypesScopedListPairIterator) All() iter.Seq2[StoragePoolTypesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StoragePoolTypesScopedListPair is a holder type for string/*computepb.StoragePoolTypesScopedList map entries
@@ -6048,6 +6789,12 @@ func (it *StoragePoolTypesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoragePoolsScopedListPairIterator) All() iter.Seq2[StoragePoolsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StoragePoolsScopedListPair is a holder type for string/*computepb.StoragePoolsScopedList map entries
 type StoragePoolsScopedListPair struct {
 	Key   string
@@ -6101,6 +6848,12 @@ func (it *StoragePoolsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubnetworkIterator) All() iter.Seq2[*computepb.Subnetwork, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SubnetworkIterator manages a stream of *computepb.Subnetwork.
 type SubnetworkIterator struct {
 	items    []*computepb.Subnetwork
@@ -6146,6 +6899,12 @@ func (it *SubnetworkIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubnetworksScopedListPairIterator) All() iter.Seq2[SubnetworksScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SubnetworksScopedListPair is a holder type for string/*computepb.SubnetworksScopedList map entries
@@ -6201,6 +6960,12 @@ func (it *SubnetworksScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetGrpcProxyIterator) All() iter.Seq2[*computepb.TargetGrpcProxy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetGrpcProxyIterator manages a stream of *computepb.TargetGrpcProxy.
 type TargetGrpcProxyIterator struct {
 	items    []*computepb.TargetGrpcProxy
@@ -6246,6 +7011,12 @@ func (it *TargetGrpcProxyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetHttpProxiesScopedListPairIterator) All() iter.Seq2[TargetHttpProxiesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TargetHttpProxiesScopedListPair is a holder type for string/*computepb.TargetHttpProxiesScopedList map entries
@@ -6301,6 +7072,12 @@ func (it *TargetHttpProxiesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetHttpProxyIterator) All() iter.Seq2[*computepb.TargetHttpProxy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetHttpProxyIterator manages a stream of *computepb.TargetHttpProxy.
 type TargetHttpProxyIterator struct {
 	items    []*computepb.TargetHttpProxy
@@ -6346,6 +7123,12 @@ func (it *TargetHttpProxyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetHttpsProxiesScopedListPairIterator) All() iter.Seq2[TargetHttpsProxiesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TargetHttpsProxiesScopedListPair is a holder type for string/*computepb.TargetHttpsProxiesScopedList map entries
@@ -6401,6 +7184,12 @@ func (it *TargetHttpsProxiesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetHttpsProxyIterator) All() iter.Seq2[*computepb.TargetHttpsProxy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetHttpsProxyIterator manages a stream of *computepb.TargetHttpsProxy.
 type TargetHttpsProxyIterator struct {
 	items    []*computepb.TargetHttpsProxy
@@ -6448,6 +7237,12 @@ func (it *TargetHttpsProxyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetInstanceIterator) All() iter.Seq2[*computepb.TargetInstance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetInstanceIterator manages a stream of *computepb.TargetInstance.
 type TargetInstanceIterator struct {
 	items    []*computepb.TargetInstance
@@ -6493,6 +7288,12 @@ func (it *TargetInstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetInstancesScopedListPairIterator) All() iter.Seq2[TargetInstancesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TargetInstancesScopedListPair is a holder type for string/*computepb.TargetInstancesScopedList map entries
@@ -6548,6 +7349,12 @@ func (it *TargetInstancesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetPoolIterator) All() iter.Seq2[*computepb.TargetPool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetPoolIterator manages a stream of *computepb.TargetPool.
 type TargetPoolIterator struct {
 	items    []*computepb.TargetPool
@@ -6593,6 +7400,12 @@ func (it *TargetPoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetPoolsScopedListPairIterator) All() iter.Seq2[TargetPoolsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TargetPoolsScopedListPair is a holder type for string/*computepb.TargetPoolsScopedList map entries
@@ -6648,6 +7461,12 @@ func (it *TargetPoolsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetSslProxyIterator) All() iter.Seq2[*computepb.TargetSslProxy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetSslProxyIterator manages a stream of *computepb.TargetSslProxy.
 type TargetSslProxyIterator struct {
 	items    []*computepb.TargetSslProxy
@@ -6693,6 +7512,12 @@ func (it *TargetSslProxyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetTcpProxiesScopedListPairIterator) All() iter.Seq2[TargetTcpProxiesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TargetTcpProxiesScopedListPair is a holder type for string/*computepb.TargetTcpProxiesScopedList map entries
@@ -6748,6 +7573,12 @@ func (it *TargetTcpProxiesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetTcpProxyIterator) All() iter.Seq2[*computepb.TargetTcpProxy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetTcpProxyIterator manages a stream of *computepb.TargetTcpProxy.
 type TargetTcpProxyIterator struct {
 	items    []*computepb.TargetTcpProxy
@@ -6795,6 +7626,12 @@ func (it *TargetTcpProxyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetVpnGatewayIterator) All() iter.Seq2[*computepb.TargetVpnGateway, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TargetVpnGatewayIterator manages a stream of *computepb.TargetVpnGateway.
 type TargetVpnGatewayIterator struct {
 	items    []*computepb.TargetVpnGateway
@@ -6840,6 +7677,12 @@ func (it *TargetVpnGatewayIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TargetVpnGatewaysScopedListPairIterator) All() iter.Seq2[TargetVpnGatewaysScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TargetVpnGatewaysScopedListPair is a holder type for string/*computepb.TargetVpnGatewaysScopedList map entries
@@ -6895,6 +7738,12 @@ func (it *TargetVpnGatewaysScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UrlMapIterator) All() iter.Seq2[*computepb.UrlMap, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // UrlMapIterator manages a stream of *computepb.UrlMap.
 type UrlMapIterator struct {
 	items    []*computepb.UrlMap
@@ -6940,6 +7789,12 @@ func (it *UrlMapIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UrlMapsScopedListPairIterator) All() iter.Seq2[UrlMapsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UrlMapsScopedListPair is a holder type for string/*computepb.UrlMapsScopedList map entries
@@ -6995,6 +7850,12 @@ func (it *UrlMapsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UsableSubnetworkIterator) All() iter.Seq2[*computepb.UsableSubnetwork, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // UsableSubnetworkIterator manages a stream of *computepb.UsableSubnetwork.
 type UsableSubnetworkIterator struct {
 	items    []*computepb.UsableSubnetwork
@@ -7042,6 +7903,12 @@ func (it *UsableSubnetworkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VmEndpointNatMappingsIterator) All() iter.Seq2[*computepb.VmEndpointNatMappings, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VmEndpointNatMappingsIterator manages a stream of *computepb.VmEndpointNatMappings.
 type VmEndpointNatMappingsIterator struct {
 	items    []*computepb.VmEndpointNatMappings
@@ -7087,6 +7954,12 @@ func (it *VmEndpointNatMappingsIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VmExtensionPoliciesScopedListPairIterator) All() iter.Seq2[VmExtensionPoliciesScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VmExtensionPoliciesScopedListPair is a holder type for string/*computepb.VmExtensionPoliciesScopedList map entries
@@ -7142,6 +8015,12 @@ func (it *VmExtensionPoliciesScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VmExtensionPolicyIterator) All() iter.Seq2[*computepb.VmExtensionPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VmExtensionPolicyIterator manages a stream of *computepb.VmExtensionPolicy.
 type VmExtensionPolicyIterator struct {
 	items    []*computepb.VmExtensionPolicy
@@ -7189,6 +8068,12 @@ func (it *VmExtensionPolicyIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VpnGatewayIterator) All() iter.Seq2[*computepb.VpnGateway, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VpnGatewayIterator manages a stream of *computepb.VpnGateway.
 type VpnGatewayIterator struct {
 	items    []*computepb.VpnGateway
@@ -7234,6 +8119,12 @@ func (it *VpnGatewayIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VpnGatewaysScopedListPairIterator) All() iter.Seq2[VpnGatewaysScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VpnGatewaysScopedListPair is a holder type for string/*computepb.VpnGatewaysScopedList map entries
@@ -7289,6 +8180,12 @@ func (it *VpnGatewaysScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VpnTunnelIterator) All() iter.Seq2[*computepb.VpnTunnel, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VpnTunnelIterator manages a stream of *computepb.VpnTunnel.
 type VpnTunnelIterator struct {
 	items    []*computepb.VpnTunnel
@@ -7334,6 +8231,12 @@ func (it *VpnTunnelIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VpnTunnelsScopedListPairIterator) All() iter.Seq2[VpnTunnelsScopedListPair, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VpnTunnelsScopedListPair is a holder type for string/*computepb.VpnTunnelsScopedList map entries
@@ -7389,6 +8292,12 @@ func (it *VpnTunnelsScopedListPairIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WireGroupIterator) All() iter.Seq2[*computepb.WireGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // WireGroupIterator manages a stream of *computepb.WireGroup.
 type WireGroupIterator struct {
 	items    []*computepb.WireGroup
@@ -7436,6 +8345,12 @@ func (it *WireGroupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *XpnResourceIdIterator) All() iter.Seq2[*computepb.XpnResourceId, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // XpnResourceIdIterator manages a stream of *computepb.XpnResourceId.
 type XpnResourceIdIterator struct {
 	items    []*computepb.XpnResourceId
@@ -7481,6 +8396,12 @@ func (it *XpnResourceIdIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ZoneIterator) All() iter.Seq2[*computepb.Zone, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ZoneIterator manages a stream of *computepb.Zone.

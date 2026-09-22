@@ -69,14 +69,6 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 
-	exporter := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
-	defer tp.Shutdown(context.Background())
-
-	// Restore the global tracer provider after the test to avoid side effects.
-	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
-	otel.SetTracerProvider(tp)
-
 	successfulEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
 			return &echo.EchoReply{Message: req.Message}, nil
@@ -85,18 +77,6 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 	errorEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
 			return nil, status.Error(grpccodes.Internal, "test error")
-		},
-	}
-	timeoutEchoer := &fakeEchoService{
-		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			time.Sleep(100 * time.Millisecond)
-			return &echo.EchoReply{Message: req.Message}, nil
-		},
-	}
-	cancelEchoer := &fakeEchoService{
-		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			time.Sleep(100 * time.Millisecond)
-			return &echo.EchoReply{Message: req.Message}, nil
 		},
 	}
 
@@ -157,7 +137,6 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 		},
 		{
 			name:      "telemetry enabled client timeout",
-			echoer:    timeoutEchoer,
 			opts:      &Options{DisableAuthentication: true},
 			errorType: "timeout",
 			wantErr:   true,
@@ -181,7 +160,6 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 		},
 		{
 			name:      "telemetry enabled client cancelled",
-			echoer:    cancelEchoer,
 			opts:      &Options{DisableAuthentication: true},
 			errorType: "cancel",
 			wantErr:   true,
@@ -257,14 +235,35 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			exporter.Reset()
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+
+			// Restore the global tracer provider after the test to avoid side effects.
+			defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
+			otel.SetTracerProvider(tp)
+
+			rpcStarted := make(chan struct{}, 1)
+			echoer := tt.echoer
+			if tt.errorType == "timeout" || tt.errorType == "cancel" {
+				echoer = &fakeEchoService{
+					Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
+						select {
+						case rpcStarted <- struct{}{}:
+						default:
+						}
+						<-ctx.Done()
+						return nil, ctx.Err()
+					},
+				}
+			}
 
 			l, err := net.Listen("tcp", "127.0.0.1:0")
 			if err != nil {
 				t.Fatalf("Failed to listen: %v", err)
 			}
 			s := grpc.NewServer()
-			echo.RegisterEchoerServer(s, tt.echoer)
+			echo.RegisterEchoerServer(s, echoer)
 			go s.Serve(l)
 			defer s.Stop()
 
@@ -280,11 +279,19 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 			ctx := context.Background()
 			var cancel context.CancelFunc
 			if tt.errorType == "timeout" {
-				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
+				ctx, cancel = context.WithTimeout(ctx, 50*time.Millisecond)
 				defer cancel()
 			} else if tt.errorType == "cancel" {
 				ctx, cancel = context.WithCancel(ctx)
-				time.AfterFunc(10*time.Millisecond, cancel)
+				defer cancel()
+				go func() {
+					select {
+					case <-rpcStarted:
+						cancel()
+					case <-time.After(5 * time.Second):
+						cancel()
+					}
+				}()
 			}
 
 			for k, v := range tt.telemetryCtxValues {
@@ -297,7 +304,7 @@ func TestDial_OpenTelemetry_Enabled(t *testing.T) {
 				t.Errorf("client.Echo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			spans := exporter.GetSpans()
+			spans := getSpansWithTimeout(exporter, tt.wantSpans)
 			if len(spans) != tt.wantSpans {
 				t.Fatalf("len(spans) = %d, want %d", len(spans), tt.wantSpans)
 			}
@@ -349,14 +356,6 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 
-	exporter := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
-	defer tp.Shutdown(context.Background())
-
-	// Restore the global tracer provider after the test to avoid side effects.
-	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
-	otel.SetTracerProvider(tp)
-
 	successfulEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
 			return &echo.EchoReply{Message: req.Message}, nil
@@ -365,18 +364,6 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 	errorEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
 			return nil, status.Error(grpccodes.Internal, "test error")
-		},
-	}
-	timeoutEchoer := &fakeEchoService{
-		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			time.Sleep(100 * time.Millisecond)
-			return &echo.EchoReply{Message: req.Message}, nil
-		},
-	}
-	cancelEchoer := &fakeEchoService{
-		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
-			time.Sleep(100 * time.Millisecond)
-			return &echo.EchoReply{Message: req.Message}, nil
 		},
 	}
 
@@ -436,7 +423,6 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 		},
 		{
 			name:      "telemetry enabled client timeout (but gated off)",
-			echoer:    timeoutEchoer,
 			opts:      &Options{DisableAuthentication: true},
 			errorType: "timeout",
 			wantErr:   true,
@@ -459,7 +445,6 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 		},
 		{
 			name:      "telemetry enabled client cancelled (but gated off)",
-			echoer:    cancelEchoer,
 			opts:      &Options{DisableAuthentication: true},
 			errorType: "cancel",
 			wantErr:   true,
@@ -523,14 +508,35 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			exporter.Reset()
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+
+			// Restore the global tracer provider after the test to avoid side effects.
+			defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
+			otel.SetTracerProvider(tp)
+
+			rpcStarted := make(chan struct{}, 1)
+			echoer := tt.echoer
+			if tt.errorType == "timeout" || tt.errorType == "cancel" {
+				echoer = &fakeEchoService{
+					Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
+						select {
+						case rpcStarted <- struct{}{}:
+						default:
+						}
+						<-ctx.Done()
+						return nil, ctx.Err()
+					},
+				}
+			}
 
 			l, err := net.Listen("tcp", "127.0.0.1:0")
 			if err != nil {
 				t.Fatalf("Failed to listen: %v", err)
 			}
 			s := grpc.NewServer()
-			echo.RegisterEchoerServer(s, tt.echoer)
+			echo.RegisterEchoerServer(s, echoer)
 			go s.Serve(l)
 			defer s.Stop()
 
@@ -546,11 +552,19 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 			ctx := context.Background()
 			var cancel context.CancelFunc
 			if tt.errorType == "timeout" {
-				ctx, cancel = context.WithTimeout(ctx, 10*time.Millisecond)
+				ctx, cancel = context.WithTimeout(ctx, 50*time.Millisecond)
 				defer cancel()
 			} else if tt.errorType == "cancel" {
 				ctx, cancel = context.WithCancel(ctx)
-				time.AfterFunc(10*time.Millisecond, cancel)
+				defer cancel()
+				go func() {
+					select {
+					case <-rpcStarted:
+						cancel()
+					case <-time.After(5 * time.Second):
+						cancel()
+					}
+				}()
 			}
 
 			for k, v := range tt.telemetryCtxValues {
@@ -563,7 +577,7 @@ func TestDial_OpenTelemetry_Disabled(t *testing.T) {
 				t.Errorf("client.Echo() error = %v, wantErr %v", err, tt.wantErr)
 			}
 
-			spans := exporter.GetSpans()
+			spans := getSpansWithTimeout(exporter, tt.wantSpans)
 			if len(spans) != tt.wantSpans {
 				t.Fatalf("len(spans) = %d, want %d", len(spans), tt.wantSpans)
 			}
@@ -835,14 +849,6 @@ func TestDial_Telemetry_Combinations(t *testing.T) {
 	// Ensure any lingering HTTP/2 connections are closed to avoid goroutine leaks.
 	defer http.DefaultTransport.(*http.Transport).CloseIdleConnections()
 
-	exporter := tracetest.NewInMemoryExporter()
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
-	defer tp.Shutdown(context.Background())
-
-	// Restore the global tracer provider after the test to avoid side effects.
-	defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
-	otel.SetTracerProvider(tp)
-
 	errorEchoer := &fakeEchoService{
 		Fn: func(ctx context.Context, req *echo.EchoRequest) (*echo.EchoReply, error) {
 			return nil, status.Error(grpccodes.Internal, "test error")
@@ -934,7 +940,14 @@ func TestDial_Telemetry_Combinations(t *testing.T) {
 
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			exporter.Reset()
+			exporter := tracetest.NewInMemoryExporter()
+			tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(exporter))
+			defer tp.Shutdown(context.Background())
+
+			// Restore the global tracer provider after the test to avoid side effects.
+			defer func(prev oteltrace.TracerProvider) { otel.SetTracerProvider(prev) }(otel.GetTracerProvider())
+			otel.SetTracerProvider(tp)
+
 			gax.TestOnlyResetIsFeatureEnabled()
 			defer gax.TestOnlyResetIsFeatureEnabled()
 
@@ -1065,5 +1078,20 @@ func TestExtractHostPort(t *testing.T) {
 				t.Errorf("extractHostPort(%q) port = %v, want %v", tt.target, gotPort, tt.wantPort)
 			}
 		})
+	}
+}
+
+func getSpansWithTimeout(exporter *tracetest.InMemoryExporter, wantSpans int) tracetest.SpanStubs {
+	if wantSpans == 0 {
+		time.Sleep(10 * time.Millisecond)
+		return exporter.GetSpans()
+	}
+	deadline := time.Now().Add(2 * time.Second)
+	for {
+		spans := exporter.GetSpans()
+		if len(spans) >= wantSpans || time.Now().After(deadline) {
+			return spans
+		}
+		time.Sleep(5 * time.Millisecond)
 	}
 }

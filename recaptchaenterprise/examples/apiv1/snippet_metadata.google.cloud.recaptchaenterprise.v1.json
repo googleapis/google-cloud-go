@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/recaptchaenterprise/v2/apiv1",
-    "version": "2.26.0"
+    "version": "2.27.0"
   },
   "snippets": [
     {
@@ -468,6 +468,52 @@
         }
       ],
       "title": "recaptchaenterprise GetMetrics Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.GetPolicy",
+        "method": {
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.GetPolicy",
+          "service": {
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService",
+            "shortName": "RecaptchaEnterpriseService"
+          },
+          "shortName": "GetPolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recaptchaenterprisepb.GetPolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Policy",
+        "shortName": "GetPolicy"
+      },
+      "description": "GetPolicy get the policy for a key.",
+      "file": "Client/GetPolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_GetPolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "recaptchaenterprise GetPolicy Sample"
     },
     {
       "clientMethod": {
@@ -1020,6 +1066,52 @@
         }
       ],
       "title": "recaptchaenterprise UpdateKey Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.recaptchaenterprise.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.recaptchaenterprise.v1.Client.UpdatePolicy",
+        "method": {
+          "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService.UpdatePolicy",
+          "service": {
+            "fullName": "google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService",
+            "shortName": "RecaptchaEnterpriseService"
+          },
+          "shortName": "UpdatePolicy"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "recaptchaenterprisepb.UpdatePolicyRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*recaptchaenterprisepb.Policy",
+        "shortName": "UpdatePolicy"
+      },
+      "description": "UpdatePolicy updates the policy for a key.",
+      "file": "Client/UpdatePolicy/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "recaptchaenterprise_v1_generated_RecaptchaEnterpriseService_UpdatePolicy_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "recaptchaenterprise UpdatePolicy Sample"
     }
   ]
 }

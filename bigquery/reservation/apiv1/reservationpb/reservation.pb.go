@@ -28,6 +28,7 @@ import (
 	iampb "cloud.google.com/go/iam/apiv1/iampb"
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	status "google.golang.org/genproto/googleapis/rpc/status"
+	expr "google.golang.org/genproto/googleapis/type/expr"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
@@ -269,9 +270,13 @@ const (
 	// Invalid plan value. Requests with this value will be rejected with
 	// error code `google.rpc.Code.INVALID_ARGUMENT`.
 	CapacityCommitment_COMMITMENT_PLAN_UNSPECIFIED CapacityCommitment_CommitmentPlan = 0
+	// Deprecated: Flex commitments are deprecated. Please use Edition-based
+	// capacity commitments.
 	// Flex commitments have committed period of 1 minute after becoming ACTIVE.
 	// After that, they are not in a committed period anymore and can be removed
 	// any time.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/bigquery/reservation/v1/reservation.proto.
 	CapacityCommitment_FLEX CapacityCommitment_CommitmentPlan = 3
 	// Same as FLEX, should only be used if flat-rate commitments are still
 	// available.
@@ -464,31 +469,37 @@ const (
 	// take priority over a default BACKGROUND reservation assignment (if it
 	// exists).
 	Assignment_BACKGROUND_SEARCH_INDEX_REFRESH Assignment_JobType = 9
+	// Automated materialized view refresh jobs will use the reservation.
+	// Reservations with this job type will take priority over a default QUERY
+	// reservation assignment (if it exists).
+	Assignment_AUTOMATIC_MATERIALIZED_VIEW_REFRESH Assignment_JobType = 10
 )
 
 // Enum value maps for Assignment_JobType.
 var (
 	Assignment_JobType_name = map[int32]string{
-		0: "JOB_TYPE_UNSPECIFIED",
-		1: "PIPELINE",
-		2: "QUERY",
-		3: "ML_EXTERNAL",
-		4: "BACKGROUND",
-		6: "CONTINUOUS",
-		7: "BACKGROUND_CHANGE_DATA_CAPTURE",
-		8: "BACKGROUND_COLUMN_METADATA_INDEX",
-		9: "BACKGROUND_SEARCH_INDEX_REFRESH",
+		0:  "JOB_TYPE_UNSPECIFIED",
+		1:  "PIPELINE",
+		2:  "QUERY",
+		3:  "ML_EXTERNAL",
+		4:  "BACKGROUND",
+		6:  "CONTINUOUS",
+		7:  "BACKGROUND_CHANGE_DATA_CAPTURE",
+		8:  "BACKGROUND_COLUMN_METADATA_INDEX",
+		9:  "BACKGROUND_SEARCH_INDEX_REFRESH",
+		10: "AUTOMATIC_MATERIALIZED_VIEW_REFRESH",
 	}
 	Assignment_JobType_value = map[string]int32{
-		"JOB_TYPE_UNSPECIFIED":             0,
-		"PIPELINE":                         1,
-		"QUERY":                            2,
-		"ML_EXTERNAL":                      3,
-		"BACKGROUND":                       4,
-		"CONTINUOUS":                       6,
-		"BACKGROUND_CHANGE_DATA_CAPTURE":   7,
-		"BACKGROUND_COLUMN_METADATA_INDEX": 8,
-		"BACKGROUND_SEARCH_INDEX_REFRESH":  9,
+		"JOB_TYPE_UNSPECIFIED":                0,
+		"PIPELINE":                            1,
+		"QUERY":                               2,
+		"ML_EXTERNAL":                         3,
+		"BACKGROUND":                          4,
+		"CONTINUOUS":                          6,
+		"BACKGROUND_CHANGE_DATA_CAPTURE":      7,
+		"BACKGROUND_COLUMN_METADATA_INDEX":    8,
+		"BACKGROUND_SEARCH_INDEX_REFRESH":     9,
+		"AUTOMATIC_MATERIALIZED_VIEW_REFRESH": 10,
 	}
 )
 
@@ -516,7 +527,7 @@ func (x Assignment_JobType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Assignment_JobType.Descriptor instead.
 func (Assignment_JobType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{25, 0}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{26, 0}
 }
 
 // Assignment will remain in PENDING state if no active capacity commitment is
@@ -572,7 +583,7 @@ func (x Assignment_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Assignment_State.Descriptor instead.
 func (Assignment_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{25, 1}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{26, 1}
 }
 
 // A reservation is a mechanism used to guarantee slots to users.
@@ -721,8 +732,14 @@ type Reservation struct {
 	//
 	// This feature is not yet generally available.
 	SchedulingPolicy *SchedulingPolicy `protobuf:"bytes,27,opt,name=scheduling_policy,json=schedulingPolicy,proto3" json:"scheduling_policy,omitempty"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Output only. The reservation group path of the reservation from root to
+	// leaf. The order of elements matters: the first element is the top level
+	// group and the last element is the direct parent reservation group. For
+	// example, if a reservation is under group-1 -> group-2 -> group-3, then the
+	// reservation group path is ["group-1", "group-2", "group-3"].
+	ReservationGroupPath []string `protobuf:"bytes,28,rep,name=reservation_group_path,json=reservationGroupPath,proto3" json:"reservation_group_path,omitempty"`
+	unknownFields        protoimpl.UnknownFields
+	sizeCache            protoimpl.SizeCache
 }
 
 func (x *Reservation) Reset() {
@@ -882,6 +899,13 @@ func (x *Reservation) GetSchedulingPolicy() *SchedulingPolicy {
 	return nil
 }
 
+func (x *Reservation) GetReservationGroupPath() []string {
+	if x != nil {
+		return x.ReservationGroupPath
+	}
+	return nil
+}
+
 // The scheduling policy controls how a reservation's resources are distributed.
 type SchedulingPolicy struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -953,7 +977,19 @@ type ReservationGroup struct {
 	// The reservation_group_id must only contain lower case alphanumeric
 	// characters or dashes. It must start with a letter and must not end with a
 	// dash. Its maximum length is 64 characters.
-	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. The parent reservation group of the reservation group.
+	// Format: `projects/*/locations/*/reservationGroups/team1-prod` for non-root
+	// reservation groups, or `projects/*/locations/*` for root reservation
+	// groups.
+	ParentGroup string `protobuf:"bytes,2,opt,name=parent_group,json=parentGroup,proto3" json:"parent_group,omitempty"`
+	// Output only. Creation time of the reservation group.
+	CreationTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=creation_time,json=creationTime,proto3" json:"creation_time,omitempty"`
+	// Output only. Last update time of the reservation group via a user
+	// operation. This timestamp is updated only when an update operation
+	// explicitly targets this reservation group directly. It is not updated when
+	// parent or child groups are created, updated, or deleted.
+	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -993,6 +1029,27 @@ func (x *ReservationGroup) GetName() string {
 		return x.Name
 	}
 	return ""
+}
+
+func (x *ReservationGroup) GetParentGroup() string {
+	if x != nil {
+		return x.ParentGroup
+	}
+	return ""
+}
+
+func (x *ReservationGroup) GetCreationTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreationTime
+	}
+	return nil
+}
+
+func (x *ReservationGroup) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
 }
 
 // Capacity commitment is a way to purchase compute capacity for BigQuery jobs
@@ -1862,6 +1919,62 @@ func (x *DeleteReservationGroupRequest) GetName() string {
 }
 
 // The request for
+// [ReservationService.UpdateReservationGroup][google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservationGroup].
+type UpdateReservationGroupRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Content of the reservation group to update.
+	ReservationGroup *ReservationGroup `protobuf:"bytes,1,opt,name=reservation_group,json=reservationGroup,proto3" json:"reservation_group,omitempty"`
+	// Optional. Standard field mask for the set of fields to be updated.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateReservationGroupRequest) Reset() {
+	*x = UpdateReservationGroupRequest{}
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateReservationGroupRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateReservationGroupRequest) ProtoMessage() {}
+
+func (x *UpdateReservationGroupRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateReservationGroupRequest.ProtoReflect.Descriptor instead.
+func (*UpdateReservationGroupRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *UpdateReservationGroupRequest) GetReservationGroup() *ReservationGroup {
+	if x != nil {
+		return x.ReservationGroup
+	}
+	return nil
+}
+
+func (x *UpdateReservationGroupRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+// The request for
 // [ReservationService.CreateCapacityCommitment][google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment].
 type CreateCapacityCommitmentRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1886,7 +1999,7 @@ type CreateCapacityCommitmentRequest struct {
 
 func (x *CreateCapacityCommitmentRequest) Reset() {
 	*x = CreateCapacityCommitmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[16]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1898,7 +2011,7 @@ func (x *CreateCapacityCommitmentRequest) String() string {
 func (*CreateCapacityCommitmentRequest) ProtoMessage() {}
 
 func (x *CreateCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[16]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1911,7 +2024,7 @@ func (x *CreateCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateCapacityCommitmentRequest.ProtoReflect.Descriptor instead.
 func (*CreateCapacityCommitmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *CreateCapacityCommitmentRequest) GetParent() string {
@@ -1960,7 +2073,7 @@ type ListCapacityCommitmentsRequest struct {
 
 func (x *ListCapacityCommitmentsRequest) Reset() {
 	*x = ListCapacityCommitmentsRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[17]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1972,7 +2085,7 @@ func (x *ListCapacityCommitmentsRequest) String() string {
 func (*ListCapacityCommitmentsRequest) ProtoMessage() {}
 
 func (x *ListCapacityCommitmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[17]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1985,7 +2098,7 @@ func (x *ListCapacityCommitmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCapacityCommitmentsRequest.ProtoReflect.Descriptor instead.
 func (*ListCapacityCommitmentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *ListCapacityCommitmentsRequest) GetParent() string {
@@ -2024,7 +2137,7 @@ type ListCapacityCommitmentsResponse struct {
 
 func (x *ListCapacityCommitmentsResponse) Reset() {
 	*x = ListCapacityCommitmentsResponse{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[18]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2036,7 +2149,7 @@ func (x *ListCapacityCommitmentsResponse) String() string {
 func (*ListCapacityCommitmentsResponse) ProtoMessage() {}
 
 func (x *ListCapacityCommitmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[18]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2049,7 +2162,7 @@ func (x *ListCapacityCommitmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListCapacityCommitmentsResponse.ProtoReflect.Descriptor instead.
 func (*ListCapacityCommitmentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *ListCapacityCommitmentsResponse) GetCapacityCommitments() []*CapacityCommitment {
@@ -2080,7 +2193,7 @@ type GetCapacityCommitmentRequest struct {
 
 func (x *GetCapacityCommitmentRequest) Reset() {
 	*x = GetCapacityCommitmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[19]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2092,7 +2205,7 @@ func (x *GetCapacityCommitmentRequest) String() string {
 func (*GetCapacityCommitmentRequest) ProtoMessage() {}
 
 func (x *GetCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[19]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2105,7 +2218,7 @@ func (x *GetCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCapacityCommitmentRequest.ProtoReflect.Descriptor instead.
 func (*GetCapacityCommitmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *GetCapacityCommitmentRequest) GetName() string {
@@ -2133,7 +2246,7 @@ type DeleteCapacityCommitmentRequest struct {
 
 func (x *DeleteCapacityCommitmentRequest) Reset() {
 	*x = DeleteCapacityCommitmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[20]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2145,7 +2258,7 @@ func (x *DeleteCapacityCommitmentRequest) String() string {
 func (*DeleteCapacityCommitmentRequest) ProtoMessage() {}
 
 func (x *DeleteCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[20]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2158,7 +2271,7 @@ func (x *DeleteCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteCapacityCommitmentRequest.ProtoReflect.Descriptor instead.
 func (*DeleteCapacityCommitmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *DeleteCapacityCommitmentRequest) GetName() string {
@@ -2189,7 +2302,7 @@ type UpdateCapacityCommitmentRequest struct {
 
 func (x *UpdateCapacityCommitmentRequest) Reset() {
 	*x = UpdateCapacityCommitmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[21]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2201,7 +2314,7 @@ func (x *UpdateCapacityCommitmentRequest) String() string {
 func (*UpdateCapacityCommitmentRequest) ProtoMessage() {}
 
 func (x *UpdateCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[21]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2214,7 +2327,7 @@ func (x *UpdateCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateCapacityCommitmentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateCapacityCommitmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *UpdateCapacityCommitmentRequest) GetCapacityCommitment() *CapacityCommitment {
@@ -2247,7 +2360,7 @@ type SplitCapacityCommitmentRequest struct {
 
 func (x *SplitCapacityCommitmentRequest) Reset() {
 	*x = SplitCapacityCommitmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[22]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2259,7 +2372,7 @@ func (x *SplitCapacityCommitmentRequest) String() string {
 func (*SplitCapacityCommitmentRequest) ProtoMessage() {}
 
 func (x *SplitCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[22]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2272,7 +2385,7 @@ func (x *SplitCapacityCommitmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SplitCapacityCommitmentRequest.ProtoReflect.Descriptor instead.
 func (*SplitCapacityCommitmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SplitCapacityCommitmentRequest) GetName() string {
@@ -2303,7 +2416,7 @@ type SplitCapacityCommitmentResponse struct {
 
 func (x *SplitCapacityCommitmentResponse) Reset() {
 	*x = SplitCapacityCommitmentResponse{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[23]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2315,7 +2428,7 @@ func (x *SplitCapacityCommitmentResponse) String() string {
 func (*SplitCapacityCommitmentResponse) ProtoMessage() {}
 
 func (x *SplitCapacityCommitmentResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[23]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2328,7 +2441,7 @@ func (x *SplitCapacityCommitmentResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SplitCapacityCommitmentResponse.ProtoReflect.Descriptor instead.
 func (*SplitCapacityCommitmentResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *SplitCapacityCommitmentResponse) GetFirst() *CapacityCommitment {
@@ -2370,7 +2483,7 @@ type MergeCapacityCommitmentsRequest struct {
 
 func (x *MergeCapacityCommitmentsRequest) Reset() {
 	*x = MergeCapacityCommitmentsRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[24]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2382,7 +2495,7 @@ func (x *MergeCapacityCommitmentsRequest) String() string {
 func (*MergeCapacityCommitmentsRequest) ProtoMessage() {}
 
 func (x *MergeCapacityCommitmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[24]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2395,7 +2508,7 @@ func (x *MergeCapacityCommitmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MergeCapacityCommitmentsRequest.ProtoReflect.Descriptor instead.
 func (*MergeCapacityCommitmentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *MergeCapacityCommitmentsRequest) GetParent() string {
@@ -2451,10 +2564,10 @@ type Assignment struct {
 	// This feature is not yet generally available.
 	SchedulingPolicy *SchedulingPolicy `protobuf:"bytes,11,opt,name=scheduling_policy,json=schedulingPolicy,proto3" json:"scheduling_policy,omitempty"`
 	// Optional. Represents the principal for this assignment. If not empty, jobs
-	// run by this principal will utilize the associated reservation. Otherwise,
-	// jobs will fall back to using the reservation assigned to the project,
-	// folder, or organization (in that order). If no reservation is assigned at
-	// any of these levels, on-demand capacity will be used.
+	// run by this principal utilize the associated reservation. Otherwise, jobs
+	// fall back to using the reservation assigned to the project, folder,
+	// or organization, in that order. If no reservation is assigned at any of
+	// these levels, on-demand capacity is used.
 	//
 	// The supported formats are:
 	//
@@ -2464,15 +2577,27 @@ type Assignment struct {
 	//   - `principal://iam.googleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_ID/subject/SUBJECT_ID`
 	//     for workload identity pool identities.
 	//   - The special value `unknown_or_deleted_user` represents principals which
-	//     cannot be read from the user info service, for example deleted users.
-	Principal     string `protobuf:"bytes,12,opt,name=principal,proto3" json:"principal,omitempty"`
+	//     cannot be read from the user info service, for example, deleted users.
+	Principal string `protobuf:"bytes,12,opt,name=principal,proto3" json:"principal,omitempty"`
+	// Optional. Specifies the priority precedence for this assignment. Used to
+	// resolve ambiguity when multiple assignments match a single job. Higher
+	// numerical values represent higher priority (e.g., 20 is higher than 10). If
+	// unspecified, it defaults to 0. Multiple assignments can share the same
+	// precedence, but it is recommended to use unique precedence values for
+	// assignments within the same assignee scope.
+	Precedence int64 `protobuf:"varint,13,opt,name=precedence,proto3" json:"precedence,omitempty"`
+	// Optional. Common Expression Language (CEL) condition that defines the
+	// matching criteria for this assignment.
+	// The condition must resolve to a boolean value.
+	// Supported variables will be added later.
+	Condition     *expr.Expr `protobuf:"bytes,14,opt,name=condition,proto3" json:"condition,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Assignment) Reset() {
 	*x = Assignment{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[25]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2484,7 +2609,7 @@ func (x *Assignment) String() string {
 func (*Assignment) ProtoMessage() {}
 
 func (x *Assignment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[25]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2497,7 +2622,7 @@ func (x *Assignment) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Assignment.ProtoReflect.Descriptor instead.
 func (*Assignment) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *Assignment) GetName() string {
@@ -2550,6 +2675,20 @@ func (x *Assignment) GetPrincipal() string {
 	return ""
 }
 
+func (x *Assignment) GetPrecedence() int64 {
+	if x != nil {
+		return x.Precedence
+	}
+	return 0
+}
+
+func (x *Assignment) GetCondition() *expr.Expr {
+	if x != nil {
+		return x.Condition
+	}
+	return nil
+}
+
 // The request for
 // [ReservationService.CreateAssignment][google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment].
 // Note: "bigquery.reservationAssignments.create" permission is required on the
@@ -2572,7 +2711,7 @@ type CreateAssignmentRequest struct {
 
 func (x *CreateAssignmentRequest) Reset() {
 	*x = CreateAssignmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[26]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2584,7 +2723,7 @@ func (x *CreateAssignmentRequest) String() string {
 func (*CreateAssignmentRequest) ProtoMessage() {}
 
 func (x *CreateAssignmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[26]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2597,7 +2736,7 @@ func (x *CreateAssignmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAssignmentRequest.ProtoReflect.Descriptor instead.
 func (*CreateAssignmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *CreateAssignmentRequest) GetParent() string {
@@ -2643,7 +2782,7 @@ type ListAssignmentsRequest struct {
 
 func (x *ListAssignmentsRequest) Reset() {
 	*x = ListAssignmentsRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[27]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2655,7 +2794,7 @@ func (x *ListAssignmentsRequest) String() string {
 func (*ListAssignmentsRequest) ProtoMessage() {}
 
 func (x *ListAssignmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[27]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2668,7 +2807,7 @@ func (x *ListAssignmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAssignmentsRequest.ProtoReflect.Descriptor instead.
 func (*ListAssignmentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *ListAssignmentsRequest) GetParent() string {
@@ -2707,7 +2846,7 @@ type ListAssignmentsResponse struct {
 
 func (x *ListAssignmentsResponse) Reset() {
 	*x = ListAssignmentsResponse{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[28]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2719,7 +2858,7 @@ func (x *ListAssignmentsResponse) String() string {
 func (*ListAssignmentsResponse) ProtoMessage() {}
 
 func (x *ListAssignmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[28]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2732,7 +2871,7 @@ func (x *ListAssignmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAssignmentsResponse.ProtoReflect.Descriptor instead.
 func (*ListAssignmentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListAssignmentsResponse) GetAssignments() []*Assignment {
@@ -2765,7 +2904,7 @@ type DeleteAssignmentRequest struct {
 
 func (x *DeleteAssignmentRequest) Reset() {
 	*x = DeleteAssignmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[29]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2777,7 +2916,7 @@ func (x *DeleteAssignmentRequest) String() string {
 func (*DeleteAssignmentRequest) ProtoMessage() {}
 
 func (x *DeleteAssignmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[29]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2790,7 +2929,7 @@ func (x *DeleteAssignmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteAssignmentRequest.ProtoReflect.Descriptor instead.
 func (*DeleteAssignmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *DeleteAssignmentRequest) GetName() string {
@@ -2829,7 +2968,7 @@ type SearchAssignmentsRequest struct {
 
 func (x *SearchAssignmentsRequest) Reset() {
 	*x = SearchAssignmentsRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[30]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2841,7 +2980,7 @@ func (x *SearchAssignmentsRequest) String() string {
 func (*SearchAssignmentsRequest) ProtoMessage() {}
 
 func (x *SearchAssignmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[30]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2854,7 +2993,7 @@ func (x *SearchAssignmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAssignmentsRequest.ProtoReflect.Descriptor instead.
 func (*SearchAssignmentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *SearchAssignmentsRequest) GetParent() string {
@@ -2914,7 +3053,7 @@ type SearchAllAssignmentsRequest struct {
 
 func (x *SearchAllAssignmentsRequest) Reset() {
 	*x = SearchAllAssignmentsRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[31]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2926,7 +3065,7 @@ func (x *SearchAllAssignmentsRequest) String() string {
 func (*SearchAllAssignmentsRequest) ProtoMessage() {}
 
 func (x *SearchAllAssignmentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[31]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2939,7 +3078,7 @@ func (x *SearchAllAssignmentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAllAssignmentsRequest.ProtoReflect.Descriptor instead.
 func (*SearchAllAssignmentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *SearchAllAssignmentsRequest) GetParent() string {
@@ -2985,7 +3124,7 @@ type SearchAssignmentsResponse struct {
 
 func (x *SearchAssignmentsResponse) Reset() {
 	*x = SearchAssignmentsResponse{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[32]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2997,7 +3136,7 @@ func (x *SearchAssignmentsResponse) String() string {
 func (*SearchAssignmentsResponse) ProtoMessage() {}
 
 func (x *SearchAssignmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[32]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3010,7 +3149,7 @@ func (x *SearchAssignmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAssignmentsResponse.ProtoReflect.Descriptor instead.
 func (*SearchAssignmentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *SearchAssignmentsResponse) GetAssignments() []*Assignment {
@@ -3042,7 +3181,7 @@ type SearchAllAssignmentsResponse struct {
 
 func (x *SearchAllAssignmentsResponse) Reset() {
 	*x = SearchAllAssignmentsResponse{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[33]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3054,7 +3193,7 @@ func (x *SearchAllAssignmentsResponse) String() string {
 func (*SearchAllAssignmentsResponse) ProtoMessage() {}
 
 func (x *SearchAllAssignmentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[33]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3067,7 +3206,7 @@ func (x *SearchAllAssignmentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SearchAllAssignmentsResponse.ProtoReflect.Descriptor instead.
 func (*SearchAllAssignmentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *SearchAllAssignmentsResponse) GetAssignments() []*Assignment {
@@ -3115,7 +3254,7 @@ type MoveAssignmentRequest struct {
 
 func (x *MoveAssignmentRequest) Reset() {
 	*x = MoveAssignmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[34]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3127,7 +3266,7 @@ func (x *MoveAssignmentRequest) String() string {
 func (*MoveAssignmentRequest) ProtoMessage() {}
 
 func (x *MoveAssignmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[34]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3140,7 +3279,7 @@ func (x *MoveAssignmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MoveAssignmentRequest.ProtoReflect.Descriptor instead.
 func (*MoveAssignmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *MoveAssignmentRequest) GetName() string {
@@ -3178,7 +3317,7 @@ type UpdateAssignmentRequest struct {
 
 func (x *UpdateAssignmentRequest) Reset() {
 	*x = UpdateAssignmentRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[35]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3190,7 +3329,7 @@ func (x *UpdateAssignmentRequest) String() string {
 func (*UpdateAssignmentRequest) ProtoMessage() {}
 
 func (x *UpdateAssignmentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[35]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3203,7 +3342,7 @@ func (x *UpdateAssignmentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAssignmentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAssignmentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *UpdateAssignmentRequest) GetAssignment() *Assignment {
@@ -3236,7 +3375,7 @@ type TableReference struct {
 
 func (x *TableReference) Reset() {
 	*x = TableReference{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[36]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3248,7 +3387,7 @@ func (x *TableReference) String() string {
 func (*TableReference) ProtoMessage() {}
 
 func (x *TableReference) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[36]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3261,7 +3400,7 @@ func (x *TableReference) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TableReference.ProtoReflect.Descriptor instead.
 func (*TableReference) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *TableReference) GetProjectId() string {
@@ -3304,7 +3443,7 @@ type BiReservation struct {
 
 func (x *BiReservation) Reset() {
 	*x = BiReservation{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[37]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3316,7 +3455,7 @@ func (x *BiReservation) String() string {
 func (*BiReservation) ProtoMessage() {}
 
 func (x *BiReservation) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[37]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3329,7 +3468,7 @@ func (x *BiReservation) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BiReservation.ProtoReflect.Descriptor instead.
 func (*BiReservation) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *BiReservation) GetName() string {
@@ -3372,7 +3511,7 @@ type GetBiReservationRequest struct {
 
 func (x *GetBiReservationRequest) Reset() {
 	*x = GetBiReservationRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[38]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3384,7 +3523,7 @@ func (x *GetBiReservationRequest) String() string {
 func (*GetBiReservationRequest) ProtoMessage() {}
 
 func (x *GetBiReservationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[38]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3397,7 +3536,7 @@ func (x *GetBiReservationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBiReservationRequest.ProtoReflect.Descriptor instead.
 func (*GetBiReservationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *GetBiReservationRequest) GetName() string {
@@ -3420,7 +3559,7 @@ type UpdateBiReservationRequest struct {
 
 func (x *UpdateBiReservationRequest) Reset() {
 	*x = UpdateBiReservationRequest{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[39]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3432,7 +3571,7 @@ func (x *UpdateBiReservationRequest) String() string {
 func (*UpdateBiReservationRequest) ProtoMessage() {}
 
 func (x *UpdateBiReservationRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[39]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3445,7 +3584,7 @@ func (x *UpdateBiReservationRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateBiReservationRequest.ProtoReflect.Descriptor instead.
 func (*UpdateBiReservationRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *UpdateBiReservationRequest) GetBiReservation() *BiReservation {
@@ -3479,7 +3618,7 @@ type Reservation_Autoscale struct {
 
 func (x *Reservation_Autoscale) Reset() {
 	*x = Reservation_Autoscale{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[40]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3491,7 +3630,7 @@ func (x *Reservation_Autoscale) String() string {
 func (*Reservation_Autoscale) ProtoMessage() {}
 
 func (x *Reservation_Autoscale) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[40]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3547,7 +3686,7 @@ type Reservation_ReplicationStatus struct {
 
 func (x *Reservation_ReplicationStatus) Reset() {
 	*x = Reservation_ReplicationStatus{}
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[41]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3559,7 +3698,7 @@ func (x *Reservation_ReplicationStatus) String() string {
 func (*Reservation_ReplicationStatus) ProtoMessage() {}
 
 func (x *Reservation_ReplicationStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[41]
+	mi := &file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3607,7 +3746,7 @@ var File_google_cloud_bigquery_reservation_v1_reservation_proto protoreflect.Fil
 
 const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\n" +
-	"6google/cloud/bigquery/reservation/v1/reservation.proto\x12$google.cloud.bigquery.reservation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xeb\x0f\n" +
+	"6google/cloud/bigquery/reservation/v1/reservation.proto\x12$google.cloud.bigquery.reservation.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x16google/type/expr.proto\"\xa6\x10\n" +
 	"\vReservation\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12(\n" +
 	"\rslot_capacity\x18\x02 \x01(\x03B\x03\xe0A\x01R\fslotCapacity\x12/\n" +
@@ -3630,7 +3769,8 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x06labels\x18\x17 \x03(\v2=.google.cloud.bigquery.reservation.v1.Reservation.LabelsEntryB\x03\xe0A\x01R\x06labels\x120\n" +
 	"\x11reservation_group\x18\x19 \x01(\tB\x03\xe0A\x01R\x10reservationGroup\x12w\n" +
 	"\x12replication_status\x18\x18 \x01(\v2C.google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatusB\x03\xe0A\x03R\x11replicationStatus\x12h\n" +
-	"\x11scheduling_policy\x18\x1b \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\x1aW\n" +
+	"\x11scheduling_policy\x18\x1b \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\x129\n" +
+	"\x16reservation_group_path\x18\x1c \x03(\tB\x03\xe0A\x03R\x14reservationGroupPath\x1aW\n" +
 	"\tAutoscale\x12(\n" +
 	"\rcurrent_slots\x18\x01 \x01(\x03B\x03\xe0A\x03R\fcurrentSlots\x12 \n" +
 	"\tmax_slots\x18\x02 \x01(\x03B\x03\xe0A\x01R\bmaxSlots\x1a\xba\x02\n" +
@@ -3655,10 +3795,14 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\tmax_slots\x18\x02 \x01(\x03B\x03\xe0A\x01H\x01R\bmaxSlots\x88\x01\x01B\x0e\n" +
 	"\f_concurrencyB\f\n" +
 	"\n" +
-	"_max_slots\"\xdb\x01\n" +
+	"_max_slots\"\xc3\x03\n" +
 	"\x10ReservationGroup\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name:\xad\x01\xeaA\xa9\x01\n" +
-	"3bigqueryreservation.googleapis.com/ReservationGroup\x12Mprojects/{project}/locations/{location}/reservationGroups/{reservation_group}*\x11reservationGroups2\x10reservationGroup\"\xb7\t\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12^\n" +
+	"\fparent_group\x18\x02 \x01(\tB;\xe0A\x01\xfaA5\x123bigqueryreservation.googleapis.com/ReservationGroupR\vparentGroup\x12D\n" +
+	"\rcreation_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\fcreationTime\x12@\n" +
+	"\vupdate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime:\xad\x01\xeaA\xa9\x01\n" +
+	"3bigqueryreservation.googleapis.com/ReservationGroup\x12Mprojects/{project}/locations/{location}/reservationGroups/{reservation_group}*\x11reservationGroups2\x10reservationGroup\"\xbb\t\n" +
 	"\x12CapacityCommitment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\"\n" +
 	"\n" +
@@ -3673,10 +3817,10 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	" \x01(\bB\x02\x18\x01R\x14multiRegionAuxiliary\x12L\n" +
 	"\aedition\x18\f \x01(\x0e2-.google.cloud.bigquery.reservation.v1.EditionB\x03\xe0A\x01R\aedition\x12%\n" +
 	"\fis_flat_rate\x18\x0e \x01(\bB\x03\xe0A\x03R\n" +
-	"isFlatRate\"\xca\x01\n" +
+	"isFlatRate\"\xce\x01\n" +
 	"\x0eCommitmentPlan\x12\x1f\n" +
-	"\x1bCOMMITMENT_PLAN_UNSPECIFIED\x10\x00\x12\b\n" +
-	"\x04FLEX\x10\x03\x12\x16\n" +
+	"\x1bCOMMITMENT_PLAN_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\x04FLEX\x10\x03\x1a\x02\b\x01\x12\x16\n" +
 	"\x0eFLEX_FLAT_RATE\x10\a\x1a\x02\b\x01\x12\r\n" +
 	"\x05TRIAL\x10\x05\x1a\x02\b\x01\x12\v\n" +
 	"\aMONTHLY\x10\x02\x12\x19\n" +
@@ -3739,7 +3883,11 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"p\n" +
 	"\x1dDeleteReservationGroupRequest\x12O\n" +
 	"\x04name\x18\x01 \x01(\tB;\xe0A\x02\xfaA5\n" +
-	"3bigqueryreservation.googleapis.com/ReservationGroupR\x04name\"\xe8\x02\n" +
+	"3bigqueryreservation.googleapis.com/ReservationGroupR\x04name\"\xcb\x01\n" +
+	"\x1dUpdateReservationGroupRequest\x12h\n" +
+	"\x11reservation_group\x18\x01 \x01(\v26.google.cloud.bigquery.reservation.v1.ReservationGroupB\x03\xe0A\x02R\x10reservationGroup\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\"\xe8\x02\n" +
 	"\x1fCreateCapacityCommitmentRequest\x12U\n" +
 	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x12i\n" +
 	"\x13capacity_commitment\x18\x02 \x01(\v28.google.cloud.bigquery.reservation.v1.CapacityCommitmentR\x12capacityCommitment\x12M\n" +
@@ -3775,7 +3923,7 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x1fMergeCapacityCommitmentsRequest\x12R\n" +
 	"\x06parent\x18\x01 \x01(\tB:\xfaA7\x125bigqueryreservation.googleapis.com/CapacityCommitmentR\x06parent\x126\n" +
 	"\x17capacity_commitment_ids\x18\x02 \x03(\tR\x15capacityCommitmentIds\x129\n" +
-	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x14capacityCommitmentId\"\x86\a\n" +
+	"\x16capacity_commitment_id\x18\x03 \x01(\tB\x03\xe0A\x01R\x14capacityCommitmentId\"\x8a\b\n" +
 	"\n" +
 	"Assignment\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
@@ -3785,7 +3933,11 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x19enable_gemini_in_bigquery\x18\n" +
 	" \x01(\bB\x05\xe0A\x01\x18\x01R\x16enableGeminiInBigquery\x12h\n" +
 	"\x11scheduling_policy\x18\v \x01(\v26.google.cloud.bigquery.reservation.v1.SchedulingPolicyB\x03\xe0A\x01R\x10schedulingPolicy\x12!\n" +
-	"\tprincipal\x18\f \x01(\tB\x03\xe0A\x01R\tprincipal\"\xdc\x01\n" +
+	"\tprincipal\x18\f \x01(\tB\x03\xe0A\x01R\tprincipal\x12#\n" +
+	"\n" +
+	"precedence\x18\r \x01(\x03B\x03\xe0A\x01R\n" +
+	"precedence\x124\n" +
+	"\tcondition\x18\x0e \x01(\v2\x11.google.type.ExprB\x03\xe0A\x01R\tcondition\"\x85\x02\n" +
 	"\aJobType\x12\x18\n" +
 	"\x14JOB_TYPE_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bPIPELINE\x10\x01\x12\t\n" +
@@ -3797,7 +3949,9 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"CONTINUOUS\x10\x06\x12\"\n" +
 	"\x1eBACKGROUND_CHANGE_DATA_CAPTURE\x10\a\x12$\n" +
 	" BACKGROUND_COLUMN_METADATA_INDEX\x10\b\x12#\n" +
-	"\x1fBACKGROUND_SEARCH_INDEX_REFRESH\x10\t\"7\n" +
+	"\x1fBACKGROUND_SEARCH_INDEX_REFRESH\x10\t\x12'\n" +
+	"#AUTOMATIC_MATERIALIZED_VIEW_REFRESH\x10\n" +
+	"\"7\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aPENDING\x10\x01\x12\n" +
@@ -3882,7 +4036,7 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\fFailoverMode\x12\x1d\n" +
 	"\x19FAILOVER_MODE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04SOFT\x10\x01\x12\b\n" +
-	"\x04HARD\x10\x022\xa36\n" +
+	"\x04HARD\x10\x022\xc08\n" +
 	"\x12ReservationService\x12\xf1\x01\n" +
 	"\x11CreateReservation\x12>.google.cloud.bigquery.reservation.v1.CreateReservationRequest\x1a1.google.cloud.bigquery.reservation.v1.Reservation\"i\xdaA!parent,reservation,reservation_id\x82\xd3\xe4\x93\x02?:\vreservation\"0/v1/{parent=projects/*/locations/*}/reservations\x12\xd4\x01\n" +
 	"\x10ListReservations\x12=.google.cloud.bigquery.reservation.v1.ListReservationsRequest\x1a>.google.cloud.bigquery.reservation.v1.ListReservationsResponse\"A\xdaA\x06parent\x82\xd3\xe4\x93\x022\x120/v1/{parent=projects/*/locations/*}/reservations\x12\xc1\x01\n" +
@@ -3914,7 +4068,8 @@ const file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc = "" +
 	"\x16CreateReservationGroup\x12C.google.cloud.bigquery.reservation.v1.CreateReservationGroupRequest\x1a6.google.cloud.bigquery.reservation.v1.ReservationGroup\"P\x82\xd3\xe4\x93\x02J:\x11reservation_group\"5/v1/{parent=projects/*/locations/*}/reservationGroups\x12\xd5\x01\n" +
 	"\x13GetReservationGroup\x12@.google.cloud.bigquery.reservation.v1.GetReservationGroupRequest\x1a6.google.cloud.bigquery.reservation.v1.ReservationGroup\"D\xdaA\x04name\x82\xd3\xe4\x93\x027\x125/v1/{name=projects/*/locations/*/reservationGroups/*}\x12\xbb\x01\n" +
 	"\x16DeleteReservationGroup\x12C.google.cloud.bigquery.reservation.v1.DeleteReservationGroupRequest\x1a\x16.google.protobuf.Empty\"D\xdaA\x04name\x82\xd3\xe4\x93\x027*5/v1/{name=projects/*/locations/*/reservationGroups/*}\x12\xe8\x01\n" +
-	"\x15ListReservationGroups\x12B.google.cloud.bigquery.reservation.v1.ListReservationGroupsRequest\x1aC.google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1/{parent=projects/*/locations/*}/reservationGroups\x1a\x7f\xcaA\"bigqueryreservation.googleapis.com\xd2AWhttps://www.googleapis.com/auth/bigquery,https://www.googleapis.com/auth/cloud-platformB\xd8\x01\n" +
+	"\x15ListReservationGroups\x12B.google.cloud.bigquery.reservation.v1.ListReservationGroupsRequest\x1aC.google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse\"F\xdaA\x06parent\x82\xd3\xe4\x93\x027\x125/v1/{parent=projects/*/locations/*}/reservationGroups\x12\x9a\x02\n" +
+	"\x16UpdateReservationGroup\x12C.google.cloud.bigquery.reservation.v1.UpdateReservationGroupRequest\x1a6.google.cloud.bigquery.reservation.v1.ReservationGroup\"\x82\x01\xdaA\x1dreservation_group,update_mask\x82\xd3\xe4\x93\x02\\:\x11reservation_group2G/v1/{reservation_group.name=projects/*/locations/*/reservationGroups/*}\x1a\x7f\xcaA\"bigqueryreservation.googleapis.com\xd2AWhttps://www.googleapis.com/auth/bigquery,https://www.googleapis.com/auth/cloud-platformB\xd8\x01\n" +
 	"(com.google.cloud.bigquery.reservation.v1B\x10ReservationProtoP\x01ZJcloud.google.com/go/bigquery/reservation/apiv1/reservationpb;reservationpb\xaa\x02$Google.Cloud.BigQuery.Reservation.V1\xca\x02$Google\\Cloud\\BigQuery\\Reservation\\V1b\x06proto3"
 
 var (
@@ -3930,7 +4085,7 @@ func file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDescGZIP() [
 }
 
 var file_google_cloud_bigquery_reservation_v1_reservation_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes = make([]protoimpl.MessageInfo, 43)
+var file_google_cloud_bigquery_reservation_v1_reservation_proto_msgTypes = make([]protoimpl.MessageInfo, 44)
 var file_google_cloud_bigquery_reservation_v1_reservation_proto_goTypes = []any{
 	(Edition)(0),                             // 0: google.cloud.bigquery.reservation.v1.Edition
 	(FailoverMode)(0),                        // 1: google.cloud.bigquery.reservation.v1.FailoverMode
@@ -3955,152 +4110,161 @@ var file_google_cloud_bigquery_reservation_v1_reservation_proto_goTypes = []any{
 	(*ListReservationGroupsRequest)(nil),     // 20: google.cloud.bigquery.reservation.v1.ListReservationGroupsRequest
 	(*ListReservationGroupsResponse)(nil),    // 21: google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse
 	(*DeleteReservationGroupRequest)(nil),    // 22: google.cloud.bigquery.reservation.v1.DeleteReservationGroupRequest
-	(*CreateCapacityCommitmentRequest)(nil),  // 23: google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest
-	(*ListCapacityCommitmentsRequest)(nil),   // 24: google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsRequest
-	(*ListCapacityCommitmentsResponse)(nil),  // 25: google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse
-	(*GetCapacityCommitmentRequest)(nil),     // 26: google.cloud.bigquery.reservation.v1.GetCapacityCommitmentRequest
-	(*DeleteCapacityCommitmentRequest)(nil),  // 27: google.cloud.bigquery.reservation.v1.DeleteCapacityCommitmentRequest
-	(*UpdateCapacityCommitmentRequest)(nil),  // 28: google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest
-	(*SplitCapacityCommitmentRequest)(nil),   // 29: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentRequest
-	(*SplitCapacityCommitmentResponse)(nil),  // 30: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse
-	(*MergeCapacityCommitmentsRequest)(nil),  // 31: google.cloud.bigquery.reservation.v1.MergeCapacityCommitmentsRequest
-	(*Assignment)(nil),                       // 32: google.cloud.bigquery.reservation.v1.Assignment
-	(*CreateAssignmentRequest)(nil),          // 33: google.cloud.bigquery.reservation.v1.CreateAssignmentRequest
-	(*ListAssignmentsRequest)(nil),           // 34: google.cloud.bigquery.reservation.v1.ListAssignmentsRequest
-	(*ListAssignmentsResponse)(nil),          // 35: google.cloud.bigquery.reservation.v1.ListAssignmentsResponse
-	(*DeleteAssignmentRequest)(nil),          // 36: google.cloud.bigquery.reservation.v1.DeleteAssignmentRequest
-	(*SearchAssignmentsRequest)(nil),         // 37: google.cloud.bigquery.reservation.v1.SearchAssignmentsRequest
-	(*SearchAllAssignmentsRequest)(nil),      // 38: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsRequest
-	(*SearchAssignmentsResponse)(nil),        // 39: google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse
-	(*SearchAllAssignmentsResponse)(nil),     // 40: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse
-	(*MoveAssignmentRequest)(nil),            // 41: google.cloud.bigquery.reservation.v1.MoveAssignmentRequest
-	(*UpdateAssignmentRequest)(nil),          // 42: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest
-	(*TableReference)(nil),                   // 43: google.cloud.bigquery.reservation.v1.TableReference
-	(*BiReservation)(nil),                    // 44: google.cloud.bigquery.reservation.v1.BiReservation
-	(*GetBiReservationRequest)(nil),          // 45: google.cloud.bigquery.reservation.v1.GetBiReservationRequest
-	(*UpdateBiReservationRequest)(nil),       // 46: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest
-	(*Reservation_Autoscale)(nil),            // 47: google.cloud.bigquery.reservation.v1.Reservation.Autoscale
-	(*Reservation_ReplicationStatus)(nil),    // 48: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus
-	nil,                                      // 49: google.cloud.bigquery.reservation.v1.Reservation.LabelsEntry
-	(*timestamppb.Timestamp)(nil),            // 50: google.protobuf.Timestamp
-	(*status.Status)(nil),                    // 51: google.rpc.Status
-	(*fieldmaskpb.FieldMask)(nil),            // 52: google.protobuf.FieldMask
-	(*iampb.GetIamPolicyRequest)(nil),        // 53: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),        // 54: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),  // 55: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                    // 56: google.protobuf.Empty
-	(*iampb.Policy)(nil),                     // 57: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil), // 58: google.iam.v1.TestIamPermissionsResponse
+	(*UpdateReservationGroupRequest)(nil),    // 23: google.cloud.bigquery.reservation.v1.UpdateReservationGroupRequest
+	(*CreateCapacityCommitmentRequest)(nil),  // 24: google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest
+	(*ListCapacityCommitmentsRequest)(nil),   // 25: google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsRequest
+	(*ListCapacityCommitmentsResponse)(nil),  // 26: google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse
+	(*GetCapacityCommitmentRequest)(nil),     // 27: google.cloud.bigquery.reservation.v1.GetCapacityCommitmentRequest
+	(*DeleteCapacityCommitmentRequest)(nil),  // 28: google.cloud.bigquery.reservation.v1.DeleteCapacityCommitmentRequest
+	(*UpdateCapacityCommitmentRequest)(nil),  // 29: google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest
+	(*SplitCapacityCommitmentRequest)(nil),   // 30: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentRequest
+	(*SplitCapacityCommitmentResponse)(nil),  // 31: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse
+	(*MergeCapacityCommitmentsRequest)(nil),  // 32: google.cloud.bigquery.reservation.v1.MergeCapacityCommitmentsRequest
+	(*Assignment)(nil),                       // 33: google.cloud.bigquery.reservation.v1.Assignment
+	(*CreateAssignmentRequest)(nil),          // 34: google.cloud.bigquery.reservation.v1.CreateAssignmentRequest
+	(*ListAssignmentsRequest)(nil),           // 35: google.cloud.bigquery.reservation.v1.ListAssignmentsRequest
+	(*ListAssignmentsResponse)(nil),          // 36: google.cloud.bigquery.reservation.v1.ListAssignmentsResponse
+	(*DeleteAssignmentRequest)(nil),          // 37: google.cloud.bigquery.reservation.v1.DeleteAssignmentRequest
+	(*SearchAssignmentsRequest)(nil),         // 38: google.cloud.bigquery.reservation.v1.SearchAssignmentsRequest
+	(*SearchAllAssignmentsRequest)(nil),      // 39: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsRequest
+	(*SearchAssignmentsResponse)(nil),        // 40: google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse
+	(*SearchAllAssignmentsResponse)(nil),     // 41: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse
+	(*MoveAssignmentRequest)(nil),            // 42: google.cloud.bigquery.reservation.v1.MoveAssignmentRequest
+	(*UpdateAssignmentRequest)(nil),          // 43: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest
+	(*TableReference)(nil),                   // 44: google.cloud.bigquery.reservation.v1.TableReference
+	(*BiReservation)(nil),                    // 45: google.cloud.bigquery.reservation.v1.BiReservation
+	(*GetBiReservationRequest)(nil),          // 46: google.cloud.bigquery.reservation.v1.GetBiReservationRequest
+	(*UpdateBiReservationRequest)(nil),       // 47: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest
+	(*Reservation_Autoscale)(nil),            // 48: google.cloud.bigquery.reservation.v1.Reservation.Autoscale
+	(*Reservation_ReplicationStatus)(nil),    // 49: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus
+	nil,                                      // 50: google.cloud.bigquery.reservation.v1.Reservation.LabelsEntry
+	(*timestamppb.Timestamp)(nil),            // 51: google.protobuf.Timestamp
+	(*status.Status)(nil),                    // 52: google.rpc.Status
+	(*fieldmaskpb.FieldMask)(nil),            // 53: google.protobuf.FieldMask
+	(*expr.Expr)(nil),                        // 54: google.type.Expr
+	(*iampb.GetIamPolicyRequest)(nil),        // 55: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),        // 56: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),  // 57: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                    // 58: google.protobuf.Empty
+	(*iampb.Policy)(nil),                     // 59: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil), // 60: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_bigquery_reservation_v1_reservation_proto_depIdxs = []int32{
-	47, // 0: google.cloud.bigquery.reservation.v1.Reservation.autoscale:type_name -> google.cloud.bigquery.reservation.v1.Reservation.Autoscale
-	50, // 1: google.cloud.bigquery.reservation.v1.Reservation.creation_time:type_name -> google.protobuf.Timestamp
-	50, // 2: google.cloud.bigquery.reservation.v1.Reservation.update_time:type_name -> google.protobuf.Timestamp
+	48, // 0: google.cloud.bigquery.reservation.v1.Reservation.autoscale:type_name -> google.cloud.bigquery.reservation.v1.Reservation.Autoscale
+	51, // 1: google.cloud.bigquery.reservation.v1.Reservation.creation_time:type_name -> google.protobuf.Timestamp
+	51, // 2: google.cloud.bigquery.reservation.v1.Reservation.update_time:type_name -> google.protobuf.Timestamp
 	0,  // 3: google.cloud.bigquery.reservation.v1.Reservation.edition:type_name -> google.cloud.bigquery.reservation.v1.Edition
 	2,  // 4: google.cloud.bigquery.reservation.v1.Reservation.scaling_mode:type_name -> google.cloud.bigquery.reservation.v1.Reservation.ScalingMode
-	49, // 5: google.cloud.bigquery.reservation.v1.Reservation.labels:type_name -> google.cloud.bigquery.reservation.v1.Reservation.LabelsEntry
-	48, // 6: google.cloud.bigquery.reservation.v1.Reservation.replication_status:type_name -> google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus
+	50, // 5: google.cloud.bigquery.reservation.v1.Reservation.labels:type_name -> google.cloud.bigquery.reservation.v1.Reservation.LabelsEntry
+	49, // 6: google.cloud.bigquery.reservation.v1.Reservation.replication_status:type_name -> google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus
 	8,  // 7: google.cloud.bigquery.reservation.v1.Reservation.scheduling_policy:type_name -> google.cloud.bigquery.reservation.v1.SchedulingPolicy
-	3,  // 8: google.cloud.bigquery.reservation.v1.CapacityCommitment.plan:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlan
-	4,  // 9: google.cloud.bigquery.reservation.v1.CapacityCommitment.state:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment.State
-	50, // 10: google.cloud.bigquery.reservation.v1.CapacityCommitment.commitment_start_time:type_name -> google.protobuf.Timestamp
-	50, // 11: google.cloud.bigquery.reservation.v1.CapacityCommitment.commitment_end_time:type_name -> google.protobuf.Timestamp
-	51, // 12: google.cloud.bigquery.reservation.v1.CapacityCommitment.failure_status:type_name -> google.rpc.Status
-	3,  // 13: google.cloud.bigquery.reservation.v1.CapacityCommitment.renewal_plan:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlan
-	0,  // 14: google.cloud.bigquery.reservation.v1.CapacityCommitment.edition:type_name -> google.cloud.bigquery.reservation.v1.Edition
-	7,  // 15: google.cloud.bigquery.reservation.v1.CreateReservationRequest.reservation:type_name -> google.cloud.bigquery.reservation.v1.Reservation
-	7,  // 16: google.cloud.bigquery.reservation.v1.ListReservationsResponse.reservations:type_name -> google.cloud.bigquery.reservation.v1.Reservation
-	7,  // 17: google.cloud.bigquery.reservation.v1.UpdateReservationRequest.reservation:type_name -> google.cloud.bigquery.reservation.v1.Reservation
-	52, // 18: google.cloud.bigquery.reservation.v1.UpdateReservationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	1,  // 19: google.cloud.bigquery.reservation.v1.FailoverReservationRequest.failover_mode:type_name -> google.cloud.bigquery.reservation.v1.FailoverMode
-	9,  // 20: google.cloud.bigquery.reservation.v1.CreateReservationGroupRequest.reservation_group:type_name -> google.cloud.bigquery.reservation.v1.ReservationGroup
-	9,  // 21: google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse.reservation_groups:type_name -> google.cloud.bigquery.reservation.v1.ReservationGroup
-	10, // 22: google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest.capacity_commitment:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	10, // 23: google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse.capacity_commitments:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	10, // 24: google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest.capacity_commitment:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	52, // 25: google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 26: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse.first:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	10, // 27: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse.second:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	5,  // 28: google.cloud.bigquery.reservation.v1.Assignment.job_type:type_name -> google.cloud.bigquery.reservation.v1.Assignment.JobType
-	6,  // 29: google.cloud.bigquery.reservation.v1.Assignment.state:type_name -> google.cloud.bigquery.reservation.v1.Assignment.State
-	8,  // 30: google.cloud.bigquery.reservation.v1.Assignment.scheduling_policy:type_name -> google.cloud.bigquery.reservation.v1.SchedulingPolicy
-	32, // 31: google.cloud.bigquery.reservation.v1.CreateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 32: google.cloud.bigquery.reservation.v1.ListAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 33: google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 34: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 35: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
-	52, // 36: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	50, // 37: google.cloud.bigquery.reservation.v1.BiReservation.update_time:type_name -> google.protobuf.Timestamp
-	43, // 38: google.cloud.bigquery.reservation.v1.BiReservation.preferred_tables:type_name -> google.cloud.bigquery.reservation.v1.TableReference
-	44, // 39: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.bi_reservation:type_name -> google.cloud.bigquery.reservation.v1.BiReservation
-	52, // 40: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.update_mask:type_name -> google.protobuf.FieldMask
-	51, // 41: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.error:type_name -> google.rpc.Status
-	50, // 42: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_error_time:type_name -> google.protobuf.Timestamp
-	50, // 43: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_replication_time:type_name -> google.protobuf.Timestamp
-	50, // 44: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.soft_failover_start_time:type_name -> google.protobuf.Timestamp
-	11, // 45: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationRequest
-	12, // 46: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:input_type -> google.cloud.bigquery.reservation.v1.ListReservationsRequest
-	14, // 47: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:input_type -> google.cloud.bigquery.reservation.v1.GetReservationRequest
-	15, // 48: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationRequest
-	16, // 49: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateReservationRequest
-	17, // 50: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:input_type -> google.cloud.bigquery.reservation.v1.FailoverReservationRequest
-	23, // 51: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest
-	24, // 52: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsRequest
-	26, // 53: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.GetCapacityCommitmentRequest
-	27, // 54: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.DeleteCapacityCommitmentRequest
-	28, // 55: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest
-	29, // 56: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentRequest
-	31, // 57: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.MergeCapacityCommitmentsRequest
-	33, // 58: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:input_type -> google.cloud.bigquery.reservation.v1.CreateAssignmentRequest
-	34, // 59: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:input_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsRequest
-	36, // 60: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:input_type -> google.cloud.bigquery.reservation.v1.DeleteAssignmentRequest
-	37, // 61: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsRequest
-	38, // 62: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsRequest
-	41, // 63: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:input_type -> google.cloud.bigquery.reservation.v1.MoveAssignmentRequest
-	42, // 64: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:input_type -> google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest
-	45, // 65: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:input_type -> google.cloud.bigquery.reservation.v1.GetBiReservationRequest
-	46, // 66: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest
-	53, // 67: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	54, // 68: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	55, // 69: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	18, // 70: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationGroupRequest
-	19, // 71: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.GetReservationGroupRequest
-	22, // 72: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationGroupRequest
-	20, // 73: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:input_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsRequest
-	7,  // 74: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	13, // 75: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:output_type -> google.cloud.bigquery.reservation.v1.ListReservationsResponse
-	7,  // 76: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	56, // 77: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:output_type -> google.protobuf.Empty
-	7,  // 78: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	7,  // 79: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
-	10, // 80: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	25, // 81: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse
-	10, // 82: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	56, // 83: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:output_type -> google.protobuf.Empty
-	10, // 84: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	30, // 85: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse
-	10, // 86: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
-	32, // 87: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
-	35, // 88: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:output_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsResponse
-	56, // 89: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:output_type -> google.protobuf.Empty
-	39, // 90: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse
-	40, // 91: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse
-	32, // 92: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
-	32, // 93: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
-	44, // 94: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
-	44, // 95: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
-	57, // 96: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:output_type -> google.iam.v1.Policy
-	57, // 97: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:output_type -> google.iam.v1.Policy
-	58, // 98: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	9,  // 99: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
-	9,  // 100: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
-	56, // 101: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:output_type -> google.protobuf.Empty
-	21, // 102: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:output_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse
-	74, // [74:103] is the sub-list for method output_type
-	45, // [45:74] is the sub-list for method input_type
-	45, // [45:45] is the sub-list for extension type_name
-	45, // [45:45] is the sub-list for extension extendee
-	0,  // [0:45] is the sub-list for field type_name
+	51, // 8: google.cloud.bigquery.reservation.v1.ReservationGroup.creation_time:type_name -> google.protobuf.Timestamp
+	51, // 9: google.cloud.bigquery.reservation.v1.ReservationGroup.update_time:type_name -> google.protobuf.Timestamp
+	3,  // 10: google.cloud.bigquery.reservation.v1.CapacityCommitment.plan:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlan
+	4,  // 11: google.cloud.bigquery.reservation.v1.CapacityCommitment.state:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment.State
+	51, // 12: google.cloud.bigquery.reservation.v1.CapacityCommitment.commitment_start_time:type_name -> google.protobuf.Timestamp
+	51, // 13: google.cloud.bigquery.reservation.v1.CapacityCommitment.commitment_end_time:type_name -> google.protobuf.Timestamp
+	52, // 14: google.cloud.bigquery.reservation.v1.CapacityCommitment.failure_status:type_name -> google.rpc.Status
+	3,  // 15: google.cloud.bigquery.reservation.v1.CapacityCommitment.renewal_plan:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment.CommitmentPlan
+	0,  // 16: google.cloud.bigquery.reservation.v1.CapacityCommitment.edition:type_name -> google.cloud.bigquery.reservation.v1.Edition
+	7,  // 17: google.cloud.bigquery.reservation.v1.CreateReservationRequest.reservation:type_name -> google.cloud.bigquery.reservation.v1.Reservation
+	7,  // 18: google.cloud.bigquery.reservation.v1.ListReservationsResponse.reservations:type_name -> google.cloud.bigquery.reservation.v1.Reservation
+	7,  // 19: google.cloud.bigquery.reservation.v1.UpdateReservationRequest.reservation:type_name -> google.cloud.bigquery.reservation.v1.Reservation
+	53, // 20: google.cloud.bigquery.reservation.v1.UpdateReservationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,  // 21: google.cloud.bigquery.reservation.v1.FailoverReservationRequest.failover_mode:type_name -> google.cloud.bigquery.reservation.v1.FailoverMode
+	9,  // 22: google.cloud.bigquery.reservation.v1.CreateReservationGroupRequest.reservation_group:type_name -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	9,  // 23: google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse.reservation_groups:type_name -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	9,  // 24: google.cloud.bigquery.reservation.v1.UpdateReservationGroupRequest.reservation_group:type_name -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	53, // 25: google.cloud.bigquery.reservation.v1.UpdateReservationGroupRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 26: google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest.capacity_commitment:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	10, // 27: google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse.capacity_commitments:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	10, // 28: google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest.capacity_commitment:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	53, // 29: google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 30: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse.first:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	10, // 31: google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse.second:type_name -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	5,  // 32: google.cloud.bigquery.reservation.v1.Assignment.job_type:type_name -> google.cloud.bigquery.reservation.v1.Assignment.JobType
+	6,  // 33: google.cloud.bigquery.reservation.v1.Assignment.state:type_name -> google.cloud.bigquery.reservation.v1.Assignment.State
+	8,  // 34: google.cloud.bigquery.reservation.v1.Assignment.scheduling_policy:type_name -> google.cloud.bigquery.reservation.v1.SchedulingPolicy
+	54, // 35: google.cloud.bigquery.reservation.v1.Assignment.condition:type_name -> google.type.Expr
+	33, // 36: google.cloud.bigquery.reservation.v1.CreateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	33, // 37: google.cloud.bigquery.reservation.v1.ListAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	33, // 38: google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	33, // 39: google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse.assignments:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	33, // 40: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.assignment:type_name -> google.cloud.bigquery.reservation.v1.Assignment
+	53, // 41: google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	51, // 42: google.cloud.bigquery.reservation.v1.BiReservation.update_time:type_name -> google.protobuf.Timestamp
+	44, // 43: google.cloud.bigquery.reservation.v1.BiReservation.preferred_tables:type_name -> google.cloud.bigquery.reservation.v1.TableReference
+	45, // 44: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.bi_reservation:type_name -> google.cloud.bigquery.reservation.v1.BiReservation
+	53, // 45: google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest.update_mask:type_name -> google.protobuf.FieldMask
+	52, // 46: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.error:type_name -> google.rpc.Status
+	51, // 47: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_error_time:type_name -> google.protobuf.Timestamp
+	51, // 48: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.last_replication_time:type_name -> google.protobuf.Timestamp
+	51, // 49: google.cloud.bigquery.reservation.v1.Reservation.ReplicationStatus.soft_failover_start_time:type_name -> google.protobuf.Timestamp
+	11, // 50: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationRequest
+	12, // 51: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:input_type -> google.cloud.bigquery.reservation.v1.ListReservationsRequest
+	14, // 52: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:input_type -> google.cloud.bigquery.reservation.v1.GetReservationRequest
+	15, // 53: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationRequest
+	16, // 54: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateReservationRequest
+	17, // 55: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:input_type -> google.cloud.bigquery.reservation.v1.FailoverReservationRequest
+	24, // 56: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.CreateCapacityCommitmentRequest
+	25, // 57: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsRequest
+	27, // 58: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.GetCapacityCommitmentRequest
+	28, // 59: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.DeleteCapacityCommitmentRequest
+	29, // 60: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.UpdateCapacityCommitmentRequest
+	30, // 61: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:input_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentRequest
+	32, // 62: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:input_type -> google.cloud.bigquery.reservation.v1.MergeCapacityCommitmentsRequest
+	34, // 63: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:input_type -> google.cloud.bigquery.reservation.v1.CreateAssignmentRequest
+	35, // 64: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:input_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsRequest
+	37, // 65: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:input_type -> google.cloud.bigquery.reservation.v1.DeleteAssignmentRequest
+	38, // 66: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsRequest
+	39, // 67: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:input_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsRequest
+	42, // 68: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:input_type -> google.cloud.bigquery.reservation.v1.MoveAssignmentRequest
+	43, // 69: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:input_type -> google.cloud.bigquery.reservation.v1.UpdateAssignmentRequest
+	46, // 70: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:input_type -> google.cloud.bigquery.reservation.v1.GetBiReservationRequest
+	47, // 71: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:input_type -> google.cloud.bigquery.reservation.v1.UpdateBiReservationRequest
+	55, // 72: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	56, // 73: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	57, // 74: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	18, // 75: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.CreateReservationGroupRequest
+	19, // 76: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.GetReservationGroupRequest
+	22, // 77: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.DeleteReservationGroupRequest
+	20, // 78: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:input_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsRequest
+	23, // 79: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservationGroup:input_type -> google.cloud.bigquery.reservation.v1.UpdateReservationGroupRequest
+	7,  // 80: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	13, // 81: google.cloud.bigquery.reservation.v1.ReservationService.ListReservations:output_type -> google.cloud.bigquery.reservation.v1.ListReservationsResponse
+	7,  // 82: google.cloud.bigquery.reservation.v1.ReservationService.GetReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	58, // 83: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservation:output_type -> google.protobuf.Empty
+	7,  // 84: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	7,  // 85: google.cloud.bigquery.reservation.v1.ReservationService.FailoverReservation:output_type -> google.cloud.bigquery.reservation.v1.Reservation
+	10, // 86: google.cloud.bigquery.reservation.v1.ReservationService.CreateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	26, // 87: google.cloud.bigquery.reservation.v1.ReservationService.ListCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.ListCapacityCommitmentsResponse
+	10, // 88: google.cloud.bigquery.reservation.v1.ReservationService.GetCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	58, // 89: google.cloud.bigquery.reservation.v1.ReservationService.DeleteCapacityCommitment:output_type -> google.protobuf.Empty
+	10, // 90: google.cloud.bigquery.reservation.v1.ReservationService.UpdateCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	31, // 91: google.cloud.bigquery.reservation.v1.ReservationService.SplitCapacityCommitment:output_type -> google.cloud.bigquery.reservation.v1.SplitCapacityCommitmentResponse
+	10, // 92: google.cloud.bigquery.reservation.v1.ReservationService.MergeCapacityCommitments:output_type -> google.cloud.bigquery.reservation.v1.CapacityCommitment
+	33, // 93: google.cloud.bigquery.reservation.v1.ReservationService.CreateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
+	36, // 94: google.cloud.bigquery.reservation.v1.ReservationService.ListAssignments:output_type -> google.cloud.bigquery.reservation.v1.ListAssignmentsResponse
+	58, // 95: google.cloud.bigquery.reservation.v1.ReservationService.DeleteAssignment:output_type -> google.protobuf.Empty
+	40, // 96: google.cloud.bigquery.reservation.v1.ReservationService.SearchAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAssignmentsResponse
+	41, // 97: google.cloud.bigquery.reservation.v1.ReservationService.SearchAllAssignments:output_type -> google.cloud.bigquery.reservation.v1.SearchAllAssignmentsResponse
+	33, // 98: google.cloud.bigquery.reservation.v1.ReservationService.MoveAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
+	33, // 99: google.cloud.bigquery.reservation.v1.ReservationService.UpdateAssignment:output_type -> google.cloud.bigquery.reservation.v1.Assignment
+	45, // 100: google.cloud.bigquery.reservation.v1.ReservationService.GetBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
+	45, // 101: google.cloud.bigquery.reservation.v1.ReservationService.UpdateBiReservation:output_type -> google.cloud.bigquery.reservation.v1.BiReservation
+	59, // 102: google.cloud.bigquery.reservation.v1.ReservationService.GetIamPolicy:output_type -> google.iam.v1.Policy
+	59, // 103: google.cloud.bigquery.reservation.v1.ReservationService.SetIamPolicy:output_type -> google.iam.v1.Policy
+	60, // 104: google.cloud.bigquery.reservation.v1.ReservationService.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	9,  // 105: google.cloud.bigquery.reservation.v1.ReservationService.CreateReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	9,  // 106: google.cloud.bigquery.reservation.v1.ReservationService.GetReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	58, // 107: google.cloud.bigquery.reservation.v1.ReservationService.DeleteReservationGroup:output_type -> google.protobuf.Empty
+	21, // 108: google.cloud.bigquery.reservation.v1.ReservationService.ListReservationGroups:output_type -> google.cloud.bigquery.reservation.v1.ListReservationGroupsResponse
+	9,  // 109: google.cloud.bigquery.reservation.v1.ReservationService.UpdateReservationGroup:output_type -> google.cloud.bigquery.reservation.v1.ReservationGroup
+	80, // [80:110] is the sub-list for method output_type
+	50, // [50:80] is the sub-list for method input_type
+	50, // [50:50] is the sub-list for extension type_name
+	50, // [50:50] is the sub-list for extension extendee
+	0,  // [0:50] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_reservation_v1_reservation_proto_init() }
@@ -4116,7 +4280,7 @@ func file_google_cloud_bigquery_reservation_v1_reservation_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc), len(file_google_cloud_bigquery_reservation_v1_reservation_proto_rawDesc)),
 			NumEnums:      7,
-			NumMessages:   43,
+			NumMessages:   44,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

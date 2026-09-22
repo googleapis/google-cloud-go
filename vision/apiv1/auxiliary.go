@@ -18,11 +18,13 @@ package vision
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	visionpb "cloud.google.com/go/vision/v2/apiv1/visionpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -271,6 +273,12 @@ func (op *PurgeProductsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductIterator) All() iter.Seq2[*visionpb.Product, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProductIterator manages a stream of *visionpb.Product.
 type ProductIterator struct {
 	items    []*visionpb.Product
@@ -318,6 +326,12 @@ func (it *ProductIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductSetIterator) All() iter.Seq2[*visionpb.ProductSet, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProductSetIterator manages a stream of *visionpb.ProductSet.
 type ProductSetIterator struct {
 	items    []*visionpb.ProductSet
@@ -363,6 +377,12 @@ func (it *ProductSetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReferenceImageIterator) All() iter.Seq2[*visionpb.ReferenceImage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReferenceImageIterator manages a stream of *visionpb.ReferenceImage.

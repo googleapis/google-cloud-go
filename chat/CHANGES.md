@@ -1,5 +1,12 @@
 # Changes
 
+## [1.7.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.6.0...chat/v1.7.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/chat/v1.5.0...chat/v1.6.0) (2026-08-07)
 
 

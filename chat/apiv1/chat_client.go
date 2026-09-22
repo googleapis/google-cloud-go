@@ -4598,6 +4598,9 @@ func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetMarkupSyntax() != 0 {
+			params.Add("markupSyntax", fmt.Sprintf("%v", req.GetMarkupSyntax()))
+		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}
@@ -4921,6 +4924,9 @@ func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetMarkupSyntax() != 0 {
+		params.Add("markupSyntax", fmt.Sprintf("%v", req.GetMarkupSyntax()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

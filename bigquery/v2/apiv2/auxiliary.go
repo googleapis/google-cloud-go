@@ -17,9 +17,18 @@
 package bigquery
 
 import (
+	"iter"
+
 	bigquerypb "cloud.google.com/go/bigquery/v2/apiv2/bigquerypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListFormatDatasetIterator) All() iter.Seq2[*bigquerypb.ListFormatDataset, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ListFormatDatasetIterator manages a stream of *bigquerypb.ListFormatDataset.
 type ListFormatDatasetIterator struct {
@@ -66,6 +75,12 @@ func (it *ListFormatDatasetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListFormatJobIterator) All() iter.Seq2[*bigquerypb.ListFormatJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ListFormatJobIterator manages a stream of *bigquerypb.ListFormatJob.
@@ -115,6 +130,12 @@ func (it *ListFormatJobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListFormatTableIterator) All() iter.Seq2[*bigquerypb.ListFormatTable, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListFormatTableIterator manages a stream of *bigquerypb.ListFormatTable.
 type ListFormatTableIterator struct {
 	items    []*bigquerypb.ListFormatTable
@@ -160,6 +181,12 @@ func (it *ListFormatTableIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ModelIterator) All() iter.Seq2[*bigquerypb.Model, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ModelIterator manages a stream of *bigquerypb.Model.
@@ -209,6 +236,12 @@ func (it *ModelIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RoutineIterator) All() iter.Seq2[*bigquerypb.Routine, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RoutineIterator manages a stream of *bigquerypb.Routine.
 type RoutineIterator struct {
 	items    []*bigquerypb.Routine
@@ -254,6 +287,12 @@ func (it *RoutineIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RowAccessPolicyIterator) All() iter.Seq2[*bigquerypb.RowAccessPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RowAccessPolicyIterator manages a stream of *bigquerypb.RowAccessPolicy.
