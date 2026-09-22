@@ -75,10 +75,6 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonUnsupportedEndpoint
 	}
 
-	if interconnectEnabled && !isGoogleDefaultUniverseHost(endpoint) {
-		return reasonUnsupportedEndpoint
-	}
-
 	if !res.ResolvedEnableDirectPathXds() {
 		return reasonXDSNotEnabled
 	}

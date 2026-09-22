@@ -154,6 +154,16 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 		want string
 	}{
 		{
+			name: "interconnect enabled off-GCE with standard endpoint bypasses GCE check",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("storage.googleapis.com:443"),
+			},
+			want: reasonUndetermined,
+		},
+		{
 			name: "interconnect enabled off-GCE with google-c2p endpoint bypasses GCE check",
 			opts: []option.ClientOption{
 				internaloption.EnableDirectPath(true),
@@ -164,32 +174,12 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 			want: reasonUndetermined,
 		},
 		{
-			name: "interconnect enabled off-GCE with rewritten endpoint bypasses GCE check",
+			name: "interconnect enabled with unsupported scheme endpoint returns unsupported_endpoint",
 			opts: []option.ClientOption{
 				internaloption.EnableDirectPath(true),
 				internaloption.EnableDirectPathXds(),
 				experimental.WithDirectPathXdsOverInterconnect(),
-				option.WithEndpoint("storage-direct.googleapis.com:443"),
-			},
-			want: reasonUndetermined,
-		},
-		{
-			name: "interconnect enabled with non-GDU endpoint returns unsupported_endpoint",
-			opts: []option.ClientOption{
-				internaloption.EnableDirectPath(true),
-				internaloption.EnableDirectPathXds(),
-				experimental.WithDirectPathXdsOverInterconnect(),
-				option.WithEndpoint("storage.apis-tpclp.goog:443"),
-			},
-			want: reasonUnsupportedEndpoint,
-		},
-		{
-			name: "interconnect enabled with lookalike domain returns unsupported_endpoint",
-			opts: []option.ClientOption{
-				internaloption.EnableDirectPath(true),
-				internaloption.EnableDirectPathXds(),
-				experimental.WithDirectPathXdsOverInterconnect(),
-				option.WithEndpoint("storage.googleapis.com.evil.com:443"),
+				option.WithEndpoint("https://storage.googleapis.com"),
 			},
 			want: reasonUnsupportedEndpoint,
 		},
@@ -199,7 +189,7 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 				internaloption.EnableDirectPath(true),
 				internaloption.EnableDirectPathXds(),
 				experimental.WithDirectPathXdsOverInterconnect(),
-				option.WithEndpoint("storage-direct.googleapis.com:443"),
+				option.WithEndpoint("storage.googleapis.com:443"),
 				option.WithoutAuthentication(),
 			},
 			want: reasonNoAuth,

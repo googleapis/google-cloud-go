@@ -30,7 +30,6 @@ import (
 	"github.com/google/go-cmp/cmp"
 	gax "github.com/googleapis/gax-go/v2"
 	"google.golang.org/api/option"
-	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
@@ -514,93 +513,6 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 	}
 }
 
-func TestRewriteHost(t *testing.T) {
-	for _, tc := range []struct {
-		name     string
-		endpoint string
-		oldHost  string
-		newHost  string
-		want     string
-	}{
-		{
-			name:     "bare host",
-			endpoint: "storage.googleapis.com",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "storage-direct.googleapis.com",
-		},
-		{
-			name:     "host with port",
-			endpoint: "storage.googleapis.com:443",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "storage-direct.googleapis.com:443",
-		},
-		{
-			name:     "host with slash path",
-			endpoint: "storage.googleapis.com/storage/v1",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "storage-direct.googleapis.com/storage/v1",
-		},
-		{
-			name:     "host with query delimiter",
-			endpoint: "storage.googleapis.com?query=val",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "storage-direct.googleapis.com?query=val",
-		},
-		{
-			name:     "host with fragment delimiter",
-			endpoint: "storage.googleapis.com#section",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "storage-direct.googleapis.com#section",
-		},
-		{
-			name:     "dns scheme prefix",
-			endpoint: "dns:///storage.googleapis.com:443",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "dns:///storage-direct.googleapis.com:443",
-		},
-		{
-			name:     "google-c2p scheme prefix",
-			endpoint: "google-c2p:///storage.googleapis.com?force-xds",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "google-c2p:///storage-direct.googleapis.com?force-xds",
-		},
-		{
-			name:     "https scheme prefix",
-			endpoint: "https://storage.googleapis.com:443",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "https://storage-direct.googleapis.com:443",
-		},
-		{
-			name:     "lookalike domain not rewritten",
-			endpoint: "storage.googleapis.com.evil.com:443",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "storage.googleapis.com.evil.com:443",
-		},
-		{
-			name:     "custom host not rewritten",
-			endpoint: "custom.storage.host:443",
-			oldHost:  "storage.googleapis.com",
-			newHost:  "storage-direct.googleapis.com",
-			want:     "custom.storage.host:443",
-		},
-	} {
-		t.Run(tc.name, func(t *testing.T) {
-			if got := rewriteHost(tc.endpoint, tc.oldHost, tc.newHost); got != tc.want {
-				t.Errorf("rewriteHost(%q, %q, %q) = %q, want %q", tc.endpoint, tc.oldHost, tc.newHost, got, tc.want)
-			}
-		})
-	}
-}
-
 func TestIsDirectPathXdsOverInterconnectEnabled(t *testing.T) {
 	for _, tc := range []struct {
 		name   string
@@ -624,81 +536,6 @@ func TestIsDirectPathXdsOverInterconnectEnabled(t *testing.T) {
 			}
 		})
 	}
-}
-
-func TestConfigureDirectPathInterconnectOptions(t *testing.T) {
-	t.Setenv(directPathDisableEnvVar, "")
-	baseOpts := []option.ClientOption{
-		internaloption.EnableDirectPath(true),
-		internaloption.EnableDirectPathXds(),
-	}
-
-	t.Run("default endpoint rewritten to storage-direct.googleapis.com:443", func(t *testing.T) {
-		gotOpts := configureDirectPathInterconnectOptions(baseOpts)
-		res, err := internaloption.NewUnsafeResolver(gotOpts...)
-		if err != nil {
-			t.Fatalf("NewUnsafeResolver() unexpected error: %v", err)
-		}
-		gotEndpoint, err := res.ResolvedGRPCEndpoint()
-		if err != nil {
-			t.Fatalf("ResolvedGRPCEndpoint() unexpected error: %v", err)
-		}
-		if gotEndpoint != "storage-direct.googleapis.com:443" {
-			t.Errorf("ResolvedGRPCEndpoint() = %q, want %q", gotEndpoint, "storage-direct.googleapis.com:443")
-		}
-	})
-
-	t.Run("custom google-c2p endpoint preserved", func(t *testing.T) {
-		opts := append([]option.ClientOption{}, baseOpts...)
-		opts = append(opts, option.WithEndpoint("google-c2p:///storage-direct.googleapis.com?force-xds"))
-		gotOpts := configureDirectPathInterconnectOptions(opts)
-		res, err := internaloption.NewUnsafeResolver(gotOpts...)
-		if err != nil {
-			t.Fatalf("NewUnsafeResolver() unexpected error: %v", err)
-		}
-		gotEndpoint, err := res.ResolvedGRPCEndpoint()
-		if err != nil {
-			t.Fatalf("ResolvedGRPCEndpoint() unexpected error: %v", err)
-		}
-		if gotEndpoint != "google-c2p:///storage-direct.googleapis.com?force-xds" {
-			t.Errorf("ResolvedGRPCEndpoint() = %q, want %q", gotEndpoint, "google-c2p:///storage-direct.googleapis.com?force-xds")
-		}
-	})
-
-	t.Run("GOOGLE_CLOUD_DISABLE_DIRECT_PATH=true does not rewrite endpoint", func(t *testing.T) {
-		t.Setenv(directPathDisableEnvVar, "true")
-		gotOpts := configureDirectPathInterconnectOptions(baseOpts)
-		if len(gotOpts) != len(baseOpts) {
-			t.Errorf("configureDirectPathInterconnectOptions() modified opts when DirectPath disabled via env: got %d opts, want %d", len(gotOpts), len(baseOpts))
-		}
-	})
-
-	t.Run("EnableDirectPath(false) does not rewrite endpoint", func(t *testing.T) {
-		opts := append([]option.ClientOption{}, baseOpts...)
-		opts = append(opts, internaloption.EnableDirectPath(false))
-		gotOpts := configureDirectPathInterconnectOptions(opts)
-		if len(gotOpts) != len(opts) {
-			t.Errorf("configureDirectPathInterconnectOptions() modified opts when EnableDirectPath(false): got %d opts, want %d", len(gotOpts), len(opts))
-		}
-	})
-
-	t.Run("WithoutAuthentication() does not rewrite endpoint", func(t *testing.T) {
-		opts := append([]option.ClientOption{}, baseOpts...)
-		opts = append(opts, option.WithoutAuthentication())
-		gotOpts := configureDirectPathInterconnectOptions(opts)
-		if len(gotOpts) != len(opts) {
-			t.Errorf("configureDirectPathInterconnectOptions() modified opts when WithoutAuthentication(): got %d opts, want %d", len(gotOpts), len(opts))
-		}
-	})
-
-	t.Run("non-GDU universe domain does not rewrite endpoint", func(t *testing.T) {
-		opts := append([]option.ClientOption{}, baseOpts...)
-		opts = append(opts, option.WithUniverseDomain("apis-tpclp.goog"))
-		gotOpts := configureDirectPathInterconnectOptions(opts)
-		if len(gotOpts) != len(opts) {
-			t.Errorf("configureDirectPathInterconnectOptions() modified opts for non-GDU universe domain: got %d opts, want %d", len(gotOpts), len(opts))
-		}
-	})
 }
 
 func TestPrepareDirectPathMetadata_FeatureTracking(t *testing.T) {

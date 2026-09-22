@@ -22,7 +22,6 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
-	"net"
 	"os"
 	"strconv"
 	"strings"
@@ -78,8 +77,6 @@ const (
 	requestParamsHeaderKey                    = "x-goog-request-params"
 	directPathEndpointPrefix                  = "google-c2p:///"
 	enableDirectPathXdsOverInterconnectEnvVar = "GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS_OVER_INTERCONNECT"
-	defaultStorageHost                        = "storage.googleapis.com"
-	defaultStorageDirectPathHost              = "storage-direct.googleapis.com"
 )
 
 func isDirectPathXdsOverInterconnectEnabled(config *storageConfig) bool {
@@ -89,81 +86,6 @@ func isDirectPathXdsOverInterconnectEnabled(config *storageConfig) bool {
 		}
 	}
 	return config != nil && config.grpcDirectPathXdsOverInterconnect
-}
-
-// rewriteHost replaces oldHost with newHost after an optional scheme prefix
-// (such as "https://", "dns:///", or "google-c2p:///") only when oldHost is
-// followed by the end of the string or a valid URI delimiter (':', '/', '?', '#').
-func rewriteHost(endpoint, oldHost, newHost string) string {
-	schemePrefix := ""
-	rest := endpoint
-	if idx := strings.Index(endpoint, "://"); idx != -1 {
-		if strings.HasPrefix(endpoint[idx+3:], "/") {
-			schemePrefix = endpoint[:idx+4]
-			rest = endpoint[idx+4:]
-		} else {
-			schemePrefix = endpoint[:idx+3]
-			rest = endpoint[idx+3:]
-		}
-	}
-	if !strings.HasPrefix(rest, oldHost) {
-		return endpoint
-	}
-	rem := rest[len(oldHost):]
-	if rem == "" || rem[0] == ':' || rem[0] == '/' || rem[0] == '?' || rem[0] == '#' {
-		return schemePrefix + newHost + rem
-	}
-	return endpoint
-}
-
-func isGoogleDefaultUniverseHost(endpoint string) bool {
-	host := strings.TrimPrefix(endpoint, directPathEndpointPrefix)
-	host = strings.TrimPrefix(host, "dns:///")
-	host = stripScheme(host)
-	if idx := strings.IndexAny(host, "/?#"); idx != -1 {
-		host = host[:idx]
-	}
-	if h, _, err := net.SplitHostPort(host); err == nil {
-		host = h
-	} else if colonIdx := strings.Index(host, ":"); colonIdx != -1 {
-		host = host[:colonIdx]
-	}
-	return host == "googleapis.com" || strings.HasSuffix(host, ".googleapis.com")
-}
-
-func configureDirectPathInterconnectOptions(opts []option.ClientOption) []option.ClientOption {
-	if disableDP, _ := strconv.ParseBool(os.Getenv(directPathDisableEnvVar)); disableDP {
-		return opts
-	}
-	resolverOpts := append([]option.ClientOption{
-		internaloption.WithDefaultEndpointTemplate("storage.UNIVERSE_DOMAIN:443"),
-		internaloption.WithDefaultUniverseDomain("googleapis.com"),
-	}, opts...)
-	res, err := internaloption.NewUnsafeResolver(resolverOpts...)
-	if err != nil {
-		return opts
-	}
-	if !res.ResolvedEnableDirectPath() || !res.ResolvedEnableDirectPathXds() || res.ResolvedWithoutAuthentication() || res.ResolvedWithAPIKeyIsCustom() || res.ResolvedGRPCConnIsCustom() || res.ResolvedHTTPClientIsCustom() {
-		return opts
-	}
-	endpoint, err := res.ResolvedGRPCEndpoint()
-	if err != nil || endpoint == "" {
-		endpoint = defaultStorageHost + ":443"
-	}
-	if !isGoogleDefaultUniverseHost(endpoint) {
-		return opts
-	}
-	rewritten := rewriteHost(endpoint, defaultStorageHost, defaultStorageDirectPathHost)
-	if rewritten != endpoint {
-		if !strings.HasPrefix(rewritten, directPathEndpointPrefix) && !strings.HasPrefix(rewritten, "dns:///") {
-			rewritten = stripScheme(rewritten)
-			if !strings.Contains(rewritten, ":") && !strings.Contains(rewritten, "/") {
-				rewritten += ":443"
-			}
-		}
-		opts = append(opts, option.WithEndpoint(rewritten))
-	}
-	return opts
 }
 
 // defaultGRPCOptions returns a set of the default client options
@@ -255,7 +177,9 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
 	}
 	if os.Getenv("STORAGE_EMULATOR_HOST_GRPC") == "" && isDirectPathXdsOverInterconnectEnabled(&config) {
-		s.clientOption = configureDirectPathInterconnectOptions(s.clientOption)
+		// TODO(https://github.com/googleapis/google-cloud-go/pull/20561): Bump google.golang.org/api
+		// in storage/go.mod once internaloption.EnableDirectPathXdsOverInterconnect() is released.
+		s.clientOption = append(s.clientOption, internaloption.EnableDirectPathXdsOverInterconnect())
 	}
 
 	if !config.disableClientMetrics {
