@@ -488,7 +488,7 @@ func TestDefaultCredentials_ServiceAccountKeyDisableAsyncRefresh(t *testing.T) {
 			ExpiresIn:   60,
 		}
 		if err := json.NewEncoder(w).Encode(&resp); err != nil {
-			t.Fatal(err)
+			t.Error(err)
 		}
 	}))
 	defer ts.Close()
