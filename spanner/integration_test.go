@@ -4312,8 +4312,8 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	// DataBoost is not available for spanner omni endpoints
-	dataBoostAvailable := omniConfig.endpoint == ""
+	// DataBoost is not available for spanner omni, cloud-devel, or cloud-staging endpoints
+	dataBoostAvailable := omniConfig.endpoint == "" && !isCloudDevelOrStaging()
 	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
@@ -4400,8 +4400,8 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	// DataBoost is not available for spanner omni endpoints
-	dataBoostAvailable := omniConfig.endpoint == ""
+	// DataBoost is not available for spanner omni, cloud-devel, or cloud-staging endpoints
+	dataBoostAvailable := omniConfig.endpoint == "" && !isCloudDevelOrStaging()
 	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
@@ -6720,9 +6720,18 @@ func skipUnsupportedPGTest(t *testing.T) {
 	}
 }
 
-func skipOnNonProd(t *testing.T) {
+func isCloudDevelOrStaging() bool {
 	job := os.Getenv("JOB_TYPE")
 	if strings.Contains(job, "cloud-devel") || strings.Contains(job, "cloud-staging") {
+		return true
+	}
+	host := getSpannerHost()
+	return strings.Contains(host, "staging-wrenchworks.sandbox.googleapis.com") ||
+		strings.Contains(host, "preprod-spanner.sandbox.googleapis.com")
+}
+
+func skipOnNonProd(t *testing.T) {
+	if isCloudDevelOrStaging() {
 		t.Skip("Skipping test on non-production environment.")
 	}
 }
@@ -6823,5 +6832,54 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	}
 	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
+	}
+}
+
+func TestIsCloudDevelOrStaging(t *testing.T) {
+	origJobType, hasJobType := os.LookupEnv("JOB_TYPE")
+	origHost, hasHost := os.LookupEnv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+	defer func() {
+		if hasJobType {
+			_ = os.Setenv("JOB_TYPE", origJobType)
+		} else {
+			_ = os.Unsetenv("JOB_TYPE")
+		}
+		if hasHost {
+			_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", origHost)
+		} else {
+			_ = os.Unsetenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+		}
+	}()
+
+	_ = os.Unsetenv("JOB_TYPE")
+	_ = os.Unsetenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+	if isCloudDevelOrStaging() {
+		t.Fatalf("expected false when JOB_TYPE and GCLOUD_TESTS_GOLANG_SPANNER_HOST are unset")
+	}
+
+	_ = os.Setenv("JOB_TYPE", "integration-cloud-devel")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when JOB_TYPE is integration-cloud-devel")
+	}
+
+	_ = os.Setenv("JOB_TYPE", "integration-cloud-staging")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when JOB_TYPE is integration-cloud-staging")
+	}
+
+	_ = os.Unsetenv("JOB_TYPE")
+	_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", "staging-wrenchworks.sandbox.googleapis.com:443")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when GCLOUD_TESTS_GOLANG_SPANNER_HOST is staging-wrenchworks")
+	}
+
+	_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", "preprod-spanner.sandbox.googleapis.com:443")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when GCLOUD_TESTS_GOLANG_SPANNER_HOST is preprod-spanner")
+	}
+
+	_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", "spanner.googleapis.com:443")
+	if isCloudDevelOrStaging() {
+		t.Fatalf("expected false when GCLOUD_TESTS_GOLANG_SPANNER_HOST is spanner.googleapis.com:443")
 	}
 }
