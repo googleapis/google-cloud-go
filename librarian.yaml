@@ -25,6 +25,8 @@ tools:
   go:
     - name: github.com/googleapis/gapic-generator-go/cmd/protoc-gen-go_gapic
       version: v0.64.0
+    - name: github.com/planetscale/vtprotobuf/cmd/protoc-gen-go-vtproto
+      version: v0.6.1-0.20240319094008-0393e58bdf10
     - name: golang.org/x/tools/cmd/goimports
       version: v0.44.0
     - name: google.golang.org/grpc/cmd/protoc-gen-go-grpc
@@ -1336,6 +1338,16 @@ libraries:
         go:
           enabled_generator_features:
             - F_export_set_google_client_info
+          internal_copies:
+            - import_path: spanner/internal/vtpb
+              plugin: go-vtproto
+              plugin_options:
+                - features=marshal+unmarshal+size+pool+unmarshal_unsafe
+                - pool=cloud.google.com/go/spanner/internal/vtpb.PartialResultSet
+                - pool=cloud.google.com/go/spanner/internal/vtpb.ResultSet
+                - pool=cloud.google.com/go/spanner/internal/vtpb.ResultSetMetadata
+                - pool=cloud.google.com/go/spanner/internal/vtpb.ResultSetStats
+              proto_package: google.spanner.v1.vtinternal
           no_metadata: true
           no_snippets: true
       - path: google/spanner/adapter/v1
