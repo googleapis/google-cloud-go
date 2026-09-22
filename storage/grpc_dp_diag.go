@@ -54,6 +54,9 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonEnvVarDisabled
 	}
 
+	cfg := newStorageConfig(opts...)
+	interconnectEnabled := isDirectPathXdsOverInterconnectEnabled(&cfg)
+
 	res, err := internaloption.NewUnsafeResolver(opts...)
 	if err != nil {
 		return reasonInternalError
@@ -72,6 +75,10 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonUnsupportedEndpoint
 	}
 
+	if interconnectEnabled && !isGoogleDefaultUniverseHost(endpoint) {
+		return reasonUnsupportedEndpoint
+	}
+
 	if !res.ResolvedEnableDirectPathXds() {
 		return reasonXDSNotEnabled
 	}
@@ -82,6 +89,16 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 
 	if res.ResolvedHTTPClientIsCustom() {
 		return reasonCustomHTTPClient
+	}
+
+	if interconnectEnabled {
+		if res.ResolvedWithoutAuthentication() {
+			return reasonNoAuth
+		}
+		if res.ResolvedWithAPIKeyIsCustom() {
+			return reasonAPIKey
+		}
+		return reasonUndetermined
 	}
 
 	if !metadata.OnGCE() {
@@ -116,8 +133,10 @@ func isDirectPathCompatible(endpoint string) bool {
 	if endpoint == "" {
 		return false
 	}
-	// DirectPath requires no scheme or the dns:/// scheme specifically.
-	if strings.Contains(endpoint, "://") && !strings.HasPrefix(endpoint, "dns:///") {
+	// DirectPath requires no scheme, dns:///, or google-c2p:///.
+	if strings.Contains(endpoint, "://") &&
+		!strings.HasPrefix(endpoint, "dns:///") &&
+		!strings.HasPrefix(endpoint, directPathEndpointPrefix) {
 		return false
 	}
 	return true
