@@ -26,7 +26,7 @@ import (
 	"os"
 	"reflect"
 	"strings"
-	"sync/atomic"
+	"sync"
 	"testing"
 	"time"
 
@@ -468,57 +468,6 @@ func TestDefaultCredentials_ServiceAccountKey(t *testing.T) {
 	}
 }
 
-func TestDefaultCredentials_ServiceAccountKeyDisableAsyncRefresh(t *testing.T) {
-	ctx := context.Background()
-	b, err := os.ReadFile("../internal/testdata/sa.json")
-	if err != nil {
-		t.Fatal(err)
-	}
-	f, err := credsfile.ParseServiceAccount(b)
-	if err != nil {
-		t.Fatal(err)
-	}
-	var issued atomic.Int32
-	ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
-		// Expires within the default early refresh window, so the token is
-		// stale as soon as it is cached.
-		resp := &tokResp{
-			AccessToken: fmt.Sprintf("token_%d", issued.Add(1)),
-			TokenType:   internal.TokenTypeBearer,
-			ExpiresIn:   60,
-		}
-		if err := json.NewEncoder(w).Encode(&resp); err != nil {
-			t.Error(err)
-		}
-	}))
-	defer ts.Close()
-	f.TokenURL = ts.URL
-	b, err = json.Marshal(f)
-	if err != nil {
-		t.Fatal(err)
-	}
-
-	creds, err := DetectDefault(&DetectOptions{
-		CredentialsJSON:     b,
-		Scopes:              []string{"https://www.googleapis.com/auth/cloud-platform"},
-		DisableAsyncRefresh: true,
-	})
-	if err != nil {
-		t.Fatal(err)
-	}
-	for _, want := range []string{"token_1", "token_2"} {
-		tok, err := creds.Token(ctx)
-		if err != nil {
-			t.Fatalf("creds.Token() = %v", err)
-		}
-		// With a blocking refresh a stale token is replaced before it is
-		// returned instead of being handed out while a refresh runs.
-		if tok.Value != want {
-			t.Fatalf("got %q, want %q", tok.Value, want)
-		}
-	}
-}
-
 func TestDefaultCredentials_ServiceAccountKeySelfSigned(t *testing.T) {
 	ctx := context.Background()
 	b, err := os.ReadFile("../internal/testdata/sa.json")
@@ -838,6 +787,183 @@ func TestDefaultCredentials_ExternalAccountAuthorizedUserKey(t *testing.T) {
 	if want := internal.TokenTypeBearer; tok.Type != want {
 		t.Fatalf("got %q, want %q", tok.Type, want)
 	}
+}
+
+func TestDefaultCredentials_DisableAsyncRefresh(t *testing.T) {
+	impersonatePath := "/v1/projects/-/serviceAccounts/impersonated-sa@fake_project.iam.gserviceaccount.com:generateAccessToken"
+	tests := []struct {
+		name string
+		// opts returns options that point the credentials at the test
+		// server at url.
+		opts func(t *testing.T, url string) *DetectOptions
+		want []string
+		// wantImpersonateAuth is the Authorization header of each call to
+		// the impersonation endpoint.
+		wantImpersonateAuth []string
+	}{
+		{
+			name: "service account",
+			opts: func(t *testing.T, url string) *DetectOptions {
+				f, err := credsfile.ParseServiceAccount(readTestFile(t, "../internal/testdata/sa.json"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				f.TokenURL = url + "/token"
+				return &DetectOptions{CredentialsJSON: marshalTestFile(t, f)}
+			},
+			want: []string{"token_1", "token_2"},
+		},
+		{
+			name: "authorized user",
+			opts: func(t *testing.T, url string) *DetectOptions {
+				return &DetectOptions{
+					CredentialsJSON: readTestFile(t, "../internal/testdata/user.json"),
+					TokenURL:        url + "/token",
+				}
+			},
+			want: []string{"token_1", "token_2"},
+		},
+		{
+			name: "client credentials",
+			opts: func(t *testing.T, url string) *DetectOptions {
+				f, err := credsfile.ParseClientCredentials(readTestFile(t, "../internal/testdata/clientcreds_installed.json"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				f.Installed.TokenURI = url + "/token"
+				return &DetectOptions{
+					CredentialsJSON: marshalTestFile(t, f),
+					AuthHandlerOptions: &auth.AuthorizationHandlerOptions{
+						Handler: func(authCodeURL string) (code string, state string, err error) {
+							return "code", "state", nil
+						},
+						State: "state",
+					},
+				}
+			},
+			want: []string{"token_1", "token_2"},
+		},
+		{
+			name: "external account",
+			opts: func(t *testing.T, url string) *DetectOptions {
+				f, err := credsfile.ParseExternalAccount(readTestFile(t, "../internal/testdata/exaccount_url.json"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				f.ServiceAccountImpersonationURL = ""
+				f.CredentialSource.URL = url + "/subject"
+				f.TokenURL = url + "/token"
+				return &DetectOptions{CredentialsJSON: marshalTestFile(t, f)}
+			},
+			want: []string{"token_1", "token_2"},
+		},
+		{
+			name: "external account with impersonation",
+			opts: func(t *testing.T, url string) *DetectOptions {
+				f, err := credsfile.ParseExternalAccount(readTestFile(t, "../internal/testdata/exaccount_url.json"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				f.ServiceAccountImpersonationURL = url + impersonatePath
+				f.CredentialSource.URL = url + "/subject"
+				f.TokenURL = url + "/token"
+				return &DetectOptions{CredentialsJSON: marshalTestFile(t, f)}
+			},
+			want: []string{"impersonated_1", "impersonated_2"},
+			// The source token must be refreshed too, not reused while stale.
+			wantImpersonateAuth: []string{"Bearer token_1", "Bearer token_2"},
+		},
+		{
+			name: "external account authorized user",
+			opts: func(t *testing.T, url string) *DetectOptions {
+				f, err := credsfile.ParseExternalAccountAuthorizedUser(readTestFile(t, "../internal/testdata/exaccount_user.json"))
+				if err != nil {
+					t.Fatal(err)
+				}
+				f.TokenURL = url + "/token"
+				return &DetectOptions{CredentialsJSON: marshalTestFile(t, f)}
+			},
+			want: []string{"token_1", "token_2"},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx := context.Background()
+			var mu sync.Mutex
+			calls := map[string]int{}
+			var impersonateAuth []string
+			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				mu.Lock()
+				calls[r.URL.Path]++
+				n := calls[r.URL.Path]
+				if r.URL.Path == impersonatePath {
+					impersonateAuth = append(impersonateAuth, r.Header.Get("Authorization"))
+				}
+				mu.Unlock()
+				// Every token lives 10 minutes: outside the default early
+				// refresh window, inside the one configured below.
+				var resp any
+				switch r.URL.Path {
+				case "/token":
+					resp = &tokResp{
+						AccessToken: fmt.Sprintf("token_%d", n),
+						TokenType:   internal.TokenTypeBearer,
+						ExpiresIn:   600,
+					}
+				case "/subject":
+					resp = map[string]string{"id_token": "subject_token"}
+				case impersonatePath:
+					resp = map[string]string{
+						"accessToken": fmt.Sprintf("impersonated_%d", n),
+						"expireTime":  time.Now().Add(10 * time.Minute).UTC().Format(time.RFC3339),
+					}
+				default:
+					t.Errorf("unexpected call to %q", r.URL.Path)
+					return
+				}
+				w.Header().Set("Content-Type", "application/json")
+				if err := json.NewEncoder(w).Encode(resp); err != nil {
+					t.Error(err)
+				}
+			}))
+			defer ts.Close()
+
+			opts := tt.opts(t, ts.URL)
+			opts.Scopes = []string{"https://www.googleapis.com/auth/cloud-platform"}
+			opts.EarlyTokenRefresh = 15 * time.Minute
+			opts.DisableAsyncRefresh = true
+			creds, err := DetectDefault(opts)
+			if err != nil {
+				t.Fatal(err)
+			}
+			for _, want := range tt.want {
+				tok, err := creds.Token(ctx)
+				if err != nil {
+					t.Fatalf("creds.Token() = %v", err)
+				}
+				// With a blocking refresh a token inside the early refresh
+				// window is replaced before it is returned instead of being
+				// handed out while a refresh runs.
+				if tok.Value != want {
+					t.Fatalf("got %q, want %q", tok.Value, want)
+				}
+			}
+			mu.Lock()
+			defer mu.Unlock()
+			if !reflect.DeepEqual(impersonateAuth, tt.wantImpersonateAuth) {
+				t.Errorf("impersonation Authorization headers: got %q, want %q", impersonateAuth, tt.wantImpersonateAuth)
+			}
+		})
+	}
+}
+
+func marshalTestFile(t *testing.T, v any) []byte {
+	t.Helper()
+	b, err := json.Marshal(v)
+	if err != nil {
+		t.Fatal(err)
+	}
+	return b
 }
 
 func TestDefaultCredentials_Fails(t *testing.T) {
