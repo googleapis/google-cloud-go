@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,6 +46,17 @@ const (
 	ParameterManager_CreateParameterVersion_FullMethodName = "/google.cloud.parametermanager.v1.ParameterManager/CreateParameterVersion"
 	ParameterManager_UpdateParameterVersion_FullMethodName = "/google.cloud.parametermanager.v1.ParameterManager/UpdateParameterVersion"
 	ParameterManager_DeleteParameterVersion_FullMethodName = "/google.cloud.parametermanager.v1.ParameterManager/DeleteParameterVersion"
+	ParameterManager_ListTemplates_FullMethodName          = "/google.cloud.parametermanager.v1.ParameterManager/ListTemplates"
+	ParameterManager_GetTemplate_FullMethodName            = "/google.cloud.parametermanager.v1.ParameterManager/GetTemplate"
+	ParameterManager_CreateTemplate_FullMethodName         = "/google.cloud.parametermanager.v1.ParameterManager/CreateTemplate"
+	ParameterManager_UpdateTemplate_FullMethodName         = "/google.cloud.parametermanager.v1.ParameterManager/UpdateTemplate"
+	ParameterManager_DeleteTemplate_FullMethodName         = "/google.cloud.parametermanager.v1.ParameterManager/DeleteTemplate"
+	ParameterManager_ListTemplateVersions_FullMethodName   = "/google.cloud.parametermanager.v1.ParameterManager/ListTemplateVersions"
+	ParameterManager_GetTemplateVersion_FullMethodName     = "/google.cloud.parametermanager.v1.ParameterManager/GetTemplateVersion"
+	ParameterManager_CreateTemplateVersion_FullMethodName  = "/google.cloud.parametermanager.v1.ParameterManager/CreateTemplateVersion"
+	ParameterManager_UpdateTemplateVersion_FullMethodName  = "/google.cloud.parametermanager.v1.ParameterManager/UpdateTemplateVersion"
+	ParameterManager_DeleteTemplateVersion_FullMethodName  = "/google.cloud.parametermanager.v1.ParameterManager/DeleteTemplateVersion"
+	ParameterManager_RenderTemplateVersion_FullMethodName  = "/google.cloud.parametermanager.v1.ParameterManager/RenderTemplateVersion"
 )
 
 // ParameterManagerClient is the client API for ParameterManager service.
@@ -74,6 +85,28 @@ type ParameterManagerClient interface {
 	UpdateParameterVersion(ctx context.Context, in *UpdateParameterVersionRequest, opts ...grpc.CallOption) (*ParameterVersion, error)
 	// Deletes a single ParameterVersion.
 	DeleteParameterVersion(ctx context.Context, in *DeleteParameterVersionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Lists Templates in a given project and location.
+	ListTemplates(ctx context.Context, in *ListTemplatesRequest, opts ...grpc.CallOption) (*ListTemplatesResponse, error)
+	// Gets details of a single Template.
+	GetTemplate(ctx context.Context, in *GetTemplateRequest, opts ...grpc.CallOption) (*Template, error)
+	// Creates a new Template in a given project and location.
+	CreateTemplate(ctx context.Context, in *CreateTemplateRequest, opts ...grpc.CallOption) (*Template, error)
+	// Updates a single Template.
+	UpdateTemplate(ctx context.Context, in *UpdateTemplateRequest, opts ...grpc.CallOption) (*Template, error)
+	// Deletes a single Template.
+	DeleteTemplate(ctx context.Context, in *DeleteTemplateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Lists TemplateVersions in a given project, location, and template.
+	ListTemplateVersions(ctx context.Context, in *ListTemplateVersionsRequest, opts ...grpc.CallOption) (*ListTemplateVersionsResponse, error)
+	// Gets details of a single TemplateVersion.
+	GetTemplateVersion(ctx context.Context, in *GetTemplateVersionRequest, opts ...grpc.CallOption) (*TemplateVersion, error)
+	// Creates a new TemplateVersion in a given project, location, and template.
+	CreateTemplateVersion(ctx context.Context, in *CreateTemplateVersionRequest, opts ...grpc.CallOption) (*TemplateVersion, error)
+	// Updates a single TemplateVersion.
+	UpdateTemplateVersion(ctx context.Context, in *UpdateTemplateVersionRequest, opts ...grpc.CallOption) (*TemplateVersion, error)
+	// Deletes a single TemplateVersion.
+	DeleteTemplateVersion(ctx context.Context, in *DeleteTemplateVersionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Gets rendered version of a TemplateVersion.
+	RenderTemplateVersion(ctx context.Context, in *RenderTemplateVersionRequest, opts ...grpc.CallOption) (*RenderTemplateVersionResponse, error)
 }
 
 type parameterManagerClient struct {
@@ -183,6 +216,105 @@ func (c *parameterManagerClient) DeleteParameterVersion(ctx context.Context, in 
 	return out, nil
 }
 
+func (c *parameterManagerClient) ListTemplates(ctx context.Context, in *ListTemplatesRequest, opts ...grpc.CallOption) (*ListTemplatesResponse, error) {
+	out := new(ListTemplatesResponse)
+	err := c.cc.Invoke(ctx, ParameterManager_ListTemplates_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) GetTemplate(ctx context.Context, in *GetTemplateRequest, opts ...grpc.CallOption) (*Template, error) {
+	out := new(Template)
+	err := c.cc.Invoke(ctx, ParameterManager_GetTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) CreateTemplate(ctx context.Context, in *CreateTemplateRequest, opts ...grpc.CallOption) (*Template, error) {
+	out := new(Template)
+	err := c.cc.Invoke(ctx, ParameterManager_CreateTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) UpdateTemplate(ctx context.Context, in *UpdateTemplateRequest, opts ...grpc.CallOption) (*Template, error) {
+	out := new(Template)
+	err := c.cc.Invoke(ctx, ParameterManager_UpdateTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) DeleteTemplate(ctx context.Context, in *DeleteTemplateRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ParameterManager_DeleteTemplate_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) ListTemplateVersions(ctx context.Context, in *ListTemplateVersionsRequest, opts ...grpc.CallOption) (*ListTemplateVersionsResponse, error) {
+	out := new(ListTemplateVersionsResponse)
+	err := c.cc.Invoke(ctx, ParameterManager_ListTemplateVersions_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) GetTemplateVersion(ctx context.Context, in *GetTemplateVersionRequest, opts ...grpc.CallOption) (*TemplateVersion, error) {
+	out := new(TemplateVersion)
+	err := c.cc.Invoke(ctx, ParameterManager_GetTemplateVersion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) CreateTemplateVersion(ctx context.Context, in *CreateTemplateVersionRequest, opts ...grpc.CallOption) (*TemplateVersion, error) {
+	out := new(TemplateVersion)
+	err := c.cc.Invoke(ctx, ParameterManager_CreateTemplateVersion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) UpdateTemplateVersion(ctx context.Context, in *UpdateTemplateVersionRequest, opts ...grpc.CallOption) (*TemplateVersion, error) {
+	out := new(TemplateVersion)
+	err := c.cc.Invoke(ctx, ParameterManager_UpdateTemplateVersion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) DeleteTemplateVersion(ctx context.Context, in *DeleteTemplateVersionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ParameterManager_DeleteTemplateVersion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *parameterManagerClient) RenderTemplateVersion(ctx context.Context, in *RenderTemplateVersionRequest, opts ...grpc.CallOption) (*RenderTemplateVersionResponse, error) {
+	out := new(RenderTemplateVersionResponse)
+	err := c.cc.Invoke(ctx, ParameterManager_RenderTemplateVersion_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // ParameterManagerServer is the server API for ParameterManager service.
 // All implementations should embed UnimplementedParameterManagerServer
 // for forward compatibility
@@ -209,6 +341,28 @@ type ParameterManagerServer interface {
 	UpdateParameterVersion(context.Context, *UpdateParameterVersionRequest) (*ParameterVersion, error)
 	// Deletes a single ParameterVersion.
 	DeleteParameterVersion(context.Context, *DeleteParameterVersionRequest) (*emptypb.Empty, error)
+	// Lists Templates in a given project and location.
+	ListTemplates(context.Context, *ListTemplatesRequest) (*ListTemplatesResponse, error)
+	// Gets details of a single Template.
+	GetTemplate(context.Context, *GetTemplateRequest) (*Template, error)
+	// Creates a new Template in a given project and location.
+	CreateTemplate(context.Context, *CreateTemplateRequest) (*Template, error)
+	// Updates a single Template.
+	UpdateTemplate(context.Context, *UpdateTemplateRequest) (*Template, error)
+	// Deletes a single Template.
+	DeleteTemplate(context.Context, *DeleteTemplateRequest) (*emptypb.Empty, error)
+	// Lists TemplateVersions in a given project, location, and template.
+	ListTemplateVersions(context.Context, *ListTemplateVersionsRequest) (*ListTemplateVersionsResponse, error)
+	// Gets details of a single TemplateVersion.
+	GetTemplateVersion(context.Context, *GetTemplateVersionRequest) (*TemplateVersion, error)
+	// Creates a new TemplateVersion in a given project, location, and template.
+	CreateTemplateVersion(context.Context, *CreateTemplateVersionRequest) (*TemplateVersion, error)
+	// Updates a single TemplateVersion.
+	UpdateTemplateVersion(context.Context, *UpdateTemplateVersionRequest) (*TemplateVersion, error)
+	// Deletes a single TemplateVersion.
+	DeleteTemplateVersion(context.Context, *DeleteTemplateVersionRequest) (*emptypb.Empty, error)
+	// Gets rendered version of a TemplateVersion.
+	RenderTemplateVersion(context.Context, *RenderTemplateVersionRequest) (*RenderTemplateVersionResponse, error)
 }
 
 // UnimplementedParameterManagerServer should be embedded to have forward compatible implementations.
@@ -247,6 +401,39 @@ func (UnimplementedParameterManagerServer) UpdateParameterVersion(context.Contex
 }
 func (UnimplementedParameterManagerServer) DeleteParameterVersion(context.Context, *DeleteParameterVersionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteParameterVersion not implemented")
+}
+func (UnimplementedParameterManagerServer) ListTemplates(context.Context, *ListTemplatesRequest) (*ListTemplatesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTemplates not implemented")
+}
+func (UnimplementedParameterManagerServer) GetTemplate(context.Context, *GetTemplateRequest) (*Template, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTemplate not implemented")
+}
+func (UnimplementedParameterManagerServer) CreateTemplate(context.Context, *CreateTemplateRequest) (*Template, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTemplate not implemented")
+}
+func (UnimplementedParameterManagerServer) UpdateTemplate(context.Context, *UpdateTemplateRequest) (*Template, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTemplate not implemented")
+}
+func (UnimplementedParameterManagerServer) DeleteTemplate(context.Context, *DeleteTemplateRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTemplate not implemented")
+}
+func (UnimplementedParameterManagerServer) ListTemplateVersions(context.Context, *ListTemplateVersionsRequest) (*ListTemplateVersionsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTemplateVersions not implemented")
+}
+func (UnimplementedParameterManagerServer) GetTemplateVersion(context.Context, *GetTemplateVersionRequest) (*TemplateVersion, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTemplateVersion not implemented")
+}
+func (UnimplementedParameterManagerServer) CreateTemplateVersion(context.Context, *CreateTemplateVersionRequest) (*TemplateVersion, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateTemplateVersion not implemented")
+}
+func (UnimplementedParameterManagerServer) UpdateTemplateVersion(context.Context, *UpdateTemplateVersionRequest) (*TemplateVersion, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdateTemplateVersion not implemented")
+}
+func (UnimplementedParameterManagerServer) DeleteTemplateVersion(context.Context, *DeleteTemplateVersionRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTemplateVersion not implemented")
+}
+func (UnimplementedParameterManagerServer) RenderTemplateVersion(context.Context, *RenderTemplateVersionRequest) (*RenderTemplateVersionResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RenderTemplateVersion not implemented")
 }
 
 // UnsafeParameterManagerServer may be embedded to opt out of forward compatibility for this service.
@@ -458,6 +645,204 @@ func _ParameterManager_DeleteParameterVersion_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _ParameterManager_ListTemplates_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTemplatesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).ListTemplates(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_ListTemplates_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).ListTemplates(ctx, req.(*ListTemplatesRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_GetTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).GetTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_GetTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).GetTemplate(ctx, req.(*GetTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_CreateTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).CreateTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_CreateTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).CreateTemplate(ctx, req.(*CreateTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_UpdateTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).UpdateTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_UpdateTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).UpdateTemplate(ctx, req.(*UpdateTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_DeleteTemplate_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTemplateRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).DeleteTemplate(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_DeleteTemplate_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).DeleteTemplate(ctx, req.(*DeleteTemplateRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_ListTemplateVersions_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTemplateVersionsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).ListTemplateVersions(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_ListTemplateVersions_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).ListTemplateVersions(ctx, req.(*ListTemplateVersionsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_GetTemplateVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTemplateVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).GetTemplateVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_GetTemplateVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).GetTemplateVersion(ctx, req.(*GetTemplateVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_CreateTemplateVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateTemplateVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).CreateTemplateVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_CreateTemplateVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).CreateTemplateVersion(ctx, req.(*CreateTemplateVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_UpdateTemplateVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdateTemplateVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).UpdateTemplateVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_UpdateTemplateVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).UpdateTemplateVersion(ctx, req.(*UpdateTemplateVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_DeleteTemplateVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTemplateVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).DeleteTemplateVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_DeleteTemplateVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).DeleteTemplateVersion(ctx, req.(*DeleteTemplateVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ParameterManager_RenderTemplateVersion_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RenderTemplateVersionRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ParameterManagerServer).RenderTemplateVersion(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ParameterManager_RenderTemplateVersion_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ParameterManagerServer).RenderTemplateVersion(ctx, req.(*RenderTemplateVersionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // ParameterManager_ServiceDesc is the grpc.ServiceDesc for ParameterManager service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -508,6 +893,50 @@ var ParameterManager_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteParameterVersion",
 			Handler:    _ParameterManager_DeleteParameterVersion_Handler,
+		},
+		{
+			MethodName: "ListTemplates",
+			Handler:    _ParameterManager_ListTemplates_Handler,
+		},
+		{
+			MethodName: "GetTemplate",
+			Handler:    _ParameterManager_GetTemplate_Handler,
+		},
+		{
+			MethodName: "CreateTemplate",
+			Handler:    _ParameterManager_CreateTemplate_Handler,
+		},
+		{
+			MethodName: "UpdateTemplate",
+			Handler:    _ParameterManager_UpdateTemplate_Handler,
+		},
+		{
+			MethodName: "DeleteTemplate",
+			Handler:    _ParameterManager_DeleteTemplate_Handler,
+		},
+		{
+			MethodName: "ListTemplateVersions",
+			Handler:    _ParameterManager_ListTemplateVersions_Handler,
+		},
+		{
+			MethodName: "GetTemplateVersion",
+			Handler:    _ParameterManager_GetTemplateVersion_Handler,
+		},
+		{
+			MethodName: "CreateTemplateVersion",
+			Handler:    _ParameterManager_CreateTemplateVersion_Handler,
+		},
+		{
+			MethodName: "UpdateTemplateVersion",
+			Handler:    _ParameterManager_UpdateTemplateVersion_Handler,
+		},
+		{
+			MethodName: "DeleteTemplateVersion",
+			Handler:    _ParameterManager_DeleteTemplateVersion_Handler,
+		},
+		{
+			MethodName: "RenderTemplateVersion",
+			Handler:    _ParameterManager_RenderTemplateVersion_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

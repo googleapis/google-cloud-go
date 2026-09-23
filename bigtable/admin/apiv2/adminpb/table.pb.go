@@ -741,6 +741,11 @@ type Table struct {
 	//
 	//	*Table_AutomatedBackupPolicy_
 	AutomatedBackupConfig isTable_AutomatedBackupConfig `protobuf_oneof:"automated_backup_config"`
+	// Output only. The effective automated backup policy applied to the table.
+	// This represents the policy actually in effect, which may be a
+	// system-default policy if the user has not explicitly configured one.
+	// Views: `SCHEMA_VIEW`, `FULL`.
+	EffectiveAutomatedBackupPolicy *Table_AutomatedBackupPolicy `protobuf:"bytes,19,opt,name=effective_automated_backup_policy,json=effectiveAutomatedBackupPolicy,proto3" json:"effective_automated_backup_policy,omitempty"`
 	// Rules to specify what data is stored in each storage tier.
 	// Different tiers store data differently, providing different trade-offs
 	// between cost and performance. Different parts of a table can be stored
@@ -905,6 +910,13 @@ func (x *Table) GetAutomatedBackupPolicy() *Table_AutomatedBackupPolicy {
 		if x, ok := x.AutomatedBackupConfig.(*Table_AutomatedBackupPolicy_); ok {
 			return x.AutomatedBackupPolicy
 		}
+	}
+	return nil
+}
+
+func (x *Table) GetEffectiveAutomatedBackupPolicy() *Table_AutomatedBackupPolicy {
+	if x != nil {
+		return x.EffectiveAutomatedBackupPolicy
 	}
 	return nil
 }
@@ -2089,7 +2101,19 @@ type Table_AutomatedBackupPolicy struct {
 	// zones of the instance. Locations are in the format
 	// `projects/{project}/locations/{zone}`.
 	// This field can only set for tables in Enterprise Plus instances.
-	Locations     []string `protobuf:"bytes,3,rep,name=locations,proto3" json:"locations,omitempty"`
+	Locations []string `protobuf:"bytes,3,rep,name=locations,proto3" json:"locations,omitempty"`
+	// Optional. The amount of time that the automated backups remain hot.
+	// If specified, the backups created by this policy are `HOT` backups.
+	// If not specified, the backups are `STANDARD` backups.
+	//
+	// The value must be at least 24 hours and at most 10 days, and can't
+	// exceed the policy's `retention_period`.
+	//
+	// Only SSD instances support `HOT` automated backups.
+	KeepHotDuration *durationpb.Duration `protobuf:"bytes,4,opt,name=keep_hot_duration,json=keepHotDuration,proto3" json:"keep_hot_duration,omitempty"`
+	// Optional. If `true`, automated backups are explicitly disabled on this
+	// table. This allows users to opt out of default enablement.
+	Disabled      bool `protobuf:"varint,5,opt,name=disabled,proto3" json:"disabled,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -2143,6 +2167,20 @@ func (x *Table_AutomatedBackupPolicy) GetLocations() []string {
 		return x.Locations
 	}
 	return nil
+}
+
+func (x *Table_AutomatedBackupPolicy) GetKeepHotDuration() *durationpb.Duration {
+	if x != nil {
+		return x.KeepHotDuration
+	}
+	return nil
+}
+
+func (x *Table_AutomatedBackupPolicy) GetDisabled() bool {
+	if x != nil {
+		return x.Disabled
+	}
+	return false
 }
 
 // Subsets of a column family that are included in this AuthorizedView.
@@ -2365,7 +2403,7 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"backupInfoB\r\n" +
 	"\vsource_info\"Z\n" +
 	"\x12ChangeStreamConfig\x12D\n" +
-	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fretentionPeriod\"\xaa\x0f\n" +
+	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\x0fretentionPeriod\"\x9f\x11\n" +
 	"\x05Table\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12^\n" +
 	"\x0ecluster_states\x18\x02 \x03(\v22.google.bigtable.admin.v2.Table.ClusterStatesEntryB\x03\xe0A\x03R\rclusterStates\x12\\\n" +
@@ -2374,7 +2412,8 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"\frestore_info\x18\x06 \x01(\v2%.google.bigtable.admin.v2.RestoreInfoB\x03\xe0A\x03R\vrestoreInfo\x12^\n" +
 	"\x14change_stream_config\x18\b \x01(\v2,.google.bigtable.admin.v2.ChangeStreamConfigR\x12changeStreamConfig\x12/\n" +
 	"\x13deletion_protection\x18\t \x01(\bR\x12deletionProtection\x12o\n" +
-	"\x17automated_backup_policy\x18\r \x01(\v25.google.bigtable.admin.v2.Table.AutomatedBackupPolicyH\x00R\x15automatedBackupPolicy\x12a\n" +
+	"\x17automated_backup_policy\x18\r \x01(\v25.google.bigtable.admin.v2.Table.AutomatedBackupPolicyH\x00R\x15automatedBackupPolicy\x12\x85\x01\n" +
+	"!effective_automated_backup_policy\x18\x13 \x01(\v25.google.bigtable.admin.v2.Table.AutomatedBackupPolicyB\x03\xe0A\x03R\x1eeffectiveAutomatedBackupPolicy\x12a\n" +
 	"\x15tiered_storage_config\x18\x0e \x01(\v2-.google.bigtable.admin.v2.TieredStorageConfigR\x13tieredStorageConfig\x12K\n" +
 	"\x0erow_key_schema\x18\x0f \x01(\v2%.google.bigtable.admin.v2.Type.StructR\frowKeySchema\x1a\xe8\x02\n" +
 	"\fClusterState\x12o\n" +
@@ -2386,12 +2425,14 @@ const file_google_bigtable_admin_v2_table_proto_rawDesc = "" +
 	"\x13PLANNED_MAINTENANCE\x10\x02\x12\x19\n" +
 	"\x15UNPLANNED_MAINTENANCE\x10\x03\x12\t\n" +
 	"\x05READY\x10\x04\x12\x14\n" +
-	"\x10READY_OPTIMIZING\x10\x05\x1a\xe4\x01\n" +
+	"\x10READY_OPTIMIZING\x10\x05\x1a\xd1\x02\n" +
 	"\x15AutomatedBackupPolicy\x12I\n" +
 	"\x10retention_period\x18\x01 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x02R\x0fretentionPeriod\x127\n" +
 	"\tfrequency\x18\x02 \x01(\v2\x19.google.protobuf.DurationR\tfrequency\x12G\n" +
 	"\tlocations\x18\x03 \x03(\tB)\xe0A\x01\xfaA#\n" +
-	"!locations.googleapis.com/LocationR\tlocations\x1an\n" +
+	"!locations.googleapis.com/LocationR\tlocations\x12J\n" +
+	"\x11keep_hot_duration\x18\x04 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x0fkeepHotDuration\x12\x1f\n" +
+	"\bdisabled\x18\x05 \x01(\bB\x03\xe0A\x01R\bdisabled\x1an\n" +
 	"\x12ClusterStatesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
 	"\x05value\x18\x02 \x01(\v2,.google.bigtable.admin.v2.Table.ClusterStateR\x05value:\x028\x01\x1ai\n" +
@@ -2602,48 +2643,50 @@ var file_google_bigtable_admin_v2_table_proto_depIdxs = []int32{
 	9,  // 6: google.bigtable.admin.v2.Table.restore_info:type_name -> google.bigtable.admin.v2.RestoreInfo
 	10, // 7: google.bigtable.admin.v2.Table.change_stream_config:type_name -> google.bigtable.admin.v2.ChangeStreamConfig
 	25, // 8: google.bigtable.admin.v2.Table.automated_backup_policy:type_name -> google.bigtable.admin.v2.Table.AutomatedBackupPolicy
-	19, // 9: google.bigtable.admin.v2.Table.tiered_storage_config:type_name -> google.bigtable.admin.v2.TieredStorageConfig
-	34, // 10: google.bigtable.admin.v2.Table.row_key_schema:type_name -> google.bigtable.admin.v2.Type.Struct
-	29, // 11: google.bigtable.admin.v2.AuthorizedView.subset_view:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView
-	14, // 12: google.bigtable.admin.v2.ColumnFamily.gc_rule:type_name -> google.bigtable.admin.v2.GcRule
-	35, // 13: google.bigtable.admin.v2.ColumnFamily.value_type:type_name -> google.bigtable.admin.v2.Type
-	33, // 14: google.bigtable.admin.v2.GcRule.max_age:type_name -> google.protobuf.Duration
-	31, // 15: google.bigtable.admin.v2.GcRule.intersection:type_name -> google.bigtable.admin.v2.GcRule.Intersection
-	32, // 16: google.bigtable.admin.v2.GcRule.union:type_name -> google.bigtable.admin.v2.GcRule.Union
-	5,  // 17: google.bigtable.admin.v2.EncryptionInfo.encryption_type:type_name -> google.bigtable.admin.v2.EncryptionInfo.EncryptionType
-	36, // 18: google.bigtable.admin.v2.EncryptionInfo.encryption_status:type_name -> google.rpc.Status
-	11, // 19: google.bigtable.admin.v2.Snapshot.source_table:type_name -> google.bigtable.admin.v2.Table
-	37, // 20: google.bigtable.admin.v2.Snapshot.create_time:type_name -> google.protobuf.Timestamp
-	37, // 21: google.bigtable.admin.v2.Snapshot.delete_time:type_name -> google.protobuf.Timestamp
-	6,  // 22: google.bigtable.admin.v2.Snapshot.state:type_name -> google.bigtable.admin.v2.Snapshot.State
-	37, // 23: google.bigtable.admin.v2.Backup.expire_time:type_name -> google.protobuf.Timestamp
-	37, // 24: google.bigtable.admin.v2.Backup.start_time:type_name -> google.protobuf.Timestamp
-	37, // 25: google.bigtable.admin.v2.Backup.end_time:type_name -> google.protobuf.Timestamp
-	7,  // 26: google.bigtable.admin.v2.Backup.state:type_name -> google.bigtable.admin.v2.Backup.State
-	15, // 27: google.bigtable.admin.v2.Backup.encryption_info:type_name -> google.bigtable.admin.v2.EncryptionInfo
-	8,  // 28: google.bigtable.admin.v2.Backup.backup_type:type_name -> google.bigtable.admin.v2.Backup.BackupType
-	37, // 29: google.bigtable.admin.v2.Backup.hot_to_standard_time:type_name -> google.protobuf.Timestamp
-	37, // 30: google.bigtable.admin.v2.BackupInfo.start_time:type_name -> google.protobuf.Timestamp
-	37, // 31: google.bigtable.admin.v2.BackupInfo.end_time:type_name -> google.protobuf.Timestamp
-	20, // 32: google.bigtable.admin.v2.TieredStorageConfig.infrequent_access:type_name -> google.bigtable.admin.v2.TieredStorageRule
-	33, // 33: google.bigtable.admin.v2.TieredStorageRule.include_if_older_than:type_name -> google.protobuf.Duration
-	21, // 34: google.bigtable.admin.v2.SchemaBundle.proto_schema:type_name -> google.bigtable.admin.v2.ProtoSchema
-	22, // 35: google.bigtable.admin.v2.SchemaBundle.avro_schema:type_name -> google.bigtable.admin.v2.AvroSchema
-	3,  // 36: google.bigtable.admin.v2.Table.ClusterState.replication_state:type_name -> google.bigtable.admin.v2.Table.ClusterState.ReplicationState
-	15, // 37: google.bigtable.admin.v2.Table.ClusterState.encryption_info:type_name -> google.bigtable.admin.v2.EncryptionInfo
-	33, // 38: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.retention_period:type_name -> google.protobuf.Duration
-	33, // 39: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.frequency:type_name -> google.protobuf.Duration
-	24, // 40: google.bigtable.admin.v2.Table.ClusterStatesEntry.value:type_name -> google.bigtable.admin.v2.Table.ClusterState
-	13, // 41: google.bigtable.admin.v2.Table.ColumnFamiliesEntry.value:type_name -> google.bigtable.admin.v2.ColumnFamily
-	30, // 42: google.bigtable.admin.v2.AuthorizedView.SubsetView.family_subsets:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry
-	28, // 43: google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry.value:type_name -> google.bigtable.admin.v2.AuthorizedView.FamilySubsets
-	14, // 44: google.bigtable.admin.v2.GcRule.Intersection.rules:type_name -> google.bigtable.admin.v2.GcRule
-	14, // 45: google.bigtable.admin.v2.GcRule.Union.rules:type_name -> google.bigtable.admin.v2.GcRule
-	46, // [46:46] is the sub-list for method output_type
-	46, // [46:46] is the sub-list for method input_type
-	46, // [46:46] is the sub-list for extension type_name
-	46, // [46:46] is the sub-list for extension extendee
-	0,  // [0:46] is the sub-list for field type_name
+	25, // 9: google.bigtable.admin.v2.Table.effective_automated_backup_policy:type_name -> google.bigtable.admin.v2.Table.AutomatedBackupPolicy
+	19, // 10: google.bigtable.admin.v2.Table.tiered_storage_config:type_name -> google.bigtable.admin.v2.TieredStorageConfig
+	34, // 11: google.bigtable.admin.v2.Table.row_key_schema:type_name -> google.bigtable.admin.v2.Type.Struct
+	29, // 12: google.bigtable.admin.v2.AuthorizedView.subset_view:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView
+	14, // 13: google.bigtable.admin.v2.ColumnFamily.gc_rule:type_name -> google.bigtable.admin.v2.GcRule
+	35, // 14: google.bigtable.admin.v2.ColumnFamily.value_type:type_name -> google.bigtable.admin.v2.Type
+	33, // 15: google.bigtable.admin.v2.GcRule.max_age:type_name -> google.protobuf.Duration
+	31, // 16: google.bigtable.admin.v2.GcRule.intersection:type_name -> google.bigtable.admin.v2.GcRule.Intersection
+	32, // 17: google.bigtable.admin.v2.GcRule.union:type_name -> google.bigtable.admin.v2.GcRule.Union
+	5,  // 18: google.bigtable.admin.v2.EncryptionInfo.encryption_type:type_name -> google.bigtable.admin.v2.EncryptionInfo.EncryptionType
+	36, // 19: google.bigtable.admin.v2.EncryptionInfo.encryption_status:type_name -> google.rpc.Status
+	11, // 20: google.bigtable.admin.v2.Snapshot.source_table:type_name -> google.bigtable.admin.v2.Table
+	37, // 21: google.bigtable.admin.v2.Snapshot.create_time:type_name -> google.protobuf.Timestamp
+	37, // 22: google.bigtable.admin.v2.Snapshot.delete_time:type_name -> google.protobuf.Timestamp
+	6,  // 23: google.bigtable.admin.v2.Snapshot.state:type_name -> google.bigtable.admin.v2.Snapshot.State
+	37, // 24: google.bigtable.admin.v2.Backup.expire_time:type_name -> google.protobuf.Timestamp
+	37, // 25: google.bigtable.admin.v2.Backup.start_time:type_name -> google.protobuf.Timestamp
+	37, // 26: google.bigtable.admin.v2.Backup.end_time:type_name -> google.protobuf.Timestamp
+	7,  // 27: google.bigtable.admin.v2.Backup.state:type_name -> google.bigtable.admin.v2.Backup.State
+	15, // 28: google.bigtable.admin.v2.Backup.encryption_info:type_name -> google.bigtable.admin.v2.EncryptionInfo
+	8,  // 29: google.bigtable.admin.v2.Backup.backup_type:type_name -> google.bigtable.admin.v2.Backup.BackupType
+	37, // 30: google.bigtable.admin.v2.Backup.hot_to_standard_time:type_name -> google.protobuf.Timestamp
+	37, // 31: google.bigtable.admin.v2.BackupInfo.start_time:type_name -> google.protobuf.Timestamp
+	37, // 32: google.bigtable.admin.v2.BackupInfo.end_time:type_name -> google.protobuf.Timestamp
+	20, // 33: google.bigtable.admin.v2.TieredStorageConfig.infrequent_access:type_name -> google.bigtable.admin.v2.TieredStorageRule
+	33, // 34: google.bigtable.admin.v2.TieredStorageRule.include_if_older_than:type_name -> google.protobuf.Duration
+	21, // 35: google.bigtable.admin.v2.SchemaBundle.proto_schema:type_name -> google.bigtable.admin.v2.ProtoSchema
+	22, // 36: google.bigtable.admin.v2.SchemaBundle.avro_schema:type_name -> google.bigtable.admin.v2.AvroSchema
+	3,  // 37: google.bigtable.admin.v2.Table.ClusterState.replication_state:type_name -> google.bigtable.admin.v2.Table.ClusterState.ReplicationState
+	15, // 38: google.bigtable.admin.v2.Table.ClusterState.encryption_info:type_name -> google.bigtable.admin.v2.EncryptionInfo
+	33, // 39: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.retention_period:type_name -> google.protobuf.Duration
+	33, // 40: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.frequency:type_name -> google.protobuf.Duration
+	33, // 41: google.bigtable.admin.v2.Table.AutomatedBackupPolicy.keep_hot_duration:type_name -> google.protobuf.Duration
+	24, // 42: google.bigtable.admin.v2.Table.ClusterStatesEntry.value:type_name -> google.bigtable.admin.v2.Table.ClusterState
+	13, // 43: google.bigtable.admin.v2.Table.ColumnFamiliesEntry.value:type_name -> google.bigtable.admin.v2.ColumnFamily
+	30, // 44: google.bigtable.admin.v2.AuthorizedView.SubsetView.family_subsets:type_name -> google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry
+	28, // 45: google.bigtable.admin.v2.AuthorizedView.SubsetView.FamilySubsetsEntry.value:type_name -> google.bigtable.admin.v2.AuthorizedView.FamilySubsets
+	14, // 46: google.bigtable.admin.v2.GcRule.Intersection.rules:type_name -> google.bigtable.admin.v2.GcRule
+	14, // 47: google.bigtable.admin.v2.GcRule.Union.rules:type_name -> google.bigtable.admin.v2.GcRule
+	48, // [48:48] is the sub-list for method output_type
+	48, // [48:48] is the sub-list for method input_type
+	48, // [48:48] is the sub-list for extension type_name
+	48, // [48:48] is the sub-list for extension extendee
+	0,  // [0:48] is the sub-list for field type_name
 }
 
 func init() { file_google_bigtable_admin_v2_table_proto_init() }

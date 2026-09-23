@@ -109,6 +109,98 @@
           "fullName": "google.cloud.parametermanager.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.parametermanager.v1.Client.CreateTemplate",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.CreateTemplate",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "CreateTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.CreateTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*parametermanagerpb.Template",
+        "shortName": "CreateTemplate"
+      },
+      "description": "CreateTemplate creates a new Template in a given project and location.",
+      "file": "Client/CreateTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_CreateTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager CreateTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.CreateTemplateVersion",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.CreateTemplateVersion",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "CreateTemplateVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.CreateTemplateVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*parametermanagerpb.TemplateVersion",
+        "shortName": "CreateTemplateVersion"
+      },
+      "description": "CreateTemplateVersion creates a new TemplateVersion in a given project, location, and template.",
+      "file": "Client/CreateTemplateVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_CreateTemplateVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager CreateTemplateVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.parametermanager.v1.Client.DeleteParameter",
         "method": {
           "fullName": "google.cloud.parametermanager.v1.ParameterManager.DeleteParameter",
@@ -192,6 +284,96 @@
         }
       ],
       "title": "parametermanager DeleteParameterVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.DeleteTemplate",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.DeleteTemplate",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "DeleteTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.DeleteTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTemplate"
+      },
+      "description": "DeleteTemplate deletes a single Template.",
+      "file": "Client/DeleteTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_DeleteTemplate_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager DeleteTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.DeleteTemplateVersion",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.DeleteTemplateVersion",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "DeleteTemplateVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.DeleteTemplateVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteTemplateVersion"
+      },
+      "description": "DeleteTemplateVersion deletes a single TemplateVersion.",
+      "file": "Client/DeleteTemplateVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_DeleteTemplateVersion_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager DeleteTemplateVersion Sample"
     },
     {
       "clientMethod": {
@@ -337,6 +519,98 @@
           "fullName": "google.cloud.parametermanager.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.parametermanager.v1.Client.GetTemplate",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.GetTemplate",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "GetTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.GetTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*parametermanagerpb.Template",
+        "shortName": "GetTemplate"
+      },
+      "description": "GetTemplate gets details of a single Template.",
+      "file": "Client/GetTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_GetTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager GetTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.GetTemplateVersion",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.GetTemplateVersion",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "GetTemplateVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.GetTemplateVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*parametermanagerpb.TemplateVersion",
+        "shortName": "GetTemplateVersion"
+      },
+      "description": "GetTemplateVersion gets details of a single TemplateVersion.",
+      "file": "Client/GetTemplateVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_GetTemplateVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager GetTemplateVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.parametermanager.v1.Client.ListLocations",
         "method": {
           "fullName": "google.cloud.location.Locations.ListLocations",
@@ -363,7 +637,7 @@
         "resultType": "LocationIterator",
         "shortName": "ListLocations"
       },
-      "description": "ListLocations lists information about the supported locations for this service.",
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
       "file": "Client/ListLocations/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",
@@ -475,6 +749,98 @@
           "fullName": "google.cloud.parametermanager.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.parametermanager.v1.Client.ListTemplateVersions",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.ListTemplateVersions",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "ListTemplateVersions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.ListTemplateVersionsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TemplateVersionIterator",
+        "shortName": "ListTemplateVersions"
+      },
+      "description": "ListTemplateVersions lists TemplateVersions in a given project, location, and template.",
+      "file": "Client/ListTemplateVersions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_ListTemplateVersions_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager ListTemplateVersions Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.ListTemplates",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.ListTemplates",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "ListTemplates"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.ListTemplatesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "TemplateIterator",
+        "shortName": "ListTemplates"
+      },
+      "description": "ListTemplates lists Templates in a given project and location.",
+      "file": "Client/ListTemplates/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_ListTemplates_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager ListTemplates Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.parametermanager.v1.Client.RenderParameterVersion",
         "method": {
           "fullName": "google.cloud.parametermanager.v1.ParameterManager.RenderParameterVersion",
@@ -514,6 +880,52 @@
         }
       ],
       "title": "parametermanager RenderParameterVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.RenderTemplateVersion",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.RenderTemplateVersion",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "RenderTemplateVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.RenderTemplateVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*parametermanagerpb.RenderTemplateVersionResponse",
+        "shortName": "RenderTemplateVersion"
+      },
+      "description": "RenderTemplateVersion gets rendered version of a TemplateVersion.",
+      "file": "Client/RenderTemplateVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_RenderTemplateVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager RenderTemplateVersion Sample"
     },
     {
       "clientMethod": {
@@ -606,6 +1018,98 @@
         }
       ],
       "title": "parametermanager UpdateParameterVersion Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.UpdateTemplate",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.UpdateTemplate",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "UpdateTemplate"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.UpdateTemplateRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*parametermanagerpb.Template",
+        "shortName": "UpdateTemplate"
+      },
+      "description": "UpdateTemplate updates a single Template.",
+      "file": "Client/UpdateTemplate/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_UpdateTemplate_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager UpdateTemplate Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.parametermanager.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.cloud.parametermanager.v1.Client.UpdateTemplateVersion",
+        "method": {
+          "fullName": "google.cloud.parametermanager.v1.ParameterManager.UpdateTemplateVersion",
+          "service": {
+            "fullName": "google.cloud.parametermanager.v1.ParameterManager",
+            "shortName": "ParameterManager"
+          },
+          "shortName": "UpdateTemplateVersion"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "parametermanagerpb.UpdateTemplateVersionRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*parametermanagerpb.TemplateVersion",
+        "shortName": "UpdateTemplateVersion"
+      },
+      "description": "UpdateTemplateVersion updates a single TemplateVersion.",
+      "file": "Client/UpdateTemplateVersion/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "parametermanager_v1_generated_ParameterManager_UpdateTemplateVersion_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "parametermanager UpdateTemplateVersion Sample"
     }
   ]
 }
