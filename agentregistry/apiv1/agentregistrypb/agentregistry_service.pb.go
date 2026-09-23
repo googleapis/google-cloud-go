@@ -1234,7 +1234,7 @@ func (x *CreateServiceRequest) GetRequestId() string {
 // Message for fetching available Bindings.
 type FetchAvailableBindingsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The reference of the source Agent.
+	// Required. The reference of the source Agent Registry resource.
 	//
 	// Types that are valid to be assigned to Source:
 	//

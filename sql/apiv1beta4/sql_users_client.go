@@ -497,6 +497,9 @@ func (c *sqlUsersRESTClient) Delete(ctx context.Context, req *sqlpb.SqlUsersDele
 	if req.GetHost() != "" {
 		params.Add("host", fmt.Sprintf("%v", req.GetHost()))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 	if req.GetName() != "" {
 		params.Add("name", fmt.Sprintf("%v", req.GetName()))
 	}
@@ -556,6 +559,9 @@ func (c *sqlUsersRESTClient) Get(ctx context.Context, req *sqlpb.SqlUsersGetRequ
 	params.Add("$alt", "json;enum-encoding=int")
 	if req.GetHost() != "" {
 		params.Add("host", fmt.Sprintf("%v", req.GetHost()))
+	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -618,6 +624,9 @@ func (c *sqlUsersRESTClient) Insert(ctx context.Context, req *sqlpb.SqlUsersInse
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -672,6 +681,9 @@ func (c *sqlUsersRESTClient) List(ctx context.Context, req *sqlpb.SqlUsersListRe
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -740,6 +752,9 @@ func (c *sqlUsersRESTClient) Update(ctx context.Context, req *sqlpb.SqlUsersUpda
 	}
 	if req.GetHost() != "" {
 		params.Add("host", fmt.Sprintf("%v", req.GetHost()))
+	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
 	}
 	if req.GetName() != "" {
 		params.Add("name", fmt.Sprintf("%v", req.GetName()))
