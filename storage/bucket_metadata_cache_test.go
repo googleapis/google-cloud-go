@@ -51,7 +51,7 @@ func TestCacheNilSafety(t *testing.T) {
 	}
 	cache.put("b1", bucketMetadata{})
 	cache.evict("b1")
-	cache.fetchBackground("b1")
+	cache.fetchBackground(context.Background(), "b1")
 }
 
 func TestCacheConcurrentSafe(t *testing.T) {
@@ -87,7 +87,7 @@ func TestCacheFetchBackground(t *testing.T) {
 	doneChan := make(chan struct{}, 1)
 	cache.fetchDone = doneChan
 
-	cache.fetchBackground("foo")
+	cache.fetchBackground(context.Background(), "foo")
 
 	select {
 	case <-doneChan:
@@ -122,7 +122,7 @@ func TestCacheFetchBackgroundSingleFlight(t *testing.T) {
 
 	// Fire 10 calls concurrently
 	for i := 0; i < 10; i++ {
-		go cache.fetchBackground("foo")
+		go cache.fetchBackground(context.Background(), "foo")
 	}
 
 	// Wait for all 10 calls to finish.
@@ -157,7 +157,7 @@ func TestCacheFetchBackgroundErrorPlaceholder(t *testing.T) {
 	doneChan := make(chan struct{}, 1)
 	cache.fetchDone = doneChan
 
-	cache.fetchBackground("failedBucket")
+	cache.fetchBackground(context.Background(), "failedBucket")
 
 	select {
 	case <-doneChan:
@@ -196,7 +196,7 @@ func TestCacheFetchBackgroundTransientErrorEviction(t *testing.T) {
 		placeholder: true,
 	})
 
-	cache.fetchBackground("failedBucket")
+	cache.fetchBackground(context.Background(), "failedBucket")
 
 	select {
 	case <-doneChan:

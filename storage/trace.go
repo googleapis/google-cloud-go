@@ -89,7 +89,7 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 				placeholder: true,
 			}
 			cache.put(bucket, placeholder)
-			cache.fetchBackground(bucket)
+			cache.fetchBackground(ctx, bucket)
 			meta = placeholder
 		}
 		attrs := []attribute.KeyValue{
