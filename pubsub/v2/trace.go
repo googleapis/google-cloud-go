@@ -353,8 +353,8 @@ const (
 	// event names
 	eventPublishStart       = "publish start"
 	eventPublishEnd         = "publish end"
-	eventHedgedPublishStart = "hedged publish start"
-	eventHedgedPublishEnd   = "hedged publish end"
+	eventHedgedPublishStart = "publish start (hedged)"
+	eventHedgedPublishEnd   = "publish end (hedged)"
 	eventModackStart        = "modack start"
 	eventModackEnd          = "modack end"
 	eventAckStart           = "ack start"

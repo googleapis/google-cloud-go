@@ -209,7 +209,7 @@ func TestTrace_PublishHedgedSpan(t *testing.T) {
 			if method == "/google.pubsub.v1.Publisher/Publish" {
 				attempt := atomic.AddInt64(&rpcAttempts, 1)
 				if attempt == 1 {
-					time.Sleep(50 * time.Millisecond) // force hedge
+					time.Sleep(150 * time.Millisecond) // force hedge
 				}
 			}
 			return invoker(ctx, method, req, reply, cc, opts...)
@@ -320,10 +320,11 @@ func TestTrace_PublishHedgedSpan(t *testing.T) {
 	defer publisher.Stop()
 
 	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay:       10 * time.Millisecond,
+		Delay:       100 * time.Millisecond,
 		MaxTokens:   50,
 		RefillRatio: 0.1,
 	}
+	publisher.hedgingTokenBucket = tokenScaleFactor
 
 	r := publisher.Publish(ctx, m)
 	_, err = r.Get(ctx)

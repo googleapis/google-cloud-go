@@ -21,6 +21,7 @@ import (
 	"fmt"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"testing"
 	"time"
 
@@ -505,8 +506,9 @@ func TestPublishHedging(t *testing.T) {
 	defer publisher.Stop()
 
 	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay: 10 * time.Millisecond,
+		Delay: 100 * time.Millisecond,
 	}
+	publisher.hedgingTokenBucket = tokenScaleFactor
 
 	srv.SetAutoPublishResponse(false)
 	for i := 0; i < 10; i++ {
@@ -535,7 +537,7 @@ func TestPublishHedgingWithOrdering(t *testing.T) {
 
 	publisher.EnableMessageOrdering = true
 	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay: 10 * time.Millisecond,
+		Delay: 100 * time.Millisecond,
 	}
 
 	res := publishSingleMessageWithKey(ctx, publisher, "test", "key")
@@ -555,8 +557,9 @@ func TestPublishDynamicMultiHedging(t *testing.T) {
 	defer publisher.Stop()
 
 	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay: 10 * time.Millisecond,
+		Delay: 100 * time.Millisecond,
 	}
+	publisher.hedgingTokenBucket = 5 * tokenScaleFactor
 
 	srv.SetAutoPublishResponse(false)
 	for i := 0; i < 10; i++ {
@@ -572,3 +575,174 @@ func TestPublishDynamicMultiHedging(t *testing.T) {
 		t.Errorf("got msg ID %q, want msg-multi-123", id)
 	}
 }
+
+func TestValidateHedgingSettings(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := "projects/proj-id/topics/test-topic-hedging-validation"
+	basePub := mustCreateTopic(t, c, topic)
+	basePub.Stop()
+
+	tests := []struct {
+		name     string
+		settings *HedgingSettings
+		wantErr  bool
+	}{
+		{
+			name:     "defaults (all zero)",
+			settings: &HedgingSettings{},
+			wantErr:  false,
+		},
+		{
+			name: "valid boundary min",
+			settings: &HedgingSettings{
+				Delay:       100 * time.Millisecond,
+				MaxTokens:   1,
+				RefillRatio: 0.001,
+			},
+			wantErr: false,
+		},
+		{
+			name: "valid boundary max",
+			settings: &HedgingSettings{
+				Delay:       10 * time.Second,
+				MaxTokens:   250,
+				RefillRatio: 0.2,
+			},
+			wantErr: false,
+		},
+		{
+			name:     "delay too low (< 100ms)",
+			settings: &HedgingSettings{Delay: 50 * time.Millisecond},
+			wantErr:  true,
+		},
+		{
+			name:     "delay too high (> 10s)",
+			settings: &HedgingSettings{Delay: 11 * time.Second},
+			wantErr:  true,
+		},
+		{
+			name:     "maxTokens negative",
+			settings: &HedgingSettings{MaxTokens: -1},
+			wantErr:  true,
+		},
+		{
+			name:     "maxTokens too high (> 250)",
+			settings: &HedgingSettings{MaxTokens: 251},
+			wantErr:  true,
+		},
+		{
+			name:     "refillRatio too low (< 0.001)",
+			settings: &HedgingSettings{RefillRatio: 0.0005},
+			wantErr:  true,
+		},
+		{
+			name:     "refillRatio too high (> 0.2)",
+			settings: &HedgingSettings{RefillRatio: 0.25},
+			wantErr:  true,
+		},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			pub := c.Publisher(topic)
+			defer pub.Stop()
+			pub.PublishSettings.HedgingSettings = tc.settings
+
+			res := pub.Publish(ctx, &Message{Data: []byte("test")})
+			_, err := res.Get(ctx)
+			if tc.wantErr && err == nil {
+				t.Errorf("expected validation error for %+v, got nil", tc.settings)
+			}
+			if !tc.wantErr && err != nil {
+				t.Errorf("unexpected error for %+v: %v", tc.settings, err)
+			}
+		})
+	}
+}
+
+func TestPublishHedging_TokenBucketStartsEmptyAndFixedPointScaling(t *testing.T) {
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := "projects/proj-id/topics/test-topic-hedging-bucket"
+	pub := mustCreateTopic(t, c, topic)
+	defer pub.Stop()
+
+	if pub.hedgingTokenBucket != 0 {
+		t.Fatalf("expected initial hedgingTokenBucket to be 0 (empty), got %d", pub.hedgingTokenBucket)
+	}
+
+	pub.PublishSettings.HedgingSettings = &HedgingSettings{
+		Delay:       100 * time.Millisecond,
+		MaxTokens:   50,
+		RefillRatio: 0.1,
+	}
+
+	// Replenishing 10 times with ratio 0.1 must reach exactly 1 full token (1000 milli-tokens)
+	// without IEEE-754 float64 accumulation drift (where 0.1 * 10 == 0.9999999999999999 < 1.0).
+	for i := 0; i < 10; i++ {
+		pub.replenishHedgingTokens()
+	}
+	if pub.hedgingTokenBucket != tokenScaleFactor {
+		t.Errorf("expected hedgingTokenBucket after 10 replenishes at 0.1 ratio to be %d, got %d", tokenScaleFactor, pub.hedgingTokenBucket)
+	}
+}
+
+func TestPublishHedging_DiscardsAllHedgedErrors(t *testing.T) {
+	ctx := context.Background()
+	srv := pstest.NewServer()
+	defer srv.Close()
+
+	var attemptCount int32
+	c, err := NewClient(ctx, "proj-id",
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			if method == "/google.pubsub.v1.Publisher/Publish" {
+				n := atomic.AddInt32(&attemptCount, 1)
+				if n == 1 {
+					// Delay the original attempt so the hedged attempt fires and finishes first.
+					time.Sleep(180 * time.Millisecond)
+					return invoker(ctx, method, req, reply, cc, opts...)
+				}
+				// Hedged attempt fails with a permanent error (PermissionDenied); it must be discarded.
+				return status.Error(codes.PermissionDenied, "hedged permanent error should be discarded")
+			}
+			return invoker(ctx, method, req, reply, cc, opts...)
+		})),
+	)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer c.Close()
+
+	topic := "projects/proj-id/topics/test-topic-discard-hedged-err"
+	pub := mustCreateTopic(t, c, topic)
+	defer pub.Stop()
+
+	pub.PublishSettings.HedgingSettings = &HedgingSettings{
+		Delay:       100 * time.Millisecond,
+		MaxTokens:   50,
+		RefillRatio: 0.1,
+	}
+	pub.hedgingTokenBucket = tokenScaleFactor
+
+	res := pub.Publish(ctx, &Message{Data: []byte("hello")})
+	id, err := res.Get(ctx)
+	if err != nil {
+		t.Fatalf("expected original publish attempt to succeed after discarding hedged PermissionDenied error, got err: %v", err)
+	}
+	if id == "" {
+		t.Errorf("expected non-empty message ID")
+	}
+	if got := atomic.LoadInt32(&attemptCount); got < 2 {
+		t.Errorf("expected at least 2 RPC attempts (1 original + 1 hedged), got %d", got)
+	}
+}
+
