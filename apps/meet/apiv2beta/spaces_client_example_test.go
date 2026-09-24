@@ -58,6 +58,31 @@ func ExampleNewSpacesRESTClient() {
 	_ = c
 }
 
+func ExampleSpacesClient_BatchUpdateMembers() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := meet.NewSpacesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &meetpb.BatchUpdateMembersRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#BatchUpdateMembersRequest.
+	}
+	resp, err := c.BatchUpdateMembers(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleSpacesClient_ConnectActiveConference() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -264,6 +289,31 @@ func ExampleSpacesClient_ListMembers() {
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*meetpb.ListMembersResponse)
 	}
+}
+
+func ExampleSpacesClient_UpdateMember() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := meet.NewSpacesClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &meetpb.UpdateMemberRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apps/meet/apiv2beta/meetpb#UpdateMemberRequest.
+	}
+	resp, err := c.UpdateMember(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
 }
 
 func ExampleSpacesClient_UpdateSpace() {

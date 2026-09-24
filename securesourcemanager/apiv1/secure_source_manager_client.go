@@ -82,6 +82,7 @@ type CallOptions struct {
 	ListPullRequestFileDiffs       []gax.CallOption
 	FetchTree                      []gax.CallOption
 	FetchBlob                      []gax.CallOption
+	FetchRefs                      []gax.CallOption
 	CreateIssue                    []gax.CallOption
 	GetIssue                       []gax.CallOption
 	ListIssues                     []gax.CallOption
@@ -217,6 +218,7 @@ func defaultCallOptions() *CallOptions {
 		ListPullRequestFileDiffs:       []gax.CallOption{},
 		FetchTree:                      []gax.CallOption{},
 		FetchBlob:                      []gax.CallOption{},
+		FetchRefs:                      []gax.CallOption{},
 		CreateIssue:                    []gax.CallOption{},
 		GetIssue:                       []gax.CallOption{},
 		ListIssues:                     []gax.CallOption{},
@@ -333,6 +335,7 @@ func defaultRESTCallOptions() *CallOptions {
 		ListPullRequestFileDiffs:       []gax.CallOption{},
 		FetchTree:                      []gax.CallOption{},
 		FetchBlob:                      []gax.CallOption{},
+		FetchRefs:                      []gax.CallOption{},
 		CreateIssue:                    []gax.CallOption{},
 		GetIssue:                       []gax.CallOption{},
 		ListIssues:                     []gax.CallOption{},
@@ -418,6 +421,7 @@ type internalClient interface {
 	ListPullRequestFileDiffs(context.Context, *securesourcemanagerpb.ListPullRequestFileDiffsRequest, ...gax.CallOption) *FileDiffIterator
 	FetchTree(context.Context, *securesourcemanagerpb.FetchTreeRequest, ...gax.CallOption) *TreeEntryIterator
 	FetchBlob(context.Context, *securesourcemanagerpb.FetchBlobRequest, ...gax.CallOption) (*securesourcemanagerpb.FetchBlobResponse, error)
+	FetchRefs(context.Context, *securesourcemanagerpb.FetchRefsRequest, ...gax.CallOption) *RefIterator
 	CreateIssue(context.Context, *securesourcemanagerpb.CreateIssueRequest, ...gax.CallOption) (*CreateIssueOperation, error)
 	CreateIssueOperation(name string) *CreateIssueOperation
 	GetIssue(context.Context, *securesourcemanagerpb.GetIssueRequest, ...gax.CallOption) (*securesourcemanagerpb.Issue, error)
@@ -766,6 +770,11 @@ func (c *Client) FetchTree(ctx context.Context, req *securesourcemanagerpb.Fetch
 // FetchBlob fetches a blob from a repository.
 func (c *Client) FetchBlob(ctx context.Context, req *securesourcemanagerpb.FetchBlobRequest, opts ...gax.CallOption) (*securesourcemanagerpb.FetchBlobResponse, error) {
 	return c.internalClient.FetchBlob(ctx, req, opts...)
+}
+
+// FetchRefs fetches git references from a repository.
+func (c *Client) FetchRefs(ctx context.Context, req *securesourcemanagerpb.FetchRefsRequest, opts ...gax.CallOption) *RefIterator {
+	return c.internalClient.FetchRefs(ctx, req, opts...)
 }
 
 // CreateIssue creates an issue.
@@ -1153,6 +1162,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListPullRequestFileDiffs = append(client.CallOptions.ListPullRequestFileDiffs, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchTree = append(client.CallOptions.FetchTree, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchBlob = append(client.CallOptions.FetchBlob, gax.WithClientMetrics(metrics))
+		client.CallOptions.FetchRefs = append(client.CallOptions.FetchRefs, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateIssue = append(client.CallOptions.CreateIssue, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetIssue = append(client.CallOptions.GetIssue, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListIssues = append(client.CallOptions.ListIssues, gax.WithClientMetrics(metrics))
@@ -1322,6 +1332,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListPullRequestFileDiffs = append(callOpts.ListPullRequestFileDiffs, gax.WithClientMetrics(metrics))
 		callOpts.FetchTree = append(callOpts.FetchTree, gax.WithClientMetrics(metrics))
 		callOpts.FetchBlob = append(callOpts.FetchBlob, gax.WithClientMetrics(metrics))
+		callOpts.FetchRefs = append(callOpts.FetchRefs, gax.WithClientMetrics(metrics))
 		callOpts.CreateIssue = append(callOpts.CreateIssue, gax.WithClientMetrics(metrics))
 		callOpts.GetIssue = append(callOpts.GetIssue, gax.WithClientMetrics(metrics))
 		callOpts.ListIssues = append(callOpts.ListIssues, gax.WithClientMetrics(metrics))
@@ -2449,6 +2460,58 @@ func (c *gRPCClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.F
 		return nil, err
 	}
 	return resp, nil
+}
+
+func (c *gRPCClient) FetchRefs(ctx context.Context, req *securesourcemanagerpb.FetchRefsRequest, opts ...gax.CallOption) *RefIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "repository", url.QueryEscape(req.GetRepository()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//securesourcemanager.googleapis.com/%v", req.GetRepository()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.securesourcemanager.v1.SecureSourceManager/FetchRefs")
+	}
+	opts = append((*c.CallOptions).FetchRefs[0:len((*c.CallOptions).FetchRefs):len((*c.CallOptions).FetchRefs)], opts...)
+	it := &RefIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Ref, string, error) {
+		resp := &securesourcemanagerpb.FetchRefsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.FetchRefs, req, settings.GRPC, c.logger, "FetchRefs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetRefs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) CreateIssue(ctx context.Context, req *securesourcemanagerpb.CreateIssueRequest, opts ...gax.CallOption) (*CreateIssueOperation, error) {
@@ -5580,6 +5643,87 @@ func (c *restClient) FetchBlob(ctx context.Context, req *securesourcemanagerpb.F
 		return nil, e
 	}
 	return resp, nil
+}
+
+// FetchRefs fetches git references from a repository.
+func (c *restClient) FetchRefs(ctx context.Context, req *securesourcemanagerpb.FetchRefsRequest, opts ...gax.CallOption) *RefIterator {
+	it := &RefIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*securesourcemanagerpb.Ref, string, error) {
+		resp := &securesourcemanagerpb.FetchRefsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v:fetchRefs", req.GetRepository())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+		if req.GetType() != 0 {
+			params.Add("type", fmt.Sprintf("%v", req.GetType()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "FetchRefs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetRefs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // CreateIssue creates an issue.

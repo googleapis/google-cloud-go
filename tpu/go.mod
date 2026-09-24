@@ -1,6 +1,6 @@
 module cloud.google.com/go/tpu
 
-go 1.25.0
+go 1.26.0
 
 require (
 	cloud.google.com/go/longrunning v1.2.0
@@ -9,7 +9,7 @@ require (
 	google.golang.org/api v0.287.1
 	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
 	google.golang.org/genproto/googleapis/api v0.0.0-20260630182238-925bb5da69e7
-	google.golang.org/grpc v1.82.1
+	google.golang.org/grpc v1.83.1
 	google.golang.org/protobuf v1.36.11
 )
 

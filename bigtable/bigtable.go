@@ -176,11 +176,9 @@ func mergeOutgoingMetadata(ctx context.Context, mds ...metadata.MD) context.Cont
 // Use RowFilter to limit the cells returned.
 //
 // When t.divertible is set (populated by Open on Clients with a
-// Diverter), the call routes through the shim so single-row shapes
-// (RowList of length 1, closed range [k,k], or a one-element
-// RowRangeList wrapping such a range) can be diverted to the session
-// data path. Multi-row shapes still land on the classic body.
-// Otherwise it runs the classic body directly.
+// Diverter), the call routes through the shim, which decides whether
+// this request can go over the session data path. Otherwise it runs
+// the classic body directly.
 func (t *Table) ReadRows(ctx context.Context, arg RowSet, f func(Row) bool, opts ...ReadOption) error {
 	if t.divertible != nil {
 		return t.divertible.ReadRows(ctx, arg, f, opts...)
@@ -380,7 +378,11 @@ func (t *Table) readRowClassic(ctx context.Context, row string, opts ...ReadOpti
 	var r Row
 
 	opts = append([]ReadOption{LimitRows(1)}, opts...)
-	err := t.ReadRows(ctx, SingleRow(row), func(rr Row) bool {
+	// readRowsClassic, not ReadRows: SingleRow(row) is exactly the shape
+	// TableShim.ReadRows diverts, so the gated entry point would bounce
+	// this classic read back into the shim and on into TableShim.ReadRow,
+	// which re-enters here. Classic has to stay classic all the way down.
+	err := t.readRowsClassic(ctx, SingleRow(row), func(rr Row) bool {
 		r = rr
 		return true
 	}, opts...)

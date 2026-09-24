@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -184,6 +184,10 @@ type Task struct {
 	//	information see
 	//	[Timeouts](https://cloud.google.com/tasks/docs/creating-appengine-handlers#timeouts).
 	//
+	// The value must be given as a string that indicates the length of time
+	// (in seconds) followed by `s` (for "seconds"). For more information on the
+	// format, see the documentation for
+	// [Duration](https://protobuf.dev/reference/protobuf/google.protobuf/#duration).
 	// `dispatch_deadline` will be truncated to the nearest millisecond. The
 	// deadline is an approximate deadline.
 	DispatchDeadline *durationpb.Duration `protobuf:"bytes,6,opt,name=dispatch_deadline,json=dispatchDeadline,proto3" json:"dispatch_deadline,omitempty"`
@@ -204,7 +208,14 @@ type Task struct {
 	LastAttempt *Attempt `protobuf:"bytes,10,opt,name=last_attempt,json=lastAttempt,proto3" json:"last_attempt,omitempty"`
 	// Output only. The view specifies which subset of the
 	// [Task][google.cloud.tasks.v2.Task] has been returned.
-	View          Task_View `protobuf:"varint,11,opt,name=view,proto3,enum=google.cloud.tasks.v2.Task_View" json:"view,omitempty"`
+	View Task_View `protobuf:"varint,11,opt,name=view,proto3,enum=google.cloud.tasks.v2.Task_View" json:"view,omitempty"`
+	// Optional. Specifies the task-level
+	// [RetryConfig][google.cloud.tasks.v2.RetryConfig].
+	//
+	// If present, this overrides the
+	// [Queue.retry_config][google.cloud.tasks.v2.Queue.retry_config] for this
+	// task.
+	RetryConfig   *RetryConfig `protobuf:"bytes,12,opt,name=retry_config,json=retryConfig,proto3" json:"retry_config,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -327,6 +338,13 @@ func (x *Task) GetView() Task_View {
 	return Task_VIEW_UNSPECIFIED
 }
 
+func (x *Task) GetRetryConfig() *RetryConfig {
+	if x != nil {
+		return x.RetryConfig
+	}
+	return nil
+}
+
 type isTask_MessageType interface {
 	isTask_MessageType()
 }
@@ -437,7 +455,7 @@ var File_google_cloud_tasks_v2_task_proto protoreflect.FileDescriptor
 
 const file_google_cloud_tasks_v2_task_proto_rawDesc = "" +
 	"\n" +
-	" google/cloud/tasks/v2/task.proto\x12\x15google.cloud.tasks.v2\x1a\x19google/api/resource.proto\x1a\"google/cloud/tasks/v2/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\xc8\x06\n" +
+	" google/cloud/tasks/v2/task.proto\x12\x15google.cloud.tasks.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a!google/cloud/tasks/v2/queue.proto\x1a\"google/cloud/tasks/v2/target.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\"\x94\a\n" +
 	"\x04Task\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12d\n" +
 	"\x17app_engine_http_request\x18\x02 \x01(\v2+.google.cloud.tasks.v2.AppEngineHttpRequestH\x00R\x14appEngineHttpRequest\x12G\n" +
@@ -451,7 +469,8 @@ const file_google_cloud_tasks_v2_task_proto_rawDesc = "" +
 	"\rfirst_attempt\x18\t \x01(\v2\x1e.google.cloud.tasks.v2.AttemptR\ffirstAttempt\x12A\n" +
 	"\flast_attempt\x18\n" +
 	" \x01(\v2\x1e.google.cloud.tasks.v2.AttemptR\vlastAttempt\x124\n" +
-	"\x04view\x18\v \x01(\x0e2 .google.cloud.tasks.v2.Task.ViewR\x04view\"1\n" +
+	"\x04view\x18\v \x01(\x0e2 .google.cloud.tasks.v2.Task.ViewR\x04view\x12J\n" +
+	"\fretry_config\x18\f \x01(\v2\".google.cloud.tasks.v2.RetryConfigB\x03\xe0A\x01R\vretryConfig\"1\n" +
 	"\x04View\x12\x14\n" +
 	"\x10VIEW_UNSPECIFIED\x10\x00\x12\t\n" +
 	"\x05BASIC\x10\x01\x12\b\n" +
@@ -487,7 +506,8 @@ var file_google_cloud_tasks_v2_task_proto_goTypes = []any{
 	(*HttpRequest)(nil),           // 4: google.cloud.tasks.v2.HttpRequest
 	(*timestamppb.Timestamp)(nil), // 5: google.protobuf.Timestamp
 	(*durationpb.Duration)(nil),   // 6: google.protobuf.Duration
-	(*status.Status)(nil),         // 7: google.rpc.Status
+	(*RetryConfig)(nil),           // 7: google.cloud.tasks.v2.RetryConfig
+	(*status.Status)(nil),         // 8: google.rpc.Status
 }
 var file_google_cloud_tasks_v2_task_proto_depIdxs = []int32{
 	3,  // 0: google.cloud.tasks.v2.Task.app_engine_http_request:type_name -> google.cloud.tasks.v2.AppEngineHttpRequest
@@ -498,15 +518,16 @@ var file_google_cloud_tasks_v2_task_proto_depIdxs = []int32{
 	2,  // 5: google.cloud.tasks.v2.Task.first_attempt:type_name -> google.cloud.tasks.v2.Attempt
 	2,  // 6: google.cloud.tasks.v2.Task.last_attempt:type_name -> google.cloud.tasks.v2.Attempt
 	0,  // 7: google.cloud.tasks.v2.Task.view:type_name -> google.cloud.tasks.v2.Task.View
-	5,  // 8: google.cloud.tasks.v2.Attempt.schedule_time:type_name -> google.protobuf.Timestamp
-	5,  // 9: google.cloud.tasks.v2.Attempt.dispatch_time:type_name -> google.protobuf.Timestamp
-	5,  // 10: google.cloud.tasks.v2.Attempt.response_time:type_name -> google.protobuf.Timestamp
-	7,  // 11: google.cloud.tasks.v2.Attempt.response_status:type_name -> google.rpc.Status
-	12, // [12:12] is the sub-list for method output_type
-	12, // [12:12] is the sub-list for method input_type
-	12, // [12:12] is the sub-list for extension type_name
-	12, // [12:12] is the sub-list for extension extendee
-	0,  // [0:12] is the sub-list for field type_name
+	7,  // 8: google.cloud.tasks.v2.Task.retry_config:type_name -> google.cloud.tasks.v2.RetryConfig
+	5,  // 9: google.cloud.tasks.v2.Attempt.schedule_time:type_name -> google.protobuf.Timestamp
+	5,  // 10: google.cloud.tasks.v2.Attempt.dispatch_time:type_name -> google.protobuf.Timestamp
+	5,  // 11: google.cloud.tasks.v2.Attempt.response_time:type_name -> google.protobuf.Timestamp
+	8,  // 12: google.cloud.tasks.v2.Attempt.response_status:type_name -> google.rpc.Status
+	13, // [13:13] is the sub-list for method output_type
+	13, // [13:13] is the sub-list for method input_type
+	13, // [13:13] is the sub-list for extension type_name
+	13, // [13:13] is the sub-list for extension extendee
+	0,  // [0:13] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_tasks_v2_task_proto_init() }
@@ -514,6 +535,7 @@ func file_google_cloud_tasks_v2_task_proto_init() {
 	if File_google_cloud_tasks_v2_task_proto != nil {
 		return
 	}
+	file_google_cloud_tasks_v2_queue_proto_init()
 	file_google_cloud_tasks_v2_target_proto_init()
 	file_google_cloud_tasks_v2_task_proto_msgTypes[0].OneofWrappers = []any{
 		(*Task_AppEngineHttpRequest)(nil),

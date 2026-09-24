@@ -171,6 +171,10 @@ type QueryConfig struct {
 
 	// Whether to run the query as continuous or a regular query.
 	Continuous bool
+
+	// JobCreationMode controls how job creation is handled for this query.
+	// If not specified, the default JobCreationMode on the client is used.
+	JobCreationMode JobCreationMode
 }
 
 func (qc *QueryConfig) toBQ() (*bq.JobConfiguration, error) {
@@ -425,6 +429,7 @@ func (q *Query) Read(ctx context.Context) (it *RowIterator, err error) {
 			jobID:     resp.JobReference.JobId,
 			location:  resp.JobReference.Location,
 			projectID: resp.JobReference.ProjectId,
+			queryID:   resp.QueryId,
 		}
 	}
 
@@ -522,7 +527,9 @@ func (q *Query) probeFastPath() (*bq.QueryRequest, error) {
 		}
 	}
 
-	if custCfg := q.client.customConfig; custCfg != nil {
+	if q.JobCreationMode != "" {
+		qRequest.JobCreationMode = string(q.JobCreationMode)
+	} else if custCfg := q.client.customConfig; custCfg != nil {
 		if custCfg.jobCreationMode != "" {
 			qRequest.JobCreationMode = string(custCfg.jobCreationMode)
 		}

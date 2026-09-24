@@ -30,6 +30,7 @@ import (
 	"path/filepath"
 	"reflect"
 	"regexp"
+	"slices"
 	"strconv"
 	"strings"
 	"sync"
@@ -2142,46 +2143,80 @@ func TestIntegration_CreateDBRetry(t *testing.T) {
 }
 
 // Test client recovery on database recreation.
-func TestIntegration_DbRemovalRecovery(t *testing.T) {
+func TestIntegration_DbRemovalIsFatal(t *testing.T) {
 	t.Parallel()
-	t.Skip("Flaky test, skipping for now (b/514205001)")
 	// tracking the failure via b/441255724 for Spanner Omni
 	skipSpannerOmniTest(t)
 
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Minute)
+	ctx, cancel := context.WithTimeout(context.Background(), 8*time.Minute)
 	defer cancel()
 	// Create a client with MinOpened=0 to prevent the session pool maintainer
 	// from repeatedly trying to create sessions for the invalid database.
 	client, dbPath, cleanup := prepareIntegrationTest(ctx, t, SessionPoolConfig{}, statements[testDialect][singerDDLStatements])
 	defer cleanup()
-	if isMultiplexEnabled {
-		// TODO: confirm that this is the valid scenario for multiplexed sessions, and what's expected behavior.
-		// wait for the multiplexed session to be created.
-		waitFor(t, func() error {
-			client.sm.mu.Lock()
-			defer client.sm.mu.Unlock()
-			if client.sm.multiplexedSession == nil {
-				return errInvalidSession
-			}
-			return nil
-		})
-		// Close the multiplexed session to prevent the session pool maintainer
-		// from repeatedly trying to use sessions for the invalid database.
+
+	// Wait for multiplexed session to be established on this database before dropping it.
+	var origSessionID string
+	waitFor(t, func() error {
 		client.sm.mu.Lock()
-		client.sm.multiplexedSession = nil
-		client.sm.mu.Unlock()
-	}
+		defer client.sm.mu.Unlock()
+		if client.sm.multiplexedSession == nil {
+			return errInvalidSession
+		}
+		origSessionID = client.sm.multiplexedSession.getID()
+		return nil
+	})
 
 	// Drop the testing database.
 	if err := databaseAdmin.DropDatabase(ctx, &adminpb.DropDatabaseRequest{Database: dbPath}); err != nil {
 		t.Fatalf("failed to drop testing database %v: %v", dbPath, err)
 	}
 
-	// Now, send the query.
-	iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
-	defer iter.Stop()
-	if _, err := iter.Next(); err == nil {
-		t.Errorf("client sends query to removed database successfully, want it to fail")
+	// Wait until the database drop takes effect across all gRPC channels and backend endpoints.
+	// Backend metadata caches have a 60-second TTL. Waiting at least 60s ensures cached metadata
+	// expires across all endpoints before recreating the database (bypassed on emulator).
+	dropTime := time.Now()
+	minPostDropPropagation := 60 * time.Second
+	minConsecutiveNotFound := 20
+	pollInterval := 500 * time.Millisecond
+	if isEmulatorEnvSet() {
+		minPostDropPropagation = 0
+		minConsecutiveNotFound = 4
+		pollInterval = 100 * time.Millisecond
+	}
+	dropDeadline := time.Now().Add(90 * time.Second)
+	consecutiveNotFound := 0
+	ticker := time.NewTicker(pollInterval)
+	defer ticker.Stop()
+	for {
+		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+		_, err := iter.Next()
+		iter.Stop()
+		if err != nil && err != iterator.Done {
+			if got := ErrCode(err); got == codes.NotFound && strings.Contains(err.Error(), "Database not found") {
+				consecutiveNotFound++
+				if consecutiveNotFound >= minConsecutiveNotFound && time.Since(dropTime) >= minPostDropPropagation {
+					t.Logf("DropDatabase propagated across all channels after %v (%d consecutive NotFound errors)", time.Since(dropTime).Round(time.Millisecond), consecutiveNotFound)
+					break
+				}
+			} else {
+				t.Logf("Query after drop returned unexpected error (resetting counter): %v", err)
+				consecutiveNotFound = 0
+			}
+		} else {
+			if consecutiveNotFound > 0 {
+				t.Logf("Query after drop succeeded on a channel with stale cache after %d NotFound errors; resetting counter", consecutiveNotFound)
+			}
+			consecutiveNotFound = 0
+		}
+		if time.Now().After(dropDeadline) {
+			t.Fatalf("timeout (90s) waiting for %d consecutive Database not found errors after drop (got %d, last err: %v)", minConsecutiveNotFound, consecutiveNotFound, err)
+		}
+		select {
+		case <-ctx.Done():
+			t.Fatalf("context done waiting for database drop to propagate across all channels: %v", ctx.Err())
+		case <-ticker.C:
+		}
 	}
 	verifyDirectPathRemoteAddress(t)
 
@@ -2207,6 +2242,11 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 	if err != nil {
 		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
 	}
+	defer func() {
+		cleanupCtx, cleanupCancel := context.WithTimeout(context.Background(), 2*time.Minute)
+		defer cleanupCancel()
+		_ = databaseAdmin.DropDatabase(cleanupCtx, &adminpb.DropDatabaseRequest{Database: dbPath})
+	}()
 	if _, err := op.Wait(ctx); err != nil {
 		t.Fatalf("cannot recreate testing DB %v: %v", dbPath, err)
 	}
@@ -2230,22 +2270,64 @@ func TestIntegration_DbRemovalRecovery(t *testing.T) {
 		}
 	}
 
-	// Now, send the query again.
-	// In real Cloud Spanner, after dropping and recreating a database, GFE location/directory
-	// cache propagation across all zones and workers can take up to several minutes.
-	// Retry sending the query until the context deadline.
+	// Verify that a newly created client is able to query the recreated database.
+	// Doing this first ensures the recreated database is live and reachable before
+	// asserting that the original client permanently fails across all channels.
+	newClient, err := createClient(ctx, dbPath, ClientConfig{SessionPoolConfig: SessionPoolConfig{}})
+	if err != nil {
+		t.Fatalf("failed to create new client for recreated database: %v", err)
+	}
+	defer newClient.Close()
+
+	newClientTicker := time.NewTicker(pollInterval)
+	defer newClientTicker.Stop()
 	for {
-		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+		iter := newClient.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
 		_, err := iter.Next()
 		iter.Stop()
 		if err == nil || err == iterator.Done {
 			break
 		}
-
 		select {
 		case <-ctx.Done():
-			t.Fatalf("timeout waiting for recreated database to be reachable: %v", ctx.Err())
-		case <-time.After(time.Second):
+			t.Fatalf("timeout waiting for recreated database to be reachable on new client: %v (last err: %v)", ctx.Err(), err)
+		case <-newClientTicker.C:
+		}
+	}
+
+	// Once the recreated database is confirmed live via newClient, verify across all
+	// channels that the original client does not recover and continues failing with
+	// Database not found (or Session not found when running against the emulator).
+	for attempt := 0; attempt < minConsecutiveNotFound; attempt++ {
+		client.sm.mu.Lock()
+		currSessionID := ""
+		if client.sm.multiplexedSession != nil {
+			currSessionID = client.sm.multiplexedSession.getID()
+		}
+		client.sm.mu.Unlock()
+		if currSessionID != origSessionID {
+			t.Fatalf("attempt %d: multiplexed session ID changed from %q to %q", attempt, origSessionID, currSessionID)
+		}
+
+		iter := client.Single().Query(ctx, Statement{SQL: "SELECT SingerId FROM Singers"})
+		_, err := iter.Next()
+		iter.Stop()
+		t.Logf("Attempt %d after recreate returned error: %v", attempt, err)
+		if err == nil || err == iterator.Done {
+			t.Fatalf("attempt %d: client silently reconnected to the recreated database, want permanent failure", attempt)
+		}
+		if got := ErrCode(err); got != codes.NotFound {
+			t.Errorf("attempt %d: got error code %v, want %v (err: %v)", attempt, got, codes.NotFound, err)
+		}
+		errStr := err.Error()
+		if isEmulatorEnvSet() {
+			if !strings.Contains(errStr, "Session not found") {
+				t.Errorf("attempt %d: expected error to indicate 'Session not found' on emulator, got %v", attempt, err)
+			}
+		} else {
+			if !strings.Contains(errStr, "Database not found") {
+				t.Errorf("attempt %d: expected error to indicate 'Database not found', got %v", attempt, err)
+			}
 		}
 	}
 	verifyDirectPathRemoteAddress(t)
@@ -4169,12 +4251,17 @@ func TestIntegration_ListDatabaseRoles(t *testing.T) {
 		t.Fatalf("cannot list database roles in %v: %v", dbPath, err)
 	}
 	var got []string
+	optional := []string{"spanner_secure_context_reader"}
 	rolePrefix := dbPath + "/databaseRoles/"
 	for _, role := range roles {
 		if !strings.HasPrefix(role.Name, rolePrefix) {
 			t.Fatalf("Role %v does not have prefix %v", role.Name, rolePrefix)
 		}
-		got = append(got, strings.TrimPrefix(role.Name, rolePrefix))
+		roleName := strings.TrimPrefix(role.Name, rolePrefix)
+		if slices.Contains(optional, roleName) {
+			continue
+		}
+		got = append(got, roleName)
 	}
 	want := []string{"a", "public", "spanner_info_reader", "spanner_sys_reader", "z"}
 	if !testEqual(got, want) {
@@ -4231,8 +4318,8 @@ func TestIntegration_BatchQuery(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	// DataBoost is not available for spanner omni endpoints
-	dataBoostAvailable := omniConfig.endpoint == ""
+	// DataBoost is not available for spanner omni, cloud-devel, or cloud-staging endpoints
+	dataBoostAvailable := omniConfig.endpoint == "" && !isCloudDevelOrStaging()
 	if partitions, err = txn.PartitionQueryWithOptions(ctx, stmt, PartitionOptions{0, 3}, QueryOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
@@ -4319,8 +4406,8 @@ func TestIntegration_BatchRead(t *testing.T) {
 		t.Fatal(err)
 	}
 	defer txn.Cleanup(ctx)
-	// DataBoost is not available for spanner omni endpoints
-	dataBoostAvailable := omniConfig.endpoint == ""
+	// DataBoost is not available for spanner omni, cloud-devel, or cloud-staging endpoints
+	dataBoostAvailable := omniConfig.endpoint == "" && !isCloudDevelOrStaging()
 	if partitions, err = txn.PartitionReadWithOptions(ctx, "test", AllKeys(), simpleDBTableColumns, PartitionOptions{0, 3}, ReadOptions{DataBoostEnabled: dataBoostAvailable}); err != nil {
 		t.Fatal(err)
 	}
@@ -6639,9 +6726,18 @@ func skipUnsupportedPGTest(t *testing.T) {
 	}
 }
 
-func skipOnNonProd(t *testing.T) {
+func isCloudDevelOrStaging() bool {
 	job := os.Getenv("JOB_TYPE")
 	if strings.Contains(job, "cloud-devel") || strings.Contains(job, "cloud-staging") {
+		return true
+	}
+	host := getSpannerHost()
+	return strings.Contains(host, "staging-wrenchworks.sandbox.googleapis.com") ||
+		strings.Contains(host, "preprod-spanner.sandbox.googleapis.com")
+}
+
+func skipOnNonProd(t *testing.T) {
+	if isCloudDevelOrStaging() {
 		t.Skip("Skipping test on non-production environment.")
 	}
 }
@@ -6742,5 +6838,54 @@ func checkCommonTagsGFELatency(t *testing.T, m map[tag.Key]string) {
 	}
 	if m[tagKeyLibVersion] != internal.Version {
 		t.Fatalf("Incorrect library version: %v", m[tagKeyLibVersion])
+	}
+}
+
+func TestIsCloudDevelOrStaging(t *testing.T) {
+	origJobType, hasJobType := os.LookupEnv("JOB_TYPE")
+	origHost, hasHost := os.LookupEnv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+	defer func() {
+		if hasJobType {
+			_ = os.Setenv("JOB_TYPE", origJobType)
+		} else {
+			_ = os.Unsetenv("JOB_TYPE")
+		}
+		if hasHost {
+			_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", origHost)
+		} else {
+			_ = os.Unsetenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+		}
+	}()
+
+	_ = os.Unsetenv("JOB_TYPE")
+	_ = os.Unsetenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST")
+	if isCloudDevelOrStaging() {
+		t.Fatalf("expected false when JOB_TYPE and GCLOUD_TESTS_GOLANG_SPANNER_HOST are unset")
+	}
+
+	_ = os.Setenv("JOB_TYPE", "integration-cloud-devel")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when JOB_TYPE is integration-cloud-devel")
+	}
+
+	_ = os.Setenv("JOB_TYPE", "integration-cloud-staging")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when JOB_TYPE is integration-cloud-staging")
+	}
+
+	_ = os.Unsetenv("JOB_TYPE")
+	_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", "staging-wrenchworks.sandbox.googleapis.com:443")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when GCLOUD_TESTS_GOLANG_SPANNER_HOST is staging-wrenchworks")
+	}
+
+	_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", "preprod-spanner.sandbox.googleapis.com:443")
+	if !isCloudDevelOrStaging() {
+		t.Fatalf("expected true when GCLOUD_TESTS_GOLANG_SPANNER_HOST is preprod-spanner")
+	}
+
+	_ = os.Setenv("GCLOUD_TESTS_GOLANG_SPANNER_HOST", "spanner.googleapis.com:443")
+	if isCloudDevelOrStaging() {
+		t.Fatalf("expected false when GCLOUD_TESTS_GOLANG_SPANNER_HOST is spanner.googleapis.com:443")
 	}
 }

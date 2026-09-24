@@ -52,6 +52,24 @@ func newBigtableServerStub() *bigtableServerStub {
 // was read from stdin (see Server.Start); the shipped daemon always reads one,
 // so auth is disabled only in test mode (WithStdinReader(nil)). Mismatches are
 // rejected with codes.Internal (see checkAuthToken for why not Unauthenticated).
+//
+// "Every RPC" is literal, and deliberately so: unlike the proxy interceptors
+// below, this one does not exempt locally-served services via isProxied, even
+// though the health service is served locally. The two interceptors read the
+// same predicate in opposite safety directions. There, a false means "do not
+// forward this to Bigtable" and an unrecognised method falls through to gRPC's
+// own Unimplemented — a loud, harmless failure. Here, a false would mean "serve
+// this without a token", so an unrecognised method would be served unauthenticated.
+// Since isProxied is a Bigtable-prefix test, every service registered later is
+// unrecognised by construction, and would be un-gated by default rather than by
+// decision.
+//
+// Nothing is lost by gating health, either: the token is not a Bigtable
+// credential but a caller-identity check on the socket, and the only legitimate
+// caller — the process that spawned this daemon — builds its health stub on the
+// same connection as its data RPCs and so already attaches the token. Gating it
+// also means a foreign daemon left on a reused socket path fails our probe
+// closed, rather than answering SERVING for a process we are not using.
 func authUnaryInterceptor(secret string) grpc.UnaryServerInterceptor {
 	return func(ctx context.Context, req any, _ *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (any, error) {
 		if err := checkAuthToken(ctx, secret); err != nil {
@@ -125,6 +143,27 @@ func authFailure(reason string) error {
 	return status.Error(codes.Internal, authRejectMsg)
 }
 
+// bigtableMethodPrefix is the "/<service>/" prefix every RPC the daemon
+// proxies to Bigtable carries. Derived from the generated service descriptor
+// so it cannot drift from the registered service name.
+var bigtableMethodPrefix = "/" + btpb.Bigtable_ServiceDesc.ServiceName + "/"
+
+// isProxied reports whether fullMethod should be forwarded through the Channel
+// to Bigtable, as opposed to being served locally by this process.
+//
+// The proxy interceptors are chained onto the whole server, so without this
+// gate they would swallow every RPC of every registered service -- they never
+// invoke the next handler. Any locally-served service (the health service, and
+// anything added later) therefore has to be excluded here or its RPCs get
+// forwarded to Bigtable, which has never heard of them.
+//
+// The test is deliberately "is this Bigtable?" rather than "is this one of the
+// known-local services": a service we forgot to list then fails with gRPC's own
+// Unimplemented instead of being silently shipped to the backend.
+func isProxied(fullMethod string) bool {
+	return strings.HasPrefix(fullMethod, bigtableMethodPrefix)
+}
+
 // proxyUnaryInterceptor intercepts every incoming unary RPC, allocates the
 // correct response message via the global proto registry, and delegates to the
 // channel's Invoke. The single switch on method name lives in
@@ -134,8 +173,13 @@ func authFailure(reason string) error {
 // effect of importing btpb (the generated init() in the btpb package does the
 // registration), so any RPC defined in the v2 Bigtable service is resolvable
 // without per-method wiring here.
+//
+// Non-Bigtable RPCs are passed to their real handler -- see isProxied.
 func proxyUnaryInterceptor(channel *Channel) grpc.UnaryServerInterceptor {
-	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, _ grpc.UnaryHandler) (interface{}, error) {
+	return func(ctx context.Context, req interface{}, info *grpc.UnaryServerInfo, handler grpc.UnaryHandler) (interface{}, error) {
+		if !isProxied(info.FullMethod) {
+			return handler(ctx, req)
+		}
 		_, output, err := resolveMethodIO(info.FullMethod)
 		if err != nil {
 			return nil, err
@@ -159,8 +203,17 @@ func proxyUnaryInterceptor(channel *Channel) grpc.UnaryServerInterceptor {
 // Only server-streaming RPCs are handled. Client-streaming and bidi RPCs are
 // rejected with Unimplemented because no Channel method shape
 // supports them today.
+//
+// Non-Bigtable streams are passed to their real handler -- see isProxied. That
+// check comes before the client-streaming rejection below, which is scoped to
+// methods this proxy is actually responsible for: grpc.health.v1.Health/Watch
+// is a legitimate server-streaming method served locally, and a locally-served
+// client-streaming method would be the local handler's business, not ours.
 func proxyStreamInterceptor(channel *Channel) grpc.StreamServerInterceptor {
-	return func(_ interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, _ grpc.StreamHandler) error {
+	return func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
+		if !isProxied(info.FullMethod) {
+			return handler(srv, ss)
+		}
 		if info.IsClientStream {
 			return status.Errorf(codes.Unimplemented, "accelerator: client-streaming method %s not supported", info.FullMethod)
 		}

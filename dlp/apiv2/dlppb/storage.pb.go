@@ -52,7 +52,7 @@ const (
 //
 // For more information about each likelihood level
 // and how likelihood works, see [Match
-// likelihood](https://cloud.google.com/sensitive-data-protection/docs/likelihood).
+// likelihood](https://docs.cloud.google.com/sensitive-data-protection/docs/likelihood).
 type Likelihood int32
 
 const (
@@ -483,7 +483,7 @@ type InfoType struct {
 	// Name of the information type. Either a name of your choosing when
 	// creating a CustomInfoType, or one of the names listed
 	// at
-	// https://cloud.google.com/sensitive-data-protection/docs/infotypes-reference
+	// https://docs.cloud.google.com/sensitive-data-protection/docs/infotypes-reference
 	// when specifying a built-in type.  When sending Cloud DLP results to Data
 	// Catalog, infoType names should conform to the pattern
 	// `[A-Za-z0-9$_-]{1,64}`.
@@ -677,6 +677,7 @@ type CustomInfoType struct {
 	//	*CustomInfoType_SurrogateType_
 	//	*CustomInfoType_StoredType
 	//	*CustomInfoType_MetadataKeyValueExpression_
+	//	*CustomInfoType_FileLabelInfoType_
 	Type isCustomInfoType_Type `protobuf_oneof:"type"`
 	// Set of detection rules to apply to all findings of this CustomInfoType.
 	// Rules are applied in the order that they are specified. Only supported
@@ -792,6 +793,15 @@ func (x *CustomInfoType) GetMetadataKeyValueExpression() *CustomInfoType_Metadat
 	return nil
 }
 
+func (x *CustomInfoType) GetFileLabelInfoType() *CustomInfoType_FileLabelInfoType {
+	if x != nil {
+		if x, ok := x.Type.(*CustomInfoType_FileLabelInfoType_); ok {
+			return x.FileLabelInfoType
+		}
+	}
+	return nil
+}
+
 func (x *CustomInfoType) GetDetectionRules() []*CustomInfoType_DetectionRule {
 	if x != nil {
 		return x.DetectionRules
@@ -843,6 +853,11 @@ type CustomInfoType_MetadataKeyValueExpression_ struct {
 	MetadataKeyValueExpression *CustomInfoType_MetadataKeyValueExpression `protobuf:"bytes,10,opt,name=metadata_key_value_expression,json=metadataKeyValueExpression,proto3,oneof"`
 }
 
+type CustomInfoType_FileLabelInfoType_ struct {
+	// File label to detect.
+	FileLabelInfoType *CustomInfoType_FileLabelInfoType `protobuf:"bytes,12,opt,name=file_label_info_type,json=fileLabelInfoType,proto3,oneof"`
+}
+
 func (*CustomInfoType_Dictionary_) isCustomInfoType_Type() {}
 
 func (*CustomInfoType_Regex_) isCustomInfoType_Type() {}
@@ -852,6 +867,8 @@ func (*CustomInfoType_SurrogateType_) isCustomInfoType_Type() {}
 func (*CustomInfoType_StoredType) isCustomInfoType_Type() {}
 
 func (*CustomInfoType_MetadataKeyValueExpression_) isCustomInfoType_Type() {}
+
+func (*CustomInfoType_FileLabelInfoType_) isCustomInfoType_Type() {}
 
 // General identifier of a data field in a storage service.
 type FieldId struct {
@@ -1182,7 +1199,7 @@ type CloudStorageOptions struct {
 	// This field can't be set if de-identification is requested. For certain file
 	// types, setting this field has no effect. For more information, see [Limits
 	// on bytes scanned per
-	// file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
+	// file](https://docs.cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
 	BytesLimitPerFile int64 `protobuf:"varint,4,opt,name=bytes_limit_per_file,json=bytesLimitPerFile,proto3" json:"bytes_limit_per_file,omitempty"`
 	// Max percentage of bytes to scan from a file. The rest are omitted. The
 	// number of bytes scanned is rounded down. Must be between 0 and 100,
@@ -1191,7 +1208,7 @@ type CloudStorageOptions struct {
 	// This field can't be set if de-identification is requested. For certain file
 	// types, setting this field has no effect. For more information, see [Limits
 	// on bytes scanned per
-	// file](https://cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
+	// file](https://docs.cloud.google.com/sensitive-data-protection/docs/supported-file-types#max-byte-size-per-file).
 	BytesLimitPerFilePercent int32 `protobuf:"varint,8,opt,name=bytes_limit_per_file_percent,json=bytesLimitPerFilePercent,proto3" json:"bytes_limit_per_file_percent,omitempty"`
 	// List of file type groups to include in the scan.
 	// If empty, all files are scanned and available data format processors
@@ -1400,7 +1417,7 @@ type BigQueryOptions struct {
 	// TimespanConfig.
 	//
 	// Caution: A [known
-	// issue](https://cloud.google.com/sensitive-data-protection/docs/known-issues#bq-sampling)
+	// issue](https://docs.cloud.google.com/sensitive-data-protection/docs/known-issues#bq-sampling)
 	// is causing the `rowsLimitPercent` field to behave unexpectedly. We
 	// recommend using `rowsLimit` instead.
 	RowsLimitPercent int32 `protobuf:"varint,6,opt,name=rows_limit_percent,json=rowsLimitPercent,proto3" json:"rows_limit_percent,omitempty"`
@@ -2305,9 +2322,9 @@ func (x *TableOptions) GetIdentifyingFields() []*FieldId {
 // Dictionary words containing a large number of characters that are not
 // letters or digits may result in unexpected findings because such characters
 // are treated as whitespace. The
-// [limits](https://cloud.google.com/sensitive-data-protection/limits) page
-// contains details about the size limits of dictionaries. For dictionaries
-// that do not fit within these constraints, consider using
+// [limits](https://docs.cloud.google.com/sensitive-data-protection/limits)
+// page contains details about the size limits of dictionaries. For
+// dictionaries that do not fit within these constraints, consider using
 // `LargeCustomDictionaryConfig` in the `StoredInfoType` API.
 type CustomInfoType_Dictionary struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2456,7 +2473,7 @@ func (x *CustomInfoType_Regex) GetGroupIndexes() []int32 {
 
 // Message for detecting output from deidentification transformations
 // such as
-// [`CryptoReplaceFfxFpeConfig`](https://cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).
+// [`CryptoReplaceFfxFpeConfig`](https://docs.cloud.google.com/sensitive-data-protection/docs/reference/rest/v2/organizations.deidentifyTemplates#cryptoreplaceffxfpeconfig).
 // These types of transformations are
 // those that perform pseudonymization, thereby producing a "surrogate" as
 // output. This should be used in conjunction with a field on the
@@ -2555,6 +2572,95 @@ func (x *CustomInfoType_MetadataKeyValueExpression) GetValueRegex() string {
 	return ""
 }
 
+// Configuration for a custom infoType that detects file labels.
+type CustomInfoType_FileLabelInfoType struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of file label to detect.
+	//
+	// Types that are valid to be assigned to Type:
+	//
+	//	*CustomInfoType_FileLabelInfoType_SensitivityLabel_
+	//	*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_
+	Type          isCustomInfoType_FileLabelInfoType_Type `protobuf_oneof:"type"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CustomInfoType_FileLabelInfoType) Reset() {
+	*x = CustomInfoType_FileLabelInfoType{}
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[28]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomInfoType_FileLabelInfoType) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomInfoType_FileLabelInfoType) ProtoMessage() {}
+
+func (x *CustomInfoType_FileLabelInfoType) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[28]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomInfoType_FileLabelInfoType.ProtoReflect.Descriptor instead.
+func (*CustomInfoType_FileLabelInfoType) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4}
+}
+
+func (x *CustomInfoType_FileLabelInfoType) GetType() isCustomInfoType_FileLabelInfoType_Type {
+	if x != nil {
+		return x.Type
+	}
+	return nil
+}
+
+func (x *CustomInfoType_FileLabelInfoType) GetSensitivityLabel() *CustomInfoType_FileLabelInfoType_SensitivityLabel {
+	if x != nil {
+		if x, ok := x.Type.(*CustomInfoType_FileLabelInfoType_SensitivityLabel_); ok {
+			return x.SensitivityLabel
+		}
+	}
+	return nil
+}
+
+func (x *CustomInfoType_FileLabelInfoType) GetGoogleDriveLabel() *CustomInfoType_FileLabelInfoType_GoogleDriveLabel {
+	if x != nil {
+		if x, ok := x.Type.(*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_); ok {
+			return x.GoogleDriveLabel
+		}
+	}
+	return nil
+}
+
+type isCustomInfoType_FileLabelInfoType_Type interface {
+	isCustomInfoType_FileLabelInfoType_Type()
+}
+
+type CustomInfoType_FileLabelInfoType_SensitivityLabel_ struct {
+	// Sensitivity labels published by Microsoft.
+	SensitivityLabel *CustomInfoType_FileLabelInfoType_SensitivityLabel `protobuf:"bytes,1,opt,name=sensitivity_label,json=sensitivityLabel,proto3,oneof"`
+}
+
+type CustomInfoType_FileLabelInfoType_GoogleDriveLabel_ struct {
+	// Google Drive labels published by Google.
+	GoogleDriveLabel *CustomInfoType_FileLabelInfoType_GoogleDriveLabel `protobuf:"bytes,2,opt,name=google_drive_label,json=googleDriveLabel,proto3,oneof"`
+}
+
+func (*CustomInfoType_FileLabelInfoType_SensitivityLabel_) isCustomInfoType_FileLabelInfoType_Type() {
+}
+
+func (*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_) isCustomInfoType_FileLabelInfoType_Type() {
+}
+
 // Deprecated; use `InspectionRuleSet` instead. Rule for modifying a
 // `CustomInfoType` to alter behavior under certain circumstances, depending
 // on the specific details of the rule. Not supported for the `surrogate_type`
@@ -2573,7 +2679,7 @@ type CustomInfoType_DetectionRule struct {
 
 func (x *CustomInfoType_DetectionRule) Reset() {
 	*x = CustomInfoType_DetectionRule{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[28]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2585,7 +2691,7 @@ func (x *CustomInfoType_DetectionRule) String() string {
 func (*CustomInfoType_DetectionRule) ProtoMessage() {}
 
 func (x *CustomInfoType_DetectionRule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[28]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2598,7 +2704,7 @@ func (x *CustomInfoType_DetectionRule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CustomInfoType_DetectionRule.ProtoReflect.Descriptor instead.
 func (*CustomInfoType_DetectionRule) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4}
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 5}
 }
 
 func (x *CustomInfoType_DetectionRule) GetType() isCustomInfoType_DetectionRule_Type {
@@ -2641,7 +2747,7 @@ type CustomInfoType_Dictionary_WordList struct {
 
 func (x *CustomInfoType_Dictionary_WordList) Reset() {
 	*x = CustomInfoType_Dictionary_WordList{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[29]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2653,7 +2759,7 @@ func (x *CustomInfoType_Dictionary_WordList) String() string {
 func (*CustomInfoType_Dictionary_WordList) ProtoMessage() {}
 
 func (x *CustomInfoType_Dictionary_WordList) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[29]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2676,6 +2782,164 @@ func (x *CustomInfoType_Dictionary_WordList) GetWords() []string {
 	return nil
 }
 
+// Sensitivity labels published by Microsoft.
+type CustomInfoType_FileLabelInfoType_SensitivityLabel struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The GUID of the sensitivity label.
+	Guid          string `protobuf:"bytes,1,opt,name=guid,proto3" json:"guid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CustomInfoType_FileLabelInfoType_SensitivityLabel) Reset() {
+	*x = CustomInfoType_FileLabelInfoType_SensitivityLabel{}
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[31]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomInfoType_FileLabelInfoType_SensitivityLabel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomInfoType_FileLabelInfoType_SensitivityLabel) ProtoMessage() {}
+
+func (x *CustomInfoType_FileLabelInfoType_SensitivityLabel) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[31]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomInfoType_FileLabelInfoType_SensitivityLabel.ProtoReflect.Descriptor instead.
+func (*CustomInfoType_FileLabelInfoType_SensitivityLabel) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4, 0}
+}
+
+func (x *CustomInfoType_FileLabelInfoType_SensitivityLabel) GetGuid() string {
+	if x != nil {
+		return x.Guid
+	}
+	return ""
+}
+
+// Google Drive labels published by Google.
+type CustomInfoType_FileLabelInfoType_GoogleDriveLabel struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The [label
+	// ID](https://developers.google.com/workspace/drive/labels/guides/overview)
+	// of the Google Drive label.
+	LabelId string `protobuf:"bytes,1,opt,name=label_id,json=labelId,proto3" json:"label_id,omitempty"`
+	// The field values of the Google Drive label to match.
+	LabelFieldsToMatch []*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField `protobuf:"bytes,2,rep,name=label_fields_to_match,json=labelFieldsToMatch,proto3" json:"label_fields_to_match,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel) Reset() {
+	*x = CustomInfoType_FileLabelInfoType_GoogleDriveLabel{}
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomInfoType_FileLabelInfoType_GoogleDriveLabel) ProtoMessage() {}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomInfoType_FileLabelInfoType_GoogleDriveLabel.ProtoReflect.Descriptor instead.
+func (*CustomInfoType_FileLabelInfoType_GoogleDriveLabel) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4, 1}
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel) GetLabelId() string {
+	if x != nil {
+		return x.LabelId
+	}
+	return ""
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel) GetLabelFieldsToMatch() []*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField {
+	if x != nil {
+		return x.LabelFieldsToMatch
+	}
+	return nil
+}
+
+// The field values of the Google Drive label to match.
+type CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The identifier of the Label Field.
+	Id string `protobuf:"bytes,1,opt,name=id,proto3" json:"id,omitempty"`
+	// The value of the Label Field to match.
+	Value         string `protobuf:"bytes,2,opt,name=value,proto3" json:"value,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField) Reset() {
+	*x = CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField{}
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField) ProtoMessage() {}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField) ProtoReflect() protoreflect.Message {
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField.ProtoReflect.Descriptor instead.
+func (*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField) Descriptor() ([]byte, []int) {
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4, 1, 0}
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField) GetId() string {
+	if x != nil {
+		return x.Id
+	}
+	return ""
+}
+
+func (x *CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
 // Message for specifying a window around a finding to apply a detection
 // rule.
 type CustomInfoType_DetectionRule_Proximity struct {
@@ -2684,7 +2948,7 @@ type CustomInfoType_DetectionRule_Proximity struct {
 	// if you want to modify the likelihood of an entire column of findngs,
 	// set this to 1. For more information, see
 	// [Hotword example: Set the match likelihood of a table column]
-	// (https://cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
+	// (https://docs.cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
 	WindowBefore int32 `protobuf:"varint,1,opt,name=window_before,json=windowBefore,proto3" json:"window_before,omitempty"`
 	// Number of characters after the finding to consider.
 	WindowAfter   int32 `protobuf:"varint,2,opt,name=window_after,json=windowAfter,proto3" json:"window_after,omitempty"`
@@ -2694,7 +2958,7 @@ type CustomInfoType_DetectionRule_Proximity struct {
 
 func (x *CustomInfoType_DetectionRule_Proximity) Reset() {
 	*x = CustomInfoType_DetectionRule_Proximity{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[30]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2706,7 +2970,7 @@ func (x *CustomInfoType_DetectionRule_Proximity) String() string {
 func (*CustomInfoType_DetectionRule_Proximity) ProtoMessage() {}
 
 func (x *CustomInfoType_DetectionRule_Proximity) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[30]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2719,7 +2983,7 @@ func (x *CustomInfoType_DetectionRule_Proximity) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use CustomInfoType_DetectionRule_Proximity.ProtoReflect.Descriptor instead.
 func (*CustomInfoType_DetectionRule_Proximity) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4, 0}
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 5, 0}
 }
 
 func (x *CustomInfoType_DetectionRule_Proximity) GetWindowBefore() int32 {
@@ -2753,7 +3017,7 @@ type CustomInfoType_DetectionRule_LikelihoodAdjustment struct {
 
 func (x *CustomInfoType_DetectionRule_LikelihoodAdjustment) Reset() {
 	*x = CustomInfoType_DetectionRule_LikelihoodAdjustment{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[31]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2765,7 +3029,7 @@ func (x *CustomInfoType_DetectionRule_LikelihoodAdjustment) String() string {
 func (*CustomInfoType_DetectionRule_LikelihoodAdjustment) ProtoMessage() {}
 
 func (x *CustomInfoType_DetectionRule_LikelihoodAdjustment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[31]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2778,7 +3042,7 @@ func (x *CustomInfoType_DetectionRule_LikelihoodAdjustment) ProtoReflect() proto
 
 // Deprecated: Use CustomInfoType_DetectionRule_LikelihoodAdjustment.ProtoReflect.Descriptor instead.
 func (*CustomInfoType_DetectionRule_LikelihoodAdjustment) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4, 1}
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 5, 1}
 }
 
 func (x *CustomInfoType_DetectionRule_LikelihoodAdjustment) GetAdjustment() isCustomInfoType_DetectionRule_LikelihoodAdjustment_Adjustment {
@@ -2851,7 +3115,7 @@ type CustomInfoType_DetectionRule_HotwordRule struct {
 	// For tabular data, if you want to modify the likelihood of an entire
 	// column of findngs, see
 	// [Hotword example: Set the match likelihood of a table column]
-	// (https://cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
+	// (https://docs.cloud.google.com/sensitive-data-protection/docs/creating-custom-infotypes-likelihood#match-column-values).
 	Proximity *CustomInfoType_DetectionRule_Proximity `protobuf:"bytes,2,opt,name=proximity,proto3" json:"proximity,omitempty"`
 	// Likelihood adjustment to apply to all matching findings.
 	LikelihoodAdjustment *CustomInfoType_DetectionRule_LikelihoodAdjustment `protobuf:"bytes,3,opt,name=likelihood_adjustment,json=likelihoodAdjustment,proto3" json:"likelihood_adjustment,omitempty"`
@@ -2861,7 +3125,7 @@ type CustomInfoType_DetectionRule_HotwordRule struct {
 
 func (x *CustomInfoType_DetectionRule_HotwordRule) Reset() {
 	*x = CustomInfoType_DetectionRule_HotwordRule{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[32]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2873,7 +3137,7 @@ func (x *CustomInfoType_DetectionRule_HotwordRule) String() string {
 func (*CustomInfoType_DetectionRule_HotwordRule) ProtoMessage() {}
 
 func (x *CustomInfoType_DetectionRule_HotwordRule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[32]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2886,7 +3150,7 @@ func (x *CustomInfoType_DetectionRule_HotwordRule) ProtoReflect() protoreflect.M
 
 // Deprecated: Use CustomInfoType_DetectionRule_HotwordRule.ProtoReflect.Descriptor instead.
 func (*CustomInfoType_DetectionRule_HotwordRule) Descriptor() ([]byte, []int) {
-	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 4, 2}
+	return file_google_privacy_dlp_v2_storage_proto_rawDescGZIP(), []int{3, 5, 2}
 }
 
 func (x *CustomInfoType_DetectionRule_HotwordRule) GetHotwordRegex() *CustomInfoType_Regex {
@@ -2933,7 +3197,7 @@ type CloudStorageOptions_FileSet struct {
 
 func (x *CloudStorageOptions_FileSet) Reset() {
 	*x = CloudStorageOptions_FileSet{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[33]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2945,7 +3209,7 @@ func (x *CloudStorageOptions_FileSet) String() string {
 func (*CloudStorageOptions_FileSet) ProtoMessage() {}
 
 func (x *CloudStorageOptions_FileSet) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[33]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2999,7 +3263,7 @@ type StorageConfig_TimespanConfig struct {
 	// `TIMESTAMP`, and `DATETIME`.
 	//
 	// If your BigQuery table is [partitioned at ingestion
-	// time](https://cloud.google.com/bigquery/docs/partitioned-tables#ingestion_time),
+	// time](https://docs.cloud.google.com/bigquery/docs/partitioned-tables#ingestion_time),
 	// you can use any of the following pseudo-columns as your timestamp field.
 	// When used with Cloud DLP, these pseudo-column names are case sensitive.
 	//
@@ -3016,7 +3280,7 @@ type StorageConfig_TimespanConfig struct {
 	//
 	// See the
 	// [known
-	// issue](https://cloud.google.com/sensitive-data-protection/docs/known-issues#bq-timespan)
+	// issue](https://docs.cloud.google.com/sensitive-data-protection/docs/known-issues#bq-timespan)
 	// related to this operation.
 	TimestampField *FieldId `protobuf:"bytes,3,opt,name=timestamp_field,json=timestampField,proto3" json:"timestamp_field,omitempty"`
 	// When the job is started by a JobTrigger we will automatically figure out
@@ -3033,7 +3297,7 @@ type StorageConfig_TimespanConfig struct {
 	// timestamp will result in skipped rows.
 	//
 	// See the [known
-	// issue](https://cloud.google.com/sensitive-data-protection/docs/known-issues#recently-streamed-data)
+	// issue](https://docs.cloud.google.com/sensitive-data-protection/docs/known-issues#recently-streamed-data)
 	// related to this operation.
 	EnableAutoPopulationOfTimespanConfig bool `protobuf:"varint,4,opt,name=enable_auto_population_of_timespan_config,json=enableAutoPopulationOfTimespanConfig,proto3" json:"enable_auto_population_of_timespan_config,omitempty"`
 	unknownFields                        protoimpl.UnknownFields
@@ -3042,7 +3306,7 @@ type StorageConfig_TimespanConfig struct {
 
 func (x *StorageConfig_TimespanConfig) Reset() {
 	*x = StorageConfig_TimespanConfig{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[34]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3054,7 +3318,7 @@ func (x *StorageConfig_TimespanConfig) String() string {
 func (*StorageConfig_TimespanConfig) ProtoMessage() {}
 
 func (x *StorageConfig_TimespanConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[34]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3122,7 +3386,7 @@ type Key_PathElement struct {
 
 func (x *Key_PathElement) Reset() {
 	*x = Key_PathElement{}
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[36]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3134,7 +3398,7 @@ func (x *Key_PathElement) String() string {
 func (*Key_PathElement) ProtoMessage() {}
 
 func (x *Key_PathElement) ProtoReflect() protoreflect.Message {
-	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[36]
+	mi := &file_google_privacy_dlp_v2_storage_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3227,7 +3491,7 @@ const file_google_privacy_dlp_v2_storage_proto_rawDesc = "" +
 	"StoredType\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12;\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"createTime\"\x9b\x10\n" +
+	"createTime\"\xad\x15\n" +
 	"\x0eCustomInfoType\x12<\n" +
 	"\tinfo_type\x18\x01 \x01(\v2\x1f.google.privacy.dlp.v2.InfoTypeR\binfoType\x12A\n" +
 	"\n" +
@@ -3241,7 +3505,8 @@ const file_google_privacy_dlp_v2_storage_proto_rawDesc = "" +
 	"\vstored_type\x18\x05 \x01(\v2!.google.privacy.dlp.v2.StoredTypeH\x00R\n" +
 	"storedType\x12\x85\x01\n" +
 	"\x1dmetadata_key_value_expression\x18\n" +
-	" \x01(\v2@.google.privacy.dlp.v2.CustomInfoType.MetadataKeyValueExpressionH\x00R\x1ametadataKeyValueExpression\x12\\\n" +
+	" \x01(\v2@.google.privacy.dlp.v2.CustomInfoType.MetadataKeyValueExpressionH\x00R\x1ametadataKeyValueExpression\x12j\n" +
+	"\x14file_label_info_type\x18\f \x01(\v27.google.privacy.dlp.v2.CustomInfoType.FileLabelInfoTypeH\x00R\x11fileLabelInfoType\x12\\\n" +
 	"\x0fdetection_rules\x18\a \x03(\v23.google.privacy.dlp.v2.CustomInfoType.DetectionRuleR\x0edetectionRules\x12Z\n" +
 	"\x0eexclusion_type\x18\b \x01(\x0e23.google.privacy.dlp.v2.CustomInfoType.ExclusionTypeR\rexclusionType\x12T\n" +
 	"\x11sensitivity_score\x18\t \x01(\v2'.google.privacy.dlp.v2.SensitivityScoreR\x10sensitivityScore\x1a\xeb\x01\n" +
@@ -3259,7 +3524,20 @@ const file_google_privacy_dlp_v2_storage_proto_rawDesc = "" +
 	"\x1aMetadataKeyValueExpression\x12\x1b\n" +
 	"\tkey_regex\x18\x01 \x01(\tR\bkeyRegex\x12\x1f\n" +
 	"\vvalue_regex\x18\x02 \x01(\tR\n" +
-	"valueRegex\x1a\xba\x05\n" +
+	"valueRegex\x1a\xa3\x04\n" +
+	"\x11FileLabelInfoType\x12w\n" +
+	"\x11sensitivity_label\x18\x01 \x01(\v2H.google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.SensitivityLabelH\x00R\x10sensitivityLabel\x12x\n" +
+	"\x12google_drive_label\x18\x02 \x01(\v2H.google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.GoogleDriveLabelH\x00R\x10googleDriveLabel\x1a&\n" +
+	"\x10SensitivityLabel\x12\x12\n" +
+	"\x04guid\x18\x01 \x01(\tR\x04guid\x1a\xea\x01\n" +
+	"\x10GoogleDriveLabel\x12\x19\n" +
+	"\blabel_id\x18\x01 \x01(\tR\alabelId\x12\x86\x01\n" +
+	"\x15label_fields_to_match\x18\x02 \x03(\v2S.google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.GoogleDriveLabel.LabelFieldR\x12labelFieldsToMatch\x1a2\n" +
+	"\n" +
+	"LabelField\x12\x0e\n" +
+	"\x02id\x18\x01 \x01(\tR\x02id\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05valueB\x06\n" +
+	"\x04type\x1a\xba\x05\n" +
 	"\rDetectionRule\x12d\n" +
 	"\fhotword_rule\x18\x01 \x01(\v2?.google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRuleH\x00R\vhotwordRule\x1aS\n" +
 	"\tProximity\x12#\n" +
@@ -3425,7 +3703,7 @@ func file_google_privacy_dlp_v2_storage_proto_rawDescGZIP() []byte {
 }
 
 var file_google_privacy_dlp_v2_storage_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_privacy_dlp_v2_storage_proto_msgTypes = make([]protoimpl.MessageInfo, 37)
+var file_google_privacy_dlp_v2_storage_proto_msgTypes = make([]protoimpl.MessageInfo, 41)
 var file_google_privacy_dlp_v2_storage_proto_goTypes = []any{
 	(Likelihood)(0), // 0: google.privacy.dlp.v2.Likelihood
 	(FileType)(0),   // 1: google.privacy.dlp.v2.FileType
@@ -3461,21 +3739,25 @@ var file_google_privacy_dlp_v2_storage_proto_goTypes = []any{
 	(*CustomInfoType_Regex)(nil),                              // 31: google.privacy.dlp.v2.CustomInfoType.Regex
 	(*CustomInfoType_SurrogateType)(nil),                      // 32: google.privacy.dlp.v2.CustomInfoType.SurrogateType
 	(*CustomInfoType_MetadataKeyValueExpression)(nil),         // 33: google.privacy.dlp.v2.CustomInfoType.MetadataKeyValueExpression
-	(*CustomInfoType_DetectionRule)(nil),                      // 34: google.privacy.dlp.v2.CustomInfoType.DetectionRule
-	(*CustomInfoType_Dictionary_WordList)(nil),                // 35: google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
-	(*CustomInfoType_DetectionRule_Proximity)(nil),            // 36: google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
-	(*CustomInfoType_DetectionRule_LikelihoodAdjustment)(nil), // 37: google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
-	(*CustomInfoType_DetectionRule_HotwordRule)(nil),          // 38: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
-	(*CloudStorageOptions_FileSet)(nil),                       // 39: google.privacy.dlp.v2.CloudStorageOptions.FileSet
-	(*StorageConfig_TimespanConfig)(nil),                      // 40: google.privacy.dlp.v2.StorageConfig.TimespanConfig
-	nil,                                                       // 41: google.privacy.dlp.v2.HybridOptions.LabelsEntry
-	(*Key_PathElement)(nil),                                   // 42: google.privacy.dlp.v2.Key.PathElement
-	(*timestamppb.Timestamp)(nil),                             // 43: google.protobuf.Timestamp
+	(*CustomInfoType_FileLabelInfoType)(nil),                  // 34: google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType
+	(*CustomInfoType_DetectionRule)(nil),                      // 35: google.privacy.dlp.v2.CustomInfoType.DetectionRule
+	(*CustomInfoType_Dictionary_WordList)(nil),                // 36: google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
+	(*CustomInfoType_FileLabelInfoType_SensitivityLabel)(nil), // 37: google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.SensitivityLabel
+	(*CustomInfoType_FileLabelInfoType_GoogleDriveLabel)(nil), // 38: google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.GoogleDriveLabel
+	(*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_LabelField)(nil), // 39: google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.GoogleDriveLabel.LabelField
+	(*CustomInfoType_DetectionRule_Proximity)(nil),                       // 40: google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
+	(*CustomInfoType_DetectionRule_LikelihoodAdjustment)(nil),            // 41: google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
+	(*CustomInfoType_DetectionRule_HotwordRule)(nil),                     // 42: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
+	(*CloudStorageOptions_FileSet)(nil),                                  // 43: google.privacy.dlp.v2.CloudStorageOptions.FileSet
+	(*StorageConfig_TimespanConfig)(nil),                                 // 44: google.privacy.dlp.v2.StorageConfig.TimespanConfig
+	nil,                                                                  // 45: google.privacy.dlp.v2.HybridOptions.LabelsEntry
+	(*Key_PathElement)(nil),                                              // 46: google.privacy.dlp.v2.Key.PathElement
+	(*timestamppb.Timestamp)(nil),                                        // 47: google.protobuf.Timestamp
 }
 var file_google_privacy_dlp_v2_storage_proto_depIdxs = []int32{
 	7,  // 0: google.privacy.dlp.v2.InfoType.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
 	2,  // 1: google.privacy.dlp.v2.SensitivityScore.score:type_name -> google.privacy.dlp.v2.SensitivityScore.SensitivityScoreLevel
-	43, // 2: google.privacy.dlp.v2.StoredType.create_time:type_name -> google.protobuf.Timestamp
+	47, // 2: google.privacy.dlp.v2.StoredType.create_time:type_name -> google.protobuf.Timestamp
 	6,  // 3: google.privacy.dlp.v2.CustomInfoType.info_type:type_name -> google.privacy.dlp.v2.InfoType
 	0,  // 4: google.privacy.dlp.v2.CustomInfoType.likelihood:type_name -> google.privacy.dlp.v2.Likelihood
 	30, // 5: google.privacy.dlp.v2.CustomInfoType.dictionary:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary
@@ -3483,52 +3765,56 @@ var file_google_privacy_dlp_v2_storage_proto_depIdxs = []int32{
 	32, // 7: google.privacy.dlp.v2.CustomInfoType.surrogate_type:type_name -> google.privacy.dlp.v2.CustomInfoType.SurrogateType
 	8,  // 8: google.privacy.dlp.v2.CustomInfoType.stored_type:type_name -> google.privacy.dlp.v2.StoredType
 	33, // 9: google.privacy.dlp.v2.CustomInfoType.metadata_key_value_expression:type_name -> google.privacy.dlp.v2.CustomInfoType.MetadataKeyValueExpression
-	34, // 10: google.privacy.dlp.v2.CustomInfoType.detection_rules:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule
-	3,  // 11: google.privacy.dlp.v2.CustomInfoType.exclusion_type:type_name -> google.privacy.dlp.v2.CustomInfoType.ExclusionType
-	7,  // 12: google.privacy.dlp.v2.CustomInfoType.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
-	11, // 13: google.privacy.dlp.v2.DatastoreOptions.partition_id:type_name -> google.privacy.dlp.v2.PartitionId
-	12, // 14: google.privacy.dlp.v2.DatastoreOptions.kind:type_name -> google.privacy.dlp.v2.KindExpression
-	39, // 15: google.privacy.dlp.v2.CloudStorageOptions.file_set:type_name -> google.privacy.dlp.v2.CloudStorageOptions.FileSet
-	1,  // 16: google.privacy.dlp.v2.CloudStorageOptions.file_types:type_name -> google.privacy.dlp.v2.FileType
-	4,  // 17: google.privacy.dlp.v2.CloudStorageOptions.sample_method:type_name -> google.privacy.dlp.v2.CloudStorageOptions.SampleMethod
-	25, // 18: google.privacy.dlp.v2.BigQueryOptions.table_reference:type_name -> google.privacy.dlp.v2.BigQueryTable
-	10, // 19: google.privacy.dlp.v2.BigQueryOptions.identifying_fields:type_name -> google.privacy.dlp.v2.FieldId
-	5,  // 20: google.privacy.dlp.v2.BigQueryOptions.sample_method:type_name -> google.privacy.dlp.v2.BigQueryOptions.SampleMethod
-	10, // 21: google.privacy.dlp.v2.BigQueryOptions.excluded_fields:type_name -> google.privacy.dlp.v2.FieldId
-	10, // 22: google.privacy.dlp.v2.BigQueryOptions.included_fields:type_name -> google.privacy.dlp.v2.FieldId
-	13, // 23: google.privacy.dlp.v2.StorageConfig.datastore_options:type_name -> google.privacy.dlp.v2.DatastoreOptions
-	15, // 24: google.privacy.dlp.v2.StorageConfig.cloud_storage_options:type_name -> google.privacy.dlp.v2.CloudStorageOptions
-	18, // 25: google.privacy.dlp.v2.StorageConfig.big_query_options:type_name -> google.privacy.dlp.v2.BigQueryOptions
-	20, // 26: google.privacy.dlp.v2.StorageConfig.hybrid_options:type_name -> google.privacy.dlp.v2.HybridOptions
-	40, // 27: google.privacy.dlp.v2.StorageConfig.timespan_config:type_name -> google.privacy.dlp.v2.StorageConfig.TimespanConfig
-	41, // 28: google.privacy.dlp.v2.HybridOptions.labels:type_name -> google.privacy.dlp.v2.HybridOptions.LabelsEntry
-	29, // 29: google.privacy.dlp.v2.HybridOptions.table_options:type_name -> google.privacy.dlp.v2.TableOptions
-	25, // 30: google.privacy.dlp.v2.BigQueryKey.table_reference:type_name -> google.privacy.dlp.v2.BigQueryTable
-	23, // 31: google.privacy.dlp.v2.DatastoreKey.entity_key:type_name -> google.privacy.dlp.v2.Key
-	11, // 32: google.privacy.dlp.v2.Key.partition_id:type_name -> google.privacy.dlp.v2.PartitionId
-	42, // 33: google.privacy.dlp.v2.Key.path:type_name -> google.privacy.dlp.v2.Key.PathElement
-	22, // 34: google.privacy.dlp.v2.RecordKey.datastore_key:type_name -> google.privacy.dlp.v2.DatastoreKey
-	21, // 35: google.privacy.dlp.v2.RecordKey.big_query_key:type_name -> google.privacy.dlp.v2.BigQueryKey
-	25, // 36: google.privacy.dlp.v2.BigQueryField.table:type_name -> google.privacy.dlp.v2.BigQueryTable
-	10, // 37: google.privacy.dlp.v2.BigQueryField.field:type_name -> google.privacy.dlp.v2.FieldId
-	10, // 38: google.privacy.dlp.v2.EntityId.field:type_name -> google.privacy.dlp.v2.FieldId
-	10, // 39: google.privacy.dlp.v2.TableOptions.identifying_fields:type_name -> google.privacy.dlp.v2.FieldId
-	35, // 40: google.privacy.dlp.v2.CustomInfoType.Dictionary.word_list:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
-	17, // 41: google.privacy.dlp.v2.CustomInfoType.Dictionary.cloud_storage_path:type_name -> google.privacy.dlp.v2.CloudStoragePath
-	38, // 42: google.privacy.dlp.v2.CustomInfoType.DetectionRule.hotword_rule:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
-	0,  // 43: google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment.fixed_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
-	31, // 44: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule.hotword_regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
-	36, // 45: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule.proximity:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
-	37, // 46: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule.likelihood_adjustment:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
-	14, // 47: google.privacy.dlp.v2.CloudStorageOptions.FileSet.regex_file_set:type_name -> google.privacy.dlp.v2.CloudStorageRegexFileSet
-	43, // 48: google.privacy.dlp.v2.StorageConfig.TimespanConfig.start_time:type_name -> google.protobuf.Timestamp
-	43, // 49: google.privacy.dlp.v2.StorageConfig.TimespanConfig.end_time:type_name -> google.protobuf.Timestamp
-	10, // 50: google.privacy.dlp.v2.StorageConfig.TimespanConfig.timestamp_field:type_name -> google.privacy.dlp.v2.FieldId
-	51, // [51:51] is the sub-list for method output_type
-	51, // [51:51] is the sub-list for method input_type
-	51, // [51:51] is the sub-list for extension type_name
-	51, // [51:51] is the sub-list for extension extendee
-	0,  // [0:51] is the sub-list for field type_name
+	34, // 10: google.privacy.dlp.v2.CustomInfoType.file_label_info_type:type_name -> google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType
+	35, // 11: google.privacy.dlp.v2.CustomInfoType.detection_rules:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule
+	3,  // 12: google.privacy.dlp.v2.CustomInfoType.exclusion_type:type_name -> google.privacy.dlp.v2.CustomInfoType.ExclusionType
+	7,  // 13: google.privacy.dlp.v2.CustomInfoType.sensitivity_score:type_name -> google.privacy.dlp.v2.SensitivityScore
+	11, // 14: google.privacy.dlp.v2.DatastoreOptions.partition_id:type_name -> google.privacy.dlp.v2.PartitionId
+	12, // 15: google.privacy.dlp.v2.DatastoreOptions.kind:type_name -> google.privacy.dlp.v2.KindExpression
+	43, // 16: google.privacy.dlp.v2.CloudStorageOptions.file_set:type_name -> google.privacy.dlp.v2.CloudStorageOptions.FileSet
+	1,  // 17: google.privacy.dlp.v2.CloudStorageOptions.file_types:type_name -> google.privacy.dlp.v2.FileType
+	4,  // 18: google.privacy.dlp.v2.CloudStorageOptions.sample_method:type_name -> google.privacy.dlp.v2.CloudStorageOptions.SampleMethod
+	25, // 19: google.privacy.dlp.v2.BigQueryOptions.table_reference:type_name -> google.privacy.dlp.v2.BigQueryTable
+	10, // 20: google.privacy.dlp.v2.BigQueryOptions.identifying_fields:type_name -> google.privacy.dlp.v2.FieldId
+	5,  // 21: google.privacy.dlp.v2.BigQueryOptions.sample_method:type_name -> google.privacy.dlp.v2.BigQueryOptions.SampleMethod
+	10, // 22: google.privacy.dlp.v2.BigQueryOptions.excluded_fields:type_name -> google.privacy.dlp.v2.FieldId
+	10, // 23: google.privacy.dlp.v2.BigQueryOptions.included_fields:type_name -> google.privacy.dlp.v2.FieldId
+	13, // 24: google.privacy.dlp.v2.StorageConfig.datastore_options:type_name -> google.privacy.dlp.v2.DatastoreOptions
+	15, // 25: google.privacy.dlp.v2.StorageConfig.cloud_storage_options:type_name -> google.privacy.dlp.v2.CloudStorageOptions
+	18, // 26: google.privacy.dlp.v2.StorageConfig.big_query_options:type_name -> google.privacy.dlp.v2.BigQueryOptions
+	20, // 27: google.privacy.dlp.v2.StorageConfig.hybrid_options:type_name -> google.privacy.dlp.v2.HybridOptions
+	44, // 28: google.privacy.dlp.v2.StorageConfig.timespan_config:type_name -> google.privacy.dlp.v2.StorageConfig.TimespanConfig
+	45, // 29: google.privacy.dlp.v2.HybridOptions.labels:type_name -> google.privacy.dlp.v2.HybridOptions.LabelsEntry
+	29, // 30: google.privacy.dlp.v2.HybridOptions.table_options:type_name -> google.privacy.dlp.v2.TableOptions
+	25, // 31: google.privacy.dlp.v2.BigQueryKey.table_reference:type_name -> google.privacy.dlp.v2.BigQueryTable
+	23, // 32: google.privacy.dlp.v2.DatastoreKey.entity_key:type_name -> google.privacy.dlp.v2.Key
+	11, // 33: google.privacy.dlp.v2.Key.partition_id:type_name -> google.privacy.dlp.v2.PartitionId
+	46, // 34: google.privacy.dlp.v2.Key.path:type_name -> google.privacy.dlp.v2.Key.PathElement
+	22, // 35: google.privacy.dlp.v2.RecordKey.datastore_key:type_name -> google.privacy.dlp.v2.DatastoreKey
+	21, // 36: google.privacy.dlp.v2.RecordKey.big_query_key:type_name -> google.privacy.dlp.v2.BigQueryKey
+	25, // 37: google.privacy.dlp.v2.BigQueryField.table:type_name -> google.privacy.dlp.v2.BigQueryTable
+	10, // 38: google.privacy.dlp.v2.BigQueryField.field:type_name -> google.privacy.dlp.v2.FieldId
+	10, // 39: google.privacy.dlp.v2.EntityId.field:type_name -> google.privacy.dlp.v2.FieldId
+	10, // 40: google.privacy.dlp.v2.TableOptions.identifying_fields:type_name -> google.privacy.dlp.v2.FieldId
+	36, // 41: google.privacy.dlp.v2.CustomInfoType.Dictionary.word_list:type_name -> google.privacy.dlp.v2.CustomInfoType.Dictionary.WordList
+	17, // 42: google.privacy.dlp.v2.CustomInfoType.Dictionary.cloud_storage_path:type_name -> google.privacy.dlp.v2.CloudStoragePath
+	37, // 43: google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.sensitivity_label:type_name -> google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.SensitivityLabel
+	38, // 44: google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.google_drive_label:type_name -> google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.GoogleDriveLabel
+	42, // 45: google.privacy.dlp.v2.CustomInfoType.DetectionRule.hotword_rule:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule
+	39, // 46: google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.GoogleDriveLabel.label_fields_to_match:type_name -> google.privacy.dlp.v2.CustomInfoType.FileLabelInfoType.GoogleDriveLabel.LabelField
+	0,  // 47: google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment.fixed_likelihood:type_name -> google.privacy.dlp.v2.Likelihood
+	31, // 48: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule.hotword_regex:type_name -> google.privacy.dlp.v2.CustomInfoType.Regex
+	40, // 49: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule.proximity:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.Proximity
+	41, // 50: google.privacy.dlp.v2.CustomInfoType.DetectionRule.HotwordRule.likelihood_adjustment:type_name -> google.privacy.dlp.v2.CustomInfoType.DetectionRule.LikelihoodAdjustment
+	14, // 51: google.privacy.dlp.v2.CloudStorageOptions.FileSet.regex_file_set:type_name -> google.privacy.dlp.v2.CloudStorageRegexFileSet
+	47, // 52: google.privacy.dlp.v2.StorageConfig.TimespanConfig.start_time:type_name -> google.protobuf.Timestamp
+	47, // 53: google.privacy.dlp.v2.StorageConfig.TimespanConfig.end_time:type_name -> google.protobuf.Timestamp
+	10, // 54: google.privacy.dlp.v2.StorageConfig.TimespanConfig.timestamp_field:type_name -> google.privacy.dlp.v2.FieldId
+	55, // [55:55] is the sub-list for method output_type
+	55, // [55:55] is the sub-list for method input_type
+	55, // [55:55] is the sub-list for extension type_name
+	55, // [55:55] is the sub-list for extension extendee
+	0,  // [0:55] is the sub-list for field type_name
 }
 
 func init() { file_google_privacy_dlp_v2_storage_proto_init() }
@@ -3542,6 +3828,7 @@ func file_google_privacy_dlp_v2_storage_proto_init() {
 		(*CustomInfoType_SurrogateType_)(nil),
 		(*CustomInfoType_StoredType)(nil),
 		(*CustomInfoType_MetadataKeyValueExpression_)(nil),
+		(*CustomInfoType_FileLabelInfoType_)(nil),
 	}
 	file_google_privacy_dlp_v2_storage_proto_msgTypes[13].OneofWrappers = []any{
 		(*StorageConfig_DatastoreOptions)(nil),
@@ -3558,13 +3845,17 @@ func file_google_privacy_dlp_v2_storage_proto_init() {
 		(*CustomInfoType_Dictionary_CloudStoragePath)(nil),
 	}
 	file_google_privacy_dlp_v2_storage_proto_msgTypes[28].OneofWrappers = []any{
+		(*CustomInfoType_FileLabelInfoType_SensitivityLabel_)(nil),
+		(*CustomInfoType_FileLabelInfoType_GoogleDriveLabel_)(nil),
+	}
+	file_google_privacy_dlp_v2_storage_proto_msgTypes[29].OneofWrappers = []any{
 		(*CustomInfoType_DetectionRule_HotwordRule_)(nil),
 	}
-	file_google_privacy_dlp_v2_storage_proto_msgTypes[31].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_storage_proto_msgTypes[35].OneofWrappers = []any{
 		(*CustomInfoType_DetectionRule_LikelihoodAdjustment_FixedLikelihood)(nil),
 		(*CustomInfoType_DetectionRule_LikelihoodAdjustment_RelativeLikelihood)(nil),
 	}
-	file_google_privacy_dlp_v2_storage_proto_msgTypes[36].OneofWrappers = []any{
+	file_google_privacy_dlp_v2_storage_proto_msgTypes[40].OneofWrappers = []any{
 		(*Key_PathElement_Id)(nil),
 		(*Key_PathElement_Name)(nil),
 	}
@@ -3574,7 +3865,7 @@ func file_google_privacy_dlp_v2_storage_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_privacy_dlp_v2_storage_proto_rawDesc), len(file_google_privacy_dlp_v2_storage_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   37,
+			NumMessages:   41,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

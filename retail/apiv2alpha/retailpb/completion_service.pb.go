@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -264,8 +264,12 @@ type CompleteQueryResponse struct {
 	//
 	// * `categories`
 	AttributeResults map[string]*CompleteQueryResponse_AttributeResult `protobuf:"bytes,4,rep,name=attribute_results,json=attributeResults,proto3" json:"attribute_results,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields    protoimpl.UnknownFields
-	sizeCache        protoimpl.SizeCache
+	// Conversational prompts to trigger agents like Shopping Agent.
+	//
+	// This is an experimental feature for select customers.
+	AgentPrompts  []*CompleteQueryResponse_AgentPrompt `protobuf:"bytes,5,rep,name=agent_prompts,json=agentPrompts,proto3" json:"agent_prompts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CompleteQueryResponse) Reset() {
@@ -327,6 +331,13 @@ func (x *CompleteQueryResponse) GetAttributeResults() map[string]*CompleteQueryR
 	return nil
 }
 
+func (x *CompleteQueryResponse) GetAgentPrompts() []*CompleteQueryResponse_AgentPrompt {
+	if x != nil {
+		return x.AgentPrompts
+	}
+	return nil
+}
+
 // Resource that represents completion results.
 type CompleteQueryResponse_CompletionResult struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -354,8 +365,17 @@ type CompleteQueryResponse_CompletionResult struct {
 	// receive this product count information, reach out to the Retail support
 	// team.
 	TotalProductCount int32 `protobuf:"varint,4,opt,name=total_product_count,json=totalProductCount,proto3" json:"total_product_count,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Deprecated: Use
+	// [CompleteQueryResponse.agent_prompts][google.cloud.retail.v2alpha.CompleteQueryResponse.agent_prompts]
+	// instead. Conversational prompts to trigger agents like Shopping Agent.
+	// There may be multiple prompts for a single suggestion.
+	//
+	// This is an experimental feature for select customers.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/retail/v2alpha/completion_service.proto.
+	AgentPrompts  []*CompleteQueryResponse_AgentPrompt `protobuf:"bytes,6,rep,name=agent_prompts,json=agentPrompts,proto3" json:"agent_prompts,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CompleteQueryResponse_CompletionResult) Reset() {
@@ -414,6 +434,14 @@ func (x *CompleteQueryResponse_CompletionResult) GetTotalProductCount() int32 {
 		return x.TotalProductCount
 	}
 	return 0
+}
+
+// Deprecated: Marked as deprecated in google/cloud/retail/v2alpha/completion_service.proto.
+func (x *CompleteQueryResponse_CompletionResult) GetAgentPrompts() []*CompleteQueryResponse_AgentPrompt {
+	if x != nil {
+		return x.AgentPrompts
+	}
+	return nil
 }
 
 // Deprecated: Recent search of this user.
@@ -510,6 +538,52 @@ func (x *CompleteQueryResponse_AttributeResult) GetSuggestions() []string {
 	return nil
 }
 
+// A conversational prompt to trigger agents like Shopping Agent.
+type CompleteQueryResponse_AgentPrompt struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The conversational prompt string.
+	Prompt        string `protobuf:"bytes,1,opt,name=prompt,proto3" json:"prompt,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CompleteQueryResponse_AgentPrompt) Reset() {
+	*x = CompleteQueryResponse_AgentPrompt{}
+	mi := &file_google_cloud_retail_v2alpha_completion_service_proto_msgTypes[5]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CompleteQueryResponse_AgentPrompt) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CompleteQueryResponse_AgentPrompt) ProtoMessage() {}
+
+func (x *CompleteQueryResponse_AgentPrompt) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_retail_v2alpha_completion_service_proto_msgTypes[5]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CompleteQueryResponse_AgentPrompt.ProtoReflect.Descriptor instead.
+func (*CompleteQueryResponse_AgentPrompt) Descriptor() ([]byte, []int) {
+	return file_google_cloud_retail_v2alpha_completion_service_proto_rawDescGZIP(), []int{1, 3}
+}
+
+func (x *CompleteQueryResponse_AgentPrompt) GetPrompt() string {
+	if x != nil {
+		return x.Prompt
+	}
+	return ""
+}
+
 var File_google_cloud_retail_v2alpha_completion_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_retail_v2alpha_completion_service_proto_rawDesc = "" +
@@ -528,12 +602,14 @@ const file_google_cloud_retail_v2alpha_completion_service_proto_rawDesc = "" +
 	"\x0fmax_suggestions\x18\x05 \x01(\x05R\x0emaxSuggestions\x12@\n" +
 	"\x1cenable_attribute_suggestions\x18\t \x01(\bR\x1aenableAttributeSuggestions\x12\x16\n" +
 	"\x06entity\x18\n" +
-	" \x01(\tR\x06entity\"\xbe\b\n" +
+	" \x01(\tR\x06entity\"\xb3\n" +
+	"\n" +
 	"\x15CompleteQueryResponse\x12r\n" +
 	"\x12completion_results\x18\x01 \x03(\v2C.google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResultR\x11completionResults\x12+\n" +
 	"\x11attribution_token\x18\x02 \x01(\tR\x10attributionToken\x12}\n" +
 	"\x15recent_search_results\x18\x03 \x03(\v2E.google.cloud.retail.v2alpha.CompleteQueryResponse.RecentSearchResultB\x02\x18\x01R\x13recentSearchResults\x12u\n" +
-	"\x11attribute_results\x18\x04 \x03(\v2H.google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntryR\x10attributeResults\x1a\x8f\x03\n" +
+	"\x11attribute_results\x18\x04 \x03(\v2H.google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntryR\x10attributeResults\x12c\n" +
+	"\ragent_prompts\x18\x05 \x03(\v2>.google.cloud.retail.v2alpha.CompleteQueryResponse.AgentPromptR\fagentPrompts\x1a\xf8\x03\n" +
 	"\x10CompletionResult\x12\x1e\n" +
 	"\n" +
 	"suggestion\x18\x01 \x01(\tR\n" +
@@ -542,14 +618,17 @@ const file_google_cloud_retail_v2alpha_completion_service_proto_rawDesc = "" +
 	"attributes\x18\x02 \x03(\v2S.google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.AttributesEntryR\n" +
 	"attributes\x12I\n" +
 	"\x06facets\x18\x03 \x03(\v21.google.cloud.retail.v2alpha.SearchResponse.FacetR\x06facets\x12.\n" +
-	"\x13total_product_count\x18\x04 \x01(\x05R\x11totalProductCount\x1ak\n" +
+	"\x13total_product_count\x18\x04 \x01(\x05R\x11totalProductCount\x12g\n" +
+	"\ragent_prompts\x18\x06 \x03(\v2>.google.cloud.retail.v2alpha.CompleteQueryResponse.AgentPromptB\x02\x18\x01R\fagentPrompts\x1ak\n" +
 	"\x0fAttributesEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12B\n" +
 	"\x05value\x18\x02 \x01(\v2,.google.cloud.retail.v2alpha.CustomAttributeR\x05value:\x028\x01\x1a=\n" +
 	"\x12RecentSearchResult\x12#\n" +
 	"\rrecent_search\x18\x01 \x01(\tR\frecentSearch:\x02\x18\x01\x1a3\n" +
 	"\x0fAttributeResult\x12 \n" +
-	"\vsuggestions\x18\x01 \x03(\tR\vsuggestions\x1a\x87\x01\n" +
+	"\vsuggestions\x18\x01 \x03(\tR\vsuggestions\x1a%\n" +
+	"\vAgentPrompt\x12\x16\n" +
+	"\x06prompt\x18\x01 \x01(\tR\x06prompt\x1a\x87\x01\n" +
 	"\x15AttributeResultsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12X\n" +
 	"\x05value\x18\x02 \x01(\v2B.google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultR\x05value:\x028\x012\xd5\x04\n" +
@@ -571,37 +650,40 @@ func file_google_cloud_retail_v2alpha_completion_service_proto_rawDescGZIP() []b
 	return file_google_cloud_retail_v2alpha_completion_service_proto_rawDescData
 }
 
-var file_google_cloud_retail_v2alpha_completion_service_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
+var file_google_cloud_retail_v2alpha_completion_service_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
 var file_google_cloud_retail_v2alpha_completion_service_proto_goTypes = []any{
 	(*CompleteQueryRequest)(nil),                     // 0: google.cloud.retail.v2alpha.CompleteQueryRequest
 	(*CompleteQueryResponse)(nil),                    // 1: google.cloud.retail.v2alpha.CompleteQueryResponse
 	(*CompleteQueryResponse_CompletionResult)(nil),   // 2: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult
 	(*CompleteQueryResponse_RecentSearchResult)(nil), // 3: google.cloud.retail.v2alpha.CompleteQueryResponse.RecentSearchResult
 	(*CompleteQueryResponse_AttributeResult)(nil),    // 4: google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResult
-	nil,                                 // 5: google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntry
-	nil,                                 // 6: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.AttributesEntry
-	(*SearchResponse_Facet)(nil),        // 7: google.cloud.retail.v2alpha.SearchResponse.Facet
-	(*CustomAttribute)(nil),             // 8: google.cloud.retail.v2alpha.CustomAttribute
-	(*ImportCompletionDataRequest)(nil), // 9: google.cloud.retail.v2alpha.ImportCompletionDataRequest
-	(*longrunningpb.Operation)(nil),     // 10: google.longrunning.Operation
+	(*CompleteQueryResponse_AgentPrompt)(nil),        // 5: google.cloud.retail.v2alpha.CompleteQueryResponse.AgentPrompt
+	nil,                                 // 6: google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntry
+	nil,                                 // 7: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.AttributesEntry
+	(*SearchResponse_Facet)(nil),        // 8: google.cloud.retail.v2alpha.SearchResponse.Facet
+	(*CustomAttribute)(nil),             // 9: google.cloud.retail.v2alpha.CustomAttribute
+	(*ImportCompletionDataRequest)(nil), // 10: google.cloud.retail.v2alpha.ImportCompletionDataRequest
+	(*longrunningpb.Operation)(nil),     // 11: google.longrunning.Operation
 }
 var file_google_cloud_retail_v2alpha_completion_service_proto_depIdxs = []int32{
 	2,  // 0: google.cloud.retail.v2alpha.CompleteQueryResponse.completion_results:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult
 	3,  // 1: google.cloud.retail.v2alpha.CompleteQueryResponse.recent_search_results:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.RecentSearchResult
-	5,  // 2: google.cloud.retail.v2alpha.CompleteQueryResponse.attribute_results:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntry
-	6,  // 3: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.attributes:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.AttributesEntry
-	7,  // 4: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.facets:type_name -> google.cloud.retail.v2alpha.SearchResponse.Facet
-	4,  // 5: google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntry.value:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResult
-	8,  // 6: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.AttributesEntry.value:type_name -> google.cloud.retail.v2alpha.CustomAttribute
-	0,  // 7: google.cloud.retail.v2alpha.CompletionService.CompleteQuery:input_type -> google.cloud.retail.v2alpha.CompleteQueryRequest
-	9,  // 8: google.cloud.retail.v2alpha.CompletionService.ImportCompletionData:input_type -> google.cloud.retail.v2alpha.ImportCompletionDataRequest
-	1,  // 9: google.cloud.retail.v2alpha.CompletionService.CompleteQuery:output_type -> google.cloud.retail.v2alpha.CompleteQueryResponse
-	10, // 10: google.cloud.retail.v2alpha.CompletionService.ImportCompletionData:output_type -> google.longrunning.Operation
-	9,  // [9:11] is the sub-list for method output_type
-	7,  // [7:9] is the sub-list for method input_type
-	7,  // [7:7] is the sub-list for extension type_name
-	7,  // [7:7] is the sub-list for extension extendee
-	0,  // [0:7] is the sub-list for field type_name
+	6,  // 2: google.cloud.retail.v2alpha.CompleteQueryResponse.attribute_results:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntry
+	5,  // 3: google.cloud.retail.v2alpha.CompleteQueryResponse.agent_prompts:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.AgentPrompt
+	7,  // 4: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.attributes:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.AttributesEntry
+	8,  // 5: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.facets:type_name -> google.cloud.retail.v2alpha.SearchResponse.Facet
+	5,  // 6: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.agent_prompts:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.AgentPrompt
+	4,  // 7: google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResultsEntry.value:type_name -> google.cloud.retail.v2alpha.CompleteQueryResponse.AttributeResult
+	9,  // 8: google.cloud.retail.v2alpha.CompleteQueryResponse.CompletionResult.AttributesEntry.value:type_name -> google.cloud.retail.v2alpha.CustomAttribute
+	0,  // 9: google.cloud.retail.v2alpha.CompletionService.CompleteQuery:input_type -> google.cloud.retail.v2alpha.CompleteQueryRequest
+	10, // 10: google.cloud.retail.v2alpha.CompletionService.ImportCompletionData:input_type -> google.cloud.retail.v2alpha.ImportCompletionDataRequest
+	1,  // 11: google.cloud.retail.v2alpha.CompletionService.CompleteQuery:output_type -> google.cloud.retail.v2alpha.CompleteQueryResponse
+	11, // 12: google.cloud.retail.v2alpha.CompletionService.ImportCompletionData:output_type -> google.longrunning.Operation
+	11, // [11:13] is the sub-list for method output_type
+	9,  // [9:11] is the sub-list for method input_type
+	9,  // [9:9] is the sub-list for extension type_name
+	9,  // [9:9] is the sub-list for extension extendee
+	0,  // [0:9] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_retail_v2alpha_completion_service_proto_init() }
@@ -618,7 +700,7 @@ func file_google_cloud_retail_v2alpha_completion_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_retail_v2alpha_completion_service_proto_rawDesc), len(file_google_cloud_retail_v2alpha_completion_service_proto_rawDesc)),
 			NumEnums:      0,
-			NumMessages:   7,
+			NumMessages:   8,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

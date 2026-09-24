@@ -1910,6 +1910,60 @@ func (DatabaseInstance_SqlNetworkArchitecture) EnumDescriptor() ([]byte, []int) 
 	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDescGZIP(), []int{15, 1}
 }
 
+// State of the integration with Database Center.
+type DatabaseInstance_DatabaseCenterIntegration int32
+
+const (
+	// Default value. The integration state is unspecified. When unspecified,
+	// Database Center integration is enabled by default.
+	DatabaseInstance_DATABASE_CENTER_INTEGRATION_UNSPECIFIED DatabaseInstance_DatabaseCenterIntegration = 0
+	// Database Center integration is enabled.
+	DatabaseInstance_ENABLED DatabaseInstance_DatabaseCenterIntegration = 1
+	// Database Center integration is disabled.
+	DatabaseInstance_DISABLED DatabaseInstance_DatabaseCenterIntegration = 2
+)
+
+// Enum value maps for DatabaseInstance_DatabaseCenterIntegration.
+var (
+	DatabaseInstance_DatabaseCenterIntegration_name = map[int32]string{
+		0: "DATABASE_CENTER_INTEGRATION_UNSPECIFIED",
+		1: "ENABLED",
+		2: "DISABLED",
+	}
+	DatabaseInstance_DatabaseCenterIntegration_value = map[string]int32{
+		"DATABASE_CENTER_INTEGRATION_UNSPECIFIED": 0,
+		"ENABLED":  1,
+		"DISABLED": 2,
+	}
+)
+
+func (x DatabaseInstance_DatabaseCenterIntegration) Enum() *DatabaseInstance_DatabaseCenterIntegration {
+	p := new(DatabaseInstance_DatabaseCenterIntegration)
+	*p = x
+	return p
+}
+
+func (x DatabaseInstance_DatabaseCenterIntegration) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (DatabaseInstance_DatabaseCenterIntegration) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[27].Descriptor()
+}
+
+func (DatabaseInstance_DatabaseCenterIntegration) Type() protoreflect.EnumType {
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[27]
+}
+
+func (x DatabaseInstance_DatabaseCenterIntegration) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use DatabaseInstance_DatabaseCenterIntegration.Descriptor instead.
+func (DatabaseInstance_DatabaseCenterIntegration) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDescGZIP(), []int{15, 2}
+}
+
 // This enum lists all possible states regarding out-of-disk issues.
 type DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState int32
 
@@ -1948,11 +2002,11 @@ func (x DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) String() string {
 }
 
 func (DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[27].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[28].Descriptor()
 }
 
 func (DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[27]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[28]
 }
 
 func (x DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState) Number() protoreflect.EnumNumber {
@@ -2005,11 +2059,11 @@ func (x DnsNameMapping_ConnectionType) String() string {
 }
 
 func (DnsNameMapping_ConnectionType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[28].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[29].Descriptor()
 }
 
 func (DnsNameMapping_ConnectionType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[28]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[29]
 }
 
 func (x DnsNameMapping_ConnectionType) Number() protoreflect.EnumNumber {
@@ -2058,11 +2112,11 @@ func (x DnsNameMapping_DnsScope) String() string {
 }
 
 func (DnsNameMapping_DnsScope) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[29].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[30].Descriptor()
 }
 
 func (DnsNameMapping_DnsScope) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[29]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[30]
 }
 
 func (x DnsNameMapping_DnsScope) Number() protoreflect.EnumNumber {
@@ -2114,11 +2168,11 @@ func (x DnsNameMapping_RecordManager) String() string {
 }
 
 func (DnsNameMapping_RecordManager) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[30].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[31].Descriptor()
 }
 
 func (DnsNameMapping_RecordManager) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[30]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[31]
 }
 
 func (x DnsNameMapping_RecordManager) Number() protoreflect.EnumNumber {
@@ -2172,11 +2226,11 @@ func (x PreCheckResponse_MessageType) String() string {
 }
 
 func (PreCheckResponse_MessageType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[31].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[32].Descriptor()
 }
 
 func (PreCheckResponse_MessageType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[31]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[32]
 }
 
 func (x PreCheckResponse_MessageType) Number() protoreflect.EnumNumber {
@@ -2479,11 +2533,11 @@ func (x SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) String() st
 }
 
 func (SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[32].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[33].Descriptor()
 }
 
 func (SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[32]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[33]
 }
 
 func (x SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType) Number() protoreflect.EnumNumber {
@@ -2559,11 +2613,11 @@ func (x IpConfiguration_SslMode) String() string {
 }
 
 func (IpConfiguration_SslMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[33].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[34].Descriptor()
 }
 
 func (IpConfiguration_SslMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[33]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[34]
 }
 
 func (x IpConfiguration_SslMode) Number() protoreflect.EnumNumber {
@@ -2619,11 +2673,11 @@ func (x IpConfiguration_CaMode) String() string {
 }
 
 func (IpConfiguration_CaMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[34].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[35].Descriptor()
 }
 
 func (IpConfiguration_CaMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[34]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[35]
 }
 
 func (x IpConfiguration_CaMode) Number() protoreflect.EnumNumber {
@@ -2678,11 +2732,11 @@ func (x IpConfiguration_ServerCertificateRotationMode) String() string {
 }
 
 func (IpConfiguration_ServerCertificateRotationMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[35].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[36].Descriptor()
 }
 
 func (IpConfiguration_ServerCertificateRotationMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[35]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[36]
 }
 
 func (x IpConfiguration_ServerCertificateRotationMode) Number() protoreflect.EnumNumber {
@@ -2736,11 +2790,11 @@ func (x OnPremisesConfiguration_SslOption) String() string {
 }
 
 func (OnPremisesConfiguration_SslOption) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[36].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[37].Descriptor()
 }
 
 func (OnPremisesConfiguration_SslOption) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[36]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[37]
 }
 
 func (x OnPremisesConfiguration_SslOption) Number() protoreflect.EnumNumber {
@@ -3027,11 +3081,11 @@ func (x Operation_SqlOperationType) String() string {
 }
 
 func (Operation_SqlOperationType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[37].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[38].Descriptor()
 }
 
 func (Operation_SqlOperationType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[37]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[38]
 }
 
 func (x Operation_SqlOperationType) Number() protoreflect.EnumNumber {
@@ -3084,11 +3138,11 @@ func (x Operation_SqlOperationStatus) String() string {
 }
 
 func (Operation_SqlOperationStatus) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[38].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[39].Descriptor()
 }
 
 func (Operation_SqlOperationStatus) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[38]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[39]
 }
 
 func (x Operation_SqlOperationStatus) Number() protoreflect.EnumNumber {
@@ -3134,11 +3188,11 @@ func (x PasswordValidationPolicy_Complexity) String() string {
 }
 
 func (PasswordValidationPolicy_Complexity) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[39].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[40].Descriptor()
 }
 
 func (PasswordValidationPolicy_Complexity) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[39]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[40]
 }
 
 func (x PasswordValidationPolicy_Complexity) Number() protoreflect.EnumNumber {
@@ -3193,11 +3247,11 @@ func (x Settings_SqlActivationPolicy) String() string {
 }
 
 func (Settings_SqlActivationPolicy) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[40].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[41].Descriptor()
 }
 
 func (Settings_SqlActivationPolicy) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[40]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[41]
 }
 
 func (x Settings_SqlActivationPolicy) Number() protoreflect.EnumNumber {
@@ -3250,11 +3304,11 @@ func (x Settings_Edition) String() string {
 }
 
 func (Settings_Edition) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[41].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[42].Descriptor()
 }
 
 func (Settings_Edition) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[41]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[42]
 }
 
 func (x Settings_Edition) Number() protoreflect.EnumNumber {
@@ -3305,11 +3359,11 @@ func (x Settings_ConnectorEnforcement) String() string {
 }
 
 func (Settings_ConnectorEnforcement) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[42].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[43].Descriptor()
 }
 
 func (Settings_ConnectorEnforcement) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[42]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[43]
 }
 
 func (x Settings_ConnectorEnforcement) Number() protoreflect.EnumNumber {
@@ -3360,11 +3414,11 @@ func (x Settings_DataApiAccess) String() string {
 }
 
 func (Settings_DataApiAccess) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[43].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[44].Descriptor()
 }
 
 func (Settings_DataApiAccess) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[43]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[44]
 }
 
 func (x Settings_DataApiAccess) Number() protoreflect.EnumNumber {
@@ -3415,11 +3469,11 @@ func (x PerformanceCaptureConfig_TransactionKillType) String() string {
 }
 
 func (PerformanceCaptureConfig_TransactionKillType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[44].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[45].Descriptor()
 }
 
 func (PerformanceCaptureConfig_TransactionKillType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[44]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[45]
 }
 
 func (x PerformanceCaptureConfig_TransactionKillType) Number() protoreflect.EnumNumber {
@@ -3471,11 +3525,11 @@ func (x SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) String() st
 }
 
 func (SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[45].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[46].Descriptor()
 }
 
 func (SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[45]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[46]
 }
 
 func (x SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType) Number() protoreflect.EnumNumber {
@@ -3531,11 +3585,11 @@ func (x SqlActiveDirectoryConfig_ActiveDirectoryMode) String() string {
 }
 
 func (SqlActiveDirectoryConfig_ActiveDirectoryMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[46].Descriptor()
+	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[47].Descriptor()
 }
 
 func (SqlActiveDirectoryConfig_ActiveDirectoryMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[46]
+	return &file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes[47]
 }
 
 func (x SqlActiveDirectoryConfig_ActiveDirectoryMode) Number() protoreflect.EnumNumber {
@@ -5329,8 +5383,11 @@ type DatabaseInstance struct {
 	// Optional. If true, instance metadata is sent to the Database Center. If
 	// false, instance metadata is not sent to the Database Center.
 	DatabaseCenterIntegrationEnabled *wrapperspb.BoolValue `protobuf:"bytes,72,opt,name=database_center_integration_enabled,json=databaseCenterIntegrationEnabled,proto3" json:"database_center_integration_enabled,omitempty"`
-	unknownFields                    protoimpl.UnknownFields
-	sizeCache                        protoimpl.SizeCache
+	// Optional. State of the Database Center integration for this instance.
+	// When unspecified, Database Center integration is enabled by default.
+	DatabaseCenterIntegration *DatabaseInstance_DatabaseCenterIntegration `protobuf:"varint,76,opt,name=database_center_integration,json=databaseCenterIntegration,proto3,enum=google.cloud.sql.v1beta4.DatabaseInstance_DatabaseCenterIntegration,oneof" json:"database_center_integration,omitempty"`
+	unknownFields             protoimpl.UnknownFields
+	sizeCache                 protoimpl.SizeCache
 }
 
 func (x *DatabaseInstance) Reset() {
@@ -5729,6 +5786,13 @@ func (x *DatabaseInstance) GetDatabaseCenterIntegrationEnabled() *wrapperspb.Boo
 		return x.DatabaseCenterIntegrationEnabled
 	}
 	return nil
+}
+
+func (x *DatabaseInstance) GetDatabaseCenterIntegration() DatabaseInstance_DatabaseCenterIntegration {
+	if x != nil && x.DatabaseCenterIntegration != nil {
+		return *x.DatabaseCenterIntegration
+	}
+	return DatabaseInstance_DATABASE_CENTER_INTEGRATION_UNSPECIFIED
 }
 
 // DNS metadata.
@@ -14149,7 +14213,7 @@ const file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDesc = "" +
 	"\x11InstanceReference\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12\x16\n" +
 	"\x06region\x18\x02 \x01(\tR\x06region\x12\x18\n" +
-	"\aproject\x18\x03 \x01(\tR\aproject\"\xd5-\n" +
+	"\aproject\x18\x03 \x01(\tR\aproject\"\xeb/\n" +
 	"\x10DatabaseInstance\x12\x12\n" +
 	"\x04kind\x18\x01 \x01(\tR\x04kind\x12Q\n" +
 	"\x05state\x18\x02 \x01(\x0e2;.google.cloud.sql.v1beta4.DatabaseInstance.SqlInstanceStateR\x05state\x12W\n" +
@@ -14206,7 +14270,8 @@ const file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDesc = "" +
 	"R\tnodeCount\x88\x01\x01\x12T\n" +
 	"\x05nodes\x18@ \x03(\v29.google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfigB\x03\xe0A\x03R\x05nodes\x12J\n" +
 	"\tdns_names\x18C \x03(\v2(.google.cloud.sql.v1beta4.DnsNameMappingB\x03\xe0A\x03R\bdnsNames\x12n\n" +
-	"#database_center_integration_enabled\x18H \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R databaseCenterIntegrationEnabled\x1ab\n" +
+	"#database_center_integration_enabled\x18H \x01(\v2\x1a.google.protobuf.BoolValueB\x03\xe0A\x01R databaseCenterIntegrationEnabled\x12\x8e\x01\n" +
+	"\x1bdatabase_center_integration\x18L \x01(\x0e2D.google.cloud.sql.v1beta4.DatabaseInstance.DatabaseCenterIntegrationB\x03\xe0A\x01H\vR\x19databaseCenterIntegration\x88\x01\x01\x1ab\n" +
 	"\x12SqlFailoverReplica\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x128\n" +
 	"\tavailable\x18\x02 \x01(\v2\x1a.google.protobuf.BoolValueR\tavailable\x1a\x8e\x02\n" +
@@ -14258,7 +14323,11 @@ const file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDesc = "" +
 	"\x16SqlNetworkArchitecture\x12(\n" +
 	"$SQL_NETWORK_ARCHITECTURE_UNSPECIFIED\x10\x00\x12\x1c\n" +
 	"\x18NEW_NETWORK_ARCHITECTURE\x10\x01\x12\x1c\n" +
-	"\x18OLD_NETWORK_ARCHITECTURE\x10\x02B\x15\n" +
+	"\x18OLD_NETWORK_ARCHITECTURE\x10\x02\"c\n" +
+	"\x19DatabaseCenterIntegration\x12+\n" +
+	"'DATABASE_CENTER_INTEGRATION_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aENABLED\x10\x01\x12\f\n" +
+	"\bDISABLED\x10\x02B\x15\n" +
 	"\x13_out_of_disk_reportB\x1b\n" +
 	"\x19_sql_network_architectureB\x1e\n" +
 	"\x1c_psc_service_attachment_linkB\v\n" +
@@ -14269,7 +14338,8 @@ const file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDesc = "" +
 	"\x0e_gemini_configB3\n" +
 	"1_switch_transaction_logs_to_cloud_storage_enabledB-\n" +
 	"+_include_replicas_for_major_version_upgradeB\r\n" +
-	"\v_node_count\"\xdd\x04\n" +
+	"\v_node_countB\x1e\n" +
+	"\x1c_database_center_integration\"\xdd\x04\n" +
 	"\x0eDnsNameMapping\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12e\n" +
 	"\x0fconnection_type\x18\x02 \x01(\x0e27.google.cloud.sql.v1beta4.DnsNameMapping.ConnectionTypeB\x03\xe0A\x03R\x0econnectionType\x12S\n" +
@@ -15316,7 +15386,7 @@ func file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDescGZIP() []byt
 	return file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDescData
 }
 
-var file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 47)
+var file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_enumTypes = make([]protoimpl.EnumInfo, 48)
 var file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_msgTypes = make([]protoimpl.MessageInfo, 119)
 var file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_goTypes = []any{
 	(SqlFileType)(0),                           // 0: google.cloud.sql.v1beta4.SqlFileType
@@ -15346,424 +15416,426 @@ var file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_goTypes = []any{
 	(Backup_SqlBackupState)(0),                                       // 24: google.cloud.sql.v1beta4.Backup.SqlBackupState
 	(DatabaseInstance_SqlInstanceState)(0),                           // 25: google.cloud.sql.v1beta4.DatabaseInstance.SqlInstanceState
 	(DatabaseInstance_SqlNetworkArchitecture)(0),                     // 26: google.cloud.sql.v1beta4.DatabaseInstance.SqlNetworkArchitecture
-	(DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState)(0),       // 27: google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
-	(DnsNameMapping_ConnectionType)(0),                               // 28: google.cloud.sql.v1beta4.DnsNameMapping.ConnectionType
-	(DnsNameMapping_DnsScope)(0),                                     // 29: google.cloud.sql.v1beta4.DnsNameMapping.DnsScope
-	(DnsNameMapping_RecordManager)(0),                                // 30: google.cloud.sql.v1beta4.DnsNameMapping.RecordManager
-	(PreCheckResponse_MessageType)(0),                                // 31: google.cloud.sql.v1beta4.PreCheckResponse.MessageType
-	(SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType)(0), // 32: google.cloud.sql.v1beta4.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
-	(IpConfiguration_SslMode)(0),                                     // 33: google.cloud.sql.v1beta4.IpConfiguration.SslMode
-	(IpConfiguration_CaMode)(0),                                      // 34: google.cloud.sql.v1beta4.IpConfiguration.CaMode
-	(IpConfiguration_ServerCertificateRotationMode)(0),               // 35: google.cloud.sql.v1beta4.IpConfiguration.ServerCertificateRotationMode
-	(OnPremisesConfiguration_SslOption)(0),                           // 36: google.cloud.sql.v1beta4.OnPremisesConfiguration.SslOption
-	(Operation_SqlOperationType)(0),                                  // 37: google.cloud.sql.v1beta4.Operation.SqlOperationType
-	(Operation_SqlOperationStatus)(0),                                // 38: google.cloud.sql.v1beta4.Operation.SqlOperationStatus
-	(PasswordValidationPolicy_Complexity)(0),                         // 39: google.cloud.sql.v1beta4.PasswordValidationPolicy.Complexity
-	(Settings_SqlActivationPolicy)(0),                                // 40: google.cloud.sql.v1beta4.Settings.SqlActivationPolicy
-	(Settings_Edition)(0),                                            // 41: google.cloud.sql.v1beta4.Settings.Edition
-	(Settings_ConnectorEnforcement)(0),                               // 42: google.cloud.sql.v1beta4.Settings.ConnectorEnforcement
-	(Settings_DataApiAccess)(0),                                      // 43: google.cloud.sql.v1beta4.Settings.DataApiAccess
-	(PerformanceCaptureConfig_TransactionKillType)(0),                // 44: google.cloud.sql.v1beta4.PerformanceCaptureConfig.TransactionKillType
-	(SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType)(0), // 45: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
-	(SqlActiveDirectoryConfig_ActiveDirectoryMode)(0),                // 46: google.cloud.sql.v1beta4.SqlActiveDirectoryConfig.ActiveDirectoryMode
-	(*AclEntry)(nil),                                                 // 47: google.cloud.sql.v1beta4.AclEntry
-	(*ApiWarning)(nil),                                               // 48: google.cloud.sql.v1beta4.ApiWarning
-	(*BackupRetentionSettings)(nil),                                  // 49: google.cloud.sql.v1beta4.BackupRetentionSettings
-	(*BackupConfiguration)(nil),                                      // 50: google.cloud.sql.v1beta4.BackupConfiguration
-	(*BackupRun)(nil),                                                // 51: google.cloud.sql.v1beta4.BackupRun
-	(*Backup)(nil),                                                   // 52: google.cloud.sql.v1beta4.Backup
-	(*BackupRunsListResponse)(nil),                                   // 53: google.cloud.sql.v1beta4.BackupRunsListResponse
-	(*BinLogCoordinates)(nil),                                        // 54: google.cloud.sql.v1beta4.BinLogCoordinates
-	(*BackupContext)(nil),                                            // 55: google.cloud.sql.v1beta4.BackupContext
-	(*CloneContext)(nil),                                             // 56: google.cloud.sql.v1beta4.CloneContext
-	(*Database)(nil),                                                 // 57: google.cloud.sql.v1beta4.Database
-	(*SqlServerDatabaseDetails)(nil),                                 // 58: google.cloud.sql.v1beta4.SqlServerDatabaseDetails
-	(*DatabaseFlags)(nil),                                            // 59: google.cloud.sql.v1beta4.DatabaseFlags
-	(*SyncFlags)(nil),                                                // 60: google.cloud.sql.v1beta4.SyncFlags
-	(*InstanceReference)(nil),                                        // 61: google.cloud.sql.v1beta4.InstanceReference
-	(*DatabaseInstance)(nil),                                         // 62: google.cloud.sql.v1beta4.DatabaseInstance
-	(*DnsNameMapping)(nil),                                           // 63: google.cloud.sql.v1beta4.DnsNameMapping
-	(*GeminiInstanceConfig)(nil),                                     // 64: google.cloud.sql.v1beta4.GeminiInstanceConfig
-	(*ReplicationCluster)(nil),                                       // 65: google.cloud.sql.v1beta4.ReplicationCluster
-	(*AvailableDatabaseVersion)(nil),                                 // 66: google.cloud.sql.v1beta4.AvailableDatabaseVersion
-	(*DatabasesListResponse)(nil),                                    // 67: google.cloud.sql.v1beta4.DatabasesListResponse
-	(*DemoteMasterConfiguration)(nil),                                // 68: google.cloud.sql.v1beta4.DemoteMasterConfiguration
-	(*DemoteMasterContext)(nil),                                      // 69: google.cloud.sql.v1beta4.DemoteMasterContext
-	(*DemoteMasterMySqlReplicaConfiguration)(nil),                    // 70: google.cloud.sql.v1beta4.DemoteMasterMySqlReplicaConfiguration
-	(*DemoteContext)(nil),                                            // 71: google.cloud.sql.v1beta4.DemoteContext
-	(*ExportContext)(nil),                                            // 72: google.cloud.sql.v1beta4.ExportContext
-	(*FailoverContext)(nil),                                          // 73: google.cloud.sql.v1beta4.FailoverContext
-	(*Flag)(nil),                                                     // 74: google.cloud.sql.v1beta4.Flag
-	(*FlagsListResponse)(nil),                                        // 75: google.cloud.sql.v1beta4.FlagsListResponse
-	(*ImportContext)(nil),                                            // 76: google.cloud.sql.v1beta4.ImportContext
-	(*InstancesCloneRequest)(nil),                                    // 77: google.cloud.sql.v1beta4.InstancesCloneRequest
-	(*InstancesDemoteMasterRequest)(nil),                             // 78: google.cloud.sql.v1beta4.InstancesDemoteMasterRequest
-	(*InstancesDemoteRequest)(nil),                                   // 79: google.cloud.sql.v1beta4.InstancesDemoteRequest
-	(*InstancesExportRequest)(nil),                                   // 80: google.cloud.sql.v1beta4.InstancesExportRequest
-	(*InstancesFailoverRequest)(nil),                                 // 81: google.cloud.sql.v1beta4.InstancesFailoverRequest
-	(*InstancesImportRequest)(nil),                                   // 82: google.cloud.sql.v1beta4.InstancesImportRequest
-	(*InstancesPreCheckMajorVersionUpgradeRequest)(nil),              // 83: google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequest
-	(*MySqlSyncConfig)(nil),                                          // 84: google.cloud.sql.v1beta4.MySqlSyncConfig
-	(*InstancesListResponse)(nil),                                    // 85: google.cloud.sql.v1beta4.InstancesListResponse
-	(*InstancesListServerCasResponse)(nil),                           // 86: google.cloud.sql.v1beta4.InstancesListServerCasResponse
-	(*InstancesListServerCertificatesResponse)(nil),                  // 87: google.cloud.sql.v1beta4.InstancesListServerCertificatesResponse
-	(*InstancesListEntraIdCertificatesResponse)(nil),                 // 88: google.cloud.sql.v1beta4.InstancesListEntraIdCertificatesResponse
-	(*InstancesRestoreBackupRequest)(nil),                            // 89: google.cloud.sql.v1beta4.InstancesRestoreBackupRequest
-	(*InstancesRotateServerCaRequest)(nil),                           // 90: google.cloud.sql.v1beta4.InstancesRotateServerCaRequest
-	(*InstancesRotateServerCertificateRequest)(nil),                  // 91: google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequest
-	(*InstancesRotateEntraIdCertificateRequest)(nil),                 // 92: google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequest
-	(*InstancesTruncateLogRequest)(nil),                              // 93: google.cloud.sql.v1beta4.InstancesTruncateLogRequest
-	(*InstancesAcquireSsrsLeaseRequest)(nil),                         // 94: google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequest
-	(*PointInTimeRestoreContext)(nil),                                // 95: google.cloud.sql.v1beta4.PointInTimeRestoreContext
-	(*PerformDiskShrinkContext)(nil),                                 // 96: google.cloud.sql.v1beta4.PerformDiskShrinkContext
-	(*PreCheckResponse)(nil),                                         // 97: google.cloud.sql.v1beta4.PreCheckResponse
-	(*PreCheckMajorVersionUpgradeContext)(nil),                       // 98: google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext
-	(*SqlInstancesGetDiskShrinkConfigResponse)(nil),                  // 99: google.cloud.sql.v1beta4.SqlInstancesGetDiskShrinkConfigResponse
-	(*SqlInstancesVerifyExternalSyncSettingsResponse)(nil),           // 100: google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsResponse
-	(*SqlExternalSyncSettingError)(nil),                              // 101: google.cloud.sql.v1beta4.SqlExternalSyncSettingError
-	(*IpConfiguration)(nil),                                          // 102: google.cloud.sql.v1beta4.IpConfiguration
-	(*PscConfig)(nil),                                                // 103: google.cloud.sql.v1beta4.PscConfig
-	(*PscAutoConnectionConfig)(nil),                                  // 104: google.cloud.sql.v1beta4.PscAutoConnectionConfig
-	(*IpMapping)(nil),                                                // 105: google.cloud.sql.v1beta4.IpMapping
-	(*LocationPreference)(nil),                                       // 106: google.cloud.sql.v1beta4.LocationPreference
-	(*MaintenanceWindow)(nil),                                        // 107: google.cloud.sql.v1beta4.MaintenanceWindow
-	(*DenyMaintenancePeriod)(nil),                                    // 108: google.cloud.sql.v1beta4.DenyMaintenancePeriod
-	(*InsightsConfig)(nil),                                           // 109: google.cloud.sql.v1beta4.InsightsConfig
-	(*MySqlReplicaConfiguration)(nil),                                // 110: google.cloud.sql.v1beta4.MySqlReplicaConfiguration
-	(*SelectedObjects)(nil),                                          // 111: google.cloud.sql.v1beta4.SelectedObjects
-	(*OnPremisesConfiguration)(nil),                                  // 112: google.cloud.sql.v1beta4.OnPremisesConfiguration
-	(*DiskEncryptionConfiguration)(nil),                              // 113: google.cloud.sql.v1beta4.DiskEncryptionConfiguration
-	(*DiskEncryptionStatus)(nil),                                     // 114: google.cloud.sql.v1beta4.DiskEncryptionStatus
-	(*SqlSubOperationType)(nil),                                      // 115: google.cloud.sql.v1beta4.SqlSubOperationType
-	(*Operation)(nil),                                                // 116: google.cloud.sql.v1beta4.Operation
-	(*OperationError)(nil),                                           // 117: google.cloud.sql.v1beta4.OperationError
-	(*OperationErrors)(nil),                                          // 118: google.cloud.sql.v1beta4.OperationErrors
-	(*PasswordValidationPolicy)(nil),                                 // 119: google.cloud.sql.v1beta4.PasswordValidationPolicy
-	(*OperationsListResponse)(nil),                                   // 120: google.cloud.sql.v1beta4.OperationsListResponse
-	(*ReplicaConfiguration)(nil),                                     // 121: google.cloud.sql.v1beta4.ReplicaConfiguration
-	(*RestoreBackupContext)(nil),                                     // 122: google.cloud.sql.v1beta4.RestoreBackupContext
-	(*RotateServerCaContext)(nil),                                    // 123: google.cloud.sql.v1beta4.RotateServerCaContext
-	(*RotateServerCertificateContext)(nil),                           // 124: google.cloud.sql.v1beta4.RotateServerCertificateContext
-	(*RotateEntraIdCertificateContext)(nil),                          // 125: google.cloud.sql.v1beta4.RotateEntraIdCertificateContext
-	(*DataCacheConfig)(nil),                                          // 126: google.cloud.sql.v1beta4.DataCacheConfig
-	(*FinalBackupConfig)(nil),                                        // 127: google.cloud.sql.v1beta4.FinalBackupConfig
-	(*Settings)(nil),                                                 // 128: google.cloud.sql.v1beta4.Settings
-	(*PerformanceCaptureConfig)(nil),                                 // 129: google.cloud.sql.v1beta4.PerformanceCaptureConfig
-	(*AdvancedMachineFeatures)(nil),                                  // 130: google.cloud.sql.v1beta4.AdvancedMachineFeatures
-	(*SslCert)(nil),                                                  // 131: google.cloud.sql.v1beta4.SslCert
-	(*SslCertDetail)(nil),                                            // 132: google.cloud.sql.v1beta4.SslCertDetail
-	(*SslCertsCreateEphemeralRequest)(nil),                           // 133: google.cloud.sql.v1beta4.SslCertsCreateEphemeralRequest
-	(*SslCertsInsertRequest)(nil),                                    // 134: google.cloud.sql.v1beta4.SslCertsInsertRequest
-	(*SqlInstancesRescheduleMaintenanceRequestBody)(nil),             // 135: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody
-	(*SslCertsInsertResponse)(nil),                                   // 136: google.cloud.sql.v1beta4.SslCertsInsertResponse
-	(*SslCertsListResponse)(nil),                                     // 137: google.cloud.sql.v1beta4.SslCertsListResponse
-	(*TruncateLogContext)(nil),                                       // 138: google.cloud.sql.v1beta4.TruncateLogContext
-	(*SqlActiveDirectoryConfig)(nil),                                 // 139: google.cloud.sql.v1beta4.SqlActiveDirectoryConfig
-	(*SqlServerAuditConfig)(nil),                                     // 140: google.cloud.sql.v1beta4.SqlServerAuditConfig
-	(*SqlServerEntraIdConfig)(nil),                                   // 141: google.cloud.sql.v1beta4.SqlServerEntraIdConfig
-	(*ConnectionPoolFlags)(nil),                                      // 142: google.cloud.sql.v1beta4.ConnectionPoolFlags
-	(*ReadPoolAutoScaleConfig)(nil),                                  // 143: google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig
-	(*ConnectionPoolConfig)(nil),                                     // 144: google.cloud.sql.v1beta4.ConnectionPoolConfig
-	(*AcquireSsrsLeaseContext)(nil),                                  // 145: google.cloud.sql.v1beta4.AcquireSsrsLeaseContext
-	(*DatabaseInstance_SqlFailoverReplica)(nil),                      // 146: google.cloud.sql.v1beta4.DatabaseInstance.SqlFailoverReplica
-	(*DatabaseInstance_SqlScheduledMaintenance)(nil),                 // 147: google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance
-	(*DatabaseInstance_SqlOutOfDiskReport)(nil),                      // 148: google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport
-	(*DatabaseInstance_PoolNodeConfig)(nil),                          // 149: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig
-	nil,                                                              // 150: google.cloud.sql.v1beta4.DatabaseInstance.TagsEntry
-	(*ExportContext_SqlCsvExportOptions)(nil),                        // 151: google.cloud.sql.v1beta4.ExportContext.SqlCsvExportOptions
-	(*ExportContext_SqlExportOptions)(nil),                           // 152: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions
-	(*ExportContext_SqlBakExportOptions)(nil),                        // 153: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions
-	(*ExportContext_SqlTdeExportOptions)(nil),                        // 154: google.cloud.sql.v1beta4.ExportContext.SqlTdeExportOptions
-	(*ExportContext_SqlExportOptions_MysqlExportOptions)(nil),        // 155: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.MysqlExportOptions
-	(*ExportContext_SqlExportOptions_PostgresExportOptions)(nil),     // 156: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions
-	(*ImportContext_SqlImportOptions)(nil),                           // 157: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions
-	(*ImportContext_SqlCsvImportOptions)(nil),                        // 158: google.cloud.sql.v1beta4.ImportContext.SqlCsvImportOptions
-	(*ImportContext_SqlBakImportOptions)(nil),                        // 159: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions
-	(*ImportContext_SqlTdeImportOptions)(nil),                        // 160: google.cloud.sql.v1beta4.ImportContext.SqlTdeImportOptions
-	(*ImportContext_SqlImportOptions_PostgresImportOptions)(nil),     // 161: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions
-	(*ImportContext_SqlBakImportOptions_EncryptionOptions)(nil),      // 162: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.EncryptionOptions
-	nil, // 163: google.cloud.sql.v1beta4.Settings.UserLabelsEntry
-	(*SqlInstancesRescheduleMaintenanceRequestBody_Reschedule)(nil), // 164: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
-	(*ReadPoolAutoScaleConfig_TargetMetric)(nil),                    // 165: google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig.TargetMetric
-	(*timestamppb.Timestamp)(nil),                                   // 166: google.protobuf.Timestamp
-	(*wrapperspb.Int32Value)(nil),                                   // 167: google.protobuf.Int32Value
-	(*wrapperspb.BoolValue)(nil),                                    // 168: google.protobuf.BoolValue
-	(*interval.Interval)(nil),                                       // 169: google.type.Interval
-	(*wrapperspb.Int64Value)(nil),                                   // 170: google.protobuf.Int64Value
-	(*durationpb.Duration)(nil),                                     // 171: google.protobuf.Duration
+	(DatabaseInstance_DatabaseCenterIntegration)(0),                  // 27: google.cloud.sql.v1beta4.DatabaseInstance.DatabaseCenterIntegration
+	(DatabaseInstance_SqlOutOfDiskReport_SqlOutOfDiskState)(0),       // 28: google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
+	(DnsNameMapping_ConnectionType)(0),                               // 29: google.cloud.sql.v1beta4.DnsNameMapping.ConnectionType
+	(DnsNameMapping_DnsScope)(0),                                     // 30: google.cloud.sql.v1beta4.DnsNameMapping.DnsScope
+	(DnsNameMapping_RecordManager)(0),                                // 31: google.cloud.sql.v1beta4.DnsNameMapping.RecordManager
+	(PreCheckResponse_MessageType)(0),                                // 32: google.cloud.sql.v1beta4.PreCheckResponse.MessageType
+	(SqlExternalSyncSettingError_SqlExternalSyncSettingErrorType)(0), // 33: google.cloud.sql.v1beta4.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
+	(IpConfiguration_SslMode)(0),                                     // 34: google.cloud.sql.v1beta4.IpConfiguration.SslMode
+	(IpConfiguration_CaMode)(0),                                      // 35: google.cloud.sql.v1beta4.IpConfiguration.CaMode
+	(IpConfiguration_ServerCertificateRotationMode)(0),               // 36: google.cloud.sql.v1beta4.IpConfiguration.ServerCertificateRotationMode
+	(OnPremisesConfiguration_SslOption)(0),                           // 37: google.cloud.sql.v1beta4.OnPremisesConfiguration.SslOption
+	(Operation_SqlOperationType)(0),                                  // 38: google.cloud.sql.v1beta4.Operation.SqlOperationType
+	(Operation_SqlOperationStatus)(0),                                // 39: google.cloud.sql.v1beta4.Operation.SqlOperationStatus
+	(PasswordValidationPolicy_Complexity)(0),                         // 40: google.cloud.sql.v1beta4.PasswordValidationPolicy.Complexity
+	(Settings_SqlActivationPolicy)(0),                                // 41: google.cloud.sql.v1beta4.Settings.SqlActivationPolicy
+	(Settings_Edition)(0),                                            // 42: google.cloud.sql.v1beta4.Settings.Edition
+	(Settings_ConnectorEnforcement)(0),                               // 43: google.cloud.sql.v1beta4.Settings.ConnectorEnforcement
+	(Settings_DataApiAccess)(0),                                      // 44: google.cloud.sql.v1beta4.Settings.DataApiAccess
+	(PerformanceCaptureConfig_TransactionKillType)(0),                // 45: google.cloud.sql.v1beta4.PerformanceCaptureConfig.TransactionKillType
+	(SqlInstancesRescheduleMaintenanceRequestBody_RescheduleType)(0), // 46: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
+	(SqlActiveDirectoryConfig_ActiveDirectoryMode)(0),                // 47: google.cloud.sql.v1beta4.SqlActiveDirectoryConfig.ActiveDirectoryMode
+	(*AclEntry)(nil),                                                 // 48: google.cloud.sql.v1beta4.AclEntry
+	(*ApiWarning)(nil),                                               // 49: google.cloud.sql.v1beta4.ApiWarning
+	(*BackupRetentionSettings)(nil),                                  // 50: google.cloud.sql.v1beta4.BackupRetentionSettings
+	(*BackupConfiguration)(nil),                                      // 51: google.cloud.sql.v1beta4.BackupConfiguration
+	(*BackupRun)(nil),                                                // 52: google.cloud.sql.v1beta4.BackupRun
+	(*Backup)(nil),                                                   // 53: google.cloud.sql.v1beta4.Backup
+	(*BackupRunsListResponse)(nil),                                   // 54: google.cloud.sql.v1beta4.BackupRunsListResponse
+	(*BinLogCoordinates)(nil),                                        // 55: google.cloud.sql.v1beta4.BinLogCoordinates
+	(*BackupContext)(nil),                                            // 56: google.cloud.sql.v1beta4.BackupContext
+	(*CloneContext)(nil),                                             // 57: google.cloud.sql.v1beta4.CloneContext
+	(*Database)(nil),                                                 // 58: google.cloud.sql.v1beta4.Database
+	(*SqlServerDatabaseDetails)(nil),                                 // 59: google.cloud.sql.v1beta4.SqlServerDatabaseDetails
+	(*DatabaseFlags)(nil),                                            // 60: google.cloud.sql.v1beta4.DatabaseFlags
+	(*SyncFlags)(nil),                                                // 61: google.cloud.sql.v1beta4.SyncFlags
+	(*InstanceReference)(nil),                                        // 62: google.cloud.sql.v1beta4.InstanceReference
+	(*DatabaseInstance)(nil),                                         // 63: google.cloud.sql.v1beta4.DatabaseInstance
+	(*DnsNameMapping)(nil),                                           // 64: google.cloud.sql.v1beta4.DnsNameMapping
+	(*GeminiInstanceConfig)(nil),                                     // 65: google.cloud.sql.v1beta4.GeminiInstanceConfig
+	(*ReplicationCluster)(nil),                                       // 66: google.cloud.sql.v1beta4.ReplicationCluster
+	(*AvailableDatabaseVersion)(nil),                                 // 67: google.cloud.sql.v1beta4.AvailableDatabaseVersion
+	(*DatabasesListResponse)(nil),                                    // 68: google.cloud.sql.v1beta4.DatabasesListResponse
+	(*DemoteMasterConfiguration)(nil),                                // 69: google.cloud.sql.v1beta4.DemoteMasterConfiguration
+	(*DemoteMasterContext)(nil),                                      // 70: google.cloud.sql.v1beta4.DemoteMasterContext
+	(*DemoteMasterMySqlReplicaConfiguration)(nil),                    // 71: google.cloud.sql.v1beta4.DemoteMasterMySqlReplicaConfiguration
+	(*DemoteContext)(nil),                                            // 72: google.cloud.sql.v1beta4.DemoteContext
+	(*ExportContext)(nil),                                            // 73: google.cloud.sql.v1beta4.ExportContext
+	(*FailoverContext)(nil),                                          // 74: google.cloud.sql.v1beta4.FailoverContext
+	(*Flag)(nil),                                                     // 75: google.cloud.sql.v1beta4.Flag
+	(*FlagsListResponse)(nil),                                        // 76: google.cloud.sql.v1beta4.FlagsListResponse
+	(*ImportContext)(nil),                                            // 77: google.cloud.sql.v1beta4.ImportContext
+	(*InstancesCloneRequest)(nil),                                    // 78: google.cloud.sql.v1beta4.InstancesCloneRequest
+	(*InstancesDemoteMasterRequest)(nil),                             // 79: google.cloud.sql.v1beta4.InstancesDemoteMasterRequest
+	(*InstancesDemoteRequest)(nil),                                   // 80: google.cloud.sql.v1beta4.InstancesDemoteRequest
+	(*InstancesExportRequest)(nil),                                   // 81: google.cloud.sql.v1beta4.InstancesExportRequest
+	(*InstancesFailoverRequest)(nil),                                 // 82: google.cloud.sql.v1beta4.InstancesFailoverRequest
+	(*InstancesImportRequest)(nil),                                   // 83: google.cloud.sql.v1beta4.InstancesImportRequest
+	(*InstancesPreCheckMajorVersionUpgradeRequest)(nil),              // 84: google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequest
+	(*MySqlSyncConfig)(nil),                                          // 85: google.cloud.sql.v1beta4.MySqlSyncConfig
+	(*InstancesListResponse)(nil),                                    // 86: google.cloud.sql.v1beta4.InstancesListResponse
+	(*InstancesListServerCasResponse)(nil),                           // 87: google.cloud.sql.v1beta4.InstancesListServerCasResponse
+	(*InstancesListServerCertificatesResponse)(nil),                  // 88: google.cloud.sql.v1beta4.InstancesListServerCertificatesResponse
+	(*InstancesListEntraIdCertificatesResponse)(nil),                 // 89: google.cloud.sql.v1beta4.InstancesListEntraIdCertificatesResponse
+	(*InstancesRestoreBackupRequest)(nil),                            // 90: google.cloud.sql.v1beta4.InstancesRestoreBackupRequest
+	(*InstancesRotateServerCaRequest)(nil),                           // 91: google.cloud.sql.v1beta4.InstancesRotateServerCaRequest
+	(*InstancesRotateServerCertificateRequest)(nil),                  // 92: google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequest
+	(*InstancesRotateEntraIdCertificateRequest)(nil),                 // 93: google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequest
+	(*InstancesTruncateLogRequest)(nil),                              // 94: google.cloud.sql.v1beta4.InstancesTruncateLogRequest
+	(*InstancesAcquireSsrsLeaseRequest)(nil),                         // 95: google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequest
+	(*PointInTimeRestoreContext)(nil),                                // 96: google.cloud.sql.v1beta4.PointInTimeRestoreContext
+	(*PerformDiskShrinkContext)(nil),                                 // 97: google.cloud.sql.v1beta4.PerformDiskShrinkContext
+	(*PreCheckResponse)(nil),                                         // 98: google.cloud.sql.v1beta4.PreCheckResponse
+	(*PreCheckMajorVersionUpgradeContext)(nil),                       // 99: google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext
+	(*SqlInstancesGetDiskShrinkConfigResponse)(nil),                  // 100: google.cloud.sql.v1beta4.SqlInstancesGetDiskShrinkConfigResponse
+	(*SqlInstancesVerifyExternalSyncSettingsResponse)(nil),           // 101: google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsResponse
+	(*SqlExternalSyncSettingError)(nil),                              // 102: google.cloud.sql.v1beta4.SqlExternalSyncSettingError
+	(*IpConfiguration)(nil),                                          // 103: google.cloud.sql.v1beta4.IpConfiguration
+	(*PscConfig)(nil),                                                // 104: google.cloud.sql.v1beta4.PscConfig
+	(*PscAutoConnectionConfig)(nil),                                  // 105: google.cloud.sql.v1beta4.PscAutoConnectionConfig
+	(*IpMapping)(nil),                                                // 106: google.cloud.sql.v1beta4.IpMapping
+	(*LocationPreference)(nil),                                       // 107: google.cloud.sql.v1beta4.LocationPreference
+	(*MaintenanceWindow)(nil),                                        // 108: google.cloud.sql.v1beta4.MaintenanceWindow
+	(*DenyMaintenancePeriod)(nil),                                    // 109: google.cloud.sql.v1beta4.DenyMaintenancePeriod
+	(*InsightsConfig)(nil),                                           // 110: google.cloud.sql.v1beta4.InsightsConfig
+	(*MySqlReplicaConfiguration)(nil),                                // 111: google.cloud.sql.v1beta4.MySqlReplicaConfiguration
+	(*SelectedObjects)(nil),                                          // 112: google.cloud.sql.v1beta4.SelectedObjects
+	(*OnPremisesConfiguration)(nil),                                  // 113: google.cloud.sql.v1beta4.OnPremisesConfiguration
+	(*DiskEncryptionConfiguration)(nil),                              // 114: google.cloud.sql.v1beta4.DiskEncryptionConfiguration
+	(*DiskEncryptionStatus)(nil),                                     // 115: google.cloud.sql.v1beta4.DiskEncryptionStatus
+	(*SqlSubOperationType)(nil),                                      // 116: google.cloud.sql.v1beta4.SqlSubOperationType
+	(*Operation)(nil),                                                // 117: google.cloud.sql.v1beta4.Operation
+	(*OperationError)(nil),                                           // 118: google.cloud.sql.v1beta4.OperationError
+	(*OperationErrors)(nil),                                          // 119: google.cloud.sql.v1beta4.OperationErrors
+	(*PasswordValidationPolicy)(nil),                                 // 120: google.cloud.sql.v1beta4.PasswordValidationPolicy
+	(*OperationsListResponse)(nil),                                   // 121: google.cloud.sql.v1beta4.OperationsListResponse
+	(*ReplicaConfiguration)(nil),                                     // 122: google.cloud.sql.v1beta4.ReplicaConfiguration
+	(*RestoreBackupContext)(nil),                                     // 123: google.cloud.sql.v1beta4.RestoreBackupContext
+	(*RotateServerCaContext)(nil),                                    // 124: google.cloud.sql.v1beta4.RotateServerCaContext
+	(*RotateServerCertificateContext)(nil),                           // 125: google.cloud.sql.v1beta4.RotateServerCertificateContext
+	(*RotateEntraIdCertificateContext)(nil),                          // 126: google.cloud.sql.v1beta4.RotateEntraIdCertificateContext
+	(*DataCacheConfig)(nil),                                          // 127: google.cloud.sql.v1beta4.DataCacheConfig
+	(*FinalBackupConfig)(nil),                                        // 128: google.cloud.sql.v1beta4.FinalBackupConfig
+	(*Settings)(nil),                                                 // 129: google.cloud.sql.v1beta4.Settings
+	(*PerformanceCaptureConfig)(nil),                                 // 130: google.cloud.sql.v1beta4.PerformanceCaptureConfig
+	(*AdvancedMachineFeatures)(nil),                                  // 131: google.cloud.sql.v1beta4.AdvancedMachineFeatures
+	(*SslCert)(nil),                                                  // 132: google.cloud.sql.v1beta4.SslCert
+	(*SslCertDetail)(nil),                                            // 133: google.cloud.sql.v1beta4.SslCertDetail
+	(*SslCertsCreateEphemeralRequest)(nil),                           // 134: google.cloud.sql.v1beta4.SslCertsCreateEphemeralRequest
+	(*SslCertsInsertRequest)(nil),                                    // 135: google.cloud.sql.v1beta4.SslCertsInsertRequest
+	(*SqlInstancesRescheduleMaintenanceRequestBody)(nil),             // 136: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody
+	(*SslCertsInsertResponse)(nil),                                   // 137: google.cloud.sql.v1beta4.SslCertsInsertResponse
+	(*SslCertsListResponse)(nil),                                     // 138: google.cloud.sql.v1beta4.SslCertsListResponse
+	(*TruncateLogContext)(nil),                                       // 139: google.cloud.sql.v1beta4.TruncateLogContext
+	(*SqlActiveDirectoryConfig)(nil),                                 // 140: google.cloud.sql.v1beta4.SqlActiveDirectoryConfig
+	(*SqlServerAuditConfig)(nil),                                     // 141: google.cloud.sql.v1beta4.SqlServerAuditConfig
+	(*SqlServerEntraIdConfig)(nil),                                   // 142: google.cloud.sql.v1beta4.SqlServerEntraIdConfig
+	(*ConnectionPoolFlags)(nil),                                      // 143: google.cloud.sql.v1beta4.ConnectionPoolFlags
+	(*ReadPoolAutoScaleConfig)(nil),                                  // 144: google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig
+	(*ConnectionPoolConfig)(nil),                                     // 145: google.cloud.sql.v1beta4.ConnectionPoolConfig
+	(*AcquireSsrsLeaseContext)(nil),                                  // 146: google.cloud.sql.v1beta4.AcquireSsrsLeaseContext
+	(*DatabaseInstance_SqlFailoverReplica)(nil),                      // 147: google.cloud.sql.v1beta4.DatabaseInstance.SqlFailoverReplica
+	(*DatabaseInstance_SqlScheduledMaintenance)(nil),                 // 148: google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance
+	(*DatabaseInstance_SqlOutOfDiskReport)(nil),                      // 149: google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport
+	(*DatabaseInstance_PoolNodeConfig)(nil),                          // 150: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig
+	nil,                                                              // 151: google.cloud.sql.v1beta4.DatabaseInstance.TagsEntry
+	(*ExportContext_SqlCsvExportOptions)(nil),                        // 152: google.cloud.sql.v1beta4.ExportContext.SqlCsvExportOptions
+	(*ExportContext_SqlExportOptions)(nil),                           // 153: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions
+	(*ExportContext_SqlBakExportOptions)(nil),                        // 154: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions
+	(*ExportContext_SqlTdeExportOptions)(nil),                        // 155: google.cloud.sql.v1beta4.ExportContext.SqlTdeExportOptions
+	(*ExportContext_SqlExportOptions_MysqlExportOptions)(nil),        // 156: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.MysqlExportOptions
+	(*ExportContext_SqlExportOptions_PostgresExportOptions)(nil),     // 157: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions
+	(*ImportContext_SqlImportOptions)(nil),                           // 158: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions
+	(*ImportContext_SqlCsvImportOptions)(nil),                        // 159: google.cloud.sql.v1beta4.ImportContext.SqlCsvImportOptions
+	(*ImportContext_SqlBakImportOptions)(nil),                        // 160: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions
+	(*ImportContext_SqlTdeImportOptions)(nil),                        // 161: google.cloud.sql.v1beta4.ImportContext.SqlTdeImportOptions
+	(*ImportContext_SqlImportOptions_PostgresImportOptions)(nil),     // 162: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions
+	(*ImportContext_SqlBakImportOptions_EncryptionOptions)(nil),      // 163: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.EncryptionOptions
+	nil, // 164: google.cloud.sql.v1beta4.Settings.UserLabelsEntry
+	(*SqlInstancesRescheduleMaintenanceRequestBody_Reschedule)(nil), // 165: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
+	(*ReadPoolAutoScaleConfig_TargetMetric)(nil),                    // 166: google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig.TargetMetric
+	(*timestamppb.Timestamp)(nil),                                   // 167: google.protobuf.Timestamp
+	(*wrapperspb.Int32Value)(nil),                                   // 168: google.protobuf.Int32Value
+	(*wrapperspb.BoolValue)(nil),                                    // 169: google.protobuf.BoolValue
+	(*interval.Interval)(nil),                                       // 170: google.type.Interval
+	(*wrapperspb.Int64Value)(nil),                                   // 171: google.protobuf.Int64Value
+	(*durationpb.Duration)(nil),                                     // 172: google.protobuf.Duration
 }
 var file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_depIdxs = []int32{
-	166, // 0: google.cloud.sql.v1beta4.AclEntry.expiration_time:type_name -> google.protobuf.Timestamp
+	167, // 0: google.cloud.sql.v1beta4.AclEntry.expiration_time:type_name -> google.protobuf.Timestamp
 	19,  // 1: google.cloud.sql.v1beta4.ApiWarning.code:type_name -> google.cloud.sql.v1beta4.ApiWarning.SqlApiWarningCode
 	20,  // 2: google.cloud.sql.v1beta4.BackupRetentionSettings.retention_unit:type_name -> google.cloud.sql.v1beta4.BackupRetentionSettings.RetentionUnit
-	167, // 3: google.cloud.sql.v1beta4.BackupRetentionSettings.retained_backups:type_name -> google.protobuf.Int32Value
-	168, // 4: google.cloud.sql.v1beta4.BackupConfiguration.enabled:type_name -> google.protobuf.BoolValue
-	168, // 5: google.cloud.sql.v1beta4.BackupConfiguration.binary_log_enabled:type_name -> google.protobuf.BoolValue
-	168, // 6: google.cloud.sql.v1beta4.BackupConfiguration.replication_log_archiving_enabled:type_name -> google.protobuf.BoolValue
-	168, // 7: google.cloud.sql.v1beta4.BackupConfiguration.point_in_time_recovery_enabled:type_name -> google.protobuf.BoolValue
-	167, // 8: google.cloud.sql.v1beta4.BackupConfiguration.transaction_log_retention_days:type_name -> google.protobuf.Int32Value
-	49,  // 9: google.cloud.sql.v1beta4.BackupConfiguration.backup_retention_settings:type_name -> google.cloud.sql.v1beta4.BackupRetentionSettings
+	168, // 3: google.cloud.sql.v1beta4.BackupRetentionSettings.retained_backups:type_name -> google.protobuf.Int32Value
+	169, // 4: google.cloud.sql.v1beta4.BackupConfiguration.enabled:type_name -> google.protobuf.BoolValue
+	169, // 5: google.cloud.sql.v1beta4.BackupConfiguration.binary_log_enabled:type_name -> google.protobuf.BoolValue
+	169, // 6: google.cloud.sql.v1beta4.BackupConfiguration.replication_log_archiving_enabled:type_name -> google.protobuf.BoolValue
+	169, // 7: google.cloud.sql.v1beta4.BackupConfiguration.point_in_time_recovery_enabled:type_name -> google.protobuf.BoolValue
+	168, // 8: google.cloud.sql.v1beta4.BackupConfiguration.transaction_log_retention_days:type_name -> google.protobuf.Int32Value
+	50,  // 9: google.cloud.sql.v1beta4.BackupConfiguration.backup_retention_settings:type_name -> google.cloud.sql.v1beta4.BackupRetentionSettings
 	21,  // 10: google.cloud.sql.v1beta4.BackupConfiguration.transactional_log_storage_state:type_name -> google.cloud.sql.v1beta4.BackupConfiguration.TransactionalLogStorageState
 	22,  // 11: google.cloud.sql.v1beta4.BackupConfiguration.backup_tier:type_name -> google.cloud.sql.v1beta4.BackupConfiguration.BackupTier
 	4,   // 12: google.cloud.sql.v1beta4.BackupRun.status:type_name -> google.cloud.sql.v1beta4.SqlBackupRunStatus
-	166, // 13: google.cloud.sql.v1beta4.BackupRun.enqueued_time:type_name -> google.protobuf.Timestamp
-	166, // 14: google.cloud.sql.v1beta4.BackupRun.start_time:type_name -> google.protobuf.Timestamp
-	166, // 15: google.cloud.sql.v1beta4.BackupRun.end_time:type_name -> google.protobuf.Timestamp
-	117, // 16: google.cloud.sql.v1beta4.BackupRun.error:type_name -> google.cloud.sql.v1beta4.OperationError
+	167, // 13: google.cloud.sql.v1beta4.BackupRun.enqueued_time:type_name -> google.protobuf.Timestamp
+	167, // 14: google.cloud.sql.v1beta4.BackupRun.start_time:type_name -> google.protobuf.Timestamp
+	167, // 15: google.cloud.sql.v1beta4.BackupRun.end_time:type_name -> google.protobuf.Timestamp
+	118, // 16: google.cloud.sql.v1beta4.BackupRun.error:type_name -> google.cloud.sql.v1beta4.OperationError
 	5,   // 17: google.cloud.sql.v1beta4.BackupRun.type:type_name -> google.cloud.sql.v1beta4.SqlBackupRunType
-	166, // 18: google.cloud.sql.v1beta4.BackupRun.window_start_time:type_name -> google.protobuf.Timestamp
+	167, // 18: google.cloud.sql.v1beta4.BackupRun.window_start_time:type_name -> google.protobuf.Timestamp
 	10,  // 19: google.cloud.sql.v1beta4.BackupRun.database_version:type_name -> google.cloud.sql.v1beta4.SqlDatabaseVersion
-	113, // 20: google.cloud.sql.v1beta4.BackupRun.disk_encryption_configuration:type_name -> google.cloud.sql.v1beta4.DiskEncryptionConfiguration
-	114, // 21: google.cloud.sql.v1beta4.BackupRun.disk_encryption_status:type_name -> google.cloud.sql.v1beta4.DiskEncryptionStatus
+	114, // 20: google.cloud.sql.v1beta4.BackupRun.disk_encryption_configuration:type_name -> google.cloud.sql.v1beta4.DiskEncryptionConfiguration
+	115, // 21: google.cloud.sql.v1beta4.BackupRun.disk_encryption_status:type_name -> google.cloud.sql.v1beta4.DiskEncryptionStatus
 	6,   // 22: google.cloud.sql.v1beta4.BackupRun.backup_kind:type_name -> google.cloud.sql.v1beta4.SqlBackupKind
 	23,  // 23: google.cloud.sql.v1beta4.Backup.type:type_name -> google.cloud.sql.v1beta4.Backup.SqlBackupType
-	169, // 24: google.cloud.sql.v1beta4.Backup.backup_interval:type_name -> google.type.Interval
+	170, // 24: google.cloud.sql.v1beta4.Backup.backup_interval:type_name -> google.type.Interval
 	24,  // 25: google.cloud.sql.v1beta4.Backup.state:type_name -> google.cloud.sql.v1beta4.Backup.SqlBackupState
-	117, // 26: google.cloud.sql.v1beta4.Backup.error:type_name -> google.cloud.sql.v1beta4.OperationError
+	118, // 26: google.cloud.sql.v1beta4.Backup.error:type_name -> google.cloud.sql.v1beta4.OperationError
 	6,   // 27: google.cloud.sql.v1beta4.Backup.backup_kind:type_name -> google.cloud.sql.v1beta4.SqlBackupKind
-	166, // 28: google.cloud.sql.v1beta4.Backup.expiry_time:type_name -> google.protobuf.Timestamp
+	167, // 28: google.cloud.sql.v1beta4.Backup.expiry_time:type_name -> google.protobuf.Timestamp
 	10,  // 29: google.cloud.sql.v1beta4.Backup.database_version:type_name -> google.cloud.sql.v1beta4.SqlDatabaseVersion
-	166, // 30: google.cloud.sql.v1beta4.Backup.instance_deletion_time:type_name -> google.protobuf.Timestamp
-	62,  // 31: google.cloud.sql.v1beta4.Backup.instance_settings:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
-	168, // 32: google.cloud.sql.v1beta4.Backup.satisfies_pzs:type_name -> google.protobuf.BoolValue
-	168, // 33: google.cloud.sql.v1beta4.Backup.satisfies_pzi:type_name -> google.protobuf.BoolValue
-	51,  // 34: google.cloud.sql.v1beta4.BackupRunsListResponse.items:type_name -> google.cloud.sql.v1beta4.BackupRun
-	54,  // 35: google.cloud.sql.v1beta4.CloneContext.bin_log_coordinates:type_name -> google.cloud.sql.v1beta4.BinLogCoordinates
-	166, // 36: google.cloud.sql.v1beta4.CloneContext.point_in_time:type_name -> google.protobuf.Timestamp
-	166, // 37: google.cloud.sql.v1beta4.CloneContext.source_instance_deletion_time:type_name -> google.protobuf.Timestamp
-	58,  // 38: google.cloud.sql.v1beta4.Database.sqlserver_database_details:type_name -> google.cloud.sql.v1beta4.SqlServerDatabaseDetails
+	167, // 30: google.cloud.sql.v1beta4.Backup.instance_deletion_time:type_name -> google.protobuf.Timestamp
+	63,  // 31: google.cloud.sql.v1beta4.Backup.instance_settings:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
+	169, // 32: google.cloud.sql.v1beta4.Backup.satisfies_pzs:type_name -> google.protobuf.BoolValue
+	169, // 33: google.cloud.sql.v1beta4.Backup.satisfies_pzi:type_name -> google.protobuf.BoolValue
+	52,  // 34: google.cloud.sql.v1beta4.BackupRunsListResponse.items:type_name -> google.cloud.sql.v1beta4.BackupRun
+	55,  // 35: google.cloud.sql.v1beta4.CloneContext.bin_log_coordinates:type_name -> google.cloud.sql.v1beta4.BinLogCoordinates
+	167, // 36: google.cloud.sql.v1beta4.CloneContext.point_in_time:type_name -> google.protobuf.Timestamp
+	167, // 37: google.cloud.sql.v1beta4.CloneContext.source_instance_deletion_time:type_name -> google.protobuf.Timestamp
+	59,  // 38: google.cloud.sql.v1beta4.Database.sqlserver_database_details:type_name -> google.cloud.sql.v1beta4.SqlServerDatabaseDetails
 	25,  // 39: google.cloud.sql.v1beta4.DatabaseInstance.state:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlInstanceState
 	10,  // 40: google.cloud.sql.v1beta4.DatabaseInstance.database_version:type_name -> google.cloud.sql.v1beta4.SqlDatabaseVersion
-	128, // 41: google.cloud.sql.v1beta4.DatabaseInstance.settings:type_name -> google.cloud.sql.v1beta4.Settings
-	146, // 42: google.cloud.sql.v1beta4.DatabaseInstance.failover_replica:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlFailoverReplica
-	170, // 43: google.cloud.sql.v1beta4.DatabaseInstance.max_disk_size:type_name -> google.protobuf.Int64Value
-	170, // 44: google.cloud.sql.v1beta4.DatabaseInstance.current_disk_size:type_name -> google.protobuf.Int64Value
-	105, // 45: google.cloud.sql.v1beta4.DatabaseInstance.ip_addresses:type_name -> google.cloud.sql.v1beta4.IpMapping
-	131, // 46: google.cloud.sql.v1beta4.DatabaseInstance.server_ca_cert:type_name -> google.cloud.sql.v1beta4.SslCert
+	129, // 41: google.cloud.sql.v1beta4.DatabaseInstance.settings:type_name -> google.cloud.sql.v1beta4.Settings
+	147, // 42: google.cloud.sql.v1beta4.DatabaseInstance.failover_replica:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlFailoverReplica
+	171, // 43: google.cloud.sql.v1beta4.DatabaseInstance.max_disk_size:type_name -> google.protobuf.Int64Value
+	171, // 44: google.cloud.sql.v1beta4.DatabaseInstance.current_disk_size:type_name -> google.protobuf.Int64Value
+	106, // 45: google.cloud.sql.v1beta4.DatabaseInstance.ip_addresses:type_name -> google.cloud.sql.v1beta4.IpMapping
+	132, // 46: google.cloud.sql.v1beta4.DatabaseInstance.server_ca_cert:type_name -> google.cloud.sql.v1beta4.SslCert
 	9,   // 47: google.cloud.sql.v1beta4.DatabaseInstance.instance_type:type_name -> google.cloud.sql.v1beta4.SqlInstanceType
-	112, // 48: google.cloud.sql.v1beta4.DatabaseInstance.on_premises_configuration:type_name -> google.cloud.sql.v1beta4.OnPremisesConfiguration
-	121, // 49: google.cloud.sql.v1beta4.DatabaseInstance.replica_configuration:type_name -> google.cloud.sql.v1beta4.ReplicaConfiguration
+	113, // 48: google.cloud.sql.v1beta4.DatabaseInstance.on_premises_configuration:type_name -> google.cloud.sql.v1beta4.OnPremisesConfiguration
+	122, // 49: google.cloud.sql.v1beta4.DatabaseInstance.replica_configuration:type_name -> google.cloud.sql.v1beta4.ReplicaConfiguration
 	7,   // 50: google.cloud.sql.v1beta4.DatabaseInstance.backend_type:type_name -> google.cloud.sql.v1beta4.SqlBackendType
 	11,  // 51: google.cloud.sql.v1beta4.DatabaseInstance.suspension_reason:type_name -> google.cloud.sql.v1beta4.SqlSuspensionReason
-	113, // 52: google.cloud.sql.v1beta4.DatabaseInstance.disk_encryption_configuration:type_name -> google.cloud.sql.v1beta4.DiskEncryptionConfiguration
-	114, // 53: google.cloud.sql.v1beta4.DatabaseInstance.disk_encryption_status:type_name -> google.cloud.sql.v1beta4.DiskEncryptionStatus
-	147, // 54: google.cloud.sql.v1beta4.DatabaseInstance.scheduled_maintenance:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance
-	168, // 55: google.cloud.sql.v1beta4.DatabaseInstance.satisfies_pzs:type_name -> google.protobuf.BoolValue
-	148, // 56: google.cloud.sql.v1beta4.DatabaseInstance.out_of_disk_report:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport
-	166, // 57: google.cloud.sql.v1beta4.DatabaseInstance.create_time:type_name -> google.protobuf.Timestamp
-	66,  // 58: google.cloud.sql.v1beta4.DatabaseInstance.upgradable_database_versions:type_name -> google.cloud.sql.v1beta4.AvailableDatabaseVersion
+	114, // 52: google.cloud.sql.v1beta4.DatabaseInstance.disk_encryption_configuration:type_name -> google.cloud.sql.v1beta4.DiskEncryptionConfiguration
+	115, // 53: google.cloud.sql.v1beta4.DatabaseInstance.disk_encryption_status:type_name -> google.cloud.sql.v1beta4.DiskEncryptionStatus
+	148, // 54: google.cloud.sql.v1beta4.DatabaseInstance.scheduled_maintenance:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance
+	169, // 55: google.cloud.sql.v1beta4.DatabaseInstance.satisfies_pzs:type_name -> google.protobuf.BoolValue
+	149, // 56: google.cloud.sql.v1beta4.DatabaseInstance.out_of_disk_report:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport
+	167, // 57: google.cloud.sql.v1beta4.DatabaseInstance.create_time:type_name -> google.protobuf.Timestamp
+	67,  // 58: google.cloud.sql.v1beta4.DatabaseInstance.upgradable_database_versions:type_name -> google.cloud.sql.v1beta4.AvailableDatabaseVersion
 	26,  // 59: google.cloud.sql.v1beta4.DatabaseInstance.sql_network_architecture:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlNetworkArchitecture
-	65,  // 60: google.cloud.sql.v1beta4.DatabaseInstance.replication_cluster:type_name -> google.cloud.sql.v1beta4.ReplicationCluster
-	64,  // 61: google.cloud.sql.v1beta4.DatabaseInstance.gemini_config:type_name -> google.cloud.sql.v1beta4.GeminiInstanceConfig
-	168, // 62: google.cloud.sql.v1beta4.DatabaseInstance.satisfies_pzi:type_name -> google.protobuf.BoolValue
-	168, // 63: google.cloud.sql.v1beta4.DatabaseInstance.switch_transaction_logs_to_cloud_storage_enabled:type_name -> google.protobuf.BoolValue
-	168, // 64: google.cloud.sql.v1beta4.DatabaseInstance.include_replicas_for_major_version_upgrade:type_name -> google.protobuf.BoolValue
-	150, // 65: google.cloud.sql.v1beta4.DatabaseInstance.tags:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.TagsEntry
-	149, // 66: google.cloud.sql.v1beta4.DatabaseInstance.nodes:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig
-	63,  // 67: google.cloud.sql.v1beta4.DatabaseInstance.dns_names:type_name -> google.cloud.sql.v1beta4.DnsNameMapping
-	168, // 68: google.cloud.sql.v1beta4.DatabaseInstance.database_center_integration_enabled:type_name -> google.protobuf.BoolValue
-	28,  // 69: google.cloud.sql.v1beta4.DnsNameMapping.connection_type:type_name -> google.cloud.sql.v1beta4.DnsNameMapping.ConnectionType
-	29,  // 70: google.cloud.sql.v1beta4.DnsNameMapping.dns_scope:type_name -> google.cloud.sql.v1beta4.DnsNameMapping.DnsScope
-	30,  // 71: google.cloud.sql.v1beta4.DnsNameMapping.record_manager:type_name -> google.cloud.sql.v1beta4.DnsNameMapping.RecordManager
-	57,  // 72: google.cloud.sql.v1beta4.DatabasesListResponse.items:type_name -> google.cloud.sql.v1beta4.Database
-	70,  // 73: google.cloud.sql.v1beta4.DemoteMasterConfiguration.mysql_replica_configuration:type_name -> google.cloud.sql.v1beta4.DemoteMasterMySqlReplicaConfiguration
-	168, // 74: google.cloud.sql.v1beta4.DemoteMasterContext.verify_gtid_consistency:type_name -> google.protobuf.BoolValue
-	68,  // 75: google.cloud.sql.v1beta4.DemoteMasterContext.replica_configuration:type_name -> google.cloud.sql.v1beta4.DemoteMasterConfiguration
-	152, // 76: google.cloud.sql.v1beta4.ExportContext.sql_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlExportOptions
-	151, // 77: google.cloud.sql.v1beta4.ExportContext.csv_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlCsvExportOptions
-	0,   // 78: google.cloud.sql.v1beta4.ExportContext.file_type:type_name -> google.cloud.sql.v1beta4.SqlFileType
-	168, // 79: google.cloud.sql.v1beta4.ExportContext.offload:type_name -> google.protobuf.BoolValue
-	153, // 80: google.cloud.sql.v1beta4.ExportContext.bak_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions
-	154, // 81: google.cloud.sql.v1beta4.ExportContext.tde_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlTdeExportOptions
-	17,  // 82: google.cloud.sql.v1beta4.Flag.type:type_name -> google.cloud.sql.v1beta4.SqlFlagType
-	10,  // 83: google.cloud.sql.v1beta4.Flag.applies_to:type_name -> google.cloud.sql.v1beta4.SqlDatabaseVersion
-	170, // 84: google.cloud.sql.v1beta4.Flag.min_value:type_name -> google.protobuf.Int64Value
-	170, // 85: google.cloud.sql.v1beta4.Flag.max_value:type_name -> google.protobuf.Int64Value
-	168, // 86: google.cloud.sql.v1beta4.Flag.requires_restart:type_name -> google.protobuf.BoolValue
-	168, // 87: google.cloud.sql.v1beta4.Flag.in_beta:type_name -> google.protobuf.BoolValue
-	18,  // 88: google.cloud.sql.v1beta4.Flag.flag_scope:type_name -> google.cloud.sql.v1beta4.SqlFlagScope
-	170, // 89: google.cloud.sql.v1beta4.Flag.recommended_int_value:type_name -> google.protobuf.Int64Value
-	74,  // 90: google.cloud.sql.v1beta4.FlagsListResponse.items:type_name -> google.cloud.sql.v1beta4.Flag
-	0,   // 91: google.cloud.sql.v1beta4.ImportContext.file_type:type_name -> google.cloud.sql.v1beta4.SqlFileType
-	158, // 92: google.cloud.sql.v1beta4.ImportContext.csv_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlCsvImportOptions
-	159, // 93: google.cloud.sql.v1beta4.ImportContext.bak_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions
-	157, // 94: google.cloud.sql.v1beta4.ImportContext.sql_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlImportOptions
-	160, // 95: google.cloud.sql.v1beta4.ImportContext.tde_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlTdeImportOptions
-	56,  // 96: google.cloud.sql.v1beta4.InstancesCloneRequest.clone_context:type_name -> google.cloud.sql.v1beta4.CloneContext
-	69,  // 97: google.cloud.sql.v1beta4.InstancesDemoteMasterRequest.demote_master_context:type_name -> google.cloud.sql.v1beta4.DemoteMasterContext
-	71,  // 98: google.cloud.sql.v1beta4.InstancesDemoteRequest.demote_context:type_name -> google.cloud.sql.v1beta4.DemoteContext
-	72,  // 99: google.cloud.sql.v1beta4.InstancesExportRequest.export_context:type_name -> google.cloud.sql.v1beta4.ExportContext
-	73,  // 100: google.cloud.sql.v1beta4.InstancesFailoverRequest.failover_context:type_name -> google.cloud.sql.v1beta4.FailoverContext
-	76,  // 101: google.cloud.sql.v1beta4.InstancesImportRequest.import_context:type_name -> google.cloud.sql.v1beta4.ImportContext
-	98,  // 102: google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequest.pre_check_major_version_upgrade_context:type_name -> google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext
-	60,  // 103: google.cloud.sql.v1beta4.MySqlSyncConfig.initial_sync_flags:type_name -> google.cloud.sql.v1beta4.SyncFlags
-	48,  // 104: google.cloud.sql.v1beta4.InstancesListResponse.warnings:type_name -> google.cloud.sql.v1beta4.ApiWarning
-	62,  // 105: google.cloud.sql.v1beta4.InstancesListResponse.items:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
-	131, // 106: google.cloud.sql.v1beta4.InstancesListServerCasResponse.certs:type_name -> google.cloud.sql.v1beta4.SslCert
-	131, // 107: google.cloud.sql.v1beta4.InstancesListServerCertificatesResponse.ca_certs:type_name -> google.cloud.sql.v1beta4.SslCert
-	131, // 108: google.cloud.sql.v1beta4.InstancesListServerCertificatesResponse.server_certs:type_name -> google.cloud.sql.v1beta4.SslCert
-	131, // 109: google.cloud.sql.v1beta4.InstancesListEntraIdCertificatesResponse.certs:type_name -> google.cloud.sql.v1beta4.SslCert
-	122, // 110: google.cloud.sql.v1beta4.InstancesRestoreBackupRequest.restore_backup_context:type_name -> google.cloud.sql.v1beta4.RestoreBackupContext
-	62,  // 111: google.cloud.sql.v1beta4.InstancesRestoreBackupRequest.restore_instance_settings:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
-	123, // 112: google.cloud.sql.v1beta4.InstancesRotateServerCaRequest.rotate_server_ca_context:type_name -> google.cloud.sql.v1beta4.RotateServerCaContext
-	124, // 113: google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequest.rotate_server_certificate_context:type_name -> google.cloud.sql.v1beta4.RotateServerCertificateContext
-	125, // 114: google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequest.rotate_entra_id_certificate_context:type_name -> google.cloud.sql.v1beta4.RotateEntraIdCertificateContext
-	138, // 115: google.cloud.sql.v1beta4.InstancesTruncateLogRequest.truncate_log_context:type_name -> google.cloud.sql.v1beta4.TruncateLogContext
-	145, // 116: google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequest.acquire_ssrs_lease_context:type_name -> google.cloud.sql.v1beta4.AcquireSsrsLeaseContext
-	166, // 117: google.cloud.sql.v1beta4.PointInTimeRestoreContext.point_in_time:type_name -> google.protobuf.Timestamp
-	62,  // 118: google.cloud.sql.v1beta4.PointInTimeRestoreContext.target_instance_settings:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
-	31,  // 119: google.cloud.sql.v1beta4.PreCheckResponse.message_type:type_name -> google.cloud.sql.v1beta4.PreCheckResponse.MessageType
-	10,  // 120: google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext.target_database_version:type_name -> google.cloud.sql.v1beta4.SqlDatabaseVersion
-	97,  // 121: google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext.pre_check_response:type_name -> google.cloud.sql.v1beta4.PreCheckResponse
-	101, // 122: google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsResponse.errors:type_name -> google.cloud.sql.v1beta4.SqlExternalSyncSettingError
-	101, // 123: google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsResponse.warnings:type_name -> google.cloud.sql.v1beta4.SqlExternalSyncSettingError
-	32,  // 124: google.cloud.sql.v1beta4.SqlExternalSyncSettingError.type:type_name -> google.cloud.sql.v1beta4.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
-	168, // 125: google.cloud.sql.v1beta4.IpConfiguration.ipv4_enabled:type_name -> google.protobuf.BoolValue
-	168, // 126: google.cloud.sql.v1beta4.IpConfiguration.require_ssl:type_name -> google.protobuf.BoolValue
-	47,  // 127: google.cloud.sql.v1beta4.IpConfiguration.authorized_networks:type_name -> google.cloud.sql.v1beta4.AclEntry
-	168, // 128: google.cloud.sql.v1beta4.IpConfiguration.enable_private_path_for_google_cloud_services:type_name -> google.protobuf.BoolValue
-	33,  // 129: google.cloud.sql.v1beta4.IpConfiguration.ssl_mode:type_name -> google.cloud.sql.v1beta4.IpConfiguration.SslMode
-	103, // 130: google.cloud.sql.v1beta4.IpConfiguration.psc_config:type_name -> google.cloud.sql.v1beta4.PscConfig
-	34,  // 131: google.cloud.sql.v1beta4.IpConfiguration.server_ca_mode:type_name -> google.cloud.sql.v1beta4.IpConfiguration.CaMode
-	35,  // 132: google.cloud.sql.v1beta4.IpConfiguration.server_certificate_rotation_mode:type_name -> google.cloud.sql.v1beta4.IpConfiguration.ServerCertificateRotationMode
-	104, // 133: google.cloud.sql.v1beta4.PscConfig.psc_auto_connections:type_name -> google.cloud.sql.v1beta4.PscAutoConnectionConfig
-	2,   // 134: google.cloud.sql.v1beta4.PscAutoConnectionConfig.instance_auto_dns_status:type_name -> google.cloud.sql.v1beta4.AutoDnsStatus
-	2,   // 135: google.cloud.sql.v1beta4.PscAutoConnectionConfig.write_endpoint_auto_dns_status:type_name -> google.cloud.sql.v1beta4.AutoDnsStatus
-	8,   // 136: google.cloud.sql.v1beta4.IpMapping.type:type_name -> google.cloud.sql.v1beta4.SqlIpAddressType
-	166, // 137: google.cloud.sql.v1beta4.IpMapping.time_to_retire:type_name -> google.protobuf.Timestamp
-	167, // 138: google.cloud.sql.v1beta4.MaintenanceWindow.hour:type_name -> google.protobuf.Int32Value
-	167, // 139: google.cloud.sql.v1beta4.MaintenanceWindow.day:type_name -> google.protobuf.Int32Value
-	16,  // 140: google.cloud.sql.v1beta4.MaintenanceWindow.update_track:type_name -> google.cloud.sql.v1beta4.SqlUpdateTrack
-	167, // 141: google.cloud.sql.v1beta4.InsightsConfig.query_string_length:type_name -> google.protobuf.Int32Value
-	167, // 142: google.cloud.sql.v1beta4.InsightsConfig.query_plans_per_minute:type_name -> google.protobuf.Int32Value
-	168, // 143: google.cloud.sql.v1beta4.InsightsConfig.enhanced_query_insights_enabled:type_name -> google.protobuf.BoolValue
-	167, // 144: google.cloud.sql.v1beta4.MySqlReplicaConfiguration.connect_retry_interval:type_name -> google.protobuf.Int32Value
-	170, // 145: google.cloud.sql.v1beta4.MySqlReplicaConfiguration.master_heartbeat_period:type_name -> google.protobuf.Int64Value
-	168, // 146: google.cloud.sql.v1beta4.MySqlReplicaConfiguration.verify_server_certificate:type_name -> google.protobuf.BoolValue
-	61,  // 147: google.cloud.sql.v1beta4.OnPremisesConfiguration.source_instance:type_name -> google.cloud.sql.v1beta4.InstanceReference
-	111, // 148: google.cloud.sql.v1beta4.OnPremisesConfiguration.selected_objects:type_name -> google.cloud.sql.v1beta4.SelectedObjects
-	36,  // 149: google.cloud.sql.v1beta4.OnPremisesConfiguration.ssl_option:type_name -> google.cloud.sql.v1beta4.OnPremisesConfiguration.SslOption
-	3,   // 150: google.cloud.sql.v1beta4.SqlSubOperationType.maintenance_type:type_name -> google.cloud.sql.v1beta4.SqlMaintenanceType
-	38,  // 151: google.cloud.sql.v1beta4.Operation.status:type_name -> google.cloud.sql.v1beta4.Operation.SqlOperationStatus
-	166, // 152: google.cloud.sql.v1beta4.Operation.insert_time:type_name -> google.protobuf.Timestamp
-	166, // 153: google.cloud.sql.v1beta4.Operation.start_time:type_name -> google.protobuf.Timestamp
-	166, // 154: google.cloud.sql.v1beta4.Operation.end_time:type_name -> google.protobuf.Timestamp
-	118, // 155: google.cloud.sql.v1beta4.Operation.error:type_name -> google.cloud.sql.v1beta4.OperationErrors
-	48,  // 156: google.cloud.sql.v1beta4.Operation.api_warning:type_name -> google.cloud.sql.v1beta4.ApiWarning
-	37,  // 157: google.cloud.sql.v1beta4.Operation.operation_type:type_name -> google.cloud.sql.v1beta4.Operation.SqlOperationType
-	76,  // 158: google.cloud.sql.v1beta4.Operation.import_context:type_name -> google.cloud.sql.v1beta4.ImportContext
-	72,  // 159: google.cloud.sql.v1beta4.Operation.export_context:type_name -> google.cloud.sql.v1beta4.ExportContext
-	55,  // 160: google.cloud.sql.v1beta4.Operation.backup_context:type_name -> google.cloud.sql.v1beta4.BackupContext
-	98,  // 161: google.cloud.sql.v1beta4.Operation.pre_check_major_version_upgrade_context:type_name -> google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext
-	145, // 162: google.cloud.sql.v1beta4.Operation.acquire_ssrs_lease_context:type_name -> google.cloud.sql.v1beta4.AcquireSsrsLeaseContext
-	115, // 163: google.cloud.sql.v1beta4.Operation.sub_operation_type:type_name -> google.cloud.sql.v1beta4.SqlSubOperationType
-	117, // 164: google.cloud.sql.v1beta4.OperationErrors.errors:type_name -> google.cloud.sql.v1beta4.OperationError
-	167, // 165: google.cloud.sql.v1beta4.PasswordValidationPolicy.min_length:type_name -> google.protobuf.Int32Value
-	39,  // 166: google.cloud.sql.v1beta4.PasswordValidationPolicy.complexity:type_name -> google.cloud.sql.v1beta4.PasswordValidationPolicy.Complexity
-	167, // 167: google.cloud.sql.v1beta4.PasswordValidationPolicy.reuse_interval:type_name -> google.protobuf.Int32Value
-	168, // 168: google.cloud.sql.v1beta4.PasswordValidationPolicy.disallow_username_substring:type_name -> google.protobuf.BoolValue
-	171, // 169: google.cloud.sql.v1beta4.PasswordValidationPolicy.password_change_interval:type_name -> google.protobuf.Duration
-	168, // 170: google.cloud.sql.v1beta4.PasswordValidationPolicy.enable_password_policy:type_name -> google.protobuf.BoolValue
-	168, // 171: google.cloud.sql.v1beta4.PasswordValidationPolicy.disallow_compromised_credentials:type_name -> google.protobuf.BoolValue
-	116, // 172: google.cloud.sql.v1beta4.OperationsListResponse.items:type_name -> google.cloud.sql.v1beta4.Operation
-	110, // 173: google.cloud.sql.v1beta4.ReplicaConfiguration.mysql_replica_configuration:type_name -> google.cloud.sql.v1beta4.MySqlReplicaConfiguration
-	168, // 174: google.cloud.sql.v1beta4.ReplicaConfiguration.failover_target:type_name -> google.protobuf.BoolValue
-	168, // 175: google.cloud.sql.v1beta4.ReplicaConfiguration.cascadable_replica:type_name -> google.protobuf.BoolValue
-	170, // 176: google.cloud.sql.v1beta4.Settings.settings_version:type_name -> google.protobuf.Int64Value
-	163, // 177: google.cloud.sql.v1beta4.Settings.user_labels:type_name -> google.cloud.sql.v1beta4.Settings.UserLabelsEntry
-	15,  // 178: google.cloud.sql.v1beta4.Settings.availability_type:type_name -> google.cloud.sql.v1beta4.SqlAvailabilityType
-	12,  // 179: google.cloud.sql.v1beta4.Settings.pricing_plan:type_name -> google.cloud.sql.v1beta4.SqlPricingPlan
-	13,  // 180: google.cloud.sql.v1beta4.Settings.replication_type:type_name -> google.cloud.sql.v1beta4.SqlReplicationType
-	170, // 181: google.cloud.sql.v1beta4.Settings.storage_auto_resize_limit:type_name -> google.protobuf.Int64Value
-	40,  // 182: google.cloud.sql.v1beta4.Settings.activation_policy:type_name -> google.cloud.sql.v1beta4.Settings.SqlActivationPolicy
-	102, // 183: google.cloud.sql.v1beta4.Settings.ip_configuration:type_name -> google.cloud.sql.v1beta4.IpConfiguration
-	168, // 184: google.cloud.sql.v1beta4.Settings.storage_auto_resize:type_name -> google.protobuf.BoolValue
-	106, // 185: google.cloud.sql.v1beta4.Settings.location_preference:type_name -> google.cloud.sql.v1beta4.LocationPreference
-	59,  // 186: google.cloud.sql.v1beta4.Settings.database_flags:type_name -> google.cloud.sql.v1beta4.DatabaseFlags
-	14,  // 187: google.cloud.sql.v1beta4.Settings.data_disk_type:type_name -> google.cloud.sql.v1beta4.SqlDataDiskType
-	107, // 188: google.cloud.sql.v1beta4.Settings.maintenance_window:type_name -> google.cloud.sql.v1beta4.MaintenanceWindow
-	50,  // 189: google.cloud.sql.v1beta4.Settings.backup_configuration:type_name -> google.cloud.sql.v1beta4.BackupConfiguration
-	168, // 190: google.cloud.sql.v1beta4.Settings.database_replication_enabled:type_name -> google.protobuf.BoolValue
-	168, // 191: google.cloud.sql.v1beta4.Settings.crash_safe_replication_enabled:type_name -> google.protobuf.BoolValue
-	170, // 192: google.cloud.sql.v1beta4.Settings.data_disk_size_gb:type_name -> google.protobuf.Int64Value
-	139, // 193: google.cloud.sql.v1beta4.Settings.active_directory_config:type_name -> google.cloud.sql.v1beta4.SqlActiveDirectoryConfig
-	108, // 194: google.cloud.sql.v1beta4.Settings.deny_maintenance_periods:type_name -> google.cloud.sql.v1beta4.DenyMaintenancePeriod
-	109, // 195: google.cloud.sql.v1beta4.Settings.insights_config:type_name -> google.cloud.sql.v1beta4.InsightsConfig
-	119, // 196: google.cloud.sql.v1beta4.Settings.password_validation_policy:type_name -> google.cloud.sql.v1beta4.PasswordValidationPolicy
-	140, // 197: google.cloud.sql.v1beta4.Settings.sql_server_audit_config:type_name -> google.cloud.sql.v1beta4.SqlServerAuditConfig
-	41,  // 198: google.cloud.sql.v1beta4.Settings.edition:type_name -> google.cloud.sql.v1beta4.Settings.Edition
-	42,  // 199: google.cloud.sql.v1beta4.Settings.connector_enforcement:type_name -> google.cloud.sql.v1beta4.Settings.ConnectorEnforcement
-	168, // 200: google.cloud.sql.v1beta4.Settings.deletion_protection_enabled:type_name -> google.protobuf.BoolValue
-	130, // 201: google.cloud.sql.v1beta4.Settings.advanced_machine_features:type_name -> google.cloud.sql.v1beta4.AdvancedMachineFeatures
-	126, // 202: google.cloud.sql.v1beta4.Settings.data_cache_config:type_name -> google.cloud.sql.v1beta4.DataCacheConfig
-	167, // 203: google.cloud.sql.v1beta4.Settings.replication_lag_max_seconds:type_name -> google.protobuf.Int32Value
-	168, // 204: google.cloud.sql.v1beta4.Settings.enable_google_ml_integration:type_name -> google.protobuf.BoolValue
-	168, // 205: google.cloud.sql.v1beta4.Settings.enable_dataplex_integration:type_name -> google.protobuf.BoolValue
-	168, // 206: google.cloud.sql.v1beta4.Settings.retain_backups_on_delete:type_name -> google.protobuf.BoolValue
-	144, // 207: google.cloud.sql.v1beta4.Settings.connection_pool_config:type_name -> google.cloud.sql.v1beta4.ConnectionPoolConfig
-	127, // 208: google.cloud.sql.v1beta4.Settings.final_backup_config:type_name -> google.cloud.sql.v1beta4.FinalBackupConfig
-	143, // 209: google.cloud.sql.v1beta4.Settings.read_pool_auto_scale_config:type_name -> google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig
-	168, // 210: google.cloud.sql.v1beta4.Settings.accelerated_replica_mode:type_name -> google.protobuf.BoolValue
-	141, // 211: google.cloud.sql.v1beta4.Settings.entraid_config:type_name -> google.cloud.sql.v1beta4.SqlServerEntraIdConfig
-	43,  // 212: google.cloud.sql.v1beta4.Settings.data_api_access:type_name -> google.cloud.sql.v1beta4.Settings.DataApiAccess
-	129, // 213: google.cloud.sql.v1beta4.Settings.performance_capture_config:type_name -> google.cloud.sql.v1beta4.PerformanceCaptureConfig
-	44,  // 214: google.cloud.sql.v1beta4.PerformanceCaptureConfig.transaction_kill_type:type_name -> google.cloud.sql.v1beta4.PerformanceCaptureConfig.TransactionKillType
-	166, // 215: google.cloud.sql.v1beta4.SslCert.create_time:type_name -> google.protobuf.Timestamp
-	166, // 216: google.cloud.sql.v1beta4.SslCert.expiration_time:type_name -> google.protobuf.Timestamp
-	131, // 217: google.cloud.sql.v1beta4.SslCertDetail.cert_info:type_name -> google.cloud.sql.v1beta4.SslCert
-	164, // 218: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.reschedule:type_name -> google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
-	116, // 219: google.cloud.sql.v1beta4.SslCertsInsertResponse.operation:type_name -> google.cloud.sql.v1beta4.Operation
-	131, // 220: google.cloud.sql.v1beta4.SslCertsInsertResponse.server_ca_cert:type_name -> google.cloud.sql.v1beta4.SslCert
-	132, // 221: google.cloud.sql.v1beta4.SslCertsInsertResponse.client_cert:type_name -> google.cloud.sql.v1beta4.SslCertDetail
-	131, // 222: google.cloud.sql.v1beta4.SslCertsListResponse.items:type_name -> google.cloud.sql.v1beta4.SslCert
-	46,  // 223: google.cloud.sql.v1beta4.SqlActiveDirectoryConfig.mode:type_name -> google.cloud.sql.v1beta4.SqlActiveDirectoryConfig.ActiveDirectoryMode
-	171, // 224: google.cloud.sql.v1beta4.SqlServerAuditConfig.retention_interval:type_name -> google.protobuf.Duration
-	171, // 225: google.cloud.sql.v1beta4.SqlServerAuditConfig.upload_interval:type_name -> google.protobuf.Duration
-	165, // 226: google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig.target_metrics:type_name -> google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig.TargetMetric
-	142, // 227: google.cloud.sql.v1beta4.ConnectionPoolConfig.flags:type_name -> google.cloud.sql.v1beta4.ConnectionPoolFlags
-	171, // 228: google.cloud.sql.v1beta4.AcquireSsrsLeaseContext.duration:type_name -> google.protobuf.Duration
-	168, // 229: google.cloud.sql.v1beta4.DatabaseInstance.SqlFailoverReplica.available:type_name -> google.protobuf.BoolValue
-	166, // 230: google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance.start_time:type_name -> google.protobuf.Timestamp
-	166, // 231: google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance.schedule_deadline_time:type_name -> google.protobuf.Timestamp
-	27,  // 232: google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport.sql_out_of_disk_state:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
-	105, // 233: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.ip_addresses:type_name -> google.cloud.sql.v1beta4.IpMapping
-	25,  // 234: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.state:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlInstanceState
-	63,  // 235: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.dns_names:type_name -> google.cloud.sql.v1beta4.DnsNameMapping
-	104, // 236: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.psc_auto_connections:type_name -> google.cloud.sql.v1beta4.PscAutoConnectionConfig
-	168, // 237: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.schema_only:type_name -> google.protobuf.BoolValue
-	155, // 238: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.mysql_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.MysqlExportOptions
-	167, // 239: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.threads:type_name -> google.protobuf.Int32Value
-	168, // 240: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.parallel:type_name -> google.protobuf.BoolValue
-	156, // 241: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.postgres_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions
-	168, // 242: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.striped:type_name -> google.protobuf.BoolValue
-	167, // 243: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.stripe_count:type_name -> google.protobuf.Int32Value
-	1,   // 244: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.bak_type:type_name -> google.cloud.sql.v1beta4.BakType
-	168, // 245: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.copy_only:type_name -> google.protobuf.BoolValue
-	168, // 246: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.differential_base:type_name -> google.protobuf.BoolValue
-	166, // 247: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.export_log_start_time:type_name -> google.protobuf.Timestamp
-	166, // 248: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.export_log_end_time:type_name -> google.protobuf.Timestamp
-	167, // 249: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.MysqlExportOptions.master_data:type_name -> google.protobuf.Int32Value
-	168, // 250: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions.clean:type_name -> google.protobuf.BoolValue
-	168, // 251: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions.if_exists:type_name -> google.protobuf.BoolValue
-	167, // 252: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.threads:type_name -> google.protobuf.Int32Value
-	168, // 253: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.parallel:type_name -> google.protobuf.BoolValue
-	161, // 254: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.postgres_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions
-	162, // 255: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.encryption_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.EncryptionOptions
-	168, // 256: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.striped:type_name -> google.protobuf.BoolValue
-	168, // 257: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.no_recovery:type_name -> google.protobuf.BoolValue
-	168, // 258: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.recovery_only:type_name -> google.protobuf.BoolValue
-	1,   // 259: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.bak_type:type_name -> google.cloud.sql.v1beta4.BakType
-	166, // 260: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.stop_at:type_name -> google.protobuf.Timestamp
-	168, // 261: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions.clean:type_name -> google.protobuf.BoolValue
-	168, // 262: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions.if_exists:type_name -> google.protobuf.BoolValue
-	168, // 263: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.EncryptionOptions.keep_encrypted:type_name -> google.protobuf.BoolValue
-	45,  // 264: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.reschedule_type:type_name -> google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
-	166, // 265: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.schedule_time:type_name -> google.protobuf.Timestamp
-	266, // [266:266] is the sub-list for method output_type
-	266, // [266:266] is the sub-list for method input_type
-	266, // [266:266] is the sub-list for extension type_name
-	266, // [266:266] is the sub-list for extension extendee
-	0,   // [0:266] is the sub-list for field type_name
+	66,  // 60: google.cloud.sql.v1beta4.DatabaseInstance.replication_cluster:type_name -> google.cloud.sql.v1beta4.ReplicationCluster
+	65,  // 61: google.cloud.sql.v1beta4.DatabaseInstance.gemini_config:type_name -> google.cloud.sql.v1beta4.GeminiInstanceConfig
+	169, // 62: google.cloud.sql.v1beta4.DatabaseInstance.satisfies_pzi:type_name -> google.protobuf.BoolValue
+	169, // 63: google.cloud.sql.v1beta4.DatabaseInstance.switch_transaction_logs_to_cloud_storage_enabled:type_name -> google.protobuf.BoolValue
+	169, // 64: google.cloud.sql.v1beta4.DatabaseInstance.include_replicas_for_major_version_upgrade:type_name -> google.protobuf.BoolValue
+	151, // 65: google.cloud.sql.v1beta4.DatabaseInstance.tags:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.TagsEntry
+	150, // 66: google.cloud.sql.v1beta4.DatabaseInstance.nodes:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig
+	64,  // 67: google.cloud.sql.v1beta4.DatabaseInstance.dns_names:type_name -> google.cloud.sql.v1beta4.DnsNameMapping
+	169, // 68: google.cloud.sql.v1beta4.DatabaseInstance.database_center_integration_enabled:type_name -> google.protobuf.BoolValue
+	27,  // 69: google.cloud.sql.v1beta4.DatabaseInstance.database_center_integration:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.DatabaseCenterIntegration
+	29,  // 70: google.cloud.sql.v1beta4.DnsNameMapping.connection_type:type_name -> google.cloud.sql.v1beta4.DnsNameMapping.ConnectionType
+	30,  // 71: google.cloud.sql.v1beta4.DnsNameMapping.dns_scope:type_name -> google.cloud.sql.v1beta4.DnsNameMapping.DnsScope
+	31,  // 72: google.cloud.sql.v1beta4.DnsNameMapping.record_manager:type_name -> google.cloud.sql.v1beta4.DnsNameMapping.RecordManager
+	58,  // 73: google.cloud.sql.v1beta4.DatabasesListResponse.items:type_name -> google.cloud.sql.v1beta4.Database
+	71,  // 74: google.cloud.sql.v1beta4.DemoteMasterConfiguration.mysql_replica_configuration:type_name -> google.cloud.sql.v1beta4.DemoteMasterMySqlReplicaConfiguration
+	169, // 75: google.cloud.sql.v1beta4.DemoteMasterContext.verify_gtid_consistency:type_name -> google.protobuf.BoolValue
+	69,  // 76: google.cloud.sql.v1beta4.DemoteMasterContext.replica_configuration:type_name -> google.cloud.sql.v1beta4.DemoteMasterConfiguration
+	153, // 77: google.cloud.sql.v1beta4.ExportContext.sql_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlExportOptions
+	152, // 78: google.cloud.sql.v1beta4.ExportContext.csv_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlCsvExportOptions
+	0,   // 79: google.cloud.sql.v1beta4.ExportContext.file_type:type_name -> google.cloud.sql.v1beta4.SqlFileType
+	169, // 80: google.cloud.sql.v1beta4.ExportContext.offload:type_name -> google.protobuf.BoolValue
+	154, // 81: google.cloud.sql.v1beta4.ExportContext.bak_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions
+	155, // 82: google.cloud.sql.v1beta4.ExportContext.tde_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlTdeExportOptions
+	17,  // 83: google.cloud.sql.v1beta4.Flag.type:type_name -> google.cloud.sql.v1beta4.SqlFlagType
+	10,  // 84: google.cloud.sql.v1beta4.Flag.applies_to:type_name -> google.cloud.sql.v1beta4.SqlDatabaseVersion
+	171, // 85: google.cloud.sql.v1beta4.Flag.min_value:type_name -> google.protobuf.Int64Value
+	171, // 86: google.cloud.sql.v1beta4.Flag.max_value:type_name -> google.protobuf.Int64Value
+	169, // 87: google.cloud.sql.v1beta4.Flag.requires_restart:type_name -> google.protobuf.BoolValue
+	169, // 88: google.cloud.sql.v1beta4.Flag.in_beta:type_name -> google.protobuf.BoolValue
+	18,  // 89: google.cloud.sql.v1beta4.Flag.flag_scope:type_name -> google.cloud.sql.v1beta4.SqlFlagScope
+	171, // 90: google.cloud.sql.v1beta4.Flag.recommended_int_value:type_name -> google.protobuf.Int64Value
+	75,  // 91: google.cloud.sql.v1beta4.FlagsListResponse.items:type_name -> google.cloud.sql.v1beta4.Flag
+	0,   // 92: google.cloud.sql.v1beta4.ImportContext.file_type:type_name -> google.cloud.sql.v1beta4.SqlFileType
+	159, // 93: google.cloud.sql.v1beta4.ImportContext.csv_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlCsvImportOptions
+	160, // 94: google.cloud.sql.v1beta4.ImportContext.bak_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions
+	158, // 95: google.cloud.sql.v1beta4.ImportContext.sql_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlImportOptions
+	161, // 96: google.cloud.sql.v1beta4.ImportContext.tde_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlTdeImportOptions
+	57,  // 97: google.cloud.sql.v1beta4.InstancesCloneRequest.clone_context:type_name -> google.cloud.sql.v1beta4.CloneContext
+	70,  // 98: google.cloud.sql.v1beta4.InstancesDemoteMasterRequest.demote_master_context:type_name -> google.cloud.sql.v1beta4.DemoteMasterContext
+	72,  // 99: google.cloud.sql.v1beta4.InstancesDemoteRequest.demote_context:type_name -> google.cloud.sql.v1beta4.DemoteContext
+	73,  // 100: google.cloud.sql.v1beta4.InstancesExportRequest.export_context:type_name -> google.cloud.sql.v1beta4.ExportContext
+	74,  // 101: google.cloud.sql.v1beta4.InstancesFailoverRequest.failover_context:type_name -> google.cloud.sql.v1beta4.FailoverContext
+	77,  // 102: google.cloud.sql.v1beta4.InstancesImportRequest.import_context:type_name -> google.cloud.sql.v1beta4.ImportContext
+	99,  // 103: google.cloud.sql.v1beta4.InstancesPreCheckMajorVersionUpgradeRequest.pre_check_major_version_upgrade_context:type_name -> google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext
+	61,  // 104: google.cloud.sql.v1beta4.MySqlSyncConfig.initial_sync_flags:type_name -> google.cloud.sql.v1beta4.SyncFlags
+	49,  // 105: google.cloud.sql.v1beta4.InstancesListResponse.warnings:type_name -> google.cloud.sql.v1beta4.ApiWarning
+	63,  // 106: google.cloud.sql.v1beta4.InstancesListResponse.items:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
+	132, // 107: google.cloud.sql.v1beta4.InstancesListServerCasResponse.certs:type_name -> google.cloud.sql.v1beta4.SslCert
+	132, // 108: google.cloud.sql.v1beta4.InstancesListServerCertificatesResponse.ca_certs:type_name -> google.cloud.sql.v1beta4.SslCert
+	132, // 109: google.cloud.sql.v1beta4.InstancesListServerCertificatesResponse.server_certs:type_name -> google.cloud.sql.v1beta4.SslCert
+	132, // 110: google.cloud.sql.v1beta4.InstancesListEntraIdCertificatesResponse.certs:type_name -> google.cloud.sql.v1beta4.SslCert
+	123, // 111: google.cloud.sql.v1beta4.InstancesRestoreBackupRequest.restore_backup_context:type_name -> google.cloud.sql.v1beta4.RestoreBackupContext
+	63,  // 112: google.cloud.sql.v1beta4.InstancesRestoreBackupRequest.restore_instance_settings:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
+	124, // 113: google.cloud.sql.v1beta4.InstancesRotateServerCaRequest.rotate_server_ca_context:type_name -> google.cloud.sql.v1beta4.RotateServerCaContext
+	125, // 114: google.cloud.sql.v1beta4.InstancesRotateServerCertificateRequest.rotate_server_certificate_context:type_name -> google.cloud.sql.v1beta4.RotateServerCertificateContext
+	126, // 115: google.cloud.sql.v1beta4.InstancesRotateEntraIdCertificateRequest.rotate_entra_id_certificate_context:type_name -> google.cloud.sql.v1beta4.RotateEntraIdCertificateContext
+	139, // 116: google.cloud.sql.v1beta4.InstancesTruncateLogRequest.truncate_log_context:type_name -> google.cloud.sql.v1beta4.TruncateLogContext
+	146, // 117: google.cloud.sql.v1beta4.InstancesAcquireSsrsLeaseRequest.acquire_ssrs_lease_context:type_name -> google.cloud.sql.v1beta4.AcquireSsrsLeaseContext
+	167, // 118: google.cloud.sql.v1beta4.PointInTimeRestoreContext.point_in_time:type_name -> google.protobuf.Timestamp
+	63,  // 119: google.cloud.sql.v1beta4.PointInTimeRestoreContext.target_instance_settings:type_name -> google.cloud.sql.v1beta4.DatabaseInstance
+	32,  // 120: google.cloud.sql.v1beta4.PreCheckResponse.message_type:type_name -> google.cloud.sql.v1beta4.PreCheckResponse.MessageType
+	10,  // 121: google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext.target_database_version:type_name -> google.cloud.sql.v1beta4.SqlDatabaseVersion
+	98,  // 122: google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext.pre_check_response:type_name -> google.cloud.sql.v1beta4.PreCheckResponse
+	102, // 123: google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsResponse.errors:type_name -> google.cloud.sql.v1beta4.SqlExternalSyncSettingError
+	102, // 124: google.cloud.sql.v1beta4.SqlInstancesVerifyExternalSyncSettingsResponse.warnings:type_name -> google.cloud.sql.v1beta4.SqlExternalSyncSettingError
+	33,  // 125: google.cloud.sql.v1beta4.SqlExternalSyncSettingError.type:type_name -> google.cloud.sql.v1beta4.SqlExternalSyncSettingError.SqlExternalSyncSettingErrorType
+	169, // 126: google.cloud.sql.v1beta4.IpConfiguration.ipv4_enabled:type_name -> google.protobuf.BoolValue
+	169, // 127: google.cloud.sql.v1beta4.IpConfiguration.require_ssl:type_name -> google.protobuf.BoolValue
+	48,  // 128: google.cloud.sql.v1beta4.IpConfiguration.authorized_networks:type_name -> google.cloud.sql.v1beta4.AclEntry
+	169, // 129: google.cloud.sql.v1beta4.IpConfiguration.enable_private_path_for_google_cloud_services:type_name -> google.protobuf.BoolValue
+	34,  // 130: google.cloud.sql.v1beta4.IpConfiguration.ssl_mode:type_name -> google.cloud.sql.v1beta4.IpConfiguration.SslMode
+	104, // 131: google.cloud.sql.v1beta4.IpConfiguration.psc_config:type_name -> google.cloud.sql.v1beta4.PscConfig
+	35,  // 132: google.cloud.sql.v1beta4.IpConfiguration.server_ca_mode:type_name -> google.cloud.sql.v1beta4.IpConfiguration.CaMode
+	36,  // 133: google.cloud.sql.v1beta4.IpConfiguration.server_certificate_rotation_mode:type_name -> google.cloud.sql.v1beta4.IpConfiguration.ServerCertificateRotationMode
+	105, // 134: google.cloud.sql.v1beta4.PscConfig.psc_auto_connections:type_name -> google.cloud.sql.v1beta4.PscAutoConnectionConfig
+	2,   // 135: google.cloud.sql.v1beta4.PscAutoConnectionConfig.instance_auto_dns_status:type_name -> google.cloud.sql.v1beta4.AutoDnsStatus
+	2,   // 136: google.cloud.sql.v1beta4.PscAutoConnectionConfig.write_endpoint_auto_dns_status:type_name -> google.cloud.sql.v1beta4.AutoDnsStatus
+	8,   // 137: google.cloud.sql.v1beta4.IpMapping.type:type_name -> google.cloud.sql.v1beta4.SqlIpAddressType
+	167, // 138: google.cloud.sql.v1beta4.IpMapping.time_to_retire:type_name -> google.protobuf.Timestamp
+	168, // 139: google.cloud.sql.v1beta4.MaintenanceWindow.hour:type_name -> google.protobuf.Int32Value
+	168, // 140: google.cloud.sql.v1beta4.MaintenanceWindow.day:type_name -> google.protobuf.Int32Value
+	16,  // 141: google.cloud.sql.v1beta4.MaintenanceWindow.update_track:type_name -> google.cloud.sql.v1beta4.SqlUpdateTrack
+	168, // 142: google.cloud.sql.v1beta4.InsightsConfig.query_string_length:type_name -> google.protobuf.Int32Value
+	168, // 143: google.cloud.sql.v1beta4.InsightsConfig.query_plans_per_minute:type_name -> google.protobuf.Int32Value
+	169, // 144: google.cloud.sql.v1beta4.InsightsConfig.enhanced_query_insights_enabled:type_name -> google.protobuf.BoolValue
+	168, // 145: google.cloud.sql.v1beta4.MySqlReplicaConfiguration.connect_retry_interval:type_name -> google.protobuf.Int32Value
+	171, // 146: google.cloud.sql.v1beta4.MySqlReplicaConfiguration.master_heartbeat_period:type_name -> google.protobuf.Int64Value
+	169, // 147: google.cloud.sql.v1beta4.MySqlReplicaConfiguration.verify_server_certificate:type_name -> google.protobuf.BoolValue
+	62,  // 148: google.cloud.sql.v1beta4.OnPremisesConfiguration.source_instance:type_name -> google.cloud.sql.v1beta4.InstanceReference
+	112, // 149: google.cloud.sql.v1beta4.OnPremisesConfiguration.selected_objects:type_name -> google.cloud.sql.v1beta4.SelectedObjects
+	37,  // 150: google.cloud.sql.v1beta4.OnPremisesConfiguration.ssl_option:type_name -> google.cloud.sql.v1beta4.OnPremisesConfiguration.SslOption
+	3,   // 151: google.cloud.sql.v1beta4.SqlSubOperationType.maintenance_type:type_name -> google.cloud.sql.v1beta4.SqlMaintenanceType
+	39,  // 152: google.cloud.sql.v1beta4.Operation.status:type_name -> google.cloud.sql.v1beta4.Operation.SqlOperationStatus
+	167, // 153: google.cloud.sql.v1beta4.Operation.insert_time:type_name -> google.protobuf.Timestamp
+	167, // 154: google.cloud.sql.v1beta4.Operation.start_time:type_name -> google.protobuf.Timestamp
+	167, // 155: google.cloud.sql.v1beta4.Operation.end_time:type_name -> google.protobuf.Timestamp
+	119, // 156: google.cloud.sql.v1beta4.Operation.error:type_name -> google.cloud.sql.v1beta4.OperationErrors
+	49,  // 157: google.cloud.sql.v1beta4.Operation.api_warning:type_name -> google.cloud.sql.v1beta4.ApiWarning
+	38,  // 158: google.cloud.sql.v1beta4.Operation.operation_type:type_name -> google.cloud.sql.v1beta4.Operation.SqlOperationType
+	77,  // 159: google.cloud.sql.v1beta4.Operation.import_context:type_name -> google.cloud.sql.v1beta4.ImportContext
+	73,  // 160: google.cloud.sql.v1beta4.Operation.export_context:type_name -> google.cloud.sql.v1beta4.ExportContext
+	56,  // 161: google.cloud.sql.v1beta4.Operation.backup_context:type_name -> google.cloud.sql.v1beta4.BackupContext
+	99,  // 162: google.cloud.sql.v1beta4.Operation.pre_check_major_version_upgrade_context:type_name -> google.cloud.sql.v1beta4.PreCheckMajorVersionUpgradeContext
+	146, // 163: google.cloud.sql.v1beta4.Operation.acquire_ssrs_lease_context:type_name -> google.cloud.sql.v1beta4.AcquireSsrsLeaseContext
+	116, // 164: google.cloud.sql.v1beta4.Operation.sub_operation_type:type_name -> google.cloud.sql.v1beta4.SqlSubOperationType
+	118, // 165: google.cloud.sql.v1beta4.OperationErrors.errors:type_name -> google.cloud.sql.v1beta4.OperationError
+	168, // 166: google.cloud.sql.v1beta4.PasswordValidationPolicy.min_length:type_name -> google.protobuf.Int32Value
+	40,  // 167: google.cloud.sql.v1beta4.PasswordValidationPolicy.complexity:type_name -> google.cloud.sql.v1beta4.PasswordValidationPolicy.Complexity
+	168, // 168: google.cloud.sql.v1beta4.PasswordValidationPolicy.reuse_interval:type_name -> google.protobuf.Int32Value
+	169, // 169: google.cloud.sql.v1beta4.PasswordValidationPolicy.disallow_username_substring:type_name -> google.protobuf.BoolValue
+	172, // 170: google.cloud.sql.v1beta4.PasswordValidationPolicy.password_change_interval:type_name -> google.protobuf.Duration
+	169, // 171: google.cloud.sql.v1beta4.PasswordValidationPolicy.enable_password_policy:type_name -> google.protobuf.BoolValue
+	169, // 172: google.cloud.sql.v1beta4.PasswordValidationPolicy.disallow_compromised_credentials:type_name -> google.protobuf.BoolValue
+	117, // 173: google.cloud.sql.v1beta4.OperationsListResponse.items:type_name -> google.cloud.sql.v1beta4.Operation
+	111, // 174: google.cloud.sql.v1beta4.ReplicaConfiguration.mysql_replica_configuration:type_name -> google.cloud.sql.v1beta4.MySqlReplicaConfiguration
+	169, // 175: google.cloud.sql.v1beta4.ReplicaConfiguration.failover_target:type_name -> google.protobuf.BoolValue
+	169, // 176: google.cloud.sql.v1beta4.ReplicaConfiguration.cascadable_replica:type_name -> google.protobuf.BoolValue
+	171, // 177: google.cloud.sql.v1beta4.Settings.settings_version:type_name -> google.protobuf.Int64Value
+	164, // 178: google.cloud.sql.v1beta4.Settings.user_labels:type_name -> google.cloud.sql.v1beta4.Settings.UserLabelsEntry
+	15,  // 179: google.cloud.sql.v1beta4.Settings.availability_type:type_name -> google.cloud.sql.v1beta4.SqlAvailabilityType
+	12,  // 180: google.cloud.sql.v1beta4.Settings.pricing_plan:type_name -> google.cloud.sql.v1beta4.SqlPricingPlan
+	13,  // 181: google.cloud.sql.v1beta4.Settings.replication_type:type_name -> google.cloud.sql.v1beta4.SqlReplicationType
+	171, // 182: google.cloud.sql.v1beta4.Settings.storage_auto_resize_limit:type_name -> google.protobuf.Int64Value
+	41,  // 183: google.cloud.sql.v1beta4.Settings.activation_policy:type_name -> google.cloud.sql.v1beta4.Settings.SqlActivationPolicy
+	103, // 184: google.cloud.sql.v1beta4.Settings.ip_configuration:type_name -> google.cloud.sql.v1beta4.IpConfiguration
+	169, // 185: google.cloud.sql.v1beta4.Settings.storage_auto_resize:type_name -> google.protobuf.BoolValue
+	107, // 186: google.cloud.sql.v1beta4.Settings.location_preference:type_name -> google.cloud.sql.v1beta4.LocationPreference
+	60,  // 187: google.cloud.sql.v1beta4.Settings.database_flags:type_name -> google.cloud.sql.v1beta4.DatabaseFlags
+	14,  // 188: google.cloud.sql.v1beta4.Settings.data_disk_type:type_name -> google.cloud.sql.v1beta4.SqlDataDiskType
+	108, // 189: google.cloud.sql.v1beta4.Settings.maintenance_window:type_name -> google.cloud.sql.v1beta4.MaintenanceWindow
+	51,  // 190: google.cloud.sql.v1beta4.Settings.backup_configuration:type_name -> google.cloud.sql.v1beta4.BackupConfiguration
+	169, // 191: google.cloud.sql.v1beta4.Settings.database_replication_enabled:type_name -> google.protobuf.BoolValue
+	169, // 192: google.cloud.sql.v1beta4.Settings.crash_safe_replication_enabled:type_name -> google.protobuf.BoolValue
+	171, // 193: google.cloud.sql.v1beta4.Settings.data_disk_size_gb:type_name -> google.protobuf.Int64Value
+	140, // 194: google.cloud.sql.v1beta4.Settings.active_directory_config:type_name -> google.cloud.sql.v1beta4.SqlActiveDirectoryConfig
+	109, // 195: google.cloud.sql.v1beta4.Settings.deny_maintenance_periods:type_name -> google.cloud.sql.v1beta4.DenyMaintenancePeriod
+	110, // 196: google.cloud.sql.v1beta4.Settings.insights_config:type_name -> google.cloud.sql.v1beta4.InsightsConfig
+	120, // 197: google.cloud.sql.v1beta4.Settings.password_validation_policy:type_name -> google.cloud.sql.v1beta4.PasswordValidationPolicy
+	141, // 198: google.cloud.sql.v1beta4.Settings.sql_server_audit_config:type_name -> google.cloud.sql.v1beta4.SqlServerAuditConfig
+	42,  // 199: google.cloud.sql.v1beta4.Settings.edition:type_name -> google.cloud.sql.v1beta4.Settings.Edition
+	43,  // 200: google.cloud.sql.v1beta4.Settings.connector_enforcement:type_name -> google.cloud.sql.v1beta4.Settings.ConnectorEnforcement
+	169, // 201: google.cloud.sql.v1beta4.Settings.deletion_protection_enabled:type_name -> google.protobuf.BoolValue
+	131, // 202: google.cloud.sql.v1beta4.Settings.advanced_machine_features:type_name -> google.cloud.sql.v1beta4.AdvancedMachineFeatures
+	127, // 203: google.cloud.sql.v1beta4.Settings.data_cache_config:type_name -> google.cloud.sql.v1beta4.DataCacheConfig
+	168, // 204: google.cloud.sql.v1beta4.Settings.replication_lag_max_seconds:type_name -> google.protobuf.Int32Value
+	169, // 205: google.cloud.sql.v1beta4.Settings.enable_google_ml_integration:type_name -> google.protobuf.BoolValue
+	169, // 206: google.cloud.sql.v1beta4.Settings.enable_dataplex_integration:type_name -> google.protobuf.BoolValue
+	169, // 207: google.cloud.sql.v1beta4.Settings.retain_backups_on_delete:type_name -> google.protobuf.BoolValue
+	145, // 208: google.cloud.sql.v1beta4.Settings.connection_pool_config:type_name -> google.cloud.sql.v1beta4.ConnectionPoolConfig
+	128, // 209: google.cloud.sql.v1beta4.Settings.final_backup_config:type_name -> google.cloud.sql.v1beta4.FinalBackupConfig
+	144, // 210: google.cloud.sql.v1beta4.Settings.read_pool_auto_scale_config:type_name -> google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig
+	169, // 211: google.cloud.sql.v1beta4.Settings.accelerated_replica_mode:type_name -> google.protobuf.BoolValue
+	142, // 212: google.cloud.sql.v1beta4.Settings.entraid_config:type_name -> google.cloud.sql.v1beta4.SqlServerEntraIdConfig
+	44,  // 213: google.cloud.sql.v1beta4.Settings.data_api_access:type_name -> google.cloud.sql.v1beta4.Settings.DataApiAccess
+	130, // 214: google.cloud.sql.v1beta4.Settings.performance_capture_config:type_name -> google.cloud.sql.v1beta4.PerformanceCaptureConfig
+	45,  // 215: google.cloud.sql.v1beta4.PerformanceCaptureConfig.transaction_kill_type:type_name -> google.cloud.sql.v1beta4.PerformanceCaptureConfig.TransactionKillType
+	167, // 216: google.cloud.sql.v1beta4.SslCert.create_time:type_name -> google.protobuf.Timestamp
+	167, // 217: google.cloud.sql.v1beta4.SslCert.expiration_time:type_name -> google.protobuf.Timestamp
+	132, // 218: google.cloud.sql.v1beta4.SslCertDetail.cert_info:type_name -> google.cloud.sql.v1beta4.SslCert
+	165, // 219: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.reschedule:type_name -> google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule
+	117, // 220: google.cloud.sql.v1beta4.SslCertsInsertResponse.operation:type_name -> google.cloud.sql.v1beta4.Operation
+	132, // 221: google.cloud.sql.v1beta4.SslCertsInsertResponse.server_ca_cert:type_name -> google.cloud.sql.v1beta4.SslCert
+	133, // 222: google.cloud.sql.v1beta4.SslCertsInsertResponse.client_cert:type_name -> google.cloud.sql.v1beta4.SslCertDetail
+	132, // 223: google.cloud.sql.v1beta4.SslCertsListResponse.items:type_name -> google.cloud.sql.v1beta4.SslCert
+	47,  // 224: google.cloud.sql.v1beta4.SqlActiveDirectoryConfig.mode:type_name -> google.cloud.sql.v1beta4.SqlActiveDirectoryConfig.ActiveDirectoryMode
+	172, // 225: google.cloud.sql.v1beta4.SqlServerAuditConfig.retention_interval:type_name -> google.protobuf.Duration
+	172, // 226: google.cloud.sql.v1beta4.SqlServerAuditConfig.upload_interval:type_name -> google.protobuf.Duration
+	166, // 227: google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig.target_metrics:type_name -> google.cloud.sql.v1beta4.ReadPoolAutoScaleConfig.TargetMetric
+	143, // 228: google.cloud.sql.v1beta4.ConnectionPoolConfig.flags:type_name -> google.cloud.sql.v1beta4.ConnectionPoolFlags
+	172, // 229: google.cloud.sql.v1beta4.AcquireSsrsLeaseContext.duration:type_name -> google.protobuf.Duration
+	169, // 230: google.cloud.sql.v1beta4.DatabaseInstance.SqlFailoverReplica.available:type_name -> google.protobuf.BoolValue
+	167, // 231: google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance.start_time:type_name -> google.protobuf.Timestamp
+	167, // 232: google.cloud.sql.v1beta4.DatabaseInstance.SqlScheduledMaintenance.schedule_deadline_time:type_name -> google.protobuf.Timestamp
+	28,  // 233: google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport.sql_out_of_disk_state:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlOutOfDiskReport.SqlOutOfDiskState
+	106, // 234: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.ip_addresses:type_name -> google.cloud.sql.v1beta4.IpMapping
+	25,  // 235: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.state:type_name -> google.cloud.sql.v1beta4.DatabaseInstance.SqlInstanceState
+	64,  // 236: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.dns_names:type_name -> google.cloud.sql.v1beta4.DnsNameMapping
+	105, // 237: google.cloud.sql.v1beta4.DatabaseInstance.PoolNodeConfig.psc_auto_connections:type_name -> google.cloud.sql.v1beta4.PscAutoConnectionConfig
+	169, // 238: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.schema_only:type_name -> google.protobuf.BoolValue
+	156, // 239: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.mysql_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.MysqlExportOptions
+	168, // 240: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.threads:type_name -> google.protobuf.Int32Value
+	169, // 241: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.parallel:type_name -> google.protobuf.BoolValue
+	157, // 242: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.postgres_export_options:type_name -> google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions
+	169, // 243: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.striped:type_name -> google.protobuf.BoolValue
+	168, // 244: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.stripe_count:type_name -> google.protobuf.Int32Value
+	1,   // 245: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.bak_type:type_name -> google.cloud.sql.v1beta4.BakType
+	169, // 246: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.copy_only:type_name -> google.protobuf.BoolValue
+	169, // 247: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.differential_base:type_name -> google.protobuf.BoolValue
+	167, // 248: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.export_log_start_time:type_name -> google.protobuf.Timestamp
+	167, // 249: google.cloud.sql.v1beta4.ExportContext.SqlBakExportOptions.export_log_end_time:type_name -> google.protobuf.Timestamp
+	168, // 250: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.MysqlExportOptions.master_data:type_name -> google.protobuf.Int32Value
+	169, // 251: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions.clean:type_name -> google.protobuf.BoolValue
+	169, // 252: google.cloud.sql.v1beta4.ExportContext.SqlExportOptions.PostgresExportOptions.if_exists:type_name -> google.protobuf.BoolValue
+	168, // 253: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.threads:type_name -> google.protobuf.Int32Value
+	169, // 254: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.parallel:type_name -> google.protobuf.BoolValue
+	162, // 255: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.postgres_import_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions
+	163, // 256: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.encryption_options:type_name -> google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.EncryptionOptions
+	169, // 257: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.striped:type_name -> google.protobuf.BoolValue
+	169, // 258: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.no_recovery:type_name -> google.protobuf.BoolValue
+	169, // 259: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.recovery_only:type_name -> google.protobuf.BoolValue
+	1,   // 260: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.bak_type:type_name -> google.cloud.sql.v1beta4.BakType
+	167, // 261: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.stop_at:type_name -> google.protobuf.Timestamp
+	169, // 262: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions.clean:type_name -> google.protobuf.BoolValue
+	169, // 263: google.cloud.sql.v1beta4.ImportContext.SqlImportOptions.PostgresImportOptions.if_exists:type_name -> google.protobuf.BoolValue
+	169, // 264: google.cloud.sql.v1beta4.ImportContext.SqlBakImportOptions.EncryptionOptions.keep_encrypted:type_name -> google.protobuf.BoolValue
+	46,  // 265: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.reschedule_type:type_name -> google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.RescheduleType
+	167, // 266: google.cloud.sql.v1beta4.SqlInstancesRescheduleMaintenanceRequestBody.Reschedule.schedule_time:type_name -> google.protobuf.Timestamp
+	267, // [267:267] is the sub-list for method output_type
+	267, // [267:267] is the sub-list for method input_type
+	267, // [267:267] is the sub-list for extension type_name
+	267, // [267:267] is the sub-list for extension extendee
+	0,   // [0:267] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_init() }
@@ -15812,7 +15884,7 @@ func file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDesc), len(file_google_cloud_sql_v1beta4_cloud_sql_resources_proto_rawDesc)),
-			NumEnums:      47,
+			NumEnums:      48,
 			NumMessages:   119,
 			NumExtensions: 0,
 			NumServices:   0,
