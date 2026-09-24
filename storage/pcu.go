@@ -451,6 +451,9 @@ func (s *pcuState) close() error {
 			finalSucceeded := s.finalComposeSucceeded
 			s.mu.Unlock()
 			if hasErr && !finalSucceeded {
+				s.mu.Lock()
+				s.ctx = context.WithoutCancel(s.ctx)
+				s.mu.Unlock()
 				go s.doCleanupFn(s)
 			}
 		}()
