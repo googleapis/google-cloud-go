@@ -50,6 +50,7 @@ type CommerceTransactionCallOptions struct {
 	GetService                 []gax.CallOption
 	ListPrivateOffers          []gax.CallOption
 	GetPrivateOffer            []gax.CallOption
+	ResolveAmendmentTarget     []gax.CallOption
 	CreatePrivateOffer         []gax.CallOption
 	UpdatePrivateOffer         []gax.CallOption
 	PublishPrivateOffer        []gax.CallOption
@@ -138,6 +139,9 @@ func defaultCommerceTransactionCallOptions() *CommerceTransactionCallOptions {
 					Multiplier: 1.30,
 				})
 			}),
+		},
+		ResolveAmendmentTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
 		},
 		CreatePrivateOffer: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -314,6 +318,9 @@ func defaultCommerceTransactionRESTCallOptions() *CommerceTransactionCallOptions
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ResolveAmendmentTarget: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+		},
 		CreatePrivateOffer: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
@@ -444,6 +451,7 @@ type internalCommerceTransactionClient interface {
 	GetService(context.Context, *commerceproducerpb.GetServiceRequest, ...gax.CallOption) (*commerceproducerpb.Service, error)
 	ListPrivateOffers(context.Context, *commerceproducerpb.ListPrivateOffersRequest, ...gax.CallOption) *PrivateOfferIterator
 	GetPrivateOffer(context.Context, *commerceproducerpb.GetPrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
+	ResolveAmendmentTarget(context.Context, *commerceproducerpb.ResolveAmendmentTargetRequest, ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error)
 	CreatePrivateOffer(context.Context, *commerceproducerpb.CreatePrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
 	UpdatePrivateOffer(context.Context, *commerceproducerpb.UpdatePrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
 	PublishPrivateOffer(context.Context, *commerceproducerpb.PublishPrivateOfferRequest, ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error)
@@ -521,6 +529,13 @@ func (c *CommerceTransactionClient) ListPrivateOffers(ctx context.Context, req *
 // GetPrivateOffer gets details of a single PrivateOffer.
 func (c *CommerceTransactionClient) GetPrivateOffer(ctx context.Context, req *commerceproducerpb.GetPrivateOfferRequest, opts ...gax.CallOption) (*commerceproducerpb.PrivateOffer, error) {
 	return c.internalClient.GetPrivateOffer(ctx, req, opts...)
+}
+
+// ResolveAmendmentTarget resolves the existing offer that must be amended when creating a new
+// PrivateOffer. Use this method to determine the correct amendment target
+// before creating or publishing an offer.
+func (c *CommerceTransactionClient) ResolveAmendmentTarget(ctx context.Context, req *commerceproducerpb.ResolveAmendmentTargetRequest, opts ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error) {
+	return c.internalClient.ResolveAmendmentTarget(ctx, req, opts...)
 }
 
 // CreatePrivateOffer creates a new PrivateOffer in a given project and location.
@@ -726,6 +741,7 @@ func NewCommerceTransactionClient(ctx context.Context, opts ...option.ClientOpti
 		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListPrivateOffers = append(client.CallOptions.ListPrivateOffers, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetPrivateOffer = append(client.CallOptions.GetPrivateOffer, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResolveAmendmentTarget = append(client.CallOptions.ResolveAmendmentTarget, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreatePrivateOffer = append(client.CallOptions.CreatePrivateOffer, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdatePrivateOffer = append(client.CallOptions.UpdatePrivateOffer, gax.WithClientMetrics(metrics))
 		client.CallOptions.PublishPrivateOffer = append(client.CallOptions.PublishPrivateOffer, gax.WithClientMetrics(metrics))
@@ -842,6 +858,7 @@ func NewCommerceTransactionRESTClient(ctx context.Context, opts ...option.Client
 		callOpts.GetService = append(callOpts.GetService, gax.WithClientMetrics(metrics))
 		callOpts.ListPrivateOffers = append(callOpts.ListPrivateOffers, gax.WithClientMetrics(metrics))
 		callOpts.GetPrivateOffer = append(callOpts.GetPrivateOffer, gax.WithClientMetrics(metrics))
+		callOpts.ResolveAmendmentTarget = append(callOpts.ResolveAmendmentTarget, gax.WithClientMetrics(metrics))
 		callOpts.CreatePrivateOffer = append(callOpts.CreatePrivateOffer, gax.WithClientMetrics(metrics))
 		callOpts.UpdatePrivateOffer = append(callOpts.UpdatePrivateOffer, gax.WithClientMetrics(metrics))
 		callOpts.PublishPrivateOffer = append(callOpts.PublishPrivateOffer, gax.WithClientMetrics(metrics))
@@ -1050,6 +1067,30 @@ func (c *commerceTransactionGRPCClient) GetPrivateOffer(ctx context.Context, req
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.commerceTransactionClient.GetPrivateOffer, req, settings.GRPC, c.logger, "GetPrivateOffer")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *commerceTransactionGRPCClient) ResolveAmendmentTarget(ctx context.Context, req *commerceproducerpb.ResolveAmendmentTargetRequest, opts ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ResolveAmendmentTarget")
+	}
+	opts = append((*c.CallOptions).ResolveAmendmentTarget[0:len((*c.CallOptions).ResolveAmendmentTarget):len((*c.CallOptions).ResolveAmendmentTarget)], opts...)
+	var resp *commerceproducerpb.ResolveAmendmentTargetResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.commerceTransactionClient.ResolveAmendmentTarget, req, settings.GRPC, c.logger, "ResolveAmendmentTarget")
 		return err
 	}, opts...)
 	if err != nil {
@@ -1980,6 +2021,67 @@ func (c *commerceTransactionRESTClient) GetPrivateOffer(ctx context.Context, req
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetPrivateOffer")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// ResolveAmendmentTarget resolves the existing offer that must be amended when creating a new
+// PrivateOffer. Use this method to determine the correct amendment target
+// before creating or publishing an offer.
+func (c *commerceTransactionRESTClient) ResolveAmendmentTarget(ctx context.Context, req *commerceproducerpb.ResolveAmendmentTargetRequest, opts ...gax.CallOption) (*commerceproducerpb.ResolveAmendmentTargetResponse, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1beta/%v/privateOffers:resolveAmendmentTarget", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	params.Add("baseStandardOffer", fmt.Sprintf("%v", req.GetBaseStandardOffer()))
+	params.Add("targetBillingAccount", fmt.Sprintf("%v", req.GetTargetBillingAccount()))
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//commerceproducer.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerceproducer.v1beta.CommerceTransaction/ResolveAmendmentTarget")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/privateOffers:resolveAmendmentTarget")
+	}
+	opts = append((*c.CallOptions).ResolveAmendmentTarget[0:len((*c.CallOptions).ResolveAmendmentTarget):len((*c.CallOptions).ResolveAmendmentTarget)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &commerceproducerpb.ResolveAmendmentTargetResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ResolveAmendmentTarget")
 		if err != nil {
 			return err
 		}

@@ -87,7 +87,7 @@ func defaultWireGroupsRESTCallOptions() *WireGroupsCallOptions {
 	}
 }
 
-// internalWireGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalWireGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalWireGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -99,7 +99,7 @@ type internalWireGroupsClient interface {
 	Patch(context.Context, *computepb.PatchWireGroupRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// WireGroupsClient is a client for interacting with Google Compute Engine API.
+// WireGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The WireGroups API.

@@ -74,7 +74,7 @@ func defaultReliabilityRisksRESTCallOptions() *ReliabilityRisksCallOptions {
 	}
 }
 
-// internalReliabilityRisksClient is an interface that defines the methods available from Google Compute Engine API.
+// internalReliabilityRisksClient is an interface that defines the methods available from Compute Engine API.
 type internalReliabilityRisksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -83,7 +83,7 @@ type internalReliabilityRisksClient interface {
 	List(context.Context, *computepb.ListReliabilityRisksRequest, ...gax.CallOption) *ReliabilityRiskIterator
 }
 
-// ReliabilityRisksClient is a client for interacting with Google Compute Engine API.
+// ReliabilityRisksClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ReliabilityRisks API.

@@ -3,6 +3,53 @@
 
 
 
+## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.83.0...bigquery/v1.84.0) (2026-09-17)
+
+
+### Features
+
+* **bigquery:** Add JobCreationMode to QueryConfig to allow per query override ([#20510](https://github.com/googleapis/google-cloud-go/issues/20510)) ([953f5cc](https://github.com/googleapis/google-cloud-go/commit/953f5ccb679e8628992b6d25dd3190731f434060))
+
+
+### Bug Fixes
+
+* **bigquery:** Plumb query ID on polls ([#20512](https://github.com/googleapis/google-cloud-go/issues/20512)) ([ebb729d](https://github.com/googleapis/google-cloud-go/commit/ebb729d1e6b60156ee1b6c4a2b295a0ed1e77243)), refs [#20435](https://github.com/googleapis/google-cloud-go/issues/20435)
+
+## [1.83.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.82.0...bigquery/v1.83.0) (2026-09-02)
+
+
+### Features
+
+* Update API sources and regenerate ([#20459](https://github.com/googleapis/google-cloud-go/issues/20459)) ([5426e32](https://github.com/googleapis/google-cloud-go/commit/5426e32154fdced65087675b6c37aba66436ac47))
+
+## [1.82.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.81.0...bigquery/v1.82.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [1.81.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.80.0...bigquery/v1.81.0) (2026-08-20)
+
+
+### Features
+
+* Update sources and regenerate ([#20399](https://github.com/googleapis/google-cloud-go/issues/20399)) ([a6b5cdb](https://github.com/googleapis/google-cloud-go/commit/a6b5cdb4eec5e66fb6bb4a00f9ec89c088826e26))
+
+## [1.80.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.79.1...bigquery/v1.80.0) (2026-08-13)
+
+
+### Features
+
+* Update API sources and regenerate ([#20369](https://github.com/googleapis/google-cloud-go/issues/20369)) ([bfe3aaf](https://github.com/googleapis/google-cloud-go/commit/bfe3aafc49e0c13815aa0401b1eba47aef4511df))
+
+## [1.79.1](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.79.0...bigquery/v1.79.1) (2026-08-07)
+
+
+### Bug Fixes
+
+* **bigquery:** Preserve SourceJob and QueryID when Storage API used ([#20314](https://github.com/googleapis/google-cloud-go/issues/20314)) ([8fc01f2](https://github.com/googleapis/google-cloud-go/commit/8fc01f282c4d4aafb8a82553645ba3aa5e8f2efc))
+
 ## [1.79.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.78.0...bigquery/v1.79.0) (2026-07-13)
 
 

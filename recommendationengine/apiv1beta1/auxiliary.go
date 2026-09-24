@@ -18,11 +18,13 @@ package recommendationengine
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	recommendationenginepb "cloud.google.com/go/recommendationengine/apiv1beta1/recommendationenginepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -218,6 +220,12 @@ func (op *PurgeUserEventsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CatalogItemIterator) All() iter.Seq2[*recommendationenginepb.CatalogItem, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CatalogItemIterator manages a stream of *recommendationenginepb.CatalogItem.
 type CatalogItemIterator struct {
 	items    []*recommendationenginepb.CatalogItem
@@ -263,6 +271,12 @@ func (it *CatalogItemIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PredictResponse_PredictionResultIterator) All() iter.Seq2[*recommendationenginepb.PredictResponse_PredictionResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PredictResponse_PredictionResultIterator manages a stream of *recommendationenginepb.PredictResponse_PredictionResult.
@@ -312,6 +326,12 @@ func (it *PredictResponse_PredictionResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PredictionApiKeyRegistrationIterator) All() iter.Seq2[*recommendationenginepb.PredictionApiKeyRegistration, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PredictionApiKeyRegistrationIterator manages a stream of *recommendationenginepb.PredictionApiKeyRegistration.
 type PredictionApiKeyRegistrationIterator struct {
 	items    []*recommendationenginepb.PredictionApiKeyRegistration
@@ -357,6 +377,12 @@ func (it *PredictionApiKeyRegistrationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *UserEventIterator) All() iter.Seq2[*recommendationenginepb.UserEvent, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // UserEventIterator manages a stream of *recommendationenginepb.UserEvent.

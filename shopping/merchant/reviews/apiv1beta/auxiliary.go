@@ -17,9 +17,18 @@
 package reviews
 
 import (
+	"iter"
+
 	reviewspb "cloud.google.com/go/shopping/merchant/reviews/apiv1beta/reviewspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MerchantReviewIterator) All() iter.Seq2[*reviewspb.MerchantReview, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // MerchantReviewIterator manages a stream of *reviewspb.MerchantReview.
 type MerchantReviewIterator struct {
@@ -66,6 +75,12 @@ func (it *MerchantReviewIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProductReviewIterator) All() iter.Seq2[*reviewspb.ProductReview, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProductReviewIterator manages a stream of *reviewspb.ProductReview.

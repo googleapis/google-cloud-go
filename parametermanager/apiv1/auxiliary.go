@@ -17,10 +17,19 @@
 package parametermanager
 
 import (
+	"iter"
+
 	parametermanagerpb "cloud.google.com/go/parametermanager/apiv1/parametermanagerpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
@@ -67,6 +76,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ParameterIterator) All() iter.Seq2[*parametermanagerpb.Parameter, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ParameterIterator manages a stream of *parametermanagerpb.Parameter.
@@ -116,6 +131,12 @@ func (it *ParameterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ParameterVersionIterator) All() iter.Seq2[*parametermanagerpb.ParameterVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ParameterVersionIterator manages a stream of *parametermanagerpb.ParameterVersion.
 type ParameterVersionIterator struct {
 	items    []*parametermanagerpb.ParameterVersion
@@ -158,6 +179,112 @@ func (it *ParameterVersionIterator) bufLen() int {
 }
 
 func (it *ParameterVersionIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TemplateIterator) All() iter.Seq2[*parametermanagerpb.Template, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// TemplateIterator manages a stream of *parametermanagerpb.Template.
+type TemplateIterator struct {
+	items    []*parametermanagerpb.Template
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*parametermanagerpb.Template, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *TemplateIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TemplateIterator) Next() (*parametermanagerpb.Template, error) {
+	var item *parametermanagerpb.Template
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TemplateIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TemplateIterator) takeBuf() interface{} {
+	b := it.items
+	it.items = nil
+	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TemplateVersionIterator) All() iter.Seq2[*parametermanagerpb.TemplateVersion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
+// TemplateVersionIterator manages a stream of *parametermanagerpb.TemplateVersion.
+type TemplateVersionIterator struct {
+	items    []*parametermanagerpb.TemplateVersion
+	pageInfo *iterator.PageInfo
+	nextFunc func() error
+
+	// Response is the raw response for the current page.
+	// It must be cast to the RPC response type.
+	// Calling Next() or InternalFetch() updates this value.
+	Response interface{}
+
+	// InternalFetch is for use by the Google Cloud Libraries only.
+	// It is not part of the stable interface of this package.
+	//
+	// InternalFetch returns results from a single call to the underlying RPC.
+	// The number of results is no greater than pageSize.
+	// If there are no more results, nextPageToken is empty and err is nil.
+	InternalFetch func(pageSize int, pageToken string) (results []*parametermanagerpb.TemplateVersion, nextPageToken string, err error)
+}
+
+// PageInfo supports pagination. See the [google.golang.org/api/iterator] package for details.
+func (it *TemplateVersionIterator) PageInfo() *iterator.PageInfo {
+	return it.pageInfo
+}
+
+// Next returns the next result. Its second return value is iterator.Done if there are no more
+// results. Once Next returns Done, all subsequent calls will return Done.
+func (it *TemplateVersionIterator) Next() (*parametermanagerpb.TemplateVersion, error) {
+	var item *parametermanagerpb.TemplateVersion
+	if err := it.nextFunc(); err != nil {
+		return item, err
+	}
+	item = it.items[0]
+	it.items = it.items[1:]
+	return item, nil
+}
+
+func (it *TemplateVersionIterator) bufLen() int {
+	return len(it.items)
+}
+
+func (it *TemplateVersionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b

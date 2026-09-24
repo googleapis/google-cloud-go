@@ -95,7 +95,7 @@ func defaultRegionNetworkEndpointGroupsRESTCallOptions() *RegionNetworkEndpointG
 	}
 }
 
-// internalRegionNetworkEndpointGroupsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionNetworkEndpointGroupsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionNetworkEndpointGroupsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,7 +109,7 @@ type internalRegionNetworkEndpointGroupsClient interface {
 	ListNetworkEndpoints(context.Context, *computepb.ListNetworkEndpointsRegionNetworkEndpointGroupsRequest, ...gax.CallOption) *NetworkEndpointWithHealthStatusIterator
 }
 
-// RegionNetworkEndpointGroupsClient is a client for interacting with Google Compute Engine API.
+// RegionNetworkEndpointGroupsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionNetworkEndpointGroups API.

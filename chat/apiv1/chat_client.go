@@ -51,6 +51,7 @@ type CallOptions struct {
 	GetMessage                     []gax.CallOption
 	UpdateMessage                  []gax.CallOption
 	DeleteMessage                  []gax.CallOption
+	SearchMessages                 []gax.CallOption
 	GetAttachment                  []gax.CallOption
 	UploadAttachment               []gax.CallOption
 	ListSpaces                     []gax.CallOption
@@ -69,6 +70,9 @@ type CallOptions struct {
 	CreateReaction                 []gax.CallOption
 	ListReactions                  []gax.CallOption
 	DeleteReaction                 []gax.CallOption
+	ListMessagePins                []gax.CallOption
+	CreateMessagePin               []gax.CallOption
+	DeleteMessagePin               []gax.CallOption
 	CreateCustomEmoji              []gax.CallOption
 	GetCustomEmoji                 []gax.CallOption
 	ListCustomEmojis               []gax.CallOption
@@ -184,6 +188,18 @@ func defaultCallOptions() *CallOptions {
 			}),
 		},
 		DeleteMessage: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		SearchMessages: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -411,6 +427,9 @@ func defaultCallOptions() *CallOptions {
 				})
 			}),
 		},
+		ListMessagePins:  []gax.CallOption{},
+		CreateMessagePin: []gax.CallOption{},
+		DeleteMessagePin: []gax.CallOption{},
 		CreateCustomEmoji: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -769,6 +788,17 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		SearchMessages: []gax.CallOption{
+			gax.WithTimeout(30000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetAttachment: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -967,6 +997,9 @@ func defaultRESTCallOptions() *CallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		ListMessagePins:  []gax.CallOption{},
+		CreateMessagePin: []gax.CallOption{},
+		DeleteMessagePin: []gax.CallOption{},
 		CreateCustomEmoji: []gax.CallOption{
 			gax.WithTimeout(30000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -1235,6 +1268,7 @@ type internalClient interface {
 	GetMessage(context.Context, *chatpb.GetMessageRequest, ...gax.CallOption) (*chatpb.Message, error)
 	UpdateMessage(context.Context, *chatpb.UpdateMessageRequest, ...gax.CallOption) (*chatpb.Message, error)
 	DeleteMessage(context.Context, *chatpb.DeleteMessageRequest, ...gax.CallOption) error
+	SearchMessages(context.Context, *chatpb.SearchMessagesRequest, ...gax.CallOption) *SearchMessageResultIterator
 	GetAttachment(context.Context, *chatpb.GetAttachmentRequest, ...gax.CallOption) (*chatpb.Attachment, error)
 	UploadAttachment(context.Context, *chatpb.UploadAttachmentRequest, ...gax.CallOption) (*chatpb.UploadAttachmentResponse, error)
 	ListSpaces(context.Context, *chatpb.ListSpacesRequest, ...gax.CallOption) *SpaceIterator
@@ -1253,6 +1287,9 @@ type internalClient interface {
 	CreateReaction(context.Context, *chatpb.CreateReactionRequest, ...gax.CallOption) (*chatpb.Reaction, error)
 	ListReactions(context.Context, *chatpb.ListReactionsRequest, ...gax.CallOption) *ReactionIterator
 	DeleteReaction(context.Context, *chatpb.DeleteReactionRequest, ...gax.CallOption) error
+	ListMessagePins(context.Context, *chatpb.ListMessagePinsRequest, ...gax.CallOption) *MessagePinIterator
+	CreateMessagePin(context.Context, *chatpb.CreateMessagePinRequest, ...gax.CallOption) (*chatpb.MessagePin, error)
+	DeleteMessagePin(context.Context, *chatpb.DeleteMessagePinRequest, ...gax.CallOption) error
 	CreateCustomEmoji(context.Context, *chatpb.CreateCustomEmojiRequest, ...gax.CallOption) (*chatpb.CustomEmoji, error)
 	GetCustomEmoji(context.Context, *chatpb.GetCustomEmojiRequest, ...gax.CallOption) (*chatpb.CustomEmoji, error)
 	ListCustomEmojis(context.Context, *chatpb.ListCustomEmojisRequest, ...gax.CallOption) *CustomEmojiIterator
@@ -1573,6 +1610,42 @@ func (c *Client) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessageReq
 	return c.internalClient.DeleteMessage(ctx, req, opts...)
 }
 
+// SearchMessages searches for messages in Google Chat that the calling user has access to.
+// Returns a list of messages matching the search criteria.
+//
+// To search across all spaces the user has access to, set parent to
+// spaces/-. Using any other value for parent results in an
+// INVALID_ARGUMENT error. The returned messages have their name field
+// populated with the full resource name, which includes the specific space
+// in which the message resides.
+//
+// This API doesn’t return all message types. The types of messages listed
+// below aren’t included in the response. Use
+// ListMessages to list all
+// messages.
+//
+//	Private Messages that are visible to the authenticated user.
+//
+//	Messages posted by Chat apps in spaces or group chats.
+//
+//	Messages in a Chat app DM.
+//
+//	Messages from blocked users.
+//
+//	Messages in spaces that the caller has muted.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.messages.readonly
+//
+//	https://www.googleapis.com/auth/chat.messages
+func (c *Client) SearchMessages(ctx context.Context, req *chatpb.SearchMessagesRequest, opts ...gax.CallOption) *SearchMessageResultIterator {
+	return c.internalClient.SearchMessages(ctx, req, opts...)
+}
+
 // GetAttachment gets the metadata of a message attachment. The attachment data is fetched
 // using the media
 // API (at https://developers.google.com/workspace/chat/api/reference/rest/v1/media/download).
@@ -1641,20 +1714,34 @@ func (c *Client) ListSpaces(ctx context.Context, req *chatpb.ListSpacesRequest, 
 	return c.internalClient.ListSpaces(ctx, req, opts...)
 }
 
-// SearchSpaces returns a list of spaces in a Google Workspace organization based on an
-// administrator’s search. In the request, set use_admin_access to true.
-// For an example, see Search for and manage
+// SearchSpaces returns a list of spaces in a Google Workspace organization. For an
+// example, see Search for and manage
 // spaces (at https://developers.google.com/workspace/chat/search-manage-admin).
 //
-// Requires user
-// authentication with administrator
-// privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
-// and one of the following authorization
-// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+// When use_admin_access is set to false, the results are limited to
+// spaces where the calling user is a joined member. To search with
+// administrator privileges, set use_admin_access to true.
 //
-//	https://www.googleapis.com/auth/chat.admin.spaces.readonly
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-//	https://www.googleapis.com/auth/chat.admin.spaces
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
+//
+//	  https://www.googleapis.com/auth/chat.spaces.readonly
+//
+//	  https://www.googleapis.com/auth/chat.spaces
+//
+//	User
+//	authentication with administrator
+//	privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
+//	and one of the following authorization
+//	scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	  https://www.googleapis.com/auth/chat.admin.spaces.readonly
+//
+//	  https://www.googleapis.com/auth/chat.admin.spaces
 func (c *Client) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	return c.internalClient.SearchSpaces(ctx, req, opts...)
 }
@@ -2170,6 +2257,54 @@ func (c *Client) ListReactions(ctx context.Context, req *chatpb.ListReactionsReq
 //	https://www.googleapis.com/auth/chat.import (import mode spaces only)
 func (c *Client) DeleteReaction(ctx context.Context, req *chatpb.DeleteReactionRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteReaction(ctx, req, opts...)
+}
+
+// ListMessagePins lists message pins in a space. Users can pin important messages in spaces
+// for easy access. For more information, see Pin or unpin a conversation in
+// Google Chat (at https://support.google.com/chat/answer/15622437).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins.readonly
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins
+//
+//	https://www.googleapis.com/auth/chat.spaces.readonly
+//
+//	https://www.googleapis.com/auth/chat.spaces
+func (c *Client) ListMessagePins(ctx context.Context, req *chatpb.ListMessagePinsRequest, opts ...gax.CallOption) *MessagePinIterator {
+	return c.internalClient.ListMessagePins(ctx, req, opts...)
+}
+
+// CreateMessagePin creates a message pin.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins
+//
+//	https://www.googleapis.com/auth/chat.spaces
+func (c *Client) CreateMessagePin(ctx context.Context, req *chatpb.CreateMessagePinRequest, opts ...gax.CallOption) (*chatpb.MessagePin, error) {
+	return c.internalClient.CreateMessagePin(ctx, req, opts...)
+}
+
+// DeleteMessagePin deletes a message pin.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins
+//
+//	https://www.googleapis.com/auth/chat.spaces
+func (c *Client) DeleteMessagePin(ctx context.Context, req *chatpb.DeleteMessagePinRequest, opts ...gax.CallOption) error {
+	return c.internalClient.DeleteMessagePin(ctx, req, opts...)
 }
 
 // CreateCustomEmoji creates a custom emoji.
@@ -2726,6 +2861,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetMessage = append(client.CallOptions.GetMessage, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateMessage = append(client.CallOptions.UpdateMessage, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteMessage = append(client.CallOptions.DeleteMessage, gax.WithClientMetrics(metrics))
+		client.CallOptions.SearchMessages = append(client.CallOptions.SearchMessages, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetAttachment = append(client.CallOptions.GetAttachment, gax.WithClientMetrics(metrics))
 		client.CallOptions.UploadAttachment = append(client.CallOptions.UploadAttachment, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListSpaces = append(client.CallOptions.ListSpaces, gax.WithClientMetrics(metrics))
@@ -2744,6 +2880,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateReaction = append(client.CallOptions.CreateReaction, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListReactions = append(client.CallOptions.ListReactions, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteReaction = append(client.CallOptions.DeleteReaction, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListMessagePins = append(client.CallOptions.ListMessagePins, gax.WithClientMetrics(metrics))
+		client.CallOptions.CreateMessagePin = append(client.CallOptions.CreateMessagePin, gax.WithClientMetrics(metrics))
+		client.CallOptions.DeleteMessagePin = append(client.CallOptions.DeleteMessagePin, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateCustomEmoji = append(client.CallOptions.CreateCustomEmoji, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetCustomEmoji = append(client.CallOptions.GetCustomEmoji, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListCustomEmojis = append(client.CallOptions.ListCustomEmojis, gax.WithClientMetrics(metrics))
@@ -2865,6 +3004,7 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetMessage = append(callOpts.GetMessage, gax.WithClientMetrics(metrics))
 		callOpts.UpdateMessage = append(callOpts.UpdateMessage, gax.WithClientMetrics(metrics))
 		callOpts.DeleteMessage = append(callOpts.DeleteMessage, gax.WithClientMetrics(metrics))
+		callOpts.SearchMessages = append(callOpts.SearchMessages, gax.WithClientMetrics(metrics))
 		callOpts.GetAttachment = append(callOpts.GetAttachment, gax.WithClientMetrics(metrics))
 		callOpts.UploadAttachment = append(callOpts.UploadAttachment, gax.WithClientMetrics(metrics))
 		callOpts.ListSpaces = append(callOpts.ListSpaces, gax.WithClientMetrics(metrics))
@@ -2883,6 +3023,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.CreateReaction = append(callOpts.CreateReaction, gax.WithClientMetrics(metrics))
 		callOpts.ListReactions = append(callOpts.ListReactions, gax.WithClientMetrics(metrics))
 		callOpts.DeleteReaction = append(callOpts.DeleteReaction, gax.WithClientMetrics(metrics))
+		callOpts.ListMessagePins = append(callOpts.ListMessagePins, gax.WithClientMetrics(metrics))
+		callOpts.CreateMessagePin = append(callOpts.CreateMessagePin, gax.WithClientMetrics(metrics))
+		callOpts.DeleteMessagePin = append(callOpts.DeleteMessagePin, gax.WithClientMetrics(metrics))
 		callOpts.CreateCustomEmoji = append(callOpts.CreateCustomEmoji, gax.WithClientMetrics(metrics))
 		callOpts.GetCustomEmoji = append(callOpts.GetCustomEmoji, gax.WithClientMetrics(metrics))
 		callOpts.ListCustomEmojis = append(callOpts.ListCustomEmojis, gax.WithClientMetrics(metrics))
@@ -3163,6 +3306,58 @@ func (c *gRPCClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *gRPCClient) SearchMessages(ctx context.Context, req *chatpb.SearchMessagesRequest, opts ...gax.CallOption) *SearchMessageResultIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/SearchMessages")
+	}
+	opts = append((*c.CallOptions).SearchMessages[0:len((*c.CallOptions).SearchMessages):len((*c.CallOptions).SearchMessages)], opts...)
+	it := &SearchMessageResultIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SearchMessageResult, string, error) {
+		resp := &chatpb.SearchMessagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.SearchMessages, req, settings.GRPC, c.logger, "SearchMessages")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 func (c *gRPCClient) GetAttachment(ctx context.Context, req *chatpb.GetAttachmentRequest, opts ...gax.CallOption) (*chatpb.Attachment, error) {
@@ -3654,6 +3849,102 @@ func (c *gRPCClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		_, err = executeRPC(ctx, c.client.DeleteReaction, req, settings.GRPC, c.logger, "DeleteReaction")
+		return err
+	}, opts...)
+	return err
+}
+
+func (c *gRPCClient) ListMessagePins(ctx context.Context, req *chatpb.ListMessagePinsRequest, opts ...gax.CallOption) *MessagePinIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/ListMessagePins")
+	}
+	opts = append((*c.CallOptions).ListMessagePins[0:len((*c.CallOptions).ListMessagePins):len((*c.CallOptions).ListMessagePins)], opts...)
+	it := &MessagePinIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.MessagePin, string, error) {
+		resp := &chatpb.ListMessagePinsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListMessagePins, req, settings.GRPC, c.logger, "ListMessagePins")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetMessagePins(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) CreateMessagePin(ctx context.Context, req *chatpb.CreateMessagePinRequest, opts ...gax.CallOption) (*chatpb.MessagePin, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateMessagePin")
+	}
+	opts = append((*c.CallOptions).CreateMessagePin[0:len((*c.CallOptions).CreateMessagePin):len((*c.CallOptions).CreateMessagePin)], opts...)
+	var resp *chatpb.MessagePin
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.CreateMessagePin, req, settings.GRPC, c.logger, "CreateMessagePin")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *gRPCClient) DeleteMessagePin(ctx context.Context, req *chatpb.DeleteMessagePinRequest, opts ...gax.CallOption) error {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteMessagePin")
+	}
+	opts = append((*c.CallOptions).DeleteMessagePin[0:len((*c.CallOptions).DeleteMessagePin):len((*c.CallOptions).DeleteMessagePin)], opts...)
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		_, err = executeRPC(ctx, c.client.DeleteMessagePin, req, settings.GRPC, c.logger, "DeleteMessagePin")
 		return err
 	}, opts...)
 	return err
@@ -4469,6 +4760,9 @@ func (c *restClient) ListMessages(ctx context.Context, req *chatpb.ListMessagesR
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
 		}
+		if req.GetMarkupSyntax() != 0 {
+			params.Add("markupSyntax", fmt.Sprintf("%v", req.GetMarkupSyntax()))
+		}
 		if req.GetOrderBy() != "" {
 			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
 		}
@@ -4792,6 +5086,9 @@ func (c *restClient) GetMessage(ctx context.Context, req *chatpb.GetMessageReque
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetMarkupSyntax() != 0 {
+		params.Add("markupSyntax", fmt.Sprintf("%v", req.GetMarkupSyntax()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -5002,6 +5299,115 @@ func (c *restClient) DeleteMessage(ctx context.Context, req *chatpb.DeleteMessag
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMessage")
 		return err
 	}, opts...)
+}
+
+// SearchMessages searches for messages in Google Chat that the calling user has access to.
+// Returns a list of messages matching the search criteria.
+//
+// To search across all spaces the user has access to, set parent to
+// spaces/-. Using any other value for parent results in an
+// INVALID_ARGUMENT error. The returned messages have their name field
+// populated with the full resource name, which includes the specific space
+// in which the message resides.
+//
+// This API doesn’t return all message types. The types of messages listed
+// below aren’t included in the response. Use
+// ListMessages to list all
+// messages.
+//
+//	Private Messages that are visible to the authenticated user.
+//
+//	Messages posted by Chat apps in spaces or group chats.
+//
+//	Messages in a Chat app DM.
+//
+//	Messages from blocked users.
+//
+//	Messages in spaces that the caller has muted.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.messages.readonly
+//
+//	https://www.googleapis.com/auth/chat.messages
+func (c *restClient) SearchMessages(ctx context.Context, req *chatpb.SearchMessagesRequest, opts ...gax.CallOption) *SearchMessageResultIterator {
+	it := &SearchMessageResultIterator{}
+	req = proto.CloneOf(req)
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.SearchMessageResult, string, error) {
+		resp := &chatpb.SearchMessagesResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		jsonReq, err := m.Marshal(req)
+		if err != nil {
+			return nil, "", err
+		}
+
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/messages:search", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "SearchMessages")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetResults(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
 }
 
 // GetAttachment gets the metadata of a message attachment. The attachment data is fetched
@@ -5258,20 +5664,34 @@ func (c *restClient) ListSpaces(ctx context.Context, req *chatpb.ListSpacesReque
 	return it
 }
 
-// SearchSpaces returns a list of spaces in a Google Workspace organization based on an
-// administrator’s search. In the request, set use_admin_access to true.
-// For an example, see Search for and manage
+// SearchSpaces returns a list of spaces in a Google Workspace organization. For an
+// example, see Search for and manage
 // spaces (at https://developers.google.com/workspace/chat/search-manage-admin).
 //
-// Requires user
-// authentication with administrator
-// privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
-// and one of the following authorization
-// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+// When use_admin_access is set to false, the results are limited to
+// spaces where the calling user is a joined member. To search with
+// administrator privileges, set use_admin_access to true.
 //
-//	https://www.googleapis.com/auth/chat.admin.spaces.readonly
+// Supports the following types of
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize):
 //
-//	https://www.googleapis.com/auth/chat.admin.spaces
+//	User
+//	authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+//	with one of the following authorization scopes:
+//
+//	  https://www.googleapis.com/auth/chat.spaces.readonly
+//
+//	  https://www.googleapis.com/auth/chat.spaces
+//
+//	User
+//	authentication with administrator
+//	privileges (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
+//	and one of the following authorization
+//	scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	  https://www.googleapis.com/auth/chat.admin.spaces.readonly
+//
+//	  https://www.googleapis.com/auth/chat.admin.spaces
 func (c *restClient) SearchSpaces(ctx context.Context, req *chatpb.SearchSpacesRequest, opts ...gax.CallOption) *SpaceIterator {
 	it := &SpaceIterator{}
 	req = proto.CloneOf(req)
@@ -6675,6 +7095,223 @@ func (c *restClient) DeleteReaction(ctx context.Context, req *chatpb.DeleteReact
 		httpReq.Header = headers
 
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteReaction")
+		return err
+	}, opts...)
+}
+
+// ListMessagePins lists message pins in a space. Users can pin important messages in spaces
+// for easy access. For more information, see Pin or unpin a conversation in
+// Google Chat (at https://support.google.com/chat/answer/15622437).
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins.readonly
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins
+//
+//	https://www.googleapis.com/auth/chat.spaces.readonly
+//
+//	https://www.googleapis.com/auth/chat.spaces
+func (c *restClient) ListMessagePins(ctx context.Context, req *chatpb.ListMessagePinsRequest, opts ...gax.CallOption) *MessagePinIterator {
+	it := &MessagePinIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*chatpb.MessagePin, string, error) {
+		resp := &chatpb.ListMessagePinsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/messagePins", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListMessagePins")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetMessagePins(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// CreateMessagePin creates a message pin.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins
+//
+//	https://www.googleapis.com/auth/chat.spaces
+func (c *restClient) CreateMessagePin(ctx context.Context, req *chatpb.CreateMessagePinRequest, opts ...gax.CallOption) (*chatpb.MessagePin, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetMessagePin()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v/messagePins", req.GetParent())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetParent()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/CreateMessagePin")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=spaces/*}/messagePins")
+	}
+	opts = append((*c.CallOptions).CreateMessagePin[0:len((*c.CallOptions).CreateMessagePin):len((*c.CallOptions).CreateMessagePin)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &chatpb.MessagePin{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "CreateMessagePin")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// DeleteMessagePin deletes a message pin.
+//
+// Requires user
+// authentication (at https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+// with one of the following authorization
+// scopes (at https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+//
+//	https://www.googleapis.com/auth/chat.spaces.pins
+//
+//	https://www.googleapis.com/auth/chat.spaces
+func (c *restClient) DeleteMessagePin(ctx context.Context, req *chatpb.DeleteMessagePinRequest, opts ...gax.CallOption) error {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chat.googleapis.com/%v", req.GetName()))
+	}
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.chat.v1.ChatService/DeleteMessagePin")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=spaces/*/messagePins/*}")
+	}
+	return gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("DELETE", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteMessagePin")
 		return err
 	}, opts...)
 }

@@ -25,6 +25,11 @@
                 "CreateManagedFolder"
               ]
             },
+            "CreateRapidCache": {
+              "methods": [
+                "CreateRapidCache"
+              ]
+            },
             "DeleteFolder": {
               "methods": [
                 "DeleteFolder"
@@ -43,6 +48,11 @@
             "DisableAnywhereCache": {
               "methods": [
                 "DisableAnywhereCache"
+              ]
+            },
+            "DisableRapidCache": {
+              "methods": [
+                "DisableRapidCache"
               ]
             },
             "GetAnywhereCache": {
@@ -90,6 +100,11 @@
                 "GetProjectIntelligenceConfig"
               ]
             },
+            "GetRapidCache": {
+              "methods": [
+                "GetRapidCache"
+              ]
+            },
             "GetStorageLayout": {
               "methods": [
                 "GetStorageLayout"
@@ -118,6 +133,11 @@
             "ListManagedFolders": {
               "methods": [
                 "ListManagedFolders"
+              ]
+            },
+            "ListRapidCaches": {
+              "methods": [
+                "ListRapidCaches"
               ]
             },
             "PauseAnywhereCache": {
@@ -160,6 +180,11 @@
                 "UpdateFolderIntelligenceConfig"
               ]
             },
+            "UpdateManagedFolder": {
+              "methods": [
+                "UpdateManagedFolder"
+              ]
+            },
             "UpdateOrganizationIntelligenceConfig": {
               "methods": [
                 "UpdateOrganizationIntelligenceConfig"
@@ -168,6 +193,16 @@
             "UpdateProjectIntelligenceConfig": {
               "methods": [
                 "UpdateProjectIntelligenceConfig"
+              ]
+            },
+            "UpdateRapidCache": {
+              "methods": [
+                "UpdateRapidCache"
+              ]
+            },
+            "ViewObjectFullContext": {
+              "methods": [
+                "ViewObjectFullContext"
               ]
             }
           }
@@ -190,6 +225,11 @@
                 "CreateManagedFolder"
               ]
             },
+            "CreateRapidCache": {
+              "methods": [
+                "CreateRapidCache"
+              ]
+            },
             "DeleteFolder": {
               "methods": [
                 "DeleteFolder"
@@ -208,6 +248,11 @@
             "DisableAnywhereCache": {
               "methods": [
                 "DisableAnywhereCache"
+              ]
+            },
+            "DisableRapidCache": {
+              "methods": [
+                "DisableRapidCache"
               ]
             },
             "GetAnywhereCache": {
@@ -255,6 +300,11 @@
                 "GetProjectIntelligenceConfig"
               ]
             },
+            "GetRapidCache": {
+              "methods": [
+                "GetRapidCache"
+              ]
+            },
             "GetStorageLayout": {
               "methods": [
                 "GetStorageLayout"
@@ -283,6 +333,11 @@
             "ListManagedFolders": {
               "methods": [
                 "ListManagedFolders"
+              ]
+            },
+            "ListRapidCaches": {
+              "methods": [
+                "ListRapidCaches"
               ]
             },
             "PauseAnywhereCache": {
@@ -325,6 +380,11 @@
                 "UpdateFolderIntelligenceConfig"
               ]
             },
+            "UpdateManagedFolder": {
+              "methods": [
+                "UpdateManagedFolder"
+              ]
+            },
             "UpdateOrganizationIntelligenceConfig": {
               "methods": [
                 "UpdateOrganizationIntelligenceConfig"
@@ -333,6 +393,16 @@
             "UpdateProjectIntelligenceConfig": {
               "methods": [
                 "UpdateProjectIntelligenceConfig"
+              ]
+            },
+            "UpdateRapidCache": {
+              "methods": [
+                "UpdateRapidCache"
+              ]
+            },
+            "ViewObjectFullContext": {
+              "methods": [
+                "ViewObjectFullContext"
               ]
             }
           }

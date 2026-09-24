@@ -175,7 +175,7 @@ func defaultFirewallPoliciesRESTCallOptions() *FirewallPoliciesCallOptions {
 	}
 }
 
-// internalFirewallPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalFirewallPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalFirewallPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -200,7 +200,7 @@ type internalFirewallPoliciesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsFirewallPolicyRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// FirewallPoliciesClient is a client for interacting with Google Compute Engine API.
+// FirewallPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The FirewallPolicies API.

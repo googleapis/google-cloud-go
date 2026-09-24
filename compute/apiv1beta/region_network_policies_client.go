@@ -147,7 +147,7 @@ func defaultRegionNetworkPoliciesRESTCallOptions() *RegionNetworkPoliciesCallOpt
 	}
 }
 
-// internalRegionNetworkPoliciesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionNetworkPoliciesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionNetworkPoliciesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -167,7 +167,7 @@ type internalRegionNetworkPoliciesClient interface {
 	RemoveTrafficClassificationRule(context.Context, *computepb.RemoveTrafficClassificationRuleRegionNetworkPolicyRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionNetworkPoliciesClient is a client for interacting with Google Compute Engine API.
+// RegionNetworkPoliciesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionNetworkPolicies API.

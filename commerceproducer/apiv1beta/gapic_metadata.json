@@ -130,6 +130,11 @@
                 "PublishPrivateOffer"
               ]
             },
+            "ResolveAmendmentTarget": {
+              "methods": [
+                "ResolveAmendmentTarget"
+              ]
+            },
             "UpdatePrivateOffer": {
               "methods": [
                 "UpdatePrivateOffer"
@@ -263,6 +268,11 @@
             "PublishPrivateOffer": {
               "methods": [
                 "PublishPrivateOffer"
+              ]
+            },
+            "ResolveAmendmentTarget": {
+              "methods": [
+                "ResolveAmendmentTarget"
               ]
             },
             "UpdatePrivateOffer": {

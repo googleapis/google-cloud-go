@@ -453,6 +453,13 @@ func (mt *Tracer) toOtelMetricAttrs(metricName string) (attribute.Set, error) {
 		clusterID = FallbackString(clusterID, mt.currOp.lastClusterID)
 		zoneID = FallbackString(zoneID, mt.currOp.lastZoneID)
 	}
+	// Cloud Monitoring rejects bigtable_client_raw writes with an empty
+	// zone/cluster ("Unrecognized region or location"). Empty values reach
+	// here when an attempt errors before response headers/trailers arrive
+	// (e.g. DEADLINE_EXCEEDED on the first attempt), so ExtractLocation
+	// never runs and there's no lastClusterID/lastZoneID to fall back on.
+	clusterID = FallbackString(clusterID, defaultCluster)
+	zoneID = FallbackString(zoneID, defaultZone)
 
 	// 4 fixed attributes below (method / table / cluster / zone) plus the
 	// per-client attributes plus this metric's additional attributes.
@@ -679,13 +686,23 @@ func (mt *Tracer) RecordAttemptCompletion(err error) {
 	// Record connectivity_error_count
 	connErrCountAttrs, _ := mt.toOtelMetricAttrs(MetricNameConnErrCount)
 	// Determine if connection error should be incremented.
-	// A true connectivity error occurs only when we receive NO server-side signals.
-	// 1. Server latency (from server-timing header) is a signal, but absent in DirectPath.
-	// 2. Location (from x-goog-ext header) is a signal present in both paths.
-	// Therefore, we only count an error if BOTH signals are missing.
+	// A true connectivity error occurs only when we receive NO
+	// server-side signals from ANY of the three sources:
+	// 1. PeerInfo (transportType non-empty) — session-path signal;
+	//    populated by stampAttempt from Session.peerInfo. Presence
+	//    means the OpenSessionResponse arrived, so we definitively
+	//    reached a server. Session-path serverLatency is 0 by design
+	//    (see CLIENT_SIDE_METRICS_SPEC.md #2) so without this prong
+	//    every session attempt would misclassify as a connectivity
+	//    error.
+	// 2. Server latency (from server-timing header) — classic unary
+	//    signal; absent in DirectPath and always 0 on session path.
+	// 3. Location (from x-goog-ext header) — both paths.
+	// Any one of the three = we reached a server; NOT a connectivity error.
+	hasPeerInfo := mt.currOp.currAttempt.transportType != ""
 	isServerLatencyEffectivelyEmpty := mt.currOp.currAttempt.serverLatencyErr != nil || mt.currOp.currAttempt.serverLatency == 0
 	isLocationEmpty := mt.currOp.currAttempt.clusterID == defaultCluster
-	if isServerLatencyEffectivelyEmpty && isLocationEmpty {
+	if !hasPeerInfo && isServerLatencyEffectivelyEmpty && isLocationEmpty {
 		// This is a connectivity error: the request likely never reached Google's network.
 		mt.instrumentConnErrCount.Add(mt.ctx, 1, metric.WithAttributeSet(connErrCountAttrs))
 	} else {

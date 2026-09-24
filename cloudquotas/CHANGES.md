@@ -3,6 +3,13 @@
 
 
 
+## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/cloudquotas/v1.11.0...cloudquotas/v1.12.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
 ## [1.11.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudquotas%2Fv1.11.0) (2026-05-07)
 
 ## [1.10.0](https://github.com/googleapis/google-cloud-go/releases/tag/cloudquotas%2Fv1.10.0) (2026-04-30)

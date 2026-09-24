@@ -109,7 +109,7 @@ func defaultAutoscalersRESTCallOptions() *AutoscalersCallOptions {
 	}
 }
 
-// internalAutoscalersClient is an interface that defines the methods available from Google Compute Engine API.
+// internalAutoscalersClient is an interface that defines the methods available from Compute Engine API.
 type internalAutoscalersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -124,7 +124,7 @@ type internalAutoscalersClient interface {
 	Update(context.Context, *computepb.UpdateAutoscalerRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// AutoscalersClient is a client for interacting with Google Compute Engine API.
+// AutoscalersClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Autoscalers API.

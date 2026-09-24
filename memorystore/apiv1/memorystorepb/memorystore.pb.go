@@ -229,6 +229,8 @@ const (
 	Instance_AUTH_DISABLED Instance_AuthorizationMode = 1
 	// IAM basic authorization.
 	Instance_IAM_AUTH Instance_AuthorizationMode = 2
+	// Token based authorization.
+	Instance_TOKEN_AUTH Instance_AuthorizationMode = 3
 )
 
 // Enum value maps for Instance_AuthorizationMode.
@@ -237,11 +239,13 @@ var (
 		0: "AUTHORIZATION_MODE_UNSPECIFIED",
 		1: "AUTH_DISABLED",
 		2: "IAM_AUTH",
+		3: "TOKEN_AUTH",
 	}
 	Instance_AuthorizationMode_value = map[string]int32{
 		"AUTHORIZATION_MODE_UNSPECIFIED": 0,
 		"AUTH_DISABLED":                  1,
 		"IAM_AUTH":                       2,
+		"TOKEN_AUTH":                     3,
 	}
 )
 
@@ -845,6 +849,126 @@ func (CrossInstanceReplicationConfig_InstanceRole) EnumDescriptor() ([]byte, []i
 	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{9, 0}
 }
 
+// Represents the different states of a token based auth user.
+// New values may be added in the future.
+type TokenAuthUser_State int32
+
+const (
+	// Not set.
+	TokenAuthUser_STATE_UNSPECIFIED TokenAuthUser_State = 0
+	// The auth user is active.
+	TokenAuthUser_ACTIVE TokenAuthUser_State = 1
+	// The auth user is being created.
+	TokenAuthUser_CREATING TokenAuthUser_State = 2
+	// The auth user is being updated.
+	TokenAuthUser_UPDATING TokenAuthUser_State = 3
+	// The auth user is being deleted.
+	TokenAuthUser_DELETING TokenAuthUser_State = 4
+)
+
+// Enum value maps for TokenAuthUser_State.
+var (
+	TokenAuthUser_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "ACTIVE",
+		2: "CREATING",
+		3: "UPDATING",
+		4: "DELETING",
+	}
+	TokenAuthUser_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"ACTIVE":            1,
+		"CREATING":          2,
+		"UPDATING":          3,
+		"DELETING":          4,
+	}
+)
+
+func (x TokenAuthUser_State) Enum() *TokenAuthUser_State {
+	p := new(TokenAuthUser_State)
+	*p = x
+	return p
+}
+
+func (x TokenAuthUser_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (TokenAuthUser_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[13].Descriptor()
+}
+
+func (TokenAuthUser_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[13]
+}
+
+func (x TokenAuthUser_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use TokenAuthUser_State.Descriptor instead.
+func (TokenAuthUser_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{10, 0}
+}
+
+// Represents the different states of an auth token.
+// New values may be added in the future.
+type AuthToken_State int32
+
+const (
+	// Not set.
+	AuthToken_STATE_UNSPECIFIED AuthToken_State = 0
+	// The auth token is active.
+	AuthToken_ACTIVE AuthToken_State = 1
+	// The auth token is being created.
+	AuthToken_CREATING AuthToken_State = 2
+	// The auth token is being deleted.
+	AuthToken_DELETING AuthToken_State = 3
+)
+
+// Enum value maps for AuthToken_State.
+var (
+	AuthToken_State_name = map[int32]string{
+		0: "STATE_UNSPECIFIED",
+		1: "ACTIVE",
+		2: "CREATING",
+		3: "DELETING",
+	}
+	AuthToken_State_value = map[string]int32{
+		"STATE_UNSPECIFIED": 0,
+		"ACTIVE":            1,
+		"CREATING":          2,
+		"DELETING":          3,
+	}
+)
+
+func (x AuthToken_State) Enum() *AuthToken_State {
+	p := new(AuthToken_State)
+	*p = x
+	return p
+}
+
+func (x AuthToken_State) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AuthToken_State) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[14].Descriptor()
+}
+
+func (AuthToken_State) Type() protoreflect.EnumType {
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[14]
+}
+
+func (x AuthToken_State) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AuthToken_State.Descriptor instead.
+func (AuthToken_State) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{11, 0}
+}
+
 // Possible persistence modes.
 type PersistenceConfig_PersistenceMode int32
 
@@ -886,11 +1010,11 @@ func (x PersistenceConfig_PersistenceMode) String() string {
 }
 
 func (PersistenceConfig_PersistenceMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[13].Descriptor()
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[15].Descriptor()
 }
 
 func (PersistenceConfig_PersistenceMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[13]
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[15]
 }
 
 func (x PersistenceConfig_PersistenceMode) Number() protoreflect.EnumNumber {
@@ -899,7 +1023,7 @@ func (x PersistenceConfig_PersistenceMode) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use PersistenceConfig_PersistenceMode.Descriptor instead.
 func (PersistenceConfig_PersistenceMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{17, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19, 0}
 }
 
 // Possible snapshot periods.
@@ -947,11 +1071,11 @@ func (x PersistenceConfig_RDBConfig_SnapshotPeriod) String() string {
 }
 
 func (PersistenceConfig_RDBConfig_SnapshotPeriod) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[14].Descriptor()
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[16].Descriptor()
 }
 
 func (PersistenceConfig_RDBConfig_SnapshotPeriod) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[14]
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[16]
 }
 
 func (x PersistenceConfig_RDBConfig_SnapshotPeriod) Number() protoreflect.EnumNumber {
@@ -960,7 +1084,7 @@ func (x PersistenceConfig_RDBConfig_SnapshotPeriod) Number() protoreflect.EnumNu
 
 // Deprecated: Use PersistenceConfig_RDBConfig_SnapshotPeriod.Descriptor instead.
 func (PersistenceConfig_RDBConfig_SnapshotPeriod) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{17, 0, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19, 0, 0}
 }
 
 // Possible fsync modes.
@@ -1007,11 +1131,11 @@ func (x PersistenceConfig_AOFConfig_AppendFsync) String() string {
 }
 
 func (PersistenceConfig_AOFConfig_AppendFsync) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[15].Descriptor()
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[17].Descriptor()
 }
 
 func (PersistenceConfig_AOFConfig_AppendFsync) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[15]
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[17]
 }
 
 func (x PersistenceConfig_AOFConfig_AppendFsync) Number() protoreflect.EnumNumber {
@@ -1020,7 +1144,7 @@ func (x PersistenceConfig_AOFConfig_AppendFsync) Number() protoreflect.EnumNumbe
 
 // Deprecated: Use PersistenceConfig_AOFConfig_AppendFsync.Descriptor instead.
 func (PersistenceConfig_AOFConfig_AppendFsync) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{17, 1, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19, 1, 0}
 }
 
 // Possible zone distribution modes.
@@ -1061,11 +1185,11 @@ func (x ZoneDistributionConfig_ZoneDistributionMode) String() string {
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[16].Descriptor()
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[18].Descriptor()
 }
 
 func (ZoneDistributionConfig_ZoneDistributionMode) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[16]
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[18]
 }
 
 func (x ZoneDistributionConfig_ZoneDistributionMode) Number() protoreflect.EnumNumber {
@@ -1074,7 +1198,7 @@ func (x ZoneDistributionConfig_ZoneDistributionMode) Number() protoreflect.EnumN
 
 // Deprecated: Use ZoneDistributionConfig_ZoneDistributionMode.Descriptor instead.
 func (ZoneDistributionConfig_ZoneDistributionMode) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{21, 0}
 }
 
 // Reschedule options.
@@ -1114,11 +1238,11 @@ func (x RescheduleMaintenanceRequest_RescheduleType) String() string {
 }
 
 func (RescheduleMaintenanceRequest_RescheduleType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[17].Descriptor()
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[19].Descriptor()
 }
 
 func (RescheduleMaintenanceRequest_RescheduleType) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[17]
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[19]
 }
 
 func (x RescheduleMaintenanceRequest_RescheduleType) Number() protoreflect.EnumNumber {
@@ -1127,7 +1251,7 @@ func (x RescheduleMaintenanceRequest_RescheduleType) Number() protoreflect.EnumN
 
 // Deprecated: Use RescheduleMaintenanceRequest_RescheduleType.Descriptor instead.
 func (RescheduleMaintenanceRequest_RescheduleType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{20, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{22, 0}
 }
 
 // Possible encryption types.
@@ -1169,11 +1293,11 @@ func (x EncryptionInfo_Type) String() string {
 }
 
 func (EncryptionInfo_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[18].Descriptor()
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[20].Descriptor()
 }
 
 func (EncryptionInfo_Type) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[18]
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[20]
 }
 
 func (x EncryptionInfo_Type) Number() protoreflect.EnumNumber {
@@ -1182,7 +1306,7 @@ func (x EncryptionInfo_Type) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EncryptionInfo_Type.Descriptor instead.
 func (EncryptionInfo_Type) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{41, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{53, 0}
 }
 
 // The state of the KMS key perceived by the system. Refer to the public
@@ -1247,11 +1371,11 @@ func (x EncryptionInfo_KmsKeyState) String() string {
 }
 
 func (EncryptionInfo_KmsKeyState) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[19].Descriptor()
+	return file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[21].Descriptor()
 }
 
 func (EncryptionInfo_KmsKeyState) Type() protoreflect.EnumType {
-	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[19]
+	return &file_google_cloud_memorystore_v1_memorystore_proto_enumTypes[21]
 }
 
 func (x EncryptionInfo_KmsKeyState) Number() protoreflect.EnumNumber {
@@ -1260,7 +1384,7 @@ func (x EncryptionInfo_KmsKeyState) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use EncryptionInfo_KmsKeyState.Descriptor instead.
 func (EncryptionInfo_KmsKeyState) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{41, 1}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{53, 1}
 }
 
 // A Memorystore instance.
@@ -2630,6 +2754,134 @@ func (x *CrossInstanceReplicationConfig) GetMembership() *CrossInstanceReplicati
 	return nil
 }
 
+// Token based auth user for the instance.
+type TokenAuthUser struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Token based auth user name.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The state of the token based auth user.
+	State         TokenAuthUser_State `protobuf:"varint,2,opt,name=state,proto3,enum=google.cloud.memorystore.v1.TokenAuthUser_State" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *TokenAuthUser) Reset() {
+	*x = TokenAuthUser{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *TokenAuthUser) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*TokenAuthUser) ProtoMessage() {}
+
+func (x *TokenAuthUser) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use TokenAuthUser.ProtoReflect.Descriptor instead.
+func (*TokenAuthUser) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{10}
+}
+
+func (x *TokenAuthUser) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *TokenAuthUser) GetState() TokenAuthUser_State {
+	if x != nil {
+		return x.State
+	}
+	return TokenAuthUser_STATE_UNSPECIFIED
+}
+
+// Auth token for the instance.
+type AuthToken struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Name of the auth token.
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The auth token.
+	Token string `protobuf:"bytes,2,opt,name=token,proto3" json:"token,omitempty"`
+	// Output only. Create time of the auth token.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,3,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. The state of the auth token.
+	State         AuthToken_State `protobuf:"varint,4,opt,name=state,proto3,enum=google.cloud.memorystore.v1.AuthToken_State" json:"state,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AuthToken) Reset() {
+	*x = AuthToken{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AuthToken) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AuthToken) ProtoMessage() {}
+
+func (x *AuthToken) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AuthToken.ProtoReflect.Descriptor instead.
+func (*AuthToken) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{11}
+}
+
+func (x *AuthToken) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *AuthToken) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *AuthToken) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *AuthToken) GetState() AuthToken_State {
+	if x != nil {
+		return x.State
+	}
+	return AuthToken_STATE_UNSPECIFIED
+}
+
 // Maintenance policy per instance.
 type MaintenancePolicy struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2647,7 +2899,7 @@ type MaintenancePolicy struct {
 
 func (x *MaintenancePolicy) Reset() {
 	*x = MaintenancePolicy{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[10]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2659,7 +2911,7 @@ func (x *MaintenancePolicy) String() string {
 func (*MaintenancePolicy) ProtoMessage() {}
 
 func (x *MaintenancePolicy) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[10]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2672,7 +2924,7 @@ func (x *MaintenancePolicy) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaintenancePolicy.ProtoReflect.Descriptor instead.
 func (*MaintenancePolicy) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *MaintenancePolicy) GetCreateTime() *timestamppb.Timestamp {
@@ -2709,7 +2961,7 @@ type WeeklyMaintenanceWindow struct {
 
 func (x *WeeklyMaintenanceWindow) Reset() {
 	*x = WeeklyMaintenanceWindow{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[11]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2721,7 +2973,7 @@ func (x *WeeklyMaintenanceWindow) String() string {
 func (*WeeklyMaintenanceWindow) ProtoMessage() {}
 
 func (x *WeeklyMaintenanceWindow) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[11]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2734,7 +2986,7 @@ func (x *WeeklyMaintenanceWindow) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WeeklyMaintenanceWindow.ProtoReflect.Descriptor instead.
 func (*WeeklyMaintenanceWindow) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *WeeklyMaintenanceWindow) GetDay() dayofweek.DayOfWeek {
@@ -2766,7 +3018,7 @@ type MaintenanceSchedule struct {
 
 func (x *MaintenanceSchedule) Reset() {
 	*x = MaintenanceSchedule{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[12]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2778,7 +3030,7 @@ func (x *MaintenanceSchedule) String() string {
 func (*MaintenanceSchedule) ProtoMessage() {}
 
 func (x *MaintenanceSchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[12]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2791,7 +3043,7 @@ func (x *MaintenanceSchedule) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MaintenanceSchedule.ProtoReflect.Descriptor instead.
 func (*MaintenanceSchedule) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *MaintenanceSchedule) GetStartTime() *timestamppb.Timestamp {
@@ -2823,7 +3075,7 @@ type PscAttachmentDetail struct {
 
 func (x *PscAttachmentDetail) Reset() {
 	*x = PscAttachmentDetail{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[13]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2835,7 +3087,7 @@ func (x *PscAttachmentDetail) String() string {
 func (*PscAttachmentDetail) ProtoMessage() {}
 
 func (x *PscAttachmentDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[13]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2848,7 +3100,7 @@ func (x *PscAttachmentDetail) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscAttachmentDetail.ProtoReflect.Descriptor instead.
 func (*PscAttachmentDetail) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *PscAttachmentDetail) GetServiceAttachment() string {
@@ -2907,7 +3159,7 @@ type PscAutoConnection struct {
 
 func (x *PscAutoConnection) Reset() {
 	*x = PscAutoConnection{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[14]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2919,7 +3171,7 @@ func (x *PscAutoConnection) String() string {
 func (*PscAutoConnection) ProtoMessage() {}
 
 func (x *PscAutoConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[14]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2932,7 +3184,7 @@ func (x *PscAutoConnection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscAutoConnection.ProtoReflect.Descriptor instead.
 func (*PscAutoConnection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *PscAutoConnection) GetPorts() isPscAutoConnection_Ports {
@@ -3060,7 +3312,7 @@ type PscConnection struct {
 
 func (x *PscConnection) Reset() {
 	*x = PscConnection{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[15]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3072,7 +3324,7 @@ func (x *PscConnection) String() string {
 func (*PscConnection) ProtoMessage() {}
 
 func (x *PscConnection) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[15]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3085,7 +3337,7 @@ func (x *PscConnection) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PscConnection.ProtoReflect.Descriptor instead.
 func (*PscConnection) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *PscConnection) GetPorts() isPscConnection_Ports {
@@ -3188,7 +3440,7 @@ type DiscoveryEndpoint struct {
 
 func (x *DiscoveryEndpoint) Reset() {
 	*x = DiscoveryEndpoint{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[16]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3200,7 +3452,7 @@ func (x *DiscoveryEndpoint) String() string {
 func (*DiscoveryEndpoint) ProtoMessage() {}
 
 func (x *DiscoveryEndpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[16]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3213,7 +3465,7 @@ func (x *DiscoveryEndpoint) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DiscoveryEndpoint.ProtoReflect.Descriptor instead.
 func (*DiscoveryEndpoint) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *DiscoveryEndpoint) GetAddress() string {
@@ -3252,7 +3504,7 @@ type PersistenceConfig struct {
 
 func (x *PersistenceConfig) Reset() {
 	*x = PersistenceConfig{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[17]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3264,7 +3516,7 @@ func (x *PersistenceConfig) String() string {
 func (*PersistenceConfig) ProtoMessage() {}
 
 func (x *PersistenceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[17]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3277,7 +3529,7 @@ func (x *PersistenceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PersistenceConfig.ProtoReflect.Descriptor instead.
 func (*PersistenceConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *PersistenceConfig) GetMode() PersistenceConfig_PersistenceMode {
@@ -3312,7 +3564,7 @@ type NodeConfig struct {
 
 func (x *NodeConfig) Reset() {
 	*x = NodeConfig{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[18]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3324,7 +3576,7 @@ func (x *NodeConfig) String() string {
 func (*NodeConfig) ProtoMessage() {}
 
 func (x *NodeConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[18]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3337,7 +3589,7 @@ func (x *NodeConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use NodeConfig.ProtoReflect.Descriptor instead.
 func (*NodeConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *NodeConfig) GetSizeGb() float64 {
@@ -3361,7 +3613,7 @@ type ZoneDistributionConfig struct {
 
 func (x *ZoneDistributionConfig) Reset() {
 	*x = ZoneDistributionConfig{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[19]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3373,7 +3625,7 @@ func (x *ZoneDistributionConfig) String() string {
 func (*ZoneDistributionConfig) ProtoMessage() {}
 
 func (x *ZoneDistributionConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[19]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3386,7 +3638,7 @@ func (x *ZoneDistributionConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ZoneDistributionConfig.ProtoReflect.Descriptor instead.
 func (*ZoneDistributionConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *ZoneDistributionConfig) GetZone() string {
@@ -3421,7 +3673,7 @@ type RescheduleMaintenanceRequest struct {
 
 func (x *RescheduleMaintenanceRequest) Reset() {
 	*x = RescheduleMaintenanceRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[20]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3433,7 +3685,7 @@ func (x *RescheduleMaintenanceRequest) String() string {
 func (*RescheduleMaintenanceRequest) ProtoMessage() {}
 
 func (x *RescheduleMaintenanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[20]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3446,7 +3698,7 @@ func (x *RescheduleMaintenanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use RescheduleMaintenanceRequest.ProtoReflect.Descriptor instead.
 func (*RescheduleMaintenanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *RescheduleMaintenanceRequest) GetName() string {
@@ -3492,7 +3744,7 @@ type ListInstancesRequest struct {
 
 func (x *ListInstancesRequest) Reset() {
 	*x = ListInstancesRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[21]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3504,7 +3756,7 @@ func (x *ListInstancesRequest) String() string {
 func (*ListInstancesRequest) ProtoMessage() {}
 
 func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[21]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3517,7 +3769,7 @@ func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesRequest.ProtoReflect.Descriptor instead.
 func (*ListInstancesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListInstancesRequest) GetParent() string {
@@ -3573,7 +3825,7 @@ type ListInstancesResponse struct {
 
 func (x *ListInstancesResponse) Reset() {
 	*x = ListInstancesResponse{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[22]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3585,7 +3837,7 @@ func (x *ListInstancesResponse) String() string {
 func (*ListInstancesResponse) ProtoMessage() {}
 
 func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[22]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3598,7 +3850,7 @@ func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesResponse.ProtoReflect.Descriptor instead.
 func (*ListInstancesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *ListInstancesResponse) GetInstances() []*Instance {
@@ -3634,7 +3886,7 @@ type GetInstanceRequest struct {
 
 func (x *GetInstanceRequest) Reset() {
 	*x = GetInstanceRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[23]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3646,7 +3898,7 @@ func (x *GetInstanceRequest) String() string {
 func (*GetInstanceRequest) ProtoMessage() {}
 
 func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[23]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3659,7 +3911,7 @@ func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInstanceRequest.ProtoReflect.Descriptor instead.
 func (*GetInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *GetInstanceRequest) GetName() string {
@@ -3708,7 +3960,7 @@ type CreateInstanceRequest struct {
 
 func (x *CreateInstanceRequest) Reset() {
 	*x = CreateInstanceRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[24]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3720,7 +3972,7 @@ func (x *CreateInstanceRequest) String() string {
 func (*CreateInstanceRequest) ProtoMessage() {}
 
 func (x *CreateInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[24]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3733,7 +3985,7 @@ func (x *CreateInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateInstanceRequest.ProtoReflect.Descriptor instead.
 func (*CreateInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *CreateInstanceRequest) GetParent() string {
@@ -3792,7 +4044,7 @@ type UpdateInstanceRequest struct {
 
 func (x *UpdateInstanceRequest) Reset() {
 	*x = UpdateInstanceRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[25]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3804,7 +4056,7 @@ func (x *UpdateInstanceRequest) String() string {
 func (*UpdateInstanceRequest) ProtoMessage() {}
 
 func (x *UpdateInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[25]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3817,7 +4069,7 @@ func (x *UpdateInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateInstanceRequest.ProtoReflect.Descriptor instead.
 func (*UpdateInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *UpdateInstanceRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -3867,7 +4119,7 @@ type DeleteInstanceRequest struct {
 
 func (x *DeleteInstanceRequest) Reset() {
 	*x = DeleteInstanceRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[26]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3879,7 +4131,7 @@ func (x *DeleteInstanceRequest) String() string {
 func (*DeleteInstanceRequest) ProtoMessage() {}
 
 func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[26]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3892,7 +4144,7 @@ func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteInstanceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *DeleteInstanceRequest) GetName() string {
@@ -3936,7 +4188,7 @@ type ListBackupCollectionsRequest struct {
 
 func (x *ListBackupCollectionsRequest) Reset() {
 	*x = ListBackupCollectionsRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[27]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3948,7 +4200,7 @@ func (x *ListBackupCollectionsRequest) String() string {
 func (*ListBackupCollectionsRequest) ProtoMessage() {}
 
 func (x *ListBackupCollectionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[27]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3961,7 +4213,7 @@ func (x *ListBackupCollectionsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupCollectionsRequest.ProtoReflect.Descriptor instead.
 func (*ListBackupCollectionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *ListBackupCollectionsRequest) GetParent() string {
@@ -4010,7 +4262,7 @@ type ListBackupCollectionsResponse struct {
 
 func (x *ListBackupCollectionsResponse) Reset() {
 	*x = ListBackupCollectionsResponse{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[28]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4022,7 +4274,7 @@ func (x *ListBackupCollectionsResponse) String() string {
 func (*ListBackupCollectionsResponse) ProtoMessage() {}
 
 func (x *ListBackupCollectionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[28]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4035,7 +4287,7 @@ func (x *ListBackupCollectionsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupCollectionsResponse.ProtoReflect.Descriptor instead.
 func (*ListBackupCollectionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ListBackupCollectionsResponse) GetBackupCollections() []*BackupCollection {
@@ -4074,7 +4326,7 @@ type GetBackupCollectionRequest struct {
 
 func (x *GetBackupCollectionRequest) Reset() {
 	*x = GetBackupCollectionRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[29]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4086,7 +4338,7 @@ func (x *GetBackupCollectionRequest) String() string {
 func (*GetBackupCollectionRequest) ProtoMessage() {}
 
 func (x *GetBackupCollectionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[29]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4099,7 +4351,7 @@ func (x *GetBackupCollectionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBackupCollectionRequest.ProtoReflect.Descriptor instead.
 func (*GetBackupCollectionRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *GetBackupCollectionRequest) GetName() string {
@@ -4132,7 +4384,7 @@ type ListBackupsRequest struct {
 
 func (x *ListBackupsRequest) Reset() {
 	*x = ListBackupsRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[30]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4144,7 +4396,7 @@ func (x *ListBackupsRequest) String() string {
 func (*ListBackupsRequest) ProtoMessage() {}
 
 func (x *ListBackupsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[30]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4157,7 +4409,7 @@ func (x *ListBackupsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupsRequest.ProtoReflect.Descriptor instead.
 func (*ListBackupsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *ListBackupsRequest) GetParent() string {
@@ -4197,7 +4449,7 @@ type ListBackupsResponse struct {
 
 func (x *ListBackupsResponse) Reset() {
 	*x = ListBackupsResponse{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[31]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4209,7 +4461,7 @@ func (x *ListBackupsResponse) String() string {
 func (*ListBackupsResponse) ProtoMessage() {}
 
 func (x *ListBackupsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[31]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4222,7 +4474,7 @@ func (x *ListBackupsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBackupsResponse.ProtoReflect.Descriptor instead.
 func (*ListBackupsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ListBackupsResponse) GetBackups() []*Backup {
@@ -4258,7 +4510,7 @@ type GetBackupRequest struct {
 
 func (x *GetBackupRequest) Reset() {
 	*x = GetBackupRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[32]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4270,7 +4522,7 @@ func (x *GetBackupRequest) String() string {
 func (*GetBackupRequest) ProtoMessage() {}
 
 func (x *GetBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[32]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4283,7 +4535,7 @@ func (x *GetBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBackupRequest.ProtoReflect.Descriptor instead.
 func (*GetBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *GetBackupRequest) GetName() string {
@@ -4307,7 +4559,7 @@ type DeleteBackupRequest struct {
 
 func (x *DeleteBackupRequest) Reset() {
 	*x = DeleteBackupRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[33]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4319,7 +4571,7 @@ func (x *DeleteBackupRequest) String() string {
 func (*DeleteBackupRequest) ProtoMessage() {}
 
 func (x *DeleteBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[33]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4332,7 +4584,7 @@ func (x *DeleteBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBackupRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *DeleteBackupRequest) GetName() string {
@@ -4367,7 +4619,7 @@ type ExportBackupRequest struct {
 
 func (x *ExportBackupRequest) Reset() {
 	*x = ExportBackupRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[34]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4379,7 +4631,7 @@ func (x *ExportBackupRequest) String() string {
 func (*ExportBackupRequest) ProtoMessage() {}
 
 func (x *ExportBackupRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[34]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4392,7 +4644,7 @@ func (x *ExportBackupRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ExportBackupRequest.ProtoReflect.Descriptor instead.
 func (*ExportBackupRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ExportBackupRequest) GetDestination() isExportBackupRequest_Destination {
@@ -4450,7 +4702,7 @@ type BackupInstanceRequest struct {
 
 func (x *BackupInstanceRequest) Reset() {
 	*x = BackupInstanceRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[35]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4462,7 +4714,7 @@ func (x *BackupInstanceRequest) String() string {
 func (*BackupInstanceRequest) ProtoMessage() {}
 
 func (x *BackupInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[35]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4475,7 +4727,7 @@ func (x *BackupInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use BackupInstanceRequest.ProtoReflect.Descriptor instead.
 func (*BackupInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *BackupInstanceRequest) GetName() string {
@@ -4512,7 +4764,7 @@ type GetCertificateAuthorityRequest struct {
 
 func (x *GetCertificateAuthorityRequest) Reset() {
 	*x = GetCertificateAuthorityRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[36]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4524,7 +4776,7 @@ func (x *GetCertificateAuthorityRequest) String() string {
 func (*GetCertificateAuthorityRequest) ProtoMessage() {}
 
 func (x *GetCertificateAuthorityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[36]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4537,10 +4789,657 @@ func (x *GetCertificateAuthorityRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetCertificateAuthorityRequest.ProtoReflect.Descriptor instead.
 func (*GetCertificateAuthorityRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *GetCertificateAuthorityRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request message for `ListTokenAuthUsers`.
+type ListTokenAuthUsersRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent to list token auth users from.
+	// Format: projects/{project}/locations/{location}/instances/{instance}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of items to return. The maximum value is 1000;
+	// values above 1000 will be coerced to 1000. If not specified, a default
+	// value of 1000 will be used by the service. Regardless of the page_size
+	// value, the response may include a partial list and a caller should only
+	// rely on response's `next_page_token` to determine if there are more token
+	// auth users left to be queried.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The `next_page_token` value returned from a previous
+	// `ListTokenAuthUsers` request, if any.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. Expression for filtering results.
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Sort results by a defined order.
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTokenAuthUsersRequest) Reset() {
+	*x = ListTokenAuthUsersRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTokenAuthUsersRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTokenAuthUsersRequest) ProtoMessage() {}
+
+func (x *ListTokenAuthUsersRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTokenAuthUsersRequest.ProtoReflect.Descriptor instead.
+func (*ListTokenAuthUsersRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *ListTokenAuthUsersRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListTokenAuthUsersRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+// Response message for `ListTokenAuthUsers`.
+type ListTokenAuthUsersResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of token auth users in the project.
+	TokenAuthUsers []*TokenAuthUser `protobuf:"bytes,1,rep,name=token_auth_users,json=tokenAuthUsers,proto3" json:"token_auth_users,omitempty"`
+	// Token to retrieve the next page of results, or empty if there are no more
+	// results in the list.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unordered list. Token auth users that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListTokenAuthUsersResponse) Reset() {
+	*x = ListTokenAuthUsersResponse{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListTokenAuthUsersResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListTokenAuthUsersResponse) ProtoMessage() {}
+
+func (x *ListTokenAuthUsersResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListTokenAuthUsersResponse.ProtoReflect.Descriptor instead.
+func (*ListTokenAuthUsersResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *ListTokenAuthUsersResponse) GetTokenAuthUsers() []*TokenAuthUser {
+	if x != nil {
+		return x.TokenAuthUsers
+	}
+	return nil
+}
+
+func (x *ListTokenAuthUsersResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListTokenAuthUsersResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// Request message for `GetTokenAuthUser`.
+type GetTokenAuthUserRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of token auth user for a basic auth enabled instance.
+	// Format:
+	// projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetTokenAuthUserRequest) Reset() {
+	*x = GetTokenAuthUserRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetTokenAuthUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetTokenAuthUserRequest) ProtoMessage() {}
+
+func (x *GetTokenAuthUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetTokenAuthUserRequest.ProtoReflect.Descriptor instead.
+func (*GetTokenAuthUserRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *GetTokenAuthUserRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request message for `ListAuthTokens`.
+type ListAuthTokensRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The parent to list auth tokens from.
+	// Format:
+	// projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. The maximum number of items to return. The maximum value is 1000;
+	// values above 1000 will be coerced to 1000.
+	//
+	// If not specified, a default value of 1000 will be used by the service.
+	// Regardless of the page_size value, the response may include a partial list
+	// and a caller should only rely on response's
+	// `next_page_token`
+	// to determine if there are more auth tokens left to be queried.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. The `next_page_token` value returned from a previous
+	// `ListAuthTokens` request, if any.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. Expression for filtering results.
+	Filter string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
+	// Optional. Sort results by a defined order.
+	OrderBy       string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuthTokensRequest) Reset() {
+	*x = ListAuthTokensRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[42]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuthTokensRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuthTokensRequest) ProtoMessage() {}
+
+func (x *ListAuthTokensRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[42]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAuthTokensRequest.ProtoReflect.Descriptor instead.
+func (*ListAuthTokensRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{42}
+}
+
+func (x *ListAuthTokensRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListAuthTokensRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListAuthTokensRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListAuthTokensRequest) GetFilter() string {
+	if x != nil {
+		return x.Filter
+	}
+	return ""
+}
+
+func (x *ListAuthTokensRequest) GetOrderBy() string {
+	if x != nil {
+		return x.OrderBy
+	}
+	return ""
+}
+
+// Response message for `ListAuthTokens`.
+type ListAuthTokensResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// A list of auth tokens in the project.
+	AuthTokens []*AuthToken `protobuf:"bytes,1,rep,name=auth_tokens,json=authTokens,proto3" json:"auth_tokens,omitempty"`
+	// Token to retrieve the next page of results, or empty if there are no more
+	// results in the list.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	// Unordered list. Auth tokens that could not be reached.
+	Unreachable   []string `protobuf:"bytes,3,rep,name=unreachable,proto3" json:"unreachable,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListAuthTokensResponse) Reset() {
+	*x = ListAuthTokensResponse{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[43]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListAuthTokensResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListAuthTokensResponse) ProtoMessage() {}
+
+func (x *ListAuthTokensResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[43]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListAuthTokensResponse.ProtoReflect.Descriptor instead.
+func (*ListAuthTokensResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{43}
+}
+
+func (x *ListAuthTokensResponse) GetAuthTokens() []*AuthToken {
+	if x != nil {
+		return x.AuthTokens
+	}
+	return nil
+}
+
+func (x *ListAuthTokensResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+func (x *ListAuthTokensResponse) GetUnreachable() []string {
+	if x != nil {
+		return x.Unreachable
+	}
+	return nil
+}
+
+// Request message for `GetAuthToken`.
+type GetAuthTokenRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of token auth user for a token auth enabled instance.
+	// Format:
+	// projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}/authTokens/{auth_token}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetAuthTokenRequest) Reset() {
+	*x = GetAuthTokenRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[44]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetAuthTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetAuthTokenRequest) ProtoMessage() {}
+
+func (x *GetAuthTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[44]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetAuthTokenRequest.ProtoReflect.Descriptor instead.
+func (*GetAuthTokenRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{44}
+}
+
+func (x *GetAuthTokenRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+// Request message for `AddTokenAuthUser`.
+type AddTokenAuthUserRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The instance resource that this token auth user will be added
+	// for. Format: projects/{project}/locations/{location}/instances/{instance}
+	Instance string `protobuf:"bytes,1,opt,name=instance,proto3" json:"instance,omitempty"`
+	// Required. The name of the token auth user to add.
+	TokenAuthUser string `protobuf:"bytes,2,opt,name=token_auth_user,json=tokenAuthUser,proto3" json:"token_auth_user,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddTokenAuthUserRequest) Reset() {
+	*x = AddTokenAuthUserRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[45]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddTokenAuthUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddTokenAuthUserRequest) ProtoMessage() {}
+
+func (x *AddTokenAuthUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[45]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddTokenAuthUserRequest.ProtoReflect.Descriptor instead.
+func (*AddTokenAuthUserRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{45}
+}
+
+func (x *AddTokenAuthUserRequest) GetInstance() string {
+	if x != nil {
+		return x.Instance
+	}
+	return ""
+}
+
+func (x *AddTokenAuthUserRequest) GetTokenAuthUser() string {
+	if x != nil {
+		return x.TokenAuthUser
+	}
+	return ""
+}
+
+// Request message for `DeleteTokenAuthUser`.
+type DeleteTokenAuthUserRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the token auth user to delete.
+	// Format:
+	// projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. An optional request ID to identify requests. Specify a unique
+	// request ID so that if you must retry your request, the server will know to
+	// ignore the request if it has already been completed. The server will
+	// guarantee that for at least 60 minutes after the first request.
+	//
+	// For example, consider a situation where you make an initial request and the
+	// request times out. If you make the request again with the same request
+	// ID, the server can check if original operation with the same request ID
+	// was received, and if so, will ignore the second request. This prevents
+	// clients from accidentally creating duplicate commitments.
+	//
+	// The request ID must be a valid UUID with the exception that zero UUID is
+	// not supported (00000000-0000-0000-0000-000000000000).
+	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	// Optional. If set to true, any auth tokens from this user will also be
+	// deleted. Otherwise, the request will only work if the user has no auth
+	// tokens.
+	Force         bool `protobuf:"varint,3,opt,name=force,proto3" json:"force,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteTokenAuthUserRequest) Reset() {
+	*x = DeleteTokenAuthUserRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[46]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteTokenAuthUserRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteTokenAuthUserRequest) ProtoMessage() {}
+
+func (x *DeleteTokenAuthUserRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[46]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteTokenAuthUserRequest.ProtoReflect.Descriptor instead.
+func (*DeleteTokenAuthUserRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{46}
+}
+
+func (x *DeleteTokenAuthUserRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DeleteTokenAuthUserRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+func (x *DeleteTokenAuthUserRequest) GetForce() bool {
+	if x != nil {
+		return x.Force
+	}
+	return false
+}
+
+// Request message for `AddAuthToken`.
+type AddAuthTokenRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the token auth user resource that this token will be
+	// added for.
+	TokenAuthUser string `protobuf:"bytes,1,opt,name=token_auth_user,json=tokenAuthUser,proto3" json:"token_auth_user,omitempty"`
+	// Required. The auth token to add.
+	AuthToken     *AuthToken `protobuf:"bytes,2,opt,name=auth_token,json=authToken,proto3" json:"auth_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *AddAuthTokenRequest) Reset() {
+	*x = AddAuthTokenRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[47]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *AddAuthTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*AddAuthTokenRequest) ProtoMessage() {}
+
+func (x *AddAuthTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[47]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use AddAuthTokenRequest.ProtoReflect.Descriptor instead.
+func (*AddAuthTokenRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{47}
+}
+
+func (x *AddAuthTokenRequest) GetTokenAuthUser() string {
+	if x != nil {
+		return x.TokenAuthUser
+	}
+	return ""
+}
+
+func (x *AddAuthTokenRequest) GetAuthToken() *AuthToken {
+	if x != nil {
+		return x.AuthToken
+	}
+	return nil
+}
+
+// Request message for `DeleteAuthToken`.
+type DeleteAuthTokenRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name of the token auth user resource that this token will be
+	// deleted from. Format:
+	// projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}/authTokens/{name}
+	Name          string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DeleteAuthTokenRequest) Reset() {
+	*x = DeleteAuthTokenRequest{}
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[48]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DeleteAuthTokenRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DeleteAuthTokenRequest) ProtoMessage() {}
+
+func (x *DeleteAuthTokenRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[48]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DeleteAuthTokenRequest.ProtoReflect.Descriptor instead.
+func (*DeleteAuthTokenRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{48}
+}
+
+func (x *DeleteAuthTokenRequest) GetName() string {
 	if x != nil {
 		return x.Name
 	}
@@ -4566,7 +5465,7 @@ type CertificateAuthority struct {
 
 func (x *CertificateAuthority) Reset() {
 	*x = CertificateAuthority{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[37]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4578,7 +5477,7 @@ func (x *CertificateAuthority) String() string {
 func (*CertificateAuthority) ProtoMessage() {}
 
 func (x *CertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[37]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4591,7 +5490,7 @@ func (x *CertificateAuthority) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CertificateAuthority.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *CertificateAuthority) GetServerCa() isCertificateAuthority_ServerCa {
@@ -4648,7 +5547,7 @@ type SharedRegionalCertificateAuthority struct {
 
 func (x *SharedRegionalCertificateAuthority) Reset() {
 	*x = SharedRegionalCertificateAuthority{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[38]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4660,7 +5559,7 @@ func (x *SharedRegionalCertificateAuthority) String() string {
 func (*SharedRegionalCertificateAuthority) ProtoMessage() {}
 
 func (x *SharedRegionalCertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[38]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4673,7 +5572,7 @@ func (x *SharedRegionalCertificateAuthority) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use SharedRegionalCertificateAuthority.ProtoReflect.Descriptor instead.
 func (*SharedRegionalCertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *SharedRegionalCertificateAuthority) GetServerCa() isSharedRegionalCertificateAuthority_ServerCa {
@@ -4726,7 +5625,7 @@ type GetSharedRegionalCertificateAuthorityRequest struct {
 
 func (x *GetSharedRegionalCertificateAuthorityRequest) Reset() {
 	*x = GetSharedRegionalCertificateAuthorityRequest{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[39]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4738,7 +5637,7 @@ func (x *GetSharedRegionalCertificateAuthorityRequest) String() string {
 func (*GetSharedRegionalCertificateAuthorityRequest) ProtoMessage() {}
 
 func (x *GetSharedRegionalCertificateAuthorityRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[39]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4751,7 +5650,7 @@ func (x *GetSharedRegionalCertificateAuthorityRequest) ProtoReflect() protorefle
 
 // Deprecated: Use GetSharedRegionalCertificateAuthorityRequest.ProtoReflect.Descriptor instead.
 func (*GetSharedRegionalCertificateAuthorityRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *GetSharedRegionalCertificateAuthorityRequest) GetName() string {
@@ -4788,7 +5687,7 @@ type OperationMetadata struct {
 
 func (x *OperationMetadata) Reset() {
 	*x = OperationMetadata{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[40]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4800,7 +5699,7 @@ func (x *OperationMetadata) String() string {
 func (*OperationMetadata) ProtoMessage() {}
 
 func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[40]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4813,7 +5712,7 @@ func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationMetadata.ProtoReflect.Descriptor instead.
 func (*OperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *OperationMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -4884,7 +5783,7 @@ type EncryptionInfo struct {
 
 func (x *EncryptionInfo) Reset() {
 	*x = EncryptionInfo{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[41]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4896,7 +5795,7 @@ func (x *EncryptionInfo) String() string {
 func (*EncryptionInfo) ProtoMessage() {}
 
 func (x *EncryptionInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[41]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4909,7 +5808,7 @@ func (x *EncryptionInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use EncryptionInfo.ProtoReflect.Descriptor instead.
 func (*EncryptionInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *EncryptionInfo) GetEncryptionType() EncryptionInfo_Type {
@@ -4953,7 +5852,7 @@ type Instance_StateInfo struct {
 
 func (x *Instance_StateInfo) Reset() {
 	*x = Instance_StateInfo{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[42]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4965,7 +5864,7 @@ func (x *Instance_StateInfo) String() string {
 func (*Instance_StateInfo) ProtoMessage() {}
 
 func (x *Instance_StateInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[42]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5020,7 +5919,7 @@ type Instance_GcsBackupSource struct {
 
 func (x *Instance_GcsBackupSource) Reset() {
 	*x = Instance_GcsBackupSource{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[43]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5032,7 +5931,7 @@ func (x *Instance_GcsBackupSource) String() string {
 func (*Instance_GcsBackupSource) ProtoMessage() {}
 
 func (x *Instance_GcsBackupSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[43]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5071,7 +5970,7 @@ type Instance_ManagedBackupSource struct {
 
 func (x *Instance_ManagedBackupSource) Reset() {
 	*x = Instance_ManagedBackupSource{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[44]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5083,7 +5982,7 @@ func (x *Instance_ManagedBackupSource) String() string {
 func (*Instance_ManagedBackupSource) ProtoMessage() {}
 
 func (x *Instance_ManagedBackupSource) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[44]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5120,7 +6019,7 @@ type Instance_InstanceEndpoint struct {
 
 func (x *Instance_InstanceEndpoint) Reset() {
 	*x = Instance_InstanceEndpoint{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[45]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5132,7 +6031,7 @@ func (x *Instance_InstanceEndpoint) String() string {
 func (*Instance_InstanceEndpoint) ProtoMessage() {}
 
 func (x *Instance_InstanceEndpoint) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[45]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5173,7 +6072,7 @@ type Instance_ConnectionDetail struct {
 
 func (x *Instance_ConnectionDetail) Reset() {
 	*x = Instance_ConnectionDetail{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[46]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5185,7 +6084,7 @@ func (x *Instance_ConnectionDetail) String() string {
 func (*Instance_ConnectionDetail) ProtoMessage() {}
 
 func (x *Instance_ConnectionDetail) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[46]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5262,7 +6161,7 @@ type Instance_StateInfo_UpdateInfo struct {
 
 func (x *Instance_StateInfo_UpdateInfo) Reset() {
 	*x = Instance_StateInfo_UpdateInfo{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[49]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5274,7 +6173,7 @@ func (x *Instance_StateInfo_UpdateInfo) String() string {
 func (*Instance_StateInfo_UpdateInfo) ProtoMessage() {}
 
 func (x *Instance_StateInfo_UpdateInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[49]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5331,7 +6230,7 @@ type AutomatedBackupConfig_FixedFrequencySchedule struct {
 
 func (x *AutomatedBackupConfig_FixedFrequencySchedule) Reset() {
 	*x = AutomatedBackupConfig_FixedFrequencySchedule{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[50]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5343,7 +6242,7 @@ func (x *AutomatedBackupConfig_FixedFrequencySchedule) String() string {
 func (*AutomatedBackupConfig_FixedFrequencySchedule) ProtoMessage() {}
 
 func (x *AutomatedBackupConfig_FixedFrequencySchedule) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[50]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5381,7 +6280,7 @@ type CrossInstanceReplicationConfig_RemoteInstance struct {
 
 func (x *CrossInstanceReplicationConfig_RemoteInstance) Reset() {
 	*x = CrossInstanceReplicationConfig_RemoteInstance{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[51]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5393,7 +6292,7 @@ func (x *CrossInstanceReplicationConfig_RemoteInstance) String() string {
 func (*CrossInstanceReplicationConfig_RemoteInstance) ProtoMessage() {}
 
 func (x *CrossInstanceReplicationConfig_RemoteInstance) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[51]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5439,7 +6338,7 @@ type CrossInstanceReplicationConfig_Membership struct {
 
 func (x *CrossInstanceReplicationConfig_Membership) Reset() {
 	*x = CrossInstanceReplicationConfig_Membership{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[52]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5451,7 +6350,7 @@ func (x *CrossInstanceReplicationConfig_Membership) String() string {
 func (*CrossInstanceReplicationConfig_Membership) ProtoMessage() {}
 
 func (x *CrossInstanceReplicationConfig_Membership) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[52]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5496,7 +6395,7 @@ type PersistenceConfig_RDBConfig struct {
 
 func (x *PersistenceConfig_RDBConfig) Reset() {
 	*x = PersistenceConfig_RDBConfig{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[53]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5508,7 +6407,7 @@ func (x *PersistenceConfig_RDBConfig) String() string {
 func (*PersistenceConfig_RDBConfig) ProtoMessage() {}
 
 func (x *PersistenceConfig_RDBConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[53]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5521,7 +6420,7 @@ func (x *PersistenceConfig_RDBConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PersistenceConfig_RDBConfig.ProtoReflect.Descriptor instead.
 func (*PersistenceConfig_RDBConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{17, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19, 0}
 }
 
 func (x *PersistenceConfig_RDBConfig) GetRdbSnapshotPeriod() PersistenceConfig_RDBConfig_SnapshotPeriod {
@@ -5549,7 +6448,7 @@ type PersistenceConfig_AOFConfig struct {
 
 func (x *PersistenceConfig_AOFConfig) Reset() {
 	*x = PersistenceConfig_AOFConfig{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[54]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5561,7 +6460,7 @@ func (x *PersistenceConfig_AOFConfig) String() string {
 func (*PersistenceConfig_AOFConfig) ProtoMessage() {}
 
 func (x *PersistenceConfig_AOFConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[54]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5574,7 +6473,7 @@ func (x *PersistenceConfig_AOFConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PersistenceConfig_AOFConfig.ProtoReflect.Descriptor instead.
 func (*PersistenceConfig_AOFConfig) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{17, 1}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{19, 1}
 }
 
 func (x *PersistenceConfig_AOFConfig) GetAppendFsync() PersistenceConfig_AOFConfig_AppendFsync {
@@ -5595,7 +6494,7 @@ type CertificateAuthority_ManagedCertificateAuthority struct {
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) Reset() {
 	*x = CertificateAuthority_ManagedCertificateAuthority{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[55]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5607,7 +6506,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority) String() string {
 func (*CertificateAuthority_ManagedCertificateAuthority) ProtoMessage() {}
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[55]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5620,7 +6519,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority) ProtoReflect() protor
 
 // Deprecated: Use CertificateAuthority_ManagedCertificateAuthority.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority_ManagedCertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{37, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{49, 0}
 }
 
 func (x *CertificateAuthority_ManagedCertificateAuthority) GetCaCerts() []*CertificateAuthority_ManagedCertificateAuthority_CertChain {
@@ -5641,7 +6540,7 @@ type CertificateAuthority_ManagedCertificateAuthority_CertChain struct {
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) Reset() {
 	*x = CertificateAuthority_ManagedCertificateAuthority_CertChain{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[56]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5653,7 +6552,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) String() st
 func (*CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoMessage() {}
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[56]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5666,7 +6565,7 @@ func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) ProtoReflec
 
 // Deprecated: Use CertificateAuthority_ManagedCertificateAuthority_CertChain.ProtoReflect.Descriptor instead.
 func (*CertificateAuthority_ManagedCertificateAuthority_CertChain) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{37, 0, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{49, 0, 0}
 }
 
 func (x *CertificateAuthority_ManagedCertificateAuthority_CertChain) GetCertificates() []string {
@@ -5688,7 +6587,7 @@ type SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority stru
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) Reset() {
 	*x = SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[57]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5700,7 +6599,7 @@ func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)
 func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) ProtoMessage() {}
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[57]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5713,7 +6612,7 @@ func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)
 
 // Deprecated: Use SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority.ProtoReflect.Descriptor instead.
 func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{38, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{50, 0}
 }
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority) GetCaCerts() []*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain {
@@ -5734,7 +6633,7 @@ type SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_Regi
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) Reset() {
 	*x = SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain{}
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[58]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5747,7 +6646,7 @@ func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_Re
 }
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[58]
+	mi := &file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5760,7 +6659,7 @@ func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_
 
 // Deprecated: Use SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain.ProtoReflect.Descriptor instead.
 func (*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) Descriptor() ([]byte, []int) {
-	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{38, 0, 0}
+	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP(), []int{50, 0, 0}
 }
 
 func (x *SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain) GetCertificates() []string {
@@ -5774,7 +6673,7 @@ var File_google_cloud_memorystore_v1_memorystore_proto protoreflect.FileDescript
 
 const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"\n" +
-	"-google/cloud/memorystore/v1/memorystore.proto\x12\x1bgoogle.cloud.memorystore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\xfc0\n" +
+	"-google/cloud/memorystore/v1/memorystore.proto\x12\x1bgoogle.cloud.memorystore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1bgoogle/type/dayofweek.proto\x1a\x1bgoogle/type/timeofday.proto\"\x8c1\n" +
 	"\bInstance\x12^\n" +
 	"\n" +
 	"gcs_source\x18\x17 \x01(\v25.google.cloud.memorystore.v1.Instance.GcsBackupSourceB\x06\xe0A\x01\xe0A\x05H\x00R\tgcsSource\x12w\n" +
@@ -5870,11 +6769,13 @@ const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"\x06ACTIVE\x10\x02\x12\f\n" +
 	"\bUPDATING\x10\x03\x12\f\n" +
 	"\bDELETING\x10\x04\x12\r\n" +
-	"\tMIGRATING\x10\x06\"X\n" +
+	"\tMIGRATING\x10\x06\"h\n" +
 	"\x11AuthorizationMode\x12\"\n" +
 	"\x1eAUTHORIZATION_MODE_UNSPECIFIED\x10\x00\x12\x11\n" +
 	"\rAUTH_DISABLED\x10\x01\x12\f\n" +
-	"\bIAM_AUTH\x10\x02\"|\n" +
+	"\bIAM_AUTH\x10\x02\x12\x0e\n" +
+	"\n" +
+	"TOKEN_AUTH\x10\x03\"|\n" +
 	"\x15TransitEncryptionMode\x12'\n" +
 	"#TRANSIT_ENCRYPTION_MODE_UNSPECIFIED\x10\x00\x12\x1f\n" +
 	"\x1bTRANSIT_ENCRYPTION_DISABLED\x10\x01\x12\x19\n" +
@@ -6040,7 +6941,32 @@ const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"\x19INSTANCE_ROLE_UNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04NONE\x10\x01\x12\v\n" +
 	"\aPRIMARY\x10\x02\x12\r\n" +
-	"\tSECONDARY\x10\x03\"\x8e\x02\n" +
+	"\tSECONDARY\x10\x03\"\xfa\x02\n" +
+	"\rTokenAuthUser\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12K\n" +
+	"\x05state\x18\x02 \x01(\x0e20.google.cloud.memorystore.v1.TokenAuthUser.StateB\x03\xe0A\x03R\x05state\"T\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bCREATING\x10\x02\x12\f\n" +
+	"\bUPDATING\x10\x03\x12\f\n" +
+	"\bDELETING\x10\x04:\xac\x01\xeaA\xa8\x01\n" +
+	"(memorystore.googleapis.com/TokenAuthUser\x12]projects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}*\x0etokenAuthUsers2\rtokenAuthUser\"\xcd\x03\n" +
+	"\tAuthToken\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x19\n" +
+	"\x05token\x18\x02 \x01(\tB\x03\xe0A\x03R\x05token\x12@\n" +
+	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12G\n" +
+	"\x05state\x18\x04 \x01(\x0e2,.google.cloud.memorystore.v1.AuthToken.StateB\x03\xe0A\x03R\x05state\"F\n" +
+	"\x05State\x12\x15\n" +
+	"\x11STATE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06ACTIVE\x10\x01\x12\f\n" +
+	"\bCREATING\x10\x02\x12\f\n" +
+	"\bDELETING\x10\x03:\xb8\x01\xeaA\xb4\x01\n" +
+	"$memorystore.googleapis.com/AuthToken\x12uprojects/{project}/locations/{location}/instances/{instance}/tokenAuthUsers/{token_auth_user}/authTokens/{auth_token}*\n" +
+	"authTokens2\tauthToken\"\x8e\x02\n" +
 	"\x11MaintenancePolicy\x12@\n" +
 	"\vcreate_time\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
@@ -6220,7 +7146,54 @@ const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"_backup_id\"a\n" +
 	"\x1eGetCertificateAuthorityRequest\x12?\n" +
 	"\x04name\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
-	"#memorystore.googleapis.com/InstanceR\x04name\"\xb7\x04\n" +
+	"#memorystore.googleapis.com/InstanceR\x04name\"\xe8\x01\n" +
+	"\x19ListTokenAuthUsersRequest\x12H\n" +
+	"\x06parent\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\x12(memorystore.googleapis.com/TokenAuthUserR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xc1\x01\n" +
+	"\x1aListTokenAuthUsersResponse\x12T\n" +
+	"\x10token_auth_users\x18\x01 \x03(\v2*.google.cloud.memorystore.v1.TokenAuthUserR\x0etokenAuthUsers\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"_\n" +
+	"\x17GetTokenAuthUserRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"(memorystore.googleapis.com/TokenAuthUserR\x04name\"\xe0\x01\n" +
+	"\x15ListAuthTokensRequest\x12D\n" +
+	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$memorystore.googleapis.com/AuthTokenR\x06parent\x12 \n" +
+	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
+	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
+	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\"\xb0\x01\n" +
+	"\x16ListAuthTokensResponse\x12G\n" +
+	"\vauth_tokens\x18\x01 \x03(\v2&.google.cloud.memorystore.v1.AuthTokenR\n" +
+	"authTokens\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\x12%\n" +
+	"\vunreachable\x18\x03 \x03(\tB\x03\xe0A\x06R\vunreachable\"W\n" +
+	"\x13GetAuthTokenRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"$memorystore.googleapis.com/AuthTokenR\x04name\"\x8f\x01\n" +
+	"\x17AddTokenAuthUserRequest\x12G\n" +
+	"\binstance\x18\x01 \x01(\tB+\xe0A\x02\xfaA%\n" +
+	"#memorystore.googleapis.com/InstanceR\binstance\x12+\n" +
+	"\x0ftoken_auth_user\x18\x02 \x01(\tB\x03\xe0A\x02R\rtokenAuthUser\"\xa9\x01\n" +
+	"\x1aDeleteTokenAuthUserRequest\x12D\n" +
+	"\x04name\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"(memorystore.googleapis.com/TokenAuthUserR\x04name\x12*\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\x12\x19\n" +
+	"\x05force\x18\x03 \x01(\bB\x03\xe0A\x01R\x05force\"\xbb\x01\n" +
+	"\x13AddAuthTokenRequest\x12X\n" +
+	"\x0ftoken_auth_user\x18\x01 \x01(\tB0\xe0A\x02\xfaA*\n" +
+	"(memorystore.googleapis.com/TokenAuthUserR\rtokenAuthUser\x12J\n" +
+	"\n" +
+	"auth_token\x18\x02 \x01(\v2&.google.cloud.memorystore.v1.AuthTokenB\x03\xe0A\x02R\tauthToken\"Z\n" +
+	"\x16DeleteAuthTokenRequest\x12@\n" +
+	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
+	"$memorystore.googleapis.com/AuthTokenR\x04name\"\xb7\x04\n" +
 	"\x14CertificateAuthority\x12{\n" +
 	"\x11managed_server_ca\x18\x02 \x01(\v2M.google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthorityH\x00R\x0fmanagedServerCa\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x1a\xc2\x01\n" +
@@ -6281,7 +7254,7 @@ const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"\x1bCONNECTION_TYPE_UNSPECIFIED\x10\x00\x12\x1d\n" +
 	"\x19CONNECTION_TYPE_DISCOVERY\x10\x01\x12\x1b\n" +
 	"\x17CONNECTION_TYPE_PRIMARY\x10\x02\x12\x1a\n" +
-	"\x16CONNECTION_TYPE_READER\x10\x032\x80\x1e\n" +
+	"\x16CONNECTION_TYPE_READER\x10\x032\x9b,\n" +
 	"\vMemorystore\x12\xb6\x01\n" +
 	"\rListInstances\x121.google.cloud.memorystore.v1.ListInstancesRequest\x1a2.google.cloud.memorystore.v1.ListInstancesResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v1/{parent=projects/*/locations/*}/instances\x12\xa3\x01\n" +
 	"\vGetInstance\x12/.google.cloud.memorystore.v1.GetInstanceRequest\x1a%.google.cloud.memorystore.v1.Instance\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*/instances/*}\x12\xe2\x01\n" +
@@ -6309,7 +7282,19 @@ const file_google_cloud_memorystore_v1_memorystore_proto_rawDesc = "" +
 	"\bInstance\x12\x11OperationMetadata\x82\xd3\xe4\x93\x02A:\x01*\"</v1/{name=projects/*/locations/*/instances/*}:startMigration\x12\xdc\x01\n" +
 	"\x0fFinishMigration\x123.google.cloud.memorystore.v1.FinishMigrationRequest\x1a\x1d.google.longrunning.Operation\"u\xcaA\x1d\n" +
 	"\bInstance\x12\x11OperationMetadata\xdaA\n" +
-	"name,force\x82\xd3\xe4\x93\x02B:\x01*\"=/v1/{name=projects/*/locations/*/instances/*}:finishMigration\x1a\xbc\x01\xcaA\x1amemorystore.googleapis.com\xd2A\x9b\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/memorystore.read-only,https://www.googleapis.com/auth/memorystore.read-writeB\x8a\b\xeaAn\n" +
+	"name,force\x82\xd3\xe4\x93\x02B:\x01*\"=/v1/{name=projects/*/locations/*/instances/*}:finishMigration\x12\xd6\x01\n" +
+	"\x12ListTokenAuthUsers\x126.google.cloud.memorystore.v1.ListTokenAuthUsersRequest\x1a7.google.cloud.memorystore.v1.ListTokenAuthUsersResponse\"O\xdaA\x06parent\x82\xd3\xe4\x93\x02@\x12>/v1/{parent=projects/*/locations/*/instances/*}/tokenAuthUsers\x12\xc3\x01\n" +
+	"\x10GetTokenAuthUser\x124.google.cloud.memorystore.v1.GetTokenAuthUserRequest\x1a*.google.cloud.memorystore.v1.TokenAuthUser\"M\xdaA\x04name\x82\xd3\xe4\x93\x02@\x12>/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*}\x12\xd7\x01\n" +
+	"\x0eListAuthTokens\x122.google.cloud.memorystore.v1.ListAuthTokensRequest\x1a3.google.cloud.memorystore.v1.ListAuthTokensResponse\"\\\xdaA\x06parent\x82\xd3\xe4\x93\x02M\x12K/v1/{parent=projects/*/locations/*/instances/*/tokenAuthUsers/*}/authTokens\x12\xc4\x01\n" +
+	"\fGetAuthToken\x120.google.cloud.memorystore.v1.GetAuthTokenRequest\x1a&.google.cloud.memorystore.v1.AuthToken\"Z\xdaA\x04name\x82\xd3\xe4\x93\x02M\x12K/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*/authTokens/*}\x12\xf2\x01\n" +
+	"\x10AddTokenAuthUser\x124.google.cloud.memorystore.v1.AddTokenAuthUserRequest\x1a\x1d.google.longrunning.Operation\"\x88\x01\xcaA\x1d\n" +
+	"\bInstance\x12\x11OperationMetadata\xdaA\x18instance,token_auth_user\x82\xd3\xe4\x93\x02G:\x01*\"B/v1/{instance=projects/*/locations/*/instances/*}:addTokenAuthUser\x12\xe9\x01\n" +
+	"\x13DeleteTokenAuthUser\x127.google.cloud.memorystore.v1.DeleteTokenAuthUserRequest\x1a\x1d.google.longrunning.Operation\"z\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02@*>/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*}\x12\x85\x02\n" +
+	"\fAddAuthToken\x120.google.cloud.memorystore.v1.AddAuthTokenRequest\x1a\x1d.google.longrunning.Operation\"\xa3\x01\xcaA\"\n" +
+	"\rTokenAuthUser\x12\x11OperationMetadata\xdaA\x1atoken_auth_user,auth_token\x82\xd3\xe4\x93\x02[:\x01*\"V/v1/{token_auth_user=projects/*/locations/*/instances/*/tokenAuthUsers/*}:addAuthToken\x12\xef\x01\n" +
+	"\x0fDeleteAuthToken\x123.google.cloud.memorystore.v1.DeleteAuthTokenRequest\x1a\x1d.google.longrunning.Operation\"\x87\x01\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02M*K/v1/{name=projects/*/locations/*/instances/*/tokenAuthUsers/*/authTokens/*}\x1a\xbc\x01\xcaA\x1amemorystore.googleapis.com\xd2A\x9b\x01https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/memorystore.read-only,https://www.googleapis.com/auth/memorystore.read-writeB\x8a\b\xeaAn\n" +
 	"%compute.googleapis.com/ForwardingRule\x12Eprojects/{project}/regions/{region}/forwardingRules/{forwarding_rule}\xeaAN\n" +
 	"\x1ecompute.googleapis.com/Network\x12,projects/{project}/global/networks/{network}\xeaAw\n" +
 	"(compute.googleapis.com/ServiceAttachment\x12Kprojects/{project}/regions/{region}/serviceAttachments/{service_attachment}\xeaAx\n" +
@@ -6331,8 +7316,8 @@ func file_google_cloud_memorystore_v1_memorystore_proto_rawDescGZIP() []byte {
 	return file_google_cloud_memorystore_v1_memorystore_proto_rawDescData
 }
 
-var file_google_cloud_memorystore_v1_memorystore_proto_enumTypes = make([]protoimpl.EnumInfo, 20)
-var file_google_cloud_memorystore_v1_memorystore_proto_msgTypes = make([]protoimpl.MessageInfo, 59)
+var file_google_cloud_memorystore_v1_memorystore_proto_enumTypes = make([]protoimpl.EnumInfo, 22)
+var file_google_cloud_memorystore_v1_memorystore_proto_msgTypes = make([]protoimpl.MessageInfo, 71)
 var file_google_cloud_memorystore_v1_memorystore_proto_goTypes = []any{
 	(PscConnectionStatus)(0),                                           // 0: google.cloud.memorystore.v1.PscConnectionStatus
 	(ConnectionType)(0),                                                // 1: google.cloud.memorystore.v1.ConnectionType
@@ -6347,211 +7332,247 @@ var file_google_cloud_memorystore_v1_memorystore_proto_goTypes = []any{
 	(Backup_BackupType)(0),                                             // 10: google.cloud.memorystore.v1.Backup.BackupType
 	(Backup_State)(0),                                                  // 11: google.cloud.memorystore.v1.Backup.State
 	(CrossInstanceReplicationConfig_InstanceRole)(0),                   // 12: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.InstanceRole
-	(PersistenceConfig_PersistenceMode)(0),                             // 13: google.cloud.memorystore.v1.PersistenceConfig.PersistenceMode
-	(PersistenceConfig_RDBConfig_SnapshotPeriod)(0),                    // 14: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.SnapshotPeriod
-	(PersistenceConfig_AOFConfig_AppendFsync)(0),                       // 15: google.cloud.memorystore.v1.PersistenceConfig.AOFConfig.AppendFsync
-	(ZoneDistributionConfig_ZoneDistributionMode)(0),                   // 16: google.cloud.memorystore.v1.ZoneDistributionConfig.ZoneDistributionMode
-	(RescheduleMaintenanceRequest_RescheduleType)(0),                   // 17: google.cloud.memorystore.v1.RescheduleMaintenanceRequest.RescheduleType
-	(EncryptionInfo_Type)(0),                                           // 18: google.cloud.memorystore.v1.EncryptionInfo.Type
-	(EncryptionInfo_KmsKeyState)(0),                                    // 19: google.cloud.memorystore.v1.EncryptionInfo.KmsKeyState
-	(*Instance)(nil),                                                   // 20: google.cloud.memorystore.v1.Instance
-	(*StartMigrationRequest)(nil),                                      // 21: google.cloud.memorystore.v1.StartMigrationRequest
-	(*FinishMigrationRequest)(nil),                                     // 22: google.cloud.memorystore.v1.FinishMigrationRequest
-	(*SelfManagedSource)(nil),                                          // 23: google.cloud.memorystore.v1.SelfManagedSource
-	(*MigrationConfig)(nil),                                            // 24: google.cloud.memorystore.v1.MigrationConfig
-	(*AutomatedBackupConfig)(nil),                                      // 25: google.cloud.memorystore.v1.AutomatedBackupConfig
-	(*BackupCollection)(nil),                                           // 26: google.cloud.memorystore.v1.BackupCollection
-	(*Backup)(nil),                                                     // 27: google.cloud.memorystore.v1.Backup
-	(*BackupFile)(nil),                                                 // 28: google.cloud.memorystore.v1.BackupFile
-	(*CrossInstanceReplicationConfig)(nil),                             // 29: google.cloud.memorystore.v1.CrossInstanceReplicationConfig
-	(*MaintenancePolicy)(nil),                                          // 30: google.cloud.memorystore.v1.MaintenancePolicy
-	(*WeeklyMaintenanceWindow)(nil),                                    // 31: google.cloud.memorystore.v1.WeeklyMaintenanceWindow
-	(*MaintenanceSchedule)(nil),                                        // 32: google.cloud.memorystore.v1.MaintenanceSchedule
-	(*PscAttachmentDetail)(nil),                                        // 33: google.cloud.memorystore.v1.PscAttachmentDetail
-	(*PscAutoConnection)(nil),                                          // 34: google.cloud.memorystore.v1.PscAutoConnection
-	(*PscConnection)(nil),                                              // 35: google.cloud.memorystore.v1.PscConnection
-	(*DiscoveryEndpoint)(nil),                                          // 36: google.cloud.memorystore.v1.DiscoveryEndpoint
-	(*PersistenceConfig)(nil),                                          // 37: google.cloud.memorystore.v1.PersistenceConfig
-	(*NodeConfig)(nil),                                                 // 38: google.cloud.memorystore.v1.NodeConfig
-	(*ZoneDistributionConfig)(nil),                                     // 39: google.cloud.memorystore.v1.ZoneDistributionConfig
-	(*RescheduleMaintenanceRequest)(nil),                               // 40: google.cloud.memorystore.v1.RescheduleMaintenanceRequest
-	(*ListInstancesRequest)(nil),                                       // 41: google.cloud.memorystore.v1.ListInstancesRequest
-	(*ListInstancesResponse)(nil),                                      // 42: google.cloud.memorystore.v1.ListInstancesResponse
-	(*GetInstanceRequest)(nil),                                         // 43: google.cloud.memorystore.v1.GetInstanceRequest
-	(*CreateInstanceRequest)(nil),                                      // 44: google.cloud.memorystore.v1.CreateInstanceRequest
-	(*UpdateInstanceRequest)(nil),                                      // 45: google.cloud.memorystore.v1.UpdateInstanceRequest
-	(*DeleteInstanceRequest)(nil),                                      // 46: google.cloud.memorystore.v1.DeleteInstanceRequest
-	(*ListBackupCollectionsRequest)(nil),                               // 47: google.cloud.memorystore.v1.ListBackupCollectionsRequest
-	(*ListBackupCollectionsResponse)(nil),                              // 48: google.cloud.memorystore.v1.ListBackupCollectionsResponse
-	(*GetBackupCollectionRequest)(nil),                                 // 49: google.cloud.memorystore.v1.GetBackupCollectionRequest
-	(*ListBackupsRequest)(nil),                                         // 50: google.cloud.memorystore.v1.ListBackupsRequest
-	(*ListBackupsResponse)(nil),                                        // 51: google.cloud.memorystore.v1.ListBackupsResponse
-	(*GetBackupRequest)(nil),                                           // 52: google.cloud.memorystore.v1.GetBackupRequest
-	(*DeleteBackupRequest)(nil),                                        // 53: google.cloud.memorystore.v1.DeleteBackupRequest
-	(*ExportBackupRequest)(nil),                                        // 54: google.cloud.memorystore.v1.ExportBackupRequest
-	(*BackupInstanceRequest)(nil),                                      // 55: google.cloud.memorystore.v1.BackupInstanceRequest
-	(*GetCertificateAuthorityRequest)(nil),                             // 56: google.cloud.memorystore.v1.GetCertificateAuthorityRequest
-	(*CertificateAuthority)(nil),                                       // 57: google.cloud.memorystore.v1.CertificateAuthority
-	(*SharedRegionalCertificateAuthority)(nil),                         // 58: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority
-	(*GetSharedRegionalCertificateAuthorityRequest)(nil),               // 59: google.cloud.memorystore.v1.GetSharedRegionalCertificateAuthorityRequest
-	(*OperationMetadata)(nil),                                          // 60: google.cloud.memorystore.v1.OperationMetadata
-	(*EncryptionInfo)(nil),                                             // 61: google.cloud.memorystore.v1.EncryptionInfo
-	(*Instance_StateInfo)(nil),                                         // 62: google.cloud.memorystore.v1.Instance.StateInfo
-	(*Instance_GcsBackupSource)(nil),                                   // 63: google.cloud.memorystore.v1.Instance.GcsBackupSource
-	(*Instance_ManagedBackupSource)(nil),                               // 64: google.cloud.memorystore.v1.Instance.ManagedBackupSource
-	(*Instance_InstanceEndpoint)(nil),                                  // 65: google.cloud.memorystore.v1.Instance.InstanceEndpoint
-	(*Instance_ConnectionDetail)(nil),                                  // 66: google.cloud.memorystore.v1.Instance.ConnectionDetail
-	nil,                                                                // 67: google.cloud.memorystore.v1.Instance.LabelsEntry
-	nil,                                                                // 68: google.cloud.memorystore.v1.Instance.EngineConfigsEntry
-	(*Instance_StateInfo_UpdateInfo)(nil),                              // 69: google.cloud.memorystore.v1.Instance.StateInfo.UpdateInfo
-	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),               // 70: google.cloud.memorystore.v1.AutomatedBackupConfig.FixedFrequencySchedule
-	(*CrossInstanceReplicationConfig_RemoteInstance)(nil),              // 71: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
-	(*CrossInstanceReplicationConfig_Membership)(nil),                  // 72: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership
-	(*PersistenceConfig_RDBConfig)(nil),                                // 73: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig
-	(*PersistenceConfig_AOFConfig)(nil),                                // 74: google.cloud.memorystore.v1.PersistenceConfig.AOFConfig
-	(*CertificateAuthority_ManagedCertificateAuthority)(nil),           // 75: google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority
-	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil), // 76: google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)(nil),                   // 77: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
-	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain)(nil), // 78: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
-	(*timestamppb.Timestamp)(nil),   // 79: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),     // 80: google.protobuf.Duration
-	(dayofweek.DayOfWeek)(0),        // 81: google.type.DayOfWeek
-	(*timeofday.TimeOfDay)(nil),     // 82: google.type.TimeOfDay
-	(*fieldmaskpb.FieldMask)(nil),   // 83: google.protobuf.FieldMask
-	(*longrunningpb.Operation)(nil), // 84: google.longrunning.Operation
+	(TokenAuthUser_State)(0),                                           // 13: google.cloud.memorystore.v1.TokenAuthUser.State
+	(AuthToken_State)(0),                                               // 14: google.cloud.memorystore.v1.AuthToken.State
+	(PersistenceConfig_PersistenceMode)(0),                             // 15: google.cloud.memorystore.v1.PersistenceConfig.PersistenceMode
+	(PersistenceConfig_RDBConfig_SnapshotPeriod)(0),                    // 16: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.SnapshotPeriod
+	(PersistenceConfig_AOFConfig_AppendFsync)(0),                       // 17: google.cloud.memorystore.v1.PersistenceConfig.AOFConfig.AppendFsync
+	(ZoneDistributionConfig_ZoneDistributionMode)(0),                   // 18: google.cloud.memorystore.v1.ZoneDistributionConfig.ZoneDistributionMode
+	(RescheduleMaintenanceRequest_RescheduleType)(0),                   // 19: google.cloud.memorystore.v1.RescheduleMaintenanceRequest.RescheduleType
+	(EncryptionInfo_Type)(0),                                           // 20: google.cloud.memorystore.v1.EncryptionInfo.Type
+	(EncryptionInfo_KmsKeyState)(0),                                    // 21: google.cloud.memorystore.v1.EncryptionInfo.KmsKeyState
+	(*Instance)(nil),                                                   // 22: google.cloud.memorystore.v1.Instance
+	(*StartMigrationRequest)(nil),                                      // 23: google.cloud.memorystore.v1.StartMigrationRequest
+	(*FinishMigrationRequest)(nil),                                     // 24: google.cloud.memorystore.v1.FinishMigrationRequest
+	(*SelfManagedSource)(nil),                                          // 25: google.cloud.memorystore.v1.SelfManagedSource
+	(*MigrationConfig)(nil),                                            // 26: google.cloud.memorystore.v1.MigrationConfig
+	(*AutomatedBackupConfig)(nil),                                      // 27: google.cloud.memorystore.v1.AutomatedBackupConfig
+	(*BackupCollection)(nil),                                           // 28: google.cloud.memorystore.v1.BackupCollection
+	(*Backup)(nil),                                                     // 29: google.cloud.memorystore.v1.Backup
+	(*BackupFile)(nil),                                                 // 30: google.cloud.memorystore.v1.BackupFile
+	(*CrossInstanceReplicationConfig)(nil),                             // 31: google.cloud.memorystore.v1.CrossInstanceReplicationConfig
+	(*TokenAuthUser)(nil),                                              // 32: google.cloud.memorystore.v1.TokenAuthUser
+	(*AuthToken)(nil),                                                  // 33: google.cloud.memorystore.v1.AuthToken
+	(*MaintenancePolicy)(nil),                                          // 34: google.cloud.memorystore.v1.MaintenancePolicy
+	(*WeeklyMaintenanceWindow)(nil),                                    // 35: google.cloud.memorystore.v1.WeeklyMaintenanceWindow
+	(*MaintenanceSchedule)(nil),                                        // 36: google.cloud.memorystore.v1.MaintenanceSchedule
+	(*PscAttachmentDetail)(nil),                                        // 37: google.cloud.memorystore.v1.PscAttachmentDetail
+	(*PscAutoConnection)(nil),                                          // 38: google.cloud.memorystore.v1.PscAutoConnection
+	(*PscConnection)(nil),                                              // 39: google.cloud.memorystore.v1.PscConnection
+	(*DiscoveryEndpoint)(nil),                                          // 40: google.cloud.memorystore.v1.DiscoveryEndpoint
+	(*PersistenceConfig)(nil),                                          // 41: google.cloud.memorystore.v1.PersistenceConfig
+	(*NodeConfig)(nil),                                                 // 42: google.cloud.memorystore.v1.NodeConfig
+	(*ZoneDistributionConfig)(nil),                                     // 43: google.cloud.memorystore.v1.ZoneDistributionConfig
+	(*RescheduleMaintenanceRequest)(nil),                               // 44: google.cloud.memorystore.v1.RescheduleMaintenanceRequest
+	(*ListInstancesRequest)(nil),                                       // 45: google.cloud.memorystore.v1.ListInstancesRequest
+	(*ListInstancesResponse)(nil),                                      // 46: google.cloud.memorystore.v1.ListInstancesResponse
+	(*GetInstanceRequest)(nil),                                         // 47: google.cloud.memorystore.v1.GetInstanceRequest
+	(*CreateInstanceRequest)(nil),                                      // 48: google.cloud.memorystore.v1.CreateInstanceRequest
+	(*UpdateInstanceRequest)(nil),                                      // 49: google.cloud.memorystore.v1.UpdateInstanceRequest
+	(*DeleteInstanceRequest)(nil),                                      // 50: google.cloud.memorystore.v1.DeleteInstanceRequest
+	(*ListBackupCollectionsRequest)(nil),                               // 51: google.cloud.memorystore.v1.ListBackupCollectionsRequest
+	(*ListBackupCollectionsResponse)(nil),                              // 52: google.cloud.memorystore.v1.ListBackupCollectionsResponse
+	(*GetBackupCollectionRequest)(nil),                                 // 53: google.cloud.memorystore.v1.GetBackupCollectionRequest
+	(*ListBackupsRequest)(nil),                                         // 54: google.cloud.memorystore.v1.ListBackupsRequest
+	(*ListBackupsResponse)(nil),                                        // 55: google.cloud.memorystore.v1.ListBackupsResponse
+	(*GetBackupRequest)(nil),                                           // 56: google.cloud.memorystore.v1.GetBackupRequest
+	(*DeleteBackupRequest)(nil),                                        // 57: google.cloud.memorystore.v1.DeleteBackupRequest
+	(*ExportBackupRequest)(nil),                                        // 58: google.cloud.memorystore.v1.ExportBackupRequest
+	(*BackupInstanceRequest)(nil),                                      // 59: google.cloud.memorystore.v1.BackupInstanceRequest
+	(*GetCertificateAuthorityRequest)(nil),                             // 60: google.cloud.memorystore.v1.GetCertificateAuthorityRequest
+	(*ListTokenAuthUsersRequest)(nil),                                  // 61: google.cloud.memorystore.v1.ListTokenAuthUsersRequest
+	(*ListTokenAuthUsersResponse)(nil),                                 // 62: google.cloud.memorystore.v1.ListTokenAuthUsersResponse
+	(*GetTokenAuthUserRequest)(nil),                                    // 63: google.cloud.memorystore.v1.GetTokenAuthUserRequest
+	(*ListAuthTokensRequest)(nil),                                      // 64: google.cloud.memorystore.v1.ListAuthTokensRequest
+	(*ListAuthTokensResponse)(nil),                                     // 65: google.cloud.memorystore.v1.ListAuthTokensResponse
+	(*GetAuthTokenRequest)(nil),                                        // 66: google.cloud.memorystore.v1.GetAuthTokenRequest
+	(*AddTokenAuthUserRequest)(nil),                                    // 67: google.cloud.memorystore.v1.AddTokenAuthUserRequest
+	(*DeleteTokenAuthUserRequest)(nil),                                 // 68: google.cloud.memorystore.v1.DeleteTokenAuthUserRequest
+	(*AddAuthTokenRequest)(nil),                                        // 69: google.cloud.memorystore.v1.AddAuthTokenRequest
+	(*DeleteAuthTokenRequest)(nil),                                     // 70: google.cloud.memorystore.v1.DeleteAuthTokenRequest
+	(*CertificateAuthority)(nil),                                       // 71: google.cloud.memorystore.v1.CertificateAuthority
+	(*SharedRegionalCertificateAuthority)(nil),                         // 72: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority
+	(*GetSharedRegionalCertificateAuthorityRequest)(nil),               // 73: google.cloud.memorystore.v1.GetSharedRegionalCertificateAuthorityRequest
+	(*OperationMetadata)(nil),                                          // 74: google.cloud.memorystore.v1.OperationMetadata
+	(*EncryptionInfo)(nil),                                             // 75: google.cloud.memorystore.v1.EncryptionInfo
+	(*Instance_StateInfo)(nil),                                         // 76: google.cloud.memorystore.v1.Instance.StateInfo
+	(*Instance_GcsBackupSource)(nil),                                   // 77: google.cloud.memorystore.v1.Instance.GcsBackupSource
+	(*Instance_ManagedBackupSource)(nil),                               // 78: google.cloud.memorystore.v1.Instance.ManagedBackupSource
+	(*Instance_InstanceEndpoint)(nil),                                  // 79: google.cloud.memorystore.v1.Instance.InstanceEndpoint
+	(*Instance_ConnectionDetail)(nil),                                  // 80: google.cloud.memorystore.v1.Instance.ConnectionDetail
+	nil,                                                                // 81: google.cloud.memorystore.v1.Instance.LabelsEntry
+	nil,                                                                // 82: google.cloud.memorystore.v1.Instance.EngineConfigsEntry
+	(*Instance_StateInfo_UpdateInfo)(nil),                              // 83: google.cloud.memorystore.v1.Instance.StateInfo.UpdateInfo
+	(*AutomatedBackupConfig_FixedFrequencySchedule)(nil),               // 84: google.cloud.memorystore.v1.AutomatedBackupConfig.FixedFrequencySchedule
+	(*CrossInstanceReplicationConfig_RemoteInstance)(nil),              // 85: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
+	(*CrossInstanceReplicationConfig_Membership)(nil),                  // 86: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership
+	(*PersistenceConfig_RDBConfig)(nil),                                // 87: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig
+	(*PersistenceConfig_AOFConfig)(nil),                                // 88: google.cloud.memorystore.v1.PersistenceConfig.AOFConfig
+	(*CertificateAuthority_ManagedCertificateAuthority)(nil),           // 89: google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority
+	(*CertificateAuthority_ManagedCertificateAuthority_CertChain)(nil), // 90: google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority)(nil),                   // 91: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	(*SharedRegionalCertificateAuthority_RegionalManagedCertificateAuthority_RegionalCertChain)(nil), // 92: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	(*timestamppb.Timestamp)(nil),   // 93: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),     // 94: google.protobuf.Duration
+	(dayofweek.DayOfWeek)(0),        // 95: google.type.DayOfWeek
+	(*timeofday.TimeOfDay)(nil),     // 96: google.type.TimeOfDay
+	(*fieldmaskpb.FieldMask)(nil),   // 97: google.protobuf.FieldMask
+	(*longrunningpb.Operation)(nil), // 98: google.longrunning.Operation
 }
 var file_google_cloud_memorystore_v1_memorystore_proto_depIdxs = []int32{
-	63,  // 0: google.cloud.memorystore.v1.Instance.gcs_source:type_name -> google.cloud.memorystore.v1.Instance.GcsBackupSource
-	64,  // 1: google.cloud.memorystore.v1.Instance.managed_backup_source:type_name -> google.cloud.memorystore.v1.Instance.ManagedBackupSource
-	79,  // 2: google.cloud.memorystore.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
-	79,  // 3: google.cloud.memorystore.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
-	67,  // 4: google.cloud.memorystore.v1.Instance.labels:type_name -> google.cloud.memorystore.v1.Instance.LabelsEntry
+	77,  // 0: google.cloud.memorystore.v1.Instance.gcs_source:type_name -> google.cloud.memorystore.v1.Instance.GcsBackupSource
+	78,  // 1: google.cloud.memorystore.v1.Instance.managed_backup_source:type_name -> google.cloud.memorystore.v1.Instance.ManagedBackupSource
+	93,  // 2: google.cloud.memorystore.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
+	93,  // 3: google.cloud.memorystore.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
+	81,  // 4: google.cloud.memorystore.v1.Instance.labels:type_name -> google.cloud.memorystore.v1.Instance.LabelsEntry
 	2,   // 5: google.cloud.memorystore.v1.Instance.state:type_name -> google.cloud.memorystore.v1.Instance.State
-	62,  // 6: google.cloud.memorystore.v1.Instance.state_info:type_name -> google.cloud.memorystore.v1.Instance.StateInfo
+	76,  // 6: google.cloud.memorystore.v1.Instance.state_info:type_name -> google.cloud.memorystore.v1.Instance.StateInfo
 	3,   // 7: google.cloud.memorystore.v1.Instance.authorization_mode:type_name -> google.cloud.memorystore.v1.Instance.AuthorizationMode
 	4,   // 8: google.cloud.memorystore.v1.Instance.transit_encryption_mode:type_name -> google.cloud.memorystore.v1.Instance.TransitEncryptionMode
-	36,  // 9: google.cloud.memorystore.v1.Instance.discovery_endpoints:type_name -> google.cloud.memorystore.v1.DiscoveryEndpoint
+	40,  // 9: google.cloud.memorystore.v1.Instance.discovery_endpoints:type_name -> google.cloud.memorystore.v1.DiscoveryEndpoint
 	5,   // 10: google.cloud.memorystore.v1.Instance.node_type:type_name -> google.cloud.memorystore.v1.Instance.NodeType
-	37,  // 11: google.cloud.memorystore.v1.Instance.persistence_config:type_name -> google.cloud.memorystore.v1.PersistenceConfig
-	68,  // 12: google.cloud.memorystore.v1.Instance.engine_configs:type_name -> google.cloud.memorystore.v1.Instance.EngineConfigsEntry
-	38,  // 13: google.cloud.memorystore.v1.Instance.node_config:type_name -> google.cloud.memorystore.v1.NodeConfig
-	39,  // 14: google.cloud.memorystore.v1.Instance.zone_distribution_config:type_name -> google.cloud.memorystore.v1.ZoneDistributionConfig
-	34,  // 15: google.cloud.memorystore.v1.Instance.psc_auto_connections:type_name -> google.cloud.memorystore.v1.PscAutoConnection
-	33,  // 16: google.cloud.memorystore.v1.Instance.psc_attachment_details:type_name -> google.cloud.memorystore.v1.PscAttachmentDetail
-	65,  // 17: google.cloud.memorystore.v1.Instance.endpoints:type_name -> google.cloud.memorystore.v1.Instance.InstanceEndpoint
+	41,  // 11: google.cloud.memorystore.v1.Instance.persistence_config:type_name -> google.cloud.memorystore.v1.PersistenceConfig
+	82,  // 12: google.cloud.memorystore.v1.Instance.engine_configs:type_name -> google.cloud.memorystore.v1.Instance.EngineConfigsEntry
+	42,  // 13: google.cloud.memorystore.v1.Instance.node_config:type_name -> google.cloud.memorystore.v1.NodeConfig
+	43,  // 14: google.cloud.memorystore.v1.Instance.zone_distribution_config:type_name -> google.cloud.memorystore.v1.ZoneDistributionConfig
+	38,  // 15: google.cloud.memorystore.v1.Instance.psc_auto_connections:type_name -> google.cloud.memorystore.v1.PscAutoConnection
+	37,  // 16: google.cloud.memorystore.v1.Instance.psc_attachment_details:type_name -> google.cloud.memorystore.v1.PscAttachmentDetail
+	79,  // 17: google.cloud.memorystore.v1.Instance.endpoints:type_name -> google.cloud.memorystore.v1.Instance.InstanceEndpoint
 	6,   // 18: google.cloud.memorystore.v1.Instance.mode:type_name -> google.cloud.memorystore.v1.Instance.Mode
-	30,  // 19: google.cloud.memorystore.v1.Instance.maintenance_policy:type_name -> google.cloud.memorystore.v1.MaintenancePolicy
-	32,  // 20: google.cloud.memorystore.v1.Instance.maintenance_schedule:type_name -> google.cloud.memorystore.v1.MaintenanceSchedule
-	29,  // 21: google.cloud.memorystore.v1.Instance.cross_instance_replication_config:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig
-	61,  // 22: google.cloud.memorystore.v1.Instance.encryption_info:type_name -> google.cloud.memorystore.v1.EncryptionInfo
-	25,  // 23: google.cloud.memorystore.v1.Instance.automated_backup_config:type_name -> google.cloud.memorystore.v1.AutomatedBackupConfig
+	34,  // 19: google.cloud.memorystore.v1.Instance.maintenance_policy:type_name -> google.cloud.memorystore.v1.MaintenancePolicy
+	36,  // 20: google.cloud.memorystore.v1.Instance.maintenance_schedule:type_name -> google.cloud.memorystore.v1.MaintenanceSchedule
+	31,  // 21: google.cloud.memorystore.v1.Instance.cross_instance_replication_config:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig
+	75,  // 22: google.cloud.memorystore.v1.Instance.encryption_info:type_name -> google.cloud.memorystore.v1.EncryptionInfo
+	27,  // 23: google.cloud.memorystore.v1.Instance.automated_backup_config:type_name -> google.cloud.memorystore.v1.AutomatedBackupConfig
 	7,   // 24: google.cloud.memorystore.v1.Instance.server_ca_mode:type_name -> google.cloud.memorystore.v1.Instance.ServerCaMode
-	24,  // 25: google.cloud.memorystore.v1.Instance.migration_config:type_name -> google.cloud.memorystore.v1.MigrationConfig
-	23,  // 26: google.cloud.memorystore.v1.StartMigrationRequest.self_managed_source:type_name -> google.cloud.memorystore.v1.SelfManagedSource
-	23,  // 27: google.cloud.memorystore.v1.MigrationConfig.self_managed_source:type_name -> google.cloud.memorystore.v1.SelfManagedSource
+	26,  // 25: google.cloud.memorystore.v1.Instance.migration_config:type_name -> google.cloud.memorystore.v1.MigrationConfig
+	25,  // 26: google.cloud.memorystore.v1.StartMigrationRequest.self_managed_source:type_name -> google.cloud.memorystore.v1.SelfManagedSource
+	25,  // 27: google.cloud.memorystore.v1.MigrationConfig.self_managed_source:type_name -> google.cloud.memorystore.v1.SelfManagedSource
 	8,   // 28: google.cloud.memorystore.v1.MigrationConfig.state:type_name -> google.cloud.memorystore.v1.MigrationConfig.State
-	70,  // 29: google.cloud.memorystore.v1.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.memorystore.v1.AutomatedBackupConfig.FixedFrequencySchedule
+	84,  // 29: google.cloud.memorystore.v1.AutomatedBackupConfig.fixed_frequency_schedule:type_name -> google.cloud.memorystore.v1.AutomatedBackupConfig.FixedFrequencySchedule
 	9,   // 30: google.cloud.memorystore.v1.AutomatedBackupConfig.automated_backup_mode:type_name -> google.cloud.memorystore.v1.AutomatedBackupConfig.AutomatedBackupMode
-	80,  // 31: google.cloud.memorystore.v1.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
-	79,  // 32: google.cloud.memorystore.v1.BackupCollection.create_time:type_name -> google.protobuf.Timestamp
-	79,  // 33: google.cloud.memorystore.v1.BackupCollection.last_backup_time:type_name -> google.protobuf.Timestamp
-	79,  // 34: google.cloud.memorystore.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
-	79,  // 35: google.cloud.memorystore.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
-	28,  // 36: google.cloud.memorystore.v1.Backup.backup_files:type_name -> google.cloud.memorystore.v1.BackupFile
+	94,  // 31: google.cloud.memorystore.v1.AutomatedBackupConfig.retention:type_name -> google.protobuf.Duration
+	93,  // 32: google.cloud.memorystore.v1.BackupCollection.create_time:type_name -> google.protobuf.Timestamp
+	93,  // 33: google.cloud.memorystore.v1.BackupCollection.last_backup_time:type_name -> google.protobuf.Timestamp
+	93,  // 34: google.cloud.memorystore.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
+	93,  // 35: google.cloud.memorystore.v1.Backup.expire_time:type_name -> google.protobuf.Timestamp
+	30,  // 36: google.cloud.memorystore.v1.Backup.backup_files:type_name -> google.cloud.memorystore.v1.BackupFile
 	5,   // 37: google.cloud.memorystore.v1.Backup.node_type:type_name -> google.cloud.memorystore.v1.Instance.NodeType
 	10,  // 38: google.cloud.memorystore.v1.Backup.backup_type:type_name -> google.cloud.memorystore.v1.Backup.BackupType
 	11,  // 39: google.cloud.memorystore.v1.Backup.state:type_name -> google.cloud.memorystore.v1.Backup.State
-	61,  // 40: google.cloud.memorystore.v1.Backup.encryption_info:type_name -> google.cloud.memorystore.v1.EncryptionInfo
-	79,  // 41: google.cloud.memorystore.v1.BackupFile.create_time:type_name -> google.protobuf.Timestamp
+	75,  // 40: google.cloud.memorystore.v1.Backup.encryption_info:type_name -> google.cloud.memorystore.v1.EncryptionInfo
+	93,  // 41: google.cloud.memorystore.v1.BackupFile.create_time:type_name -> google.protobuf.Timestamp
 	12,  // 42: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.instance_role:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.InstanceRole
-	71,  // 43: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.primary_instance:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
-	71,  // 44: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.secondary_instances:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
-	79,  // 45: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
-	72,  // 46: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.membership:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership
-	79,  // 47: google.cloud.memorystore.v1.MaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
-	79,  // 48: google.cloud.memorystore.v1.MaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
-	31,  // 49: google.cloud.memorystore.v1.MaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.memorystore.v1.WeeklyMaintenanceWindow
-	81,  // 50: google.cloud.memorystore.v1.WeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
-	82,  // 51: google.cloud.memorystore.v1.WeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
-	79,  // 52: google.cloud.memorystore.v1.MaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
-	79,  // 53: google.cloud.memorystore.v1.MaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
-	1,   // 54: google.cloud.memorystore.v1.PscAttachmentDetail.connection_type:type_name -> google.cloud.memorystore.v1.ConnectionType
-	0,   // 55: google.cloud.memorystore.v1.PscAutoConnection.psc_connection_status:type_name -> google.cloud.memorystore.v1.PscConnectionStatus
-	1,   // 56: google.cloud.memorystore.v1.PscAutoConnection.connection_type:type_name -> google.cloud.memorystore.v1.ConnectionType
-	0,   // 57: google.cloud.memorystore.v1.PscConnection.psc_connection_status:type_name -> google.cloud.memorystore.v1.PscConnectionStatus
-	1,   // 58: google.cloud.memorystore.v1.PscConnection.connection_type:type_name -> google.cloud.memorystore.v1.ConnectionType
-	13,  // 59: google.cloud.memorystore.v1.PersistenceConfig.mode:type_name -> google.cloud.memorystore.v1.PersistenceConfig.PersistenceMode
-	73,  // 60: google.cloud.memorystore.v1.PersistenceConfig.rdb_config:type_name -> google.cloud.memorystore.v1.PersistenceConfig.RDBConfig
-	74,  // 61: google.cloud.memorystore.v1.PersistenceConfig.aof_config:type_name -> google.cloud.memorystore.v1.PersistenceConfig.AOFConfig
-	16,  // 62: google.cloud.memorystore.v1.ZoneDistributionConfig.mode:type_name -> google.cloud.memorystore.v1.ZoneDistributionConfig.ZoneDistributionMode
-	17,  // 63: google.cloud.memorystore.v1.RescheduleMaintenanceRequest.reschedule_type:type_name -> google.cloud.memorystore.v1.RescheduleMaintenanceRequest.RescheduleType
-	79,  // 64: google.cloud.memorystore.v1.RescheduleMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
-	20,  // 65: google.cloud.memorystore.v1.ListInstancesResponse.instances:type_name -> google.cloud.memorystore.v1.Instance
-	20,  // 66: google.cloud.memorystore.v1.CreateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1.Instance
-	83,  // 67: google.cloud.memorystore.v1.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
-	20,  // 68: google.cloud.memorystore.v1.UpdateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1.Instance
-	26,  // 69: google.cloud.memorystore.v1.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.memorystore.v1.BackupCollection
-	27,  // 70: google.cloud.memorystore.v1.ListBackupsResponse.backups:type_name -> google.cloud.memorystore.v1.Backup
-	80,  // 71: google.cloud.memorystore.v1.BackupInstanceRequest.ttl:type_name -> google.protobuf.Duration
-	75,  // 72: google.cloud.memorystore.v1.CertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority
-	77,  // 73: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
-	79,  // 74: google.cloud.memorystore.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	79,  // 75: google.cloud.memorystore.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	18,  // 76: google.cloud.memorystore.v1.EncryptionInfo.encryption_type:type_name -> google.cloud.memorystore.v1.EncryptionInfo.Type
-	19,  // 77: google.cloud.memorystore.v1.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.memorystore.v1.EncryptionInfo.KmsKeyState
-	79,  // 78: google.cloud.memorystore.v1.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
-	69,  // 79: google.cloud.memorystore.v1.Instance.StateInfo.update_info:type_name -> google.cloud.memorystore.v1.Instance.StateInfo.UpdateInfo
-	66,  // 80: google.cloud.memorystore.v1.Instance.InstanceEndpoint.connections:type_name -> google.cloud.memorystore.v1.Instance.ConnectionDetail
-	34,  // 81: google.cloud.memorystore.v1.Instance.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.memorystore.v1.PscAutoConnection
-	35,  // 82: google.cloud.memorystore.v1.Instance.ConnectionDetail.psc_connection:type_name -> google.cloud.memorystore.v1.PscConnection
-	5,   // 83: google.cloud.memorystore.v1.Instance.StateInfo.UpdateInfo.target_node_type:type_name -> google.cloud.memorystore.v1.Instance.NodeType
-	82,  // 84: google.cloud.memorystore.v1.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
-	71,  // 85: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership.primary_instance:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
-	71,  // 86: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership.secondary_instances:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
-	14,  // 87: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.SnapshotPeriod
-	79,  // 88: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
-	15,  // 89: google.cloud.memorystore.v1.PersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.memorystore.v1.PersistenceConfig.AOFConfig.AppendFsync
-	76,  // 90: google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
-	78,  // 91: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
-	41,  // 92: google.cloud.memorystore.v1.Memorystore.ListInstances:input_type -> google.cloud.memorystore.v1.ListInstancesRequest
-	43,  // 93: google.cloud.memorystore.v1.Memorystore.GetInstance:input_type -> google.cloud.memorystore.v1.GetInstanceRequest
-	44,  // 94: google.cloud.memorystore.v1.Memorystore.CreateInstance:input_type -> google.cloud.memorystore.v1.CreateInstanceRequest
-	45,  // 95: google.cloud.memorystore.v1.Memorystore.UpdateInstance:input_type -> google.cloud.memorystore.v1.UpdateInstanceRequest
-	46,  // 96: google.cloud.memorystore.v1.Memorystore.DeleteInstance:input_type -> google.cloud.memorystore.v1.DeleteInstanceRequest
-	56,  // 97: google.cloud.memorystore.v1.Memorystore.GetCertificateAuthority:input_type -> google.cloud.memorystore.v1.GetCertificateAuthorityRequest
-	59,  // 98: google.cloud.memorystore.v1.Memorystore.GetSharedRegionalCertificateAuthority:input_type -> google.cloud.memorystore.v1.GetSharedRegionalCertificateAuthorityRequest
-	40,  // 99: google.cloud.memorystore.v1.Memorystore.RescheduleMaintenance:input_type -> google.cloud.memorystore.v1.RescheduleMaintenanceRequest
-	47,  // 100: google.cloud.memorystore.v1.Memorystore.ListBackupCollections:input_type -> google.cloud.memorystore.v1.ListBackupCollectionsRequest
-	49,  // 101: google.cloud.memorystore.v1.Memorystore.GetBackupCollection:input_type -> google.cloud.memorystore.v1.GetBackupCollectionRequest
-	50,  // 102: google.cloud.memorystore.v1.Memorystore.ListBackups:input_type -> google.cloud.memorystore.v1.ListBackupsRequest
-	52,  // 103: google.cloud.memorystore.v1.Memorystore.GetBackup:input_type -> google.cloud.memorystore.v1.GetBackupRequest
-	53,  // 104: google.cloud.memorystore.v1.Memorystore.DeleteBackup:input_type -> google.cloud.memorystore.v1.DeleteBackupRequest
-	54,  // 105: google.cloud.memorystore.v1.Memorystore.ExportBackup:input_type -> google.cloud.memorystore.v1.ExportBackupRequest
-	55,  // 106: google.cloud.memorystore.v1.Memorystore.BackupInstance:input_type -> google.cloud.memorystore.v1.BackupInstanceRequest
-	21,  // 107: google.cloud.memorystore.v1.Memorystore.StartMigration:input_type -> google.cloud.memorystore.v1.StartMigrationRequest
-	22,  // 108: google.cloud.memorystore.v1.Memorystore.FinishMigration:input_type -> google.cloud.memorystore.v1.FinishMigrationRequest
-	42,  // 109: google.cloud.memorystore.v1.Memorystore.ListInstances:output_type -> google.cloud.memorystore.v1.ListInstancesResponse
-	20,  // 110: google.cloud.memorystore.v1.Memorystore.GetInstance:output_type -> google.cloud.memorystore.v1.Instance
-	84,  // 111: google.cloud.memorystore.v1.Memorystore.CreateInstance:output_type -> google.longrunning.Operation
-	84,  // 112: google.cloud.memorystore.v1.Memorystore.UpdateInstance:output_type -> google.longrunning.Operation
-	84,  // 113: google.cloud.memorystore.v1.Memorystore.DeleteInstance:output_type -> google.longrunning.Operation
-	57,  // 114: google.cloud.memorystore.v1.Memorystore.GetCertificateAuthority:output_type -> google.cloud.memorystore.v1.CertificateAuthority
-	58,  // 115: google.cloud.memorystore.v1.Memorystore.GetSharedRegionalCertificateAuthority:output_type -> google.cloud.memorystore.v1.SharedRegionalCertificateAuthority
-	84,  // 116: google.cloud.memorystore.v1.Memorystore.RescheduleMaintenance:output_type -> google.longrunning.Operation
-	48,  // 117: google.cloud.memorystore.v1.Memorystore.ListBackupCollections:output_type -> google.cloud.memorystore.v1.ListBackupCollectionsResponse
-	26,  // 118: google.cloud.memorystore.v1.Memorystore.GetBackupCollection:output_type -> google.cloud.memorystore.v1.BackupCollection
-	51,  // 119: google.cloud.memorystore.v1.Memorystore.ListBackups:output_type -> google.cloud.memorystore.v1.ListBackupsResponse
-	27,  // 120: google.cloud.memorystore.v1.Memorystore.GetBackup:output_type -> google.cloud.memorystore.v1.Backup
-	84,  // 121: google.cloud.memorystore.v1.Memorystore.DeleteBackup:output_type -> google.longrunning.Operation
-	84,  // 122: google.cloud.memorystore.v1.Memorystore.ExportBackup:output_type -> google.longrunning.Operation
-	84,  // 123: google.cloud.memorystore.v1.Memorystore.BackupInstance:output_type -> google.longrunning.Operation
-	84,  // 124: google.cloud.memorystore.v1.Memorystore.StartMigration:output_type -> google.longrunning.Operation
-	84,  // 125: google.cloud.memorystore.v1.Memorystore.FinishMigration:output_type -> google.longrunning.Operation
-	109, // [109:126] is the sub-list for method output_type
-	92,  // [92:109] is the sub-list for method input_type
-	92,  // [92:92] is the sub-list for extension type_name
-	92,  // [92:92] is the sub-list for extension extendee
-	0,   // [0:92] is the sub-list for field type_name
+	85,  // 43: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.primary_instance:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
+	85,  // 44: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.secondary_instances:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
+	93,  // 45: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.update_time:type_name -> google.protobuf.Timestamp
+	86,  // 46: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.membership:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership
+	13,  // 47: google.cloud.memorystore.v1.TokenAuthUser.state:type_name -> google.cloud.memorystore.v1.TokenAuthUser.State
+	93,  // 48: google.cloud.memorystore.v1.AuthToken.create_time:type_name -> google.protobuf.Timestamp
+	14,  // 49: google.cloud.memorystore.v1.AuthToken.state:type_name -> google.cloud.memorystore.v1.AuthToken.State
+	93,  // 50: google.cloud.memorystore.v1.MaintenancePolicy.create_time:type_name -> google.protobuf.Timestamp
+	93,  // 51: google.cloud.memorystore.v1.MaintenancePolicy.update_time:type_name -> google.protobuf.Timestamp
+	35,  // 52: google.cloud.memorystore.v1.MaintenancePolicy.weekly_maintenance_window:type_name -> google.cloud.memorystore.v1.WeeklyMaintenanceWindow
+	95,  // 53: google.cloud.memorystore.v1.WeeklyMaintenanceWindow.day:type_name -> google.type.DayOfWeek
+	96,  // 54: google.cloud.memorystore.v1.WeeklyMaintenanceWindow.start_time:type_name -> google.type.TimeOfDay
+	93,  // 55: google.cloud.memorystore.v1.MaintenanceSchedule.start_time:type_name -> google.protobuf.Timestamp
+	93,  // 56: google.cloud.memorystore.v1.MaintenanceSchedule.end_time:type_name -> google.protobuf.Timestamp
+	1,   // 57: google.cloud.memorystore.v1.PscAttachmentDetail.connection_type:type_name -> google.cloud.memorystore.v1.ConnectionType
+	0,   // 58: google.cloud.memorystore.v1.PscAutoConnection.psc_connection_status:type_name -> google.cloud.memorystore.v1.PscConnectionStatus
+	1,   // 59: google.cloud.memorystore.v1.PscAutoConnection.connection_type:type_name -> google.cloud.memorystore.v1.ConnectionType
+	0,   // 60: google.cloud.memorystore.v1.PscConnection.psc_connection_status:type_name -> google.cloud.memorystore.v1.PscConnectionStatus
+	1,   // 61: google.cloud.memorystore.v1.PscConnection.connection_type:type_name -> google.cloud.memorystore.v1.ConnectionType
+	15,  // 62: google.cloud.memorystore.v1.PersistenceConfig.mode:type_name -> google.cloud.memorystore.v1.PersistenceConfig.PersistenceMode
+	87,  // 63: google.cloud.memorystore.v1.PersistenceConfig.rdb_config:type_name -> google.cloud.memorystore.v1.PersistenceConfig.RDBConfig
+	88,  // 64: google.cloud.memorystore.v1.PersistenceConfig.aof_config:type_name -> google.cloud.memorystore.v1.PersistenceConfig.AOFConfig
+	18,  // 65: google.cloud.memorystore.v1.ZoneDistributionConfig.mode:type_name -> google.cloud.memorystore.v1.ZoneDistributionConfig.ZoneDistributionMode
+	19,  // 66: google.cloud.memorystore.v1.RescheduleMaintenanceRequest.reschedule_type:type_name -> google.cloud.memorystore.v1.RescheduleMaintenanceRequest.RescheduleType
+	93,  // 67: google.cloud.memorystore.v1.RescheduleMaintenanceRequest.schedule_time:type_name -> google.protobuf.Timestamp
+	22,  // 68: google.cloud.memorystore.v1.ListInstancesResponse.instances:type_name -> google.cloud.memorystore.v1.Instance
+	22,  // 69: google.cloud.memorystore.v1.CreateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1.Instance
+	97,  // 70: google.cloud.memorystore.v1.UpdateInstanceRequest.update_mask:type_name -> google.protobuf.FieldMask
+	22,  // 71: google.cloud.memorystore.v1.UpdateInstanceRequest.instance:type_name -> google.cloud.memorystore.v1.Instance
+	28,  // 72: google.cloud.memorystore.v1.ListBackupCollectionsResponse.backup_collections:type_name -> google.cloud.memorystore.v1.BackupCollection
+	29,  // 73: google.cloud.memorystore.v1.ListBackupsResponse.backups:type_name -> google.cloud.memorystore.v1.Backup
+	94,  // 74: google.cloud.memorystore.v1.BackupInstanceRequest.ttl:type_name -> google.protobuf.Duration
+	32,  // 75: google.cloud.memorystore.v1.ListTokenAuthUsersResponse.token_auth_users:type_name -> google.cloud.memorystore.v1.TokenAuthUser
+	33,  // 76: google.cloud.memorystore.v1.ListAuthTokensResponse.auth_tokens:type_name -> google.cloud.memorystore.v1.AuthToken
+	33,  // 77: google.cloud.memorystore.v1.AddAuthTokenRequest.auth_token:type_name -> google.cloud.memorystore.v1.AuthToken
+	89,  // 78: google.cloud.memorystore.v1.CertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority
+	91,  // 79: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.managed_server_ca:type_name -> google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority
+	93,  // 80: google.cloud.memorystore.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	93,  // 81: google.cloud.memorystore.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	20,  // 82: google.cloud.memorystore.v1.EncryptionInfo.encryption_type:type_name -> google.cloud.memorystore.v1.EncryptionInfo.Type
+	21,  // 83: google.cloud.memorystore.v1.EncryptionInfo.kms_key_primary_state:type_name -> google.cloud.memorystore.v1.EncryptionInfo.KmsKeyState
+	93,  // 84: google.cloud.memorystore.v1.EncryptionInfo.last_update_time:type_name -> google.protobuf.Timestamp
+	83,  // 85: google.cloud.memorystore.v1.Instance.StateInfo.update_info:type_name -> google.cloud.memorystore.v1.Instance.StateInfo.UpdateInfo
+	80,  // 86: google.cloud.memorystore.v1.Instance.InstanceEndpoint.connections:type_name -> google.cloud.memorystore.v1.Instance.ConnectionDetail
+	38,  // 87: google.cloud.memorystore.v1.Instance.ConnectionDetail.psc_auto_connection:type_name -> google.cloud.memorystore.v1.PscAutoConnection
+	39,  // 88: google.cloud.memorystore.v1.Instance.ConnectionDetail.psc_connection:type_name -> google.cloud.memorystore.v1.PscConnection
+	5,   // 89: google.cloud.memorystore.v1.Instance.StateInfo.UpdateInfo.target_node_type:type_name -> google.cloud.memorystore.v1.Instance.NodeType
+	96,  // 90: google.cloud.memorystore.v1.AutomatedBackupConfig.FixedFrequencySchedule.start_time:type_name -> google.type.TimeOfDay
+	85,  // 91: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership.primary_instance:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
+	85,  // 92: google.cloud.memorystore.v1.CrossInstanceReplicationConfig.Membership.secondary_instances:type_name -> google.cloud.memorystore.v1.CrossInstanceReplicationConfig.RemoteInstance
+	16,  // 93: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.rdb_snapshot_period:type_name -> google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.SnapshotPeriod
+	93,  // 94: google.cloud.memorystore.v1.PersistenceConfig.RDBConfig.rdb_snapshot_start_time:type_name -> google.protobuf.Timestamp
+	17,  // 95: google.cloud.memorystore.v1.PersistenceConfig.AOFConfig.append_fsync:type_name -> google.cloud.memorystore.v1.PersistenceConfig.AOFConfig.AppendFsync
+	90,  // 96: google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1.CertificateAuthority.ManagedCertificateAuthority.CertChain
+	92,  // 97: google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.ca_certs:type_name -> google.cloud.memorystore.v1.SharedRegionalCertificateAuthority.RegionalManagedCertificateAuthority.RegionalCertChain
+	45,  // 98: google.cloud.memorystore.v1.Memorystore.ListInstances:input_type -> google.cloud.memorystore.v1.ListInstancesRequest
+	47,  // 99: google.cloud.memorystore.v1.Memorystore.GetInstance:input_type -> google.cloud.memorystore.v1.GetInstanceRequest
+	48,  // 100: google.cloud.memorystore.v1.Memorystore.CreateInstance:input_type -> google.cloud.memorystore.v1.CreateInstanceRequest
+	49,  // 101: google.cloud.memorystore.v1.Memorystore.UpdateInstance:input_type -> google.cloud.memorystore.v1.UpdateInstanceRequest
+	50,  // 102: google.cloud.memorystore.v1.Memorystore.DeleteInstance:input_type -> google.cloud.memorystore.v1.DeleteInstanceRequest
+	60,  // 103: google.cloud.memorystore.v1.Memorystore.GetCertificateAuthority:input_type -> google.cloud.memorystore.v1.GetCertificateAuthorityRequest
+	73,  // 104: google.cloud.memorystore.v1.Memorystore.GetSharedRegionalCertificateAuthority:input_type -> google.cloud.memorystore.v1.GetSharedRegionalCertificateAuthorityRequest
+	44,  // 105: google.cloud.memorystore.v1.Memorystore.RescheduleMaintenance:input_type -> google.cloud.memorystore.v1.RescheduleMaintenanceRequest
+	51,  // 106: google.cloud.memorystore.v1.Memorystore.ListBackupCollections:input_type -> google.cloud.memorystore.v1.ListBackupCollectionsRequest
+	53,  // 107: google.cloud.memorystore.v1.Memorystore.GetBackupCollection:input_type -> google.cloud.memorystore.v1.GetBackupCollectionRequest
+	54,  // 108: google.cloud.memorystore.v1.Memorystore.ListBackups:input_type -> google.cloud.memorystore.v1.ListBackupsRequest
+	56,  // 109: google.cloud.memorystore.v1.Memorystore.GetBackup:input_type -> google.cloud.memorystore.v1.GetBackupRequest
+	57,  // 110: google.cloud.memorystore.v1.Memorystore.DeleteBackup:input_type -> google.cloud.memorystore.v1.DeleteBackupRequest
+	58,  // 111: google.cloud.memorystore.v1.Memorystore.ExportBackup:input_type -> google.cloud.memorystore.v1.ExportBackupRequest
+	59,  // 112: google.cloud.memorystore.v1.Memorystore.BackupInstance:input_type -> google.cloud.memorystore.v1.BackupInstanceRequest
+	23,  // 113: google.cloud.memorystore.v1.Memorystore.StartMigration:input_type -> google.cloud.memorystore.v1.StartMigrationRequest
+	24,  // 114: google.cloud.memorystore.v1.Memorystore.FinishMigration:input_type -> google.cloud.memorystore.v1.FinishMigrationRequest
+	61,  // 115: google.cloud.memorystore.v1.Memorystore.ListTokenAuthUsers:input_type -> google.cloud.memorystore.v1.ListTokenAuthUsersRequest
+	63,  // 116: google.cloud.memorystore.v1.Memorystore.GetTokenAuthUser:input_type -> google.cloud.memorystore.v1.GetTokenAuthUserRequest
+	64,  // 117: google.cloud.memorystore.v1.Memorystore.ListAuthTokens:input_type -> google.cloud.memorystore.v1.ListAuthTokensRequest
+	66,  // 118: google.cloud.memorystore.v1.Memorystore.GetAuthToken:input_type -> google.cloud.memorystore.v1.GetAuthTokenRequest
+	67,  // 119: google.cloud.memorystore.v1.Memorystore.AddTokenAuthUser:input_type -> google.cloud.memorystore.v1.AddTokenAuthUserRequest
+	68,  // 120: google.cloud.memorystore.v1.Memorystore.DeleteTokenAuthUser:input_type -> google.cloud.memorystore.v1.DeleteTokenAuthUserRequest
+	69,  // 121: google.cloud.memorystore.v1.Memorystore.AddAuthToken:input_type -> google.cloud.memorystore.v1.AddAuthTokenRequest
+	70,  // 122: google.cloud.memorystore.v1.Memorystore.DeleteAuthToken:input_type -> google.cloud.memorystore.v1.DeleteAuthTokenRequest
+	46,  // 123: google.cloud.memorystore.v1.Memorystore.ListInstances:output_type -> google.cloud.memorystore.v1.ListInstancesResponse
+	22,  // 124: google.cloud.memorystore.v1.Memorystore.GetInstance:output_type -> google.cloud.memorystore.v1.Instance
+	98,  // 125: google.cloud.memorystore.v1.Memorystore.CreateInstance:output_type -> google.longrunning.Operation
+	98,  // 126: google.cloud.memorystore.v1.Memorystore.UpdateInstance:output_type -> google.longrunning.Operation
+	98,  // 127: google.cloud.memorystore.v1.Memorystore.DeleteInstance:output_type -> google.longrunning.Operation
+	71,  // 128: google.cloud.memorystore.v1.Memorystore.GetCertificateAuthority:output_type -> google.cloud.memorystore.v1.CertificateAuthority
+	72,  // 129: google.cloud.memorystore.v1.Memorystore.GetSharedRegionalCertificateAuthority:output_type -> google.cloud.memorystore.v1.SharedRegionalCertificateAuthority
+	98,  // 130: google.cloud.memorystore.v1.Memorystore.RescheduleMaintenance:output_type -> google.longrunning.Operation
+	52,  // 131: google.cloud.memorystore.v1.Memorystore.ListBackupCollections:output_type -> google.cloud.memorystore.v1.ListBackupCollectionsResponse
+	28,  // 132: google.cloud.memorystore.v1.Memorystore.GetBackupCollection:output_type -> google.cloud.memorystore.v1.BackupCollection
+	55,  // 133: google.cloud.memorystore.v1.Memorystore.ListBackups:output_type -> google.cloud.memorystore.v1.ListBackupsResponse
+	29,  // 134: google.cloud.memorystore.v1.Memorystore.GetBackup:output_type -> google.cloud.memorystore.v1.Backup
+	98,  // 135: google.cloud.memorystore.v1.Memorystore.DeleteBackup:output_type -> google.longrunning.Operation
+	98,  // 136: google.cloud.memorystore.v1.Memorystore.ExportBackup:output_type -> google.longrunning.Operation
+	98,  // 137: google.cloud.memorystore.v1.Memorystore.BackupInstance:output_type -> google.longrunning.Operation
+	98,  // 138: google.cloud.memorystore.v1.Memorystore.StartMigration:output_type -> google.longrunning.Operation
+	98,  // 139: google.cloud.memorystore.v1.Memorystore.FinishMigration:output_type -> google.longrunning.Operation
+	62,  // 140: google.cloud.memorystore.v1.Memorystore.ListTokenAuthUsers:output_type -> google.cloud.memorystore.v1.ListTokenAuthUsersResponse
+	32,  // 141: google.cloud.memorystore.v1.Memorystore.GetTokenAuthUser:output_type -> google.cloud.memorystore.v1.TokenAuthUser
+	65,  // 142: google.cloud.memorystore.v1.Memorystore.ListAuthTokens:output_type -> google.cloud.memorystore.v1.ListAuthTokensResponse
+	33,  // 143: google.cloud.memorystore.v1.Memorystore.GetAuthToken:output_type -> google.cloud.memorystore.v1.AuthToken
+	98,  // 144: google.cloud.memorystore.v1.Memorystore.AddTokenAuthUser:output_type -> google.longrunning.Operation
+	98,  // 145: google.cloud.memorystore.v1.Memorystore.DeleteTokenAuthUser:output_type -> google.longrunning.Operation
+	98,  // 146: google.cloud.memorystore.v1.Memorystore.AddAuthToken:output_type -> google.longrunning.Operation
+	98,  // 147: google.cloud.memorystore.v1.Memorystore.DeleteAuthToken:output_type -> google.longrunning.Operation
+	123, // [123:148] is the sub-list for method output_type
+	98,  // [98:123] is the sub-list for method input_type
+	98,  // [98:98] is the sub-list for extension type_name
+	98,  // [98:98] is the sub-list for extension extendee
+	0,   // [0:98] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_memorystore_v1_memorystore_proto_init() }
@@ -6572,37 +7593,37 @@ func file_google_cloud_memorystore_v1_memorystore_proto_init() {
 	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[5].OneofWrappers = []any{
 		(*AutomatedBackupConfig_FixedFrequencySchedule_)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[14].OneofWrappers = []any{
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[16].OneofWrappers = []any{
 		(*PscAutoConnection_Port)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[15].OneofWrappers = []any{
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[17].OneofWrappers = []any{
 		(*PscConnection_Port)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[34].OneofWrappers = []any{
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[36].OneofWrappers = []any{
 		(*ExportBackupRequest_GcsBucket)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[35].OneofWrappers = []any{}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[37].OneofWrappers = []any{
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[37].OneofWrappers = []any{}
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[49].OneofWrappers = []any{
 		(*CertificateAuthority_ManagedServerCa)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[38].OneofWrappers = []any{
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[50].OneofWrappers = []any{
 		(*SharedRegionalCertificateAuthority_ManagedServerCa)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[42].OneofWrappers = []any{
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[54].OneofWrappers = []any{
 		(*Instance_StateInfo_UpdateInfo_)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[46].OneofWrappers = []any{
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[58].OneofWrappers = []any{
 		(*Instance_ConnectionDetail_PscAutoConnection)(nil),
 		(*Instance_ConnectionDetail_PscConnection)(nil),
 	}
-	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[49].OneofWrappers = []any{}
+	file_google_cloud_memorystore_v1_memorystore_proto_msgTypes[61].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_memorystore_v1_memorystore_proto_rawDesc), len(file_google_cloud_memorystore_v1_memorystore_proto_rawDesc)),
-			NumEnums:      20,
-			NumMessages:   59,
+			NumEnums:      22,
+			NumMessages:   71,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

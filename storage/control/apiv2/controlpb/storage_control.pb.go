@@ -32,6 +32,7 @@ import (
 	interval "google.golang.org/genproto/googleapis/type/interval"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	anypb "google.golang.org/protobuf/types/known/anypb"
 	durationpb "google.golang.org/protobuf/types/known/durationpb"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
@@ -210,11 +211,62 @@ func (FindingSeverity) EnumDescriptor() ([]byte, []int) {
 	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{2}
 }
 
+// The behavior of the rapid cache when an object is written.
+type ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite int32
+
+const (
+	// The behavior is not specified at this resource level.
+	// It should be inherited from the parent resource's configuration.
+	// This is the default value.
+	ManagedFolder_RapidCacheConfig_RapidCachePolicy_INGEST_ON_WRITE_UNSPECIFIED ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite = 0
+	// Ingestion on write is explicitly enabled for this resource.
+	ManagedFolder_RapidCacheConfig_RapidCachePolicy_INGEST_ON_WRITE_ENABLED ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite = 1
+)
+
+// Enum value maps for ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite.
+var (
+	ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite_name = map[int32]string{
+		0: "INGEST_ON_WRITE_UNSPECIFIED",
+		1: "INGEST_ON_WRITE_ENABLED",
+	}
+	ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite_value = map[string]int32{
+		"INGEST_ON_WRITE_UNSPECIFIED": 0,
+		"INGEST_ON_WRITE_ENABLED":     1,
+	}
+)
+
+func (x ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite) Enum() *ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite {
+	p := new(ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite)
+	*p = x
+	return p
+}
+
+func (x ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_storage_control_v2_storage_control_proto_enumTypes[3].Descriptor()
+}
+
+func (ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite) Type() protoreflect.EnumType {
+	return &file_google_storage_control_v2_storage_control_proto_enumTypes[3]
+}
+
+func (x ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite.Descriptor instead.
+func (ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite) EnumDescriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{14, 0, 0, 0}
+}
+
 // The edition configuration of the `IntelligenceConfig` resource. This
 // signifies the edition used for configuring the `IntelligenceConfig`
 // resource and can only take the following values:
 // `EDITION_CONFIG_UNSPECIFIED`, `INHERIT`, `DISABLED`, `STANDARD` and
-// `TRIAL`.
+// `EVALUATE`.
 type IntelligenceConfig_EditionConfig int32
 
 const (
@@ -234,6 +286,8 @@ const (
 	// using filters. At the end of the trial period, the `IntelligenceConfig`
 	// resource is upgraded to `STANDARD` edition.
 	IntelligenceConfig_TRIAL IntelligenceConfig_EditionConfig = 5
+	// The `IntelligenceConfig` resource is of ESSENTIALS edition.
+	IntelligenceConfig_ESSENTIALS IntelligenceConfig_EditionConfig = 6
 )
 
 // Enum value maps for IntelligenceConfig_EditionConfig.
@@ -244,6 +298,7 @@ var (
 		2: "DISABLED",
 		3: "STANDARD",
 		5: "TRIAL",
+		6: "ESSENTIALS",
 	}
 	IntelligenceConfig_EditionConfig_value = map[string]int32{
 		"EDITION_CONFIG_UNSPECIFIED": 0,
@@ -251,6 +306,7 @@ var (
 		"DISABLED":                   2,
 		"STANDARD":                   3,
 		"TRIAL":                      5,
+		"ESSENTIALS":                 6,
 	}
 )
 
@@ -265,11 +321,11 @@ func (x IntelligenceConfig_EditionConfig) String() string {
 }
 
 func (IntelligenceConfig_EditionConfig) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_storage_control_v2_storage_control_proto_enumTypes[3].Descriptor()
+	return file_google_storage_control_v2_storage_control_proto_enumTypes[4].Descriptor()
 }
 
 func (IntelligenceConfig_EditionConfig) Type() protoreflect.EnumType {
-	return &file_google_storage_control_v2_storage_control_proto_enumTypes[3]
+	return &file_google_storage_control_v2_storage_control_proto_enumTypes[4]
 }
 
 func (x IntelligenceConfig_EditionConfig) Number() protoreflect.EnumNumber {
@@ -278,7 +334,7 @@ func (x IntelligenceConfig_EditionConfig) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use IntelligenceConfig_EditionConfig.Descriptor instead.
 func (IntelligenceConfig_EditionConfig) EnumDescriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42, 0}
 }
 
 // The effective edition of the `IntelligenceConfig` resource.
@@ -318,11 +374,11 @@ func (x IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition) String(
 }
 
 func (IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_storage_control_v2_storage_control_proto_enumTypes[4].Descriptor()
+	return file_google_storage_control_v2_storage_control_proto_enumTypes[5].Descriptor()
 }
 
 func (IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition) Type() protoreflect.EnumType {
-	return &file_google_storage_control_v2_storage_control_proto_enumTypes[4]
+	return &file_google_storage_control_v2_storage_control_proto_enumTypes[5]
 }
 
 func (x IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition) Number() protoreflect.EnumNumber {
@@ -331,7 +387,7 @@ func (x IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition) Number(
 
 // Deprecated: Use IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition.Descriptor instead.
 func (IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition) EnumDescriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31, 1, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42, 1, 0}
 }
 
 // The list of resource scopes.
@@ -371,11 +427,11 @@ func (x SummarizeIntelligenceFindingsRequest_ResourceScope) String() string {
 }
 
 func (SummarizeIntelligenceFindingsRequest_ResourceScope) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_storage_control_v2_storage_control_proto_enumTypes[5].Descriptor()
+	return file_google_storage_control_v2_storage_control_proto_enumTypes[6].Descriptor()
 }
 
 func (SummarizeIntelligenceFindingsRequest_ResourceScope) Type() protoreflect.EnumType {
-	return &file_google_storage_control_v2_storage_control_proto_enumTypes[5]
+	return &file_google_storage_control_v2_storage_control_proto_enumTypes[6]
 }
 
 func (x SummarizeIntelligenceFindingsRequest_ResourceScope) Number() protoreflect.EnumNumber {
@@ -384,7 +440,7 @@ func (x SummarizeIntelligenceFindingsRequest_ResourceScope) Number() protoreflec
 
 // Deprecated: Use SummarizeIntelligenceFindingsRequest_ResourceScope.Descriptor instead.
 func (SummarizeIntelligenceFindingsRequest_ResourceScope) EnumDescriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{43, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{54, 0}
 }
 
 // The list of resource types.
@@ -424,11 +480,11 @@ func (x FindingSummary_SummaryDetails_ResourceType) String() string {
 }
 
 func (FindingSummary_SummaryDetails_ResourceType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_storage_control_v2_storage_control_proto_enumTypes[6].Descriptor()
+	return file_google_storage_control_v2_storage_control_proto_enumTypes[7].Descriptor()
 }
 
 func (FindingSummary_SummaryDetails_ResourceType) Type() protoreflect.EnumType {
-	return &file_google_storage_control_v2_storage_control_proto_enumTypes[6]
+	return &file_google_storage_control_v2_storage_control_proto_enumTypes[7]
 }
 
 func (x FindingSummary_SummaryDetails_ResourceType) Number() protoreflect.EnumNumber {
@@ -437,7 +493,60 @@ func (x FindingSummary_SummaryDetails_ResourceType) Number() protoreflect.EnumNu
 
 // Deprecated: Use FindingSummary_SummaryDetails_ResourceType.Descriptor instead.
 func (FindingSummary_SummaryDetails_ResourceType) EnumDescriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{48, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{59, 0, 0}
+}
+
+// Types of object contexts.
+type ObjectFullContext_Type int32
+
+const (
+	// The type is not specified.
+	ObjectFullContext_TYPE_UNSPECIFIED ObjectFullContext_Type = 0
+	// Custom context.
+	ObjectFullContext_CUSTOM ObjectFullContext_Type = 1
+	// Google context.
+	ObjectFullContext_GOOGLE ObjectFullContext_Type = 2
+)
+
+// Enum value maps for ObjectFullContext_Type.
+var (
+	ObjectFullContext_Type_name = map[int32]string{
+		0: "TYPE_UNSPECIFIED",
+		1: "CUSTOM",
+		2: "GOOGLE",
+	}
+	ObjectFullContext_Type_value = map[string]int32{
+		"TYPE_UNSPECIFIED": 0,
+		"CUSTOM":           1,
+		"GOOGLE":           2,
+	}
+)
+
+func (x ObjectFullContext_Type) Enum() *ObjectFullContext_Type {
+	p := new(ObjectFullContext_Type)
+	*p = x
+	return p
+}
+
+func (x ObjectFullContext_Type) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ObjectFullContext_Type) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_storage_control_v2_storage_control_proto_enumTypes[8].Descriptor()
+}
+
+func (ObjectFullContext_Type) Type() protoreflect.EnumType {
+	return &file_google_storage_control_v2_storage_control_proto_enumTypes[8]
+}
+
+func (x ObjectFullContext_Type) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ObjectFullContext_Type.Descriptor instead.
+func (ObjectFullContext_Type) EnumDescriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{60, 0}
 }
 
 // Contains information about a pending rename operation.
@@ -1401,8 +1510,10 @@ type StorageLayout struct {
 	// Output only. The bucket's hierarchical namespace configuration. If there is
 	// no configuration, the hierarchical namespace is disabled.
 	HierarchicalNamespace *StorageLayout_HierarchicalNamespace `protobuf:"bytes,5,opt,name=hierarchical_namespace,json=hierarchicalNamespace,proto3" json:"hierarchical_namespace,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Output only. The Rapid Cache configuration for the bucket.
+	RapidCacheInfo *StorageLayout_RapidCacheInfo `protobuf:"bytes,6,opt,name=rapid_cache_info,json=rapidCacheInfo,proto3" json:"rapid_cache_info,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *StorageLayout) Reset() {
@@ -1466,6 +1577,13 @@ func (x *StorageLayout) GetCustomPlacementConfig() *StorageLayout_CustomPlacemen
 func (x *StorageLayout) GetHierarchicalNamespace() *StorageLayout_HierarchicalNamespace {
 	if x != nil {
 		return x.HierarchicalNamespace
+	}
+	return nil
+}
+
+func (x *StorageLayout) GetRapidCacheInfo() *StorageLayout_RapidCacheInfo {
+	if x != nil {
+		return x.RapidCacheInfo
 	}
 	return nil
 }
@@ -1551,9 +1669,11 @@ type ManagedFolder struct {
 	// Output only. The creation time of the managed folder.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
 	// Output only. The modification time of the managed folder.
-	UpdateTime    *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Rapid Cache configuration for a managed prefix.
+	RapidCacheConfig *ManagedFolder_RapidCacheConfig `protobuf:"bytes,6,opt,name=rapid_cache_config,json=rapidCacheConfig,proto3,oneof" json:"rapid_cache_config,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ManagedFolder) Reset() {
@@ -1610,6 +1730,13 @@ func (x *ManagedFolder) GetCreateTime() *timestamppb.Timestamp {
 func (x *ManagedFolder) GetUpdateTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *ManagedFolder) GetRapidCacheConfig() *ManagedFolder_RapidCacheConfig {
+	if x != nil {
+		return x.RapidCacheConfig
 	}
 	return nil
 }
@@ -2002,6 +2129,100 @@ func (x *ListManagedFoldersResponse) GetNextPageToken() string {
 	return ""
 }
 
+// Request message for UpdateManagedFolder.
+type UpdateManagedFolderRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Properties of the managed folder being updated. Currently, this
+	// RPC only supports updating the `rapid_cache_config` field in
+	// `managed_folder`.
+	ManagedFolder *ManagedFolder `protobuf:"bytes,1,opt,name=managed_folder,json=managedFolder,proto3" json:"managed_folder,omitempty"`
+	// Optional. Update mask for managed_folder.
+	// Currently, this RPC only supports updating the `rapid_cache_config`
+	// field in `managed_folder`. This field also supports update mask for the
+	// subfields in the map of `rapid_cache_config`. The user can specify the
+	// update mask for `rapid_cache_config.policies` and
+	// `rapid_cache_config.policies.<key>`, but patching is not supported for
+	// a field within `RapidCachePolicy.policies.<key>`, like
+	// rapid_cache_config.policies.[key].ingest_on_write.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. The operation succeeds conditional on the managed folder's
+	// current metageneration matching the value here specified.
+	IfMetagenerationMatch *int64 `protobuf:"varint,3,opt,name=if_metageneration_match,json=ifMetagenerationMatch,proto3,oneof" json:"if_metageneration_match,omitempty"`
+	// Optional. The operation succeeds conditional on the managed folder's
+	// current metageneration NOT matching the value here specified.
+	IfMetagenerationNotMatch *int64 `protobuf:"varint,4,opt,name=if_metageneration_not_match,json=ifMetagenerationNotMatch,proto3,oneof" json:"if_metageneration_not_match,omitempty"`
+	// Optional. A unique identifier for this request. UUID is the recommended
+	// format, but other formats are still accepted.
+	RequestId     string `protobuf:"bytes,5,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateManagedFolderRequest) Reset() {
+	*x = UpdateManagedFolderRequest{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[20]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateManagedFolderRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateManagedFolderRequest) ProtoMessage() {}
+
+func (x *UpdateManagedFolderRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[20]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateManagedFolderRequest.ProtoReflect.Descriptor instead.
+func (*UpdateManagedFolderRequest) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{20}
+}
+
+func (x *UpdateManagedFolderRequest) GetManagedFolder() *ManagedFolder {
+	if x != nil {
+		return x.ManagedFolder
+	}
+	return nil
+}
+
+func (x *UpdateManagedFolderRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateManagedFolderRequest) GetIfMetagenerationMatch() int64 {
+	if x != nil && x.IfMetagenerationMatch != nil {
+		return *x.IfMetagenerationMatch
+	}
+	return 0
+}
+
+func (x *UpdateManagedFolderRequest) GetIfMetagenerationNotMatch() int64 {
+	if x != nil && x.IfMetagenerationNotMatch != nil {
+		return *x.IfMetagenerationNotMatch
+	}
+	return 0
+}
+
+func (x *UpdateManagedFolderRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
 // Message returned in the metadata field of the Operation resource for
 // CreateAnywhereCache operations.
 type CreateAnywhereCacheMetadata struct {
@@ -2021,13 +2242,16 @@ type CreateAnywhereCacheMetadata struct {
 	// "admit-on-first-miss"). Default admission policy (admit-on-first-miss) is
 	// applied if not specified in the create request.
 	AdmissionPolicy *string `protobuf:"bytes,5,opt,name=admission_policy,json=admissionPolicy,proto3,oneof" json:"admission_policy,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Specifies whether objects are ingested into the cache upon write.
+	// Defaults to false.
+	IngestOnWrite *bool `protobuf:"varint,7,opt,name=ingest_on_write,json=ingestOnWrite,proto3,oneof" json:"ingest_on_write,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *CreateAnywhereCacheMetadata) Reset() {
 	*x = CreateAnywhereCacheMetadata{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[20]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2039,7 +2263,7 @@ func (x *CreateAnywhereCacheMetadata) String() string {
 func (*CreateAnywhereCacheMetadata) ProtoMessage() {}
 
 func (x *CreateAnywhereCacheMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[20]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2052,7 +2276,7 @@ func (x *CreateAnywhereCacheMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAnywhereCacheMetadata.ProtoReflect.Descriptor instead.
 func (*CreateAnywhereCacheMetadata) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{20}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *CreateAnywhereCacheMetadata) GetCommonMetadata() *CommonLongRunningOperationMetadata {
@@ -2090,6 +2314,120 @@ func (x *CreateAnywhereCacheMetadata) GetAdmissionPolicy() string {
 	return ""
 }
 
+func (x *CreateAnywhereCacheMetadata) GetIngestOnWrite() bool {
+	if x != nil && x.IngestOnWrite != nil {
+		return *x.IngestOnWrite
+	}
+	return false
+}
+
+// Message returned in the metadata field of the Operation resource for
+// CreateRapidCache operations.
+type CreateRapidCacheMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Generic metadata for the long running operation.
+	CommonMetadata *CommonLongRunningOperationMetadata `protobuf:"bytes,1,opt,name=common_metadata,json=commonMetadata,proto3" json:"common_metadata,omitempty"`
+	// Rapid Cache ID.
+	RapidCacheId *string `protobuf:"bytes,2,opt,name=rapid_cache_id,json=rapidCacheId,proto3,oneof" json:"rapid_cache_id,omitempty"`
+	// The zone in which the cache instance is running. For example,
+	// us-central1-a.
+	Zone *string `protobuf:"bytes,3,opt,name=zone,proto3,oneof" json:"zone,omitempty"`
+	// Rapid Cache entry's TTL. A cache-level config that is applied to all new
+	// cache entries on admission. Default ttl value (24hrs) is applied if not
+	// specified in the create request.
+	Ttl *durationpb.Duration `protobuf:"bytes,4,opt,name=ttl,proto3,oneof" json:"ttl,omitempty"`
+	// Anywhere Cache entry Admission Policy in kebab-case (e.g.,
+	// "admit-on-first-miss"). Default admission policy (admit-on-first-miss) is
+	// applied if not specified in the create request.
+	AdmissionPolicy *string `protobuf:"bytes,5,opt,name=admission_policy,json=admissionPolicy,proto3,oneof" json:"admission_policy,omitempty"`
+	// Optional. Specifies whether objects are ingested into the cache upon write.
+	// Defaults to false.
+	IngestOnWrite *bool `protobuf:"varint,6,opt,name=ingest_on_write,json=ingestOnWrite,proto3,oneof" json:"ingest_on_write,omitempty"`
+	// Optional. The type of cache. Either rapid cache or rapid cache ultra.
+	CacheType     *string `protobuf:"bytes,7,opt,name=cache_type,json=cacheType,proto3,oneof" json:"cache_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateRapidCacheMetadata) Reset() {
+	*x = CreateRapidCacheMetadata{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[22]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRapidCacheMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRapidCacheMetadata) ProtoMessage() {}
+
+func (x *CreateRapidCacheMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[22]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRapidCacheMetadata.ProtoReflect.Descriptor instead.
+func (*CreateRapidCacheMetadata) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{22}
+}
+
+func (x *CreateRapidCacheMetadata) GetCommonMetadata() *CommonLongRunningOperationMetadata {
+	if x != nil {
+		return x.CommonMetadata
+	}
+	return nil
+}
+
+func (x *CreateRapidCacheMetadata) GetRapidCacheId() string {
+	if x != nil && x.RapidCacheId != nil {
+		return *x.RapidCacheId
+	}
+	return ""
+}
+
+func (x *CreateRapidCacheMetadata) GetZone() string {
+	if x != nil && x.Zone != nil {
+		return *x.Zone
+	}
+	return ""
+}
+
+func (x *CreateRapidCacheMetadata) GetTtl() *durationpb.Duration {
+	if x != nil {
+		return x.Ttl
+	}
+	return nil
+}
+
+func (x *CreateRapidCacheMetadata) GetAdmissionPolicy() string {
+	if x != nil && x.AdmissionPolicy != nil {
+		return *x.AdmissionPolicy
+	}
+	return ""
+}
+
+func (x *CreateRapidCacheMetadata) GetIngestOnWrite() bool {
+	if x != nil && x.IngestOnWrite != nil {
+		return *x.IngestOnWrite
+	}
+	return false
+}
+
+func (x *CreateRapidCacheMetadata) GetCacheType() string {
+	if x != nil && x.CacheType != nil {
+		return *x.CacheType
+	}
+	return ""
+}
+
 // Message returned in the metadata field of the Operation resource for
 // UpdateAnywhereCache operation.
 type UpdateAnywhereCacheMetadata struct {
@@ -2105,17 +2443,20 @@ type UpdateAnywhereCacheMetadata struct {
 	// is applied to all new cache entries on admission. If `ttl` is pending
 	// update, this field equals to the new value specified in the Update request.
 	Ttl *durationpb.Duration `protobuf:"bytes,3,opt,name=ttl,proto3,oneof" json:"ttl,omitempty"`
-	// L4 Cache entry Admission Policy in kebab-case (e.g.,
+	// Optional. Anywhere Cache entry Admission Policy in kebab-case (e.g.,
 	// "admit-on-first-miss"). If `admission_policy` is pending
 	// update, this field equals to the new value specified in the Update request.
 	AdmissionPolicy *string `protobuf:"bytes,4,opt,name=admission_policy,json=admissionPolicy,proto3,oneof" json:"admission_policy,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Specifies whether objects are ingested into the cache upon write. If not
+	// set, it defaults to false.
+	IngestOnWrite *bool `protobuf:"varint,6,opt,name=ingest_on_write,json=ingestOnWrite,proto3,oneof" json:"ingest_on_write,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *UpdateAnywhereCacheMetadata) Reset() {
 	*x = UpdateAnywhereCacheMetadata{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[21]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2127,7 +2468,7 @@ func (x *UpdateAnywhereCacheMetadata) String() string {
 func (*UpdateAnywhereCacheMetadata) ProtoMessage() {}
 
 func (x *UpdateAnywhereCacheMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[21]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2140,7 +2481,7 @@ func (x *UpdateAnywhereCacheMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAnywhereCacheMetadata.ProtoReflect.Descriptor instead.
 func (*UpdateAnywhereCacheMetadata) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{21}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *UpdateAnywhereCacheMetadata) GetCommonMetadata() *CommonLongRunningOperationMetadata {
@@ -2178,6 +2519,195 @@ func (x *UpdateAnywhereCacheMetadata) GetAdmissionPolicy() string {
 	return ""
 }
 
+func (x *UpdateAnywhereCacheMetadata) GetIngestOnWrite() bool {
+	if x != nil && x.IngestOnWrite != nil {
+		return *x.IngestOnWrite
+	}
+	return false
+}
+
+// Message returned in the metadata field of the Operation resource for
+// UpdateRapidCache operation.
+type UpdateRapidCacheMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Generic metadata for the long running operation.
+	CommonMetadata *CommonLongRunningOperationMetadata `protobuf:"bytes,1,opt,name=common_metadata,json=commonMetadata,proto3" json:"common_metadata,omitempty"`
+	// Rapid Cache ID.
+	RapidCacheId *string `protobuf:"bytes,2,opt,name=rapid_cache_id,json=rapidCacheId,proto3,oneof" json:"rapid_cache_id,omitempty"`
+	// The zone in which the cache instance is running. For example,
+	// us-central1-a.
+	Zone *string `protobuf:"bytes,3,opt,name=zone,proto3,oneof" json:"zone,omitempty"`
+	// Rapid Cache entry's TTL between 1h and 7days. A cache-level config that
+	// is applied to all new cache entries on admission. If `ttl` is pending
+	// update, this field equals to the new value specified in the Update request.
+	Ttl *durationpb.Duration `protobuf:"bytes,4,opt,name=ttl,proto3,oneof" json:"ttl,omitempty"`
+	// Optional. Rapid Cache entry Admission Policy in kebab-case (e.g.,
+	// "admit-on-first-miss"). If `admission_policy` is pending
+	// update, this field equals to the new value specified in the Update request.
+	AdmissionPolicy *string `protobuf:"bytes,5,opt,name=admission_policy,json=admissionPolicy,proto3,oneof" json:"admission_policy,omitempty"`
+	// Specifies whether objects are ingested into the cache upon write. If not
+	// set, it defaults to false.
+	IngestOnWrite *bool `protobuf:"varint,6,opt,name=ingest_on_write,json=ingestOnWrite,proto3,oneof" json:"ingest_on_write,omitempty"`
+	// Optional. The type of cache. Either rapid cache or rapid cache ultra.
+	CacheType     *string `protobuf:"bytes,7,opt,name=cache_type,json=cacheType,proto3,oneof" json:"cache_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateRapidCacheMetadata) Reset() {
+	*x = UpdateRapidCacheMetadata{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[24]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateRapidCacheMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateRapidCacheMetadata) ProtoMessage() {}
+
+func (x *UpdateRapidCacheMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[24]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateRapidCacheMetadata.ProtoReflect.Descriptor instead.
+func (*UpdateRapidCacheMetadata) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{24}
+}
+
+func (x *UpdateRapidCacheMetadata) GetCommonMetadata() *CommonLongRunningOperationMetadata {
+	if x != nil {
+		return x.CommonMetadata
+	}
+	return nil
+}
+
+func (x *UpdateRapidCacheMetadata) GetRapidCacheId() string {
+	if x != nil && x.RapidCacheId != nil {
+		return *x.RapidCacheId
+	}
+	return ""
+}
+
+func (x *UpdateRapidCacheMetadata) GetZone() string {
+	if x != nil && x.Zone != nil {
+		return *x.Zone
+	}
+	return ""
+}
+
+func (x *UpdateRapidCacheMetadata) GetTtl() *durationpb.Duration {
+	if x != nil {
+		return x.Ttl
+	}
+	return nil
+}
+
+func (x *UpdateRapidCacheMetadata) GetAdmissionPolicy() string {
+	if x != nil && x.AdmissionPolicy != nil {
+		return *x.AdmissionPolicy
+	}
+	return ""
+}
+
+func (x *UpdateRapidCacheMetadata) GetIngestOnWrite() bool {
+	if x != nil && x.IngestOnWrite != nil {
+		return *x.IngestOnWrite
+	}
+	return false
+}
+
+func (x *UpdateRapidCacheMetadata) GetCacheType() string {
+	if x != nil && x.CacheType != nil {
+		return *x.CacheType
+	}
+	return ""
+}
+
+// Message returned in the metadata field of the Operation resource for
+// DeleteRapidCache operation.
+type DisableRapidCacheMetadata struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Generic metadata for the long running operation.
+	CommonMetadata *CommonLongRunningOperationMetadata `protobuf:"bytes,1,opt,name=common_metadata,json=commonMetadata,proto3" json:"common_metadata,omitempty"`
+	// Rapid Cache ID.
+	RapidCacheId *string `protobuf:"bytes,2,opt,name=rapid_cache_id,json=rapidCacheId,proto3,oneof" json:"rapid_cache_id,omitempty"`
+	// The zone in which the cache instance is running. For example,
+	// us-central1-a.
+	Zone *string `protobuf:"bytes,3,opt,name=zone,proto3,oneof" json:"zone,omitempty"`
+	// Optional. The type of cache. Either rapid cache or rapid cache ultra.
+	CacheType     *string `protobuf:"bytes,4,opt,name=cache_type,json=cacheType,proto3,oneof" json:"cache_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DisableRapidCacheMetadata) Reset() {
+	*x = DisableRapidCacheMetadata{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DisableRapidCacheMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DisableRapidCacheMetadata) ProtoMessage() {}
+
+func (x *DisableRapidCacheMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DisableRapidCacheMetadata.ProtoReflect.Descriptor instead.
+func (*DisableRapidCacheMetadata) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{25}
+}
+
+func (x *DisableRapidCacheMetadata) GetCommonMetadata() *CommonLongRunningOperationMetadata {
+	if x != nil {
+		return x.CommonMetadata
+	}
+	return nil
+}
+
+func (x *DisableRapidCacheMetadata) GetRapidCacheId() string {
+	if x != nil && x.RapidCacheId != nil {
+		return *x.RapidCacheId
+	}
+	return ""
+}
+
+func (x *DisableRapidCacheMetadata) GetZone() string {
+	if x != nil && x.Zone != nil {
+		return *x.Zone
+	}
+	return ""
+}
+
+func (x *DisableRapidCacheMetadata) GetCacheType() string {
+	if x != nil && x.CacheType != nil {
+		return *x.CacheType
+	}
+	return ""
+}
+
 // An Anywhere Cache Instance.
 type AnywhereCache struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2198,7 +2728,8 @@ type AnywhereCache struct {
 	// `admit-on-first-miss`. Default value is applied if not specified in the
 	// create request.
 	AdmissionPolicy string `protobuf:"bytes,9,opt,name=admission_policy,json=admissionPolicy,proto3" json:"admission_policy,omitempty"`
-	// Output only. Cache state including RUNNING, CREATING, DISABLED and PAUSED.
+	// Output only. Cache state including `running`, `creating`, `disabled` and
+	// `paused`.
 	State string `protobuf:"bytes,5,opt,name=state,proto3" json:"state,omitempty"`
 	// Output only. Time when Anywhere cache instance is allocated.
 	CreateTime *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
@@ -2209,13 +2740,16 @@ type AnywhereCache struct {
 	// instance. Subsequential update requests will be rejected if this field is
 	// true. Output only.
 	PendingUpdate bool `protobuf:"varint,8,opt,name=pending_update,json=pendingUpdate,proto3" json:"pending_update,omitempty"`
+	// Optional. Specifies whether objects are ingested into the cache upon write.
+	// Defaults to false.
+	IngestOnWrite *bool `protobuf:"varint,11,opt,name=ingest_on_write,json=ingestOnWrite,proto3,oneof" json:"ingest_on_write,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AnywhereCache) Reset() {
 	*x = AnywhereCache{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[22]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2227,7 +2761,7 @@ func (x *AnywhereCache) String() string {
 func (*AnywhereCache) ProtoMessage() {}
 
 func (x *AnywhereCache) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[22]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2240,7 +2774,7 @@ func (x *AnywhereCache) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AnywhereCache.ProtoReflect.Descriptor instead.
 func (*AnywhereCache) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{22}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *AnywhereCache) GetName() string {
@@ -2299,6 +2833,13 @@ func (x *AnywhereCache) GetPendingUpdate() bool {
 	return false
 }
 
+func (x *AnywhereCache) GetIngestOnWrite() bool {
+	if x != nil && x.IngestOnWrite != nil {
+		return *x.IngestOnWrite
+	}
+	return false
+}
+
 // Request message for CreateAnywhereCache.
 type CreateAnywhereCacheRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -2320,7 +2861,7 @@ type CreateAnywhereCacheRequest struct {
 
 func (x *CreateAnywhereCacheRequest) Reset() {
 	*x = CreateAnywhereCacheRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[23]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2332,7 +2873,7 @@ func (x *CreateAnywhereCacheRequest) String() string {
 func (*CreateAnywhereCacheRequest) ProtoMessage() {}
 
 func (x *CreateAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[23]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2345,7 +2886,7 @@ func (x *CreateAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateAnywhereCacheRequest.ProtoReflect.Descriptor instead.
 func (*CreateAnywhereCacheRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{23}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *CreateAnywhereCacheRequest) GetParent() string {
@@ -2394,7 +2935,7 @@ type UpdateAnywhereCacheRequest struct {
 
 func (x *UpdateAnywhereCacheRequest) Reset() {
 	*x = UpdateAnywhereCacheRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[24]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2406,7 +2947,7 @@ func (x *UpdateAnywhereCacheRequest) String() string {
 func (*UpdateAnywhereCacheRequest) ProtoMessage() {}
 
 func (x *UpdateAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[24]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2419,7 +2960,7 @@ func (x *UpdateAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateAnywhereCacheRequest.ProtoReflect.Descriptor instead.
 func (*UpdateAnywhereCacheRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{24}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *UpdateAnywhereCacheRequest) GetAnywhereCache() *AnywhereCache {
@@ -2459,7 +3000,7 @@ type DisableAnywhereCacheRequest struct {
 
 func (x *DisableAnywhereCacheRequest) Reset() {
 	*x = DisableAnywhereCacheRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[25]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2471,7 +3012,7 @@ func (x *DisableAnywhereCacheRequest) String() string {
 func (*DisableAnywhereCacheRequest) ProtoMessage() {}
 
 func (x *DisableAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[25]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2484,7 +3025,7 @@ func (x *DisableAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DisableAnywhereCacheRequest.ProtoReflect.Descriptor instead.
 func (*DisableAnywhereCacheRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{25}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *DisableAnywhereCacheRequest) GetName() string {
@@ -2517,7 +3058,7 @@ type PauseAnywhereCacheRequest struct {
 
 func (x *PauseAnywhereCacheRequest) Reset() {
 	*x = PauseAnywhereCacheRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[26]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2529,7 +3070,7 @@ func (x *PauseAnywhereCacheRequest) String() string {
 func (*PauseAnywhereCacheRequest) ProtoMessage() {}
 
 func (x *PauseAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[26]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2542,7 +3083,7 @@ func (x *PauseAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use PauseAnywhereCacheRequest.ProtoReflect.Descriptor instead.
 func (*PauseAnywhereCacheRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{26}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *PauseAnywhereCacheRequest) GetName() string {
@@ -2575,7 +3116,7 @@ type ResumeAnywhereCacheRequest struct {
 
 func (x *ResumeAnywhereCacheRequest) Reset() {
 	*x = ResumeAnywhereCacheRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[27]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2587,7 +3128,7 @@ func (x *ResumeAnywhereCacheRequest) String() string {
 func (*ResumeAnywhereCacheRequest) ProtoMessage() {}
 
 func (x *ResumeAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[27]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2600,7 +3141,7 @@ func (x *ResumeAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ResumeAnywhereCacheRequest.ProtoReflect.Descriptor instead.
 func (*ResumeAnywhereCacheRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{27}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *ResumeAnywhereCacheRequest) GetName() string {
@@ -2632,7 +3173,7 @@ type GetAnywhereCacheRequest struct {
 
 func (x *GetAnywhereCacheRequest) Reset() {
 	*x = GetAnywhereCacheRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[28]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2644,7 +3185,7 @@ func (x *GetAnywhereCacheRequest) String() string {
 func (*GetAnywhereCacheRequest) ProtoMessage() {}
 
 func (x *GetAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[28]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2657,7 +3198,7 @@ func (x *GetAnywhereCacheRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetAnywhereCacheRequest.ProtoReflect.Descriptor instead.
 func (*GetAnywhereCacheRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{28}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *GetAnywhereCacheRequest) GetName() string {
@@ -2694,7 +3235,7 @@ type ListAnywhereCachesRequest struct {
 
 func (x *ListAnywhereCachesRequest) Reset() {
 	*x = ListAnywhereCachesRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[29]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2706,7 +3247,7 @@ func (x *ListAnywhereCachesRequest) String() string {
 func (*ListAnywhereCachesRequest) ProtoMessage() {}
 
 func (x *ListAnywhereCachesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[29]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2719,7 +3260,7 @@ func (x *ListAnywhereCachesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAnywhereCachesRequest.ProtoReflect.Descriptor instead.
 func (*ListAnywhereCachesRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{29}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ListAnywhereCachesRequest) GetParent() string {
@@ -2764,7 +3305,7 @@ type ListAnywhereCachesResponse struct {
 
 func (x *ListAnywhereCachesResponse) Reset() {
 	*x = ListAnywhereCachesResponse{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[30]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2776,7 +3317,7 @@ func (x *ListAnywhereCachesResponse) String() string {
 func (*ListAnywhereCachesResponse) ProtoMessage() {}
 
 func (x *ListAnywhereCachesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[30]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2789,7 +3330,7 @@ func (x *ListAnywhereCachesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListAnywhereCachesResponse.ProtoReflect.Descriptor instead.
 func (*ListAnywhereCachesResponse) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{30}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ListAnywhereCachesResponse) GetAnywhereCaches() []*AnywhereCache {
@@ -2800,6 +3341,526 @@ func (x *ListAnywhereCachesResponse) GetAnywhereCaches() []*AnywhereCache {
 }
 
 func (x *ListAnywhereCachesResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
+	}
+	return ""
+}
+
+// A Rapid Cache Instance.
+type RapidCache struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Immutable. The resource name of this RapidCache.
+	// Format:
+	// projects/{project}/buckets/{bucket}/rapidCaches/{rapid_cache}
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Immutable. The zone in which the cache instance is running. For example,
+	// us-central1-a.
+	Zone string `protobuf:"bytes,2,opt,name=zone,proto3" json:"zone,omitempty"`
+	// Immutable. The type of Rapid Cache this represents. Valid values include:
+	// 'rapid-cache' and 'rapid-cache-ultra'.
+	CacheType string `protobuf:"bytes,3,opt,name=cache_type,json=cacheType,proto3" json:"cache_type,omitempty"`
+	// Cache entry TTL (ranges between 1h to 7d). This is a cache-level config
+	// that defines how long a cache entry can live. Default ttl value (24hrs)
+	// is applied if not specified in the create request. TTL must be in whole
+	// seconds.
+	Ttl *durationpb.Duration `protobuf:"bytes,4,opt,name=ttl,proto3" json:"ttl,omitempty"`
+	// Cache admission policy. Valid policies includes:
+	// no_read_admission, admit-on-first-miss and admit-on-second-miss. Defaults
+	// to admit-on-first-miss for both AC and RCU. Default value is applied if not
+	// specified in the create request.
+	AdmissionPolicy string `protobuf:"bytes,5,opt,name=admission_policy,json=admissionPolicy,proto3" json:"admission_policy,omitempty"`
+	// Output only. Cache state including running, creating, and disabled.
+	State string `protobuf:"bytes,6,opt,name=state,proto3" json:"state,omitempty"`
+	// Output only. Time when Rapid cache instance is allocated.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,7,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// Output only. Time when Rapid cache instance is last updated, including
+	// creation.
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// Output only. True if there is an active update operation against this cache
+	// instance. Subsequential update requests will be rejected if this field is
+	// true. Output only.
+	PendingUpdate bool `protobuf:"varint,9,opt,name=pending_update,json=pendingUpdate,proto3" json:"pending_update,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RapidCache) Reset() {
+	*x = RapidCache{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RapidCache) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RapidCache) ProtoMessage() {}
+
+func (x *RapidCache) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RapidCache.ProtoReflect.Descriptor instead.
+func (*RapidCache) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{35}
+}
+
+func (x *RapidCache) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *RapidCache) GetZone() string {
+	if x != nil {
+		return x.Zone
+	}
+	return ""
+}
+
+func (x *RapidCache) GetCacheType() string {
+	if x != nil {
+		return x.CacheType
+	}
+	return ""
+}
+
+func (x *RapidCache) GetTtl() *durationpb.Duration {
+	if x != nil {
+		return x.Ttl
+	}
+	return nil
+}
+
+func (x *RapidCache) GetAdmissionPolicy() string {
+	if x != nil {
+		return x.AdmissionPolicy
+	}
+	return ""
+}
+
+func (x *RapidCache) GetState() string {
+	if x != nil {
+		return x.State
+	}
+	return ""
+}
+
+func (x *RapidCache) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *RapidCache) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *RapidCache) GetPendingUpdate() bool {
+	if x != nil {
+		return x.PendingUpdate
+	}
+	return false
+}
+
+// Request message for CreateRapidCache.
+type CreateRapidCacheRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The bucket to which this cache belongs.
+	// Format: `projects/{project}/buckets/{bucket}`
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The RapidCache to create. Default values for ingest_on_write, ttl
+	// and admission_policy will be applied if not specified in the request.
+	RapidCache *RapidCache `protobuf:"bytes,2,opt,name=rapid_cache,json=rapidCache,proto3" json:"rapid_cache,omitempty"`
+	// Optional. A unique identifier for this request. UUID is the recommended
+	// format, but other formats are still accepted. This request is only
+	// idempotent if a `request_id` is provided.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *CreateRapidCacheRequest) Reset() {
+	*x = CreateRapidCacheRequest{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *CreateRapidCacheRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*CreateRapidCacheRequest) ProtoMessage() {}
+
+func (x *CreateRapidCacheRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use CreateRapidCacheRequest.ProtoReflect.Descriptor instead.
+func (*CreateRapidCacheRequest) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{36}
+}
+
+func (x *CreateRapidCacheRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *CreateRapidCacheRequest) GetRapidCache() *RapidCache {
+	if x != nil {
+		return x.RapidCache
+	}
+	return nil
+}
+
+func (x *CreateRapidCacheRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// Request message for UpdateRapidCache.
+type UpdateRapidCacheRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The RapidCache to update.
+	RapidCache *RapidCache `protobuf:"bytes,1,opt,name=rapid_cache,json=rapidCache,proto3" json:"rapid_cache,omitempty"`
+	// Required. List of fields to be updated. Mutable fields of RapidCache
+	// include `ttl`, `admission_policy` and `ingest_on_write`.
+	//
+	// To specify ALL fields, specify a single field with the value `*`. Note: We
+	// recommend against doing this. If a new field is introduced at a later time,
+	// an older client updating with the `*` may accidentally reset the new
+	// field's value.
+	//
+	// Not specifying any fields is an error.
+	UpdateMask *fieldmaskpb.FieldMask `protobuf:"bytes,2,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	// Optional. A unique identifier for this request. UUID is the recommended
+	// format, but other formats are still accepted. This request is only
+	// idempotent if a `request_id` is provided.
+	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *UpdateRapidCacheRequest) Reset() {
+	*x = UpdateRapidCacheRequest{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[37]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *UpdateRapidCacheRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*UpdateRapidCacheRequest) ProtoMessage() {}
+
+func (x *UpdateRapidCacheRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[37]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use UpdateRapidCacheRequest.ProtoReflect.Descriptor instead.
+func (*UpdateRapidCacheRequest) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{37}
+}
+
+func (x *UpdateRapidCacheRequest) GetRapidCache() *RapidCache {
+	if x != nil {
+		return x.RapidCache
+	}
+	return nil
+}
+
+func (x *UpdateRapidCacheRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+func (x *UpdateRapidCacheRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// Request message for DisableRapidCache.
+type DisableRapidCacheRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name field in the request should be:
+	// `projects/{project}/buckets/{bucket}/rapidCaches/{rapid_cache}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. A unique identifier for this request. UUID is the recommended
+	// format, but other formats are still accepted. This request is only
+	// idempotent if a `request_id` is provided.
+	RequestId     string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *DisableRapidCacheRequest) Reset() {
+	*x = DisableRapidCacheRequest{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[38]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *DisableRapidCacheRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*DisableRapidCacheRequest) ProtoMessage() {}
+
+func (x *DisableRapidCacheRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[38]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use DisableRapidCacheRequest.ProtoReflect.Descriptor instead.
+func (*DisableRapidCacheRequest) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38}
+}
+
+func (x *DisableRapidCacheRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *DisableRapidCacheRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// Request message for GetRapidCache.
+type GetRapidCacheRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The name field in the request should be:
+	// `projects/{project}/buckets/{bucket}/rapidCaches/{rapid_cache}`
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Optional. A unique identifier for this request. UUID is the recommended
+	// format, but other formats are still accepted.
+	RequestId     string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GetRapidCacheRequest) Reset() {
+	*x = GetRapidCacheRequest{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[39]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GetRapidCacheRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GetRapidCacheRequest) ProtoMessage() {}
+
+func (x *GetRapidCacheRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[39]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GetRapidCacheRequest.ProtoReflect.Descriptor instead.
+func (*GetRapidCacheRequest) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{39}
+}
+
+func (x *GetRapidCacheRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *GetRapidCacheRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// Request message for ListRapidCaches.
+type ListRapidCachesRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The bucket to which this cache belongs.
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Maximum number of caches to return in a single response.
+	// The service will use this parameter or 1,000 items, whichever is smaller.
+	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// A previously-returned page token representing part of the larger set of
+	// results to view.
+	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	// Optional. A unique identifier for this request. UUID is the recommended
+	// format, but other formats are still accepted.
+	RequestId     string `protobuf:"bytes,4,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRapidCachesRequest) Reset() {
+	*x = ListRapidCachesRequest{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[40]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRapidCachesRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRapidCachesRequest) ProtoMessage() {}
+
+func (x *ListRapidCachesRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[40]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRapidCachesRequest.ProtoReflect.Descriptor instead.
+func (*ListRapidCachesRequest) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{40}
+}
+
+func (x *ListRapidCachesRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *ListRapidCachesRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *ListRapidCachesRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+func (x *ListRapidCachesRequest) GetRequestId() string {
+	if x != nil {
+		return x.RequestId
+	}
+	return ""
+}
+
+// Response message for ListRapidCaches.
+type ListRapidCachesResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of rapid caches.
+	RapidCaches []*RapidCache `protobuf:"bytes,1,rep,name=rapid_caches,json=rapidCaches,proto3" json:"rapid_caches,omitempty"`
+	// A token, which can be sent as `page_token` to retrieve the next page.
+	// If this field is omitted, there are no subsequent pages.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ListRapidCachesResponse) Reset() {
+	*x = ListRapidCachesResponse{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[41]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ListRapidCachesResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ListRapidCachesResponse) ProtoMessage() {}
+
+func (x *ListRapidCachesResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[41]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ListRapidCachesResponse.ProtoReflect.Descriptor instead.
+func (*ListRapidCachesResponse) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{41}
+}
+
+func (x *ListRapidCachesResponse) GetRapidCaches() []*RapidCache {
+	if x != nil {
+		return x.RapidCaches
+	}
+	return nil
+}
+
+func (x *ListRapidCachesResponse) GetNextPageToken() string {
 	if x != nil {
 		return x.NextPageToken
 	}
@@ -2839,7 +3900,7 @@ type IntelligenceConfig struct {
 
 func (x *IntelligenceConfig) Reset() {
 	*x = IntelligenceConfig{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[31]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2851,7 +3912,7 @@ func (x *IntelligenceConfig) String() string {
 func (*IntelligenceConfig) ProtoMessage() {}
 
 func (x *IntelligenceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[31]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2864,7 +3925,7 @@ func (x *IntelligenceConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntelligenceConfig.ProtoReflect.Descriptor instead.
 func (*IntelligenceConfig) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *IntelligenceConfig) GetName() string {
@@ -2911,12 +3972,6 @@ func (x *IntelligenceConfig) GetTrialConfig() *IntelligenceConfig_TrialConfig {
 
 // Request message to update the `IntelligenceConfig` resource associated with
 // your organization.
-//
-// **IAM Permissions**:
-//
-// Requires `storage.intelligenceConfigs.update`
-// [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on
-// the organization.
 type UpdateOrganizationIntelligenceConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The `IntelligenceConfig` resource to be updated.
@@ -2934,7 +3989,7 @@ type UpdateOrganizationIntelligenceConfigRequest struct {
 
 func (x *UpdateOrganizationIntelligenceConfigRequest) Reset() {
 	*x = UpdateOrganizationIntelligenceConfigRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[32]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2946,7 +4001,7 @@ func (x *UpdateOrganizationIntelligenceConfigRequest) String() string {
 func (*UpdateOrganizationIntelligenceConfigRequest) ProtoMessage() {}
 
 func (x *UpdateOrganizationIntelligenceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[32]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2959,7 +4014,7 @@ func (x *UpdateOrganizationIntelligenceConfigRequest) ProtoReflect() protoreflec
 
 // Deprecated: Use UpdateOrganizationIntelligenceConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateOrganizationIntelligenceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{32}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *UpdateOrganizationIntelligenceConfigRequest) GetIntelligenceConfig() *IntelligenceConfig {
@@ -2985,12 +4040,6 @@ func (x *UpdateOrganizationIntelligenceConfigRequest) GetRequestId() string {
 
 // Request message to update the `IntelligenceConfig` resource associated with
 // your folder.
-//
-// **IAM Permissions**:
-//
-// Requires `storage.intelligenceConfigs.update`
-// [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on
-// the folder.
 type UpdateFolderIntelligenceConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The `IntelligenceConfig` resource to be updated.
@@ -3008,7 +4057,7 @@ type UpdateFolderIntelligenceConfigRequest struct {
 
 func (x *UpdateFolderIntelligenceConfigRequest) Reset() {
 	*x = UpdateFolderIntelligenceConfigRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[33]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3020,7 +4069,7 @@ func (x *UpdateFolderIntelligenceConfigRequest) String() string {
 func (*UpdateFolderIntelligenceConfigRequest) ProtoMessage() {}
 
 func (x *UpdateFolderIntelligenceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[33]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3033,7 +4082,7 @@ func (x *UpdateFolderIntelligenceConfigRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use UpdateFolderIntelligenceConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateFolderIntelligenceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{33}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *UpdateFolderIntelligenceConfigRequest) GetIntelligenceConfig() *IntelligenceConfig {
@@ -3059,12 +4108,6 @@ func (x *UpdateFolderIntelligenceConfigRequest) GetRequestId() string {
 
 // Request message to update the `IntelligenceConfig` resource associated with
 // your project.
-//
-// **IAM Permissions**:
-//
-// Requires `storage.intelligenceConfigs.update`
-// [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on
-// the folder.
 type UpdateProjectIntelligenceConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The `IntelligenceConfig` resource to be updated.
@@ -3082,7 +4125,7 @@ type UpdateProjectIntelligenceConfigRequest struct {
 
 func (x *UpdateProjectIntelligenceConfigRequest) Reset() {
 	*x = UpdateProjectIntelligenceConfigRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[34]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3094,7 +4137,7 @@ func (x *UpdateProjectIntelligenceConfigRequest) String() string {
 func (*UpdateProjectIntelligenceConfigRequest) ProtoMessage() {}
 
 func (x *UpdateProjectIntelligenceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[34]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3107,7 +4150,7 @@ func (x *UpdateProjectIntelligenceConfigRequest) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use UpdateProjectIntelligenceConfigRequest.ProtoReflect.Descriptor instead.
 func (*UpdateProjectIntelligenceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{34}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *UpdateProjectIntelligenceConfigRequest) GetIntelligenceConfig() *IntelligenceConfig {
@@ -3133,12 +4176,6 @@ func (x *UpdateProjectIntelligenceConfigRequest) GetRequestId() string {
 
 // Request message to get the `IntelligenceConfig` resource associated with your
 // organization.
-//
-// **IAM Permissions**
-//
-// Requires `storage.intelligenceConfigs.get`
-// [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on
-// the organization.
 type GetOrganizationIntelligenceConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the `IntelligenceConfig` resource associated with
@@ -3152,7 +4189,7 @@ type GetOrganizationIntelligenceConfigRequest struct {
 
 func (x *GetOrganizationIntelligenceConfigRequest) Reset() {
 	*x = GetOrganizationIntelligenceConfigRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[35]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3164,7 +4201,7 @@ func (x *GetOrganizationIntelligenceConfigRequest) String() string {
 func (*GetOrganizationIntelligenceConfigRequest) ProtoMessage() {}
 
 func (x *GetOrganizationIntelligenceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[35]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3177,7 +4214,7 @@ func (x *GetOrganizationIntelligenceConfigRequest) ProtoReflect() protoreflect.M
 
 // Deprecated: Use GetOrganizationIntelligenceConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetOrganizationIntelligenceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{35}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *GetOrganizationIntelligenceConfigRequest) GetName() string {
@@ -3189,12 +4226,6 @@ func (x *GetOrganizationIntelligenceConfigRequest) GetName() string {
 
 // Request message to get the `IntelligenceConfig` resource associated with your
 // folder.
-//
-// **IAM Permissions**
-//
-// Requires `storage.intelligenceConfigs.get`
-// [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission on
-// the folder.
 type GetFolderIntelligenceConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the `IntelligenceConfig` resource associated with
@@ -3208,7 +4239,7 @@ type GetFolderIntelligenceConfigRequest struct {
 
 func (x *GetFolderIntelligenceConfigRequest) Reset() {
 	*x = GetFolderIntelligenceConfigRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[36]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3220,7 +4251,7 @@ func (x *GetFolderIntelligenceConfigRequest) String() string {
 func (*GetFolderIntelligenceConfigRequest) ProtoMessage() {}
 
 func (x *GetFolderIntelligenceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[36]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3233,7 +4264,7 @@ func (x *GetFolderIntelligenceConfigRequest) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use GetFolderIntelligenceConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetFolderIntelligenceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{36}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *GetFolderIntelligenceConfigRequest) GetName() string {
@@ -3245,12 +4276,6 @@ func (x *GetFolderIntelligenceConfigRequest) GetName() string {
 
 // Request message to get the `IntelligenceConfig` resource associated with your
 // project.
-//
-// **IAM Permissions**:
-//
-// Requires `storage.intelligenceConfigs.get`
-// [IAM](https://cloud.google.com/iam/docs/overview#permissions) permission
-// on the project.
 type GetProjectIntelligenceConfigRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The name of the `IntelligenceConfig` resource associated with
@@ -3264,7 +4289,7 @@ type GetProjectIntelligenceConfigRequest struct {
 
 func (x *GetProjectIntelligenceConfigRequest) Reset() {
 	*x = GetProjectIntelligenceConfigRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[37]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3276,7 +4301,7 @@ func (x *GetProjectIntelligenceConfigRequest) String() string {
 func (*GetProjectIntelligenceConfigRequest) ProtoMessage() {}
 
 func (x *GetProjectIntelligenceConfigRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[37]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3289,7 +4314,7 @@ func (x *GetProjectIntelligenceConfigRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use GetProjectIntelligenceConfigRequest.ProtoReflect.Descriptor instead.
 func (*GetProjectIntelligenceConfigRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{37}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *GetProjectIntelligenceConfigRequest) GetName() string {
@@ -3348,7 +4373,7 @@ type IntelligenceFinding struct {
 
 func (x *IntelligenceFinding) Reset() {
 	*x = IntelligenceFinding{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[38]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3360,7 +4385,7 @@ func (x *IntelligenceFinding) String() string {
 func (*IntelligenceFinding) ProtoMessage() {}
 
 func (x *IntelligenceFinding) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[38]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3373,7 +4398,7 @@ func (x *IntelligenceFinding) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntelligenceFinding.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *IntelligenceFinding) GetName() string {
@@ -3532,7 +4557,7 @@ func (*IntelligenceFinding_StorageGrowthAboveTrend_) isIntelligenceFinding_Intel
 // `IntelligenceFinding` resource.
 type IntelligenceFindingRevision struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Identifier. The resource name of `IntelligenceFindingRevision`.
+	// Output only. The resource name of `IntelligenceFindingRevision`.
 	// Format:
 	// `projects/{project}/locations/{location}/intelligenceFindings/{intelligence_finding}/revisions/{revision}`
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
@@ -3548,7 +4573,7 @@ type IntelligenceFindingRevision struct {
 
 func (x *IntelligenceFindingRevision) Reset() {
 	*x = IntelligenceFindingRevision{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[39]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3560,7 +4585,7 @@ func (x *IntelligenceFindingRevision) String() string {
 func (*IntelligenceFindingRevision) ProtoMessage() {}
 
 func (x *IntelligenceFindingRevision) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[39]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3573,7 +4598,7 @@ func (x *IntelligenceFindingRevision) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntelligenceFindingRevision.ProtoReflect.Descriptor instead.
 func (*IntelligenceFindingRevision) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{39}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *IntelligenceFindingRevision) GetName() string {
@@ -3612,7 +4637,7 @@ type GetIntelligenceFindingRequest struct {
 
 func (x *GetIntelligenceFindingRequest) Reset() {
 	*x = GetIntelligenceFindingRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[40]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3624,7 +4649,7 @@ func (x *GetIntelligenceFindingRequest) String() string {
 func (*GetIntelligenceFindingRequest) ProtoMessage() {}
 
 func (x *GetIntelligenceFindingRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[40]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3637,7 +4662,7 @@ func (x *GetIntelligenceFindingRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetIntelligenceFindingRequest.ProtoReflect.Descriptor instead.
 func (*GetIntelligenceFindingRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{40}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *GetIntelligenceFindingRequest) GetName() string {
@@ -3676,7 +4701,7 @@ type ListIntelligenceFindingsRequest struct {
 
 func (x *ListIntelligenceFindingsRequest) Reset() {
 	*x = ListIntelligenceFindingsRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[41]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3688,7 +4713,7 @@ func (x *ListIntelligenceFindingsRequest) String() string {
 func (*ListIntelligenceFindingsRequest) ProtoMessage() {}
 
 func (x *ListIntelligenceFindingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[41]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3701,7 +4726,7 @@ func (x *ListIntelligenceFindingsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIntelligenceFindingsRequest.ProtoReflect.Descriptor instead.
 func (*ListIntelligenceFindingsRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{41}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *ListIntelligenceFindingsRequest) GetParent() string {
@@ -3747,7 +4772,7 @@ type ListIntelligenceFindingsResponse struct {
 
 func (x *ListIntelligenceFindingsResponse) Reset() {
 	*x = ListIntelligenceFindingsResponse{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[42]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3759,7 +4784,7 @@ func (x *ListIntelligenceFindingsResponse) String() string {
 func (*ListIntelligenceFindingsResponse) ProtoMessage() {}
 
 func (x *ListIntelligenceFindingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[42]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3772,7 +4797,7 @@ func (x *ListIntelligenceFindingsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIntelligenceFindingsResponse.ProtoReflect.Descriptor instead.
 func (*ListIntelligenceFindingsResponse) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *ListIntelligenceFindingsResponse) GetIntelligenceFindings() []*IntelligenceFinding {
@@ -3790,7 +4815,7 @@ func (x *ListIntelligenceFindingsResponse) GetNextPageToken() string {
 }
 
 // Request message to summarize the intelligence findings for the specified
-// scope(org, folder or project).
+// scope (organization, folder or project).
 type SummarizeIntelligenceFindingsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. The scope to summarize the findings for.
@@ -3833,7 +4858,7 @@ type SummarizeIntelligenceFindingsRequest struct {
 
 func (x *SummarizeIntelligenceFindingsRequest) Reset() {
 	*x = SummarizeIntelligenceFindingsRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[43]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3845,7 +4870,7 @@ func (x *SummarizeIntelligenceFindingsRequest) String() string {
 func (*SummarizeIntelligenceFindingsRequest) ProtoMessage() {}
 
 func (x *SummarizeIntelligenceFindingsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[43]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3858,7 +4883,7 @@ func (x *SummarizeIntelligenceFindingsRequest) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use SummarizeIntelligenceFindingsRequest.ProtoReflect.Descriptor instead.
 func (*SummarizeIntelligenceFindingsRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{43}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *SummarizeIntelligenceFindingsRequest) GetParent() string {
@@ -3897,7 +4922,7 @@ func (x *SummarizeIntelligenceFindingsRequest) GetPageToken() string {
 }
 
 // Response message to summarize the intelligence findings for a specified
-// scope(org, folder or project).
+// scope (organization, folder or project).
 type SummarizeIntelligenceFindingsResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The list of `FindingSummary` summaries.
@@ -3912,7 +4937,7 @@ type SummarizeIntelligenceFindingsResponse struct {
 
 func (x *SummarizeIntelligenceFindingsResponse) Reset() {
 	*x = SummarizeIntelligenceFindingsResponse{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[44]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3924,7 +4949,7 @@ func (x *SummarizeIntelligenceFindingsResponse) String() string {
 func (*SummarizeIntelligenceFindingsResponse) ProtoMessage() {}
 
 func (x *SummarizeIntelligenceFindingsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[44]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3937,7 +4962,7 @@ func (x *SummarizeIntelligenceFindingsResponse) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use SummarizeIntelligenceFindingsResponse.ProtoReflect.Descriptor instead.
 func (*SummarizeIntelligenceFindingsResponse) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{44}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *SummarizeIntelligenceFindingsResponse) GetFindingSummaries() []*FindingSummary {
@@ -3969,7 +4994,7 @@ type GetIntelligenceFindingRevisionRequest struct {
 
 func (x *GetIntelligenceFindingRevisionRequest) Reset() {
 	*x = GetIntelligenceFindingRevisionRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[45]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3981,7 +5006,7 @@ func (x *GetIntelligenceFindingRevisionRequest) String() string {
 func (*GetIntelligenceFindingRevisionRequest) ProtoMessage() {}
 
 func (x *GetIntelligenceFindingRevisionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[45]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3994,7 +5019,7 @@ func (x *GetIntelligenceFindingRevisionRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use GetIntelligenceFindingRevisionRequest.ProtoReflect.Descriptor instead.
 func (*GetIntelligenceFindingRevisionRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{45}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *GetIntelligenceFindingRevisionRequest) GetName() string {
@@ -4029,7 +5054,7 @@ type ListIntelligenceFindingRevisionsRequest struct {
 
 func (x *ListIntelligenceFindingRevisionsRequest) Reset() {
 	*x = ListIntelligenceFindingRevisionsRequest{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[46]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[57]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4041,7 +5066,7 @@ func (x *ListIntelligenceFindingRevisionsRequest) String() string {
 func (*ListIntelligenceFindingRevisionsRequest) ProtoMessage() {}
 
 func (x *ListIntelligenceFindingRevisionsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[46]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[57]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4054,7 +5079,7 @@ func (x *ListIntelligenceFindingRevisionsRequest) ProtoReflect() protoreflect.Me
 
 // Deprecated: Use ListIntelligenceFindingRevisionsRequest.ProtoReflect.Descriptor instead.
 func (*ListIntelligenceFindingRevisionsRequest) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{46}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{57}
 }
 
 func (x *ListIntelligenceFindingRevisionsRequest) GetParent() string {
@@ -4092,7 +5117,7 @@ type ListIntelligenceFindingRevisionsResponse struct {
 
 func (x *ListIntelligenceFindingRevisionsResponse) Reset() {
 	*x = ListIntelligenceFindingRevisionsResponse{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[47]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[58]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4104,7 +5129,7 @@ func (x *ListIntelligenceFindingRevisionsResponse) String() string {
 func (*ListIntelligenceFindingRevisionsResponse) ProtoMessage() {}
 
 func (x *ListIntelligenceFindingRevisionsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[47]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[58]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4117,7 +5142,7 @@ func (x *ListIntelligenceFindingRevisionsResponse) ProtoReflect() protoreflect.M
 
 // Deprecated: Use ListIntelligenceFindingRevisionsResponse.ProtoReflect.Descriptor instead.
 func (*ListIntelligenceFindingRevisionsResponse) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{47}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{58}
 }
 
 func (x *ListIntelligenceFindingRevisionsResponse) GetIntelligenceFindingRevisions() []*IntelligenceFindingRevision {
@@ -4161,7 +5186,7 @@ type FindingSummary struct {
 
 func (x *FindingSummary) Reset() {
 	*x = FindingSummary{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[48]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4173,7 +5198,7 @@ func (x *FindingSummary) String() string {
 func (*FindingSummary) ProtoMessage() {}
 
 func (x *FindingSummary) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[48]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4186,7 +5211,7 @@ func (x *FindingSummary) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindingSummary.ProtoReflect.Descriptor instead.
 func (*FindingSummary) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{48}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *FindingSummary) GetType() FindingType {
@@ -4238,6 +5263,163 @@ func (x *FindingSummary) GetSummaryDetails() []*FindingSummary_SummaryDetails {
 	return nil
 }
 
+// A full representation of an object context.
+type ObjectFullContext struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of the object context.
+	Type ObjectFullContext_Type `protobuf:"varint,1,opt,name=type,proto3,enum=google.storage.control.v2.ObjectFullContext_Type" json:"type,omitempty"`
+	// The key of the object context, which is unique among contexts of an object.
+	Key string `protobuf:"bytes,2,opt,name=key,proto3" json:"key,omitempty"`
+	// The value of the object context.
+	Value string `protobuf:"bytes,3,opt,name=value,proto3" json:"value,omitempty"`
+	// The time at which the object context was created.
+	CreateTime *timestamppb.Timestamp `protobuf:"bytes,4,opt,name=create_time,json=createTime,proto3" json:"create_time,omitempty"`
+	// The time at which the object context was updated.
+	UpdateTime *timestamppb.Timestamp `protobuf:"bytes,5,opt,name=update_time,json=updateTime,proto3" json:"update_time,omitempty"`
+	// The extended data of the object context.
+	ExtendedData  *anypb.Any `protobuf:"bytes,6,opt,name=extended_data,json=extendedData,proto3" json:"extended_data,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ObjectFullContext) Reset() {
+	*x = ObjectFullContext{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[60]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ObjectFullContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ObjectFullContext) ProtoMessage() {}
+
+func (x *ObjectFullContext) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[60]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ObjectFullContext.ProtoReflect.Descriptor instead.
+func (*ObjectFullContext) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{60}
+}
+
+func (x *ObjectFullContext) GetType() ObjectFullContext_Type {
+	if x != nil {
+		return x.Type
+	}
+	return ObjectFullContext_TYPE_UNSPECIFIED
+}
+
+func (x *ObjectFullContext) GetKey() string {
+	if x != nil {
+		return x.Key
+	}
+	return ""
+}
+
+func (x *ObjectFullContext) GetValue() string {
+	if x != nil {
+		return x.Value
+	}
+	return ""
+}
+
+func (x *ObjectFullContext) GetCreateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CreateTime
+	}
+	return nil
+}
+
+func (x *ObjectFullContext) GetUpdateTime() *timestamppb.Timestamp {
+	if x != nil {
+		return x.UpdateTime
+	}
+	return nil
+}
+
+func (x *ObjectFullContext) GetExtendedData() *anypb.Any {
+	if x != nil {
+		return x.ExtendedData
+	}
+	return nil
+}
+
+// Request message for ViewObjectFullContext.
+type ViewObjectFullContextRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. If present, selects a specific revision of this object (as
+	// opposed to the latest version, the default).
+	Generation int64 `protobuf:"varint,3,opt,name=generation,proto3" json:"generation,omitempty"`
+	// Required. The key of the object context to retrieve.
+	ContextKey string `protobuf:"bytes,4,opt,name=context_key,json=contextKey,proto3" json:"context_key,omitempty"`
+	// Required. The name of the object.
+	// Format: `projects/{project}/buckets/{bucket}/objects/{object}`
+	Name          string `protobuf:"bytes,5,opt,name=name,proto3" json:"name,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ViewObjectFullContextRequest) Reset() {
+	*x = ViewObjectFullContextRequest{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[61]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ViewObjectFullContextRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ViewObjectFullContextRequest) ProtoMessage() {}
+
+func (x *ViewObjectFullContextRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[61]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ViewObjectFullContextRequest.ProtoReflect.Descriptor instead.
+func (*ViewObjectFullContextRequest) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{61}
+}
+
+func (x *ViewObjectFullContextRequest) GetGeneration() int64 {
+	if x != nil {
+		return x.Generation
+	}
+	return 0
+}
+
+func (x *ViewObjectFullContextRequest) GetContextKey() string {
+	if x != nil {
+		return x.ContextKey
+	}
+	return ""
+}
+
+func (x *ViewObjectFullContextRequest) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
 // Configuration for Custom Dual Regions.  It should specify precisely two
 // eligible regions within the same Multiregion. More information on regions
 // may be found [here](https://cloud.google.com/storage/docs/locations).
@@ -4251,7 +5433,7 @@ type StorageLayout_CustomPlacementConfig struct {
 
 func (x *StorageLayout_CustomPlacementConfig) Reset() {
 	*x = StorageLayout_CustomPlacementConfig{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[49]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4263,7 +5445,7 @@ func (x *StorageLayout_CustomPlacementConfig) String() string {
 func (*StorageLayout_CustomPlacementConfig) ProtoMessage() {}
 
 func (x *StorageLayout_CustomPlacementConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[49]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4297,7 +5479,7 @@ type StorageLayout_HierarchicalNamespace struct {
 
 func (x *StorageLayout_HierarchicalNamespace) Reset() {
 	*x = StorageLayout_HierarchicalNamespace{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[50]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4309,7 +5491,7 @@ func (x *StorageLayout_HierarchicalNamespace) String() string {
 func (*StorageLayout_HierarchicalNamespace) ProtoMessage() {}
 
 func (x *StorageLayout_HierarchicalNamespace) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[50]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4330,6 +5512,161 @@ func (x *StorageLayout_HierarchicalNamespace) GetEnabled() bool {
 		return x.Enabled
 	}
 	return false
+}
+
+// The Rapid Cache configuration for the bucket.
+type StorageLayout_RapidCacheInfo struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. The type of cache in the bucket. Set to `rapid-cache` or
+	// `rapid-cache-ultra`, only if there is a cache present.
+	CacheType     string `protobuf:"bytes,1,opt,name=cache_type,json=cacheType,proto3" json:"cache_type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *StorageLayout_RapidCacheInfo) Reset() {
+	*x = StorageLayout_RapidCacheInfo{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[64]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *StorageLayout_RapidCacheInfo) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*StorageLayout_RapidCacheInfo) ProtoMessage() {}
+
+func (x *StorageLayout_RapidCacheInfo) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[64]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use StorageLayout_RapidCacheInfo.ProtoReflect.Descriptor instead.
+func (*StorageLayout_RapidCacheInfo) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{12, 2}
+}
+
+func (x *StorageLayout_RapidCacheInfo) GetCacheType() string {
+	if x != nil {
+		return x.CacheType
+	}
+	return ""
+}
+
+// Rapid Cache configuration for a managed prefix. This configuration is used
+// to determine how the rapid cache behaves for objects under the managed
+// folder.
+type ManagedFolder_RapidCacheConfig struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. A map of rapid_cache_id to RapidCachePolicy for this prefix.
+	// Currently, the key rapid_cache_id is the zone. However, the
+	// field is generalized as rapid_cache_id to align the policy lifetime
+	// with the cache instance lifetime. This allows for a future transition
+	// from zone to a cache id if required.
+	Policies      map[string]*ManagedFolder_RapidCacheConfig_RapidCachePolicy `protobuf:"bytes,1,rep,name=policies,proto3" json:"policies,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ManagedFolder_RapidCacheConfig) Reset() {
+	*x = ManagedFolder_RapidCacheConfig{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[65]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ManagedFolder_RapidCacheConfig) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ManagedFolder_RapidCacheConfig) ProtoMessage() {}
+
+func (x *ManagedFolder_RapidCacheConfig) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[65]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ManagedFolder_RapidCacheConfig.ProtoReflect.Descriptor instead.
+func (*ManagedFolder_RapidCacheConfig) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{14, 0}
+}
+
+func (x *ManagedFolder_RapidCacheConfig) GetPolicies() map[string]*ManagedFolder_RapidCacheConfig_RapidCachePolicy {
+	if x != nil {
+		return x.Policies
+	}
+	return nil
+}
+
+// Rapid Cache policy for a managed folder.
+type ManagedFolder_RapidCacheConfig_RapidCachePolicy struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The identifier for the rapid cache.
+	RapidCacheId string `protobuf:"bytes,1,opt,name=rapid_cache_id,json=rapidCacheId,proto3" json:"rapid_cache_id,omitempty"`
+	// Required. If enabled, objects in the Managed Folder will be ingested
+	// into the cache when they are written.
+	IngestOnWrite ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite `protobuf:"varint,2,opt,name=ingest_on_write,json=ingestOnWrite,proto3,enum=google.storage.control.v2.ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite" json:"ingest_on_write,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ManagedFolder_RapidCacheConfig_RapidCachePolicy) Reset() {
+	*x = ManagedFolder_RapidCacheConfig_RapidCachePolicy{}
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[66]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ManagedFolder_RapidCacheConfig_RapidCachePolicy) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ManagedFolder_RapidCacheConfig_RapidCachePolicy) ProtoMessage() {}
+
+func (x *ManagedFolder_RapidCacheConfig_RapidCachePolicy) ProtoReflect() protoreflect.Message {
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[66]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ManagedFolder_RapidCacheConfig_RapidCachePolicy.ProtoReflect.Descriptor instead.
+func (*ManagedFolder_RapidCacheConfig_RapidCachePolicy) Descriptor() ([]byte, []int) {
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{14, 0, 0}
+}
+
+func (x *ManagedFolder_RapidCacheConfig_RapidCachePolicy) GetRapidCacheId() string {
+	if x != nil {
+		return x.RapidCacheId
+	}
+	return ""
+}
+
+func (x *ManagedFolder_RapidCacheConfig_RapidCachePolicy) GetIngestOnWrite() ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite {
+	if x != nil {
+		return x.IngestOnWrite
+	}
+	return ManagedFolder_RapidCacheConfig_RapidCachePolicy_INGEST_ON_WRITE_UNSPECIFIED
 }
 
 // Filter over location and bucket using include or exclude semantics.
@@ -4357,7 +5694,7 @@ type IntelligenceConfig_Filter struct {
 
 func (x *IntelligenceConfig_Filter) Reset() {
 	*x = IntelligenceConfig_Filter{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[51]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4369,7 +5706,7 @@ func (x *IntelligenceConfig_Filter) String() string {
 func (*IntelligenceConfig_Filter) ProtoMessage() {}
 
 func (x *IntelligenceConfig_Filter) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[51]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4382,7 +5719,7 @@ func (x *IntelligenceConfig_Filter) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntelligenceConfig_Filter.ProtoReflect.Descriptor instead.
 func (*IntelligenceConfig_Filter) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42, 0}
 }
 
 func (x *IntelligenceConfig_Filter) GetCloudStorageLocations() isIntelligenceConfig_Filter_CloudStorageLocations {
@@ -4491,7 +5828,7 @@ type IntelligenceConfig_EffectiveIntelligenceConfig struct {
 
 func (x *IntelligenceConfig_EffectiveIntelligenceConfig) Reset() {
 	*x = IntelligenceConfig_EffectiveIntelligenceConfig{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[52]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4503,7 +5840,7 @@ func (x *IntelligenceConfig_EffectiveIntelligenceConfig) String() string {
 func (*IntelligenceConfig_EffectiveIntelligenceConfig) ProtoMessage() {}
 
 func (x *IntelligenceConfig_EffectiveIntelligenceConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[52]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4516,7 +5853,7 @@ func (x *IntelligenceConfig_EffectiveIntelligenceConfig) ProtoReflect() protoref
 
 // Deprecated: Use IntelligenceConfig_EffectiveIntelligenceConfig.ProtoReflect.Descriptor instead.
 func (*IntelligenceConfig_EffectiveIntelligenceConfig) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31, 1}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42, 1}
 }
 
 func (x *IntelligenceConfig_EffectiveIntelligenceConfig) GetEffectiveEdition() IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition {
@@ -4544,7 +5881,7 @@ type IntelligenceConfig_TrialConfig struct {
 
 func (x *IntelligenceConfig_TrialConfig) Reset() {
 	*x = IntelligenceConfig_TrialConfig{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[53]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4556,7 +5893,7 @@ func (x *IntelligenceConfig_TrialConfig) String() string {
 func (*IntelligenceConfig_TrialConfig) ProtoMessage() {}
 
 func (x *IntelligenceConfig_TrialConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[53]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4569,7 +5906,7 @@ func (x *IntelligenceConfig_TrialConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use IntelligenceConfig_TrialConfig.ProtoReflect.Descriptor instead.
 func (*IntelligenceConfig_TrialConfig) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31, 2}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42, 2}
 }
 
 func (x *IntelligenceConfig_TrialConfig) GetExpireTime() *timestamppb.Timestamp {
@@ -4592,7 +5929,7 @@ type IntelligenceConfig_Filter_CloudStorageLocations struct {
 
 func (x *IntelligenceConfig_Filter_CloudStorageLocations) Reset() {
 	*x = IntelligenceConfig_Filter_CloudStorageLocations{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[54]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4604,7 +5941,7 @@ func (x *IntelligenceConfig_Filter_CloudStorageLocations) String() string {
 func (*IntelligenceConfig_Filter_CloudStorageLocations) ProtoMessage() {}
 
 func (x *IntelligenceConfig_Filter_CloudStorageLocations) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[54]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4617,7 +5954,7 @@ func (x *IntelligenceConfig_Filter_CloudStorageLocations) ProtoReflect() protore
 
 // Deprecated: Use IntelligenceConfig_Filter_CloudStorageLocations.ProtoReflect.Descriptor instead.
 func (*IntelligenceConfig_Filter_CloudStorageLocations) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42, 0, 0}
 }
 
 func (x *IntelligenceConfig_Filter_CloudStorageLocations) GetLocations() []string {
@@ -4645,7 +5982,7 @@ type IntelligenceConfig_Filter_CloudStorageBuckets struct {
 
 func (x *IntelligenceConfig_Filter_CloudStorageBuckets) Reset() {
 	*x = IntelligenceConfig_Filter_CloudStorageBuckets{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[55]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4657,7 +5994,7 @@ func (x *IntelligenceConfig_Filter_CloudStorageBuckets) String() string {
 func (*IntelligenceConfig_Filter_CloudStorageBuckets) ProtoMessage() {}
 
 func (x *IntelligenceConfig_Filter_CloudStorageBuckets) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[55]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4670,7 +6007,7 @@ func (x *IntelligenceConfig_Filter_CloudStorageBuckets) ProtoReflect() protorefl
 
 // Deprecated: Use IntelligenceConfig_Filter_CloudStorageBuckets.ProtoReflect.Descriptor instead.
 func (*IntelligenceConfig_Filter_CloudStorageBuckets) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{31, 0, 1}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{42, 0, 1}
 }
 
 func (x *IntelligenceConfig_Filter_CloudStorageBuckets) GetBucketIdRegexes() []string {
@@ -4699,7 +6036,7 @@ type IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike struct {
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike) Reset() {
 	*x = IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[56]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4711,7 +6048,7 @@ func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike) String()
 func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike) ProtoMessage() {}
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[56]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4724,7 +6061,7 @@ func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike) ProtoRef
 
 // Deprecated: Use IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 0}
 }
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike) GetPercentageIncrease() float64 {
@@ -4768,7 +6105,7 @@ type IntelligenceFinding_CrossRegionEgressSpike struct {
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike) Reset() {
 	*x = IntelligenceFinding_CrossRegionEgressSpike{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[57]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4780,7 +6117,7 @@ func (x *IntelligenceFinding_CrossRegionEgressSpike) String() string {
 func (*IntelligenceFinding_CrossRegionEgressSpike) ProtoMessage() {}
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[57]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4793,7 +6130,7 @@ func (x *IntelligenceFinding_CrossRegionEgressSpike) ProtoReflect() protoreflect
 
 // Deprecated: Use IntelligenceFinding_CrossRegionEgressSpike.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_CrossRegionEgressSpike) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 1}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 1}
 }
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike) GetTotalEgressBytes() int64 {
@@ -4836,7 +6173,7 @@ type IntelligenceFinding_ThrottledRequestSpike struct {
 
 func (x *IntelligenceFinding_ThrottledRequestSpike) Reset() {
 	*x = IntelligenceFinding_ThrottledRequestSpike{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[58]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4848,7 +6185,7 @@ func (x *IntelligenceFinding_ThrottledRequestSpike) String() string {
 func (*IntelligenceFinding_ThrottledRequestSpike) ProtoMessage() {}
 
 func (x *IntelligenceFinding_ThrottledRequestSpike) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[58]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4861,7 +6198,7 @@ func (x *IntelligenceFinding_ThrottledRequestSpike) ProtoReflect() protoreflect.
 
 // Deprecated: Use IntelligenceFinding_ThrottledRequestSpike.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ThrottledRequestSpike) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 2}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 2}
 }
 
 func (x *IntelligenceFinding_ThrottledRequestSpike) GetThrottledRequests() int64 {
@@ -4902,7 +6239,7 @@ type IntelligenceFinding_StorageGrowthAboveTrend struct {
 
 func (x *IntelligenceFinding_StorageGrowthAboveTrend) Reset() {
 	*x = IntelligenceFinding_StorageGrowthAboveTrend{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[59]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4914,7 +6251,7 @@ func (x *IntelligenceFinding_StorageGrowthAboveTrend) String() string {
 func (*IntelligenceFinding_StorageGrowthAboveTrend) ProtoMessage() {}
 
 func (x *IntelligenceFinding_StorageGrowthAboveTrend) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[59]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4927,7 +6264,7 @@ func (x *IntelligenceFinding_StorageGrowthAboveTrend) ProtoReflect() protoreflec
 
 // Deprecated: Use IntelligenceFinding_StorageGrowthAboveTrend.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_StorageGrowthAboveTrend) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 3}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 3}
 }
 
 func (x *IntelligenceFinding_StorageGrowthAboveTrend) GetTotalStorageGrowthBytes() int64 {
@@ -4974,7 +6311,7 @@ type IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContrib
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution) Reset() {
 	*x = IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[60]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4987,7 +6324,7 @@ func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContr
 }
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[60]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5000,7 +6337,7 @@ func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketCon
 
 // Deprecated: Use IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 0, 0}
 }
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution) GetBucket() string {
@@ -5083,7 +6420,7 @@ type IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContrib
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution) Reset() {
 	*x = IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[61]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5096,7 +6433,7 @@ func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContr
 }
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[61]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5109,7 +6446,7 @@ func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketCon
 
 // Deprecated: Use IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 0, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 0, 0, 0}
 }
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution) GetTopPrefixes() []*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution {
@@ -5136,7 +6473,7 @@ type IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContrib
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution) Reset() {
 	*x = IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[62]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5149,7 +6486,7 @@ func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContr
 }
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[62]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5162,7 +6499,7 @@ func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketCon
 
 // Deprecated: Use IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 0, 0, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 0, 0, 0, 0}
 }
 
 func (x *IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution) GetPrefix() string {
@@ -5211,7 +6548,7 @@ type IntelligenceFinding_CrossRegionEgressSpike_BucketContribution struct {
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution) Reset() {
 	*x = IntelligenceFinding_CrossRegionEgressSpike_BucketContribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[63]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[80]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5223,7 +6560,7 @@ func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution) String()
 func (*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution) ProtoMessage() {}
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[63]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[80]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5236,7 +6573,7 @@ func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution) ProtoRef
 
 // Deprecated: Use IntelligenceFinding_CrossRegionEgressSpike_BucketContribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 1, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 1, 0}
 }
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution) GetBucket() string {
@@ -5319,7 +6656,7 @@ type IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution 
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution) Reset() {
 	*x = IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[64]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5331,7 +6668,7 @@ func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribut
 func (*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution) ProtoMessage() {}
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[64]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5344,7 +6681,7 @@ func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribut
 
 // Deprecated: Use IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 1, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 1, 0, 0}
 }
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution) GetTopPrefixes() []*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution {
@@ -5373,7 +6710,7 @@ type IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution) Reset() {
 	*x = IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[65]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5386,7 +6723,7 @@ func (*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contributio
 }
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[65]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5399,7 +6736,7 @@ func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribut
 
 // Deprecated: Use IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 1, 0, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 1, 0, 0, 0}
 }
 
 func (x *IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution) GetPrefix() string {
@@ -5447,7 +6784,7 @@ type IntelligenceFinding_ThrottledRequestSpike_BucketContribution struct {
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution) Reset() {
 	*x = IntelligenceFinding_ThrottledRequestSpike_BucketContribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[66]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5459,7 +6796,7 @@ func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution) String() 
 func (*IntelligenceFinding_ThrottledRequestSpike_BucketContribution) ProtoMessage() {}
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[66]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5472,7 +6809,7 @@ func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution) ProtoRefl
 
 // Deprecated: Use IntelligenceFinding_ThrottledRequestSpike_BucketContribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ThrottledRequestSpike_BucketContribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 2, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 2, 0}
 }
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution) GetBucket() string {
@@ -5555,7 +6892,7 @@ type IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution s
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution) Reset() {
 	*x = IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[67]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5567,7 +6904,7 @@ func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contributi
 func (*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution) ProtoMessage() {}
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[67]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5580,7 +6917,7 @@ func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contributi
 
 // Deprecated: Use IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 2, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 2, 0, 0}
 }
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution) GetTopPrefixes() []*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution {
@@ -5607,7 +6944,7 @@ type IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_P
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution) Reset() {
 	*x = IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[68]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5620,7 +6957,7 @@ func (*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution
 }
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[68]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5633,7 +6970,7 @@ func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contributi
 
 // Deprecated: Use IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 2, 0, 0, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 2, 0, 0, 0}
 }
 
 func (x *IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution) GetPrefix() string {
@@ -5679,7 +7016,7 @@ type IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution struct {
 
 func (x *IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution) Reset() {
 	*x = IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[69]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5691,7 +7028,7 @@ func (x *IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution) String(
 func (*IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution) ProtoMessage() {}
 
 func (x *IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[69]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5704,7 +7041,7 @@ func (x *IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution) ProtoRe
 
 // Deprecated: Use IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution.ProtoReflect.Descriptor instead.
 func (*IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{38, 3, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{49, 3, 0}
 }
 
 func (x *IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution) GetBucket() string {
@@ -5777,7 +7114,7 @@ type FindingSummary_SummaryDetails struct {
 
 func (x *FindingSummary_SummaryDetails) Reset() {
 	*x = FindingSummary_SummaryDetails{}
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[70]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5789,7 +7126,7 @@ func (x *FindingSummary_SummaryDetails) String() string {
 func (*FindingSummary_SummaryDetails) ProtoMessage() {}
 
 func (x *FindingSummary_SummaryDetails) ProtoReflect() protoreflect.Message {
-	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[70]
+	mi := &file_google_storage_control_v2_storage_control_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5802,7 +7139,7 @@ func (x *FindingSummary_SummaryDetails) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FindingSummary_SummaryDetails.ProtoReflect.Descriptor instead.
 func (*FindingSummary_SummaryDetails) Descriptor() ([]byte, []int) {
-	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{48, 0}
+	return file_google_storage_control_v2_storage_control_proto_rawDescGZIP(), []int{59, 0}
 }
 
 func (x *FindingSummary_SummaryDetails) GetMagnitude() isFindingSummary_SummaryDetails_Magnitude {
@@ -5866,7 +7203,7 @@ var File_google_storage_control_v2_storage_control_proto protoreflect.FileDescri
 
 const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\n" +
-	"/google/storage/control/v2/storage_control.proto\x12\x19google.storage.control.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"6\n" +
+	"/google/storage/control/v2/storage_control.proto\x12\x19google.storage.control.v2\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x18google/api/routing.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x19google/protobuf/any.proto\x1a\x1egoogle/protobuf/duration.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x17google/rpc/status.proto\x1a\x1agoogle/type/interval.proto\"6\n" +
 	"\x11PendingRenameInfo\x12!\n" +
 	"\toperation\x18\x01 \x01(\tB\x03\xe0A\x03R\toperation\"\xa3\x03\n" +
 	"\x06Folder\x12\x17\n" +
@@ -5951,32 +7288,49 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\x15destination_folder_id\x18\x03 \x01(\tR\x13destinationFolderId\"\xa4\x01\n" +
 	"\x1dDeleteFolderRecursiveMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12\x1b\n" +
-	"\tfolder_id\x18\x02 \x01(\tR\bfolderId\"\xdc\x04\n" +
+	"\tfolder_id\x18\x02 \x01(\tR\bfolderId\"\xfa\x05\n" +
 	"\rStorageLayout\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12\x1f\n" +
 	"\blocation\x18\x02 \x01(\tB\x03\xe0A\x03R\blocation\x12(\n" +
 	"\rlocation_type\x18\x03 \x01(\tB\x03\xe0A\x03R\flocationType\x12{\n" +
 	"\x17custom_placement_config\x18\x04 \x01(\v2>.google.storage.control.v2.StorageLayout.CustomPlacementConfigB\x03\xe0A\x03R\x15customPlacementConfig\x12z\n" +
-	"\x16hierarchical_namespace\x18\x05 \x01(\v2>.google.storage.control.v2.StorageLayout.HierarchicalNamespaceB\x03\xe0A\x03R\x15hierarchicalNamespace\x1a>\n" +
+	"\x16hierarchical_namespace\x18\x05 \x01(\v2>.google.storage.control.v2.StorageLayout.HierarchicalNamespaceB\x03\xe0A\x03R\x15hierarchicalNamespace\x12f\n" +
+	"\x10rapid_cache_info\x18\x06 \x01(\v27.google.storage.control.v2.StorageLayout.RapidCacheInfoB\x03\xe0A\x03R\x0erapidCacheInfo\x1a>\n" +
 	"\x15CustomPlacementConfig\x12%\n" +
 	"\x0edata_locations\x18\x01 \x03(\tR\rdataLocations\x1a1\n" +
 	"\x15HierarchicalNamespace\x12\x18\n" +
-	"\aenabled\x18\x01 \x01(\bR\aenabled:{\xeaAx\n" +
+	"\aenabled\x18\x01 \x01(\bR\aenabled\x1a4\n" +
+	"\x0eRapidCacheInfo\x12\"\n" +
+	"\n" +
+	"cache_type\x18\x01 \x01(\tB\x03\xe0A\x03R\tcacheType:{\xeaAx\n" +
 	"$storage.googleapis.com/StorageLayout\x121projects/{project}/buckets/{bucket}/storageLayout*\x0estorageLayouts2\rstorageLayout\"\x9f\x01\n" +
 	"\x17GetStorageLayoutRequest\x12@\n" +
 	"\x04name\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\n" +
 	"$storage.googleapis.com/StorageLayoutR\x04name\x12\x16\n" +
 	"\x06prefix\x18\x02 \x01(\tR\x06prefix\x12*\n" +
 	"\n" +
-	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xed\x02\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x92\b\n" +
 	"\rManagedFolder\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12+\n" +
 	"\x0emetageneration\x18\x03 \x01(\x03B\x03\xe0A\x03R\x0emetageneration\x12@\n" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime:\x91\x01\xeaA\x8d\x01\n" +
-	"$storage.googleapis.com/ManagedFolder\x12Fprojects/{project}/buckets/{bucket}/managedFolders/{managed_folder=**}*\x0emanagedFolders2\rmanagedFolder\"\xc4\x02\n" +
+	"updateTime\x12l\n" +
+	"\x12rapid_cache_config\x18\x06 \x01(\v29.google.storage.control.v2.ManagedFolder.RapidCacheConfigH\x00R\x10rapidCacheConfig\x88\x01\x01\x1a\x9d\x04\n" +
+	"\x10RapidCacheConfig\x12h\n" +
+	"\bpolicies\x18\x01 \x03(\v2G.google.storage.control.v2.ManagedFolder.RapidCacheConfig.PoliciesEntryB\x03\xe0A\x01R\bpolicies\x1a\x94\x02\n" +
+	"\x10RapidCachePolicy\x12)\n" +
+	"\x0erapid_cache_id\x18\x01 \x01(\tB\x03\xe0A\x02R\frapidCacheId\x12\x85\x01\n" +
+	"\x0fingest_on_write\x18\x02 \x01(\x0e2X.google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy.IngestOnWriteB\x03\xe0A\x02R\ringestOnWrite\"M\n" +
+	"\rIngestOnWrite\x12\x1f\n" +
+	"\x1bINGEST_ON_WRITE_UNSPECIFIED\x10\x00\x12\x1b\n" +
+	"\x17INGEST_ON_WRITE_ENABLED\x10\x01\x1a\x87\x01\n" +
+	"\rPoliciesEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12`\n" +
+	"\x05value\x18\x02 \x01(\v2J.google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicyR\x05value:\x028\x01:\x91\x01\xeaA\x8d\x01\n" +
+	"$storage.googleapis.com/ManagedFolder\x12Fprojects/{project}/buckets/{bucket}/managedFolders/{managed_folder=**}*\x0emanagedFolders2\rmanagedFolderB\x15\n" +
+	"\x13_rapid_cache_config\"\xc4\x02\n" +
 	"\x17GetManagedFolderRequest\x12@\n" +
 	"\x04name\x18\x06 \x01(\tB,\xe0A\x02\xfaA&\n" +
 	"$storage.googleapis.com/ManagedFolderR\x04name\x12;\n" +
@@ -6012,27 +7366,80 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x97\x01\n" +
 	"\x1aListManagedFoldersResponse\x12Q\n" +
 	"\x0fmanaged_folders\x18\x01 \x03(\v2(.google.storage.control.v2.ManagedFolderR\x0emanagedFolders\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xed\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa7\x03\n" +
+	"\x1aUpdateManagedFolderRequest\x12T\n" +
+	"\x0emanaged_folder\x18\x01 \x01(\v2(.google.storage.control.v2.ManagedFolderB\x03\xe0A\x02R\rmanagedFolder\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\x12@\n" +
+	"\x17if_metageneration_match\x18\x03 \x01(\x03B\x03\xe0A\x01H\x00R\x15ifMetagenerationMatch\x88\x01\x01\x12G\n" +
+	"\x1bif_metageneration_not_match\x18\x04 \x01(\x03B\x03\xe0A\x01H\x01R\x18ifMetagenerationNotMatch\x88\x01\x01\x12*\n" +
+	"\n" +
+	"request_id\x18\x05 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\x1a\n" +
+	"\x18_if_metageneration_matchB\x1e\n" +
+	"\x1c_if_metageneration_not_match\"\xb3\x03\n" +
 	"\x1bCreateAnywhereCacheMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12/\n" +
 	"\x11anywhere_cache_id\x18\x02 \x01(\tH\x00R\x0fanywhereCacheId\x88\x01\x01\x12\x17\n" +
 	"\x04zone\x18\x06 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
 	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x12.\n" +
-	"\x10admission_policy\x18\x05 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01B\x14\n" +
+	"\x10admission_policy\x18\x05 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01\x120\n" +
+	"\x0fingest_on_write\x18\a \x01(\bB\x03\xe0A\x01H\x04R\ringestOnWrite\x88\x01\x01B\x14\n" +
 	"\x12_anywhere_cache_idB\a\n" +
 	"\x05_zoneB\x06\n" +
 	"\x04_ttlB\x13\n" +
-	"\x11_admission_policy\"\xed\x02\n" +
+	"\x11_admission_policyB\x12\n" +
+	"\x10_ingest_on_write\"\xdf\x03\n" +
+	"\x18CreateRapidCacheMetadata\x12f\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12)\n" +
+	"\x0erapid_cache_id\x18\x02 \x01(\tH\x00R\frapidCacheId\x88\x01\x01\x12\x17\n" +
+	"\x04zone\x18\x03 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
+	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x12.\n" +
+	"\x10admission_policy\x18\x05 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01\x120\n" +
+	"\x0fingest_on_write\x18\x06 \x01(\bB\x03\xe0A\x01H\x04R\ringestOnWrite\x88\x01\x01\x12'\n" +
+	"\n" +
+	"cache_type\x18\a \x01(\tB\x03\xe0A\x01H\x05R\tcacheType\x88\x01\x01B\x11\n" +
+	"\x0f_rapid_cache_idB\a\n" +
+	"\x05_zoneB\x06\n" +
+	"\x04_ttlB\x13\n" +
+	"\x11_admission_policyB\x12\n" +
+	"\x10_ingest_on_writeB\r\n" +
+	"\v_cache_type\"\xb3\x03\n" +
 	"\x1bUpdateAnywhereCacheMetadata\x12f\n" +
 	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12/\n" +
 	"\x11anywhere_cache_id\x18\x02 \x01(\tH\x00R\x0fanywhereCacheId\x88\x01\x01\x12\x17\n" +
 	"\x04zone\x18\x05 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
-	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x12.\n" +
-	"\x10admission_policy\x18\x04 \x01(\tH\x03R\x0fadmissionPolicy\x88\x01\x01B\x14\n" +
+	"\x03ttl\x18\x03 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x123\n" +
+	"\x10admission_policy\x18\x04 \x01(\tB\x03\xe0A\x01H\x03R\x0fadmissionPolicy\x88\x01\x01\x12+\n" +
+	"\x0fingest_on_write\x18\x06 \x01(\bH\x04R\ringestOnWrite\x88\x01\x01B\x14\n" +
 	"\x12_anywhere_cache_idB\a\n" +
 	"\x05_zoneB\x06\n" +
 	"\x04_ttlB\x13\n" +
-	"\x11_admission_policy\"\xf5\x03\n" +
+	"\x11_admission_policyB\x12\n" +
+	"\x10_ingest_on_write\"\xdf\x03\n" +
+	"\x18UpdateRapidCacheMetadata\x12f\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12)\n" +
+	"\x0erapid_cache_id\x18\x02 \x01(\tH\x00R\frapidCacheId\x88\x01\x01\x12\x17\n" +
+	"\x04zone\x18\x03 \x01(\tH\x01R\x04zone\x88\x01\x01\x120\n" +
+	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationH\x02R\x03ttl\x88\x01\x01\x123\n" +
+	"\x10admission_policy\x18\x05 \x01(\tB\x03\xe0A\x01H\x03R\x0fadmissionPolicy\x88\x01\x01\x12+\n" +
+	"\x0fingest_on_write\x18\x06 \x01(\bH\x04R\ringestOnWrite\x88\x01\x01\x12'\n" +
+	"\n" +
+	"cache_type\x18\a \x01(\tB\x03\xe0A\x01H\x05R\tcacheType\x88\x01\x01B\x11\n" +
+	"\x0f_rapid_cache_idB\a\n" +
+	"\x05_zoneB\x06\n" +
+	"\x04_ttlB\x13\n" +
+	"\x11_admission_policyB\x12\n" +
+	"\x10_ingest_on_writeB\r\n" +
+	"\v_cache_type\"\x9b\x02\n" +
+	"\x19DisableRapidCacheMetadata\x12f\n" +
+	"\x0fcommon_metadata\x18\x01 \x01(\v2=.google.storage.control.v2.CommonLongRunningOperationMetadataR\x0ecommonMetadata\x12)\n" +
+	"\x0erapid_cache_id\x18\x02 \x01(\tH\x00R\frapidCacheId\x88\x01\x01\x12\x17\n" +
+	"\x04zone\x18\x03 \x01(\tH\x01R\x04zone\x88\x01\x01\x12'\n" +
+	"\n" +
+	"cache_type\x18\x04 \x01(\tB\x03\xe0A\x01H\x02R\tcacheType\x88\x01\x01B\x11\n" +
+	"\x0f_rapid_cache_idB\a\n" +
+	"\x05_zoneB\r\n" +
+	"\v_cache_type\"\xbb\x04\n" +
 	"\rAnywhereCache\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x17\n" +
 	"\x04zone\x18\n" +
@@ -6044,8 +7451,10 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"updateTime\x12*\n" +
-	"\x0epending_update\x18\b \x01(\bB\x03\xe0A\x03R\rpendingUpdate:\x8e\x01\xeaA\x8a\x01\n" +
-	"$storage.googleapis.com/AnywhereCache\x12Cprojects/{project}/buckets/{bucket}/anywhereCaches/{anywhere_cache}*\x0eanywhereCaches2\ranywhereCache\"\xe4\x01\n" +
+	"\x0epending_update\x18\b \x01(\bB\x03\xe0A\x03R\rpendingUpdate\x120\n" +
+	"\x0fingest_on_write\x18\v \x01(\bB\x03\xe0A\x01H\x00R\ringestOnWrite\x88\x01\x01:\x8e\x01\xeaA\x8a\x01\n" +
+	"$storage.googleapis.com/AnywhereCache\x12Cprojects/{project}/buckets/{bucket}/anywhereCaches/{anywhere_cache}*\x0eanywhereCaches2\ranywhereCacheB\x12\n" +
+	"\x10_ingest_on_write\"\xe4\x01\n" +
 	"\x1aCreateAnywhereCacheRequest\x12D\n" +
 	"\x06parent\x18\x01 \x01(\tB,\xe0A\x02\xfaA&\x12$storage.googleapis.com/AnywhereCacheR\x06parent\x12T\n" +
 	"\x0eanywhere_cache\x18\x03 \x01(\v2(.google.storage.control.v2.AnywhereCacheB\x03\xe0A\x02R\ranywhereCache\x12*\n" +
@@ -6086,7 +7495,56 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x97\x01\n" +
 	"\x1aListAnywhereCachesResponse\x12Q\n" +
 	"\x0fanywhere_caches\x18\x01 \x03(\v2(.google.storage.control.v2.AnywhereCacheR\x0eanywhereCaches\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xad\x10\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\x85\x04\n" +
+	"\n" +
+	"RapidCache\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x05R\x04name\x12\x17\n" +
+	"\x04zone\x18\x02 \x01(\tB\x03\xe0A\x05R\x04zone\x12\"\n" +
+	"\n" +
+	"cache_type\x18\x03 \x01(\tB\x03\xe0A\x05R\tcacheType\x12+\n" +
+	"\x03ttl\x18\x04 \x01(\v2\x19.google.protobuf.DurationR\x03ttl\x12)\n" +
+	"\x10admission_policy\x18\x05 \x01(\tR\x0fadmissionPolicy\x12\x19\n" +
+	"\x05state\x18\x06 \x01(\tB\x03\xe0A\x03R\x05state\x12@\n" +
+	"\vcreate_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"createTime\x12@\n" +
+	"\vupdate_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
+	"updateTime\x12*\n" +
+	"\x0epending_update\x18\t \x01(\bB\x03\xe0A\x03R\rpendingUpdate:~\xeaA{\n" +
+	"!storage.googleapis.com/RapidCache\x12=projects/{project}/buckets/{bucket}/rapidCaches/{rapid_cache}*\vrapidCaches2\n" +
+	"rapidCache\"\xd5\x01\n" +
+	"\x17CreateRapidCacheRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!storage.googleapis.com/RapidCacheR\x06parent\x12K\n" +
+	"\vrapid_cache\x18\x02 \x01(\v2%.google.storage.control.v2.RapidCacheB\x03\xe0A\x02R\n" +
+	"rapidCache\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xd4\x01\n" +
+	"\x17UpdateRapidCacheRequest\x12K\n" +
+	"\vrapid_cache\x18\x01 \x01(\v2%.google.storage.control.v2.RapidCacheB\x03\xe0A\x02R\n" +
+	"rapidCache\x12@\n" +
+	"\vupdate_mask\x18\x02 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
+	"updateMask\x12*\n" +
+	"\n" +
+	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x85\x01\n" +
+	"\x18DisableRapidCacheRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!storage.googleapis.com/RapidCacheR\x04name\x12*\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x81\x01\n" +
+	"\x14GetRapidCacheRequest\x12=\n" +
+	"\x04name\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!storage.googleapis.com/RapidCacheR\x04name\x12*\n" +
+	"\n" +
+	"request_id\x18\x02 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\xc3\x01\n" +
+	"\x16ListRapidCachesRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\x12!storage.googleapis.com/RapidCacheR\x06parent\x12\x1b\n" +
+	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
+	"\n" +
+	"page_token\x18\x03 \x01(\tR\tpageToken\x12*\n" +
+	"\n" +
+	"request_id\x18\x04 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestId\"\x8b\x01\n" +
+	"\x17ListRapidCachesResponse\x12H\n" +
+	"\frapid_caches\x18\x01 \x03(\v2%.google.storage.control.v2.RapidCacheR\vrapidCaches\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x10\n" +
 	"\x12IntelligenceConfig\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12g\n" +
 	"\x0eedition_config\x18\x02 \x01(\x0e2;.google.storage.control.v2.IntelligenceConfig.EditionConfigB\x03\xe0A\x01R\reditionConfig\x12@\n" +
@@ -6115,13 +7573,15 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\bSTANDARD\x10\x02\x1aO\n" +
 	"\vTrialConfig\x12@\n" +
 	"\vexpire_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"expireTime\"c\n" +
+	"expireTime\"s\n" +
 	"\rEditionConfig\x12\x1e\n" +
 	"\x1aEDITION_CONFIG_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aINHERIT\x10\x01\x12\f\n" +
 	"\bDISABLED\x10\x02\x12\f\n" +
 	"\bSTANDARD\x10\x03\x12\t\n" +
-	"\x05TRIAL\x10\x05:\x8b\x02\xeaA\x87\x02\n" +
+	"\x05TRIAL\x10\x05\x12\x0e\n" +
+	"\n" +
+	"ESSENTIALS\x10\x06:\x8b\x02\xeaA\x87\x02\n" +
 	")storage.googleapis.com/IntelligenceConfig\x128folders/{folder}/locations/{location}/intelligenceConfig\x12;organizations/{org}/locations/{location}/intelligenceConfig\x12:projects/{project}/locations/{location}/intelligenceConfig*\x13intelligenceConfigs2\x12intelligenceConfig\"\x80\x02\n" +
 	"+UpdateOrganizationIntelligenceConfigRequest\x12c\n" +
 	"\x13intelligence_config\x18\x01 \x01(\v2-.google.storage.control.v2.IntelligenceConfigB\x03\xe0A\x02R\x12intelligenceConfig\x12@\n" +
@@ -6240,7 +7700,7 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"*storage.googleapis.com/IntelligenceFinding\x12Sprojects/{project}/locations/{location}/intelligenceFindings/{intelligence_finding}*\x14intelligenceFindings2\x13intelligenceFindingB\x1e\n" +
 	"\x1cintelligence_finding_details\"\xa9\x03\n" +
 	"\x1bIntelligenceFindingRevision\x12\x17\n" +
-	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12O\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x03R\x04name\x12O\n" +
 	"\bsnapshot\x18\x02 \x01(\v2..google.storage.control.v2.IntelligenceFindingB\x03\xe0A\x03R\bsnapshot\x12@\n" +
 	"\vcreate_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime:\xdd\x01\xeaA\xd9\x01\n" +
@@ -6282,7 +7742,7 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\"\xd0\x01\n" +
 	"(ListIntelligenceFindingRevisionsResponse\x12|\n" +
 	"\x1eintelligence_finding_revisions\x18\x01 \x03(\v26.google.storage.control.v2.IntelligenceFindingRevisionR\x1cintelligenceFindingRevisions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbf\x06\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xba\x06\n" +
 	"\x0eFindingSummary\x12?\n" +
 	"\x04type\x18\x01 \x01(\x0e2&.google.storage.control.v2.FindingTypeB\x03\xe0A\x03R\x04type\x12K\n" +
 	"\bcategory\x18\x02 \x01(\x0e2*.google.storage.control.v2.FindingCategoryB\x03\xe0A\x03R\bcategory\x12,\n" +
@@ -6290,8 +7750,8 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\vcreate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
 	"createTime\x12@\n" +
 	"\vupdate_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
-	"updateTime\x12K\n" +
-	"\bseverity\x18\a \x01(\x0e2*.google.storage.control.v2.FindingSeverityB\x03\xe0A\x03R\bseverity\x12f\n" +
+	"updateTime\x12F\n" +
+	"\bseverity\x18\a \x01(\x0e2*.google.storage.control.v2.FindingSeverityR\bseverity\x12f\n" +
 	"\x0fsummary_details\x18\b \x03(\v28.google.storage.control.v2.FindingSummary.SummaryDetailsB\x03\xe0A\x03R\x0esummaryDetails\x1a\xb7\x02\n" +
 	"\x0eSummaryDetails\x12\x16\n" +
 	"\x05count\x18\x01 \x01(\x03H\x00R\x05count\x12 \n" +
@@ -6305,7 +7765,30 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\aPROJECT\x10\x01\x12\n" +
 	"\n" +
 	"\x06BUCKET\x10\x02B\v\n" +
-	"\tmagnitude*\xef\x01\n" +
+	"\tmagnitude\"\xed\x02\n" +
+	"\x11ObjectFullContext\x12E\n" +
+	"\x04type\x18\x01 \x01(\x0e21.google.storage.control.v2.ObjectFullContext.TypeR\x04type\x12\x10\n" +
+	"\x03key\x18\x02 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x03 \x01(\tR\x05value\x12;\n" +
+	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"createTime\x12;\n" +
+	"\vupdate_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"updateTime\x129\n" +
+	"\rextended_data\x18\x06 \x01(\v2\x14.google.protobuf.AnyR\fextendedData\"4\n" +
+	"\x04Type\x12\x14\n" +
+	"\x10TYPE_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06CUSTOM\x10\x01\x12\n" +
+	"\n" +
+	"\x06GOOGLE\x10\x02\"\xa4\x01\n" +
+	"\x1cViewObjectFullContextRequest\x12#\n" +
+	"\n" +
+	"generation\x18\x03 \x01(\x03B\x03\xe0A\x01R\n" +
+	"generation\x12$\n" +
+	"\vcontext_key\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
+	"contextKey\x129\n" +
+	"\x04name\x18\x05 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
+	"\x1dstorage.googleapis.com/ObjectR\x04name*\xef\x01\n" +
 	"\vFindingType\x12\x1c\n" +
 	"\x18FINDING_TYPE_UNSPECIFIED\x10\x00\x12?\n" +
 	";FINDING_TYPE_COLDLINE_AND_ARCHIVAL_STORAGE_OPERATIONS_SPIKE\x10\x01\x12(\n" +
@@ -6318,23 +7801,23 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\x1cFINDING_CATEGORY_PERFORMANCE\x10\x02*R\n" +
 	"\x0fFindingSeverity\x12 \n" +
 	"\x1cFINDING_SEVERITY_UNSPECIFIED\x10\x00\x12\x1d\n" +
-	"\x19FINDING_SEVERITY_CRITICAL\x10\x012\x847\n" +
-	"\x0eStorageControl\x12\x9a\x01\n" +
-	"\fCreateFolder\x12..google.storage.control.v2.CreateFolderRequest\x1a!.google.storage.control.v2.Folder\"7\xdaA\x17parent,folder,folder_id\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
-	"\x06parent\x12\v{bucket=**}\x12\x8f\x01\n" +
-	"\fDeleteFolder\x12..google.storage.control.v2.DeleteFolderRequest\x1a\x16.google.protobuf.Empty\"7\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
-	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\x94\x01\n" +
-	"\tGetFolder\x12+.google.storage.control.v2.GetFolderRequest\x1a!.google.storage.control.v2.Folder\"7\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
-	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\x94\x01\n" +
-	"\vListFolders\x12-.google.storage.control.v2.ListFoldersRequest\x1a..google.storage.control.v2.ListFoldersResponse\"&\xdaA\x06parent\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
-	"\x06parent\x12\v{bucket=**}\x12\xcd\x01\n" +
-	"\fRenameFolder\x12..google.storage.control.v2.RenameFolderRequest\x1a\x1d.google.longrunning.Operation\"n\xcaA\x1e\n" +
-	"\x06Folder\x12\x14RenameFolderMetadata\xdaA\x1aname,destination_folder_id\x8a\xd3\xe4\x93\x02*\x12(\n" +
-	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xe1\x01\n" +
-	"\x15DeleteFolderRecursive\x127.google.storage.control.v2.DeleteFolderRecursiveRequest\x1a\x1d.google.longrunning.Operation\"p\xcaA6\n" +
-	"\x15google.protobuf.Empty\x12\x1dDeleteFolderRecursiveMetadata\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
-	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xa9\x01\n" +
-	"\x10GetStorageLayout\x122.google.storage.control.v2.GetStorageLayoutRequest\x1a(.google.storage.control.v2.StorageLayout\"7\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x19FINDING_SEVERITY_CRITICAL\x10\x012\xc9E\n" +
+	"\x0eStorageControl\x12\xd3\x01\n" +
+	"\fCreateFolder\x12..google.storage.control.v2.CreateFolderRequest\x1a!.google.storage.control.v2.Folder\"p\xdaA\x17parent,folder,folder_id\x82\xd3\xe4\x93\x023:\x06folder\")/v2/{parent=projects/*/buckets/*}/folders\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
+	"\x06parent\x12\v{bucket=**}\x12\xc1\x01\n" +
+	"\fDeleteFolder\x12..google.storage.control.v2.DeleteFolderRequest\x1a\x16.google.protobuf.Empty\"i\xdaA\x04name\x82\xd3\xe4\x93\x02,**/v2/{name=projects/*/buckets/*/folders/**}\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xc6\x01\n" +
+	"\tGetFolder\x12+.google.storage.control.v2.GetFolderRequest\x1a!.google.storage.control.v2.Folder\"i\xdaA\x04name\x82\xd3\xe4\x93\x02,\x12*/v2/{name=projects/*/buckets/*/folders/**}\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xc5\x01\n" +
+	"\vListFolders\x12-.google.storage.control.v2.ListFoldersRequest\x1a..google.storage.control.v2.ListFoldersResponse\"W\xdaA\x06parent\x82\xd3\xe4\x93\x02+\x12)/v2/{parent=projects/*/buckets/*}/folders\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
+	"\x06parent\x12\v{bucket=**}\x12\x8a\x02\n" +
+	"\fRenameFolder\x12..google.storage.control.v2.RenameFolderRequest\x1a\x1d.google.longrunning.Operation\"\xaa\x01\xcaA\x1e\n" +
+	"\x06Folder\x12\x14RenameFolderMetadata\xdaA\x1aname,destination_folder_id\x82\xd3\xe4\x93\x026:\x01*\"1/v2/{name=projects/*/buckets/*/folders/**}:rename\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xa7\x02\n" +
+	"\x15DeleteFolderRecursive\x127.google.storage.control.v2.DeleteFolderRecursiveRequest\x1a\x1d.google.longrunning.Operation\"\xb5\x01\xcaA6\n" +
+	"\x15google.protobuf.Empty\x12\x1dDeleteFolderRecursiveMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02?:\x01*\":/v2/{name=projects/*/buckets/*/folders/**}:deleteRecursive\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xde\x01\n" +
+	"\x10GetStorageLayout\x122.google.storage.control.v2.GetStorageLayoutRequest\x1a(.google.storage.control.v2.StorageLayout\"l\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v2/{name=projects/*/buckets/*/storageLayout}\x8a\xd3\xe4\x93\x02*\x12(\n" +
 	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xbf\x01\n" +
 	"\x13CreateManagedFolder\x125.google.storage.control.v2.CreateManagedFolderRequest\x1a(.google.storage.control.v2.ManagedFolder\"G\xdaA'parent,managed_folder,managed_folder_id\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
 	"\x06parent\x12\v{bucket=**}\x12\x9d\x01\n" +
@@ -6343,7 +7826,9 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\x10GetManagedFolder\x122.google.storage.control.v2.GetManagedFolderRequest\x1a(.google.storage.control.v2.ManagedFolder\"7\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
 	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xa9\x01\n" +
 	"\x12ListManagedFolders\x124.google.storage.control.v2.ListManagedFoldersRequest\x1a5.google.storage.control.v2.ListManagedFoldersResponse\"&\xdaA\x06parent\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
-	"\x06parent\x12\v{bucket=**}\x12\xd1\x01\n" +
+	"\x06parent\x12\v{bucket=**}\x12\xd4\x01\n" +
+	"\x13UpdateManagedFolder\x125.google.storage.control.v2.UpdateManagedFolderRequest\x1a(.google.storage.control.v2.ManagedFolder\"\\\xdaA\x1amanaged_folder,update_mask\x8a\xd3\xe4\x93\x029\x127\n" +
+	"\x13managed_folder.name\x12 {bucket=projects/*/buckets/*}/**\x12\xd1\x01\n" +
 	"\x13CreateAnywhereCache\x125.google.storage.control.v2.CreateAnywhereCacheRequest\x1a\x1d.google.longrunning.Operation\"d\xcaA,\n" +
 	"\rAnywhereCache\x12\x1bCreateAnywhereCacheMetadata\xdaA\x15parent,anywhere_cache\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
 	"\x06parent\x12\v{bucket=**}\x12\xf9\x01\n" +
@@ -6359,6 +7844,22 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\x10GetAnywhereCache\x122.google.storage.control.v2.GetAnywhereCacheRequest\x1a(.google.storage.control.v2.AnywhereCache\"7\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
 	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xa9\x01\n" +
 	"\x12ListAnywhereCaches\x124.google.storage.control.v2.ListAnywhereCachesRequest\x1a5.google.storage.control.v2.ListAnywhereCachesResponse\"&\xdaA\x06parent\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
+	"\x06parent\x12\v{bucket=**}\x12\xc2\x01\n" +
+	"\x10CreateRapidCache\x122.google.storage.control.v2.CreateRapidCacheRequest\x1a\x1d.google.longrunning.Operation\"[\xcaA&\n" +
+	"\n" +
+	"RapidCache\x12\x18CreateRapidCacheMetadata\xdaA\x12parent,rapid_cache\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
+	"\x06parent\x12\v{bucket=**}\x12\xe6\x01\n" +
+	"\x10UpdateRapidCache\x122.google.storage.control.v2.UpdateRapidCacheRequest\x1a\x1d.google.longrunning.Operation\"\x7f\xcaA&\n" +
+	"\n" +
+	"RapidCache\x12\x18UpdateRapidCacheMetadata\xdaA\x17rapid_cache,update_mask\x8a\xd3\xe4\x93\x026\x124\n" +
+	"\x10rapid_cache.name\x12 {bucket=projects/*/buckets/*}/**\x12\xca\x01\n" +
+	"\x11DisableRapidCache\x123.google.storage.control.v2.DisableRapidCacheRequest\x1a\x1d.google.longrunning.Operation\"a\xcaA'\n" +
+	"\n" +
+	"RapidCache\x12\x19DisableRapidCacheMetadata\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xa0\x01\n" +
+	"\rGetRapidCache\x12/.google.storage.control.v2.GetRapidCacheRequest\x1a%.google.storage.control.v2.RapidCache\"7\xdaA\x04name\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x12\xa0\x01\n" +
+	"\x0fListRapidCaches\x121.google.storage.control.v2.ListRapidCachesRequest\x1a2.google.storage.control.v2.ListRapidCachesResponse\"&\xdaA\x06parent\x8a\xd3\xe4\x93\x02\x17\x12\x15\n" +
 	"\x06parent\x12\v{bucket=**}\x12\xd2\x01\n" +
 	"\x1cGetProjectIntelligenceConfig\x12>.google.storage.control.v2.GetProjectIntelligenceConfigRequest\x1a-.google.storage.control.v2.IntelligenceConfig\"C\xdaA\x04name\x82\xd3\xe4\x93\x026\x124/v2/{name=projects/*/locations/*/intelligenceConfig}\x12\x9d\x02\n" +
 	"\x1fUpdateProjectIntelligenceConfig\x12A.google.storage.control.v2.UpdateProjectIntelligenceConfigRequest\x1a-.google.storage.control.v2.IntelligenceConfig\"\x87\x01\xdaA\x1fintelligence_config,update_mask\x82\xd3\xe4\x93\x02_:\x13intelligence_config2H/v2/{intelligence_config.name=projects/*/locations/*/intelligenceConfig}\x12\xcf\x01\n" +
@@ -6380,8 +7881,11 @@ const file_google_storage_control_v2_storage_control_proto_rawDesc = "" +
 	"\x18ListIntelligenceFindings\x12:.google.storage.control.v2.ListIntelligenceFindingsRequest\x1a;.google.storage.control.v2.ListIntelligenceFindingsResponse\"I\xdaA\x06parent\x82\xd3\xe4\x93\x02:\x128/v2/{parent=projects/*/locations/*}/intelligenceFindings\x12\x89\x03\n" +
 	"\x1dSummarizeIntelligenceFindings\x12?.google.storage.control.v2.SummarizeIntelligenceFindingsRequest\x1a@.google.storage.control.v2.SummarizeIntelligenceFindingsResponse\"\xe4\x01\xdaA\x06parent\x82\xd3\xe4\x93\x02\xd4\x01ZC\x12A/v2/{parent=folders/*/locations/*}/intelligenceFindings:summarizeZI\x12G/v2/{parent=organizations/*/locations/*}/intelligenceFindings:summarize\x12B/v2/{parent=projects/*/locations/*}/intelligenceFindings:summarize\x12\xef\x01\n" +
 	"\x1eGetIntelligenceFindingRevision\x12@.google.storage.control.v2.GetIntelligenceFindingRevisionRequest\x1a6.google.storage.control.v2.IntelligenceFindingRevision\"S\xdaA\x04name\x82\xd3\xe4\x93\x02F\x12D/v2/{name=projects/*/locations/*/intelligenceFindings/*/revisions/*}\x12\x82\x02\n" +
-	" ListIntelligenceFindingRevisions\x12B.google.storage.control.v2.ListIntelligenceFindingRevisionsRequest\x1aC.google.storage.control.v2.ListIntelligenceFindingRevisionsResponse\"U\xdaA\x06parent\x82\xd3\xe4\x93\x02F\x12D/v2/{parent=projects/*/locations/*/intelligenceFindings/*}/revisions\x1a\xa7\x02\xcaA\x16storage.googleapis.com\xd2A\x8a\x02https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only,https://www.googleapis.com/auth/devstorage.full_control,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/devstorage.read_writeB\xa6\x02\xeaAD\n" +
-	"\x1dstorage.googleapis.com/Bucket\x12#projects/{project}/buckets/{bucket}\n" +
+	" ListIntelligenceFindingRevisions\x12B.google.storage.control.v2.ListIntelligenceFindingRevisionsRequest\x1aC.google.storage.control.v2.ListIntelligenceFindingRevisionsResponse\"U\xdaA\x06parent\x82\xd3\xe4\x93\x02F\x12D/v2/{parent=projects/*/locations/*/intelligenceFindings/*}/revisions\x12\xa4\x02\n" +
+	"\x15ViewObjectFullContext\x127.google.storage.control.v2.ViewObjectFullContextRequest\x1a,.google.storage.control.v2.ObjectFullContext\"\xa3\x01\xdaA\x10name,context_key\xdaA\x1bname,generation,context_key\x82\xd3\xe4\x93\x02<\x12:/v2/{name=projects/*/buckets/*/objects/**}:viewFullContext\x8a\xd3\xe4\x93\x02*\x12(\n" +
+	"\x04name\x12 {bucket=projects/*/buckets/*}/**\x1a\xa7\x02\xcaA\x16storage.googleapis.com\xd2A\x8a\x02https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/cloud-platform.read-only,https://www.googleapis.com/auth/devstorage.full_control,https://www.googleapis.com/auth/devstorage.read_only,https://www.googleapis.com/auth/devstorage.read_writeB\xfe\x02\xeaAD\n" +
+	"\x1dstorage.googleapis.com/Bucket\x12#projects/{project}/buckets/{bucket}\xeaAU\n" +
+	"\x1dstorage.googleapis.com/Object\x124projects/{project}/buckets/{bucket}/objects/{object}\n" +
 	"\x1dcom.google.storage.control.v2B\x13StorageControlProtoP\x01Z=cloud.google.com/go/storage/control/apiv2/controlpb;controlpb\xaa\x02\x1fGoogle.Cloud.Storage.Control.V2\xca\x02\x1fGoogle\\Cloud\\Storage\\Control\\V2\xea\x02#Google::Cloud::Storage::Control::V2b\x06proto3"
 
 var (
@@ -6396,251 +7900,308 @@ func file_google_storage_control_v2_storage_control_proto_rawDescGZIP() []byte {
 	return file_google_storage_control_v2_storage_control_proto_rawDescData
 }
 
-var file_google_storage_control_v2_storage_control_proto_enumTypes = make([]protoimpl.EnumInfo, 7)
-var file_google_storage_control_v2_storage_control_proto_msgTypes = make([]protoimpl.MessageInfo, 71)
+var file_google_storage_control_v2_storage_control_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_storage_control_v2_storage_control_proto_msgTypes = make([]protoimpl.MessageInfo, 88)
 var file_google_storage_control_v2_storage_control_proto_goTypes = []any{
-	(FindingType)(0),                      // 0: google.storage.control.v2.FindingType
-	(FindingCategory)(0),                  // 1: google.storage.control.v2.FindingCategory
-	(FindingSeverity)(0),                  // 2: google.storage.control.v2.FindingSeverity
-	(IntelligenceConfig_EditionConfig)(0), // 3: google.storage.control.v2.IntelligenceConfig.EditionConfig
-	(IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition)(0),                     // 4: google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.EffectiveEdition
-	(SummarizeIntelligenceFindingsRequest_ResourceScope)(0),                                  // 5: google.storage.control.v2.SummarizeIntelligenceFindingsRequest.ResourceScope
-	(FindingSummary_SummaryDetails_ResourceType)(0),                                          // 6: google.storage.control.v2.FindingSummary.SummaryDetails.ResourceType
-	(*PendingRenameInfo)(nil),                                                                // 7: google.storage.control.v2.PendingRenameInfo
-	(*Folder)(nil),                                                                           // 8: google.storage.control.v2.Folder
-	(*GetFolderRequest)(nil),                                                                 // 9: google.storage.control.v2.GetFolderRequest
-	(*CreateFolderRequest)(nil),                                                              // 10: google.storage.control.v2.CreateFolderRequest
-	(*DeleteFolderRequest)(nil),                                                              // 11: google.storage.control.v2.DeleteFolderRequest
-	(*ListFoldersRequest)(nil),                                                               // 12: google.storage.control.v2.ListFoldersRequest
-	(*ListFoldersResponse)(nil),                                                              // 13: google.storage.control.v2.ListFoldersResponse
-	(*RenameFolderRequest)(nil),                                                              // 14: google.storage.control.v2.RenameFolderRequest
-	(*DeleteFolderRecursiveRequest)(nil),                                                     // 15: google.storage.control.v2.DeleteFolderRecursiveRequest
-	(*CommonLongRunningOperationMetadata)(nil),                                               // 16: google.storage.control.v2.CommonLongRunningOperationMetadata
-	(*RenameFolderMetadata)(nil),                                                             // 17: google.storage.control.v2.RenameFolderMetadata
-	(*DeleteFolderRecursiveMetadata)(nil),                                                    // 18: google.storage.control.v2.DeleteFolderRecursiveMetadata
-	(*StorageLayout)(nil),                                                                    // 19: google.storage.control.v2.StorageLayout
-	(*GetStorageLayoutRequest)(nil),                                                          // 20: google.storage.control.v2.GetStorageLayoutRequest
-	(*ManagedFolder)(nil),                                                                    // 21: google.storage.control.v2.ManagedFolder
-	(*GetManagedFolderRequest)(nil),                                                          // 22: google.storage.control.v2.GetManagedFolderRequest
-	(*CreateManagedFolderRequest)(nil),                                                       // 23: google.storage.control.v2.CreateManagedFolderRequest
-	(*DeleteManagedFolderRequest)(nil),                                                       // 24: google.storage.control.v2.DeleteManagedFolderRequest
-	(*ListManagedFoldersRequest)(nil),                                                        // 25: google.storage.control.v2.ListManagedFoldersRequest
-	(*ListManagedFoldersResponse)(nil),                                                       // 26: google.storage.control.v2.ListManagedFoldersResponse
-	(*CreateAnywhereCacheMetadata)(nil),                                                      // 27: google.storage.control.v2.CreateAnywhereCacheMetadata
-	(*UpdateAnywhereCacheMetadata)(nil),                                                      // 28: google.storage.control.v2.UpdateAnywhereCacheMetadata
-	(*AnywhereCache)(nil),                                                                    // 29: google.storage.control.v2.AnywhereCache
-	(*CreateAnywhereCacheRequest)(nil),                                                       // 30: google.storage.control.v2.CreateAnywhereCacheRequest
-	(*UpdateAnywhereCacheRequest)(nil),                                                       // 31: google.storage.control.v2.UpdateAnywhereCacheRequest
-	(*DisableAnywhereCacheRequest)(nil),                                                      // 32: google.storage.control.v2.DisableAnywhereCacheRequest
-	(*PauseAnywhereCacheRequest)(nil),                                                        // 33: google.storage.control.v2.PauseAnywhereCacheRequest
-	(*ResumeAnywhereCacheRequest)(nil),                                                       // 34: google.storage.control.v2.ResumeAnywhereCacheRequest
-	(*GetAnywhereCacheRequest)(nil),                                                          // 35: google.storage.control.v2.GetAnywhereCacheRequest
-	(*ListAnywhereCachesRequest)(nil),                                                        // 36: google.storage.control.v2.ListAnywhereCachesRequest
-	(*ListAnywhereCachesResponse)(nil),                                                       // 37: google.storage.control.v2.ListAnywhereCachesResponse
-	(*IntelligenceConfig)(nil),                                                               // 38: google.storage.control.v2.IntelligenceConfig
-	(*UpdateOrganizationIntelligenceConfigRequest)(nil),                                      // 39: google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest
-	(*UpdateFolderIntelligenceConfigRequest)(nil),                                            // 40: google.storage.control.v2.UpdateFolderIntelligenceConfigRequest
-	(*UpdateProjectIntelligenceConfigRequest)(nil),                                           // 41: google.storage.control.v2.UpdateProjectIntelligenceConfigRequest
-	(*GetOrganizationIntelligenceConfigRequest)(nil),                                         // 42: google.storage.control.v2.GetOrganizationIntelligenceConfigRequest
-	(*GetFolderIntelligenceConfigRequest)(nil),                                               // 43: google.storage.control.v2.GetFolderIntelligenceConfigRequest
-	(*GetProjectIntelligenceConfigRequest)(nil),                                              // 44: google.storage.control.v2.GetProjectIntelligenceConfigRequest
-	(*IntelligenceFinding)(nil),                                                              // 45: google.storage.control.v2.IntelligenceFinding
-	(*IntelligenceFindingRevision)(nil),                                                      // 46: google.storage.control.v2.IntelligenceFindingRevision
-	(*GetIntelligenceFindingRequest)(nil),                                                    // 47: google.storage.control.v2.GetIntelligenceFindingRequest
-	(*ListIntelligenceFindingsRequest)(nil),                                                  // 48: google.storage.control.v2.ListIntelligenceFindingsRequest
-	(*ListIntelligenceFindingsResponse)(nil),                                                 // 49: google.storage.control.v2.ListIntelligenceFindingsResponse
-	(*SummarizeIntelligenceFindingsRequest)(nil),                                             // 50: google.storage.control.v2.SummarizeIntelligenceFindingsRequest
-	(*SummarizeIntelligenceFindingsResponse)(nil),                                            // 51: google.storage.control.v2.SummarizeIntelligenceFindingsResponse
-	(*GetIntelligenceFindingRevisionRequest)(nil),                                            // 52: google.storage.control.v2.GetIntelligenceFindingRevisionRequest
-	(*ListIntelligenceFindingRevisionsRequest)(nil),                                          // 53: google.storage.control.v2.ListIntelligenceFindingRevisionsRequest
-	(*ListIntelligenceFindingRevisionsResponse)(nil),                                         // 54: google.storage.control.v2.ListIntelligenceFindingRevisionsResponse
-	(*FindingSummary)(nil),                                                                   // 55: google.storage.control.v2.FindingSummary
-	(*StorageLayout_CustomPlacementConfig)(nil),                                              // 56: google.storage.control.v2.StorageLayout.CustomPlacementConfig
-	(*StorageLayout_HierarchicalNamespace)(nil),                                              // 57: google.storage.control.v2.StorageLayout.HierarchicalNamespace
-	(*IntelligenceConfig_Filter)(nil),                                                        // 58: google.storage.control.v2.IntelligenceConfig.Filter
-	(*IntelligenceConfig_EffectiveIntelligenceConfig)(nil),                                   // 59: google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig
-	(*IntelligenceConfig_TrialConfig)(nil),                                                   // 60: google.storage.control.v2.IntelligenceConfig.TrialConfig
-	(*IntelligenceConfig_Filter_CloudStorageLocations)(nil),                                  // 61: google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocations
-	(*IntelligenceConfig_Filter_CloudStorageBuckets)(nil),                                    // 62: google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBuckets
-	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike)(nil),                    // 63: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike
-	(*IntelligenceFinding_CrossRegionEgressSpike)(nil),                                       // 64: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike
-	(*IntelligenceFinding_ThrottledRequestSpike)(nil),                                        // 65: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike
-	(*IntelligenceFinding_StorageGrowthAboveTrend)(nil),                                      // 66: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend
-	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution)(nil), // 67: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution
-	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution)(nil),                    // 68: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution
-	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution)(nil), // 69: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.PrefixContribution
-	(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution)(nil),                                                    // 70: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution
-	(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution)(nil),                                       // 71: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution
-	(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution)(nil),                    // 72: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.PrefixContribution
-	(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution)(nil),                                                     // 73: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution
-	(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution)(nil),                                        // 74: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution
-	(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution)(nil),                     // 75: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.PrefixContribution
-	(*IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution)(nil),                                                   // 76: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContribution
-	(*FindingSummary_SummaryDetails)(nil),                                                                                    // 77: google.storage.control.v2.FindingSummary.SummaryDetails
-	(*timestamppb.Timestamp)(nil),                                                                                            // 78: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),                                                                                              // 79: google.protobuf.Duration
-	(*fieldmaskpb.FieldMask)(nil),                                                                                            // 80: google.protobuf.FieldMask
-	(*interval.Interval)(nil),                                                                                                // 81: google.type.Interval
-	(*status.Status)(nil),                                                                                                    // 82: google.rpc.Status
-	(*iampb.GetIamPolicyRequest)(nil),                                                                                        // 83: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),                                                                                        // 84: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),                                                                                  // 85: google.iam.v1.TestIamPermissionsRequest
-	(*emptypb.Empty)(nil),                                                                                                    // 86: google.protobuf.Empty
-	(*longrunningpb.Operation)(nil),                                                                                          // 87: google.longrunning.Operation
-	(*iampb.Policy)(nil),                                                                                                     // 88: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil),                                                                                 // 89: google.iam.v1.TestIamPermissionsResponse
+	(FindingType)(0),     // 0: google.storage.control.v2.FindingType
+	(FindingCategory)(0), // 1: google.storage.control.v2.FindingCategory
+	(FindingSeverity)(0), // 2: google.storage.control.v2.FindingSeverity
+	(ManagedFolder_RapidCacheConfig_RapidCachePolicy_IngestOnWrite)(0),   // 3: google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy.IngestOnWrite
+	(IntelligenceConfig_EditionConfig)(0),                                // 4: google.storage.control.v2.IntelligenceConfig.EditionConfig
+	(IntelligenceConfig_EffectiveIntelligenceConfig_EffectiveEdition)(0), // 5: google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.EffectiveEdition
+	(SummarizeIntelligenceFindingsRequest_ResourceScope)(0),              // 6: google.storage.control.v2.SummarizeIntelligenceFindingsRequest.ResourceScope
+	(FindingSummary_SummaryDetails_ResourceType)(0),                      // 7: google.storage.control.v2.FindingSummary.SummaryDetails.ResourceType
+	(ObjectFullContext_Type)(0),                                          // 8: google.storage.control.v2.ObjectFullContext.Type
+	(*PendingRenameInfo)(nil),                                            // 9: google.storage.control.v2.PendingRenameInfo
+	(*Folder)(nil),                                                       // 10: google.storage.control.v2.Folder
+	(*GetFolderRequest)(nil),                                             // 11: google.storage.control.v2.GetFolderRequest
+	(*CreateFolderRequest)(nil),                                          // 12: google.storage.control.v2.CreateFolderRequest
+	(*DeleteFolderRequest)(nil),                                          // 13: google.storage.control.v2.DeleteFolderRequest
+	(*ListFoldersRequest)(nil),                                           // 14: google.storage.control.v2.ListFoldersRequest
+	(*ListFoldersResponse)(nil),                                          // 15: google.storage.control.v2.ListFoldersResponse
+	(*RenameFolderRequest)(nil),                                          // 16: google.storage.control.v2.RenameFolderRequest
+	(*DeleteFolderRecursiveRequest)(nil),                                 // 17: google.storage.control.v2.DeleteFolderRecursiveRequest
+	(*CommonLongRunningOperationMetadata)(nil),                           // 18: google.storage.control.v2.CommonLongRunningOperationMetadata
+	(*RenameFolderMetadata)(nil),                                         // 19: google.storage.control.v2.RenameFolderMetadata
+	(*DeleteFolderRecursiveMetadata)(nil),                                // 20: google.storage.control.v2.DeleteFolderRecursiveMetadata
+	(*StorageLayout)(nil),                                                // 21: google.storage.control.v2.StorageLayout
+	(*GetStorageLayoutRequest)(nil),                                      // 22: google.storage.control.v2.GetStorageLayoutRequest
+	(*ManagedFolder)(nil),                                                // 23: google.storage.control.v2.ManagedFolder
+	(*GetManagedFolderRequest)(nil),                                      // 24: google.storage.control.v2.GetManagedFolderRequest
+	(*CreateManagedFolderRequest)(nil),                                   // 25: google.storage.control.v2.CreateManagedFolderRequest
+	(*DeleteManagedFolderRequest)(nil),                                   // 26: google.storage.control.v2.DeleteManagedFolderRequest
+	(*ListManagedFoldersRequest)(nil),                                    // 27: google.storage.control.v2.ListManagedFoldersRequest
+	(*ListManagedFoldersResponse)(nil),                                   // 28: google.storage.control.v2.ListManagedFoldersResponse
+	(*UpdateManagedFolderRequest)(nil),                                   // 29: google.storage.control.v2.UpdateManagedFolderRequest
+	(*CreateAnywhereCacheMetadata)(nil),                                  // 30: google.storage.control.v2.CreateAnywhereCacheMetadata
+	(*CreateRapidCacheMetadata)(nil),                                     // 31: google.storage.control.v2.CreateRapidCacheMetadata
+	(*UpdateAnywhereCacheMetadata)(nil),                                  // 32: google.storage.control.v2.UpdateAnywhereCacheMetadata
+	(*UpdateRapidCacheMetadata)(nil),                                     // 33: google.storage.control.v2.UpdateRapidCacheMetadata
+	(*DisableRapidCacheMetadata)(nil),                                    // 34: google.storage.control.v2.DisableRapidCacheMetadata
+	(*AnywhereCache)(nil),                                                // 35: google.storage.control.v2.AnywhereCache
+	(*CreateAnywhereCacheRequest)(nil),                                   // 36: google.storage.control.v2.CreateAnywhereCacheRequest
+	(*UpdateAnywhereCacheRequest)(nil),                                   // 37: google.storage.control.v2.UpdateAnywhereCacheRequest
+	(*DisableAnywhereCacheRequest)(nil),                                  // 38: google.storage.control.v2.DisableAnywhereCacheRequest
+	(*PauseAnywhereCacheRequest)(nil),                                    // 39: google.storage.control.v2.PauseAnywhereCacheRequest
+	(*ResumeAnywhereCacheRequest)(nil),                                   // 40: google.storage.control.v2.ResumeAnywhereCacheRequest
+	(*GetAnywhereCacheRequest)(nil),                                      // 41: google.storage.control.v2.GetAnywhereCacheRequest
+	(*ListAnywhereCachesRequest)(nil),                                    // 42: google.storage.control.v2.ListAnywhereCachesRequest
+	(*ListAnywhereCachesResponse)(nil),                                   // 43: google.storage.control.v2.ListAnywhereCachesResponse
+	(*RapidCache)(nil),                                                   // 44: google.storage.control.v2.RapidCache
+	(*CreateRapidCacheRequest)(nil),                                      // 45: google.storage.control.v2.CreateRapidCacheRequest
+	(*UpdateRapidCacheRequest)(nil),                                      // 46: google.storage.control.v2.UpdateRapidCacheRequest
+	(*DisableRapidCacheRequest)(nil),                                     // 47: google.storage.control.v2.DisableRapidCacheRequest
+	(*GetRapidCacheRequest)(nil),                                         // 48: google.storage.control.v2.GetRapidCacheRequest
+	(*ListRapidCachesRequest)(nil),                                       // 49: google.storage.control.v2.ListRapidCachesRequest
+	(*ListRapidCachesResponse)(nil),                                      // 50: google.storage.control.v2.ListRapidCachesResponse
+	(*IntelligenceConfig)(nil),                                           // 51: google.storage.control.v2.IntelligenceConfig
+	(*UpdateOrganizationIntelligenceConfigRequest)(nil),                  // 52: google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest
+	(*UpdateFolderIntelligenceConfigRequest)(nil),                        // 53: google.storage.control.v2.UpdateFolderIntelligenceConfigRequest
+	(*UpdateProjectIntelligenceConfigRequest)(nil),                       // 54: google.storage.control.v2.UpdateProjectIntelligenceConfigRequest
+	(*GetOrganizationIntelligenceConfigRequest)(nil),                     // 55: google.storage.control.v2.GetOrganizationIntelligenceConfigRequest
+	(*GetFolderIntelligenceConfigRequest)(nil),                           // 56: google.storage.control.v2.GetFolderIntelligenceConfigRequest
+	(*GetProjectIntelligenceConfigRequest)(nil),                          // 57: google.storage.control.v2.GetProjectIntelligenceConfigRequest
+	(*IntelligenceFinding)(nil),                                          // 58: google.storage.control.v2.IntelligenceFinding
+	(*IntelligenceFindingRevision)(nil),                                  // 59: google.storage.control.v2.IntelligenceFindingRevision
+	(*GetIntelligenceFindingRequest)(nil),                                // 60: google.storage.control.v2.GetIntelligenceFindingRequest
+	(*ListIntelligenceFindingsRequest)(nil),                              // 61: google.storage.control.v2.ListIntelligenceFindingsRequest
+	(*ListIntelligenceFindingsResponse)(nil),                             // 62: google.storage.control.v2.ListIntelligenceFindingsResponse
+	(*SummarizeIntelligenceFindingsRequest)(nil),                         // 63: google.storage.control.v2.SummarizeIntelligenceFindingsRequest
+	(*SummarizeIntelligenceFindingsResponse)(nil),                        // 64: google.storage.control.v2.SummarizeIntelligenceFindingsResponse
+	(*GetIntelligenceFindingRevisionRequest)(nil),                        // 65: google.storage.control.v2.GetIntelligenceFindingRevisionRequest
+	(*ListIntelligenceFindingRevisionsRequest)(nil),                      // 66: google.storage.control.v2.ListIntelligenceFindingRevisionsRequest
+	(*ListIntelligenceFindingRevisionsResponse)(nil),                     // 67: google.storage.control.v2.ListIntelligenceFindingRevisionsResponse
+	(*FindingSummary)(nil),                                               // 68: google.storage.control.v2.FindingSummary
+	(*ObjectFullContext)(nil),                                            // 69: google.storage.control.v2.ObjectFullContext
+	(*ViewObjectFullContextRequest)(nil),                                 // 70: google.storage.control.v2.ViewObjectFullContextRequest
+	(*StorageLayout_CustomPlacementConfig)(nil),                          // 71: google.storage.control.v2.StorageLayout.CustomPlacementConfig
+	(*StorageLayout_HierarchicalNamespace)(nil),                          // 72: google.storage.control.v2.StorageLayout.HierarchicalNamespace
+	(*StorageLayout_RapidCacheInfo)(nil),                                 // 73: google.storage.control.v2.StorageLayout.RapidCacheInfo
+	(*ManagedFolder_RapidCacheConfig)(nil),                               // 74: google.storage.control.v2.ManagedFolder.RapidCacheConfig
+	(*ManagedFolder_RapidCacheConfig_RapidCachePolicy)(nil),              // 75: google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy
+	nil,                               // 76: google.storage.control.v2.ManagedFolder.RapidCacheConfig.PoliciesEntry
+	(*IntelligenceConfig_Filter)(nil), // 77: google.storage.control.v2.IntelligenceConfig.Filter
+	(*IntelligenceConfig_EffectiveIntelligenceConfig)(nil),                                                                   // 78: google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig
+	(*IntelligenceConfig_TrialConfig)(nil),                                                                                   // 79: google.storage.control.v2.IntelligenceConfig.TrialConfig
+	(*IntelligenceConfig_Filter_CloudStorageLocations)(nil),                                                                  // 80: google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocations
+	(*IntelligenceConfig_Filter_CloudStorageBuckets)(nil),                                                                    // 81: google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBuckets
+	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike)(nil),                                                    // 82: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike
+	(*IntelligenceFinding_CrossRegionEgressSpike)(nil),                                                                       // 83: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike
+	(*IntelligenceFinding_ThrottledRequestSpike)(nil),                                                                        // 84: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike
+	(*IntelligenceFinding_StorageGrowthAboveTrend)(nil),                                                                      // 85: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend
+	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution)(nil),                                 // 86: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution
+	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution)(nil),                    // 87: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution
+	(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_PrefixContribution)(nil), // 88: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.PrefixContribution
+	(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution)(nil),                                                    // 89: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution
+	(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution)(nil),                                       // 90: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution
+	(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_PrefixContribution)(nil),                    // 91: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.PrefixContribution
+	(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution)(nil),                                                     // 92: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution
+	(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution)(nil),                                        // 93: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution
+	(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_PrefixContribution)(nil),                     // 94: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.PrefixContribution
+	(*IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution)(nil),                                                   // 95: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContribution
+	(*FindingSummary_SummaryDetails)(nil),                                                                                    // 96: google.storage.control.v2.FindingSummary.SummaryDetails
+	(*timestamppb.Timestamp)(nil),                                                                                            // 97: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                                                                                            // 98: google.protobuf.FieldMask
+	(*durationpb.Duration)(nil),                                                                                              // 99: google.protobuf.Duration
+	(*interval.Interval)(nil),                                                                                                // 100: google.type.Interval
+	(*anypb.Any)(nil),                                                                                                        // 101: google.protobuf.Any
+	(*status.Status)(nil),                                                                                                    // 102: google.rpc.Status
+	(*iampb.GetIamPolicyRequest)(nil),                                                                                        // 103: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),                                                                                        // 104: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),                                                                                  // 105: google.iam.v1.TestIamPermissionsRequest
+	(*emptypb.Empty)(nil),                                                                                                    // 106: google.protobuf.Empty
+	(*longrunningpb.Operation)(nil),                                                                                          // 107: google.longrunning.Operation
+	(*iampb.Policy)(nil),                                                                                                     // 108: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),                                                                                 // 109: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_storage_control_v2_storage_control_proto_depIdxs = []int32{
-	78,  // 0: google.storage.control.v2.Folder.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 1: google.storage.control.v2.Folder.update_time:type_name -> google.protobuf.Timestamp
-	7,   // 2: google.storage.control.v2.Folder.pending_rename_info:type_name -> google.storage.control.v2.PendingRenameInfo
-	8,   // 3: google.storage.control.v2.CreateFolderRequest.folder:type_name -> google.storage.control.v2.Folder
-	8,   // 4: google.storage.control.v2.ListFoldersResponse.folders:type_name -> google.storage.control.v2.Folder
-	78,  // 5: google.storage.control.v2.CommonLongRunningOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 6: google.storage.control.v2.CommonLongRunningOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	78,  // 7: google.storage.control.v2.CommonLongRunningOperationMetadata.update_time:type_name -> google.protobuf.Timestamp
-	16,  // 8: google.storage.control.v2.RenameFolderMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
-	16,  // 9: google.storage.control.v2.DeleteFolderRecursiveMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
-	56,  // 10: google.storage.control.v2.StorageLayout.custom_placement_config:type_name -> google.storage.control.v2.StorageLayout.CustomPlacementConfig
-	57,  // 11: google.storage.control.v2.StorageLayout.hierarchical_namespace:type_name -> google.storage.control.v2.StorageLayout.HierarchicalNamespace
-	78,  // 12: google.storage.control.v2.ManagedFolder.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 13: google.storage.control.v2.ManagedFolder.update_time:type_name -> google.protobuf.Timestamp
-	21,  // 14: google.storage.control.v2.CreateManagedFolderRequest.managed_folder:type_name -> google.storage.control.v2.ManagedFolder
-	21,  // 15: google.storage.control.v2.ListManagedFoldersResponse.managed_folders:type_name -> google.storage.control.v2.ManagedFolder
-	16,  // 16: google.storage.control.v2.CreateAnywhereCacheMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
-	79,  // 17: google.storage.control.v2.CreateAnywhereCacheMetadata.ttl:type_name -> google.protobuf.Duration
-	16,  // 18: google.storage.control.v2.UpdateAnywhereCacheMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
-	79,  // 19: google.storage.control.v2.UpdateAnywhereCacheMetadata.ttl:type_name -> google.protobuf.Duration
-	79,  // 20: google.storage.control.v2.AnywhereCache.ttl:type_name -> google.protobuf.Duration
-	78,  // 21: google.storage.control.v2.AnywhereCache.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 22: google.storage.control.v2.AnywhereCache.update_time:type_name -> google.protobuf.Timestamp
-	29,  // 23: google.storage.control.v2.CreateAnywhereCacheRequest.anywhere_cache:type_name -> google.storage.control.v2.AnywhereCache
-	29,  // 24: google.storage.control.v2.UpdateAnywhereCacheRequest.anywhere_cache:type_name -> google.storage.control.v2.AnywhereCache
-	80,  // 25: google.storage.control.v2.UpdateAnywhereCacheRequest.update_mask:type_name -> google.protobuf.FieldMask
-	29,  // 26: google.storage.control.v2.ListAnywhereCachesResponse.anywhere_caches:type_name -> google.storage.control.v2.AnywhereCache
-	3,   // 27: google.storage.control.v2.IntelligenceConfig.edition_config:type_name -> google.storage.control.v2.IntelligenceConfig.EditionConfig
-	78,  // 28: google.storage.control.v2.IntelligenceConfig.update_time:type_name -> google.protobuf.Timestamp
-	58,  // 29: google.storage.control.v2.IntelligenceConfig.filter:type_name -> google.storage.control.v2.IntelligenceConfig.Filter
-	59,  // 30: google.storage.control.v2.IntelligenceConfig.effective_intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig
-	60,  // 31: google.storage.control.v2.IntelligenceConfig.trial_config:type_name -> google.storage.control.v2.IntelligenceConfig.TrialConfig
-	38,  // 32: google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest.intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig
-	80,  // 33: google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	38,  // 34: google.storage.control.v2.UpdateFolderIntelligenceConfigRequest.intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig
-	80,  // 35: google.storage.control.v2.UpdateFolderIntelligenceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	38,  // 36: google.storage.control.v2.UpdateProjectIntelligenceConfigRequest.intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig
-	80,  // 37: google.storage.control.v2.UpdateProjectIntelligenceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
-	0,   // 38: google.storage.control.v2.IntelligenceFinding.type:type_name -> google.storage.control.v2.FindingType
-	1,   // 39: google.storage.control.v2.IntelligenceFinding.category:type_name -> google.storage.control.v2.FindingCategory
-	2,   // 40: google.storage.control.v2.IntelligenceFinding.severity:type_name -> google.storage.control.v2.FindingSeverity
-	78,  // 41: google.storage.control.v2.IntelligenceFinding.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 42: google.storage.control.v2.IntelligenceFinding.update_time:type_name -> google.protobuf.Timestamp
-	81,  // 43: google.storage.control.v2.IntelligenceFinding.observation_period:type_name -> google.type.Interval
-	63,  // 44: google.storage.control.v2.IntelligenceFinding.coldline_and_archival_storage_operations_spike:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike
-	65,  // 45: google.storage.control.v2.IntelligenceFinding.throttled_requests_spike:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike
-	64,  // 46: google.storage.control.v2.IntelligenceFinding.cross_region_egress_spike:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike
-	66,  // 47: google.storage.control.v2.IntelligenceFinding.storage_growth_above_trend:type_name -> google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend
-	45,  // 48: google.storage.control.v2.IntelligenceFindingRevision.snapshot:type_name -> google.storage.control.v2.IntelligenceFinding
-	78,  // 49: google.storage.control.v2.IntelligenceFindingRevision.create_time:type_name -> google.protobuf.Timestamp
-	45,  // 50: google.storage.control.v2.ListIntelligenceFindingsResponse.intelligence_findings:type_name -> google.storage.control.v2.IntelligenceFinding
-	5,   // 51: google.storage.control.v2.SummarizeIntelligenceFindingsRequest.resource_scope:type_name -> google.storage.control.v2.SummarizeIntelligenceFindingsRequest.ResourceScope
-	55,  // 52: google.storage.control.v2.SummarizeIntelligenceFindingsResponse.finding_summaries:type_name -> google.storage.control.v2.FindingSummary
-	46,  // 53: google.storage.control.v2.ListIntelligenceFindingRevisionsResponse.intelligence_finding_revisions:type_name -> google.storage.control.v2.IntelligenceFindingRevision
-	0,   // 54: google.storage.control.v2.FindingSummary.type:type_name -> google.storage.control.v2.FindingType
-	1,   // 55: google.storage.control.v2.FindingSummary.category:type_name -> google.storage.control.v2.FindingCategory
-	78,  // 56: google.storage.control.v2.FindingSummary.create_time:type_name -> google.protobuf.Timestamp
-	78,  // 57: google.storage.control.v2.FindingSummary.update_time:type_name -> google.protobuf.Timestamp
-	2,   // 58: google.storage.control.v2.FindingSummary.severity:type_name -> google.storage.control.v2.FindingSeverity
-	77,  // 59: google.storage.control.v2.FindingSummary.summary_details:type_name -> google.storage.control.v2.FindingSummary.SummaryDetails
-	61,  // 60: google.storage.control.v2.IntelligenceConfig.Filter.included_cloud_storage_locations:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocations
-	61,  // 61: google.storage.control.v2.IntelligenceConfig.Filter.excluded_cloud_storage_locations:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocations
-	62,  // 62: google.storage.control.v2.IntelligenceConfig.Filter.included_cloud_storage_buckets:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBuckets
-	62,  // 63: google.storage.control.v2.IntelligenceConfig.Filter.excluded_cloud_storage_buckets:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBuckets
-	4,   // 64: google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.effective_edition:type_name -> google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.EffectiveEdition
-	78,  // 65: google.storage.control.v2.IntelligenceConfig.TrialConfig.expire_time:type_name -> google.protobuf.Timestamp
-	67,  // 66: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution
-	70,  // 67: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution
-	73,  // 68: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution
-	76,  // 69: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContribution
-	68,  // 70: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.contribution:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution
-	82,  // 71: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.error:type_name -> google.rpc.Status
-	69,  // 72: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.top_prefixes:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.PrefixContribution
-	71,  // 73: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.contribution:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution
-	82,  // 74: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.error:type_name -> google.rpc.Status
-	72,  // 75: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.top_prefixes:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.PrefixContribution
-	74,  // 76: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.contribution:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution
-	82,  // 77: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.error:type_name -> google.rpc.Status
-	75,  // 78: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.top_prefixes:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.PrefixContribution
-	82,  // 79: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContribution.error:type_name -> google.rpc.Status
-	6,   // 80: google.storage.control.v2.FindingSummary.SummaryDetails.resource_type:type_name -> google.storage.control.v2.FindingSummary.SummaryDetails.ResourceType
-	10,  // 81: google.storage.control.v2.StorageControl.CreateFolder:input_type -> google.storage.control.v2.CreateFolderRequest
-	11,  // 82: google.storage.control.v2.StorageControl.DeleteFolder:input_type -> google.storage.control.v2.DeleteFolderRequest
-	9,   // 83: google.storage.control.v2.StorageControl.GetFolder:input_type -> google.storage.control.v2.GetFolderRequest
-	12,  // 84: google.storage.control.v2.StorageControl.ListFolders:input_type -> google.storage.control.v2.ListFoldersRequest
-	14,  // 85: google.storage.control.v2.StorageControl.RenameFolder:input_type -> google.storage.control.v2.RenameFolderRequest
-	15,  // 86: google.storage.control.v2.StorageControl.DeleteFolderRecursive:input_type -> google.storage.control.v2.DeleteFolderRecursiveRequest
-	20,  // 87: google.storage.control.v2.StorageControl.GetStorageLayout:input_type -> google.storage.control.v2.GetStorageLayoutRequest
-	23,  // 88: google.storage.control.v2.StorageControl.CreateManagedFolder:input_type -> google.storage.control.v2.CreateManagedFolderRequest
-	24,  // 89: google.storage.control.v2.StorageControl.DeleteManagedFolder:input_type -> google.storage.control.v2.DeleteManagedFolderRequest
-	22,  // 90: google.storage.control.v2.StorageControl.GetManagedFolder:input_type -> google.storage.control.v2.GetManagedFolderRequest
-	25,  // 91: google.storage.control.v2.StorageControl.ListManagedFolders:input_type -> google.storage.control.v2.ListManagedFoldersRequest
-	30,  // 92: google.storage.control.v2.StorageControl.CreateAnywhereCache:input_type -> google.storage.control.v2.CreateAnywhereCacheRequest
-	31,  // 93: google.storage.control.v2.StorageControl.UpdateAnywhereCache:input_type -> google.storage.control.v2.UpdateAnywhereCacheRequest
-	32,  // 94: google.storage.control.v2.StorageControl.DisableAnywhereCache:input_type -> google.storage.control.v2.DisableAnywhereCacheRequest
-	33,  // 95: google.storage.control.v2.StorageControl.PauseAnywhereCache:input_type -> google.storage.control.v2.PauseAnywhereCacheRequest
-	34,  // 96: google.storage.control.v2.StorageControl.ResumeAnywhereCache:input_type -> google.storage.control.v2.ResumeAnywhereCacheRequest
-	35,  // 97: google.storage.control.v2.StorageControl.GetAnywhereCache:input_type -> google.storage.control.v2.GetAnywhereCacheRequest
-	36,  // 98: google.storage.control.v2.StorageControl.ListAnywhereCaches:input_type -> google.storage.control.v2.ListAnywhereCachesRequest
-	44,  // 99: google.storage.control.v2.StorageControl.GetProjectIntelligenceConfig:input_type -> google.storage.control.v2.GetProjectIntelligenceConfigRequest
-	41,  // 100: google.storage.control.v2.StorageControl.UpdateProjectIntelligenceConfig:input_type -> google.storage.control.v2.UpdateProjectIntelligenceConfigRequest
-	43,  // 101: google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig:input_type -> google.storage.control.v2.GetFolderIntelligenceConfigRequest
-	40,  // 102: google.storage.control.v2.StorageControl.UpdateFolderIntelligenceConfig:input_type -> google.storage.control.v2.UpdateFolderIntelligenceConfigRequest
-	42,  // 103: google.storage.control.v2.StorageControl.GetOrganizationIntelligenceConfig:input_type -> google.storage.control.v2.GetOrganizationIntelligenceConfigRequest
-	39,  // 104: google.storage.control.v2.StorageControl.UpdateOrganizationIntelligenceConfig:input_type -> google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest
-	83,  // 105: google.storage.control.v2.StorageControl.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	84,  // 106: google.storage.control.v2.StorageControl.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	85,  // 107: google.storage.control.v2.StorageControl.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
-	47,  // 108: google.storage.control.v2.StorageControl.GetIntelligenceFinding:input_type -> google.storage.control.v2.GetIntelligenceFindingRequest
-	48,  // 109: google.storage.control.v2.StorageControl.ListIntelligenceFindings:input_type -> google.storage.control.v2.ListIntelligenceFindingsRequest
-	50,  // 110: google.storage.control.v2.StorageControl.SummarizeIntelligenceFindings:input_type -> google.storage.control.v2.SummarizeIntelligenceFindingsRequest
-	52,  // 111: google.storage.control.v2.StorageControl.GetIntelligenceFindingRevision:input_type -> google.storage.control.v2.GetIntelligenceFindingRevisionRequest
-	53,  // 112: google.storage.control.v2.StorageControl.ListIntelligenceFindingRevisions:input_type -> google.storage.control.v2.ListIntelligenceFindingRevisionsRequest
-	8,   // 113: google.storage.control.v2.StorageControl.CreateFolder:output_type -> google.storage.control.v2.Folder
-	86,  // 114: google.storage.control.v2.StorageControl.DeleteFolder:output_type -> google.protobuf.Empty
-	8,   // 115: google.storage.control.v2.StorageControl.GetFolder:output_type -> google.storage.control.v2.Folder
-	13,  // 116: google.storage.control.v2.StorageControl.ListFolders:output_type -> google.storage.control.v2.ListFoldersResponse
-	87,  // 117: google.storage.control.v2.StorageControl.RenameFolder:output_type -> google.longrunning.Operation
-	87,  // 118: google.storage.control.v2.StorageControl.DeleteFolderRecursive:output_type -> google.longrunning.Operation
-	19,  // 119: google.storage.control.v2.StorageControl.GetStorageLayout:output_type -> google.storage.control.v2.StorageLayout
-	21,  // 120: google.storage.control.v2.StorageControl.CreateManagedFolder:output_type -> google.storage.control.v2.ManagedFolder
-	86,  // 121: google.storage.control.v2.StorageControl.DeleteManagedFolder:output_type -> google.protobuf.Empty
-	21,  // 122: google.storage.control.v2.StorageControl.GetManagedFolder:output_type -> google.storage.control.v2.ManagedFolder
-	26,  // 123: google.storage.control.v2.StorageControl.ListManagedFolders:output_type -> google.storage.control.v2.ListManagedFoldersResponse
-	87,  // 124: google.storage.control.v2.StorageControl.CreateAnywhereCache:output_type -> google.longrunning.Operation
-	87,  // 125: google.storage.control.v2.StorageControl.UpdateAnywhereCache:output_type -> google.longrunning.Operation
-	29,  // 126: google.storage.control.v2.StorageControl.DisableAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
-	29,  // 127: google.storage.control.v2.StorageControl.PauseAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
-	29,  // 128: google.storage.control.v2.StorageControl.ResumeAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
-	29,  // 129: google.storage.control.v2.StorageControl.GetAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
-	37,  // 130: google.storage.control.v2.StorageControl.ListAnywhereCaches:output_type -> google.storage.control.v2.ListAnywhereCachesResponse
-	38,  // 131: google.storage.control.v2.StorageControl.GetProjectIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
-	38,  // 132: google.storage.control.v2.StorageControl.UpdateProjectIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
-	38,  // 133: google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
-	38,  // 134: google.storage.control.v2.StorageControl.UpdateFolderIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
-	38,  // 135: google.storage.control.v2.StorageControl.GetOrganizationIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
-	38,  // 136: google.storage.control.v2.StorageControl.UpdateOrganizationIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
-	88,  // 137: google.storage.control.v2.StorageControl.GetIamPolicy:output_type -> google.iam.v1.Policy
-	88,  // 138: google.storage.control.v2.StorageControl.SetIamPolicy:output_type -> google.iam.v1.Policy
-	89,  // 139: google.storage.control.v2.StorageControl.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
-	45,  // 140: google.storage.control.v2.StorageControl.GetIntelligenceFinding:output_type -> google.storage.control.v2.IntelligenceFinding
-	49,  // 141: google.storage.control.v2.StorageControl.ListIntelligenceFindings:output_type -> google.storage.control.v2.ListIntelligenceFindingsResponse
-	51,  // 142: google.storage.control.v2.StorageControl.SummarizeIntelligenceFindings:output_type -> google.storage.control.v2.SummarizeIntelligenceFindingsResponse
-	46,  // 143: google.storage.control.v2.StorageControl.GetIntelligenceFindingRevision:output_type -> google.storage.control.v2.IntelligenceFindingRevision
-	54,  // 144: google.storage.control.v2.StorageControl.ListIntelligenceFindingRevisions:output_type -> google.storage.control.v2.ListIntelligenceFindingRevisionsResponse
-	113, // [113:145] is the sub-list for method output_type
-	81,  // [81:113] is the sub-list for method input_type
-	81,  // [81:81] is the sub-list for extension type_name
-	81,  // [81:81] is the sub-list for extension extendee
-	0,   // [0:81] is the sub-list for field type_name
+	97,  // 0: google.storage.control.v2.Folder.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 1: google.storage.control.v2.Folder.update_time:type_name -> google.protobuf.Timestamp
+	9,   // 2: google.storage.control.v2.Folder.pending_rename_info:type_name -> google.storage.control.v2.PendingRenameInfo
+	10,  // 3: google.storage.control.v2.CreateFolderRequest.folder:type_name -> google.storage.control.v2.Folder
+	10,  // 4: google.storage.control.v2.ListFoldersResponse.folders:type_name -> google.storage.control.v2.Folder
+	97,  // 5: google.storage.control.v2.CommonLongRunningOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 6: google.storage.control.v2.CommonLongRunningOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	97,  // 7: google.storage.control.v2.CommonLongRunningOperationMetadata.update_time:type_name -> google.protobuf.Timestamp
+	18,  // 8: google.storage.control.v2.RenameFolderMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
+	18,  // 9: google.storage.control.v2.DeleteFolderRecursiveMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
+	71,  // 10: google.storage.control.v2.StorageLayout.custom_placement_config:type_name -> google.storage.control.v2.StorageLayout.CustomPlacementConfig
+	72,  // 11: google.storage.control.v2.StorageLayout.hierarchical_namespace:type_name -> google.storage.control.v2.StorageLayout.HierarchicalNamespace
+	73,  // 12: google.storage.control.v2.StorageLayout.rapid_cache_info:type_name -> google.storage.control.v2.StorageLayout.RapidCacheInfo
+	97,  // 13: google.storage.control.v2.ManagedFolder.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 14: google.storage.control.v2.ManagedFolder.update_time:type_name -> google.protobuf.Timestamp
+	74,  // 15: google.storage.control.v2.ManagedFolder.rapid_cache_config:type_name -> google.storage.control.v2.ManagedFolder.RapidCacheConfig
+	23,  // 16: google.storage.control.v2.CreateManagedFolderRequest.managed_folder:type_name -> google.storage.control.v2.ManagedFolder
+	23,  // 17: google.storage.control.v2.ListManagedFoldersResponse.managed_folders:type_name -> google.storage.control.v2.ManagedFolder
+	23,  // 18: google.storage.control.v2.UpdateManagedFolderRequest.managed_folder:type_name -> google.storage.control.v2.ManagedFolder
+	98,  // 19: google.storage.control.v2.UpdateManagedFolderRequest.update_mask:type_name -> google.protobuf.FieldMask
+	18,  // 20: google.storage.control.v2.CreateAnywhereCacheMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
+	99,  // 21: google.storage.control.v2.CreateAnywhereCacheMetadata.ttl:type_name -> google.protobuf.Duration
+	18,  // 22: google.storage.control.v2.CreateRapidCacheMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
+	99,  // 23: google.storage.control.v2.CreateRapidCacheMetadata.ttl:type_name -> google.protobuf.Duration
+	18,  // 24: google.storage.control.v2.UpdateAnywhereCacheMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
+	99,  // 25: google.storage.control.v2.UpdateAnywhereCacheMetadata.ttl:type_name -> google.protobuf.Duration
+	18,  // 26: google.storage.control.v2.UpdateRapidCacheMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
+	99,  // 27: google.storage.control.v2.UpdateRapidCacheMetadata.ttl:type_name -> google.protobuf.Duration
+	18,  // 28: google.storage.control.v2.DisableRapidCacheMetadata.common_metadata:type_name -> google.storage.control.v2.CommonLongRunningOperationMetadata
+	99,  // 29: google.storage.control.v2.AnywhereCache.ttl:type_name -> google.protobuf.Duration
+	97,  // 30: google.storage.control.v2.AnywhereCache.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 31: google.storage.control.v2.AnywhereCache.update_time:type_name -> google.protobuf.Timestamp
+	35,  // 32: google.storage.control.v2.CreateAnywhereCacheRequest.anywhere_cache:type_name -> google.storage.control.v2.AnywhereCache
+	35,  // 33: google.storage.control.v2.UpdateAnywhereCacheRequest.anywhere_cache:type_name -> google.storage.control.v2.AnywhereCache
+	98,  // 34: google.storage.control.v2.UpdateAnywhereCacheRequest.update_mask:type_name -> google.protobuf.FieldMask
+	35,  // 35: google.storage.control.v2.ListAnywhereCachesResponse.anywhere_caches:type_name -> google.storage.control.v2.AnywhereCache
+	99,  // 36: google.storage.control.v2.RapidCache.ttl:type_name -> google.protobuf.Duration
+	97,  // 37: google.storage.control.v2.RapidCache.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 38: google.storage.control.v2.RapidCache.update_time:type_name -> google.protobuf.Timestamp
+	44,  // 39: google.storage.control.v2.CreateRapidCacheRequest.rapid_cache:type_name -> google.storage.control.v2.RapidCache
+	44,  // 40: google.storage.control.v2.UpdateRapidCacheRequest.rapid_cache:type_name -> google.storage.control.v2.RapidCache
+	98,  // 41: google.storage.control.v2.UpdateRapidCacheRequest.update_mask:type_name -> google.protobuf.FieldMask
+	44,  // 42: google.storage.control.v2.ListRapidCachesResponse.rapid_caches:type_name -> google.storage.control.v2.RapidCache
+	4,   // 43: google.storage.control.v2.IntelligenceConfig.edition_config:type_name -> google.storage.control.v2.IntelligenceConfig.EditionConfig
+	97,  // 44: google.storage.control.v2.IntelligenceConfig.update_time:type_name -> google.protobuf.Timestamp
+	77,  // 45: google.storage.control.v2.IntelligenceConfig.filter:type_name -> google.storage.control.v2.IntelligenceConfig.Filter
+	78,  // 46: google.storage.control.v2.IntelligenceConfig.effective_intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig
+	79,  // 47: google.storage.control.v2.IntelligenceConfig.trial_config:type_name -> google.storage.control.v2.IntelligenceConfig.TrialConfig
+	51,  // 48: google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest.intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig
+	98,  // 49: google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	51,  // 50: google.storage.control.v2.UpdateFolderIntelligenceConfigRequest.intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig
+	98,  // 51: google.storage.control.v2.UpdateFolderIntelligenceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	51,  // 52: google.storage.control.v2.UpdateProjectIntelligenceConfigRequest.intelligence_config:type_name -> google.storage.control.v2.IntelligenceConfig
+	98,  // 53: google.storage.control.v2.UpdateProjectIntelligenceConfigRequest.update_mask:type_name -> google.protobuf.FieldMask
+	0,   // 54: google.storage.control.v2.IntelligenceFinding.type:type_name -> google.storage.control.v2.FindingType
+	1,   // 55: google.storage.control.v2.IntelligenceFinding.category:type_name -> google.storage.control.v2.FindingCategory
+	2,   // 56: google.storage.control.v2.IntelligenceFinding.severity:type_name -> google.storage.control.v2.FindingSeverity
+	97,  // 57: google.storage.control.v2.IntelligenceFinding.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 58: google.storage.control.v2.IntelligenceFinding.update_time:type_name -> google.protobuf.Timestamp
+	100, // 59: google.storage.control.v2.IntelligenceFinding.observation_period:type_name -> google.type.Interval
+	82,  // 60: google.storage.control.v2.IntelligenceFinding.coldline_and_archival_storage_operations_spike:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike
+	84,  // 61: google.storage.control.v2.IntelligenceFinding.throttled_requests_spike:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike
+	83,  // 62: google.storage.control.v2.IntelligenceFinding.cross_region_egress_spike:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike
+	85,  // 63: google.storage.control.v2.IntelligenceFinding.storage_growth_above_trend:type_name -> google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend
+	58,  // 64: google.storage.control.v2.IntelligenceFindingRevision.snapshot:type_name -> google.storage.control.v2.IntelligenceFinding
+	97,  // 65: google.storage.control.v2.IntelligenceFindingRevision.create_time:type_name -> google.protobuf.Timestamp
+	58,  // 66: google.storage.control.v2.ListIntelligenceFindingsResponse.intelligence_findings:type_name -> google.storage.control.v2.IntelligenceFinding
+	6,   // 67: google.storage.control.v2.SummarizeIntelligenceFindingsRequest.resource_scope:type_name -> google.storage.control.v2.SummarizeIntelligenceFindingsRequest.ResourceScope
+	68,  // 68: google.storage.control.v2.SummarizeIntelligenceFindingsResponse.finding_summaries:type_name -> google.storage.control.v2.FindingSummary
+	59,  // 69: google.storage.control.v2.ListIntelligenceFindingRevisionsResponse.intelligence_finding_revisions:type_name -> google.storage.control.v2.IntelligenceFindingRevision
+	0,   // 70: google.storage.control.v2.FindingSummary.type:type_name -> google.storage.control.v2.FindingType
+	1,   // 71: google.storage.control.v2.FindingSummary.category:type_name -> google.storage.control.v2.FindingCategory
+	97,  // 72: google.storage.control.v2.FindingSummary.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 73: google.storage.control.v2.FindingSummary.update_time:type_name -> google.protobuf.Timestamp
+	2,   // 74: google.storage.control.v2.FindingSummary.severity:type_name -> google.storage.control.v2.FindingSeverity
+	96,  // 75: google.storage.control.v2.FindingSummary.summary_details:type_name -> google.storage.control.v2.FindingSummary.SummaryDetails
+	8,   // 76: google.storage.control.v2.ObjectFullContext.type:type_name -> google.storage.control.v2.ObjectFullContext.Type
+	97,  // 77: google.storage.control.v2.ObjectFullContext.create_time:type_name -> google.protobuf.Timestamp
+	97,  // 78: google.storage.control.v2.ObjectFullContext.update_time:type_name -> google.protobuf.Timestamp
+	101, // 79: google.storage.control.v2.ObjectFullContext.extended_data:type_name -> google.protobuf.Any
+	76,  // 80: google.storage.control.v2.ManagedFolder.RapidCacheConfig.policies:type_name -> google.storage.control.v2.ManagedFolder.RapidCacheConfig.PoliciesEntry
+	3,   // 81: google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy.ingest_on_write:type_name -> google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy.IngestOnWrite
+	75,  // 82: google.storage.control.v2.ManagedFolder.RapidCacheConfig.PoliciesEntry.value:type_name -> google.storage.control.v2.ManagedFolder.RapidCacheConfig.RapidCachePolicy
+	80,  // 83: google.storage.control.v2.IntelligenceConfig.Filter.included_cloud_storage_locations:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocations
+	80,  // 84: google.storage.control.v2.IntelligenceConfig.Filter.excluded_cloud_storage_locations:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageLocations
+	81,  // 85: google.storage.control.v2.IntelligenceConfig.Filter.included_cloud_storage_buckets:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBuckets
+	81,  // 86: google.storage.control.v2.IntelligenceConfig.Filter.excluded_cloud_storage_buckets:type_name -> google.storage.control.v2.IntelligenceConfig.Filter.CloudStorageBuckets
+	5,   // 87: google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.effective_edition:type_name -> google.storage.control.v2.IntelligenceConfig.EffectiveIntelligenceConfig.EffectiveEdition
+	97,  // 88: google.storage.control.v2.IntelligenceConfig.TrialConfig.expire_time:type_name -> google.protobuf.Timestamp
+	86,  // 89: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution
+	89,  // 90: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution
+	92,  // 91: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution
+	95,  // 92: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.top_buckets:type_name -> google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContribution
+	87,  // 93: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.contribution:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution
+	102, // 94: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.error:type_name -> google.rpc.Status
+	88,  // 95: google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.top_prefixes:type_name -> google.storage.control.v2.IntelligenceFinding.ColdlineAndArchivalStorageOperationsSpike.BucketContribution.Contribution.PrefixContribution
+	90,  // 96: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.contribution:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution
+	102, // 97: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.error:type_name -> google.rpc.Status
+	91,  // 98: google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.top_prefixes:type_name -> google.storage.control.v2.IntelligenceFinding.CrossRegionEgressSpike.BucketContribution.Contribution.PrefixContribution
+	93,  // 99: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.contribution:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution
+	102, // 100: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.error:type_name -> google.rpc.Status
+	94,  // 101: google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.top_prefixes:type_name -> google.storage.control.v2.IntelligenceFinding.ThrottledRequestSpike.BucketContribution.Contribution.PrefixContribution
+	102, // 102: google.storage.control.v2.IntelligenceFinding.StorageGrowthAboveTrend.BucketContribution.error:type_name -> google.rpc.Status
+	7,   // 103: google.storage.control.v2.FindingSummary.SummaryDetails.resource_type:type_name -> google.storage.control.v2.FindingSummary.SummaryDetails.ResourceType
+	12,  // 104: google.storage.control.v2.StorageControl.CreateFolder:input_type -> google.storage.control.v2.CreateFolderRequest
+	13,  // 105: google.storage.control.v2.StorageControl.DeleteFolder:input_type -> google.storage.control.v2.DeleteFolderRequest
+	11,  // 106: google.storage.control.v2.StorageControl.GetFolder:input_type -> google.storage.control.v2.GetFolderRequest
+	14,  // 107: google.storage.control.v2.StorageControl.ListFolders:input_type -> google.storage.control.v2.ListFoldersRequest
+	16,  // 108: google.storage.control.v2.StorageControl.RenameFolder:input_type -> google.storage.control.v2.RenameFolderRequest
+	17,  // 109: google.storage.control.v2.StorageControl.DeleteFolderRecursive:input_type -> google.storage.control.v2.DeleteFolderRecursiveRequest
+	22,  // 110: google.storage.control.v2.StorageControl.GetStorageLayout:input_type -> google.storage.control.v2.GetStorageLayoutRequest
+	25,  // 111: google.storage.control.v2.StorageControl.CreateManagedFolder:input_type -> google.storage.control.v2.CreateManagedFolderRequest
+	26,  // 112: google.storage.control.v2.StorageControl.DeleteManagedFolder:input_type -> google.storage.control.v2.DeleteManagedFolderRequest
+	24,  // 113: google.storage.control.v2.StorageControl.GetManagedFolder:input_type -> google.storage.control.v2.GetManagedFolderRequest
+	27,  // 114: google.storage.control.v2.StorageControl.ListManagedFolders:input_type -> google.storage.control.v2.ListManagedFoldersRequest
+	29,  // 115: google.storage.control.v2.StorageControl.UpdateManagedFolder:input_type -> google.storage.control.v2.UpdateManagedFolderRequest
+	36,  // 116: google.storage.control.v2.StorageControl.CreateAnywhereCache:input_type -> google.storage.control.v2.CreateAnywhereCacheRequest
+	37,  // 117: google.storage.control.v2.StorageControl.UpdateAnywhereCache:input_type -> google.storage.control.v2.UpdateAnywhereCacheRequest
+	38,  // 118: google.storage.control.v2.StorageControl.DisableAnywhereCache:input_type -> google.storage.control.v2.DisableAnywhereCacheRequest
+	39,  // 119: google.storage.control.v2.StorageControl.PauseAnywhereCache:input_type -> google.storage.control.v2.PauseAnywhereCacheRequest
+	40,  // 120: google.storage.control.v2.StorageControl.ResumeAnywhereCache:input_type -> google.storage.control.v2.ResumeAnywhereCacheRequest
+	41,  // 121: google.storage.control.v2.StorageControl.GetAnywhereCache:input_type -> google.storage.control.v2.GetAnywhereCacheRequest
+	42,  // 122: google.storage.control.v2.StorageControl.ListAnywhereCaches:input_type -> google.storage.control.v2.ListAnywhereCachesRequest
+	45,  // 123: google.storage.control.v2.StorageControl.CreateRapidCache:input_type -> google.storage.control.v2.CreateRapidCacheRequest
+	46,  // 124: google.storage.control.v2.StorageControl.UpdateRapidCache:input_type -> google.storage.control.v2.UpdateRapidCacheRequest
+	47,  // 125: google.storage.control.v2.StorageControl.DisableRapidCache:input_type -> google.storage.control.v2.DisableRapidCacheRequest
+	48,  // 126: google.storage.control.v2.StorageControl.GetRapidCache:input_type -> google.storage.control.v2.GetRapidCacheRequest
+	49,  // 127: google.storage.control.v2.StorageControl.ListRapidCaches:input_type -> google.storage.control.v2.ListRapidCachesRequest
+	57,  // 128: google.storage.control.v2.StorageControl.GetProjectIntelligenceConfig:input_type -> google.storage.control.v2.GetProjectIntelligenceConfigRequest
+	54,  // 129: google.storage.control.v2.StorageControl.UpdateProjectIntelligenceConfig:input_type -> google.storage.control.v2.UpdateProjectIntelligenceConfigRequest
+	56,  // 130: google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig:input_type -> google.storage.control.v2.GetFolderIntelligenceConfigRequest
+	53,  // 131: google.storage.control.v2.StorageControl.UpdateFolderIntelligenceConfig:input_type -> google.storage.control.v2.UpdateFolderIntelligenceConfigRequest
+	55,  // 132: google.storage.control.v2.StorageControl.GetOrganizationIntelligenceConfig:input_type -> google.storage.control.v2.GetOrganizationIntelligenceConfigRequest
+	52,  // 133: google.storage.control.v2.StorageControl.UpdateOrganizationIntelligenceConfig:input_type -> google.storage.control.v2.UpdateOrganizationIntelligenceConfigRequest
+	103, // 134: google.storage.control.v2.StorageControl.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	104, // 135: google.storage.control.v2.StorageControl.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	105, // 136: google.storage.control.v2.StorageControl.TestIamPermissions:input_type -> google.iam.v1.TestIamPermissionsRequest
+	60,  // 137: google.storage.control.v2.StorageControl.GetIntelligenceFinding:input_type -> google.storage.control.v2.GetIntelligenceFindingRequest
+	61,  // 138: google.storage.control.v2.StorageControl.ListIntelligenceFindings:input_type -> google.storage.control.v2.ListIntelligenceFindingsRequest
+	63,  // 139: google.storage.control.v2.StorageControl.SummarizeIntelligenceFindings:input_type -> google.storage.control.v2.SummarizeIntelligenceFindingsRequest
+	65,  // 140: google.storage.control.v2.StorageControl.GetIntelligenceFindingRevision:input_type -> google.storage.control.v2.GetIntelligenceFindingRevisionRequest
+	66,  // 141: google.storage.control.v2.StorageControl.ListIntelligenceFindingRevisions:input_type -> google.storage.control.v2.ListIntelligenceFindingRevisionsRequest
+	70,  // 142: google.storage.control.v2.StorageControl.ViewObjectFullContext:input_type -> google.storage.control.v2.ViewObjectFullContextRequest
+	10,  // 143: google.storage.control.v2.StorageControl.CreateFolder:output_type -> google.storage.control.v2.Folder
+	106, // 144: google.storage.control.v2.StorageControl.DeleteFolder:output_type -> google.protobuf.Empty
+	10,  // 145: google.storage.control.v2.StorageControl.GetFolder:output_type -> google.storage.control.v2.Folder
+	15,  // 146: google.storage.control.v2.StorageControl.ListFolders:output_type -> google.storage.control.v2.ListFoldersResponse
+	107, // 147: google.storage.control.v2.StorageControl.RenameFolder:output_type -> google.longrunning.Operation
+	107, // 148: google.storage.control.v2.StorageControl.DeleteFolderRecursive:output_type -> google.longrunning.Operation
+	21,  // 149: google.storage.control.v2.StorageControl.GetStorageLayout:output_type -> google.storage.control.v2.StorageLayout
+	23,  // 150: google.storage.control.v2.StorageControl.CreateManagedFolder:output_type -> google.storage.control.v2.ManagedFolder
+	106, // 151: google.storage.control.v2.StorageControl.DeleteManagedFolder:output_type -> google.protobuf.Empty
+	23,  // 152: google.storage.control.v2.StorageControl.GetManagedFolder:output_type -> google.storage.control.v2.ManagedFolder
+	28,  // 153: google.storage.control.v2.StorageControl.ListManagedFolders:output_type -> google.storage.control.v2.ListManagedFoldersResponse
+	23,  // 154: google.storage.control.v2.StorageControl.UpdateManagedFolder:output_type -> google.storage.control.v2.ManagedFolder
+	107, // 155: google.storage.control.v2.StorageControl.CreateAnywhereCache:output_type -> google.longrunning.Operation
+	107, // 156: google.storage.control.v2.StorageControl.UpdateAnywhereCache:output_type -> google.longrunning.Operation
+	35,  // 157: google.storage.control.v2.StorageControl.DisableAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
+	35,  // 158: google.storage.control.v2.StorageControl.PauseAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
+	35,  // 159: google.storage.control.v2.StorageControl.ResumeAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
+	35,  // 160: google.storage.control.v2.StorageControl.GetAnywhereCache:output_type -> google.storage.control.v2.AnywhereCache
+	43,  // 161: google.storage.control.v2.StorageControl.ListAnywhereCaches:output_type -> google.storage.control.v2.ListAnywhereCachesResponse
+	107, // 162: google.storage.control.v2.StorageControl.CreateRapidCache:output_type -> google.longrunning.Operation
+	107, // 163: google.storage.control.v2.StorageControl.UpdateRapidCache:output_type -> google.longrunning.Operation
+	107, // 164: google.storage.control.v2.StorageControl.DisableRapidCache:output_type -> google.longrunning.Operation
+	44,  // 165: google.storage.control.v2.StorageControl.GetRapidCache:output_type -> google.storage.control.v2.RapidCache
+	50,  // 166: google.storage.control.v2.StorageControl.ListRapidCaches:output_type -> google.storage.control.v2.ListRapidCachesResponse
+	51,  // 167: google.storage.control.v2.StorageControl.GetProjectIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
+	51,  // 168: google.storage.control.v2.StorageControl.UpdateProjectIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
+	51,  // 169: google.storage.control.v2.StorageControl.GetFolderIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
+	51,  // 170: google.storage.control.v2.StorageControl.UpdateFolderIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
+	51,  // 171: google.storage.control.v2.StorageControl.GetOrganizationIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
+	51,  // 172: google.storage.control.v2.StorageControl.UpdateOrganizationIntelligenceConfig:output_type -> google.storage.control.v2.IntelligenceConfig
+	108, // 173: google.storage.control.v2.StorageControl.GetIamPolicy:output_type -> google.iam.v1.Policy
+	108, // 174: google.storage.control.v2.StorageControl.SetIamPolicy:output_type -> google.iam.v1.Policy
+	109, // 175: google.storage.control.v2.StorageControl.TestIamPermissions:output_type -> google.iam.v1.TestIamPermissionsResponse
+	58,  // 176: google.storage.control.v2.StorageControl.GetIntelligenceFinding:output_type -> google.storage.control.v2.IntelligenceFinding
+	62,  // 177: google.storage.control.v2.StorageControl.ListIntelligenceFindings:output_type -> google.storage.control.v2.ListIntelligenceFindingsResponse
+	64,  // 178: google.storage.control.v2.StorageControl.SummarizeIntelligenceFindings:output_type -> google.storage.control.v2.SummarizeIntelligenceFindingsResponse
+	59,  // 179: google.storage.control.v2.StorageControl.GetIntelligenceFindingRevision:output_type -> google.storage.control.v2.IntelligenceFindingRevision
+	67,  // 180: google.storage.control.v2.StorageControl.ListIntelligenceFindingRevisions:output_type -> google.storage.control.v2.ListIntelligenceFindingRevisionsResponse
+	69,  // 181: google.storage.control.v2.StorageControl.ViewObjectFullContext:output_type -> google.storage.control.v2.ObjectFullContext
+	143, // [143:182] is the sub-list for method output_type
+	104, // [104:143] is the sub-list for method input_type
+	104, // [104:104] is the sub-list for extension type_name
+	104, // [104:104] is the sub-list for extension extendee
+	0,   // [0:104] is the sub-list for field type_name
 }
 
 func init() { file_google_storage_control_v2_storage_control_proto_init() }
@@ -6652,38 +8213,44 @@ func file_google_storage_control_v2_storage_control_proto_init() {
 	file_google_storage_control_v2_storage_control_proto_msgTypes[4].OneofWrappers = []any{}
 	file_google_storage_control_v2_storage_control_proto_msgTypes[7].OneofWrappers = []any{}
 	file_google_storage_control_v2_storage_control_proto_msgTypes[8].OneofWrappers = []any{}
+	file_google_storage_control_v2_storage_control_proto_msgTypes[14].OneofWrappers = []any{}
 	file_google_storage_control_v2_storage_control_proto_msgTypes[15].OneofWrappers = []any{}
 	file_google_storage_control_v2_storage_control_proto_msgTypes[17].OneofWrappers = []any{}
 	file_google_storage_control_v2_storage_control_proto_msgTypes[20].OneofWrappers = []any{}
 	file_google_storage_control_v2_storage_control_proto_msgTypes[21].OneofWrappers = []any{}
-	file_google_storage_control_v2_storage_control_proto_msgTypes[38].OneofWrappers = []any{
+	file_google_storage_control_v2_storage_control_proto_msgTypes[22].OneofWrappers = []any{}
+	file_google_storage_control_v2_storage_control_proto_msgTypes[23].OneofWrappers = []any{}
+	file_google_storage_control_v2_storage_control_proto_msgTypes[24].OneofWrappers = []any{}
+	file_google_storage_control_v2_storage_control_proto_msgTypes[25].OneofWrappers = []any{}
+	file_google_storage_control_v2_storage_control_proto_msgTypes[26].OneofWrappers = []any{}
+	file_google_storage_control_v2_storage_control_proto_msgTypes[49].OneofWrappers = []any{
 		(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_)(nil),
 		(*IntelligenceFinding_ThrottledRequestsSpike)(nil),
 		(*IntelligenceFinding_CrossRegionEgressSpike_)(nil),
 		(*IntelligenceFinding_StorageGrowthAboveTrend_)(nil),
 	}
-	file_google_storage_control_v2_storage_control_proto_msgTypes[51].OneofWrappers = []any{
+	file_google_storage_control_v2_storage_control_proto_msgTypes[68].OneofWrappers = []any{
 		(*IntelligenceConfig_Filter_IncludedCloudStorageLocations)(nil),
 		(*IntelligenceConfig_Filter_ExcludedCloudStorageLocations)(nil),
 		(*IntelligenceConfig_Filter_IncludedCloudStorageBuckets)(nil),
 		(*IntelligenceConfig_Filter_ExcludedCloudStorageBuckets)(nil),
 	}
-	file_google_storage_control_v2_storage_control_proto_msgTypes[60].OneofWrappers = []any{
+	file_google_storage_control_v2_storage_control_proto_msgTypes[77].OneofWrappers = []any{
 		(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Contribution_)(nil),
 		(*IntelligenceFinding_ColdlineAndArchivalStorageOperationsSpike_BucketContribution_Error)(nil),
 	}
-	file_google_storage_control_v2_storage_control_proto_msgTypes[63].OneofWrappers = []any{
+	file_google_storage_control_v2_storage_control_proto_msgTypes[80].OneofWrappers = []any{
 		(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Contribution_)(nil),
 		(*IntelligenceFinding_CrossRegionEgressSpike_BucketContribution_Error)(nil),
 	}
-	file_google_storage_control_v2_storage_control_proto_msgTypes[66].OneofWrappers = []any{
+	file_google_storage_control_v2_storage_control_proto_msgTypes[83].OneofWrappers = []any{
 		(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Contribution_)(nil),
 		(*IntelligenceFinding_ThrottledRequestSpike_BucketContribution_Error)(nil),
 	}
-	file_google_storage_control_v2_storage_control_proto_msgTypes[69].OneofWrappers = []any{
+	file_google_storage_control_v2_storage_control_proto_msgTypes[86].OneofWrappers = []any{
 		(*IntelligenceFinding_StorageGrowthAboveTrend_BucketContribution_Error)(nil),
 	}
-	file_google_storage_control_v2_storage_control_proto_msgTypes[70].OneofWrappers = []any{
+	file_google_storage_control_v2_storage_control_proto_msgTypes[87].OneofWrappers = []any{
 		(*FindingSummary_SummaryDetails_Count)(nil),
 		(*FindingSummary_SummaryDetails_Percentage)(nil),
 	}
@@ -6692,8 +8259,8 @@ func file_google_storage_control_v2_storage_control_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_storage_control_v2_storage_control_proto_rawDesc), len(file_google_storage_control_v2_storage_control_proto_rawDesc)),
-			NumEnums:      7,
-			NumMessages:   71,
+			NumEnums:      9,
+			NumMessages:   88,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

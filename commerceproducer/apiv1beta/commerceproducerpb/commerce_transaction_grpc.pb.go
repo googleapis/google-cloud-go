@@ -39,6 +39,7 @@ const (
 	CommerceTransaction_GetService_FullMethodName                 = "/google.cloud.commerceproducer.v1beta.CommerceTransaction/GetService"
 	CommerceTransaction_ListPrivateOffers_FullMethodName          = "/google.cloud.commerceproducer.v1beta.CommerceTransaction/ListPrivateOffers"
 	CommerceTransaction_GetPrivateOffer_FullMethodName            = "/google.cloud.commerceproducer.v1beta.CommerceTransaction/GetPrivateOffer"
+	CommerceTransaction_ResolveAmendmentTarget_FullMethodName     = "/google.cloud.commerceproducer.v1beta.CommerceTransaction/ResolveAmendmentTarget"
 	CommerceTransaction_CreatePrivateOffer_FullMethodName         = "/google.cloud.commerceproducer.v1beta.CommerceTransaction/CreatePrivateOffer"
 	CommerceTransaction_UpdatePrivateOffer_FullMethodName         = "/google.cloud.commerceproducer.v1beta.CommerceTransaction/UpdatePrivateOffer"
 	CommerceTransaction_PublishPrivateOffer_FullMethodName        = "/google.cloud.commerceproducer.v1beta.CommerceTransaction/PublishPrivateOffer"
@@ -69,6 +70,10 @@ type CommerceTransactionClient interface {
 	ListPrivateOffers(ctx context.Context, in *ListPrivateOffersRequest, opts ...grpc.CallOption) (*ListPrivateOffersResponse, error)
 	// Gets details of a single PrivateOffer.
 	GetPrivateOffer(ctx context.Context, in *GetPrivateOfferRequest, opts ...grpc.CallOption) (*PrivateOffer, error)
+	// Resolves the existing offer that must be amended when creating a new
+	// PrivateOffer. Use this method to determine the correct amendment target
+	// before creating or publishing an offer.
+	ResolveAmendmentTarget(ctx context.Context, in *ResolveAmendmentTargetRequest, opts ...grpc.CallOption) (*ResolveAmendmentTargetResponse, error)
 	// Creates a new PrivateOffer in a given project and location.
 	CreatePrivateOffer(ctx context.Context, in *CreatePrivateOfferRequest, opts ...grpc.CallOption) (*PrivateOffer, error)
 	// Updates the target PrivateOffer.
@@ -141,6 +146,15 @@ func (c *commerceTransactionClient) ListPrivateOffers(ctx context.Context, in *L
 func (c *commerceTransactionClient) GetPrivateOffer(ctx context.Context, in *GetPrivateOfferRequest, opts ...grpc.CallOption) (*PrivateOffer, error) {
 	out := new(PrivateOffer)
 	err := c.cc.Invoke(ctx, CommerceTransaction_GetPrivateOffer_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *commerceTransactionClient) ResolveAmendmentTarget(ctx context.Context, in *ResolveAmendmentTargetRequest, opts ...grpc.CallOption) (*ResolveAmendmentTargetResponse, error) {
+	out := new(ResolveAmendmentTargetResponse)
+	err := c.cc.Invoke(ctx, CommerceTransaction_ResolveAmendmentTarget_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -303,6 +317,10 @@ type CommerceTransactionServer interface {
 	ListPrivateOffers(context.Context, *ListPrivateOffersRequest) (*ListPrivateOffersResponse, error)
 	// Gets details of a single PrivateOffer.
 	GetPrivateOffer(context.Context, *GetPrivateOfferRequest) (*PrivateOffer, error)
+	// Resolves the existing offer that must be amended when creating a new
+	// PrivateOffer. Use this method to determine the correct amendment target
+	// before creating or publishing an offer.
+	ResolveAmendmentTarget(context.Context, *ResolveAmendmentTargetRequest) (*ResolveAmendmentTargetResponse, error)
 	// Creates a new PrivateOffer in a given project and location.
 	CreatePrivateOffer(context.Context, *CreatePrivateOfferRequest) (*PrivateOffer, error)
 	// Updates the target PrivateOffer.
@@ -352,6 +370,9 @@ func (UnimplementedCommerceTransactionServer) ListPrivateOffers(context.Context,
 }
 func (UnimplementedCommerceTransactionServer) GetPrivateOffer(context.Context, *GetPrivateOfferRequest) (*PrivateOffer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetPrivateOffer not implemented")
+}
+func (UnimplementedCommerceTransactionServer) ResolveAmendmentTarget(context.Context, *ResolveAmendmentTargetRequest) (*ResolveAmendmentTargetResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolveAmendmentTarget not implemented")
 }
 func (UnimplementedCommerceTransactionServer) CreatePrivateOffer(context.Context, *CreatePrivateOfferRequest) (*PrivateOffer, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreatePrivateOffer not implemented")
@@ -481,6 +502,24 @@ func _CommerceTransaction_GetPrivateOffer_Handler(srv interface{}, ctx context.C
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(CommerceTransactionServer).GetPrivateOffer(ctx, req.(*GetPrivateOfferRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _CommerceTransaction_ResolveAmendmentTarget_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolveAmendmentTargetRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(CommerceTransactionServer).ResolveAmendmentTarget(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: CommerceTransaction_ResolveAmendmentTarget_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(CommerceTransactionServer).ResolveAmendmentTarget(ctx, req.(*ResolveAmendmentTargetRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -795,6 +834,10 @@ var CommerceTransaction_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetPrivateOffer",
 			Handler:    _CommerceTransaction_GetPrivateOffer_Handler,
+		},
+		{
+			MethodName: "ResolveAmendmentTarget",
+			Handler:    _CommerceTransaction_ResolveAmendmentTarget_Handler,
 		},
 		{
 			MethodName: "CreatePrivateOffer",

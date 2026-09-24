@@ -18,12 +18,14 @@ package dataform
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	dataformpb "cloud.google.com/go/dataform/apiv1/dataformpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -240,6 +242,12 @@ func (op *MoveRepositoryOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CommitLogEntryIterator) All() iter.Seq2[*dataformpb.CommitLogEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CommitLogEntryIterator manages a stream of *dataformpb.CommitLogEntry.
 type CommitLogEntryIterator struct {
 	items    []*dataformpb.CommitLogEntry
@@ -285,6 +293,12 @@ func (it *CommitLogEntryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CompilationResultActionIterator) All() iter.Seq2[*dataformpb.CompilationResultAction, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CompilationResultActionIterator manages a stream of *dataformpb.CompilationResultAction.
@@ -334,6 +348,12 @@ func (it *CompilationResultActionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CompilationResultIterator) All() iter.Seq2[*dataformpb.CompilationResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CompilationResultIterator manages a stream of *dataformpb.CompilationResult.
 type CompilationResultIterator struct {
 	items    []*dataformpb.CompilationResult
@@ -379,6 +399,12 @@ func (it *CompilationResultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DirectoryEntryIterator) All() iter.Seq2[*dataformpb.DirectoryEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DirectoryEntryIterator manages a stream of *dataformpb.DirectoryEntry.
@@ -428,6 +454,12 @@ func (it *DirectoryEntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -473,6 +505,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -522,6 +560,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueryFolderContentsResponse_FolderContentsEntryIterator) All() iter.Seq2[*dataformpb.QueryFolderContentsResponse_FolderContentsEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // QueryFolderContentsResponse_FolderContentsEntryIterator manages a stream of *dataformpb.QueryFolderContentsResponse_FolderContentsEntry.
 type QueryFolderContentsResponse_FolderContentsEntryIterator struct {
 	items    []*dataformpb.QueryFolderContentsResponse_FolderContentsEntry
@@ -567,6 +611,12 @@ func (it *QueryFolderContentsResponse_FolderContentsEntryIterator) takeBuf() int
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator) All() iter.Seq2[*dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator manages a stream of *dataformpb.QueryTeamFolderContentsResponse_TeamFolderContentsEntry.
@@ -616,6 +666,12 @@ func (it *QueryTeamFolderContentsResponse_TeamFolderContentsEntryIterator) takeB
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QueryUserRootContentsResponse_RootContentsEntryIterator) All() iter.Seq2[*dataformpb.QueryUserRootContentsResponse_RootContentsEntry, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // QueryUserRootContentsResponse_RootContentsEntryIterator manages a stream of *dataformpb.QueryUserRootContentsResponse_RootContentsEntry.
 type QueryUserRootContentsResponse_RootContentsEntryIterator struct {
 	items    []*dataformpb.QueryUserRootContentsResponse_RootContentsEntry
@@ -661,6 +717,12 @@ func (it *QueryUserRootContentsResponse_RootContentsEntryIterator) takeBuf() int
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReleaseConfigIterator) All() iter.Seq2[*dataformpb.ReleaseConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReleaseConfigIterator manages a stream of *dataformpb.ReleaseConfig.
@@ -710,6 +772,12 @@ func (it *ReleaseConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RepositoryIterator) All() iter.Seq2[*dataformpb.Repository, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RepositoryIterator manages a stream of *dataformpb.Repository.
 type RepositoryIterator struct {
 	items    []*dataformpb.Repository
@@ -755,6 +823,12 @@ func (it *RepositoryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResultIterator) All() iter.Seq2[*dataformpb.SearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchResultIterator manages a stream of *dataformpb.SearchResult.
@@ -804,6 +878,12 @@ func (it *SearchResultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchTeamFoldersResponse_TeamFolderSearchResultIterator) All() iter.Seq2[*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchTeamFoldersResponse_TeamFolderSearchResultIterator manages a stream of *dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult.
 type SearchTeamFoldersResponse_TeamFolderSearchResultIterator struct {
 	items    []*dataformpb.SearchTeamFoldersResponse_TeamFolderSearchResult
@@ -849,6 +929,12 @@ func (it *SearchTeamFoldersResponse_TeamFolderSearchResultIterator) takeBuf() in
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkflowConfigIterator) All() iter.Seq2[*dataformpb.WorkflowConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkflowConfigIterator manages a stream of *dataformpb.WorkflowConfig.
@@ -898,6 +984,12 @@ func (it *WorkflowConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkflowInvocationActionIterator) All() iter.Seq2[*dataformpb.WorkflowInvocationAction, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // WorkflowInvocationActionIterator manages a stream of *dataformpb.WorkflowInvocationAction.
 type WorkflowInvocationActionIterator struct {
 	items    []*dataformpb.WorkflowInvocationAction
@@ -945,6 +1037,12 @@ func (it *WorkflowInvocationActionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkflowInvocationIterator) All() iter.Seq2[*dataformpb.WorkflowInvocation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // WorkflowInvocationIterator manages a stream of *dataformpb.WorkflowInvocation.
 type WorkflowInvocationIterator struct {
 	items    []*dataformpb.WorkflowInvocation
@@ -990,6 +1088,12 @@ func (it *WorkflowInvocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkspaceIterator) All() iter.Seq2[*dataformpb.Workspace, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkspaceIterator manages a stream of *dataformpb.Workspace.

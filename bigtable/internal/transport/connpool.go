@@ -52,7 +52,6 @@ var maxDrainingTimeout = 30 * time.Minute
 const (
 	artificialLoadIfError        = 10
 	artificialLoadPenalizedTimer = 5 * time.Second
-	requestParamsHeader          = "x-goog-request-params"
 	// maxPrimeWorkers caps the goroutines used to prime initial pool
 	// connections in parallel. Pools smaller than this naturally fan out to
 	// connPoolSize workers; larger pools cap here so we don't spawn one
@@ -170,7 +169,7 @@ func (bc *BigtableConn) Prime(ctx context.Context, fullInstanceName, appProfileI
 		AppProfileId: appProfileID,
 	}
 
-	requestParamsMD := metadata.Pairs(requestParamsHeader,
+	requestParamsMD := metadata.Pairs(RequestParamsHeader,
 		fmt.Sprintf("name=%s&app_profile_id=%s", url.QueryEscape(fullInstanceName), url.QueryEscape(appProfileID)))
 
 	originalContextMd, _ := metadata.FromOutgoingContext(ctx)
@@ -227,6 +226,76 @@ func (p *BigtableChannelPool) connPoolStatsSupplier() []connPoolStats {
 		}
 	}
 	return stats
+}
+
+// ChannelSnapshot is one row in a ChannelPoolSnapshot. All numeric fields are
+// read non-destructively, so the debug UI can poll without disturbing the
+// metrics exporter (which itself swaps errorCount to 0 on each report).
+type ChannelSnapshot struct {
+	Index                int
+	OutstandingUnary     int32
+	OutstandingStreaming int32
+	ErrorCount           int64
+	IsALTSUsed           bool
+	IsDraining           bool
+	CreatedAt            time.Time
+	IPProtocol           string
+	TargetState          string
+	PenaltyExpiresAt     time.Time
+	// Picks and LastActivity are placeholders reserved for a follow-up
+	// change that wires per-entry counters into the pick path — the
+	// debug UI already renders them and treating them as zero here
+	// keeps the wire shape stable.
+	Picks        int64
+	LastActivity time.Time
+}
+
+// ChannelPoolSnapshot is what bigtable/channelz renders. It captures pool-wide
+// metadata (LB policy, connection count) plus one ChannelSnapshot per live
+// connection.
+type ChannelPoolSnapshot struct {
+	LBPolicy   string
+	TotalConns int
+	Channels   []ChannelSnapshot
+	CapturedAt time.Time
+}
+
+// ChannelPoolSnapshot returns a non-destructive snapshot of every connection
+// in the pool, plus pool-wide LB policy. Safe to call concurrently with
+// traffic; reads use the same atomics the hot path uses.
+func (p *BigtableChannelPool) ChannelPoolSnapshot() ChannelPoolSnapshot {
+	conns := p.getConns()
+	snap := ChannelPoolSnapshot{
+		LBPolicy:   p.strategy.String(),
+		TotalConns: len(conns),
+		Channels:   make([]ChannelSnapshot, 0, len(conns)),
+		CapturedAt: time.Now(),
+	}
+	for i, entry := range conns {
+		if entry == nil {
+			continue
+		}
+		cs := ChannelSnapshot{
+			Index:                i,
+			OutstandingUnary:     entry.unaryLoad.Load(),
+			OutstandingStreaming: entry.streamingLoad.Load(),
+			ErrorCount:           entry.errorCount.Load(),
+			IsALTSUsed:           entry.isALTSUsed(),
+			IsDraining:           entry.isDraining(),
+		}
+		if entry.conn != nil {
+			cs.IPProtocol = entry.conn.ipProtocol()
+			cs.TargetState = entry.conn.GetState().String()
+			if created := entry.createdAt(); created > 0 {
+				cs.CreatedAt = time.UnixMilli(created)
+			}
+		}
+		if expiry := entry.penaltyExpiry.Load(); expiry > 0 {
+			cs.PenaltyExpiresAt = time.Unix(0, expiry)
+		}
+		snap.Channels = append(snap.Channels, cs)
+	}
+	return snap
 }
 
 // NewBigtableConn creates a wrapped grpc Client Conn
@@ -700,11 +769,26 @@ func (p *BigtableChannelPool) getBigtableConn() *BigtableConn {
 }
 
 // NewStream selects a connection by the configured load-balancing strategy
-// and opens a stream on it. grpc.OnFinish fires exactly once for any stream
-// that was successfully created (normal completion, context cancellation,
-// transport teardown), so it is the single source of truth for both load
-// accounting and per-stream error attribution — no need to wrap the
-// returned ClientStream.
+// and opens a stream on it. Load accounting and per-stream error attribution
+// happen in a single `finish` closure that runs AT MOST ONCE per NewStream
+// call — the CAS in the closure body enforces that regardless of how many
+// times grpc-go invokes OnFinish (which has been observed to be 0, 1, or
+// more depending on the stream-creation path):
+//
+//   - Nominal path: grpc-go fires OnFinish once at stream teardown; the
+//     CAS wins on the first fire, all bookkeeping runs.
+//   - Double-fire path: grpc-go re-fires OnFinish on some stream-creation
+//     failures (retry unwinder + deferred stream-teardown both call it);
+//     the CAS wins once, subsequent fires are no-ops. Without the guard,
+//     streamingLoad would drift negative — the debug pages first surfaced
+//     this as "Streaming in flight: -9" on an idle classic pool.
+//   - Zero-fire path: if `entry.conn.NewStream` returns an error before
+//     grpc-go arms the OnFinish trigger, the deferred `finish(err)` at
+//     the return site picks it up. Belt-and-suspenders — no current
+//     grpc-go version does this on any path bigtable exercises, but the
+//     accounting invariant is now load-bearing and OnFinish is a
+//     best-effort callback, so we don't want a future interceptor
+//     addition to silently leak +1.
 func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDesc, method string, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 	entry, err := p.selectFunc()
 	if err != nil {
@@ -713,26 +797,36 @@ func (p *BigtableChannelPool) NewStream(ctx context.Context, desc *grpc.StreamDe
 
 	entry.streamingLoad.Add(1)
 
-	onFinish := grpc.OnFinish(func(err error) {
+	// onFinishFired is the exactly-once gate for `finish`. Named for the
+	// callback state ("did the accounting closure run?") — not the stream
+	// state — because both the OnFinish callback and the error-path
+	// fallback below race to be the first-and-only caller. Reads of this
+	// field are only ever "did we already fire?".
+	var onFinishFired atomic.Bool
+	finish := func(err error) {
+		if !onFinishFired.CompareAndSwap(false, true) {
+			return
+		}
 		if err != nil {
 			entry.errorCount.Add(1)
 			entry.applyErrorPenalty(err)
 		}
 		entry.streamingLoad.Add(-1)
-	})
+	}
 	// Prepend onto a fresh slice so we never write into spare capacity of
 	// the caller's opts (which would race with concurrent NewStream calls
 	// that share the same backing array).
-	opts = append([]grpc.CallOption{onFinish}, opts...)
+	opts = append([]grpc.CallOption{grpc.OnFinish(finish)}, opts...)
 
 	stream, err := entry.conn.NewStream(ctx, desc, method, opts...)
 	if err != nil {
-		entry.errorCount.Add(1)
-		entry.applyErrorPenalty(err)
-		entry.streamingLoad.Add(-1) // Decrement immediately on creation failure
+		// Zero-fire fallback: if grpc-go never armed OnFinish before
+		// returning this error, `finish` wins the CAS here. If it DID
+		// fire OnFinish (once or twice), the CAS is already lost and
+		// this call is a no-op — safe to unconditionally invoke.
+		finish(err)
 		return nil, err
 	}
-
 	return stream, nil
 }
 
@@ -1065,4 +1159,23 @@ func (m multiError) Error() string {
 		return s + " (and 1 other error)"
 	}
 	return fmt.Sprintf("%s (and %d other errors)", s, n-1)
+}
+
+// channelPickHintKey identifies the *atomic.Int32 destination the caller
+// wants BigtableChannelPool to publish the picked connEntry index into.
+type channelPickHintKey struct{}
+
+// ChannelPickHintInto returns a context that BigtableChannelPool will use to
+// publish the picked connEntry index into the supplied *atomic.Int32. The
+// caller can then read the value once the stream/invoke has returned.
+//
+// Used by Session creation to link sessions back to the channel they ride
+// on — surfaced in the sessionz / channelz debug UIs. Untouched by callers
+// that don't care: stampChannelPickHint short-circuits when the context
+// lacks the key. Passing dst == nil returns ctx unchanged.
+func ChannelPickHintInto(ctx context.Context, dst *atomic.Int32) context.Context {
+	if dst == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, channelPickHintKey{}, dst)
 }

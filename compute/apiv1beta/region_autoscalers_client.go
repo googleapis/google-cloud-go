@@ -95,7 +95,7 @@ func defaultRegionAutoscalersRESTCallOptions() *RegionAutoscalersCallOptions {
 	}
 }
 
-// internalRegionAutoscalersClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionAutoscalersClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionAutoscalersClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,7 +109,7 @@ type internalRegionAutoscalersClient interface {
 	Update(context.Context, *computepb.UpdateRegionAutoscalerRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionAutoscalersClient is a client for interacting with Google Compute Engine API.
+// RegionAutoscalersClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionAutoscalers API.

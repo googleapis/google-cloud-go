@@ -334,6 +334,11 @@ type LocalInventoryAttributes struct {
 	// Optional. Location of the product inside the store. Maximum length is 20
 	// bytes.
 	InstoreProductLocation *string `protobuf:"bytes,8,opt,name=instore_product_location,json=instoreProductLocation,proto3,oneof" json:"instore_product_location,omitempty"`
+	// Optional. Specifies a label associated with the shipping for the
+	// `LocalInventory` resource. Can be used to group local shipping services to
+	// this particular inventory item. For accepted field format, see the [Local
+	// delivery](https://support.google.com/merchants/answer/14819809#localdelivery)
+	LocalShippingLabel *string `protobuf:"bytes,9,opt,name=local_shipping_label,json=localShippingLabel,proto3,oneof" json:"local_shipping_label,omitempty"`
 	// Optional. An optional list of loyalty programs containing applicable
 	// loyalty member prices for this product at this store.
 	//
@@ -350,8 +355,17 @@ type LocalInventoryAttributes struct {
 	// For local inventory specific details, see the [Local inventory data
 	// specification](https://support.google.com/merchants/answer/3061342).
 	LoyaltyPrograms []*InventoryLoyaltyProgram `protobuf:"bytes,10,rep,name=loyalty_programs,json=loyaltyPrograms,proto3" json:"loyalty_programs,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. A list of custom (merchant-provided) attributes. It can also be
+	// used for submitting any attribute of the data specification in its generic
+	// form (for example, `{ "name": "size type", "value": "regular" }`). This is
+	// useful for submitting attributes not explicitly exposed by the API. Maximum
+	// allowed number of characters for each custom attribute is 10240 (represents
+	// sum of characters for name and value). Maximum 2500 custom attributes can
+	// be set, with total size of 102.4kB. Underscores in custom
+	// attribute names are replaced by spaces upon insertion.
+	CustomAttributes []*typepb.CustomAttribute `protobuf:"bytes,11,rep,name=custom_attributes,json=customAttributes,proto3" json:"custom_attributes,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *LocalInventoryAttributes) Reset() {
@@ -440,9 +454,23 @@ func (x *LocalInventoryAttributes) GetInstoreProductLocation() string {
 	return ""
 }
 
+func (x *LocalInventoryAttributes) GetLocalShippingLabel() string {
+	if x != nil && x.LocalShippingLabel != nil {
+		return *x.LocalShippingLabel
+	}
+	return ""
+}
+
 func (x *LocalInventoryAttributes) GetLoyaltyPrograms() []*InventoryLoyaltyProgram {
 	if x != nil {
 		return x.LoyaltyPrograms
+	}
+	return nil
+}
+
+func (x *LocalInventoryAttributes) GetCustomAttributes() []*typepb.CustomAttribute {
+	if x != nil {
+		return x.CustomAttributes
 	}
 	return nil
 }
@@ -668,8 +696,7 @@ var File_google_shopping_merchant_inventories_v1_inventories_common_proto protor
 
 const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawDesc = "" +
 	"\n" +
-	"@google/shopping/merchant/inventories/v1/inventories_common.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xb7\n" +
-	"\n" +
+	"@google/shopping/merchant/inventories/v1/inventories_common.proto\x12'google.shopping.merchant.inventories.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xe5\v\n" +
 	"\x18LocalInventoryAttributes\x126\n" +
 	"\x05price\x18\x01 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01R\x05price\x12?\n" +
 	"\n" +
@@ -680,9 +707,11 @@ const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawD
 	"\rpickup_method\x18\x06 \x01(\x0e2N.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupMethodB\x03\xe0A\x01H\x02R\fpickupMethod\x88\x01\x01\x12t\n" +
 	"\n" +
 	"pickup_sla\x18\a \x01(\x0e2K.google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupSlaB\x03\xe0A\x01H\x03R\tpickupSla\x88\x01\x01\x12B\n" +
-	"\x18instore_product_location\x18\b \x01(\tB\x03\xe0A\x01H\x04R\x16instoreProductLocation\x88\x01\x01\x12p\n" +
+	"\x18instore_product_location\x18\b \x01(\tB\x03\xe0A\x01H\x04R\x16instoreProductLocation\x88\x01\x01\x12:\n" +
+	"\x14local_shipping_label\x18\t \x01(\tB\x03\xe0A\x01H\x05R\x12localShippingLabel\x88\x01\x01\x12p\n" +
 	"\x10loyalty_programs\x18\n" +
-	" \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x03\xe0A\x01R\x0floyaltyPrograms\"\x8f\x01\n" +
+	" \x03(\v2@.google.shopping.merchant.inventories.v1.InventoryLoyaltyProgramB\x03\xe0A\x01R\x0floyaltyPrograms\x12W\n" +
+	"\x11custom_attributes\x18\v \x03(\v2%.google.shopping.type.CustomAttributeB\x03\xe0A\x01R\x10customAttributes\"\x8f\x01\n" +
 	"\fAvailability\x12,\n" +
 	"(LOCAL_INVENTORY_AVAILABILITY_UNSPECIFIED\x10\x00\x12\f\n" +
 	"\bIN_STOCK\x10\x01\x12\x18\n" +
@@ -711,7 +740,8 @@ const file_google_shopping_merchant_inventories_v1_inventories_common_proto_rawD
 	"\t_quantityB\x10\n" +
 	"\x0e_pickup_methodB\r\n" +
 	"\v_pickup_slaB\x1b\n" +
-	"\x19_instore_product_location\"\xc4\x04\n" +
+	"\x19_instore_product_locationB\x17\n" +
+	"\x15_local_shipping_label\"\xc4\x04\n" +
 	"\x17InventoryLoyaltyProgram\x12(\n" +
 	"\rprogram_label\x18\x01 \x01(\tH\x00R\fprogramLabel\x88\x01\x01\x12\"\n" +
 	"\n" +
@@ -766,6 +796,7 @@ var file_google_shopping_merchant_inventories_v1_inventories_common_proto_goType
 	(*RegionalInventoryAttributes)(nil),           // 6: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes
 	(*typepb.Price)(nil),                          // 7: google.shopping.type.Price
 	(*interval.Interval)(nil),                     // 8: google.type.Interval
+	(*typepb.CustomAttribute)(nil),                // 9: google.shopping.type.CustomAttribute
 }
 var file_google_shopping_merchant_inventories_v1_inventories_common_proto_depIdxs = []int32{
 	7,  // 0: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.price:type_name -> google.shopping.type.Price
@@ -775,19 +806,20 @@ var file_google_shopping_merchant_inventories_v1_inventories_common_proto_depIdx
 	1,  // 4: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.pickup_method:type_name -> google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupMethod
 	2,  // 5: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.pickup_sla:type_name -> google.shopping.merchant.inventories.v1.LocalInventoryAttributes.PickupSla
 	5,  // 6: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.loyalty_programs:type_name -> google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram
-	7,  // 7: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.price:type_name -> google.shopping.type.Price
-	7,  // 8: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.cashback_for_future_use:type_name -> google.shopping.type.Price
-	8,  // 9: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.member_price_effective_interval:type_name -> google.type.Interval
-	7,  // 10: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.price:type_name -> google.shopping.type.Price
-	7,  // 11: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price:type_name -> google.shopping.type.Price
-	8,  // 12: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price_effective_date:type_name -> google.type.Interval
-	3,  // 13: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.availability:type_name -> google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.Availability
-	5,  // 14: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.loyalty_programs:type_name -> google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram
-	15, // [15:15] is the sub-list for method output_type
-	15, // [15:15] is the sub-list for method input_type
-	15, // [15:15] is the sub-list for extension type_name
-	15, // [15:15] is the sub-list for extension extendee
-	0,  // [0:15] is the sub-list for field type_name
+	9,  // 7: google.shopping.merchant.inventories.v1.LocalInventoryAttributes.custom_attributes:type_name -> google.shopping.type.CustomAttribute
+	7,  // 8: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.price:type_name -> google.shopping.type.Price
+	7,  // 9: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.cashback_for_future_use:type_name -> google.shopping.type.Price
+	8,  // 10: google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram.member_price_effective_interval:type_name -> google.type.Interval
+	7,  // 11: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.price:type_name -> google.shopping.type.Price
+	7,  // 12: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price:type_name -> google.shopping.type.Price
+	8,  // 13: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.sale_price_effective_date:type_name -> google.type.Interval
+	3,  // 14: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.availability:type_name -> google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.Availability
+	5,  // 15: google.shopping.merchant.inventories.v1.RegionalInventoryAttributes.loyalty_programs:type_name -> google.shopping.merchant.inventories.v1.InventoryLoyaltyProgram
+	16, // [16:16] is the sub-list for method output_type
+	16, // [16:16] is the sub-list for method input_type
+	16, // [16:16] is the sub-list for extension type_name
+	16, // [16:16] is the sub-list for extension extendee
+	0,  // [0:16] is the sub-list for field type_name
 }
 
 func init() { file_google_shopping_merchant_inventories_v1_inventories_common_proto_init() }

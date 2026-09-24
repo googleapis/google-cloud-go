@@ -18,12 +18,14 @@ package workstations
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	workstationspb "cloud.google.com/go/workstations/apiv1beta/workstationspb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -795,6 +797,12 @@ func (op *UpdateWorkstationOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -840,6 +848,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkstationClusterIterator) All() iter.Seq2[*workstationspb.WorkstationCluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkstationClusterIterator manages a stream of *workstationspb.WorkstationCluster.
@@ -889,6 +903,12 @@ func (it *WorkstationClusterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkstationConfigIterator) All() iter.Seq2[*workstationspb.WorkstationConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // WorkstationConfigIterator manages a stream of *workstationspb.WorkstationConfig.
 type WorkstationConfigIterator struct {
 	items    []*workstationspb.WorkstationConfig
@@ -934,6 +954,12 @@ func (it *WorkstationConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkstationIterator) All() iter.Seq2[*workstationspb.Workstation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkstationIterator manages a stream of *workstationspb.Workstation.

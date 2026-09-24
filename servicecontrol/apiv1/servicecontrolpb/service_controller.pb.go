@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -667,8 +667,8 @@ const file_google_api_servicecontrol_v1_service_controller_proto_rawDesc = "" +
 	"\x06status\x18\x02 \x01(\v2\x12.google.rpc.StatusR\x06status2\xbc\x03\n" +
 	"\x11ServiceController\x12\x8e\x01\n" +
 	"\x05Check\x12*.google.api.servicecontrol.v1.CheckRequest\x1a+.google.api.servicecontrol.v1.CheckResponse\",\x82\xd3\xe4\x93\x02&:\x01*\"!/v1/services/{service_name}:check\x12\x92\x01\n" +
-	"\x06Report\x12+.google.api.servicecontrol.v1.ReportRequest\x1a,.google.api.servicecontrol.v1.ReportResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/v1/services/{service_name}:report\x1a\x80\x01\xcaA\x1dservicecontrol.googleapis.com\xd2A]https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/servicecontrolB\xf8\x01\n" +
-	" com.google.api.servicecontrol.v1B\x16ServiceControllerProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xf8\x01\x01\xa2\x02\x04GASC\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
+	"\x06Report\x12+.google.api.servicecontrol.v1.ReportRequest\x1a,.google.api.servicecontrol.v1.ReportResponse\"-\x82\xd3\xe4\x93\x02':\x01*\"\"/v1/services/{service_name}:report\x1a\x80\x01\xcaA\x1dservicecontrol.googleapis.com\xd2A]https://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/servicecontrolB\xee\x01\n" +
+	" com.google.api.servicecontrol.v1B\x16ServiceControllerProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
 
 var (
 	file_google_api_servicecontrol_v1_service_controller_proto_rawDescOnce sync.Once

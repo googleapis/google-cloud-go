@@ -783,6 +783,200 @@
         }
       }
     },
+    "FeedsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "FeedsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFeed": {
+              "methods": [
+                "CreateFeed"
+              ]
+            },
+            "DeleteFeed": {
+              "methods": [
+                "DeleteFeed"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DisableFeed": {
+              "methods": [
+                "DisableFeed"
+              ]
+            },
+            "EnableFeed": {
+              "methods": [
+                "EnableFeed"
+              ]
+            },
+            "FetchServiceAccountForCustomer": {
+              "methods": [
+                "FetchServiceAccountForCustomer"
+              ]
+            },
+            "GenerateSecret": {
+              "methods": [
+                "GenerateSecret"
+              ]
+            },
+            "GetFeed": {
+              "methods": [
+                "GetFeed"
+              ]
+            },
+            "GetFeedPack": {
+              "methods": [
+                "GetFeedPack"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportPushLogs": {
+              "methods": [
+                "ImportPushLogs"
+              ]
+            },
+            "ListFeedPacks": {
+              "methods": [
+                "ListFeedPacks"
+              ]
+            },
+            "ListFeedSourceTypeSchemas": {
+              "methods": [
+                "ListFeedSourceTypeSchemas"
+              ]
+            },
+            "ListFeeds": {
+              "methods": [
+                "ListFeeds"
+              ]
+            },
+            "ListLogTypeSchemas": {
+              "methods": [
+                "ListLogTypeSchemas"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateFeed": {
+              "methods": [
+                "UpdateFeed"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "FeedsClient",
+          "rpcs": {
+            "CancelOperation": {
+              "methods": [
+                "CancelOperation"
+              ]
+            },
+            "CreateFeed": {
+              "methods": [
+                "CreateFeed"
+              ]
+            },
+            "DeleteFeed": {
+              "methods": [
+                "DeleteFeed"
+              ]
+            },
+            "DeleteOperation": {
+              "methods": [
+                "DeleteOperation"
+              ]
+            },
+            "DisableFeed": {
+              "methods": [
+                "DisableFeed"
+              ]
+            },
+            "EnableFeed": {
+              "methods": [
+                "EnableFeed"
+              ]
+            },
+            "FetchServiceAccountForCustomer": {
+              "methods": [
+                "FetchServiceAccountForCustomer"
+              ]
+            },
+            "GenerateSecret": {
+              "methods": [
+                "GenerateSecret"
+              ]
+            },
+            "GetFeed": {
+              "methods": [
+                "GetFeed"
+              ]
+            },
+            "GetFeedPack": {
+              "methods": [
+                "GetFeedPack"
+              ]
+            },
+            "GetOperation": {
+              "methods": [
+                "GetOperation"
+              ]
+            },
+            "ImportPushLogs": {
+              "methods": [
+                "ImportPushLogs"
+              ]
+            },
+            "ListFeedPacks": {
+              "methods": [
+                "ListFeedPacks"
+              ]
+            },
+            "ListFeedSourceTypeSchemas": {
+              "methods": [
+                "ListFeedSourceTypeSchemas"
+              ]
+            },
+            "ListFeeds": {
+              "methods": [
+                "ListFeeds"
+              ]
+            },
+            "ListLogTypeSchemas": {
+              "methods": [
+                "ListLogTypeSchemas"
+              ]
+            },
+            "ListOperations": {
+              "methods": [
+                "ListOperations"
+              ]
+            },
+            "UpdateFeed": {
+              "methods": [
+                "UpdateFeed"
+              ]
+            }
+          }
+        }
+      }
+    },
     "FindingsRefinementService": {
       "clients": {
         "grpc": {

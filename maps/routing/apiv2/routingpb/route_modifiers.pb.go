@@ -25,6 +25,7 @@ import (
 	sync "sync"
 	unsafe "unsafe"
 
+	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
 )
@@ -64,7 +65,15 @@ type RouteModifiers struct {
 	// tries to return the cash price.
 	// Applies only to the `DRIVE` and `TWO_WHEELER`
 	// [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
-	TollPasses    []TollPass `protobuf:"varint,6,rep,packed,name=toll_passes,json=tollPasses,proto3,enum=google.maps.routing.v2.TollPass" json:"toll_passes,omitempty"`
+	TollPasses []TollPass `protobuf:"varint,6,rep,packed,name=toll_passes,json=tollPasses,proto3,enum=google.maps.routing.v2.TollPass" json:"toll_passes,omitempty"`
+	// Optional. When set to true, avoids tunnels where reasonable, giving
+	// preference to routes not containing tunnels. Applies only to the `DRIVE`
+	// and `TWO_WHEELER`
+	// [`RouteTravelMode`][google.maps.routing.v2.RouteTravelMode].
+	// [`RoutingPreference`][google.maps.routing.v2.RoutingPreference]
+	// must be set to `TRAFFIC_AWARE_OPTIMAL`.
+	// This field is not supported in ComputeRouteMatrix.
+	AvoidTunnels  bool `protobuf:"varint,7,opt,name=avoid_tunnels,json=avoidTunnels,proto3" json:"avoid_tunnels,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -141,11 +150,18 @@ func (x *RouteModifiers) GetTollPasses() []TollPass {
 	return nil
 }
 
+func (x *RouteModifiers) GetAvoidTunnels() bool {
+	if x != nil {
+		return x.AvoidTunnels
+	}
+	return false
+}
+
 var File_google_maps_routing_v2_route_modifiers_proto protoreflect.FileDescriptor
 
 const file_google_maps_routing_v2_route_modifiers_proto_rawDesc = "" +
 	"\n" +
-	",google/maps/routing/v2/route_modifiers.proto\x12\x16google.maps.routing.v2\x1a(google/maps/routing/v2/toll_passes.proto\x1a)google/maps/routing/v2/vehicle_info.proto\"\xab\x02\n" +
+	",google/maps/routing/v2/route_modifiers.proto\x12\x16google.maps.routing.v2\x1a\x1fgoogle/api/field_behavior.proto\x1a(google/maps/routing/v2/toll_passes.proto\x1a)google/maps/routing/v2/vehicle_info.proto\"\xd5\x02\n" +
 	"\x0eRouteModifiers\x12\x1f\n" +
 	"\vavoid_tolls\x18\x01 \x01(\bR\n" +
 	"avoidTolls\x12%\n" +
@@ -154,7 +170,8 @@ const file_google_maps_routing_v2_route_modifiers_proto_rawDesc = "" +
 	"\favoid_indoor\x18\x04 \x01(\bR\vavoidIndoor\x12F\n" +
 	"\fvehicle_info\x18\x05 \x01(\v2#.google.maps.routing.v2.VehicleInfoR\vvehicleInfo\x12A\n" +
 	"\vtoll_passes\x18\x06 \x03(\x0e2 .google.maps.routing.v2.TollPassR\n" +
-	"tollPassesB\xc5\x01\n" +
+	"tollPasses\x12(\n" +
+	"\ravoid_tunnels\x18\a \x01(\bB\x03\xe0A\x01R\favoidTunnelsB\xc5\x01\n" +
 	"\x1acom.google.maps.routing.v2B\x13RouteModifiersProtoP\x01Z:cloud.google.com/go/maps/routing/apiv2/routingpb;routingpb\xa2\x02\x05GMRV2\xaa\x02\x16Google.Maps.Routing.V2\xca\x02\x16Google\\Maps\\Routing\\V2\xea\x02\x19Google::Maps::Routing::V2b\x06proto3"
 
 var (

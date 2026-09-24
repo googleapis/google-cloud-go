@@ -1596,6 +1596,11 @@ func (c *restClient) GetDocument(ctx context.Context, req *firestorepb.GetDocume
 		}
 		params.Add("readTime", string(field[1:len(field)-1]))
 	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+		}
+	}
 	if req.GetTransaction() != nil {
 		params.Add("transaction", fmt.Sprintf("%v", req.GetTransaction()))
 	}
@@ -1687,6 +1692,11 @@ func (c *restClient) ListDocuments(ctx context.Context, req *firestorepb.ListDoc
 			}
 			params.Add("readTime", string(field[1:len(field)-1]))
 		}
+		if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+			for _, item := range items {
+				params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+			}
+		}
 		if req.GetShowMissing() {
 			params.Add("showMissing", fmt.Sprintf("%v", req.GetShowMissing()))
 		}
@@ -1774,6 +1784,11 @@ func (c *restClient) UpdateDocument(ctx context.Context, req *firestorepb.Update
 			params.Add("mask.fieldPaths", fmt.Sprintf("%v", item))
 		}
 	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+		}
+	}
 	if items := req.GetUpdateMask().GetFieldPaths(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("updateMask.fieldPaths", fmt.Sprintf("%v", item))
@@ -1842,6 +1857,11 @@ func (c *restClient) DeleteDocument(ctx context.Context, req *firestorepb.Delete
 			return err
 		}
 		params.Add("currentDocument.updateTime", string(field[1:len(field)-1]))
+	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
+		}
 	}
 
 	baseUrl.RawQuery = params.Encode()
@@ -2754,6 +2774,11 @@ func (c *restClient) CreateDocument(ctx context.Context, req *firestorepb.Create
 	if items := req.GetMask().GetFieldPaths(); len(items) > 0 {
 		for _, item := range items {
 			params.Add("mask.fieldPaths", fmt.Sprintf("%v", item))
+		}
+	}
+	if items := req.GetRequestOptions().GetRequestTags(); len(items) > 0 {
+		for _, item := range items {
+			params.Add("requestOptions.requestTags", fmt.Sprintf("%v", item))
 		}
 	}
 

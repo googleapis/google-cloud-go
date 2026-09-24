@@ -88,7 +88,7 @@ func defaultMachineTypesRESTCallOptions() *MachineTypesCallOptions {
 	}
 }
 
-// internalMachineTypesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalMachineTypesClient is an interface that defines the methods available from Compute Engine API.
 type internalMachineTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -98,7 +98,7 @@ type internalMachineTypesClient interface {
 	List(context.Context, *computepb.ListMachineTypesRequest, ...gax.CallOption) *MachineTypeIterator
 }
 
-// MachineTypesClient is a client for interacting with Google Compute Engine API.
+// MachineTypesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The MachineTypes API.

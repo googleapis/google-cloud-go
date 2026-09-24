@@ -18,11 +18,13 @@ package osconfig
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	osconfigpb "cloud.google.com/go/osconfig/apiv1alpha/osconfigpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -207,6 +209,12 @@ func (op *UpdateOSPolicyAssignmentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceOSPoliciesComplianceIterator) All() iter.Seq2[*osconfigpb.InstanceOSPoliciesCompliance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceOSPoliciesComplianceIterator manages a stream of *osconfigpb.InstanceOSPoliciesCompliance.
 type InstanceOSPoliciesComplianceIterator struct {
 	items    []*osconfigpb.InstanceOSPoliciesCompliance
@@ -252,6 +260,12 @@ func (it *InstanceOSPoliciesComplianceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InventoryIterator) All() iter.Seq2[*osconfigpb.Inventory, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InventoryIterator manages a stream of *osconfigpb.Inventory.
@@ -301,6 +315,12 @@ func (it *InventoryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OSPolicyAssignmentIterator) All() iter.Seq2[*osconfigpb.OSPolicyAssignment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OSPolicyAssignmentIterator manages a stream of *osconfigpb.OSPolicyAssignment.
 type OSPolicyAssignmentIterator struct {
 	items    []*osconfigpb.OSPolicyAssignment
@@ -348,6 +368,12 @@ func (it *OSPolicyAssignmentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OSPolicyAssignmentReportIterator) All() iter.Seq2[*osconfigpb.OSPolicyAssignmentReport, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OSPolicyAssignmentReportIterator manages a stream of *osconfigpb.OSPolicyAssignmentReport.
 type OSPolicyAssignmentReportIterator struct {
 	items    []*osconfigpb.OSPolicyAssignmentReport
@@ -393,6 +419,12 @@ func (it *OSPolicyAssignmentReportIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VulnerabilityReportIterator) All() iter.Seq2[*osconfigpb.VulnerabilityReport, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VulnerabilityReportIterator manages a stream of *osconfigpb.VulnerabilityReport.

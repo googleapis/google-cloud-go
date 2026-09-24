@@ -18,12 +18,14 @@ package stitcher
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	stitcherpb "cloud.google.com/go/video/stitcher/apiv1/stitcherpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -715,6 +717,12 @@ func (op *UpdateVodConfigOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CdnKeyIterator) All() iter.Seq2[*stitcherpb.CdnKey, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CdnKeyIterator manages a stream of *stitcherpb.CdnKey.
 type CdnKeyIterator struct {
 	items    []*stitcherpb.CdnKey
@@ -760,6 +768,12 @@ func (it *CdnKeyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LiveAdTagDetailIterator) All() iter.Seq2[*stitcherpb.LiveAdTagDetail, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LiveAdTagDetailIterator manages a stream of *stitcherpb.LiveAdTagDetail.
@@ -809,6 +823,12 @@ func (it *LiveAdTagDetailIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LiveConfigIterator) All() iter.Seq2[*stitcherpb.LiveConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LiveConfigIterator manages a stream of *stitcherpb.LiveConfig.
 type LiveConfigIterator struct {
 	items    []*stitcherpb.LiveConfig
@@ -854,6 +874,12 @@ func (it *LiveConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -903,6 +929,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SlateIterator) All() iter.Seq2[*stitcherpb.Slate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SlateIterator manages a stream of *stitcherpb.Slate.
 type SlateIterator struct {
 	items    []*stitcherpb.Slate
@@ -948,6 +980,12 @@ func (it *SlateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VodAdTagDetailIterator) All() iter.Seq2[*stitcherpb.VodAdTagDetail, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VodAdTagDetailIterator manages a stream of *stitcherpb.VodAdTagDetail.
@@ -997,6 +1035,12 @@ func (it *VodAdTagDetailIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VodConfigIterator) All() iter.Seq2[*stitcherpb.VodConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // VodConfigIterator manages a stream of *stitcherpb.VodConfig.
 type VodConfigIterator struct {
 	items    []*stitcherpb.VodConfig
@@ -1042,6 +1086,12 @@ func (it *VodConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VodStitchDetailIterator) All() iter.Seq2[*stitcherpb.VodStitchDetail, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VodStitchDetailIterator manages a stream of *stitcherpb.VodStitchDetail.

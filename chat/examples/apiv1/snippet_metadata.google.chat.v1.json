@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "1.3.0"
+    "version": "1.7.0"
   },
   "snippets": [
     {
@@ -194,6 +194,52 @@
         }
       ],
       "title": "chat CreateMessage Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.CreateMessagePin",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.CreateMessagePin",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "CreateMessagePin"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.CreateMessagePinRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.MessagePin",
+        "shortName": "CreateMessagePin"
+      },
+      "description": "CreateMessagePin creates a message pin.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.spaces.pins`\n- `https: //www.googleapis.com/auth/chat.spaces`",
+      "file": "Client/CreateMessagePin/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_CreateMessagePin_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat CreateMessagePin Sample"
     },
     {
       "clientMethod": {
@@ -468,6 +514,51 @@
         }
       ],
       "title": "chat DeleteMessage Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.DeleteMessagePin",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.DeleteMessagePin",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "DeleteMessagePin"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.DeleteMessagePinRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteMessagePin"
+      },
+      "description": "DeleteMessagePin deletes a message pin.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.spaces.pins`\n- `https: //www.googleapis.com/auth/chat.spaces`",
+      "file": "Client/DeleteMessagePin/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_DeleteMessagePin_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat DeleteMessagePin Sample"
     },
     {
       "clientMethod": {
@@ -1254,6 +1345,52 @@
           "fullName": "google.chat.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.chat.v1.Client.ListMessagePins",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.ListMessagePins",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "ListMessagePins"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.ListMessagePinsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "MessagePinIterator",
+        "shortName": "ListMessagePins"
+      },
+      "description": "ListMessagePins lists message pins in a space. Users can pin important messages in spaces\nfor easy access. For more information, see [Pin or unpin a conversation in\nGoogle Chat](https: //support.google.com/chat/answer/15622437).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.spaces.pins.readonly`\n- `https: //www.googleapis.com/auth/chat.spaces.pins`\n- `https: //www.googleapis.com/auth/chat.spaces.readonly`\n- `https: //www.googleapis.com/auth/chat.spaces`",
+      "file": "Client/ListMessagePins/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_ListMessagePins_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat ListMessagePins Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.chat.v1.Client.ListMessages",
         "method": {
           "fullName": "google.chat.v1.ChatService.ListMessages",
@@ -1760,6 +1897,52 @@
           "fullName": "google.chat.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.chat.v1.Client.SearchMessages",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.SearchMessages",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "SearchMessages"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.SearchMessagesRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "SearchMessageResultIterator",
+        "shortName": "SearchMessages"
+      },
+      "description": "SearchMessages searches for messages in Google Chat that the calling user has access to.\nReturns a list of messages matching the search criteria.\n\nTo search across all spaces the user has access to, set `parent` to\n`spaces/-`. Using any other value for `parent` results in an\n`INVALID_ARGUMENT` error. The returned messages have their `name` field\npopulated with the full resource name, which includes the specific `space`\nin which the message resides.\n\nThis API doesn't return all message types. The types of messages listed\nbelow aren't included in the response. Use\n[ListMessages][google.chat.v1.ChatService.ListMessages] to list all\nmessages.\n\n- Private Messages that are visible to the authenticated user.\n- Messages posted by Chat apps in spaces or group chats.\n- Messages in a Chat app DM.\n- Messages from blocked users.\n- Messages in spaces that the caller has muted.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.messages.readonly`\n- `https: //www.googleapis.com/auth/chat.messages`",
+      "file": "Client/SearchMessages/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_SearchMessages_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat SearchMessages Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.chat.v1.Client.SearchSpaces",
         "method": {
           "fullName": "google.chat.v1.ChatService.SearchSpaces",
@@ -1786,7 +1969,7 @@
         "resultType": "SpaceIterator",
         "shortName": "SearchSpaces"
       },
-      "description": "SearchSpaces returns a list of spaces in a Google Workspace organization based on an\nadministrator's search. In the request, set `use_admin_access` to `true`.\nFor an example, see [Search for and manage\nspaces](https: //developers.google.com/workspace/chat/search-manage-admin).\n\nRequires [user\nauthentication with administrator\nprivileges](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)\nand one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.admin.spaces.readonly`\n- `https: //www.googleapis.com/auth/chat.admin.spaces`",
+      "description": "SearchSpaces returns a list of spaces in a Google Workspace organization. For an\nexample, see [Search for and manage\nspaces](https: //developers.google.com/workspace/chat/search-manage-admin).\n\nWhen `use_admin_access` is set to `false`, the results are limited to\nspaces where the calling user is a joined member. To search with\nadministrator privileges, set `use_admin_access` to `true`.\n\nSupports the following types of\n[authentication](https: //developers.google.com/workspace/chat/authenticate-authorize): \n\n- [User\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following authorization scopes: \n- `https: //www.googleapis.com/auth/chat.spaces.readonly`\n- `https: //www.googleapis.com/auth/chat.spaces`\n\n- [User\nauthentication with administrator\nprivileges](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)\nand one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n- `https: //www.googleapis.com/auth/chat.admin.spaces.readonly`\n- `https: //www.googleapis.com/auth/chat.admin.spaces`",
       "file": "Client/SearchSpaces/main.go",
       "language": "GO",
       "origin": "API_DEFINITION",

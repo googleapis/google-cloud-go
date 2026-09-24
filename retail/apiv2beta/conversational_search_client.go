@@ -106,7 +106,7 @@ func defaultConversationalSearchRESTCallOptions() *ConversationalSearchCallOptio
 	}
 }
 
-// internalConversationalSearchClient is an interface that defines the methods available from Vertex AI Search for commerce API.
+// internalConversationalSearchClient is an interface that defines the methods available from AI Commerce Search API.
 type internalConversationalSearchClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -116,7 +116,7 @@ type internalConversationalSearchClient interface {
 	ListOperations(context.Context, *longrunningpb.ListOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// ConversationalSearchClient is a client for interacting with Vertex AI Search for commerce API.
+// ConversationalSearchClient is a client for interacting with AI Commerce Search API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Service for retail conversational search.
@@ -173,7 +173,7 @@ func (c *ConversationalSearchClient) ListOperations(ctx context.Context, req *lo
 	return c.internalClient.ListOperations(ctx, req, opts...)
 }
 
-// conversationalSearchGRPCClient is a client for interacting with Vertex AI Search for commerce API over gRPC transport.
+// conversationalSearchGRPCClient is a client for interacting with AI Commerce Search API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type conversationalSearchGRPCClient struct {

@@ -631,6 +631,41 @@ func TestPoolNewStream(t *testing.T) {
 			t.Errorf("Load is %d, want 0 after stream error", pool.getConns()[0].streamingLoad.Load())
 		}
 	})
+
+	// Regression: when entry.conn.NewStream itself returns an error (e.g.
+	// the ClientConn is closed), grpc-go's deferred endOfClientStream can
+	// fire every registered OnFinish. Load accounting must not double-
+	// decrement on that path or streamingLoad goes negative and stays
+	// negative.
+	t.Run("ImmediateFailureLoadStaysNonNegative", func(t *testing.T) {
+		poolSize := 1
+		fake := &fakeService{}
+		addr := setupTestServer(t, fake)
+		dialFunc := func() (*BigtableConn, error) { return dialBigtableserver(addr) }
+		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, dialFunc, time.Now(), poolOpts()...)
+		if err != nil {
+			t.Fatalf("Failed to create pool: %v", err)
+		}
+		defer pool.Close()
+
+		entry := pool.getConns()[0]
+		// Close the underlying ClientConn so any subsequent NewStream fails
+		// immediately with codes.Canceled / codes.Unavailable.
+		entry.conn.Close()
+
+		for i := 0; i < 5; i++ {
+			_, err := pool.NewStream(ctx, &grpc.StreamDesc{StreamName: "StreamingCall"}, "/grpc.testing.BenchmarkService/StreamingCall")
+			if err == nil {
+				t.Fatalf("attempt %d: NewStream unexpectedly succeeded on a closed conn", i)
+			}
+			if got := entry.streamingLoad.Load(); got < 0 {
+				t.Fatalf("attempt %d: streamingLoad went negative (%d) — accounting fired more than once", i, got)
+			}
+		}
+		if got := entry.streamingLoad.Load(); got != 0 {
+			t.Errorf("streamingLoad after 5 failed NewStreams = %d, want 0", got)
+		}
+	})
 }
 
 func TestNewBigtableChannelPool(t *testing.T) {
@@ -1735,7 +1770,7 @@ func TestDirectAccessLogic(t *testing.T) {
 
 		poolSize := 3
 		fake.setPingCount(0)
-		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
+		opts := append(poolOpts(), WithDirectAccessChecker(NewPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 
 		if err != nil {
@@ -1778,7 +1813,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 2
-		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
+		opts := append(poolOpts(), WithDirectAccessChecker(NewPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
@@ -1803,7 +1838,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
+		opts := append(poolOpts(), WithDirectAccessChecker(NewPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)
@@ -1829,7 +1864,7 @@ func TestDirectAccessLogic(t *testing.T) {
 			daConn = c
 			return c, nil
 		}
-		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
+		opts := append(poolOpts(), WithDirectAccessChecker(NewPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		poolSize := 1
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
@@ -1894,7 +1929,7 @@ func TestDirectAccessLogic(t *testing.T) {
 		}
 
 		poolSize := 1
-		opts := append(poolOpts(), WithDirectAccessChecker(newPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
+		opts := append(poolOpts(), WithDirectAccessChecker(NewPingAndWarmDirectAccessChecker(daDial, newPingAndWarmChannelPrimer(testInstanceName, testAppProfile, nil), nil, nil)))
 		pool, err := NewBigtableChannelPool(ctx, poolSize, btopt.RoundRobin, baseDialFunc, time.Now(), opts...)
 		if err != nil {
 			t.Fatalf("Failed to create pool: %v", err)

@@ -100,7 +100,7 @@ func defaultReservationBlocksRESTCallOptions() *ReservationBlocksCallOptions {
 	}
 }
 
-// internalReservationBlocksClient is an interface that defines the methods available from Google Compute Engine API.
+// internalReservationBlocksClient is an interface that defines the methods available from Compute Engine API.
 type internalReservationBlocksClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -113,7 +113,7 @@ type internalReservationBlocksClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsReservationBlockRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// ReservationBlocksClient is a client for interacting with Google Compute Engine API.
+// ReservationBlocksClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ReservationBlocks API.

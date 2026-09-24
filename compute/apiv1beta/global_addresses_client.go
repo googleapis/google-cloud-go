@@ -95,7 +95,7 @@ func defaultGlobalAddressesRESTCallOptions() *GlobalAddressesCallOptions {
 	}
 }
 
-// internalGlobalAddressesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalAddressesClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalAddressesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -109,7 +109,7 @@ type internalGlobalAddressesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsGlobalAddressRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// GlobalAddressesClient is a client for interacting with Google Compute Engine API.
+// GlobalAddressesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalAddresses API.

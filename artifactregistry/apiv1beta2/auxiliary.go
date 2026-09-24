@@ -18,11 +18,13 @@ package artifactregistry
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	artifactregistrypb "cloud.google.com/go/artifactregistry/apiv1beta2/artifactregistrypb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -378,6 +380,12 @@ func (op *ImportYumArtifactsOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FileIterator) All() iter.Seq2[*artifactregistrypb.File, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FileIterator manages a stream of *artifactregistrypb.File.
 type FileIterator struct {
 	items    []*artifactregistrypb.File
@@ -423,6 +431,12 @@ func (it *FileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -472,6 +486,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PackageIterator) All() iter.Seq2[*artifactregistrypb.Package, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PackageIterator manages a stream of *artifactregistrypb.Package.
 type PackageIterator struct {
 	items    []*artifactregistrypb.Package
@@ -517,6 +537,12 @@ func (it *PackageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RepositoryIterator) All() iter.Seq2[*artifactregistrypb.Repository, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RepositoryIterator manages a stream of *artifactregistrypb.Repository.
@@ -566,6 +592,12 @@ func (it *RepositoryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TagIterator) All() iter.Seq2[*artifactregistrypb.Tag, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TagIterator manages a stream of *artifactregistrypb.Tag.
 type TagIterator struct {
 	items    []*artifactregistrypb.Tag
@@ -611,6 +643,12 @@ func (it *TagIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*artifactregistrypb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *artifactregistrypb.Version.

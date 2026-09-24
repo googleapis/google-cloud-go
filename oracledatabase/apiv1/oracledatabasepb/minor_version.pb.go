@@ -117,9 +117,9 @@ type ListMinorVersionsRequest struct {
 	// fields except the filter should remain the same as in the request that
 	// provided this page token.
 	PageToken string `protobuf:"bytes,3,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
-	// Optional. An expression for filtering the results of the request.
-	// Only shapeFamily and gcp_oracle_zone_id are supported in this format:
-	// `shape_family="{shapeFamily}" AND
+	// Optional. An expression for filtering the results of the request. Only the
+	// `shape_family` and `gcp_oracle_zone_id` fields are supported in the
+	// following format: `shape_family="{shape_family}" AND
 	// gcp_oracle_zone_id="{gcp_oracle_zone_id}"`.
 	Filter        string `protobuf:"bytes,4,opt,name=filter,proto3" json:"filter,omitempty"`
 	unknownFields protoimpl.UnknownFields

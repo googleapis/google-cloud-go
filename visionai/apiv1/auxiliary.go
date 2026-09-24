@@ -18,12 +18,14 @@ package visionai
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	visionaipb "cloud.google.com/go/visionai/apiv1/visionaipb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -3650,6 +3652,12 @@ func (op *UploadAssetOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnalysisIterator) All() iter.Seq2[*visionaipb.Analysis, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AnalysisIterator manages a stream of *visionaipb.Analysis.
 type AnalysisIterator struct {
 	items    []*visionaipb.Analysis
@@ -3695,6 +3703,12 @@ func (it *AnalysisIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnnotationIterator) All() iter.Seq2[*visionaipb.Annotation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AnnotationIterator manages a stream of *visionaipb.Annotation.
@@ -3744,6 +3758,12 @@ func (it *AnnotationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApplicationIterator) All() iter.Seq2[*visionaipb.Application, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ApplicationIterator manages a stream of *visionaipb.Application.
 type ApplicationIterator struct {
 	items    []*visionaipb.Application
@@ -3789,6 +3809,12 @@ func (it *ApplicationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AssetIterator) All() iter.Seq2[*visionaipb.Asset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AssetIterator manages a stream of *visionaipb.Asset.
@@ -3838,6 +3864,12 @@ func (it *AssetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClusterIterator) All() iter.Seq2[*visionaipb.Cluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ClusterIterator manages a stream of *visionaipb.Cluster.
 type ClusterIterator struct {
 	items    []*visionaipb.Cluster
@@ -3883,6 +3915,12 @@ func (it *ClusterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CollectionItemIterator) All() iter.Seq2[*visionaipb.CollectionItem, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CollectionItemIterator manages a stream of *visionaipb.CollectionItem.
@@ -3932,6 +3970,12 @@ func (it *CollectionItemIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CollectionIterator) All() iter.Seq2[*visionaipb.Collection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CollectionIterator manages a stream of *visionaipb.Collection.
 type CollectionIterator struct {
 	items    []*visionaipb.Collection
@@ -3977,6 +4021,12 @@ func (it *CollectionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CorpusIterator) All() iter.Seq2[*visionaipb.Corpus, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // CorpusIterator manages a stream of *visionaipb.Corpus.
@@ -4026,6 +4076,12 @@ func (it *CorpusIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataSchemaIterator) All() iter.Seq2[*visionaipb.DataSchema, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataSchemaIterator manages a stream of *visionaipb.DataSchema.
 type DataSchemaIterator struct {
 	items    []*visionaipb.DataSchema
@@ -4071,6 +4127,12 @@ func (it *DataSchemaIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DraftIterator) All() iter.Seq2[*visionaipb.Draft, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DraftIterator manages a stream of *visionaipb.Draft.
@@ -4120,6 +4182,12 @@ func (it *DraftIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EventIterator) All() iter.Seq2[*visionaipb.Event, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EventIterator manages a stream of *visionaipb.Event.
 type EventIterator struct {
 	items    []*visionaipb.Event
@@ -4165,6 +4233,12 @@ func (it *EventIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IndexEndpointIterator) All() iter.Seq2[*visionaipb.IndexEndpoint, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IndexEndpointIterator manages a stream of *visionaipb.IndexEndpoint.
@@ -4214,6 +4288,12 @@ func (it *IndexEndpointIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IndexIterator) All() iter.Seq2[*visionaipb.Index, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // IndexIterator manages a stream of *visionaipb.Index.
 type IndexIterator struct {
 	items    []*visionaipb.Index
@@ -4259,6 +4339,12 @@ func (it *IndexIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IndexedAssetIterator) All() iter.Seq2[*visionaipb.IndexedAsset, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IndexedAssetIterator manages a stream of *visionaipb.IndexedAsset.
@@ -4308,6 +4394,12 @@ func (it *IndexedAssetIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*visionaipb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceIterator manages a stream of *visionaipb.Instance.
 type InstanceIterator struct {
 	items    []*visionaipb.Instance
@@ -4353,6 +4445,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -4402,6 +4500,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -4447,6 +4551,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperatorIterator) All() iter.Seq2[*visionaipb.Operator, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperatorIterator manages a stream of *visionaipb.Operator.
@@ -4496,6 +4606,12 @@ func (it *OperatorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProcessIterator) All() iter.Seq2[*visionaipb.Process, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ProcessIterator manages a stream of *visionaipb.Process.
 type ProcessIterator struct {
 	items    []*visionaipb.Process
@@ -4541,6 +4657,12 @@ func (it *ProcessIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ProcessorIterator) All() iter.Seq2[*visionaipb.Processor, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ProcessorIterator manages a stream of *visionaipb.Processor.
@@ -4590,6 +4712,12 @@ func (it *ProcessorIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchConfigIterator) All() iter.Seq2[*visionaipb.SearchConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchConfigIterator manages a stream of *visionaipb.SearchConfig.
 type SearchConfigIterator struct {
 	items    []*visionaipb.SearchConfig
@@ -4635,6 +4763,12 @@ func (it *SearchConfigIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchHypernymIterator) All() iter.Seq2[*visionaipb.SearchHypernym, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchHypernymIterator manages a stream of *visionaipb.SearchHypernym.
@@ -4684,6 +4818,12 @@ func (it *SearchHypernymIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResultItemIterator) All() iter.Seq2[*visionaipb.SearchResultItem, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SearchResultItemIterator manages a stream of *visionaipb.SearchResultItem.
 type SearchResultItemIterator struct {
 	items    []*visionaipb.SearchResultItem
@@ -4731,6 +4871,12 @@ func (it *SearchResultItemIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SeriesIterator) All() iter.Seq2[*visionaipb.Series, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SeriesIterator manages a stream of *visionaipb.Series.
 type SeriesIterator struct {
 	items    []*visionaipb.Series
@@ -4776,6 +4922,12 @@ func (it *SeriesIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StreamIterator) All() iter.Seq2[*visionaipb.Stream, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StreamIterator manages a stream of *visionaipb.Stream.

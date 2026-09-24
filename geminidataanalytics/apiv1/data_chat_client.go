@@ -51,6 +51,7 @@ type DataChatCallOptions struct {
 	Chat               []gax.CallOption
 	CreateConversation []gax.CallOption
 	DeleteConversation []gax.CallOption
+	UpdateConversation []gax.CallOption
 	GetConversation    []gax.CallOption
 	ListConversations  []gax.CallOption
 	ListMessages       []gax.CallOption
@@ -103,6 +104,18 @@ func defaultDataChatCallOptions() *DataChatCallOptions {
 			}),
 		},
 		DeleteConversation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+				}, gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		UpdateConversation: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
 				return gax.OnCodes([]codes.Code{
@@ -260,6 +273,17 @@ func defaultDataChatRESTCallOptions() *DataChatCallOptions {
 					http.StatusServiceUnavailable)
 			}),
 		},
+		UpdateConversation: []gax.CallOption{
+			gax.WithTimeout(600000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    1000 * time.Millisecond,
+					Max:        10000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable)
+			}),
+		},
 		GetConversation: []gax.CallOption{
 			gax.WithTimeout(600000 * time.Millisecond),
 			gax.WithRetry(func() gax.Retryer {
@@ -370,6 +394,7 @@ type internalDataChatClient interface {
 	Chat(context.Context, *geminidataanalyticspb.ChatRequest, ...gax.CallOption) (geminidataanalyticspb.DataChatService_ChatClient, error)
 	CreateConversation(context.Context, *geminidataanalyticspb.CreateConversationRequest, ...gax.CallOption) (*geminidataanalyticspb.Conversation, error)
 	DeleteConversation(context.Context, *geminidataanalyticspb.DeleteConversationRequest, ...gax.CallOption) error
+	UpdateConversation(context.Context, *geminidataanalyticspb.UpdateConversationRequest, ...gax.CallOption) (*geminidataanalyticspb.Conversation, error)
 	GetConversation(context.Context, *geminidataanalyticspb.GetConversationRequest, ...gax.CallOption) (*geminidataanalyticspb.Conversation, error)
 	ListConversations(context.Context, *geminidataanalyticspb.ListConversationsRequest, ...gax.CallOption) *ConversationIterator
 	ListMessages(context.Context, *geminidataanalyticspb.ListMessagesRequest, ...gax.CallOption) *StorageMessageIterator
@@ -433,6 +458,11 @@ func (c *DataChatClient) CreateConversation(ctx context.Context, req *geminidata
 // DeleteConversation deletes a conversation.
 func (c *DataChatClient) DeleteConversation(ctx context.Context, req *geminidataanalyticspb.DeleteConversationRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteConversation(ctx, req, opts...)
+}
+
+// UpdateConversation updates a conversation.
+func (c *DataChatClient) UpdateConversation(ctx context.Context, req *geminidataanalyticspb.UpdateConversationRequest, opts ...gax.CallOption) (*geminidataanalyticspb.Conversation, error) {
+	return c.internalClient.UpdateConversation(ctx, req, opts...)
 }
 
 // GetConversation gets details of a single conversation by using conversation id and parent.
@@ -574,6 +604,7 @@ func NewDataChatClient(ctx context.Context, opts ...option.ClientOption) (*DataC
 		client.CallOptions.Chat = append(client.CallOptions.Chat, gax.WithClientMetrics(metrics))
 		client.CallOptions.CreateConversation = append(client.CallOptions.CreateConversation, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteConversation = append(client.CallOptions.DeleteConversation, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateConversation = append(client.CallOptions.UpdateConversation, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetConversation = append(client.CallOptions.GetConversation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListConversations = append(client.CallOptions.ListConversations, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListMessages = append(client.CallOptions.ListMessages, gax.WithClientMetrics(metrics))
@@ -678,6 +709,7 @@ func NewDataChatRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 		callOpts.Chat = append(callOpts.Chat, gax.WithClientMetrics(metrics))
 		callOpts.CreateConversation = append(callOpts.CreateConversation, gax.WithClientMetrics(metrics))
 		callOpts.DeleteConversation = append(callOpts.DeleteConversation, gax.WithClientMetrics(metrics))
+		callOpts.UpdateConversation = append(callOpts.UpdateConversation, gax.WithClientMetrics(metrics))
 		callOpts.GetConversation = append(callOpts.GetConversation, gax.WithClientMetrics(metrics))
 		callOpts.ListConversations = append(callOpts.ListConversations, gax.WithClientMetrics(metrics))
 		callOpts.ListMessages = append(callOpts.ListMessages, gax.WithClientMetrics(metrics))
@@ -794,6 +826,27 @@ func (c *dataChatGRPCClient) DeleteConversation(ctx context.Context, req *gemini
 		return err
 	}, opts...)
 	return err
+}
+
+func (c *dataChatGRPCClient) UpdateConversation(ctx context.Context, req *geminidataanalyticspb.UpdateConversationRequest, opts ...gax.CallOption) (*geminidataanalyticspb.Conversation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversation.name", url.QueryEscape(req.GetConversation().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1.DataChatService/UpdateConversation")
+	}
+	opts = append((*c.CallOptions).UpdateConversation[0:len((*c.CallOptions).UpdateConversation):len((*c.CallOptions).UpdateConversation)], opts...)
+	var resp *geminidataanalyticspb.Conversation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.dataChatClient.UpdateConversation, req, settings.GRPC, c.logger, "UpdateConversation")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *dataChatGRPCClient) GetConversation(ctx context.Context, req *geminidataanalyticspb.GetConversationRequest, opts ...gax.CallOption) (*geminidataanalyticspb.Conversation, error) {
@@ -1316,6 +1369,77 @@ func (c *dataChatRESTClient) DeleteConversation(ctx context.Context, req *gemini
 		_, err = executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "DeleteConversation")
 		return err
 	}, opts...)
+}
+
+// UpdateConversation updates a conversation.
+func (c *dataChatRESTClient) UpdateConversation(ctx context.Context, req *geminidataanalyticspb.UpdateConversationRequest, opts ...gax.CallOption) (*geminidataanalyticspb.Conversation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	body := req.GetConversation()
+	jsonReq, err := m.Marshal(body)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v", req.GetConversation().GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetRequestId() != "" {
+		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
+	}
+	if req.GetUpdateMask() != nil {
+		field, err := protojson.Marshal(req.GetUpdateMask())
+		if err != nil {
+			return nil, err
+		}
+		params.Add("updateMask", string(field[1:len(field)-1]))
+	}
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "conversation.name", url.QueryEscape(req.GetConversation().GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1.DataChatService/UpdateConversation")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{conversation.name=projects/*/locations/*/conversations/*}")
+	}
+	opts = append((*c.CallOptions).UpdateConversation[0:len((*c.CallOptions).UpdateConversation):len((*c.CallOptions).UpdateConversation)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &geminidataanalyticspb.Conversation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("PATCH", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateConversation")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // GetConversation gets details of a single conversation by using conversation id and parent.

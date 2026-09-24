@@ -212,6 +212,70 @@ func (Membership_MembershipRole) EnumDescriptor() ([]byte, []int) {
 	return file_google_chat_v1_membership_proto_rawDescGZIP(), []int{0, 1}
 }
 
+// Represents the affiliation of a user to the Google Workspace organization
+// that owns the space. This enum may have more values added in the future.
+type Membership_Affiliation int32
+
+const (
+	// Default value. This value is unused.
+	Membership_AFFILIATION_UNSPECIFIED Membership_Affiliation = 0
+	// An account managed by the same Google Workspace organization that owns
+	// the space.
+	Membership_INTERNAL Membership_Affiliation = 1
+	// An account external to the Google Workspace organization that owns the
+	// space (e.g., a consumer account, or an account managed by a different
+	// Workspace organization).
+	Membership_EXTERNAL Membership_Affiliation = 2
+	// An account managed by the Workspace organization that owns the space,
+	// but provisioned for a user who is external to the organization (e.g., a
+	// Guest user). To learn more about guests, see
+	// https://support.google.com/chat/answer/16997417.
+	Membership_MANAGED_EXTERNAL Membership_Affiliation = 3
+)
+
+// Enum value maps for Membership_Affiliation.
+var (
+	Membership_Affiliation_name = map[int32]string{
+		0: "AFFILIATION_UNSPECIFIED",
+		1: "INTERNAL",
+		2: "EXTERNAL",
+		3: "MANAGED_EXTERNAL",
+	}
+	Membership_Affiliation_value = map[string]int32{
+		"AFFILIATION_UNSPECIFIED": 0,
+		"INTERNAL":                1,
+		"EXTERNAL":                2,
+		"MANAGED_EXTERNAL":        3,
+	}
+)
+
+func (x Membership_Affiliation) Enum() *Membership_Affiliation {
+	p := new(Membership_Affiliation)
+	*p = x
+	return p
+}
+
+func (x Membership_Affiliation) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Membership_Affiliation) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_chat_v1_membership_proto_enumTypes[2].Descriptor()
+}
+
+func (Membership_Affiliation) Type() protoreflect.EnumType {
+	return &file_google_chat_v1_membership_proto_enumTypes[2]
+}
+
+func (x Membership_Affiliation) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Membership_Affiliation.Descriptor instead.
+func (Membership_Affiliation) EnumDescriptor() ([]byte, []int) {
+	return file_google_chat_v1_membership_proto_rawDescGZIP(), []int{0, 2}
+}
+
 // Represents a membership relation in Google Chat, such as whether a user or
 // Chat app is invited to, part of, or absent from a space.
 type Membership struct {
@@ -242,7 +306,11 @@ type Membership struct {
 	// Optional. Immutable. The deletion time of the membership, such as when a
 	// member left or was removed from a space. This field is output only, except
 	// when used to import historical memberships in import mode spaces.
-	DeleteTime    *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=delete_time,json=deleteTime,proto3" json:"delete_time,omitempty"`
+	DeleteTime *timestamppb.Timestamp `protobuf:"bytes,8,opt,name=delete_time,json=deleteTime,proto3" json:"delete_time,omitempty"`
+	// Output only. A user's relationship to the Workspace organization that owns
+	// the space. In spaces owned by consumer accounts, the affiliation of all
+	// members is `EXTERNAL`.
+	Affiliation   Membership_Affiliation `protobuf:"varint,9,opt,name=affiliation,proto3,enum=google.chat.v1.Membership_Affiliation" json:"affiliation,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -335,6 +403,13 @@ func (x *Membership) GetDeleteTime() *timestamppb.Timestamp {
 		return x.DeleteTime
 	}
 	return nil
+}
+
+func (x *Membership) GetAffiliation() Membership_Affiliation {
+	if x != nil {
+		return x.Affiliation
+	}
+	return Membership_AFFILIATION_UNSPECIFIED
 }
 
 type isMembership_MemberType interface {
@@ -948,7 +1023,7 @@ var File_google_chat_v1_membership_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_membership_proto_rawDesc = "" +
 	"\n" +
-	"\x1fgoogle/chat/v1/membership.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1agoogle/chat/v1/group.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xd6\x05\n" +
+	"\x1fgoogle/chat/v1/membership.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a\x1agoogle/chat/v1/group.proto\x1a\x19google/chat/v1/user.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x83\a\n" +
 	"\n" +
 	"Membership\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12E\n" +
@@ -959,7 +1034,8 @@ const file_google_chat_v1_membership_proto_rawDesc = "" +
 	"\vcreate_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x05\xe0A\x01R\n" +
 	"createTime\x12C\n" +
 	"\vdelete_time\x18\b \x01(\v2\x1a.google.protobuf.TimestampB\x06\xe0A\x05\xe0A\x01R\n" +
-	"deleteTime\"^\n" +
+	"deleteTime\x12M\n" +
+	"\vaffiliation\x18\t \x01(\x0e2&.google.chat.v1.Membership.AffiliationB\x03\xe0A\x03R\vaffiliation\"^\n" +
 	"\x0fMembershipState\x12 \n" +
 	"\x1cMEMBERSHIP_STATE_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
@@ -970,7 +1046,12 @@ const file_google_chat_v1_membership_proto_rawDesc = "" +
 	"\x1bMEMBERSHIP_ROLE_UNSPECIFIED\x10\x00\x12\x0f\n" +
 	"\vROLE_MEMBER\x10\x01\x12\x10\n" +
 	"\fROLE_MANAGER\x10\x02\x12\x1a\n" +
-	"\x16ROLE_ASSISTANT_MANAGER\x10\x04:D\xeaAA\n" +
+	"\x16ROLE_ASSISTANT_MANAGER\x10\x04\"\\\n" +
+	"\vAffiliation\x12\x1b\n" +
+	"\x17AFFILIATION_UNSPECIFIED\x10\x00\x12\f\n" +
+	"\bINTERNAL\x10\x01\x12\f\n" +
+	"\bEXTERNAL\x10\x02\x12\x14\n" +
+	"\x10MANAGED_EXTERNAL\x10\x03:D\xeaAA\n" +
 	"\x1echat.googleapis.com/Membership\x12\x1fspaces/{space}/members/{member}B\f\n" +
 	"\n" +
 	"memberType\"\xc9\x01\n" +
@@ -1022,39 +1103,41 @@ func file_google_chat_v1_membership_proto_rawDescGZIP() []byte {
 	return file_google_chat_v1_membership_proto_rawDescData
 }
 
-var file_google_chat_v1_membership_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
+var file_google_chat_v1_membership_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
 var file_google_chat_v1_membership_proto_msgTypes = make([]protoimpl.MessageInfo, 7)
 var file_google_chat_v1_membership_proto_goTypes = []any{
 	(Membership_MembershipState)(0), // 0: google.chat.v1.Membership.MembershipState
 	(Membership_MembershipRole)(0),  // 1: google.chat.v1.Membership.MembershipRole
-	(*Membership)(nil),              // 2: google.chat.v1.Membership
-	(*CreateMembershipRequest)(nil), // 3: google.chat.v1.CreateMembershipRequest
-	(*UpdateMembershipRequest)(nil), // 4: google.chat.v1.UpdateMembershipRequest
-	(*ListMembershipsRequest)(nil),  // 5: google.chat.v1.ListMembershipsRequest
-	(*ListMembershipsResponse)(nil), // 6: google.chat.v1.ListMembershipsResponse
-	(*GetMembershipRequest)(nil),    // 7: google.chat.v1.GetMembershipRequest
-	(*DeleteMembershipRequest)(nil), // 8: google.chat.v1.DeleteMembershipRequest
-	(*User)(nil),                    // 9: google.chat.v1.User
-	(*Group)(nil),                   // 10: google.chat.v1.Group
-	(*timestamppb.Timestamp)(nil),   // 11: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),   // 12: google.protobuf.FieldMask
+	(Membership_Affiliation)(0),     // 2: google.chat.v1.Membership.Affiliation
+	(*Membership)(nil),              // 3: google.chat.v1.Membership
+	(*CreateMembershipRequest)(nil), // 4: google.chat.v1.CreateMembershipRequest
+	(*UpdateMembershipRequest)(nil), // 5: google.chat.v1.UpdateMembershipRequest
+	(*ListMembershipsRequest)(nil),  // 6: google.chat.v1.ListMembershipsRequest
+	(*ListMembershipsResponse)(nil), // 7: google.chat.v1.ListMembershipsResponse
+	(*GetMembershipRequest)(nil),    // 8: google.chat.v1.GetMembershipRequest
+	(*DeleteMembershipRequest)(nil), // 9: google.chat.v1.DeleteMembershipRequest
+	(*User)(nil),                    // 10: google.chat.v1.User
+	(*Group)(nil),                   // 11: google.chat.v1.Group
+	(*timestamppb.Timestamp)(nil),   // 12: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),   // 13: google.protobuf.FieldMask
 }
 var file_google_chat_v1_membership_proto_depIdxs = []int32{
 	0,  // 0: google.chat.v1.Membership.state:type_name -> google.chat.v1.Membership.MembershipState
 	1,  // 1: google.chat.v1.Membership.role:type_name -> google.chat.v1.Membership.MembershipRole
-	9,  // 2: google.chat.v1.Membership.member:type_name -> google.chat.v1.User
-	10, // 3: google.chat.v1.Membership.group_member:type_name -> google.chat.v1.Group
-	11, // 4: google.chat.v1.Membership.create_time:type_name -> google.protobuf.Timestamp
-	11, // 5: google.chat.v1.Membership.delete_time:type_name -> google.protobuf.Timestamp
-	2,  // 6: google.chat.v1.CreateMembershipRequest.membership:type_name -> google.chat.v1.Membership
-	2,  // 7: google.chat.v1.UpdateMembershipRequest.membership:type_name -> google.chat.v1.Membership
-	12, // 8: google.chat.v1.UpdateMembershipRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 9: google.chat.v1.ListMembershipsResponse.memberships:type_name -> google.chat.v1.Membership
-	10, // [10:10] is the sub-list for method output_type
-	10, // [10:10] is the sub-list for method input_type
-	10, // [10:10] is the sub-list for extension type_name
-	10, // [10:10] is the sub-list for extension extendee
-	0,  // [0:10] is the sub-list for field type_name
+	10, // 2: google.chat.v1.Membership.member:type_name -> google.chat.v1.User
+	11, // 3: google.chat.v1.Membership.group_member:type_name -> google.chat.v1.Group
+	12, // 4: google.chat.v1.Membership.create_time:type_name -> google.protobuf.Timestamp
+	12, // 5: google.chat.v1.Membership.delete_time:type_name -> google.protobuf.Timestamp
+	2,  // 6: google.chat.v1.Membership.affiliation:type_name -> google.chat.v1.Membership.Affiliation
+	3,  // 7: google.chat.v1.CreateMembershipRequest.membership:type_name -> google.chat.v1.Membership
+	3,  // 8: google.chat.v1.UpdateMembershipRequest.membership:type_name -> google.chat.v1.Membership
+	13, // 9: google.chat.v1.UpdateMembershipRequest.update_mask:type_name -> google.protobuf.FieldMask
+	3,  // 10: google.chat.v1.ListMembershipsResponse.memberships:type_name -> google.chat.v1.Membership
+	11, // [11:11] is the sub-list for method output_type
+	11, // [11:11] is the sub-list for method input_type
+	11, // [11:11] is the sub-list for extension type_name
+	11, // [11:11] is the sub-list for extension extendee
+	0,  // [0:11] is the sub-list for field type_name
 }
 
 func init() { file_google_chat_v1_membership_proto_init() }
@@ -1073,7 +1156,7 @@ func file_google_chat_v1_membership_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_chat_v1_membership_proto_rawDesc), len(file_google_chat_v1_membership_proto_rawDesc)),
-			NumEnums:      2,
+			NumEnums:      3,
 			NumMessages:   7,
 			NumExtensions: 0,
 			NumServices:   0,

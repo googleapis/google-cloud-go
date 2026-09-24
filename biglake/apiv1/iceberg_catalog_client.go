@@ -137,7 +137,7 @@ func defaultIcebergCatalogRESTCallOptions() *IcebergCatalogCallOptions {
 	}
 }
 
-// internalIcebergCatalogClient is an interface that defines the methods available from BigLake API.
+// internalIcebergCatalogClient is an interface that defines the methods available from Lakehouse API.
 type internalIcebergCatalogClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -166,7 +166,7 @@ type internalIcebergCatalogClient interface {
 	FailoverIcebergCatalog(context.Context, *biglakepb.FailoverIcebergCatalogRequest, ...gax.CallOption) (*biglakepb.FailoverIcebergCatalogResponse, error)
 }
 
-// IcebergCatalogClient is a client for interacting with BigLake API.
+// IcebergCatalogClient is a client for interacting with Lakehouse API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // Lakehouse runtime catalog supports the following catalog management methods:
@@ -343,7 +343,7 @@ func (c *IcebergCatalogClient) FailoverIcebergCatalog(ctx context.Context, req *
 	return c.internalClient.FailoverIcebergCatalog(ctx, req, opts...)
 }
 
-// icebergCatalogGRPCClient is a client for interacting with BigLake API over gRPC transport.
+// icebergCatalogGRPCClient is a client for interacting with Lakehouse API over gRPC transport.
 //
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 type icebergCatalogGRPCClient struct {
@@ -2178,6 +2178,9 @@ func (c *icebergCatalogRESTClient) ListIcebergCatalogs(ctx context.Context, req 
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}

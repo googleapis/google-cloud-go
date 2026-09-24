@@ -54,6 +54,7 @@ const (
 	HiveMetastoreService_BatchDeletePartitions_FullMethodName = "/google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchDeletePartitions"
 	HiveMetastoreService_BatchUpdatePartitions_FullMethodName = "/google.cloud.biglake.hive.v1beta.HiveMetastoreService/BatchUpdatePartitions"
 	HiveMetastoreService_ListPartitions_FullMethodName        = "/google.cloud.biglake.hive.v1beta.HiveMetastoreService/ListPartitions"
+	HiveMetastoreService_FailoverHiveCatalog_FullMethodName   = "/google.cloud.biglake.hive.v1beta.HiveMetastoreService/FailoverHiveCatalog"
 )
 
 // HiveMetastoreServiceClient is the client API for HiveMetastoreService service.
@@ -100,6 +101,8 @@ type HiveMetastoreServiceClient interface {
 	BatchUpdatePartitions(ctx context.Context, in *BatchUpdatePartitionsRequest, opts ...grpc.CallOption) (*BatchUpdatePartitionsResponse, error)
 	// Streams list of partitions from a table.
 	ListPartitions(ctx context.Context, in *ListPartitionsRequest, opts ...grpc.CallOption) (HiveMetastoreService_ListPartitionsClient, error)
+	// Failover the catalog to a new primary replica region.
+	FailoverHiveCatalog(ctx context.Context, in *FailoverHiveCatalogRequest, opts ...grpc.CallOption) (*FailoverHiveCatalogResponse, error)
 }
 
 type hiveMetastoreServiceClient struct {
@@ -304,6 +307,15 @@ func (x *hiveMetastoreServiceListPartitionsClient) Recv() (*ListPartitionsRespon
 	return m, nil
 }
 
+func (c *hiveMetastoreServiceClient) FailoverHiveCatalog(ctx context.Context, in *FailoverHiveCatalogRequest, opts ...grpc.CallOption) (*FailoverHiveCatalogResponse, error) {
+	out := new(FailoverHiveCatalogResponse)
+	err := c.cc.Invoke(ctx, HiveMetastoreService_FailoverHiveCatalog_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // HiveMetastoreServiceServer is the server API for HiveMetastoreService service.
 // All implementations should embed UnimplementedHiveMetastoreServiceServer
 // for forward compatibility
@@ -348,6 +360,8 @@ type HiveMetastoreServiceServer interface {
 	BatchUpdatePartitions(context.Context, *BatchUpdatePartitionsRequest) (*BatchUpdatePartitionsResponse, error)
 	// Streams list of partitions from a table.
 	ListPartitions(*ListPartitionsRequest, HiveMetastoreService_ListPartitionsServer) error
+	// Failover the catalog to a new primary replica region.
+	FailoverHiveCatalog(context.Context, *FailoverHiveCatalogRequest) (*FailoverHiveCatalogResponse, error)
 }
 
 // UnimplementedHiveMetastoreServiceServer should be embedded to have forward compatible implementations.
@@ -410,6 +424,9 @@ func (UnimplementedHiveMetastoreServiceServer) BatchUpdatePartitions(context.Con
 }
 func (UnimplementedHiveMetastoreServiceServer) ListPartitions(*ListPartitionsRequest, HiveMetastoreService_ListPartitionsServer) error {
 	return status.Errorf(codes.Unimplemented, "method ListPartitions not implemented")
+}
+func (UnimplementedHiveMetastoreServiceServer) FailoverHiveCatalog(context.Context, *FailoverHiveCatalogRequest) (*FailoverHiveCatalogResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method FailoverHiveCatalog not implemented")
 }
 
 // UnsafeHiveMetastoreServiceServer may be embedded to opt out of forward compatibility for this service.
@@ -768,6 +785,24 @@ func (x *hiveMetastoreServiceListPartitionsServer) Send(m *ListPartitionsRespons
 	return x.ServerStream.SendMsg(m)
 }
 
+func _HiveMetastoreService_FailoverHiveCatalog_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(FailoverHiveCatalogRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(HiveMetastoreServiceServer).FailoverHiveCatalog(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: HiveMetastoreService_FailoverHiveCatalog_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(HiveMetastoreServiceServer).FailoverHiveCatalog(ctx, req.(*FailoverHiveCatalogRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // HiveMetastoreService_ServiceDesc is the grpc.ServiceDesc for HiveMetastoreService service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -846,6 +881,10 @@ var HiveMetastoreService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "BatchUpdatePartitions",
 			Handler:    _HiveMetastoreService_BatchUpdatePartitions_Handler,
+		},
+		{
+			MethodName: "FailoverHiveCatalog",
+			Handler:    _HiveMetastoreService_FailoverHiveCatalog_Handler,
 		},
 	},
 	Streams: []grpc.StreamDesc{

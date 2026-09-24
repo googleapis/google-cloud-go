@@ -462,6 +462,11 @@
                 "ListTransports"
               ]
             },
+            "ParseFromActivationKey": {
+              "methods": [
+                "ParseFromActivationKey"
+              ]
+            },
             "SetIamPolicy": {
               "methods": [
                 "SetIamPolicy"

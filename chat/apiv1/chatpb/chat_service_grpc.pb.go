@@ -42,6 +42,7 @@ const (
 	ChatService_GetMessage_FullMethodName                     = "/google.chat.v1.ChatService/GetMessage"
 	ChatService_UpdateMessage_FullMethodName                  = "/google.chat.v1.ChatService/UpdateMessage"
 	ChatService_DeleteMessage_FullMethodName                  = "/google.chat.v1.ChatService/DeleteMessage"
+	ChatService_SearchMessages_FullMethodName                 = "/google.chat.v1.ChatService/SearchMessages"
 	ChatService_GetAttachment_FullMethodName                  = "/google.chat.v1.ChatService/GetAttachment"
 	ChatService_UploadAttachment_FullMethodName               = "/google.chat.v1.ChatService/UploadAttachment"
 	ChatService_ListSpaces_FullMethodName                     = "/google.chat.v1.ChatService/ListSpaces"
@@ -60,6 +61,9 @@ const (
 	ChatService_CreateReaction_FullMethodName                 = "/google.chat.v1.ChatService/CreateReaction"
 	ChatService_ListReactions_FullMethodName                  = "/google.chat.v1.ChatService/ListReactions"
 	ChatService_DeleteReaction_FullMethodName                 = "/google.chat.v1.ChatService/DeleteReaction"
+	ChatService_ListMessagePins_FullMethodName                = "/google.chat.v1.ChatService/ListMessagePins"
+	ChatService_CreateMessagePin_FullMethodName               = "/google.chat.v1.ChatService/CreateMessagePin"
+	ChatService_DeleteMessagePin_FullMethodName               = "/google.chat.v1.ChatService/DeleteMessagePin"
 	ChatService_CreateCustomEmoji_FullMethodName              = "/google.chat.v1.ChatService/CreateCustomEmoji"
 	ChatService_GetCustomEmoji_FullMethodName                 = "/google.chat.v1.ChatService/GetCustomEmoji"
 	ChatService_ListCustomEmojis_FullMethodName               = "/google.chat.v1.ChatService/ListCustomEmojis"
@@ -300,6 +304,34 @@ type ChatServiceClient interface {
 	// When using app authentication, requests can only delete messages
 	// created by the calling Chat app.
 	DeleteMessage(ctx context.Context, in *DeleteMessageRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Searches for messages in Google Chat that the calling user has access to.
+	// Returns a list of messages matching the search criteria.
+	//
+	// To search across all spaces the user has access to, set `parent` to
+	// `spaces/-`. Using any other value for `parent` results in an
+	// `INVALID_ARGUMENT` error. The returned messages have their `name` field
+	// populated with the full resource name, which includes the specific `space`
+	// in which the message resides.
+	//
+	// This API doesn't return all message types. The types of messages listed
+	// below aren't included in the response. Use
+	// [ListMessages][google.chat.v1.ChatService.ListMessages] to list all
+	// messages.
+	//
+	// - Private Messages that are visible to the authenticated user.
+	// - Messages posted by Chat apps in spaces or group chats.
+	// - Messages in a Chat app DM.
+	// - Messages from blocked users.
+	// - Messages in spaces that the caller has muted.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	SearchMessages(ctx context.Context, in *SearchMessagesRequest, opts ...grpc.CallOption) (*SearchMessagesResponse, error)
 	// Gets the metadata of a message attachment. The attachment data is fetched
 	// using the [media
 	// API](https://developers.google.com/workspace/chat/api/reference/rest/v1/media/download).
@@ -354,17 +386,28 @@ type ChatServiceClient interface {
 	// [`spaces.search()`](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
 	// method using Workspace administrator privileges instead.
 	ListSpaces(ctx context.Context, in *ListSpacesRequest, opts ...grpc.CallOption) (*ListSpacesResponse, error)
-	// Returns a list of spaces in a Google Workspace organization based on an
-	// administrator's search. In the request, set `use_admin_access` to `true`.
-	// For an example, see [Search for and manage
+	// Returns a list of spaces in a Google Workspace organization. For an
+	// example, see [Search for and manage
 	// spaces](https://developers.google.com/workspace/chat/search-manage-admin).
 	//
-	// Requires [user
+	// When `use_admin_access` is set to `false`, the results are limited to
+	// spaces where the calling user is a joined member. To search with
+	// administrator privileges, set `use_admin_access` to `true`.
+	//
+	// Supports the following types of
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
+	//
+	// - [User
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//
+	// - [User
 	// authentication with administrator
 	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
 	// and one of the following [authorization
 	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
-	//
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
 	SearchSpaces(ctx context.Context, in *SearchSpacesRequest, opts ...grpc.CallOption) (*SearchSpacesResponse, error)
@@ -779,6 +822,40 @@ type ChatServiceClient interface {
 	//   - `https://www.googleapis.com/auth/chat.messages`
 	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	DeleteReaction(ctx context.Context, in *DeleteReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
+	// Lists message pins in a space. Users can pin important messages in spaces
+	// for easy access. For more information, see [Pin or unpin a conversation in
+	// Google Chat](https://support.google.com/chat/answer/15622437).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	ListMessagePins(ctx context.Context, in *ListMessagePinsRequest, opts ...grpc.CallOption) (*ListMessagePinsResponse, error)
+	// Creates a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	CreateMessagePin(ctx context.Context, in *CreateMessagePinRequest, opts ...grpc.CallOption) (*MessagePin, error)
+	// Deletes a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	DeleteMessagePin(ctx context.Context, in *DeleteMessagePinRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 	// Creates a custom emoji.
 	//
 	// Custom emojis are only available for Google Workspace accounts, and the
@@ -1228,6 +1305,15 @@ func (c *chatServiceClient) DeleteMessage(ctx context.Context, in *DeleteMessage
 	return out, nil
 }
 
+func (c *chatServiceClient) SearchMessages(ctx context.Context, in *SearchMessagesRequest, opts ...grpc.CallOption) (*SearchMessagesResponse, error) {
+	out := new(SearchMessagesResponse)
+	err := c.cc.Invoke(ctx, ChatService_SearchMessages_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *chatServiceClient) GetAttachment(ctx context.Context, in *GetAttachmentRequest, opts ...grpc.CallOption) (*Attachment, error) {
 	out := new(Attachment)
 	err := c.cc.Invoke(ctx, ChatService_GetAttachment_FullMethodName, in, out, opts...)
@@ -1384,6 +1470,33 @@ func (c *chatServiceClient) ListReactions(ctx context.Context, in *ListReactions
 func (c *chatServiceClient) DeleteReaction(ctx context.Context, in *DeleteReactionRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
 	out := new(emptypb.Empty)
 	err := c.cc.Invoke(ctx, ChatService_DeleteReaction_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) ListMessagePins(ctx context.Context, in *ListMessagePinsRequest, opts ...grpc.CallOption) (*ListMessagePinsResponse, error) {
+	out := new(ListMessagePinsResponse)
+	err := c.cc.Invoke(ctx, ChatService_ListMessagePins_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) CreateMessagePin(ctx context.Context, in *CreateMessagePinRequest, opts ...grpc.CallOption) (*MessagePin, error) {
+	out := new(MessagePin)
+	err := c.cc.Invoke(ctx, ChatService_CreateMessagePin_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *chatServiceClient) DeleteMessagePin(ctx context.Context, in *DeleteMessagePinRequest, opts ...grpc.CallOption) (*emptypb.Empty, error) {
+	out := new(emptypb.Empty)
+	err := c.cc.Invoke(ctx, ChatService_DeleteMessagePin_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -1812,6 +1925,34 @@ type ChatServiceServer interface {
 	// When using app authentication, requests can only delete messages
 	// created by the calling Chat app.
 	DeleteMessage(context.Context, *DeleteMessageRequest) (*emptypb.Empty, error)
+	// Searches for messages in Google Chat that the calling user has access to.
+	// Returns a list of messages matching the search criteria.
+	//
+	// To search across all spaces the user has access to, set `parent` to
+	// `spaces/-`. Using any other value for `parent` results in an
+	// `INVALID_ARGUMENT` error. The returned messages have their `name` field
+	// populated with the full resource name, which includes the specific `space`
+	// in which the message resides.
+	//
+	// This API doesn't return all message types. The types of messages listed
+	// below aren't included in the response. Use
+	// [ListMessages][google.chat.v1.ChatService.ListMessages] to list all
+	// messages.
+	//
+	// - Private Messages that are visible to the authenticated user.
+	// - Messages posted by Chat apps in spaces or group chats.
+	// - Messages in a Chat app DM.
+	// - Messages from blocked users.
+	// - Messages in spaces that the caller has muted.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.messages.readonly`
+	//   - `https://www.googleapis.com/auth/chat.messages`
+	SearchMessages(context.Context, *SearchMessagesRequest) (*SearchMessagesResponse, error)
 	// Gets the metadata of a message attachment. The attachment data is fetched
 	// using the [media
 	// API](https://developers.google.com/workspace/chat/api/reference/rest/v1/media/download).
@@ -1866,17 +2007,28 @@ type ChatServiceServer interface {
 	// [`spaces.search()`](https://developers.google.com/workspace/chat/api/reference/rest/v1/spaces/search)
 	// method using Workspace administrator privileges instead.
 	ListSpaces(context.Context, *ListSpacesRequest) (*ListSpacesResponse, error)
-	// Returns a list of spaces in a Google Workspace organization based on an
-	// administrator's search. In the request, set `use_admin_access` to `true`.
-	// For an example, see [Search for and manage
+	// Returns a list of spaces in a Google Workspace organization. For an
+	// example, see [Search for and manage
 	// spaces](https://developers.google.com/workspace/chat/search-manage-admin).
 	//
-	// Requires [user
+	// When `use_admin_access` is set to `false`, the results are limited to
+	// spaces where the calling user is a joined member. To search with
+	// administrator privileges, set `use_admin_access` to `true`.
+	//
+	// Supports the following types of
+	// [authentication](https://developers.google.com/workspace/chat/authenticate-authorize):
+	//
+	// - [User
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following authorization scopes:
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	//
+	// - [User
 	// authentication with administrator
 	// privileges](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user#admin-privileges)
 	// and one of the following [authorization
 	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
-	//
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces.readonly`
 	//   - `https://www.googleapis.com/auth/chat.admin.spaces`
 	SearchSpaces(context.Context, *SearchSpacesRequest) (*SearchSpacesResponse, error)
@@ -2291,6 +2443,40 @@ type ChatServiceServer interface {
 	//   - `https://www.googleapis.com/auth/chat.messages`
 	//   - `https://www.googleapis.com/auth/chat.import` (import mode spaces only)
 	DeleteReaction(context.Context, *DeleteReactionRequest) (*emptypb.Empty, error)
+	// Lists message pins in a space. Users can pin important messages in spaces
+	// for easy access. For more information, see [Pin or unpin a conversation in
+	// Google Chat](https://support.google.com/chat/answer/15622437).
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces.readonly`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	ListMessagePins(context.Context, *ListMessagePinsRequest) (*ListMessagePinsResponse, error)
+	// Creates a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	CreateMessagePin(context.Context, *CreateMessagePinRequest) (*MessagePin, error)
+	// Deletes a message pin.
+	//
+	// Requires [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user)
+	// with one of the following [authorization
+	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
+	//
+	//   - `https://www.googleapis.com/auth/chat.spaces.pins`
+	//   - `https://www.googleapis.com/auth/chat.spaces`
+	DeleteMessagePin(context.Context, *DeleteMessagePinRequest) (*emptypb.Empty, error)
 	// Creates a custom emoji.
 	//
 	// Custom emojis are only available for Google Workspace accounts, and the
@@ -2694,6 +2880,9 @@ func (UnimplementedChatServiceServer) UpdateMessage(context.Context, *UpdateMess
 func (UnimplementedChatServiceServer) DeleteMessage(context.Context, *DeleteMessageRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessage not implemented")
 }
+func (UnimplementedChatServiceServer) SearchMessages(context.Context, *SearchMessagesRequest) (*SearchMessagesResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method SearchMessages not implemented")
+}
 func (UnimplementedChatServiceServer) GetAttachment(context.Context, *GetAttachmentRequest) (*Attachment, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetAttachment not implemented")
 }
@@ -2747,6 +2936,15 @@ func (UnimplementedChatServiceServer) ListReactions(context.Context, *ListReacti
 }
 func (UnimplementedChatServiceServer) DeleteReaction(context.Context, *DeleteReactionRequest) (*emptypb.Empty, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteReaction not implemented")
+}
+func (UnimplementedChatServiceServer) ListMessagePins(context.Context, *ListMessagePinsRequest) (*ListMessagePinsResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListMessagePins not implemented")
+}
+func (UnimplementedChatServiceServer) CreateMessagePin(context.Context, *CreateMessagePinRequest) (*MessagePin, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method CreateMessagePin not implemented")
+}
+func (UnimplementedChatServiceServer) DeleteMessagePin(context.Context, *DeleteMessagePinRequest) (*emptypb.Empty, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteMessagePin not implemented")
 }
 func (UnimplementedChatServiceServer) CreateCustomEmoji(context.Context, *CreateCustomEmojiRequest) (*CustomEmoji, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateCustomEmoji not implemented")
@@ -2951,6 +3149,24 @@ func _ChatService_DeleteMessage_Handler(srv interface{}, ctx context.Context, de
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChatServiceServer).DeleteMessage(ctx, req.(*DeleteMessageRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_SearchMessages_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(SearchMessagesRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).SearchMessages(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_SearchMessages_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).SearchMessages(ctx, req.(*SearchMessagesRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3275,6 +3491,60 @@ func _ChatService_DeleteReaction_Handler(srv interface{}, ctx context.Context, d
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(ChatServiceServer).DeleteReaction(ctx, req.(*DeleteReactionRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_ListMessagePins_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListMessagePinsRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).ListMessagePins(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_ListMessagePins_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).ListMessagePins(ctx, req.(*ListMessagePinsRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_CreateMessagePin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(CreateMessagePinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).CreateMessagePin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_CreateMessagePin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).CreateMessagePin(ctx, req.(*CreateMessagePinRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _ChatService_DeleteMessagePin_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteMessagePinRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(ChatServiceServer).DeleteMessagePin(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: ChatService_DeleteMessagePin_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(ChatServiceServer).DeleteMessagePin(ctx, req.(*DeleteMessagePinRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -3729,6 +3999,10 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 			Handler:    _ChatService_DeleteMessage_Handler,
 		},
 		{
+			MethodName: "SearchMessages",
+			Handler:    _ChatService_SearchMessages_Handler,
+		},
+		{
 			MethodName: "GetAttachment",
 			Handler:    _ChatService_GetAttachment_Handler,
 		},
@@ -3799,6 +4073,18 @@ var ChatService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteReaction",
 			Handler:    _ChatService_DeleteReaction_Handler,
+		},
+		{
+			MethodName: "ListMessagePins",
+			Handler:    _ChatService_ListMessagePins_Handler,
+		},
+		{
+			MethodName: "CreateMessagePin",
+			Handler:    _ChatService_CreateMessagePin_Handler,
+		},
+		{
+			MethodName: "DeleteMessagePin",
+			Handler:    _ChatService_DeleteMessagePin_Handler,
 		},
 		{
 			MethodName: "CreateCustomEmoji",

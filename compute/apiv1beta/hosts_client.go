@@ -79,7 +79,7 @@ func defaultHostsRESTCallOptions() *HostsCallOptions {
 	}
 }
 
-// internalHostsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalHostsClient is an interface that defines the methods available from Compute Engine API.
 type internalHostsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -89,7 +89,7 @@ type internalHostsClient interface {
 	List(context.Context, *computepb.ListHostsRequest, ...gax.CallOption) *HostIterator
 }
 
-// HostsClient is a client for interacting with Google Compute Engine API.
+// HostsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Hosts API.

@@ -1,5 +1,19 @@
 # Changes
 
+## [1.54.0](https://github.com/googleapis/google-cloud-go/compare/container/v1.53.1...container/v1.54.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [1.53.1](https://github.com/googleapis/google-cloud-go/compare/container/v1.53.0...container/v1.53.1) (2026-07-30)
+
+
+### Bug Fixes
+
+* **multiple:** Correct module go version declaration ([#20260](https://github.com/googleapis/google-cloud-go/issues/20260)) ([bf30b2f](https://github.com/googleapis/google-cloud-go/commit/bf30b2f57819575f35cb69fa935d22913be29d4a))
+
 ## [1.53.0](https://github.com/googleapis/google-cloud-go/releases/tag/container%2Fv1.53.0) (2026-06-04)
 
 ### Features

@@ -17,10 +17,19 @@
 package agentidentity
 
 import (
+	"iter"
+
 	agentidentitypb "cloud.google.com/go/agentidentity/apiv1beta/agentidentitypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AccessSummaryIterator) All() iter.Seq2[*agentidentitypb.AccessSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // AccessSummaryIterator manages a stream of *agentidentitypb.AccessSummary.
 type AccessSummaryIterator struct {
@@ -67,6 +76,12 @@ func (it *AccessSummaryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthProviderIterator) All() iter.Seq2[*agentidentitypb.AuthProvider, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AuthProviderIterator manages a stream of *agentidentitypb.AuthProvider.
@@ -116,6 +131,12 @@ func (it *AuthProviderIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthorizationIterator) All() iter.Seq2[*agentidentitypb.Authorization, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AuthorizationIterator manages a stream of *agentidentitypb.Authorization.
 type AuthorizationIterator struct {
 	items    []*agentidentitypb.Authorization
@@ -163,6 +184,12 @@ func (it *AuthorizationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -208,6 +235,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.

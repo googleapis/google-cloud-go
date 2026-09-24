@@ -206,6 +206,8 @@ func (c *ModelClient) Connection() *grpc.ClientConn {
 }
 
 // GetModel gets the specified model resource by model ID.
+//
+// IAM PermissionsRequires the bigquery.models.getMetadata permission on the model.
 func (c *ModelClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	return c.internalClient.GetModel(ctx, req, opts...)
 }
@@ -213,16 +215,22 @@ func (c *ModelClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequ
 // ListModels lists all models in the specified dataset. Requires the READER dataset
 // role. After retrieving the list of models, you can get information about a
 // particular model by calling the models.get method.
+//
+// IAM PermissionsRequires the bigquery.models.list permission on the dataset.
 func (c *ModelClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	return c.internalClient.ListModels(ctx, req, opts...)
 }
 
 // PatchModel patch specific fields in the specified model.
+//
+// IAM PermissionsRequires the bigquery.models.updateMetadata permission on the model.
 func (c *ModelClient) PatchModel(ctx context.Context, req *bigquerypb.PatchModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	return c.internalClient.PatchModel(ctx, req, opts...)
 }
 
 // DeleteModel deletes the model specified by modelId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.models.delete permission on the model.
 func (c *ModelClient) DeleteModel(ctx context.Context, req *bigquerypb.DeleteModelRequest, opts ...gax.CallOption) error {
 	return c.internalClient.DeleteModel(ctx, req, opts...)
 }
@@ -558,6 +566,8 @@ func (c *modelGRPCClient) DeleteModel(ctx context.Context, req *bigquerypb.Delet
 }
 
 // GetModel gets the specified model resource by model ID.
+//
+// IAM PermissionsRequires the bigquery.models.getMetadata permission on the model.
 func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -612,6 +622,8 @@ func (c *modelRESTClient) GetModel(ctx context.Context, req *bigquerypb.GetModel
 // ListModels lists all models in the specified dataset. Requires the READER dataset
 // role. After retrieving the list of models, you can get information about a
 // particular model by calling the models.get method.
+//
+// IAM PermissionsRequires the bigquery.models.list permission on the dataset.
 func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListModelsRequest, opts ...gax.CallOption) *ModelIterator {
 	it := &ModelIterator{}
 	req = proto.CloneOf(req)
@@ -695,6 +707,8 @@ func (c *modelRESTClient) ListModels(ctx context.Context, req *bigquerypb.ListMo
 }
 
 // PatchModel patch specific fields in the specified model.
+//
+// IAM PermissionsRequires the bigquery.models.updateMetadata permission on the model.
 func (c *modelRESTClient) PatchModel(ctx context.Context, req *bigquerypb.PatchModelRequest, opts ...gax.CallOption) (*bigquerypb.Model, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetModel()
@@ -754,6 +768,8 @@ func (c *modelRESTClient) PatchModel(ctx context.Context, req *bigquerypb.PatchM
 }
 
 // DeleteModel deletes the model specified by modelId from the dataset.
+//
+// IAM PermissionsRequires the bigquery.models.delete permission on the model.
 func (c *modelRESTClient) DeleteModel(ctx context.Context, req *bigquerypb.DeleteModelRequest, opts ...gax.CallOption) error {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {

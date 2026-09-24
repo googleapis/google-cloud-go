@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -49,19 +49,17 @@ const (
 type PolicyBindingsClient interface {
 	// Creates a policy binding and returns a long-running operation.
 	// Callers will need the IAM permissions on both the policy and target.
-	// Once the binding is created, the policy is applied to the target.
+	// After the binding is created, the policy is applied to the target.
 	CreatePolicyBinding(ctx context.Context, in *CreatePolicyBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Gets a policy binding.
 	GetPolicyBinding(ctx context.Context, in *GetPolicyBindingRequest, opts ...grpc.CallOption) (*PolicyBinding, error)
 	// Updates a policy binding and returns a long-running operation.
 	// Callers will need the IAM permissions on the policy and target in the
-	// binding to update, and the IAM permission to remove the existing policy
-	// from the binding. Target is immutable and cannot be updated. Once the
-	// binding is updated, the new policy is applied to the target.
+	// binding to update. Target and policy are immutable and cannot be updated.
 	UpdatePolicyBinding(ctx context.Context, in *UpdatePolicyBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Deletes a policy binding and returns a long-running operation.
 	// Callers will need the IAM permissions on both the policy and target.
-	// Once the binding is deleted, the policy no longer applies to the target.
+	// After the binding is deleted, the policy no longer applies to the target.
 	DeletePolicyBinding(ctx context.Context, in *DeletePolicyBindingRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 	// Lists policy bindings.
 	ListPolicyBindings(ctx context.Context, in *ListPolicyBindingsRequest, opts ...grpc.CallOption) (*ListPolicyBindingsResponse, error)
@@ -138,19 +136,17 @@ func (c *policyBindingsClient) SearchTargetPolicyBindings(ctx context.Context, i
 type PolicyBindingsServer interface {
 	// Creates a policy binding and returns a long-running operation.
 	// Callers will need the IAM permissions on both the policy and target.
-	// Once the binding is created, the policy is applied to the target.
+	// After the binding is created, the policy is applied to the target.
 	CreatePolicyBinding(context.Context, *CreatePolicyBindingRequest) (*longrunningpb.Operation, error)
 	// Gets a policy binding.
 	GetPolicyBinding(context.Context, *GetPolicyBindingRequest) (*PolicyBinding, error)
 	// Updates a policy binding and returns a long-running operation.
 	// Callers will need the IAM permissions on the policy and target in the
-	// binding to update, and the IAM permission to remove the existing policy
-	// from the binding. Target is immutable and cannot be updated. Once the
-	// binding is updated, the new policy is applied to the target.
+	// binding to update. Target and policy are immutable and cannot be updated.
 	UpdatePolicyBinding(context.Context, *UpdatePolicyBindingRequest) (*longrunningpb.Operation, error)
 	// Deletes a policy binding and returns a long-running operation.
 	// Callers will need the IAM permissions on both the policy and target.
-	// Once the binding is deleted, the policy no longer applies to the target.
+	// After the binding is deleted, the policy no longer applies to the target.
 	DeletePolicyBinding(context.Context, *DeletePolicyBindingRequest) (*longrunningpb.Operation, error)
 	// Lists policy bindings.
 	ListPolicyBindings(context.Context, *ListPolicyBindingsRequest) (*ListPolicyBindingsResponse, error)

@@ -18,12 +18,14 @@ package database
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	databasepb "cloud.google.com/go/spanner/admin/database/apiv1/databasepb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -400,6 +402,12 @@ func (op *UpdateDatabaseOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*databasepb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupIterator manages a stream of *databasepb.Backup.
 type BackupIterator struct {
 	items    []*databasepb.Backup
@@ -445,6 +453,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupScheduleIterator) All() iter.Seq2[*databasepb.BackupSchedule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupScheduleIterator manages a stream of *databasepb.BackupSchedule.
@@ -494,6 +508,12 @@ func (it *BackupScheduleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseIterator) All() iter.Seq2[*databasepb.Database, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DatabaseIterator manages a stream of *databasepb.Database.
 type DatabaseIterator struct {
 	items    []*databasepb.Database
@@ -541,6 +561,12 @@ func (it *DatabaseIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DatabaseRoleIterator) All() iter.Seq2[*databasepb.DatabaseRole, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DatabaseRoleIterator manages a stream of *databasepb.DatabaseRole.
 type DatabaseRoleIterator struct {
 	items    []*databasepb.DatabaseRole
@@ -586,6 +612,12 @@ func (it *DatabaseRoleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.

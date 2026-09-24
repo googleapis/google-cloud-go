@@ -18,12 +18,14 @@ package netapp
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	netapppb "cloud.google.com/go/netapp/apiv1/netapppb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -2712,6 +2714,12 @@ func (op *ValidateDirectoryServiceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ActiveDirectoryIterator) All() iter.Seq2[*netapppb.ActiveDirectory, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ActiveDirectoryIterator manages a stream of *netapppb.ActiveDirectory.
 type ActiveDirectoryIterator struct {
 	items    []*netapppb.ActiveDirectory
@@ -2757,6 +2765,12 @@ func (it *ActiveDirectoryIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*netapppb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupIterator manages a stream of *netapppb.Backup.
@@ -2806,6 +2820,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPolicyIterator) All() iter.Seq2[*netapppb.BackupPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupPolicyIterator manages a stream of *netapppb.BackupPolicy.
 type BackupPolicyIterator struct {
 	items    []*netapppb.BackupPolicy
@@ -2851,6 +2871,12 @@ func (it *BackupPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupVaultIterator) All() iter.Seq2[*netapppb.BackupVault, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupVaultIterator manages a stream of *netapppb.BackupVault.
@@ -2900,6 +2926,12 @@ func (it *BackupVaultIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *HostGroupIterator) All() iter.Seq2[*netapppb.HostGroup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // HostGroupIterator manages a stream of *netapppb.HostGroup.
 type HostGroupIterator struct {
 	items    []*netapppb.HostGroup
@@ -2945,6 +2977,12 @@ func (it *HostGroupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *KmsConfigIterator) All() iter.Seq2[*netapppb.KmsConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // KmsConfigIterator manages a stream of *netapppb.KmsConfig.
@@ -2994,6 +3032,12 @@ func (it *KmsConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -3039,6 +3083,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -3088,6 +3138,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QuotaRuleIterator) All() iter.Seq2[*netapppb.QuotaRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // QuotaRuleIterator manages a stream of *netapppb.QuotaRule.
 type QuotaRuleIterator struct {
 	items    []*netapppb.QuotaRule
@@ -3133,6 +3189,12 @@ func (it *QuotaRuleIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ReplicationIterator) All() iter.Seq2[*netapppb.Replication, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ReplicationIterator manages a stream of *netapppb.Replication.
@@ -3182,6 +3244,12 @@ func (it *ReplicationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SnapshotIterator) All() iter.Seq2[*netapppb.Snapshot, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SnapshotIterator manages a stream of *netapppb.Snapshot.
 type SnapshotIterator struct {
 	items    []*netapppb.Snapshot
@@ -3229,6 +3297,12 @@ func (it *SnapshotIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StoragePoolIterator) All() iter.Seq2[*netapppb.StoragePool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StoragePoolIterator manages a stream of *netapppb.StoragePool.
 type StoragePoolIterator struct {
 	items    []*netapppb.StoragePool
@@ -3274,6 +3348,12 @@ func (it *StoragePoolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VolumeIterator) All() iter.Seq2[*netapppb.Volume, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VolumeIterator manages a stream of *netapppb.Volume.

@@ -2237,6 +2237,11 @@ type Cluster struct {
 	AutomatedBackupConfig *AutomatedBackupConfig `protobuf:"bytes,42,opt,name=automated_backup_config,json=automatedBackupConfig,proto3" json:"automated_backup_config,omitempty"`
 	// Output only. Encryption information of the data at rest of the cluster.
 	EncryptionInfo *EncryptionInfo `protobuf:"bytes,43,opt,name=encryption_info,json=encryptionInfo,proto3" json:"encryption_info,omitempty"`
+	// Optional. If true, cluster endpoints that are created and registered by
+	// customers can be deleted asynchronously. That is, such a cluster endpoint
+	// can be de-registered before the forwarding rules in the cluster endpoint
+	// are deleted.
+	AsyncClusterEndpointsDeletionEnabled *bool `protobuf:"varint,44,opt,name=async_cluster_endpoints_deletion_enabled,json=asyncClusterEndpointsDeletionEnabled,proto3,oneof" json:"async_cluster_endpoints_deletion_enabled,omitempty"`
 	// Optional. Server CA mode for the cluster.
 	ServerCaMode *ServerCaMode `protobuf:"varint,53,opt,name=server_ca_mode,json=serverCaMode,proto3,enum=google.cloud.redis.cluster.v1.ServerCaMode,oneof" json:"server_ca_mode,omitempty"`
 	// Optional. Customer-managed CA pool for the cluster. Only applicable for
@@ -2498,6 +2503,13 @@ func (x *Cluster) GetEncryptionInfo() *EncryptionInfo {
 		return x.EncryptionInfo
 	}
 	return nil
+}
+
+func (x *Cluster) GetAsyncClusterEndpointsDeletionEnabled() bool {
+	if x != nil && x.AsyncClusterEndpointsDeletionEnabled != nil {
+		return *x.AsyncClusterEndpointsDeletionEnabled
+	}
+	return false
 }
 
 func (x *Cluster) GetServerCaMode() ServerCaMode {
@@ -5125,7 +5137,7 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x03ttl\x18\x02 \x01(\v2\x19.google.protobuf.DurationB\x03\xe0A\x01R\x03ttl\x12%\n" +
 	"\tbackup_id\x18\x03 \x01(\tB\x03\xe0A\x01H\x00R\bbackupId\x88\x01\x01B\f\n" +
 	"\n" +
-	"_backup_id\"\xbe\x1d\n" +
+	"_backup_id\"\xcd\x1e\n" +
 	"\aCluster\x12\\\n" +
 	"\n" +
 	"gcs_source\x18\" \x01(\v26.google.cloud.redis.cluster.v1.Cluster.GcsBackupSourceB\x03\xe0A\x01H\x00R\tgcsSource\x12u\n" +
@@ -5163,12 +5175,13 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\akms_key\x18( \x01(\tB)\xe0A\x01\xfaA#\n" +
 	"!cloudkms.googleapis.com/CryptoKeyH\tR\x06kmsKey\x88\x01\x01\x12q\n" +
 	"\x17automated_backup_config\x18* \x01(\v24.google.cloud.redis.cluster.v1.AutomatedBackupConfigB\x03\xe0A\x01R\x15automatedBackupConfig\x12[\n" +
-	"\x0fencryption_info\x18+ \x01(\v2-.google.cloud.redis.cluster.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12[\n" +
-	"\x0eserver_ca_mode\x185 \x01(\x0e2+.google.cloud.redis.cluster.v1.ServerCaModeB\x03\xe0A\x01H\n" +
-	"R\fserverCaMode\x88\x01\x01\x12R\n" +
+	"\x0fencryption_info\x18+ \x01(\v2-.google.cloud.redis.cluster.v1.EncryptionInfoB\x03\xe0A\x03R\x0eencryptionInfo\x12`\n" +
+	"(async_cluster_endpoints_deletion_enabled\x18, \x01(\bB\x03\xe0A\x01H\n" +
+	"R$asyncClusterEndpointsDeletionEnabled\x88\x01\x01\x12[\n" +
+	"\x0eserver_ca_mode\x185 \x01(\x0e2+.google.cloud.redis.cluster.v1.ServerCaModeB\x03\xe0A\x01H\vR\fserverCaMode\x88\x01\x01\x12R\n" +
 	"\x0eserver_ca_pool\x186 \x01(\tB'\xe0A\x01\xfaA!\n" +
-	"\x1fprivateca.googleapis.com/CaPoolH\vR\fserverCaPool\x88\x01\x01\x12G\n" +
-	"\x19rotate_server_certificate\x187 \x01(\bB\x06\xe0A\x01\xe0A\x04H\fR\x17rotateServerCertificate\x88\x01\x01\x1a\x9c\x02\n" +
+	"\x1fprivateca.googleapis.com/CaPoolH\fR\fserverCaPool\x88\x01\x01\x12G\n" +
+	"\x19rotate_server_certificate\x187 \x01(\bB\x06\xe0A\x01\xe0A\x04H\rR\x17rotateServerCertificate\x88\x01\x01\x1a\x9c\x02\n" +
 	"\tStateInfo\x12^\n" +
 	"\vupdate_info\x18\x01 \x01(\v2;.google.cloud.redis.cluster.v1.Cluster.StateInfo.UpdateInfoH\x00R\n" +
 	"updateInfo\x1a\xa6\x01\n" +
@@ -5205,7 +5218,8 @@ const file_google_cloud_redis_cluster_v1_cloud_redis_cluster_proto_rawDesc = "" 
 	"\x15_maintenance_scheduleB\x14\n" +
 	"\x12_backup_collectionB\n" +
 	"\n" +
-	"\b_kms_keyB\x11\n" +
+	"\b_kms_keyB+\n" +
+	")_async_cluster_endpoints_deletion_enabledB\x11\n" +
 	"\x0f_server_ca_modeB\x11\n" +
 	"\x0f_server_ca_poolB\x1c\n" +
 	"\x1a_rotate_server_certificate\"\xca\x04\n" +

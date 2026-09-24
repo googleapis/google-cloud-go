@@ -1,5 +1,26 @@
 # Changes
 
+## [1.6.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.5.0...networkservices/v1.6.0) (2026-09-17)
+
+
+### Features
+
+* **google/cloud/networkservices/v1beta1:** Add networkservices ([#20533](https://github.com/googleapis/google-cloud-go/issues/20533)) ([c5626ad](https://github.com/googleapis/google-cloud-go/commit/c5626adf844e75388b25b675cc722226b3333be7))
+
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.4.0...networkservices/v1.5.0) (2026-07-30)
+
+
+### Features
+
+* Update API sources and regenerate ([#20252](https://github.com/googleapis/google-cloud-go/issues/20252)) ([ac017a0](https://github.com/googleapis/google-cloud-go/commit/ac017a0d30ec2d42db35f7d3b5ea7fb20b4b860a))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.3.0...networkservices/v1.4.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/networkservices/v1.2.0...networkservices/v1.3.0) (2026-07-13)
 
 

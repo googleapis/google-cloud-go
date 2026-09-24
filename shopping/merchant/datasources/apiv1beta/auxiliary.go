@@ -17,9 +17,18 @@
 package datasources
 
 import (
+	"iter"
+
 	datasourcespb "cloud.google.com/go/shopping/merchant/datasources/apiv1beta/datasourcespb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataSourceIterator) All() iter.Seq2[*datasourcespb.DataSource, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DataSourceIterator manages a stream of *datasourcespb.DataSource.
 type DataSourceIterator struct {

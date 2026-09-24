@@ -151,7 +151,7 @@ func defaultBackendBucketsRESTCallOptions() *BackendBucketsCallOptions {
 	}
 }
 
-// internalBackendBucketsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalBackendBucketsClient is an interface that defines the methods available from Compute Engine API.
 type internalBackendBucketsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -172,7 +172,7 @@ type internalBackendBucketsClient interface {
 	Update(context.Context, *computepb.UpdateBackendBucketRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// BackendBucketsClient is a client for interacting with Google Compute Engine API.
+// BackendBucketsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The BackendBuckets API.

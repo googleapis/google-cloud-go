@@ -52,6 +52,14 @@ const (
 	Memorystore_BackupInstance_FullMethodName                        = "/google.cloud.memorystore.v1.Memorystore/BackupInstance"
 	Memorystore_StartMigration_FullMethodName                        = "/google.cloud.memorystore.v1.Memorystore/StartMigration"
 	Memorystore_FinishMigration_FullMethodName                       = "/google.cloud.memorystore.v1.Memorystore/FinishMigration"
+	Memorystore_ListTokenAuthUsers_FullMethodName                    = "/google.cloud.memorystore.v1.Memorystore/ListTokenAuthUsers"
+	Memorystore_GetTokenAuthUser_FullMethodName                      = "/google.cloud.memorystore.v1.Memorystore/GetTokenAuthUser"
+	Memorystore_ListAuthTokens_FullMethodName                        = "/google.cloud.memorystore.v1.Memorystore/ListAuthTokens"
+	Memorystore_GetAuthToken_FullMethodName                          = "/google.cloud.memorystore.v1.Memorystore/GetAuthToken"
+	Memorystore_AddTokenAuthUser_FullMethodName                      = "/google.cloud.memorystore.v1.Memorystore/AddTokenAuthUser"
+	Memorystore_DeleteTokenAuthUser_FullMethodName                   = "/google.cloud.memorystore.v1.Memorystore/DeleteTokenAuthUser"
+	Memorystore_AddAuthToken_FullMethodName                          = "/google.cloud.memorystore.v1.Memorystore/AddAuthToken"
+	Memorystore_DeleteAuthToken_FullMethodName                       = "/google.cloud.memorystore.v1.Memorystore/DeleteAuthToken"
 )
 
 // MemorystoreClient is the client API for Memorystore service.
@@ -120,6 +128,22 @@ type MemorystoreClient interface {
 	// 1. Stop replicating from the source instance.
 	// 2. Allow both reads and writes.
 	FinishMigration(ctx context.Context, in *FinishMigrationRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Lists all the token auth users for a token based auth enabled instance.
+	ListTokenAuthUsers(ctx context.Context, in *ListTokenAuthUsersRequest, opts ...grpc.CallOption) (*ListTokenAuthUsersResponse, error)
+	// Gets a specific token auth user for a token based auth enabled instance.
+	GetTokenAuthUser(ctx context.Context, in *GetTokenAuthUserRequest, opts ...grpc.CallOption) (*TokenAuthUser, error)
+	// Lists all the auth tokens for a specific token auth user.
+	ListAuthTokens(ctx context.Context, in *ListAuthTokensRequest, opts ...grpc.CallOption) (*ListAuthTokensResponse, error)
+	// Gets a token based auth enabled instance's auth token for a given user.
+	GetAuthToken(ctx context.Context, in *GetAuthTokenRequest, opts ...grpc.CallOption) (*AuthToken, error)
+	// Adds a token auth user for a token based auth enabled instance.
+	AddTokenAuthUser(ctx context.Context, in *AddTokenAuthUserRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a token auth user for a token based auth enabled instance.
+	DeleteTokenAuthUser(ctx context.Context, in *DeleteTokenAuthUserRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Adds a token for a user of a token based auth enabled instance.
+	AddAuthToken(ctx context.Context, in *AddAuthTokenRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deletes a token for a user of a token based auth enabled instance.
+	DeleteAuthToken(ctx context.Context, in *DeleteAuthTokenRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
 
 type memorystoreClient struct {
@@ -283,6 +307,78 @@ func (c *memorystoreClient) FinishMigration(ctx context.Context, in *FinishMigra
 	return out, nil
 }
 
+func (c *memorystoreClient) ListTokenAuthUsers(ctx context.Context, in *ListTokenAuthUsersRequest, opts ...grpc.CallOption) (*ListTokenAuthUsersResponse, error) {
+	out := new(ListTokenAuthUsersResponse)
+	err := c.cc.Invoke(ctx, Memorystore_ListTokenAuthUsers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) GetTokenAuthUser(ctx context.Context, in *GetTokenAuthUserRequest, opts ...grpc.CallOption) (*TokenAuthUser, error) {
+	out := new(TokenAuthUser)
+	err := c.cc.Invoke(ctx, Memorystore_GetTokenAuthUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) ListAuthTokens(ctx context.Context, in *ListAuthTokensRequest, opts ...grpc.CallOption) (*ListAuthTokensResponse, error) {
+	out := new(ListAuthTokensResponse)
+	err := c.cc.Invoke(ctx, Memorystore_ListAuthTokens_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) GetAuthToken(ctx context.Context, in *GetAuthTokenRequest, opts ...grpc.CallOption) (*AuthToken, error) {
+	out := new(AuthToken)
+	err := c.cc.Invoke(ctx, Memorystore_GetAuthToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) AddTokenAuthUser(ctx context.Context, in *AddTokenAuthUserRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_AddTokenAuthUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) DeleteTokenAuthUser(ctx context.Context, in *DeleteTokenAuthUserRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_DeleteTokenAuthUser_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) AddAuthToken(ctx context.Context, in *AddAuthTokenRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_AddAuthToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *memorystoreClient) DeleteAuthToken(ctx context.Context, in *DeleteAuthTokenRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
+	out := new(longrunningpb.Operation)
+	err := c.cc.Invoke(ctx, Memorystore_DeleteAuthToken_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 // MemorystoreServer is the server API for Memorystore service.
 // All implementations should embed UnimplementedMemorystoreServer
 // for forward compatibility
@@ -349,6 +445,22 @@ type MemorystoreServer interface {
 	// 1. Stop replicating from the source instance.
 	// 2. Allow both reads and writes.
 	FinishMigration(context.Context, *FinishMigrationRequest) (*longrunningpb.Operation, error)
+	// Lists all the token auth users for a token based auth enabled instance.
+	ListTokenAuthUsers(context.Context, *ListTokenAuthUsersRequest) (*ListTokenAuthUsersResponse, error)
+	// Gets a specific token auth user for a token based auth enabled instance.
+	GetTokenAuthUser(context.Context, *GetTokenAuthUserRequest) (*TokenAuthUser, error)
+	// Lists all the auth tokens for a specific token auth user.
+	ListAuthTokens(context.Context, *ListAuthTokensRequest) (*ListAuthTokensResponse, error)
+	// Gets a token based auth enabled instance's auth token for a given user.
+	GetAuthToken(context.Context, *GetAuthTokenRequest) (*AuthToken, error)
+	// Adds a token auth user for a token based auth enabled instance.
+	AddTokenAuthUser(context.Context, *AddTokenAuthUserRequest) (*longrunningpb.Operation, error)
+	// Deletes a token auth user for a token based auth enabled instance.
+	DeleteTokenAuthUser(context.Context, *DeleteTokenAuthUserRequest) (*longrunningpb.Operation, error)
+	// Adds a token for a user of a token based auth enabled instance.
+	AddAuthToken(context.Context, *AddAuthTokenRequest) (*longrunningpb.Operation, error)
+	// Deletes a token for a user of a token based auth enabled instance.
+	DeleteAuthToken(context.Context, *DeleteAuthTokenRequest) (*longrunningpb.Operation, error)
 }
 
 // UnimplementedMemorystoreServer should be embedded to have forward compatible implementations.
@@ -405,6 +517,30 @@ func (UnimplementedMemorystoreServer) StartMigration(context.Context, *StartMigr
 }
 func (UnimplementedMemorystoreServer) FinishMigration(context.Context, *FinishMigrationRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method FinishMigration not implemented")
+}
+func (UnimplementedMemorystoreServer) ListTokenAuthUsers(context.Context, *ListTokenAuthUsersRequest) (*ListTokenAuthUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListTokenAuthUsers not implemented")
+}
+func (UnimplementedMemorystoreServer) GetTokenAuthUser(context.Context, *GetTokenAuthUserRequest) (*TokenAuthUser, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetTokenAuthUser not implemented")
+}
+func (UnimplementedMemorystoreServer) ListAuthTokens(context.Context, *ListAuthTokensRequest) (*ListAuthTokensResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ListAuthTokens not implemented")
+}
+func (UnimplementedMemorystoreServer) GetAuthToken(context.Context, *GetAuthTokenRequest) (*AuthToken, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetAuthToken not implemented")
+}
+func (UnimplementedMemorystoreServer) AddTokenAuthUser(context.Context, *AddTokenAuthUserRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddTokenAuthUser not implemented")
+}
+func (UnimplementedMemorystoreServer) DeleteTokenAuthUser(context.Context, *DeleteTokenAuthUserRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteTokenAuthUser not implemented")
+}
+func (UnimplementedMemorystoreServer) AddAuthToken(context.Context, *AddAuthTokenRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method AddAuthToken not implemented")
+}
+func (UnimplementedMemorystoreServer) DeleteAuthToken(context.Context, *DeleteAuthTokenRequest) (*longrunningpb.Operation, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method DeleteAuthToken not implemented")
 }
 
 // UnsafeMemorystoreServer may be embedded to opt out of forward compatibility for this service.
@@ -724,6 +860,150 @@ func _Memorystore_FinishMigration_Handler(srv interface{}, ctx context.Context, 
 	return interceptor(ctx, in, info, handler)
 }
 
+func _Memorystore_ListTokenAuthUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListTokenAuthUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).ListTokenAuthUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_ListTokenAuthUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).ListTokenAuthUsers(ctx, req.(*ListTokenAuthUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_GetTokenAuthUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetTokenAuthUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).GetTokenAuthUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_GetTokenAuthUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).GetTokenAuthUser(ctx, req.(*GetTokenAuthUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_ListAuthTokens_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ListAuthTokensRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).ListAuthTokens(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_ListAuthTokens_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).ListAuthTokens(ctx, req.(*ListAuthTokensRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_GetAuthToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetAuthTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).GetAuthToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_GetAuthToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).GetAuthToken(ctx, req.(*GetAuthTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_AddTokenAuthUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddTokenAuthUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).AddTokenAuthUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_AddTokenAuthUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).AddTokenAuthUser(ctx, req.(*AddTokenAuthUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_DeleteTokenAuthUser_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteTokenAuthUserRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).DeleteTokenAuthUser(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_DeleteTokenAuthUser_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).DeleteTokenAuthUser(ctx, req.(*DeleteTokenAuthUserRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_AddAuthToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(AddAuthTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).AddAuthToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_AddAuthToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).AddAuthToken(ctx, req.(*AddAuthTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _Memorystore_DeleteAuthToken_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(DeleteAuthTokenRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(MemorystoreServer).DeleteAuthToken(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: Memorystore_DeleteAuthToken_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(MemorystoreServer).DeleteAuthToken(ctx, req.(*DeleteAuthTokenRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 // Memorystore_ServiceDesc is the grpc.ServiceDesc for Memorystore service.
 // It's only intended for direct use with grpc.RegisterService,
 // and not to be introspected or modified (even as a copy)
@@ -798,6 +1078,38 @@ var Memorystore_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "FinishMigration",
 			Handler:    _Memorystore_FinishMigration_Handler,
+		},
+		{
+			MethodName: "ListTokenAuthUsers",
+			Handler:    _Memorystore_ListTokenAuthUsers_Handler,
+		},
+		{
+			MethodName: "GetTokenAuthUser",
+			Handler:    _Memorystore_GetTokenAuthUser_Handler,
+		},
+		{
+			MethodName: "ListAuthTokens",
+			Handler:    _Memorystore_ListAuthTokens_Handler,
+		},
+		{
+			MethodName: "GetAuthToken",
+			Handler:    _Memorystore_GetAuthToken_Handler,
+		},
+		{
+			MethodName: "AddTokenAuthUser",
+			Handler:    _Memorystore_AddTokenAuthUser_Handler,
+		},
+		{
+			MethodName: "DeleteTokenAuthUser",
+			Handler:    _Memorystore_DeleteTokenAuthUser_Handler,
+		},
+		{
+			MethodName: "AddAuthToken",
+			Handler:    _Memorystore_AddAuthToken_Handler,
+		},
+		{
+			MethodName: "DeleteAuthToken",
+			Handler:    _Memorystore_DeleteAuthToken_Handler,
 		},
 	},
 	Streams:  []grpc.StreamDesc{},

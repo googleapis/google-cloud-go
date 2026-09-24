@@ -17,9 +17,18 @@
 package cloudquotas
 
 import (
+	"iter"
+
 	cloudquotaspb "cloud.google.com/go/cloudquotas/apiv1beta/cloudquotaspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QuotaInfoIterator) All() iter.Seq2[*cloudquotaspb.QuotaInfo, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // QuotaInfoIterator manages a stream of *cloudquotaspb.QuotaInfo.
 type QuotaInfoIterator struct {
@@ -66,6 +75,12 @@ func (it *QuotaInfoIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *QuotaPreferenceIterator) All() iter.Seq2[*cloudquotaspb.QuotaPreference, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // QuotaPreferenceIterator manages a stream of *cloudquotaspb.QuotaPreference.

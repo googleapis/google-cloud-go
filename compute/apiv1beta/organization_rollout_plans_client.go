@@ -83,7 +83,7 @@ func defaultOrganizationRolloutPlansRESTCallOptions() *OrganizationRolloutPlansC
 	}
 }
 
-// internalOrganizationRolloutPlansClient is an interface that defines the methods available from Google Compute Engine API.
+// internalOrganizationRolloutPlansClient is an interface that defines the methods available from Compute Engine API.
 type internalOrganizationRolloutPlansClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -94,7 +94,7 @@ type internalOrganizationRolloutPlansClient interface {
 	List(context.Context, *computepb.ListOrganizationRolloutPlansRequest, ...gax.CallOption) *RolloutPlanIterator
 }
 
-// OrganizationRolloutPlansClient is a client for interacting with Google Compute Engine API.
+// OrganizationRolloutPlansClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The OrganizationRolloutPlans API.

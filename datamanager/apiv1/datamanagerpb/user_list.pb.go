@@ -337,6 +337,7 @@ const (
 	// Publisher advertiser identity reconciliation ids.
 	IngestedUserListInfo_PAIR_ID IngestedUserListInfo_UploadKeyType = 4
 	// Data Management Platform IDs:
+	//
 	// - Google User ID
 	// - Partner Provided ID
 	// - Publisher Provided ID
@@ -345,6 +346,7 @@ const (
 	// - Roku ID
 	// - Amazon Fire TV ID
 	// - Xbox or Microsoft ID
+	// - Generic Device ID
 	IngestedUserListInfo_PSEUDONYMOUS_ID IngestedUserListInfo_UploadKeyType = 5
 )
 

@@ -63,6 +63,10 @@ runPresubmitTests() {
     # internal tools only expected to work with latest go version
     return
   fi
+  if [[ -z "$(find . -name '*.go' -print -quit 2>/dev/null)" ]]; then
+    echo "No Go files found in $PWD, skipping tests."
+    return
+  fi
 
   go_test_args=("-race")
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then

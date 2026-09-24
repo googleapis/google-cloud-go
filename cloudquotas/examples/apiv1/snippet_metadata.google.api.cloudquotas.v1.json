@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/cloudquotas/apiv1",
-    "version": "1.11.0"
+    "version": "1.12.0"
   },
   "snippets": [
     {
@@ -286,6 +286,98 @@
         }
       ],
       "title": "cloudquotas UpdateQuotaPreference Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManagerClient",
+          "shortName": "QuotaAdjusterSettingsManagerClient"
+        },
+        "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManagerClient.GetQuotaAdjusterSettings",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManager.GetQuotaAdjusterSettings",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManager",
+            "shortName": "QuotaAdjusterSettingsManager"
+          },
+          "shortName": "GetQuotaAdjusterSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudquotaspb.GetQuotaAdjusterSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cloudquotaspb.QuotaAdjusterSettings",
+        "shortName": "GetQuotaAdjusterSettings"
+      },
+      "description": "GetQuotaAdjusterSettings gets the QuotaAdjusterSettings for the specified resource.",
+      "file": "QuotaAdjusterSettingsManagerClient/GetQuotaAdjusterSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_QuotaAdjusterSettingsManager_GetQuotaAdjusterSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudquotas GetQuotaAdjusterSettings Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManagerClient",
+          "shortName": "QuotaAdjusterSettingsManagerClient"
+        },
+        "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManagerClient.UpdateQuotaAdjusterSettings",
+        "method": {
+          "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManager.UpdateQuotaAdjusterSettings",
+          "service": {
+            "fullName": "google.api.cloudquotas.v1.QuotaAdjusterSettingsManager",
+            "shortName": "QuotaAdjusterSettingsManager"
+          },
+          "shortName": "UpdateQuotaAdjusterSettings"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "cloudquotaspb.UpdateQuotaAdjusterSettingsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*cloudquotaspb.QuotaAdjusterSettings",
+        "shortName": "UpdateQuotaAdjusterSettings"
+      },
+      "description": "UpdateQuotaAdjusterSettings updates the QuotaAdjusterSettings for the specified resource.",
+      "file": "QuotaAdjusterSettingsManagerClient/UpdateQuotaAdjusterSettings/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "cloudquotas_v1_generated_QuotaAdjusterSettingsManager_UpdateQuotaAdjusterSettings_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "cloudquotas UpdateQuotaAdjusterSettings Sample"
     }
   ]
 }

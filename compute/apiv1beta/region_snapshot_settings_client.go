@@ -63,7 +63,7 @@ func defaultRegionSnapshotSettingsRESTCallOptions() *RegionSnapshotSettingsCallO
 	}
 }
 
-// internalRegionSnapshotSettingsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionSnapshotSettingsClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionSnapshotSettingsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -72,7 +72,7 @@ type internalRegionSnapshotSettingsClient interface {
 	Patch(context.Context, *computepb.PatchRegionSnapshotSettingRequest, ...gax.CallOption) (*Operation, error)
 }
 
-// RegionSnapshotSettingsClient is a client for interacting with Google Compute Engine API.
+// RegionSnapshotSettingsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionSnapshotSettings API.

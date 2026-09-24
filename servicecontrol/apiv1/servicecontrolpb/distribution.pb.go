@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -69,7 +69,7 @@ type Distribution struct {
 	// The buckets are defined below in `bucket_option`. There are N buckets.
 	// `bucket_counts[0]` is the number of samples in the underflow bucket.
 	// `bucket_counts[1]` to `bucket_counts[N-1]` are the numbers of samples
-	// in each of the finite buckets. And `bucket_counts[N] is the number
+	// in each of the finite buckets. And `bucket_counts[N]` is the number
 	// of samples in the overflow bucket. See the comments of `bucket_option`
 	// below for more details.
 	//
@@ -490,8 +490,8 @@ const file_google_api_servicecontrol_v1_distribution_proto_rawDesc = "" +
 	"\x05scale\x18\x03 \x01(\x01R\x05scale\x1a)\n" +
 	"\x0fExplicitBuckets\x12\x16\n" +
 	"\x06bounds\x18\x01 \x03(\x01R\x06boundsB\x0f\n" +
-	"\rbucket_optionB\xec\x01\n" +
-	" com.google.api.servicecontrol.v1B\x11DistributionProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xf8\x01\x01\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
+	"\rbucket_optionB\xe9\x01\n" +
+	" com.google.api.servicecontrol.v1B\x11DistributionProtoP\x01ZJcloud.google.com/go/servicecontrol/apiv1/servicecontrolpb;servicecontrolpb\xaa\x02\x1eGoogle.Cloud.ServiceControl.V1\xca\x02\x1eGoogle\\Cloud\\ServiceControl\\V1\xea\x02!Google::Cloud::ServiceControl::V1b\x06proto3"
 
 var (
 	file_google_api_servicecontrol_v1_distribution_proto_rawDescOnce sync.Once

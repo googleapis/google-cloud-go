@@ -17,9 +17,18 @@
 package tables
 
 import (
+	"iter"
+
 	tablespb "cloud.google.com/go/area120/tables/apiv1alpha1/tablespb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RowIterator) All() iter.Seq2[*tablespb.Row, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // RowIterator manages a stream of *tablespb.Row.
 type RowIterator struct {
@@ -68,6 +77,12 @@ func (it *RowIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TableIterator) All() iter.Seq2[*tablespb.Table, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // TableIterator manages a stream of *tablespb.Table.
 type TableIterator struct {
 	items    []*tablespb.Table
@@ -113,6 +128,12 @@ func (it *TableIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkspaceIterator) All() iter.Seq2[*tablespb.Workspace, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkspaceIterator manages a stream of *tablespb.Workspace.

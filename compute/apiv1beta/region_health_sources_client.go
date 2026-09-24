@@ -118,7 +118,7 @@ func defaultRegionHealthSourcesRESTCallOptions() *RegionHealthSourcesCallOptions
 	}
 }
 
-// internalRegionHealthSourcesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionHealthSourcesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionHealthSourcesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -133,7 +133,7 @@ type internalRegionHealthSourcesClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsRegionHealthSourceRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// RegionHealthSourcesClient is a client for interacting with Google Compute Engine API.
+// RegionHealthSourcesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionHealthSources API.

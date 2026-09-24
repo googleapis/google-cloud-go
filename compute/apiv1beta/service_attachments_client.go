@@ -122,7 +122,7 @@ func defaultServiceAttachmentsRESTCallOptions() *ServiceAttachmentsCallOptions {
 	}
 }
 
-// internalServiceAttachmentsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalServiceAttachmentsClient is an interface that defines the methods available from Compute Engine API.
 type internalServiceAttachmentsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -138,7 +138,7 @@ type internalServiceAttachmentsClient interface {
 	TestIamPermissions(context.Context, *computepb.TestIamPermissionsServiceAttachmentRequest, ...gax.CallOption) (*computepb.TestPermissionsResponse, error)
 }
 
-// ServiceAttachmentsClient is a client for interacting with Google Compute Engine API.
+// ServiceAttachmentsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ServiceAttachments API.

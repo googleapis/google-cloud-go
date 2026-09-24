@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.13.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.12.0...gkemulticloud/v1.13.0) (2026-07-23)
+
+
+### Features
+
+* Update API sources and regenerate ([#20188](https://github.com/googleapis/google-cloud-go/issues/20188)) ([104e0de](https://github.com/googleapis/google-cloud-go/commit/104e0de4fb40e0008232a9a01f100f089ec18d8b))
+
 ## [1.12.0](https://github.com/googleapis/google-cloud-go/compare/gkemulticloud/v1.11.0...gkemulticloud/v1.12.0) (2026-07-13)
 
 

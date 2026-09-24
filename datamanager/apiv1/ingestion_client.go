@@ -24,6 +24,7 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"time"
 
 	datamanagerpb "cloud.google.com/go/datamanager/apiv1/datamanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -33,6 +34,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	httptransport "google.golang.org/api/transport/http"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/codes"
 	"google.golang.org/protobuf/encoding/protojson"
 )
 
@@ -40,11 +42,12 @@ var newIngestionClientHook clientHook
 
 // IngestionCallOptions contains the retry settings for each method of IngestionClient.
 type IngestionCallOptions struct {
-	IngestAudienceMembers []gax.CallOption
-	RemoveAudienceMembers []gax.CallOption
-	IngestEvents          []gax.CallOption
-	IngestAdEvents        []gax.CallOption
-	RetrieveRequestStatus []gax.CallOption
+	IngestAudienceMembers    []gax.CallOption
+	RemoveAudienceMembers    []gax.CallOption
+	RemoveAllAudienceMembers []gax.CallOption
+	IngestEvents             []gax.CallOption
+	IngestAdEvents           []gax.CallOption
+	RetrieveRequestStatus    []gax.CallOption
 }
 
 func defaultIngestionGRPCClientOptions() []option.ClientOption {
@@ -64,21 +67,115 @@ func defaultIngestionGRPCClientOptions() []option.ClientOption {
 
 func defaultIngestionCallOptions() *IngestionCallOptions {
 	return &IngestionCallOptions{
-		IngestAudienceMembers: []gax.CallOption{},
-		RemoveAudienceMembers: []gax.CallOption{},
-		IngestEvents:          []gax.CallOption{},
-		IngestAdEvents:        []gax.CallOption{},
-		RetrieveRequestStatus: []gax.CallOption{},
+		IngestAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RemoveAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		RemoveAllAudienceMembers: []gax.CallOption{},
+		IngestEvents: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
+		IngestAdEvents: []gax.CallOption{},
+		RetrieveRequestStatus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnCodes([]codes.Code{
+					codes.Unavailable,
+					codes.DeadlineExceeded,
+				}, gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				})
+			}),
+		},
 	}
 }
 
 func defaultIngestionRESTCallOptions() *IngestionCallOptions {
 	return &IngestionCallOptions{
-		IngestAudienceMembers: []gax.CallOption{},
-		RemoveAudienceMembers: []gax.CallOption{},
-		IngestEvents:          []gax.CallOption{},
-		IngestAdEvents:        []gax.CallOption{},
-		RetrieveRequestStatus: []gax.CallOption{},
+		IngestAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		RemoveAudienceMembers: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		RemoveAllAudienceMembers: []gax.CallOption{},
+		IngestEvents: []gax.CallOption{
+			gax.WithTimeout(120000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
+		IngestAdEvents: []gax.CallOption{},
+		RetrieveRequestStatus: []gax.CallOption{
+			gax.WithTimeout(60000 * time.Millisecond),
+			gax.WithRetry(func() gax.Retryer {
+				return gax.OnHTTPCodes(gax.Backoff{
+					Initial:    5000 * time.Millisecond,
+					Max:        60000 * time.Millisecond,
+					Multiplier: 1.30,
+				},
+					http.StatusServiceUnavailable,
+					http.StatusGatewayTimeout)
+			}),
+		},
 	}
 }
 
@@ -89,6 +186,7 @@ type internalIngestionClient interface {
 	Connection() *grpc.ClientConn
 	IngestAudienceMembers(context.Context, *datamanagerpb.IngestAudienceMembersRequest, ...gax.CallOption) (*datamanagerpb.IngestAudienceMembersResponse, error)
 	RemoveAudienceMembers(context.Context, *datamanagerpb.RemoveAudienceMembersRequest, ...gax.CallOption) (*datamanagerpb.RemoveAudienceMembersResponse, error)
+	RemoveAllAudienceMembers(context.Context, *datamanagerpb.RemoveAllAudienceMembersRequest, ...gax.CallOption) (*datamanagerpb.RemoveAllAudienceMembersResponse, error)
 	IngestEvents(context.Context, *datamanagerpb.IngestEventsRequest, ...gax.CallOption) (*datamanagerpb.IngestEventsResponse, error)
 	IngestAdEvents(context.Context, *datamanagerpb.IngestAdEventsRequest, ...gax.CallOption) (*datamanagerpb.IngestAdEventsResponse, error)
 	RetrieveRequestStatus(context.Context, *datamanagerpb.RetrieveRequestStatusRequest, ...gax.CallOption) (*datamanagerpb.RetrieveRequestStatusResponse, error)
@@ -141,6 +239,11 @@ func (c *IngestionClient) IngestAudienceMembers(ctx context.Context, req *datama
 // the provided Destination.
 func (c *IngestionClient) RemoveAudienceMembers(ctx context.Context, req *datamanagerpb.RemoveAudienceMembersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveAudienceMembersResponse, error) {
 	return c.internalClient.RemoveAudienceMembers(ctx, req, opts...)
+}
+
+// RemoveAllAudienceMembers removes all audience members from the provided destinations.
+func (c *IngestionClient) RemoveAllAudienceMembers(ctx context.Context, req *datamanagerpb.RemoveAllAudienceMembersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveAllAudienceMembersResponse, error) {
+	return c.internalClient.RemoveAllAudienceMembers(ctx, req, opts...)
 }
 
 // IngestEvents uploads a list of
@@ -234,6 +337,7 @@ func NewIngestionClient(ctx context.Context, opts ...option.ClientOption) (*Inge
 
 		client.CallOptions.IngestAudienceMembers = append(client.CallOptions.IngestAudienceMembers, gax.WithClientMetrics(metrics))
 		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
+		client.CallOptions.RemoveAllAudienceMembers = append(client.CallOptions.RemoveAllAudienceMembers, gax.WithClientMetrics(metrics))
 		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
@@ -329,6 +433,7 @@ func NewIngestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 
 		callOpts.IngestAudienceMembers = append(callOpts.IngestAudienceMembers, gax.WithClientMetrics(metrics))
 		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientMetrics(metrics))
+		callOpts.RemoveAllAudienceMembers = append(callOpts.RemoveAllAudienceMembers, gax.WithClientMetrics(metrics))
 		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientMetrics(metrics))
 		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientMetrics(metrics))
 		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
@@ -402,6 +507,24 @@ func (c *ingestionGRPCClient) RemoveAudienceMembers(ctx context.Context, req *da
 	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
 		var err error
 		resp, err = executeRPC(ctx, c.ingestionClient.RemoveAudienceMembers, req, settings.GRPC, c.logger, "RemoveAudienceMembers")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
+}
+
+func (c *ingestionGRPCClient) RemoveAllAudienceMembers(ctx context.Context, req *datamanagerpb.RemoveAllAudienceMembersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveAllAudienceMembersResponse, error) {
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, c.xGoogHeaders...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RemoveAllAudienceMembers")
+	}
+	opts = append((*c.CallOptions).RemoveAllAudienceMembers[0:len((*c.CallOptions).RemoveAllAudienceMembers):len((*c.CallOptions).RemoveAllAudienceMembers)], opts...)
+	var resp *datamanagerpb.RemoveAllAudienceMembersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.ingestionClient.RemoveAllAudienceMembers, req, settings.GRPC, c.logger, "RemoveAllAudienceMembers")
 		return err
 	}, opts...)
 	if err != nil {
@@ -566,6 +689,63 @@ func (c *ingestionRESTClient) RemoveAudienceMembers(ctx context.Context, req *da
 		httpReq.Header = headers
 
 		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveAudienceMembers")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
+}
+
+// RemoveAllAudienceMembers removes all audience members from the provided destinations.
+func (c *ingestionRESTClient) RemoveAllAudienceMembers(ctx context.Context, req *datamanagerpb.RemoveAllAudienceMembersRequest, opts ...gax.CallOption) (*datamanagerpb.RemoveAllAudienceMembersResponse, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/audienceMembers:removeAll")
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.IngestionService/RemoveAllAudienceMembers")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/audienceMembers:removeAll")
+	}
+	opts = append((*c.CallOptions).RemoveAllAudienceMembers[0:len((*c.CallOptions).RemoveAllAudienceMembers):len((*c.CallOptions).RemoveAllAudienceMembers)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &datamanagerpb.RemoveAllAudienceMembersResponse{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RemoveAllAudienceMembers")
 		if err != nil {
 			return err
 		}

@@ -14,7 +14,11 @@
 
 package internal
 
-import "errors"
+import (
+	"errors"
+
+	"google.golang.org/grpc/status"
+)
 
 // AttemptState classifies how far a single vRPC attempt progressed before
 // terminating. RetryingVRpc consumes this instead of raw gRPC codes so
@@ -31,9 +35,7 @@ const (
 	// path that hasn't yet adopted tagErr (or an error introduced by a
 	// non-vRPC layer) classifies here. Under the strict Java-parity
 	// default (see shouldRetryDefault in retrying.go) StateServerResult
-	// does NOT retry unless the server explicitly attached RetryInfo or
-	// the caller set RetryingOptions.ShouldRetry to override the whole
-	// classifier. Callers that need a permissive fallback must opt in.
+	// does NOT retry unless the server explicitly attached RetryInfo.
 	StateServerResult AttemptState = iota
 	// StateUncommitted means the attempt never reached the wire — encode
 	// failed, session was Closing, etc. Retry is safe regardless of
@@ -75,6 +77,23 @@ type vrpcErr struct {
 func (e *vrpcErr) Error() string { return e.outcome.Err.Error() }
 func (e *vrpcErr) Unwrap() error { return e.outcome.Err }
 
+// GRPCStatus lets status.Code / status.FromError see through the tagged
+// wrapper. Session vRPC bypasses grpc-go's unary client interceptor —
+// the place where ctx.Err() → gRPC status translation normally happens
+// — so we do it here. Unwrap() stays raw so errors.Is walks through.
+func (e *vrpcErr) GRPCStatus() *status.Status { return statusOf(e.outcome.Err) }
+
+// statusOf returns err's gRPC status: existing status wins, else
+// stdlib ctx errors get translated to DeadlineExceeded / Canceled,
+// else Unknown-with-message. Shared by vrpcErr.GRPCStatus and the
+// pool's slow-op labelers so ctx-err → status logic lives in one place.
+func statusOf(err error) *status.Status {
+	if s, ok := status.FromError(err); ok {
+		return s
+	}
+	return status.FromContextError(err)
+}
+
 // tagErr wraps err with the given AttemptState. Returns nil for nil err so
 // call sites can compose without extra guards.
 func tagErr(state AttemptState, err error) error {
@@ -92,8 +111,8 @@ func tagErr(state AttemptState, err error) error {
 // fake Invoker must tag its errors the same way for the RetryingVRpc
 // interceptor's default classification to see them.
 //
-// Returns nil for nil err. Wraps unwrap()-transparently — errors.Is and
-// status.FromError continue to see the underlying err.
+// Returns nil for nil err. Unwrap exposes the raw err (errors.Is walks
+// through); GRPCStatus returns the translated gRPC status.
 func TagErr(state AttemptState, err error) error { return tagErr(state, err) }
 
 // ClassifyErr returns the outcome for any error. Untagged errors fall

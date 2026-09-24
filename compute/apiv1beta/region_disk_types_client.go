@@ -74,7 +74,7 @@ func defaultRegionDiskTypesRESTCallOptions() *RegionDiskTypesCallOptions {
 	}
 }
 
-// internalRegionDiskTypesClient is an interface that defines the methods available from Google Compute Engine API.
+// internalRegionDiskTypesClient is an interface that defines the methods available from Compute Engine API.
 type internalRegionDiskTypesClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -83,7 +83,7 @@ type internalRegionDiskTypesClient interface {
 	List(context.Context, *computepb.ListRegionDiskTypesRequest, ...gax.CallOption) *DiskTypeIterator
 }
 
-// RegionDiskTypesClient is a client for interacting with Google Compute Engine API.
+// RegionDiskTypesClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionDiskTypes API.

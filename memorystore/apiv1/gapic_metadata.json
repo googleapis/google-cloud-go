@@ -10,6 +10,16 @@
         "grpc": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddAuthToken": {
+              "methods": [
+                "AddAuthToken"
+              ]
+            },
+            "AddTokenAuthUser": {
+              "methods": [
+                "AddTokenAuthUser"
+              ]
+            },
             "BackupInstance": {
               "methods": [
                 "BackupInstance"
@@ -23,6 +33,11 @@
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
+              ]
+            },
+            "DeleteAuthToken": {
+              "methods": [
+                "DeleteAuthToken"
               ]
             },
             "DeleteBackup": {
@@ -40,6 +55,11 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteTokenAuthUser": {
+              "methods": [
+                "DeleteTokenAuthUser"
+              ]
+            },
             "ExportBackup": {
               "methods": [
                 "ExportBackup"
@@ -48,6 +68,11 @@
             "FinishMigration": {
               "methods": [
                 "FinishMigration"
+              ]
+            },
+            "GetAuthToken": {
+              "methods": [
+                "GetAuthToken"
               ]
             },
             "GetBackup": {
@@ -85,6 +110,16 @@
                 "GetSharedRegionalCertificateAuthority"
               ]
             },
+            "GetTokenAuthUser": {
+              "methods": [
+                "GetTokenAuthUser"
+              ]
+            },
+            "ListAuthTokens": {
+              "methods": [
+                "ListAuthTokens"
+              ]
+            },
             "ListBackupCollections": {
               "methods": [
                 "ListBackupCollections"
@@ -108,6 +143,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListTokenAuthUsers": {
+              "methods": [
+                "ListTokenAuthUsers"
               ]
             },
             "RescheduleMaintenance": {
@@ -130,6 +170,16 @@
         "rest": {
           "libraryClient": "Client",
           "rpcs": {
+            "AddAuthToken": {
+              "methods": [
+                "AddAuthToken"
+              ]
+            },
+            "AddTokenAuthUser": {
+              "methods": [
+                "AddTokenAuthUser"
+              ]
+            },
             "BackupInstance": {
               "methods": [
                 "BackupInstance"
@@ -143,6 +193,11 @@
             "CreateInstance": {
               "methods": [
                 "CreateInstance"
+              ]
+            },
+            "DeleteAuthToken": {
+              "methods": [
+                "DeleteAuthToken"
               ]
             },
             "DeleteBackup": {
@@ -160,6 +215,11 @@
                 "DeleteOperation"
               ]
             },
+            "DeleteTokenAuthUser": {
+              "methods": [
+                "DeleteTokenAuthUser"
+              ]
+            },
             "ExportBackup": {
               "methods": [
                 "ExportBackup"
@@ -168,6 +228,11 @@
             "FinishMigration": {
               "methods": [
                 "FinishMigration"
+              ]
+            },
+            "GetAuthToken": {
+              "methods": [
+                "GetAuthToken"
               ]
             },
             "GetBackup": {
@@ -205,6 +270,16 @@
                 "GetSharedRegionalCertificateAuthority"
               ]
             },
+            "GetTokenAuthUser": {
+              "methods": [
+                "GetTokenAuthUser"
+              ]
+            },
+            "ListAuthTokens": {
+              "methods": [
+                "ListAuthTokens"
+              ]
+            },
             "ListBackupCollections": {
               "methods": [
                 "ListBackupCollections"
@@ -228,6 +303,11 @@
             "ListOperations": {
               "methods": [
                 "ListOperations"
+              ]
+            },
+            "ListTokenAuthUsers": {
+              "methods": [
+                "ListTokenAuthUsers"
               ]
             },
             "RescheduleMaintenance": {

@@ -18,12 +18,14 @@ package agentregistry
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	agentregistrypb "cloud.google.com/go/agentregistry/apiv1/agentregistrypb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -390,6 +392,12 @@ func (op *UpdateServiceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AgentIterator) All() iter.Seq2[*agentregistrypb.Agent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AgentIterator manages a stream of *agentregistrypb.Agent.
 type AgentIterator struct {
 	items    []*agentregistrypb.Agent
@@ -435,6 +443,12 @@ func (it *AgentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BindingIterator) All() iter.Seq2[*agentregistrypb.Binding, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BindingIterator manages a stream of *agentregistrypb.Binding.
@@ -484,6 +498,12 @@ func (it *BindingIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EndpointIterator) All() iter.Seq2[*agentregistrypb.Endpoint, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EndpointIterator manages a stream of *agentregistrypb.Endpoint.
 type EndpointIterator struct {
 	items    []*agentregistrypb.Endpoint
@@ -529,6 +549,12 @@ func (it *EndpointIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -578,6 +604,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *McpServerIterator) All() iter.Seq2[*agentregistrypb.McpServer, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // McpServerIterator manages a stream of *agentregistrypb.McpServer.
 type McpServerIterator struct {
 	items    []*agentregistrypb.McpServer
@@ -625,6 +657,12 @@ func (it *McpServerIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -670,6 +708,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*agentregistrypb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceIterator manages a stream of *agentregistrypb.Service.

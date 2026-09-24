@@ -320,6 +320,52 @@ func (*TransactionOptions_ReadOnly_) isTransactionOptions_Mode() {}
 
 func (*TransactionOptions_ReadWrite_) isTransactionOptions_Mode() {}
 
+// Options for a server request.
+type RequestOptions struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The request tags for the request.
+	RequestTags   []string `protobuf:"bytes,1,rep,name=request_tags,json=requestTags,proto3" json:"request_tags,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RequestOptions) Reset() {
+	*x = RequestOptions{}
+	mi := &file_google_firestore_v1_common_proto_msgTypes[3]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RequestOptions) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RequestOptions) ProtoMessage() {}
+
+func (x *RequestOptions) ProtoReflect() protoreflect.Message {
+	mi := &file_google_firestore_v1_common_proto_msgTypes[3]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RequestOptions.ProtoReflect.Descriptor instead.
+func (*RequestOptions) Descriptor() ([]byte, []int) {
+	return file_google_firestore_v1_common_proto_rawDescGZIP(), []int{3}
+}
+
+func (x *RequestOptions) GetRequestTags() []string {
+	if x != nil {
+		return x.RequestTags
+	}
+	return nil
+}
+
 // Options for a transaction that can be used to read and write documents.
 type TransactionOptions_ReadWrite struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -340,7 +386,7 @@ type TransactionOptions_ReadWrite struct {
 
 func (x *TransactionOptions_ReadWrite) Reset() {
 	*x = TransactionOptions_ReadWrite{}
-	mi := &file_google_firestore_v1_common_proto_msgTypes[3]
+	mi := &file_google_firestore_v1_common_proto_msgTypes[4]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -352,7 +398,7 @@ func (x *TransactionOptions_ReadWrite) String() string {
 func (*TransactionOptions_ReadWrite) ProtoMessage() {}
 
 func (x *TransactionOptions_ReadWrite) ProtoReflect() protoreflect.Message {
-	mi := &file_google_firestore_v1_common_proto_msgTypes[3]
+	mi := &file_google_firestore_v1_common_proto_msgTypes[4]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -398,7 +444,7 @@ type TransactionOptions_ReadOnly struct {
 
 func (x *TransactionOptions_ReadOnly) Reset() {
 	*x = TransactionOptions_ReadOnly{}
-	mi := &file_google_firestore_v1_common_proto_msgTypes[4]
+	mi := &file_google_firestore_v1_common_proto_msgTypes[5]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -410,7 +456,7 @@ func (x *TransactionOptions_ReadOnly) String() string {
 func (*TransactionOptions_ReadOnly) ProtoMessage() {}
 
 func (x *TransactionOptions_ReadOnly) ProtoReflect() protoreflect.Message {
-	mi := &file_google_firestore_v1_common_proto_msgTypes[4]
+	mi := &file_google_firestore_v1_common_proto_msgTypes[5]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -485,7 +531,9 @@ const file_google_firestore_v1_common_proto_rawDesc = "" +
 	"\n" +
 	"OPTIMISTIC\x10\x01\x12\x0f\n" +
 	"\vPESSIMISTIC\x10\x02B\x06\n" +
-	"\x04modeB\xc3\x01\n" +
+	"\x04mode\"8\n" +
+	"\x0eRequestOptions\x12&\n" +
+	"\frequest_tags\x18\x01 \x03(\tB\x03\xe0A\x01R\vrequestTagsB\xc3\x01\n" +
 	"\x17com.google.firestore.v1B\vCommonProtoP\x01Z;cloud.google.com/go/firestore/apiv1/firestorepb;firestorepb\xa2\x02\x04GCFS\xaa\x02\x19Google.Cloud.Firestore.V1\xca\x02\x19Google\\Cloud\\Firestore\\V1\xea\x02\x1cGoogle::Cloud::Firestore::V1b\x06proto3"
 
 var (
@@ -501,22 +549,23 @@ func file_google_firestore_v1_common_proto_rawDescGZIP() []byte {
 }
 
 var file_google_firestore_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_firestore_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 5)
+var file_google_firestore_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 6)
 var file_google_firestore_v1_common_proto_goTypes = []any{
 	(TransactionOptions_ConcurrencyMode)(0), // 0: google.firestore.v1.TransactionOptions.ConcurrencyMode
 	(*DocumentMask)(nil),                    // 1: google.firestore.v1.DocumentMask
 	(*Precondition)(nil),                    // 2: google.firestore.v1.Precondition
 	(*TransactionOptions)(nil),              // 3: google.firestore.v1.TransactionOptions
-	(*TransactionOptions_ReadWrite)(nil),    // 4: google.firestore.v1.TransactionOptions.ReadWrite
-	(*TransactionOptions_ReadOnly)(nil),     // 5: google.firestore.v1.TransactionOptions.ReadOnly
-	(*timestamppb.Timestamp)(nil),           // 6: google.protobuf.Timestamp
+	(*RequestOptions)(nil),                  // 4: google.firestore.v1.RequestOptions
+	(*TransactionOptions_ReadWrite)(nil),    // 5: google.firestore.v1.TransactionOptions.ReadWrite
+	(*TransactionOptions_ReadOnly)(nil),     // 6: google.firestore.v1.TransactionOptions.ReadOnly
+	(*timestamppb.Timestamp)(nil),           // 7: google.protobuf.Timestamp
 }
 var file_google_firestore_v1_common_proto_depIdxs = []int32{
-	6, // 0: google.firestore.v1.Precondition.update_time:type_name -> google.protobuf.Timestamp
-	5, // 1: google.firestore.v1.TransactionOptions.read_only:type_name -> google.firestore.v1.TransactionOptions.ReadOnly
-	4, // 2: google.firestore.v1.TransactionOptions.read_write:type_name -> google.firestore.v1.TransactionOptions.ReadWrite
+	7, // 0: google.firestore.v1.Precondition.update_time:type_name -> google.protobuf.Timestamp
+	6, // 1: google.firestore.v1.TransactionOptions.read_only:type_name -> google.firestore.v1.TransactionOptions.ReadOnly
+	5, // 2: google.firestore.v1.TransactionOptions.read_write:type_name -> google.firestore.v1.TransactionOptions.ReadWrite
 	0, // 3: google.firestore.v1.TransactionOptions.ReadWrite.concurrency_mode:type_name -> google.firestore.v1.TransactionOptions.ConcurrencyMode
-	6, // 4: google.firestore.v1.TransactionOptions.ReadOnly.read_time:type_name -> google.protobuf.Timestamp
+	7, // 4: google.firestore.v1.TransactionOptions.ReadOnly.read_time:type_name -> google.protobuf.Timestamp
 	5, // [5:5] is the sub-list for method output_type
 	5, // [5:5] is the sub-list for method input_type
 	5, // [5:5] is the sub-list for extension type_name
@@ -537,7 +586,7 @@ func file_google_firestore_v1_common_proto_init() {
 		(*TransactionOptions_ReadOnly_)(nil),
 		(*TransactionOptions_ReadWrite_)(nil),
 	}
-	file_google_firestore_v1_common_proto_msgTypes[4].OneofWrappers = []any{
+	file_google_firestore_v1_common_proto_msgTypes[5].OneofWrappers = []any{
 		(*TransactionOptions_ReadOnly_ReadTime)(nil),
 	}
 	type x struct{}
@@ -546,7 +595,7 @@ func file_google_firestore_v1_common_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_firestore_v1_common_proto_rawDesc), len(file_google_firestore_v1_common_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   5,
+			NumMessages:   6,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

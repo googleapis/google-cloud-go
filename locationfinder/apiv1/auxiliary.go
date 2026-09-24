@@ -17,10 +17,19 @@
 package locationfinder
 
 import (
+	"iter"
+
 	locationfinderpb "cloud.google.com/go/locationfinder/apiv1/locationfinderpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CloudLocationIterator) All() iter.Seq2[*locationfinderpb.CloudLocation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // CloudLocationIterator manages a stream of *locationfinderpb.CloudLocation.
 type CloudLocationIterator struct {
@@ -67,6 +76,12 @@ func (it *CloudLocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
