@@ -191,13 +191,11 @@ func TestRetryApplyBulk_OverallRequestFailure(t *testing.T) {
 	errCount := 0
 	errInjector := func(srv interface{}, ss grpc.ServerStream, info *grpc.StreamServerInfo, handler grpc.StreamHandler) error {
 		if strings.HasSuffix(info.FullMethod, "MutateRows") {
-			return func() error {
-				if errCount < 3 {
-					errCount++
-					return status.Errorf(codes.Aborted, "")
-				}
-				return nil
-			}()
+			if errCount < 3 {
+				errCount++
+				return status.Errorf(codes.Aborted, "")
+			}
+			return handler(srv, ss)
 		}
 		return handler(ctx, ss)
 	}
