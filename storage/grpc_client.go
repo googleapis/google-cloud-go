@@ -71,12 +71,22 @@ const (
 	// which only does a single read per stream.
 	defaultReadID = 1
 
-	forceDirectConnectivityEnforced       = "ENFORCED"
-	directConnectivityHeaderKey           = "force_direct_connectivity"
-	directConnectivityDiagnosticHeaderKey = "direct_connectivity_diagnostic"
-	requestParamsHeaderKey                = "x-goog-request-params"
-	directPathEndpointPrefix              = "google-c2p:///"
+	forceDirectConnectivityEnforced           = "ENFORCED"
+	directConnectivityHeaderKey               = "force_direct_connectivity"
+	directConnectivityDiagnosticHeaderKey     = "direct_connectivity_diagnostic"
+	requestParamsHeaderKey                    = "x-goog-request-params"
+	directPathEndpointPrefix                  = "google-c2p:///"
+	enableDirectPathXdsOverInterconnectEnvVar = "GOOGLE_CLOUD_ENABLE_DIRECT_PATH_XDS_OVER_INTERCONNECT"
 )
+
+func isDirectPathXdsOverInterconnectEnabled(config *storageConfig) bool {
+	if valStr, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
+		if b, err := strconv.ParseBool(valStr); err == nil {
+			return b
+		}
+	}
+	return config != nil && config.grpcDirectPathXdsOverInterconnect
+}
 
 // defaultGRPCOptions returns a set of the default client options
 // for gRPC client initialization.
@@ -165,6 +175,11 @@ func newGRPCStorageClient(ctx context.Context, opts ...storageOption) (client *g
 	config := newStorageConfig(s.clientOption...)
 	if config.readAPIWasSet {
 		return nil, errors.New("storage: GRPC is incompatible with any option that specifies an API for reads")
+	}
+	if os.Getenv("STORAGE_EMULATOR_HOST_GRPC") == "" && isDirectPathXdsOverInterconnectEnabled(&config) {
+		// TODO(https://github.com/googleapis/google-cloud-go/pull/20561): Bump google.golang.org/api
+		// in storage/go.mod once internaloption.EnableDirectPathXdsOverInterconnect() is released.
+		s.clientOption = append(s.clientOption, internaloption.EnableDirectPathXdsOverInterconnect())
 	}
 
 	if !config.disableClientMetrics {

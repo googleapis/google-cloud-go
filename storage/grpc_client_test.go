@@ -460,6 +460,18 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			want:     "direct_connectivity_diagnostic=reason",
 		},
 		{
+			desc:     "DirectPath over Interconnect target with ENFORCED",
+			enforced: true,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "force_direct_connectivity=ENFORCED",
+		},
+		{
+			desc:     "DirectPath over Interconnect target with NOT ENFORCED",
+			enforced: false,
+			target:   "google-c2p:///storage-direct.googleapis.com?force-xds",
+			want:     "",
+		},
+		{
 			desc:     "Empty target with ENFORCED",
 			enforced: true,
 			target:   "",
@@ -496,6 +508,31 @@ func TestPrepareDirectPathMetadata(t *testing.T) {
 			}
 			if headerValue != tc.want {
 				t.Errorf("got metadata %q, want %q", headerValue, tc.want)
+			}
+		})
+	}
+}
+
+func TestIsDirectPathXdsOverInterconnectEnabled(t *testing.T) {
+	for _, tc := range []struct {
+		name   string
+		envVal string
+		cfgVal bool
+		want   bool
+	}{
+		{name: "option true, env unset", envVal: "", cfgVal: true, want: true},
+		{name: "option false, env unset", envVal: "", cfgVal: false, want: false},
+		{name: "env true overrides option false", envVal: "true", cfgVal: false, want: true},
+		{name: "env 1 overrides option false", envVal: "1", cfgVal: false, want: true},
+		{name: "env false overrides option true", envVal: "false", cfgVal: true, want: false},
+		{name: "env 0 overrides option true", envVal: "0", cfgVal: true, want: false},
+		{name: "invalid env falls back to option true", envVal: "invalid", cfgVal: true, want: true},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, tc.envVal)
+			cfg := &storageConfig{grpcDirectPathXdsOverInterconnect: tc.cfgVal}
+			if got := isDirectPathXdsOverInterconnectEnabled(cfg); got != tc.want {
+				t.Errorf("isDirectPathXdsOverInterconnectEnabled() = %v, want %v", got, tc.want)
 			}
 		})
 	}

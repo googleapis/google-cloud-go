@@ -21,6 +21,7 @@ import (
 	"os"
 	"testing"
 
+	"cloud.google.com/go/storage/experimental"
 	"google.golang.org/api/option"
 	"google.golang.org/api/option/internaloption"
 	"google.golang.org/grpc"
@@ -136,6 +137,67 @@ func TestDirectPathDiagnostic(t *testing.T) {
 			got := directPathDiagnostic(context.Background(), tc.opts...)
 			if got != tc.want {
 				t.Errorf("directPathDiagnostic() = %v; want %v", got, tc.want)
+			}
+		})
+	}
+}
+
+func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
+	// Ensure GCE metadata server is not used/reachable so off-GCE bypass is verified.
+	t.Setenv("GCE_METADATA_HOST", "127.0.0.1:1")
+	t.Setenv(directPathDisableEnvVar, "false")
+	t.Setenv(enableDirectPathXdsOverInterconnectEnvVar, "")
+
+	for _, tc := range []struct {
+		name string
+		opts []option.ClientOption
+		want string
+	}{
+		{
+			name: "interconnect enabled off-GCE with standard endpoint bypasses GCE check",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("storage.googleapis.com:443"),
+			},
+			want: reasonUndetermined,
+		},
+		{
+			name: "interconnect enabled off-GCE with google-c2p endpoint bypasses GCE check",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("google-c2p:///storage-direct.googleapis.com?force-xds"),
+			},
+			want: reasonUndetermined,
+		},
+		{
+			name: "interconnect enabled with unsupported scheme endpoint returns unsupported_endpoint",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("https://storage.googleapis.com"),
+			},
+			want: reasonUnsupportedEndpoint,
+		},
+		{
+			name: "interconnect enabled without authentication returns no_auth",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("storage.googleapis.com:443"),
+				option.WithoutAuthentication(),
+			},
+			want: reasonNoAuth,
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := directPathDiagnostic(context.Background(), tc.opts...); got != tc.want {
+				t.Errorf("directPathDiagnostic() = %q, want %q", got, tc.want)
 			}
 		})
 	}
