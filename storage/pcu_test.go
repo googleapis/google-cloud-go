@@ -71,18 +71,18 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			name: "all defaults",
 			in:   &ParallelUploadConfig{},
 			want: &ParallelUploadConfig{
-				PartSize:   defaultPartSize,
+				PartSize:       defaultPartSize,
 				MaxConcurrency: expectedWorkers,
 			},
 		},
 		{
 			name: "user-provided values are respected",
 			in: &ParallelUploadConfig{
-				PartSize:   10 * 1024 * 1024, // 10 MiB
+				PartSize:       10 * 1024 * 1024, // 10 MiB
 				MaxConcurrency: 10,
 			},
 			want: &ParallelUploadConfig{
-				PartSize:   10 * 1024 * 1024,
+				PartSize:       10 * 1024 * 1024,
 				MaxConcurrency: 10,
 			},
 		},
@@ -92,7 +92,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 				PartSize: 1024 * 1024, // 1 MiB, below the 8 MiB minimum.
 			},
 			want: &ParallelUploadConfig{
-				PartSize:   minPartSize,
+				PartSize:       minPartSize,
 				MaxConcurrency: expectedWorkers,
 			},
 		},
