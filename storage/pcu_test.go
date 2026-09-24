@@ -71,28 +71,28 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 			name: "all defaults",
 			in:   &ParallelUploadConfig{},
 			want: &ParallelUploadConfig{
-				PartSizeHint:   defaultPartSize,
+				PartSize:   defaultPartSize,
 				MaxConcurrency: expectedWorkers,
 			},
 		},
 		{
 			name: "user-provided values are respected",
 			in: &ParallelUploadConfig{
-				PartSizeHint:   10 * 1024 * 1024, // 10 MiB
+				PartSize:   10 * 1024 * 1024, // 10 MiB
 				MaxConcurrency: 10,
 			},
 			want: &ParallelUploadConfig{
-				PartSizeHint:   10 * 1024 * 1024,
+				PartSize:   10 * 1024 * 1024,
 				MaxConcurrency: 10,
 			},
 		},
 		{
-			name: "PartSizeHint below minimum is adjusted",
+			name: "PartSize below minimum is adjusted",
 			in: &ParallelUploadConfig{
-				PartSizeHint: 1024 * 1024, // 1 MiB, below the 8 MiB minimum.
+				PartSize: 1024 * 1024, // 1 MiB, below the 8 MiB minimum.
 			},
 			want: &ParallelUploadConfig{
-				PartSizeHint:   minPartSize,
+				PartSize:   minPartSize,
 				MaxConcurrency: expectedWorkers,
 			},
 		},
@@ -424,7 +424,7 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 				c:      &Client{},
 			},
 		},
-		config:   &ParallelUploadConfig{PartSizeHint: 10, MaxConcurrency: 1},
+		config:   &ParallelUploadConfig{PartSize: 10, MaxConcurrency: 1},
 		settings: &pcuSettings{bufferPoolSize: 2},
 		partMap:  make(map[int]*ObjectHandle),
 		doCleanupFn: func(s *pcuState) {
@@ -554,7 +554,7 @@ func TestPCUState_Write(t *testing.T) {
 				started:  true,
 				bufferCh: make(chan []byte, 5),
 				uploadCh: make(chan uploadTask, 5),
-				config:   &ParallelUploadConfig{PartSizeHint: PartSize},
+				config:   &ParallelUploadConfig{PartSize: PartSize},
 			}
 
 			// Pre-fill buffer pool.

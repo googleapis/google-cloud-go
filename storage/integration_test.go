@@ -9360,25 +9360,25 @@ func TestIntegration_ParallelUpload(t *testing.T) {
 			{
 				name:     "small object",
 				content:  bytes.Repeat([]byte("a"), 1<<20), // 1 MiB
-				config:   ParallelUploadConfig{PartSizeHint: 8 << 20, MaxConcurrency: 2},
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2},
 				expected: 1 << 20,
 			},
 			{
 				name:     "exact part size",
 				content:  bytes.Repeat([]byte("b"), 8<<20), // 8 MiB
-				config:   ParallelUploadConfig{PartSizeHint: 8 << 20, MaxConcurrency: 2},
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2},
 				expected: 8 << 20,
 			},
 			{
 				name:     "large object",
 				content:  bytes.Repeat([]byte("c"), 18<<20), // 18 MiB
-				config:   ParallelUploadConfig{PartSizeHint: 8 << 20, MaxConcurrency: 4},
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 4},
 				expected: 18 << 20,
 			},
 			{
 				name:     "recursive composition logic",
 				content:  bytes.Repeat([]byte("d"), 264<<20), // 264 MiB = 33 parts of 8 MiB each (tests recursive compose)
-				config:   ParallelUploadConfig{PartSizeHint: 8 << 20, MaxConcurrency: 16},
+				config:   ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 16},
 				expected: 264 << 20,
 			},
 		}
@@ -9472,7 +9472,7 @@ func TestIntegration_ParallelUploadConcurrency(t *testing.T) {
 		h := testHelper{t}
 
 		content := bytes.Repeat([]byte("z"), 24<<20) // 24 MiB
-		config := ParallelUploadConfig{PartSizeHint: 8 << 20, MaxConcurrency: 4}
+		config := ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 4}
 
 		var wg sync.WaitGroup
 		numUploads := 5
@@ -9556,7 +9556,7 @@ func TestIntegration_ParallelUpload_ChecksumValidation(t *testing.T) {
 
 				w := obj.NewWriter(ctx)
 				w.EnableParallelUpload = true
-				w.ParallelUploadConfig = ParallelUploadConfig{PartSizeHint: 8 << 20, MaxConcurrency: 2}
+				w.ParallelUploadConfig = ParallelUploadConfig{PartSize: 8 << 20, MaxConcurrency: 2}
 				w.SendCRC32C = true
 				w.CRC32C = tc.crc32c
 

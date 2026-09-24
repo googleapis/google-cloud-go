@@ -49,11 +49,11 @@ const (
 // in future releases. It is not yet recommended for production use.
 type ParallelUploadConfig struct {
 
-	// PartSizeHint is the preferred size of each part to be uploaded in parallel.
-	// This is used as a hint; the actual part size used may be different (e.g. server-determined).
+	// PartSize is the requested size of each part to be uploaded in parallel.
+	// The server may determine an actual part size closer to the requested one.
 	// Defaults to 16MiB. If a value less than 8MiB is provided, it will be
 	// automatically increased to 8MiB.
-	PartSizeHint int
+	PartSize int
 
 	// MaxConcurrency is the number of goroutines to use for uploading parts in parallel.
 	// Defaults to a dynamic value based on the number of CPUs (min(4 + NumCPU/2, 16)).
@@ -62,10 +62,10 @@ type ParallelUploadConfig struct {
 
 // defaults fills in values for the configuration options.
 func (c *ParallelUploadConfig) defaults() {
-	if c.PartSizeHint == 0 {
-		c.PartSizeHint = defaultPartSize
-	} else if c.PartSizeHint < minPartSize {
-		c.PartSizeHint = minPartSize
+	if c.PartSize == 0 {
+		c.PartSize = defaultPartSize
+	} else if c.PartSize < minPartSize {
+		c.PartSize = minPartSize
 	}
 	// Use a heuristic for the number of workers: start with 4, add 1 for
 	// every 2 CPUs, but don't exceed a cap of 16. This provides a
@@ -175,8 +175,8 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	cfg := &w.ParallelUploadConfig
 	cfg.defaults()
 
-	// Ensure PartSizeHint is a multiple of googleapi.MinUploadChunkSize.
-	cfg.PartSizeHint = gRPCChunkSize(cfg.PartSizeHint)
+	// Ensure PartSize is a multiple of googleapi.MinUploadChunkSize.
+	cfg.PartSize = gRPCChunkSize(cfg.PartSize)
 
 	s := newPCUSettings(cfg.MaxConcurrency)
 
@@ -218,7 +218,7 @@ func (w *Writer) initPCU(ctx context.Context) error {
 	go state.resultCollector()
 
 	// Handle to get the first buffer.
-	state.currentBuffer = make([]byte, cfg.PartSizeHint)
+	state.currentBuffer = make([]byte, cfg.PartSize)
 	state.buffersAlloc = 1
 	state.bytesBuffered = 0
 
@@ -354,7 +354,7 @@ func (s *pcuState) write(p []byte) (int, error) {
 				s.bytesBuffered = 0
 			default:
 				if s.buffersAlloc < s.settings.bufferPoolSize {
-					s.currentBuffer = make([]byte, s.config.PartSizeHint)
+					s.currentBuffer = make([]byte, s.config.PartSize)
 					s.buffersAlloc++
 					s.bytesBuffered = 0
 				} else {
@@ -373,7 +373,7 @@ func (s *pcuState) write(p []byte) (int, error) {
 		p = p[n:]
 
 		// If the buffer is full, dispatch it to a worker.
-		if s.bytesBuffered == int64(s.config.PartSizeHint) {
+		if s.bytesBuffered == int64(s.config.PartSize) {
 			if err := s.flushCurrentBuffer(); err != nil {
 				return total - len(p), err
 			}
