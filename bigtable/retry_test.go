@@ -197,7 +197,7 @@ func TestRetryApplyBulk_OverallRequestFailure(t *testing.T) {
 			}
 			return handler(srv, ss)
 		}
-		return handler(ctx, ss)
+		return handler(srv, ss)
 	}
 
 	tbl, cleanup, err := setupDefaultFakeServer(grpc.StreamInterceptor(errInjector))
