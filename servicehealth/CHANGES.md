@@ -1,6 +1,13 @@
 # Changes
 
 
+## [1.8.0](https://github.com/googleapis/google-cloud-go/compare/servicehealth/v1.7.0...servicehealth/v1.8.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
 ## [1.7.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicehealth%2Fv1.7.0) (2026-05-07)
 
 ## [1.6.0](https://github.com/googleapis/google-cloud-go/releases/tag/servicehealth%2Fv1.6.0) (2026-04-30)
