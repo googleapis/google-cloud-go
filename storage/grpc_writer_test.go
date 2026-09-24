@@ -15,6 +15,7 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"io"
@@ -267,6 +268,13 @@ type mockSender struct {
 	wg               sync.WaitGroup // Waits for all async operations to complete.
 	failOnData       bool
 	respondToAllData bool
+	// overAckAfter is the 1-based index of the flush whose completion should
+	// report overAckBy extra bytes, modelling the persisted size reported
+	// after a reconnect: it counts bytes written by an earlier attempt, so it
+	// can exceed what the current attempt has sent. Zero disables this.
+	overAckAfter int
+	overAckBy    int64
+	flushes      int
 }
 
 func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -287,6 +295,11 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 			m.requests = append(m.requests, req)
 			failOnData := m.failOnData
 			respondToAllData := m.respondToAllData
+			overAckAfter, overAckBy := m.overAckAfter, m.overAckBy
+			if req.flush {
+				m.flushes++
+			}
+			flushes := m.flushes
 			m.mu.Unlock()
 
 			if req.requestAck {
@@ -302,6 +315,10 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 			}
 
 			if req.flush || respondToAllData {
+				flushOffset := req.offset + int64(len(req.buf))
+				if req.flush && overAckAfter > 0 && flushes == overAckAfter {
+					flushOffset += overAckBy
+				}
 				completionWg.Add(1)
 				// Send completions asynchronously to avoid blocking the request loop.
 				go func(offset int64) {
@@ -312,7 +329,7 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 					}:
 					case <-ctx.Done():
 					}
-				}(req.offset + int64(len(req.buf)))
+				}(flushOffset)
 			}
 		}
 	}()
@@ -329,6 +346,95 @@ func filterDataRequests(reqs []gRPCBidiWriteRequest) []gRPCBidiWriteRequest {
 		}
 	}
 	return dataReqs
+}
+
+// newTestGRPCWriter returns a gRPCWriter wired to sender, deriving the buffer
+// geometry exactly as OpenWriter does.
+func newTestGRPCWriter(chunkSize int, sender gRPCBidiWriteBufferSender) *gRPCWriter {
+	writeQuantum := min(maxPerMessageWriteSize, chunkSize)
+	sendableUnits := chunkSize / writeQuantum
+	lastSegmentStart := sendableUnits * writeQuantum
+	if lastSegmentStart < chunkSize {
+		sendableUnits++
+	}
+	w := &gRPCWriter{
+		preRunCtx:        context.Background(),
+		settings:         &settings{},
+		chunkSize:        chunkSize,
+		writeQuantum:     writeQuantum,
+		lastSegmentStart: lastSegmentStart,
+		sendableUnits:    sendableUnits,
+		bufFlushedIdx:    -1,
+		writesChan:       make(chan gRPCWriterCommand, 1),
+		donec:            make(chan struct{}),
+		streamSender:     sender,
+	}
+	w.progress = func(int64) {}
+	w.setObj = func(*ObjectAttrs) {}
+	w.setSize = func(int64) {}
+	return w
+}
+
+// TestGRPCWriter_ServiceAcksBeyondSentBytes is a regression test for a panic in
+// the resumable write path.
+//
+// After a reconnect, the first completion carries the persisted size reported
+// by QueryWriteStatus. That counts bytes durably written by an earlier,
+// aborted attempt, so it can sit beyond anything the current attempt has sent.
+// It was used unchecked to index the caller's buffer, panicking with "slice
+// bounds out of range" and taking down the calling process.
+func TestGRPCWriter_ServiceAcksBeyondSentBytes(t *testing.T) {
+	chunkSize := gRPCChunkSize(0)
+	// Report the fourth flush as though two further chunks were already
+	// persisted, placing the offset past the end of the data left to stage.
+	sender := &mockSender{
+		overAckAfter: 4,
+		overAckBy:    int64(2 * chunkSize),
+	}
+	w := newTestGRPCWriter(chunkSize, sender)
+
+	// A position-dependent pattern; zeros would hide a misaligned index.
+	data := make([]byte, 4*chunkSize)
+	for i := range data {
+		data[i] = byte(i%251 + 1)
+	}
+
+	go func() {
+		w.writeLoop(context.Background())
+		close(w.donec)
+	}()
+
+	if _, err := w.Write(data); err != nil {
+		t.Fatalf("Write failed: %v", err)
+	}
+	if err := w.Close(); err != nil {
+		t.Fatalf("Close failed: %v", err)
+	}
+	sender.wg.Wait()
+
+	// Surviving is only half of it: clamping an index must not shift the byte
+	// stream. Every buffer must carry the payload bytes belonging at the
+	// offset it was sent to, with no region sent twice. Bytes the writer skips
+	// are expected, since the service claimed to hold them already.
+	sender.mu.Lock()
+	defer sender.mu.Unlock()
+	var sentThrough int64
+	for _, req := range filterDataRequests(sender.requests) {
+		end := req.offset + int64(len(req.buf))
+		if req.offset < sentThrough {
+			t.Errorf("buffer at offset %d re-sends bytes already sent through %d", req.offset, sentThrough)
+		}
+		if end > int64(len(data)) {
+			t.Fatalf("buffer [%d,%d) runs past the %d byte payload", req.offset, end, len(data))
+		}
+		if !bytes.Equal(req.buf, data[req.offset:end]) {
+			t.Fatalf("bytes sent at offset %d are not the payload bytes for that offset", req.offset)
+		}
+		sentThrough = end
+	}
+	if sentThrough == 0 {
+		t.Fatal("no payload bytes were sent")
+	}
 }
 
 // Test the logic correctly handles the combination of io.EOF
