@@ -295,13 +295,13 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
 	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
 	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
-	if client == nil {
-		return client, err
+	if err != nil {
+		return nil, err
 	}
 	cached := &cachedExecuteStreamingSQLClient{Spanner_ExecuteStreamingSqlClient: client}
 	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	captureStreamServerTiming(span, mt, cached)
-	return cached, err
+	return cached, nil
 }
 
 func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
@@ -334,13 +334,13 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
 	client, err := g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
-	if client == nil {
-		return client, err
+	if err != nil {
+		return nil, err
 	}
 	cached := &cachedStreamingReadClient{Spanner_StreamingReadClient: client}
 	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 	captureStreamServerTiming(span, mt, cached)
-	return cached, err
+	return cached, nil
 }
 
 func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
