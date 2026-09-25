@@ -28,6 +28,7 @@ import (
 
 	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	metrics "cloud.google.com/go/bigtable/internal/metrics"
+	vtpb "cloud.google.com/go/bigtable/internal/vtpb"
 	"cloud.google.com/go/internal/trace"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
@@ -256,7 +257,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		defer cancel()
 
 		startTime := time.Now()
-		stream, err := t.c.client.ReadRows(ctx, req)
+		stream, err := t.c.client.ReadRows(ctx, req, readRowsCodecOpt)
 		if err != nil {
 			return err
 		}
@@ -271,9 +272,9 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 		// Ignore error since header is only being used to record builtin metrics
 		// Failure to record metrics should not fail the operation
 		*headerMD, _ = stream.Header()
-		res := new(btpb.ReadRowsResponse)
+		res := vtpb.ReadRowsResponseFromVTPool()
 		for {
-			proto.Reset(res)
+			res.ResetVT()
 			err := stream.RecvMsg(res)
 			if !firstResponseRecorded && (err == nil || err == io.EOF) {
 				firstResponseRecorded = true
@@ -325,11 +326,12 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 					// Cancel and drain stream.
 					cancel()
 					for {
-						proto.Reset(res)
+						res.ResetVT()
 						if err := stream.RecvMsg(res); err != nil {
 							*trailerMD = stream.Trailer()
 							// The stream has ended. We don't return an error
 							// because the caller has intentionally interrupted the scan.
+							res.ReturnToVTPool()
 							return nil
 						}
 					}
@@ -342,7 +344,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 
 			// Handle any incoming RequestStats. This should happen at most once.
 			if res.RequestStats != nil && settings.fullReadStatsFunc != nil {
-				stats := makeFullReadStats(res.RequestStats)
+				stats := makeFullReadStatsVT(res.RequestStats)
 				settings.fullReadStatsFunc(&stats)
 			}
 
@@ -351,6 +353,7 @@ func (t *Table) readRows(ctx context.Context, arg RowSet, f func(Row) bool, opts
 				return err
 			}
 		}
+		res.ReturnToVTPool()
 		return err
 	}, t.c.retryOption)
 
@@ -798,6 +801,20 @@ func makeFullReadStats(reqStats *btpb.RequestStats) FullReadStats {
 			RowsSeenCount:      readStats.RowsSeenCount},
 		RequestLatencyStats: RequestLatencyStats{
 			FrontendServerLatency: latencyStats.FrontendServerLatency.AsDuration()}}
+}
+
+func makeFullReadStatsVT(reqStats *vtpb.RequestStats) FullReadStats {
+	statsView := reqStats.GetFullReadStatsView()
+	readStats := statsView.GetReadIterationStats()
+	latencyStats := statsView.GetRequestLatencyStats()
+	return FullReadStats{
+		ReadIterationStats: ReadIterationStats{
+			CellsReturnedCount: readStats.GetCellsReturnedCount(),
+			CellsSeenCount:     readStats.GetCellsSeenCount(),
+			RowsReturnedCount:  readStats.GetRowsReturnedCount(),
+			RowsSeenCount:      readStats.GetRowsSeenCount()},
+		RequestLatencyStats: RequestLatencyStats{
+			FrontendServerLatency: latencyStats.GetFrontendServerLatency().AsDuration()}}
 }
 
 // FullReadStatsFunc describes a callback that receives a FullReadStats for evaluation.

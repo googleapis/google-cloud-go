@@ -21,7 +21,7 @@ import (
 	"fmt"
 	"strings"
 
-	btpb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
+	vtpb "cloud.google.com/go/bigtable/internal/vtpb"
 )
 
 // A Row is returned by ReadRows. The map is keyed by column family (the prefix
@@ -82,7 +82,7 @@ func newReverseChunkReader() *chunkReader {
 
 // Process takes a cell chunk and returns a new Row if the given chunk
 // completes a Row, or nil otherwise.
-func (cr *chunkReader) Process(cc *btpb.ReadRowsResponse_CellChunk) (Row, error) {
+func (cr *chunkReader) Process(cc *vtpb.ReadRowsResponse_CellChunk) (Row, error) {
 	var row Row
 	switch cr.state {
 	case newRow:
@@ -141,7 +141,7 @@ func (cr *chunkReader) Close() error {
 }
 
 // handleCellValue returns a Row if the cell value includes a commit, otherwise nil.
-func (cr *chunkReader) handleCellValue(cc *btpb.ReadRowsResponse_CellChunk) Row {
+func (cr *chunkReader) handleCellValue(cc *vtpb.ReadRowsResponse_CellChunk) Row {
 	if cc.ValueSize > 0 {
 		// ValueSize is specified so expect a split value of ValueSize bytes
 		if cr.curVal == nil {
@@ -199,7 +199,7 @@ func (cr *chunkReader) resetToNewRow() {
 	cr.state = newRow
 }
 
-func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error {
+func (cr *chunkReader) validateNewRow(cc *vtpb.ReadRowsResponse_CellChunk) error {
 	if cc.GetResetRow() {
 		return fmt.Errorf("reset_row not allowed between rows")
 	}
@@ -222,7 +222,7 @@ func (cr *chunkReader) validateNewRow(cc *btpb.ReadRowsResponse_CellChunk) error
 	return nil
 }
 
-func (cr *chunkReader) validateRowInProgress(cc *btpb.ReadRowsResponse_CellChunk) error {
+func (cr *chunkReader) validateRowInProgress(cc *vtpb.ReadRowsResponse_CellChunk) error {
 	if err := cr.validateRowStatus(cc); err != nil {
 		return err
 	}
@@ -235,7 +235,7 @@ func (cr *chunkReader) validateRowInProgress(cc *btpb.ReadRowsResponse_CellChunk
 	return nil
 }
 
-func (cr *chunkReader) validateCellInProgress(cc *btpb.ReadRowsResponse_CellChunk) error {
+func (cr *chunkReader) validateCellInProgress(cc *vtpb.ReadRowsResponse_CellChunk) error {
 	if err := cr.validateRowStatus(cc); err != nil {
 		return err
 	}
@@ -248,7 +248,7 @@ func (cr *chunkReader) validateCellInProgress(cc *btpb.ReadRowsResponse_CellChun
 	return nil
 }
 
-func (cr *chunkReader) isAnyKeyPresent(cc *btpb.ReadRowsResponse_CellChunk) bool {
+func (cr *chunkReader) isAnyKeyPresent(cc *vtpb.ReadRowsResponse_CellChunk) bool {
 	return cc.RowKey != nil ||
 		cc.FamilyName != nil ||
 		cc.Qualifier != nil ||
@@ -256,7 +256,7 @@ func (cr *chunkReader) isAnyKeyPresent(cc *btpb.ReadRowsResponse_CellChunk) bool
 }
 
 // Validate a RowStatus, commit or reset, if present.
-func (cr *chunkReader) validateRowStatus(cc *btpb.ReadRowsResponse_CellChunk) error {
+func (cr *chunkReader) validateRowStatus(cc *vtpb.ReadRowsResponse_CellChunk) error {
 	// Resets can't be specified with any other part of a cell
 	if cc.GetResetRow() && (cr.isAnyKeyPresent(cc) ||
 		cc.Value != nil ||

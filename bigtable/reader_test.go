@@ -23,8 +23,8 @@ import (
 	"strings"
 	"testing"
 
-	btspb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
 	"cloud.google.com/go/internal/testutil"
+	vtpb "cloud.google.com/go/bigtable/internal/vtpb"
 	"google.golang.org/protobuf/encoding/prototext"
 	"google.golang.org/protobuf/types/known/wrapperspb"
 )
@@ -220,7 +220,7 @@ func TestNewFamEmptyQualifier(t *testing.T) {
 	}
 }
 
-func mustProcess(t *testing.T, cr *chunkReader, cc *btspb.ReadRowsResponse_CellChunk) Row {
+func mustProcess(t *testing.T, cr *chunkReader, cc *vtpb.ReadRowsResponse_CellChunk) Row {
 	row, err := cr.Process(cc)
 	if err != nil {
 		t.Fatal(err)
@@ -274,7 +274,7 @@ func runTestCase(t *testing.T, test TestCase) {
 	var seenErr bool
 	for _, chunkText := range test.Chunks {
 		// Parse and pass each cell chunk to the ChunkReader
-		cc := &btspb.ReadRowsResponse_CellChunk{}
+		cc := &vtpb.ReadRowsResponse_CellChunk{}
 		err := prototext.Unmarshal([]byte(chunkText), cc)
 		if err != nil {
 			t.Errorf("[%s] failed to unmarshal text proto: %s\n%s", test.Name, chunkText, err)
@@ -331,7 +331,7 @@ func ri(rk string, fm string, qual string, ts int64, val string, labels []string
 }
 
 // cc returns a CellChunk proto
-func cc(rk string, fm string, qual string, ts int64, val string, size int32, commit bool, labels []string) *btspb.ReadRowsResponse_CellChunk {
+func cc(rk string, fm string, qual string, ts int64, val string, size int32, commit bool, labels []string) *vtpb.ReadRowsResponse_CellChunk {
 	// The components of the cell key are wrapped and can be null or empty
 	var rkWrapper []byte
 	if rk == nilStr {
@@ -354,25 +354,25 @@ func cc(rk string, fm string, qual string, ts int64, val string, size int32, com
 		qualWrapper = nil
 	}
 
-	return &btspb.ReadRowsResponse_CellChunk{
+	return &vtpb.ReadRowsResponse_CellChunk{
 		RowKey:          rkWrapper,
 		FamilyName:      fmWrapper,
 		Qualifier:       qualWrapper,
 		TimestampMicros: ts,
 		Value:           []byte(val),
 		ValueSize:       size,
-		RowStatus:       &btspb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: commit},
+		RowStatus:       &vtpb.ReadRowsResponse_CellChunk_CommitRow{CommitRow: commit},
 		Labels:          labels,
 	}
 }
 
 // ccData returns a CellChunk with only a value and size
-func ccData(val string, size int32, commit bool) *btspb.ReadRowsResponse_CellChunk {
+func ccData(val string, size int32, commit bool) *vtpb.ReadRowsResponse_CellChunk {
 	return cc(nilStr, nilStr, nilStr, 0, val, size, commit, []string{})
 }
 
 // ccReset returns a CellChunk with RestRow set to true
-func ccReset() *btspb.ReadRowsResponse_CellChunk {
-	return &btspb.ReadRowsResponse_CellChunk{
-		RowStatus: &btspb.ReadRowsResponse_CellChunk_ResetRow{ResetRow: true}}
+func ccReset() *vtpb.ReadRowsResponse_CellChunk {
+	return &vtpb.ReadRowsResponse_CellChunk{
+		RowStatus: &vtpb.ReadRowsResponse_CellChunk_ResetRow{ResetRow: true}}
 }
