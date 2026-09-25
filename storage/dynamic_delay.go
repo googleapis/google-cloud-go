@@ -278,6 +278,16 @@ func executeWithReadStallTimeout(
 
 	select {
 	case <-timer.C:
+		// If openStream completed at the same time the timer fired, select may
+		// pick either case. Prefer the real result over reporting a stall.
+		select {
+		case <-done:
+			if innerErr == nil {
+				cancel = nil
+			}
+			return innerErr
+		default:
+		}
 		cancel()
 		<-done
 		if onStall != nil {
