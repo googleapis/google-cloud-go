@@ -1,6 +1,19 @@
 # Changes
 
 
+## [1.69.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.68.0...storage/v1.69.0) (2026-09-25)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+* **storage:** Add read stall retry for gRPC storage client ([#20525](https://github.com/googleapis/google-cloud-go/issues/20525)) ([8bfc486](https://github.com/googleapis/google-cloud-go/commit/8bfc4863da4151976a5e4629ef9dce429edb43d5))
+
+
+### Bug Fixes
+
+* **various:** Address format directive issues ([#20547](https://github.com/googleapis/google-cloud-go/issues/20547)) ([e2e1047](https://github.com/googleapis/google-cloud-go/commit/e2e104731999b3bfc75ed0b8f2d71844ced3b073))
+
 ## [1.68.0](https://github.com/googleapis/google-cloud-go/compare/storage/v1.67.1...storage/v1.68.0) (2026-09-17)
 
 
