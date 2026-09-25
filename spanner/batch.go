@@ -315,6 +315,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			if err != nil {
 				return client, err
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "Execute"); err != nil {
@@ -344,6 +347,9 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 			client, err := client.ExecuteStreamingSql(ctx, req, opts...)
 			if err != nil {
 				return client, err
+			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
 			}
 			md, err := client.Header()
 

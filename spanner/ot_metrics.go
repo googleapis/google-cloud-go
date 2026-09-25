@@ -227,3 +227,10 @@ func recordGFELatencyMetricsOT(ctx context.Context, md metadata.MD, keyMethod st
 	}
 	return nil
 }
+
+// gfeLatencySinksEnabled reports whether any GFE latency sink consumes the
+// response headers of a streaming call, either OpenCensus GFE latency metrics
+// or OpenTelemetry metrics.
+func gfeLatencySinksEnabled(hasOpenCensusContext bool, otConfig *openTelemetryConfig) bool {
+	return (getGFELatencyMetricsFlag() && hasOpenCensusContext) || (otConfig != nil && otConfig.enabled)
+}

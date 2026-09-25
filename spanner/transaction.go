@@ -400,6 +400,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 				}
 				return client, t.updateTxState(err)
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
@@ -754,6 +757,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 					return client, t.updateTxState(errInlineBeginTransactionFailed(err))
 				}
 				return client, t.updateTxState(err)
+			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
 			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
