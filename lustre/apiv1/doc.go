@@ -54,11 +54,11 @@
 //
 // The following is an example of making an API call with the newly created client, mentioned above.
 //
-//	req := &lustrepb.CreateInstanceRequest{
+//	req := &lustrepb.CreateDirectoryPolicyRequest{
 //		// TODO: Fill request struct fields.
-//		// See https://pkg.go.dev/cloud.google.com/go/lustre/apiv1/lustrepb#CreateInstanceRequest.
+//		// See https://pkg.go.dev/cloud.google.com/go/lustre/apiv1/lustrepb#CreateDirectoryPolicyRequest.
 //	}
-//	op, err := c.CreateInstance(ctx, req)
+//	op, err := c.CreateDirectoryPolicy(ctx, req)
 //	if err != nil {
 //		// TODO: Handle error.
 //	}

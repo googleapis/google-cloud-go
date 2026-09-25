@@ -3,6 +3,7 @@ module cloud.google.com/go/lustre
 go 1.26.0
 
 require (
+	cloud.google.com/go/iam v1.5.3
 	cloud.google.com/go/longrunning v1.2.0
 	github.com/googleapis/gax-go/v2 v2.23.0
 	go.opentelemetry.io/otel/trace v1.44.0
