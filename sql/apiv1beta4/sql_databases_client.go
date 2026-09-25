@@ -536,6 +536,9 @@ func (c *sqlDatabasesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlDatab
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -591,6 +594,9 @@ func (c *sqlDatabasesRESTClient) Get(ctx context.Context, req *sqlpb.SqlDatabase
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -655,6 +661,9 @@ func (c *sqlDatabasesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlDatab
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -709,6 +718,9 @@ func (c *sqlDatabasesRESTClient) List(ctx context.Context, req *sqlpb.SqlDatabas
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -771,6 +783,9 @@ func (c *sqlDatabasesRESTClient) Patch(ctx context.Context, req *sqlpb.SqlDataba
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -833,6 +848,9 @@ func (c *sqlDatabasesRESTClient) Update(ctx context.Context, req *sqlpb.SqlDatab
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

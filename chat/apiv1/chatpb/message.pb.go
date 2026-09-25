@@ -1532,9 +1532,24 @@ type CreateMessageRequest struct {
 	//
 	// Deprecated: Marked as deprecated in google/chat/v1/message.proto.
 	ThreadKey string `protobuf:"bytes,6,opt,name=thread_key,json=threadKey,proto3" json:"thread_key,omitempty"`
-	// Optional. A unique request ID for this message. Specifying an existing
-	// request ID returns the message created with that ID instead of creating a
-	// new message.
+	// Optional. A unique ID for this request. A random UUID is recommended.
+	// Specifying a request ID makes the request idempotent, which ensures that
+	// multiple identical requests with the same request ID result in only a
+	// single message being created. Subsequent requests with the same request
+	// ID return the existing message and do not update the message, even if the
+	// requested details differ from the current state.
+	//
+	// To use this field effectively:
+	//
+	// - Ensure that subsequent requests are identical and use the same
+	// authentication credentials as the original request.
+	// - If a message was already created with the provided request ID, the
+	// request returns that message. Note that the returned message might not be
+	// fully populated; the API echoes the message in your request with the
+	// system-assigned resource names populated. To retrieve the latest metadata
+	// for the message, call `GetMessage`.
+	// - Reusing an existing request ID with a different authenticated user
+	// results in an error.
 	RequestId string `protobuf:"bytes,7,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. Specifies whether a message starts a thread or replies to one.
 	// Only supported in named spaces.
@@ -2156,6 +2171,10 @@ type SearchMessagesRequest struct {
 	//     the top five space matches. For example, `space.display_name:Project`
 	//     searches for messages in the top five spaces that contain the word
 	//     "Project" in their display names.
+	//   - `space.space_type`: The type of the space. Only supports `=`. For
+	//     example, `space.space_type="DIRECT_MESSAGE"` returns only messages from
+	//     direct messages. The possible values are `DIRECT_MESSAGE`, `GROUP_CHAT`,
+	//     and `SPACE`.
 	//   - `attachment`: Supports the operator `:*` (has any) to check for the
 	//     presence of attachments. If `attachment:*` is specified, only messages
 	//     that have at least one attachment are returned.
@@ -2175,8 +2194,8 @@ type SearchMessagesRequest struct {
 	//   - `is_unread()`: Filters out messages that have been read by the calling
 	//     user.
 	//
-	// Using the `space.display_name` filter requires that the calling credentials
-	// include one of the following [authorization
+	// Using the `space.display_name` or the `space.space_type` filters requires
+	// that the calling credentials include one of the following [authorization
 	// scopes](https://developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes):
 	//
 	// - `https://www.googleapis.com/auth/chat.spaces.readonly`
@@ -2213,6 +2232,8 @@ type SearchMessagesRequest struct {
 	//     `space.display_name:Project OR space.display_name:Tasks` returns messages
 	//     that are in spaces with display names containing either `Project` or
 	//     `Tasks` or both.
+	//   - `space.space_type` supports only the `OR` operator, for example:
+	//     `space.space_type = "DIRECT_MESSAGE" OR space.space_type = "GROUP_CHAT"`.
 	//   - `annotations.user_mentions.user.name` supports the operators `AND` and
 	//     `OR`, but not a mix of both. For example:
 	//     `annotations.user_mentions.user.name:"users/1234567890" AND
@@ -2701,12 +2722,12 @@ const file_google_chat_v1_message_proto_rawDesc = "" +
 	"\x11ForwardedMetadata\x127\n" +
 	"\x05space\x18\x01 \x01(\tB!\xe0A\x03\xfaA\x1b\n" +
 	"\x19chat.googleapis.com/SpaceR\x05space\x121\n" +
-	"\x12space_display_name\x18\x02 \x01(\tB\x03\xe0A\x03R\x10spaceDisplayName\"\x87\x01\n" +
+	"\x12space_display_name\x18\x02 \x01(\tB\x03\xe0A\x03R\x10spaceDisplayName\"\x98\x01\n" +
 	"\x06Thread\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
 	"\n" +
-	"thread_key\x18\x03 \x01(\tB\x03\xe0A\x01R\tthreadKey:@\xeaA=\n" +
-	"\x1achat.googleapis.com/Thread\x12\x1fspaces/{space}/threads/{thread}\"\x97\x05\n" +
+	"thread_key\x18\x03 \x01(\tB\x03\xe0A\x01R\tthreadKey:Q\xeaAN\n" +
+	"\x1achat.googleapis.com/Thread\x12\x1fspaces/{space}/threads/{thread}*\athreads2\x06thread\"\x97\x05\n" +
 	"\x0eActionResponse\x12D\n" +
 	"\x04type\x18\x01 \x01(\x0e2+.google.chat.v1.ActionResponse.ResponseTypeB\x03\xe0A\x04R\x04type\x12\x15\n" +
 	"\x03url\x18\x02 \x01(\tB\x03\xe0A\x04R\x03url\x12F\n" +

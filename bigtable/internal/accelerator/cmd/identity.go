@@ -54,6 +54,10 @@ func writeIdentity(udsPath, principal string, scopes []string) error {
 	}
 	path := filepath.Join(filepath.Dir(udsPath), identityFilename)
 	// 0600: identifier only, but keep it same-uid readable and nothing more.
+	// The mode is a no-op on Windows, which has no POSIX bits; there the file
+	// inherits its directory's ACL, same as the socket beside it. That is
+	// acceptable because the document carries no secret -- only a principal
+	// email and scope list.
 	if err := os.WriteFile(path, b, 0o600); err != nil {
 		return fmt.Errorf("write %s: %w", path, err)
 	}

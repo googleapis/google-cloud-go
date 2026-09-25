@@ -3555,7 +3555,6 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 		}
 		t.ProtoRef = pbTypeName
 		t.Base = Proto
-		return t, nil
 	case quotedID:
 		if !fqProtoMsgName.MatchString(tok.string) {
 			return Type{}, p.errorf("got %q, want fully qualified protobuf type", tok.value)
@@ -3566,7 +3565,6 @@ func (p *parser) parseBaseOrParameterizedType(withParam bool) (Type, *parseError
 		}
 		t.ProtoRef = pbTypeName
 		t.Base = Proto
-		return t, nil
 	default:
 	}
 	if withParam && (t.Base == String || t.Base == Bytes) {

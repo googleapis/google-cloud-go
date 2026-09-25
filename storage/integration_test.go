@@ -308,7 +308,7 @@ func testConfigGRPC(ctx context.Context, t *testing.T, opts ...option.ClientOpti
 // initTransportClients initializes Storage clients for each supported transport.
 func initTransportClients(ctx context.Context, t *testing.T, opts ...option.ClientOption) map[string]*Client {
 	withJSON := append(slices.Clone(opts), WithJSONReads())
-	withZonal := append(slices.Clone(opts), experimental.WithZonalBucketAPIs())
+	withZonal := append(slices.Clone(opts), WithGRPCBidiReads(), WithAppendableUploads())
 	return map[string]*Client{
 		"http": testConfig(ctx, t, opts...),
 		"grpc": testConfigGRPC(ctx, t, opts...),
@@ -1357,7 +1357,7 @@ func TestIntegration_OtelMetricsEnablement(t *testing.T) {
 			}
 			expectedSums := []string{
 				"gcp.storage.client.operations",
-				"gcp.storage.client.active_requests",
+				"gcp.storage.client.request.active",
 			}
 			expectedNetworkMetrics := []string{
 				"gcp.storage.client.network.tcp.connect.duration",

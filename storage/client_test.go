@@ -1758,7 +1758,7 @@ func TestNewRangeReaderUnfinalizedEmulated(t *testing.T) {
 			return clientStream, err
 		})
 
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -1949,7 +1949,7 @@ func TestReadObjectWrongChunkChecksumEmulated(t *testing.T) {
 				var clientOpts []option.ClientOption
 				clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
 				if bidiReads {
-					clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+					clientOpts = append(clientOpts, WithGRPCBidiReads())
 				}
 
 				client, err := NewGRPCClient(ctx, clientOpts...)
@@ -2092,7 +2092,7 @@ func TestReadObjectWrongChecksumWholeObjectSizeEmulated(t *testing.T) {
 					var clientOpts []option.ClientOption
 					clientOpts = append(clientOpts, option.WithGRPCDialOption(streamInterceptor))
 					if bidiReads {
-						clientOpts = append(clientOpts, experimental.WithGRPCBidiReads())
+						clientOpts = append(clientOpts, WithGRPCBidiReads())
 					}
 
 					client, err := NewGRPCClient(ctx, clientOpts...)
@@ -2176,7 +2176,7 @@ func TestReadObjectWrongChecksumUnfinalizedWholeObjectSizeEmulated(t *testing.T)
 			return clientStream, err
 		})
 
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}
@@ -2234,7 +2234,7 @@ func TestMRDWrongChunkChecksumEmulated(t *testing.T) {
 					return clientStream, err
 				})
 
-			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), experimental.WithGRPCBidiReads())
+			client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(streamInterceptor), WithGRPCBidiReads())
 			if err != nil {
 				t.Fatalf("NewGRPCClient: %v", err)
 			}
@@ -3295,7 +3295,7 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	client, err := NewClient(ctx, experimental.WithReadStallTimeout(
 		&experimental.ReadStallTimeoutConfig{
 			TargetPercentile: 0.99,
-			Min:              10 * time.Millisecond,
+			Min:              250 * time.Millisecond,
 		}))
 	if err != nil {
 		t.Fatalf("storage.NewClient: %v", err)
@@ -3333,6 +3333,59 @@ func TestRetryReadStallEmulated(t *testing.T) {
 	if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
 		t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
 	}
+}
+
+func TestGRPCRetryReadStallEmulated(t *testing.T) {
+	checkEmulatorEnvironment(t)
+	t.Run("ReadObject", func(t *testing.T) {
+		ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+		defer cancel()
+
+		opts := []option.ClientOption{
+			experimental.WithReadStallTimeout(
+				&experimental.ReadStallTimeoutConfig{
+					TargetPercentile: 0.99,
+					Min:              250 * time.Millisecond,
+				}),
+		}
+
+		client, err := NewGRPCClient(ctx, opts...)
+		if err != nil {
+			t.Fatalf("storage.NewGRPCClient: %v", err)
+		}
+		defer client.Close()
+		client.SetRetry(WithBackoff(gax.Backoff{Initial: 10 * time.Millisecond}))
+
+		project := "fake-project"
+		bucket := fmt.Sprintf("grpc-bucket-%d", time.Now().Nanosecond())
+		if err := client.Bucket(bucket).Create(ctx, project, nil); err != nil {
+			t.Fatalf("client.Bucket.Create: %v", err)
+		}
+
+		name, _, _, err := createObjectWithContent(ctx, bucket, randomBytes3MiB)
+		if err != nil {
+			t.Fatalf("createObject: %v", err)
+		}
+
+		instructions := map[string][]string{"storage.objects.get": {"stall-for-10s-after-0K"}}
+		testID := createRetryTest(t, client.tc, instructions)
+
+		testCtx := callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		r, err := client.Bucket(bucket).Object(name).NewReader(testCtx)
+		if err != nil {
+			t.Fatalf("NewReader: %v", err)
+		}
+		defer r.Close()
+
+		buf := &bytes.Buffer{}
+		if _, err := io.Copy(buf, r); err != nil {
+			t.Fatalf("io.Copy: %v", err)
+		}
+		if !bytes.Equal(buf.Bytes(), randomBytes3MiB) {
+			t.Errorf("content does not match, got len %v, want len %v", buf.Len(), len(randomBytes3MiB))
+		}
+	})
 }
 
 func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
@@ -3702,7 +3755,7 @@ func TestReadCodecLeaksEmulated(t *testing.T) {
 	checkEmulatorEnvironment(t)
 	ctx := context.Background()
 	var bp testBufferPool
-	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), experimental.WithZonalBucketAPIs())
+	client, err := NewGRPCClient(ctx, option.WithGRPCDialOption(expgrpc.WithBufferPool(&bp)), WithGRPCBidiReads(), WithAppendableUploads())
 	if err != nil {
 		t.Fatalf("NewGRPCClient: %v", err)
 	}

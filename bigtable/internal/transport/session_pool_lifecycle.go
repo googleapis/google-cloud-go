@@ -151,8 +151,17 @@ func (p *SessionPoolImpl) snapshotCloseReasons() map[string]int64 {
 // per-session graceful Close returns (or the bounded ctx fires). Only
 // after the WaitGroup completes do we cancel poolCtx, which tears down
 // any remaining session goroutines.
+//
+// Close is the ONLY teardown entry point. When it returns, every
+// goroutine the pool owns has been cancelled and the pool is
+// unreachable — sessions and createSession workers are joined outright,
+// maintenance loops are cancelled and unwind on their own. That is what
+// lets session.TableCache evict pools without leaking them.
 func (p *SessionPoolImpl) Close() error {
-	// Phase 1: mark closed so no new sessions are admitted.
+	// Phase 1: mark closed so no new sessions are admitted, and stop the
+	// background maintenance loops. maintCancel runs here rather than
+	// riding on Phase 4's poolCancel so no prune / sweep / metrics tick
+	// fires against a pool that's mid-teardown.
 	p.mu.Lock()
 	if p.closed {
 		p.mu.Unlock()
@@ -160,6 +169,7 @@ func (p *SessionPoolImpl) Close() error {
 	}
 	p.closed = true
 	p.mu.Unlock()
+	p.maintCancel()
 
 	// Drain parked waiters with ErrPoolClosed. Without this, long-poll
 	// callers with context.Background hang past Close: only ctx-cancel
@@ -233,6 +243,14 @@ func (p *SessionPoolImpl) Close() error {
 	// error paths touch package-level metric state, so without this wait
 	// they can outlive Close and race the next test's metrics init.
 	p.spawns.Wait()
+
+	// The maintenance loops cancelled in Phase 1 are deliberately NOT
+	// waited on. They park on a select, so cancel releases the pool
+	// immediately; joining them would only close a microsecond-wide
+	// window in which an already-running tick body finishes after Close
+	// returns. Not worth blocking for — Close runs inline on the
+	// TableCache sweeper (sweepOnce closes evicted handles serially), so
+	// a wedged tick body would stall eviction for every table.
 
 	// Phase 6: wait for every Session's goroutines to unwind. Re-snapshot
 	// AFTER spawns.Wait to catch sessions that reached sl during the tail
@@ -480,37 +498,54 @@ const slowMetricsInterval = 1 * time.Minute
 //   - CheckoutSession → spawnTickOnce          (waiter park on empty)
 //   - UpdateConfig → spawnTickOnce             (server-driven min/max bump)
 //
-// The pre-start Tick above (line: p.spawnTickOnce(ctx)) covers the
+// The pre-start Tick above (line: p.spawnTickOnce) covers the
 // cold-start MinSessions seed; everything after is event-driven.
 // Matches java-bigtable's fully event-driven poolSizer (no periodic
 // timer for sizing).
-func (p *SessionPoolImpl) Start(ctx context.Context) {
+//
+// Start takes no ctx on purpose. Everything it launches is scoped to
+// the pool's own poolCtx / maintCtx, so Close alone is sufficient to
+// unwind it. Threading a caller ctx here previously outlived Close
+// (which cancels poolCtx, not the caller's) and leaked the loops.
+func (p *SessionPoolImpl) Start() {
 	p.startOnce.Do(func() {
-		p.spawnTickOnce(ctx)
-		p.startAfePruneLoop(ctx)
-		p.startSweepStuckSessionsLoop(ctx)
-		p.startSlowMetricsLoop(ctx)
+		p.spawnTickOnce(p.poolCtx)
+		p.startAfePruneLoop()
+		p.startSweepStuckSessionsLoop()
+		p.startSlowMetricsLoop()
 	})
 }
 
-// startSlowMetricsLoop runs recordTimeSeries + sampleActiveUptimes
-// every slowMetricsInterval until ctx cancels. Decoupled from Tick so
-// Tick's per-second cadence doesn't drag ~60× extra OTel histogram
-// writes onto sessionUptime.
-func (p *SessionPoolImpl) startSlowMetricsLoop(ctx context.Context) {
+// startMaintenanceLoop starts one ticker-driven maintenance goroutine
+// scoped to p.maintCtx, which Close cancels in Phase 1. No closed-check
+// is needed: a Start racing Close either sees a live maintCtx and is
+// cancelled a moment later, or sees a cancelled one and exits on the
+// first select.
+func (p *SessionPoolImpl) startMaintenanceLoop(interval time.Duration, fn func()) {
 	go func() {
-		ticker := time.NewTicker(slowMetricsInterval)
+		ticker := time.NewTicker(interval)
 		defer ticker.Stop()
+
 		for {
 			select {
-			case <-ctx.Done():
+			case <-p.maintCtx.Done():
 				return
 			case <-ticker.C:
-				p.recordTimeSeries()
-				p.sampleActiveUptimes(ctx)
+				fn()
 			}
 		}
 	}()
+}
+
+// startSlowMetricsLoop runs recordTimeSeries + sampleActiveUptimes
+// every slowMetricsInterval until the pool closes. Decoupled from Tick
+// so Tick's per-second cadence doesn't drag ~60× extra OTel histogram
+// writes onto sessionUptime.
+func (p *SessionPoolImpl) startSlowMetricsLoop() {
+	p.startMaintenanceLoop(slowMetricsInterval, func() {
+		p.recordTimeSeries()
+		p.sampleActiveUptimes(p.maintCtx)
+	})
 }
 
 // tickOnce runs one Tick with panic recovery + a debounce gate. The
@@ -549,23 +584,11 @@ func (p *SessionPoolImpl) spawnTickOnce(ctx context.Context) {
 	}()
 }
 
-// startAfePruneLoop runs sl.Prune on afePruneMaxIdle cadence until ctx
-// cancels — deliberately OFF the tickInterval so sl.mu held during the
-// map walk can't contend with serving-path Checkouts.
-func (p *SessionPoolImpl) startAfePruneLoop(ctx context.Context) {
-	go func() {
-		ticker := time.NewTicker(afePruneMaxIdle)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				p.pruneOnce()
-			}
-		}
-	}()
+// startAfePruneLoop runs sl.Prune on afePruneMaxIdle cadence until the
+// pool closes — deliberately OFF the tickInterval so sl.mu held during
+// the map walk can't contend with serving-path Checkouts.
+func (p *SessionPoolImpl) startAfePruneLoop() {
+	p.startMaintenanceLoop(afePruneMaxIdle, p.pruneOnce)
 }
 
 // pruneOnce runs one sl.Prune with panic recovery per iteration.
@@ -579,25 +602,13 @@ func (p *SessionPoolImpl) pruneOnce() {
 }
 
 // startSweepStuckSessionsLoop runs sweepStuckSessions on
-// sweepStuckSessionsInterval cadence until ctx cancels. Deliberately
-// OFF the 1s Tick — a stuck WaitServerClose session only becomes
-// actionable after waitServerCloseGrace has elapsed, so checking more
-// often just burns CPU walking sl.AllHandles. Worst-case detection is
-// waitServerCloseGrace + sweepStuckSessionsInterval.
-func (p *SessionPoolImpl) startSweepStuckSessionsLoop(ctx context.Context) {
-	go func() {
-		ticker := time.NewTicker(sweepStuckSessionsInterval)
-		defer ticker.Stop()
-
-		for {
-			select {
-			case <-ctx.Done():
-				return
-			case <-ticker.C:
-				p.sweepStuckSessionsOnce()
-			}
-		}
-	}()
+// sweepStuckSessionsInterval cadence until the pool closes.
+// Deliberately OFF the 1s Tick — a stuck WaitServerClose session only
+// becomes actionable after waitServerCloseGrace has elapsed, so
+// checking more often just burns CPU walking sl.AllHandles. Worst-case
+// detection is waitServerCloseGrace + sweepStuckSessionsInterval.
+func (p *SessionPoolImpl) startSweepStuckSessionsLoop() {
+	p.startMaintenanceLoop(sweepStuckSessionsInterval, p.sweepStuckSessionsOnce)
 }
 
 // sweepStuckSessionsOnce runs one sweepStuckSessions with panic

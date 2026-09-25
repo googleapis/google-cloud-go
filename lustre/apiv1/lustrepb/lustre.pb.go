@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -42,7 +42,7 @@ var File_google_cloud_lustre_v1_lustre_proto protoreflect.FileDescriptor
 
 const file_google_cloud_lustre_v1_lustre_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/lustre/v1/lustre.proto\x12\x16google.cloud.lustre.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x19google/api/resource.proto\x1a%google/cloud/lustre/v1/instance.proto\x1a%google/cloud/lustre/v1/transfer.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto2\xc5\v\n" +
+	"#google/cloud/lustre/v1/lustre.proto\x12\x16google.cloud.lustre.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x19google/api/resource.proto\x1a-google/cloud/lustre/v1/directory_policy.proto\x1a%google/cloud/lustre/v1/instance.proto\x1a#google/cloud/lustre/v1/mirror.proto\x1a%google/cloud/lustre/v1/transfer.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto2\xcf\x1c\n" +
 	"\x06Lustre\x12\xac\x01\n" +
 	"\rListInstances\x12,.google.cloud.lustre.v1.ListInstancesRequest\x1a-.google.cloud.lustre.v1.ListInstancesResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v1/{parent=projects/*/locations/*}/instances\x12\x99\x01\n" +
 	"\vGetInstance\x12*.google.cloud.lustre.v1.GetInstanceRequest\x1a .google.cloud.lustre.v1.Instance\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*/instances/*}\x12\xdd\x01\n" +
@@ -51,49 +51,101 @@ const file_google_cloud_lustre_v1_lustre_proto_rawDesc = "" +
 	"\x0eUpdateInstance\x12-.google.cloud.lustre.v1.UpdateInstanceRequest\x1a\x1d.google.longrunning.Operation\"\x7f\xcaA\x1d\n" +
 	"\bInstance\x12\x11OperationMetadata\xdaA\x14instance,update_mask\x82\xd3\xe4\x93\x02B:\binstance26/v1/{instance.name=projects/*/locations/*/instances/*}\x12\xc9\x01\n" +
 	"\x0eDeleteInstance\x12-.google.cloud.lustre.v1.DeleteInstanceRequest\x1a\x1d.google.longrunning.Operation\"i\xcaA*\n" +
-	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02/*-/v1/{name=projects/*/locations/*/instances/*}\x12\xcd\x01\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02/*-/v1/{name=projects/*/locations/*/instances/*}\x12\xef\x01\n" +
+	"\x15RescheduleMaintenance\x124.google.cloud.lustre.v1.RescheduleMaintenanceRequest\x1a\x1d.google.longrunning.Operation\"\x80\x01\xcaA\x1d\n" +
+	"\bInstance\x12\x11OperationMetadata\xdaA\x0fname,reschedule\x82\xd3\xe4\x93\x02H:\x01*\"C/v1/{name=projects/*/locations/*/instances/*}:rescheduleMaintenance\x12\xcd\x01\n" +
 	"\n" +
 	"ImportData\x12).google.cloud.lustre.v1.ImportDataRequest\x1a\x1d.google.longrunning.Operation\"u\xcaA(\n" +
 	"\x12ImportDataResponse\x12\x12ImportDataMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02=:\x01*\"8/v1/{name=projects/*/locations/*/instances/*}:importData\x12\xc6\x01\n" +
 	"\n" +
 	"ExportData\x12).google.cloud.lustre.v1.ExportDataRequest\x1a\x1d.google.longrunning.Operation\"n\xcaA(\n" +
-	"\x12ExportDataResponse\x12\x12ExportDataMetadata\x82\xd3\xe4\x93\x02=:\x01*\"8/v1/{name=projects/*/locations/*/instances/*}:exportData\x1aI\xcaA\x15lustre.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x8c\x02\xeaAY\n" +
+	"\x12ExportDataResponse\x12\x12ExportDataMetadata\x82\xd3\xe4\x93\x02=:\x01*\"8/v1/{name=projects/*/locations/*/instances/*}:exportData\x12\xdf\x01\n" +
+	"\fCreateMirror\x12+.google.cloud.lustre.v1.CreateMirrorRequest\x1a\x1d.google.longrunning.Operation\"\x82\x01\xcaA\x1e\n" +
+	"\x06Mirror\x12\x14CreateMirrorMetadata\xdaA\x17parent,mirror,mirror_id\x82\xd3\xe4\x93\x02A:\x06mirror\"7/v1/{parent=projects/*/locations/*/instances/*}/mirrors\x12\xde\x01\n" +
+	"\fUpdateMirror\x12+.google.cloud.lustre.v1.UpdateMirrorRequest\x1a\x1d.google.longrunning.Operation\"\x81\x01\xcaA\x1b\n" +
+	"\x06Mirror\x12\x11OperationMetadata\xdaA\x12mirror,update_mask\x82\xd3\xe4\x93\x02H:\x06mirror2>/v1/{mirror.name=projects/*/locations/*/instances/*/mirrors/*}\x12\xcf\x01\n" +
+	"\fDeleteMirror\x12+.google.cloud.lustre.v1.DeleteMirrorRequest\x1a\x1d.google.longrunning.Operation\"s\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x029*7/v1/{name=projects/*/locations/*/instances/*/mirrors/*}\x12\x9d\x01\n" +
+	"\tGetMirror\x12(.google.cloud.lustre.v1.GetMirrorRequest\x1a\x1e.google.cloud.lustre.v1.Mirror\"F\xdaA\x04name\x82\xd3\xe4\x93\x029\x127/v1/{name=projects/*/locations/*/instances/*/mirrors/*}\x12\xb0\x01\n" +
+	"\vListMirrors\x12*.google.cloud.lustre.v1.ListMirrorsRequest\x1a+.google.cloud.lustre.v1.ListMirrorsResponse\"H\xdaA\x06parent\x82\xd3\xe4\x93\x029\x127/v1/{parent=projects/*/locations/*/instances/*}/mirrors\x12\x9f\x02\n" +
+	"\x15CreateDirectoryPolicy\x124.google.cloud.lustre.v1.CreateDirectoryPolicyRequest\x1a\x1d.google.longrunning.Operation\"\xb0\x01\xcaA$\n" +
+	"\x0fDirectoryPolicy\x12\x11OperationMetadata\xdaA+parent,directory_policy,directory_policy_id\x82\xd3\xe4\x93\x02U:\x10directory_policy\"A/v1/{parent=projects/*/locations/*/instances/*}/directoryPolicies\x12\xeb\x01\n" +
+	"\x15DeleteDirectoryPolicy\x124.google.cloud.lustre.v1.DeleteDirectoryPolicyRequest\x1a\x1d.google.longrunning.Operation\"}\xcaA*\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02C*A/v1/{name=projects/*/locations/*/instances/*/directoryPolicies/*}\x12\xc2\x01\n" +
+	"\x12GetDirectoryPolicy\x121.google.cloud.lustre.v1.GetDirectoryPolicyRequest\x1a'.google.cloud.lustre.v1.DirectoryPolicy\"P\xdaA\x04name\x82\xd3\xe4\x93\x02C\x12A/v1/{name=projects/*/locations/*/instances/*/directoryPolicies/*}\x12\xd8\x01\n" +
+	"\x15ListDirectoryPolicies\x124.google.cloud.lustre.v1.ListDirectoryPoliciesRequest\x1a5.google.cloud.lustre.v1.ListDirectoryPoliciesResponse\"R\xdaA\x06parent\x82\xd3\xe4\x93\x02C\x12A/v1/{parent=projects/*/locations/*/instances/*}/directoryPolicies\x1aI\xcaA\x15lustre.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xc6\x04\xeaAY\n" +
 	"!iam.googleapis.com/ServiceAccount\x124projects/{project}/serviceAccounts/{service_account}\xeaAN\n" +
-	"\x1ecompute.googleapis.com/Network\x12,projects/{project}/global/networks/{network}\n" +
+	"\x1ecompute.googleapis.com/Network\x12,projects/{project}/global/networks/{network}\xeaAx\n" +
+	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\xbb\x01\n" +
+	"%compute.googleapis.com/ResourcePolicy\x12Fprojects/{project}/regions/{region}/resourcePolicies/{resource_policy}\x12Jprojects/{project}/locations/{location}/resourcePolicies/{resource_policy}\n" +
 	"\x1acom.google.cloud.lustre.v1B\vLustreProtoP\x01Z2cloud.google.com/go/lustre/apiv1/lustrepb;lustrepbb\x06proto3"
 
 var file_google_cloud_lustre_v1_lustre_proto_goTypes = []any{
-	(*ListInstancesRequest)(nil),    // 0: google.cloud.lustre.v1.ListInstancesRequest
-	(*GetInstanceRequest)(nil),      // 1: google.cloud.lustre.v1.GetInstanceRequest
-	(*CreateInstanceRequest)(nil),   // 2: google.cloud.lustre.v1.CreateInstanceRequest
-	(*UpdateInstanceRequest)(nil),   // 3: google.cloud.lustre.v1.UpdateInstanceRequest
-	(*DeleteInstanceRequest)(nil),   // 4: google.cloud.lustre.v1.DeleteInstanceRequest
-	(*ImportDataRequest)(nil),       // 5: google.cloud.lustre.v1.ImportDataRequest
-	(*ExportDataRequest)(nil),       // 6: google.cloud.lustre.v1.ExportDataRequest
-	(*ListInstancesResponse)(nil),   // 7: google.cloud.lustre.v1.ListInstancesResponse
-	(*Instance)(nil),                // 8: google.cloud.lustre.v1.Instance
-	(*longrunningpb.Operation)(nil), // 9: google.longrunning.Operation
+	(*ListInstancesRequest)(nil),          // 0: google.cloud.lustre.v1.ListInstancesRequest
+	(*GetInstanceRequest)(nil),            // 1: google.cloud.lustre.v1.GetInstanceRequest
+	(*CreateInstanceRequest)(nil),         // 2: google.cloud.lustre.v1.CreateInstanceRequest
+	(*UpdateInstanceRequest)(nil),         // 3: google.cloud.lustre.v1.UpdateInstanceRequest
+	(*DeleteInstanceRequest)(nil),         // 4: google.cloud.lustre.v1.DeleteInstanceRequest
+	(*RescheduleMaintenanceRequest)(nil),  // 5: google.cloud.lustre.v1.RescheduleMaintenanceRequest
+	(*ImportDataRequest)(nil),             // 6: google.cloud.lustre.v1.ImportDataRequest
+	(*ExportDataRequest)(nil),             // 7: google.cloud.lustre.v1.ExportDataRequest
+	(*CreateMirrorRequest)(nil),           // 8: google.cloud.lustre.v1.CreateMirrorRequest
+	(*UpdateMirrorRequest)(nil),           // 9: google.cloud.lustre.v1.UpdateMirrorRequest
+	(*DeleteMirrorRequest)(nil),           // 10: google.cloud.lustre.v1.DeleteMirrorRequest
+	(*GetMirrorRequest)(nil),              // 11: google.cloud.lustre.v1.GetMirrorRequest
+	(*ListMirrorsRequest)(nil),            // 12: google.cloud.lustre.v1.ListMirrorsRequest
+	(*CreateDirectoryPolicyRequest)(nil),  // 13: google.cloud.lustre.v1.CreateDirectoryPolicyRequest
+	(*DeleteDirectoryPolicyRequest)(nil),  // 14: google.cloud.lustre.v1.DeleteDirectoryPolicyRequest
+	(*GetDirectoryPolicyRequest)(nil),     // 15: google.cloud.lustre.v1.GetDirectoryPolicyRequest
+	(*ListDirectoryPoliciesRequest)(nil),  // 16: google.cloud.lustre.v1.ListDirectoryPoliciesRequest
+	(*ListInstancesResponse)(nil),         // 17: google.cloud.lustre.v1.ListInstancesResponse
+	(*Instance)(nil),                      // 18: google.cloud.lustre.v1.Instance
+	(*longrunningpb.Operation)(nil),       // 19: google.longrunning.Operation
+	(*Mirror)(nil),                        // 20: google.cloud.lustre.v1.Mirror
+	(*ListMirrorsResponse)(nil),           // 21: google.cloud.lustre.v1.ListMirrorsResponse
+	(*DirectoryPolicy)(nil),               // 22: google.cloud.lustre.v1.DirectoryPolicy
+	(*ListDirectoryPoliciesResponse)(nil), // 23: google.cloud.lustre.v1.ListDirectoryPoliciesResponse
 }
 var file_google_cloud_lustre_v1_lustre_proto_depIdxs = []int32{
-	0, // 0: google.cloud.lustre.v1.Lustre.ListInstances:input_type -> google.cloud.lustre.v1.ListInstancesRequest
-	1, // 1: google.cloud.lustre.v1.Lustre.GetInstance:input_type -> google.cloud.lustre.v1.GetInstanceRequest
-	2, // 2: google.cloud.lustre.v1.Lustre.CreateInstance:input_type -> google.cloud.lustre.v1.CreateInstanceRequest
-	3, // 3: google.cloud.lustre.v1.Lustre.UpdateInstance:input_type -> google.cloud.lustre.v1.UpdateInstanceRequest
-	4, // 4: google.cloud.lustre.v1.Lustre.DeleteInstance:input_type -> google.cloud.lustre.v1.DeleteInstanceRequest
-	5, // 5: google.cloud.lustre.v1.Lustre.ImportData:input_type -> google.cloud.lustre.v1.ImportDataRequest
-	6, // 6: google.cloud.lustre.v1.Lustre.ExportData:input_type -> google.cloud.lustre.v1.ExportDataRequest
-	7, // 7: google.cloud.lustre.v1.Lustre.ListInstances:output_type -> google.cloud.lustre.v1.ListInstancesResponse
-	8, // 8: google.cloud.lustre.v1.Lustre.GetInstance:output_type -> google.cloud.lustre.v1.Instance
-	9, // 9: google.cloud.lustre.v1.Lustre.CreateInstance:output_type -> google.longrunning.Operation
-	9, // 10: google.cloud.lustre.v1.Lustre.UpdateInstance:output_type -> google.longrunning.Operation
-	9, // 11: google.cloud.lustre.v1.Lustre.DeleteInstance:output_type -> google.longrunning.Operation
-	9, // 12: google.cloud.lustre.v1.Lustre.ImportData:output_type -> google.longrunning.Operation
-	9, // 13: google.cloud.lustre.v1.Lustre.ExportData:output_type -> google.longrunning.Operation
-	7, // [7:14] is the sub-list for method output_type
-	0, // [0:7] is the sub-list for method input_type
-	0, // [0:0] is the sub-list for extension type_name
-	0, // [0:0] is the sub-list for extension extendee
-	0, // [0:0] is the sub-list for field type_name
+	0,  // 0: google.cloud.lustre.v1.Lustre.ListInstances:input_type -> google.cloud.lustre.v1.ListInstancesRequest
+	1,  // 1: google.cloud.lustre.v1.Lustre.GetInstance:input_type -> google.cloud.lustre.v1.GetInstanceRequest
+	2,  // 2: google.cloud.lustre.v1.Lustre.CreateInstance:input_type -> google.cloud.lustre.v1.CreateInstanceRequest
+	3,  // 3: google.cloud.lustre.v1.Lustre.UpdateInstance:input_type -> google.cloud.lustre.v1.UpdateInstanceRequest
+	4,  // 4: google.cloud.lustre.v1.Lustre.DeleteInstance:input_type -> google.cloud.lustre.v1.DeleteInstanceRequest
+	5,  // 5: google.cloud.lustre.v1.Lustre.RescheduleMaintenance:input_type -> google.cloud.lustre.v1.RescheduleMaintenanceRequest
+	6,  // 6: google.cloud.lustre.v1.Lustre.ImportData:input_type -> google.cloud.lustre.v1.ImportDataRequest
+	7,  // 7: google.cloud.lustre.v1.Lustre.ExportData:input_type -> google.cloud.lustre.v1.ExportDataRequest
+	8,  // 8: google.cloud.lustre.v1.Lustre.CreateMirror:input_type -> google.cloud.lustre.v1.CreateMirrorRequest
+	9,  // 9: google.cloud.lustre.v1.Lustre.UpdateMirror:input_type -> google.cloud.lustre.v1.UpdateMirrorRequest
+	10, // 10: google.cloud.lustre.v1.Lustre.DeleteMirror:input_type -> google.cloud.lustre.v1.DeleteMirrorRequest
+	11, // 11: google.cloud.lustre.v1.Lustre.GetMirror:input_type -> google.cloud.lustre.v1.GetMirrorRequest
+	12, // 12: google.cloud.lustre.v1.Lustre.ListMirrors:input_type -> google.cloud.lustre.v1.ListMirrorsRequest
+	13, // 13: google.cloud.lustre.v1.Lustre.CreateDirectoryPolicy:input_type -> google.cloud.lustre.v1.CreateDirectoryPolicyRequest
+	14, // 14: google.cloud.lustre.v1.Lustre.DeleteDirectoryPolicy:input_type -> google.cloud.lustre.v1.DeleteDirectoryPolicyRequest
+	15, // 15: google.cloud.lustre.v1.Lustre.GetDirectoryPolicy:input_type -> google.cloud.lustre.v1.GetDirectoryPolicyRequest
+	16, // 16: google.cloud.lustre.v1.Lustre.ListDirectoryPolicies:input_type -> google.cloud.lustre.v1.ListDirectoryPoliciesRequest
+	17, // 17: google.cloud.lustre.v1.Lustre.ListInstances:output_type -> google.cloud.lustre.v1.ListInstancesResponse
+	18, // 18: google.cloud.lustre.v1.Lustre.GetInstance:output_type -> google.cloud.lustre.v1.Instance
+	19, // 19: google.cloud.lustre.v1.Lustre.CreateInstance:output_type -> google.longrunning.Operation
+	19, // 20: google.cloud.lustre.v1.Lustre.UpdateInstance:output_type -> google.longrunning.Operation
+	19, // 21: google.cloud.lustre.v1.Lustre.DeleteInstance:output_type -> google.longrunning.Operation
+	19, // 22: google.cloud.lustre.v1.Lustre.RescheduleMaintenance:output_type -> google.longrunning.Operation
+	19, // 23: google.cloud.lustre.v1.Lustre.ImportData:output_type -> google.longrunning.Operation
+	19, // 24: google.cloud.lustre.v1.Lustre.ExportData:output_type -> google.longrunning.Operation
+	19, // 25: google.cloud.lustre.v1.Lustre.CreateMirror:output_type -> google.longrunning.Operation
+	19, // 26: google.cloud.lustre.v1.Lustre.UpdateMirror:output_type -> google.longrunning.Operation
+	19, // 27: google.cloud.lustre.v1.Lustre.DeleteMirror:output_type -> google.longrunning.Operation
+	20, // 28: google.cloud.lustre.v1.Lustre.GetMirror:output_type -> google.cloud.lustre.v1.Mirror
+	21, // 29: google.cloud.lustre.v1.Lustre.ListMirrors:output_type -> google.cloud.lustre.v1.ListMirrorsResponse
+	19, // 30: google.cloud.lustre.v1.Lustre.CreateDirectoryPolicy:output_type -> google.longrunning.Operation
+	19, // 31: google.cloud.lustre.v1.Lustre.DeleteDirectoryPolicy:output_type -> google.longrunning.Operation
+	22, // 32: google.cloud.lustre.v1.Lustre.GetDirectoryPolicy:output_type -> google.cloud.lustre.v1.DirectoryPolicy
+	23, // 33: google.cloud.lustre.v1.Lustre.ListDirectoryPolicies:output_type -> google.cloud.lustre.v1.ListDirectoryPoliciesResponse
+	17, // [17:34] is the sub-list for method output_type
+	0,  // [0:17] is the sub-list for method input_type
+	0,  // [0:0] is the sub-list for extension type_name
+	0,  // [0:0] is the sub-list for extension extendee
+	0,  // [0:0] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_lustre_v1_lustre_proto_init() }
@@ -101,7 +153,9 @@ func file_google_cloud_lustre_v1_lustre_proto_init() {
 	if File_google_cloud_lustre_v1_lustre_proto != nil {
 		return
 	}
+	file_google_cloud_lustre_v1_directory_policy_proto_init()
 	file_google_cloud_lustre_v1_instance_proto_init()
+	file_google_cloud_lustre_v1_mirror_proto_init()
 	file_google_cloud_lustre_v1_transfer_proto_init()
 	type x struct{}
 	out := protoimpl.TypeBuilder{

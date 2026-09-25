@@ -121,7 +121,9 @@ type ListDataAgentsRequest struct {
 	OrderBy string `protobuf:"bytes,5,opt,name=order_by,json=orderBy,proto3" json:"order_by,omitempty"`
 	// Optional. If true, the list results will include soft-deleted DataAgents.
 	// Defaults to false.
-	ShowDeleted   bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
+	ShowDeleted bool `protobuf:"varint,6,opt,name=show_deleted,json=showDeleted,proto3" json:"show_deleted,omitempty"`
+	// Optional. Filter for the creator of the agent.
+	CreatorFilter ListAccessibleDataAgentsRequest_CreatorFilter `protobuf:"varint,8,opt,name=creator_filter,json=creatorFilter,proto3,enum=google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest_CreatorFilter" json:"creator_filter,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -196,6 +198,13 @@ func (x *ListDataAgentsRequest) GetShowDeleted() bool {
 		return x.ShowDeleted
 	}
 	return false
+}
+
+func (x *ListDataAgentsRequest) GetCreatorFilter() ListAccessibleDataAgentsRequest_CreatorFilter {
+	if x != nil {
+		return x.CreatorFilter
+	}
+	return ListAccessibleDataAgentsRequest_CREATOR_FILTER_UNSPECIFIED
 }
 
 // Message for response to listing DataAgents.
@@ -820,11 +829,341 @@ func (x *OperationMetadata) GetApiVersion() string {
 	return ""
 }
 
+// Request for SetAgentOpsObservability.
+type SetAgentOpsObservabilityRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Parent value for SetAgentOpsObservabilityRequest.
+	// Format: projects/{project}/locations/{location}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Optional. Whether to enable or disable AgentOps observability.
+	// When update_mask is provided, this field is ignored unless specified in the
+	// mask.
+	TelemetryEnabled bool `protobuf:"varint,2,opt,name=telemetry_enabled,json=telemetryEnabled,proto3" json:"telemetry_enabled,omitempty"`
+	// Required. The data source type for which to set observability settings.
+	// Examples: "bigquery", "looker"
+	DataSourceType string `protobuf:"bytes,3,opt,name=data_source_type,json=dataSourceType,proto3" json:"data_source_type,omitempty"`
+	// Optional. Whether BigQuery Agent Analytics is enabled.
+	// Note: An explicit `update_mask` containing "bqaa_enabled" is required to
+	// modify this field. If `update_mask` is omitted, this field is ignored and
+	// an existing enabled setting cannot be disabled.
+	//
+	// This is a project-level setting and does not by itself enable trace
+	// logging for any individual agent. Per-agent trace logging is controlled
+	// by `DataAgent.bigquery_agent_analytics_enabled` together with
+	// `DataAgent.bigquery_agent_analytics_table`; an agent does not inherit
+	// this setting.
+	BqaaEnabled bool `protobuf:"varint,4,opt,name=bqaa_enabled,json=bqaaEnabled,proto3" json:"bqaa_enabled,omitempty"`
+	// Optional. Field mask is used to specify the fields to be overwritten by the
+	// update. The fields specified in the update_mask are relative to the
+	// resource. A field will be overwritten if it is in the mask.
+	//
+	// If the user does not provide a mask, only `telemetry_enabled` will be
+	// updated (for backward compatibility with legacy callers). Note that
+	// disabling BigQuery Agent Analytics (`bqaa_enabled = false`) requires
+	// providing an explicit `update_mask` containing "bqaa_enabled".
+	//
+	// Per AIP-161:
+	//   - The special wildcard value '*' is supported to update all fields.
+	//   - Field paths should use snake_case, though camelCase equivalents
+	//     (`telemetryEnabled`, `bqaaEnabled`) are accepted for REST/JSON
+	//     transcoding compatibility.
+	UpdateMask    *fieldmaskpb.FieldMask `protobuf:"bytes,5,opt,name=update_mask,json=updateMask,proto3" json:"update_mask,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetAgentOpsObservabilityRequest) Reset() {
+	*x = SetAgentOpsObservabilityRequest{}
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetAgentOpsObservabilityRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetAgentOpsObservabilityRequest) ProtoMessage() {}
+
+func (x *SetAgentOpsObservabilityRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetAgentOpsObservabilityRequest.ProtoReflect.Descriptor instead.
+func (*SetAgentOpsObservabilityRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *SetAgentOpsObservabilityRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *SetAgentOpsObservabilityRequest) GetTelemetryEnabled() bool {
+	if x != nil {
+		return x.TelemetryEnabled
+	}
+	return false
+}
+
+func (x *SetAgentOpsObservabilityRequest) GetDataSourceType() string {
+	if x != nil {
+		return x.DataSourceType
+	}
+	return ""
+}
+
+func (x *SetAgentOpsObservabilityRequest) GetBqaaEnabled() bool {
+	if x != nil {
+		return x.BqaaEnabled
+	}
+	return false
+}
+
+func (x *SetAgentOpsObservabilityRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
+	if x != nil {
+		return x.UpdateMask
+	}
+	return nil
+}
+
+// Response for SetAgentOpsObservability.
+type SetAgentOpsObservabilityResponse struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetAgentOpsObservabilityResponse) Reset() {
+	*x = SetAgentOpsObservabilityResponse{}
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[10]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetAgentOpsObservabilityResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetAgentOpsObservabilityResponse) ProtoMessage() {}
+
+func (x *SetAgentOpsObservabilityResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[10]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetAgentOpsObservabilityResponse.ProtoReflect.Descriptor instead.
+func (*SetAgentOpsObservabilityResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDescGZIP(), []int{10}
+}
+
+// Metadata for SetAgentOpsObservability.
+type SetAgentOpsObservabilityMetadata struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *SetAgentOpsObservabilityMetadata) Reset() {
+	*x = SetAgentOpsObservabilityMetadata{}
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[11]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SetAgentOpsObservabilityMetadata) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SetAgentOpsObservabilityMetadata) ProtoMessage() {}
+
+func (x *SetAgentOpsObservabilityMetadata) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[11]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SetAgentOpsObservabilityMetadata.ProtoReflect.Descriptor instead.
+func (*SetAgentOpsObservabilityMetadata) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDescGZIP(), []int{11}
+}
+
+// Request for RetrieveAgentOpsObservability.
+type RetrieveAgentOpsObservabilityRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Parent value for RetrieveAgentOpsObservabilityRequest.
+	// Format: projects/{project}/locations/{location}
+	Parent string `protobuf:"bytes,1,opt,name=parent,proto3" json:"parent,omitempty"`
+	// Required. The data source type for which to retrieve observability
+	// settings. Examples: "bigquery", "looker"
+	DataSourceType string `protobuf:"bytes,2,opt,name=data_source_type,json=dataSourceType,proto3" json:"data_source_type,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *RetrieveAgentOpsObservabilityRequest) Reset() {
+	*x = RetrieveAgentOpsObservabilityRequest{}
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[12]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetrieveAgentOpsObservabilityRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetrieveAgentOpsObservabilityRequest) ProtoMessage() {}
+
+func (x *RetrieveAgentOpsObservabilityRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[12]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetrieveAgentOpsObservabilityRequest.ProtoReflect.Descriptor instead.
+func (*RetrieveAgentOpsObservabilityRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDescGZIP(), []int{12}
+}
+
+func (x *RetrieveAgentOpsObservabilityRequest) GetParent() string {
+	if x != nil {
+		return x.Parent
+	}
+	return ""
+}
+
+func (x *RetrieveAgentOpsObservabilityRequest) GetDataSourceType() string {
+	if x != nil {
+		return x.DataSourceType
+	}
+	return ""
+}
+
+// Response for RetrieveAgentOpsObservability.
+type RetrieveAgentOpsObservabilityResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Output only. Whether AgentOps observability telemetry is enabled.
+	TelemetryEnabled bool `protobuf:"varint,1,opt,name=telemetry_enabled,json=telemetryEnabled,proto3" json:"telemetry_enabled,omitempty"`
+	// Output only. Whether BigQuery API is enabled.
+	BigqueryEnabled bool `protobuf:"varint,3,opt,name=bigquery_enabled,json=bigqueryEnabled,proto3" json:"bigquery_enabled,omitempty"`
+	// Output only. Whether Cloud Trace API is enabled.
+	CloudTraceEnabled bool `protobuf:"varint,4,opt,name=cloud_trace_enabled,json=cloudTraceEnabled,proto3" json:"cloud_trace_enabled,omitempty"`
+	// Output only. Whether Cloud Monitoring API is enabled.
+	CloudMonitoringEnabled bool `protobuf:"varint,5,opt,name=cloud_monitoring_enabled,json=cloudMonitoringEnabled,proto3" json:"cloud_monitoring_enabled,omitempty"`
+	// Output only. Whether Cloud Logging API is enabled.
+	CloudLoggingEnabled bool `protobuf:"varint,6,opt,name=cloud_logging_enabled,json=cloudLoggingEnabled,proto3" json:"cloud_logging_enabled,omitempty"`
+	// Output only. Whether BigQuery Agent Analytics is enabled.
+	BqaaEnabled   bool `protobuf:"varint,7,opt,name=bqaa_enabled,json=bqaaEnabled,proto3" json:"bqaa_enabled,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) Reset() {
+	*x = RetrieveAgentOpsObservabilityResponse{}
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[13]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RetrieveAgentOpsObservabilityResponse) ProtoMessage() {}
+
+func (x *RetrieveAgentOpsObservabilityResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes[13]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RetrieveAgentOpsObservabilityResponse.ProtoReflect.Descriptor instead.
+func (*RetrieveAgentOpsObservabilityResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDescGZIP(), []int{13}
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) GetTelemetryEnabled() bool {
+	if x != nil {
+		return x.TelemetryEnabled
+	}
+	return false
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) GetBigqueryEnabled() bool {
+	if x != nil {
+		return x.BigqueryEnabled
+	}
+	return false
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) GetCloudTraceEnabled() bool {
+	if x != nil {
+		return x.CloudTraceEnabled
+	}
+	return false
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) GetCloudMonitoringEnabled() bool {
+	if x != nil {
+		return x.CloudMonitoringEnabled
+	}
+	return false
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) GetCloudLoggingEnabled() bool {
+	if x != nil {
+		return x.CloudLoggingEnabled
+	}
+	return false
+}
+
+func (x *RetrieveAgentOpsObservabilityResponse) GetBqaaEnabled() bool {
+	if x != nil {
+		return x.BqaaEnabled
+	}
+	return false
+}
+
 var File_google_cloud_geminidataanalytics_v1_data_agent_service_proto protoreflect.FileDescriptor
 
 const file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDesc = "" +
 	"\n" +
-	"<google/cloud/geminidataanalytics/v1/data_agent_service.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/geminidataanalytics/v1/data_agent.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x02\n" +
+	"<google/cloud/geminidataanalytics/v1/data_agent_service.proto\x12#google.cloud.geminidataanalytics.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a4google/cloud/geminidataanalytics/v1/data_agent.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x90\x03\n" +
 	"\x15ListDataAgentsRequest\x12L\n" +
 	"\x06parent\x18\x01 \x01(\tB4\xe0A\x02\xfaA.\x12,geminidataanalytics.googleapis.com/DataAgentR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -832,7 +1171,8 @@ const file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDesc 
 	"page_token\x18\x03 \x01(\tB\x03\xe0A\x01R\tpageToken\x12\x1b\n" +
 	"\x06filter\x18\x04 \x01(\tB\x03\xe0A\x01R\x06filter\x12\x1e\n" +
 	"\border_by\x18\x05 \x01(\tB\x03\xe0A\x01R\aorderBy\x12&\n" +
-	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\"\xb8\x01\n" +
+	"\fshow_deleted\x18\x06 \x01(\bB\x03\xe0A\x01R\vshowDeleted\x12~\n" +
+	"\x0ecreator_filter\x18\b \x01(\x0e2R.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilterB\x03\xe0A\x01R\rcreatorFilter\"\xb8\x01\n" +
 	"\x16ListDataAgentsResponse\x12O\n" +
 	"\vdata_agents\x18\x01 \x03(\v2..google.cloud.geminidataanalytics.v1.DataAgentR\n" +
 	"dataAgents\x12&\n" +
@@ -888,7 +1228,28 @@ const file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDesc 
 	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
 	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion2\xa4\x13\n" +
+	"apiVersion\"\xaf\x02\n" +
+	"\x1fSetAgentOpsObservabilityRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x120\n" +
+	"\x11telemetry_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x10telemetryEnabled\x12-\n" +
+	"\x10data_source_type\x18\x03 \x01(\tB\x03\xe0A\x02R\x0edataSourceType\x12&\n" +
+	"\fbqaa_enabled\x18\x04 \x01(\bB\x03\xe0A\x01R\vbqaaEnabled\x12@\n" +
+	"\vupdate_mask\x18\x05 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x01R\n" +
+	"updateMask\"\"\n" +
+	" SetAgentOpsObservabilityResponse\"\"\n" +
+	" SetAgentOpsObservabilityMetadata\"\x98\x01\n" +
+	"$RetrieveAgentOpsObservabilityRequest\x12A\n" +
+	"\x06parent\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!locations.googleapis.com/LocationR\x06parent\x12-\n" +
+	"\x10data_source_type\x18\x02 \x01(\tB\x03\xe0A\x02R\x0edataSourceType\"\xde\x02\n" +
+	"%RetrieveAgentOpsObservabilityResponse\x120\n" +
+	"\x11telemetry_enabled\x18\x01 \x01(\bB\x03\xe0A\x03R\x10telemetryEnabled\x12.\n" +
+	"\x10bigquery_enabled\x18\x03 \x01(\bB\x03\xe0A\x03R\x0fbigqueryEnabled\x123\n" +
+	"\x13cloud_trace_enabled\x18\x04 \x01(\bB\x03\xe0A\x03R\x11cloudTraceEnabled\x12=\n" +
+	"\x18cloud_monitoring_enabled\x18\x05 \x01(\bB\x03\xe0A\x03R\x16cloudMonitoringEnabled\x127\n" +
+	"\x15cloud_logging_enabled\x18\x06 \x01(\bB\x03\xe0A\x03R\x13cloudLoggingEnabled\x12&\n" +
+	"\fbqaa_enabled\x18\a \x01(\bB\x03\xe0A\x03R\vbqaaEnabled2\x97\x18\n" +
 	"\x10DataAgentService\x12\xca\x01\n" +
 	"\x0eListDataAgents\x12:.google.cloud.geminidataanalytics.v1.ListDataAgentsRequest\x1a;.google.cloud.geminidataanalytics.v1.ListDataAgentsResponse\"?\xdaA\x06parent\x82\xd3\xe4\x93\x020\x12./v1/{parent=projects/*/locations/*}/dataAgents\x12\xf7\x01\n" +
 	"\x18ListAccessibleDataAgents\x12D.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest\x1aE.google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsResponse\"N\xdaA\x06parent\x82\xd3\xe4\x93\x02?\x12=/v1/{parent=projects/*/locations/*}/dataAgents:listAccessible\x12\xb7\x01\n" +
@@ -907,7 +1268,10 @@ const file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDesc 
 	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x020*./v1/{name=projects/*/locations/*/dataAgents/*}\x12\xb4\x01\n" +
 	"\x13DeleteDataAgentSync\x12;.google.cloud.geminidataanalytics.v1.DeleteDataAgentRequest\x1a\x16.google.protobuf.Empty\"H\xdaA\x04name\x82\xd3\xe4\x93\x02;*9/v1/{name=projects/*/locations/*/dataAgents/*}:deleteSync\x12\xa0\x01\n" +
 	"\fGetIamPolicy\x12\".google.iam.v1.GetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"U\xdaA\bresource\x82\xd3\xe4\x93\x02D:\x01*\"?/v1/{resource=projects/*/locations/*/dataAgents/*}:getIamPolicy\x12\xa0\x01\n" +
-	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"U\xdaA\bresource\x82\xd3\xe4\x93\x02D:\x01*\"?/v1/{resource=projects/*/locations/*/dataAgents/*}:setIamPolicy\x1aV\xcaA\"geminidataanalytics.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x92\x02\n" +
+	"\fSetIamPolicy\x12\".google.iam.v1.SetIamPolicyRequest\x1a\x15.google.iam.v1.Policy\"U\xdaA\bresource\x82\xd3\xe4\x93\x02D:\x01*\"?/v1/{resource=projects/*/locations/*/dataAgents/*}:setIamPolicy\x12\xd2\x02\n" +
+	"\x18SetAgentOpsObservability\x12D.google.cloud.geminidataanalytics.v1.SetAgentOpsObservabilityRequest\x1a\x1d.google.longrunning.Operation\"\xd0\x01\xcaAD\n" +
+	" SetAgentOpsObservabilityResponse\x12 SetAgentOpsObservabilityMetadata\xdaA)parent,telemetry_enabled,data_source_type\x82\xd3\xe4\x93\x02W:\x01*\"R/v1/{parent=projects/*/locations/*}/observabilitySettings:setAgentOpsObservability\x12\x9b\x02\n" +
+	"\x1dRetrieveAgentOpsObservability\x12I.google.cloud.geminidataanalytics.v1.RetrieveAgentOpsObservabilityRequest\x1aJ.google.cloud.geminidataanalytics.v1.RetrieveAgentOpsObservabilityResponse\"c\xdaA\x17parent,data_source_type\x82\xd3\xe4\x93\x02C\x12A/v1/{parent=projects/*/locations/*}:retrieveAgentOpsObservability\x1aV\xcaA\"geminidataanalytics.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\x92\x02\n" +
 	"'com.google.cloud.geminidataanalytics.v1B\x15DataAgentServiceProtoP\x01ZYcloud.google.com/go/geminidataanalytics/apiv1/geminidataanalyticspb;geminidataanalyticspb\xaa\x02#Google.Cloud.GeminiDataAnalytics.V1\xca\x02#Google\\Cloud\\GeminiDataAnalytics\\V1\xea\x02&Google::Cloud::GeminiDataAnalytics::V1b\x06proto3"
 
 var (
@@ -923,7 +1287,7 @@ func file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDescGZ
 }
 
 var file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
+var file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_goTypes = []any{
 	(ListAccessibleDataAgentsRequest_CreatorFilter)(0), // 0: google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilter
 	(*ListDataAgentsRequest)(nil),                      // 1: google.cloud.geminidataanalytics.v1.ListDataAgentsRequest
@@ -935,51 +1299,62 @@ var file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_goTypes = 
 	(*UpdateDataAgentRequest)(nil),                     // 7: google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest
 	(*DeleteDataAgentRequest)(nil),                     // 8: google.cloud.geminidataanalytics.v1.DeleteDataAgentRequest
 	(*OperationMetadata)(nil),                          // 9: google.cloud.geminidataanalytics.v1.OperationMetadata
-	(*DataAgent)(nil),                                  // 10: google.cloud.geminidataanalytics.v1.DataAgent
-	(*fieldmaskpb.FieldMask)(nil),                      // 11: google.protobuf.FieldMask
-	(*timestamppb.Timestamp)(nil),                      // 12: google.protobuf.Timestamp
-	(*iampb.GetIamPolicyRequest)(nil),                  // 13: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),                  // 14: google.iam.v1.SetIamPolicyRequest
-	(*longrunningpb.Operation)(nil),                    // 15: google.longrunning.Operation
-	(*emptypb.Empty)(nil),                              // 16: google.protobuf.Empty
-	(*iampb.Policy)(nil),                               // 17: google.iam.v1.Policy
+	(*SetAgentOpsObservabilityRequest)(nil),            // 10: google.cloud.geminidataanalytics.v1.SetAgentOpsObservabilityRequest
+	(*SetAgentOpsObservabilityResponse)(nil),           // 11: google.cloud.geminidataanalytics.v1.SetAgentOpsObservabilityResponse
+	(*SetAgentOpsObservabilityMetadata)(nil),           // 12: google.cloud.geminidataanalytics.v1.SetAgentOpsObservabilityMetadata
+	(*RetrieveAgentOpsObservabilityRequest)(nil),       // 13: google.cloud.geminidataanalytics.v1.RetrieveAgentOpsObservabilityRequest
+	(*RetrieveAgentOpsObservabilityResponse)(nil),      // 14: google.cloud.geminidataanalytics.v1.RetrieveAgentOpsObservabilityResponse
+	(*DataAgent)(nil),                                  // 15: google.cloud.geminidataanalytics.v1.DataAgent
+	(*fieldmaskpb.FieldMask)(nil),                      // 16: google.protobuf.FieldMask
+	(*timestamppb.Timestamp)(nil),                      // 17: google.protobuf.Timestamp
+	(*iampb.GetIamPolicyRequest)(nil),                  // 18: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),                  // 19: google.iam.v1.SetIamPolicyRequest
+	(*longrunningpb.Operation)(nil),                    // 20: google.longrunning.Operation
+	(*emptypb.Empty)(nil),                              // 21: google.protobuf.Empty
+	(*iampb.Policy)(nil),                               // 22: google.iam.v1.Policy
 }
 var file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_depIdxs = []int32{
-	10, // 0: google.cloud.geminidataanalytics.v1.ListDataAgentsResponse.data_agents:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
-	0,  // 1: google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.creator_filter:type_name -> google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilter
-	10, // 2: google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsResponse.data_agents:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
-	10, // 3: google.cloud.geminidataanalytics.v1.CreateDataAgentRequest.data_agent:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
-	11, // 4: google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10, // 5: google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest.data_agent:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
-	12, // 6: google.cloud.geminidataanalytics.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	12, // 7: google.cloud.geminidataanalytics.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	1,  // 8: google.cloud.geminidataanalytics.v1.DataAgentService.ListDataAgents:input_type -> google.cloud.geminidataanalytics.v1.ListDataAgentsRequest
-	3,  // 9: google.cloud.geminidataanalytics.v1.DataAgentService.ListAccessibleDataAgents:input_type -> google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest
-	5,  // 10: google.cloud.geminidataanalytics.v1.DataAgentService.GetDataAgent:input_type -> google.cloud.geminidataanalytics.v1.GetDataAgentRequest
-	6,  // 11: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgent:input_type -> google.cloud.geminidataanalytics.v1.CreateDataAgentRequest
-	6,  // 12: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgentSync:input_type -> google.cloud.geminidataanalytics.v1.CreateDataAgentRequest
-	7,  // 13: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgent:input_type -> google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest
-	7,  // 14: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgentSync:input_type -> google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest
-	8,  // 15: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgent:input_type -> google.cloud.geminidataanalytics.v1.DeleteDataAgentRequest
-	8,  // 16: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgentSync:input_type -> google.cloud.geminidataanalytics.v1.DeleteDataAgentRequest
-	13, // 17: google.cloud.geminidataanalytics.v1.DataAgentService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
-	14, // 18: google.cloud.geminidataanalytics.v1.DataAgentService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
-	2,  // 19: google.cloud.geminidataanalytics.v1.DataAgentService.ListDataAgents:output_type -> google.cloud.geminidataanalytics.v1.ListDataAgentsResponse
-	4,  // 20: google.cloud.geminidataanalytics.v1.DataAgentService.ListAccessibleDataAgents:output_type -> google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsResponse
-	10, // 21: google.cloud.geminidataanalytics.v1.DataAgentService.GetDataAgent:output_type -> google.cloud.geminidataanalytics.v1.DataAgent
-	15, // 22: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgent:output_type -> google.longrunning.Operation
-	10, // 23: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgentSync:output_type -> google.cloud.geminidataanalytics.v1.DataAgent
-	15, // 24: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgent:output_type -> google.longrunning.Operation
-	10, // 25: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgentSync:output_type -> google.cloud.geminidataanalytics.v1.DataAgent
-	15, // 26: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgent:output_type -> google.longrunning.Operation
-	16, // 27: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgentSync:output_type -> google.protobuf.Empty
-	17, // 28: google.cloud.geminidataanalytics.v1.DataAgentService.GetIamPolicy:output_type -> google.iam.v1.Policy
-	17, // 29: google.cloud.geminidataanalytics.v1.DataAgentService.SetIamPolicy:output_type -> google.iam.v1.Policy
-	19, // [19:30] is the sub-list for method output_type
-	8,  // [8:19] is the sub-list for method input_type
-	8,  // [8:8] is the sub-list for extension type_name
-	8,  // [8:8] is the sub-list for extension extendee
-	0,  // [0:8] is the sub-list for field type_name
+	0,  // 0: google.cloud.geminidataanalytics.v1.ListDataAgentsRequest.creator_filter:type_name -> google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilter
+	15, // 1: google.cloud.geminidataanalytics.v1.ListDataAgentsResponse.data_agents:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
+	0,  // 2: google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.creator_filter:type_name -> google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest.CreatorFilter
+	15, // 3: google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsResponse.data_agents:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
+	15, // 4: google.cloud.geminidataanalytics.v1.CreateDataAgentRequest.data_agent:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
+	16, // 5: google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	15, // 6: google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest.data_agent:type_name -> google.cloud.geminidataanalytics.v1.DataAgent
+	17, // 7: google.cloud.geminidataanalytics.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	17, // 8: google.cloud.geminidataanalytics.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	16, // 9: google.cloud.geminidataanalytics.v1.SetAgentOpsObservabilityRequest.update_mask:type_name -> google.protobuf.FieldMask
+	1,  // 10: google.cloud.geminidataanalytics.v1.DataAgentService.ListDataAgents:input_type -> google.cloud.geminidataanalytics.v1.ListDataAgentsRequest
+	3,  // 11: google.cloud.geminidataanalytics.v1.DataAgentService.ListAccessibleDataAgents:input_type -> google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsRequest
+	5,  // 12: google.cloud.geminidataanalytics.v1.DataAgentService.GetDataAgent:input_type -> google.cloud.geminidataanalytics.v1.GetDataAgentRequest
+	6,  // 13: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgent:input_type -> google.cloud.geminidataanalytics.v1.CreateDataAgentRequest
+	6,  // 14: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgentSync:input_type -> google.cloud.geminidataanalytics.v1.CreateDataAgentRequest
+	7,  // 15: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgent:input_type -> google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest
+	7,  // 16: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgentSync:input_type -> google.cloud.geminidataanalytics.v1.UpdateDataAgentRequest
+	8,  // 17: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgent:input_type -> google.cloud.geminidataanalytics.v1.DeleteDataAgentRequest
+	8,  // 18: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgentSync:input_type -> google.cloud.geminidataanalytics.v1.DeleteDataAgentRequest
+	18, // 19: google.cloud.geminidataanalytics.v1.DataAgentService.GetIamPolicy:input_type -> google.iam.v1.GetIamPolicyRequest
+	19, // 20: google.cloud.geminidataanalytics.v1.DataAgentService.SetIamPolicy:input_type -> google.iam.v1.SetIamPolicyRequest
+	10, // 21: google.cloud.geminidataanalytics.v1.DataAgentService.SetAgentOpsObservability:input_type -> google.cloud.geminidataanalytics.v1.SetAgentOpsObservabilityRequest
+	13, // 22: google.cloud.geminidataanalytics.v1.DataAgentService.RetrieveAgentOpsObservability:input_type -> google.cloud.geminidataanalytics.v1.RetrieveAgentOpsObservabilityRequest
+	2,  // 23: google.cloud.geminidataanalytics.v1.DataAgentService.ListDataAgents:output_type -> google.cloud.geminidataanalytics.v1.ListDataAgentsResponse
+	4,  // 24: google.cloud.geminidataanalytics.v1.DataAgentService.ListAccessibleDataAgents:output_type -> google.cloud.geminidataanalytics.v1.ListAccessibleDataAgentsResponse
+	15, // 25: google.cloud.geminidataanalytics.v1.DataAgentService.GetDataAgent:output_type -> google.cloud.geminidataanalytics.v1.DataAgent
+	20, // 26: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgent:output_type -> google.longrunning.Operation
+	15, // 27: google.cloud.geminidataanalytics.v1.DataAgentService.CreateDataAgentSync:output_type -> google.cloud.geminidataanalytics.v1.DataAgent
+	20, // 28: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgent:output_type -> google.longrunning.Operation
+	15, // 29: google.cloud.geminidataanalytics.v1.DataAgentService.UpdateDataAgentSync:output_type -> google.cloud.geminidataanalytics.v1.DataAgent
+	20, // 30: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgent:output_type -> google.longrunning.Operation
+	21, // 31: google.cloud.geminidataanalytics.v1.DataAgentService.DeleteDataAgentSync:output_type -> google.protobuf.Empty
+	22, // 32: google.cloud.geminidataanalytics.v1.DataAgentService.GetIamPolicy:output_type -> google.iam.v1.Policy
+	22, // 33: google.cloud.geminidataanalytics.v1.DataAgentService.SetIamPolicy:output_type -> google.iam.v1.Policy
+	20, // 34: google.cloud.geminidataanalytics.v1.DataAgentService.SetAgentOpsObservability:output_type -> google.longrunning.Operation
+	14, // 35: google.cloud.geminidataanalytics.v1.DataAgentService.RetrieveAgentOpsObservability:output_type -> google.cloud.geminidataanalytics.v1.RetrieveAgentOpsObservabilityResponse
+	23, // [23:36] is the sub-list for method output_type
+	10, // [10:23] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_init() }
@@ -994,7 +1369,7 @@ func file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDesc), len(file_google_cloud_geminidataanalytics_v1_data_agent_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   9,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

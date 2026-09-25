@@ -172,6 +172,17 @@ type SessionPoolImpl struct {
 	poolCtx    context.Context
 	poolCancel context.CancelFunc
 
+	// maintCtx scopes the background maintenance loops started by Start
+	// (AFE prune, WaitServerClose sweep, slow metrics). Child of poolCtx
+	// so it can never outlive the pool, but cancelled separately in
+	// Close's Phase 1 — ahead of poolCancel — so no maintenance tick runs
+	// against a pool that's mid-teardown. Each loop closure captures p,
+	// so a loop that survives Close pins the whole pool on the heap;
+	// that's what leaked under session.TableCache TTL eviction, which
+	// Closes pools continuously over a long-lived process's life.
+	maintCtx    context.Context
+	maintCancel context.CancelFunc
+
 	// debugEnabled mirrors session.Config.EnableDebug via
 	// NewSessionPoolImpl. Immutable after construction (no atomic
 	// needed). When false, every allocating debug recorder in
@@ -207,6 +218,7 @@ func (p *SessionPoolImpl) noteVRpcOutcome(sh *SessionHandle, e2e, backend time.D
 // defaultPoolConfig() values (currently 5/400).
 func NewSessionPoolImpl(id uint64, poolName string, streamFactory func(ctx context.Context) (Stream, error), openSessionRequest *spb.OpenSessionRequest, md metadata.MD, sessionType SessionType, debugEnabled bool) *SessionPoolImpl {
 	poolCtx, poolCancel := context.WithCancel(context.Background())
+	maintCtx, maintCancel := context.WithCancel(poolCtx)
 	pool := &SessionPoolImpl{
 		poolName:           poolName,
 		poolID:             id,
@@ -218,6 +230,8 @@ func NewSessionPoolImpl(id uint64, poolName string, streamFactory func(ctx conte
 		waiters:            list.New(),
 		poolCtx:            poolCtx,
 		poolCancel:         poolCancel,
+		maintCtx:           maintCtx,
+		maintCancel:        maintCancel,
 		sl:                 newSessionList(),
 		debugEnabled:       debugEnabled,
 	}

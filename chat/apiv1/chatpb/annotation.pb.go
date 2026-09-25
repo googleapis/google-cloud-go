@@ -381,10 +381,10 @@ func (MeetSpaceLinkData_HuddleStatus) EnumDescriptor() ([]byte, []int) {
 	return file_google_chat_v1_annotation_proto_rawDescGZIP(), []int{7, 1}
 }
 
-// Output only. Annotations can be associated with the plain-text body of the
-// message or with chips that link to Google Workspace resources like Google
-// Docs or Sheets with `start_index` and `length` of 0. To add basic formatting
-// to a text message, see [Format text
+// Annotations can be associated with the plain-text body of the message or
+// with chips that link to Google Workspace resources like Google Docs or Sheets
+// with `start_index` and `length` of 0. To add basic formatting to a text
+// message, see [Format text
 // messages](https://developers.google.com/workspace/chat/format-messages).
 //
 // Example plain-text message body:
