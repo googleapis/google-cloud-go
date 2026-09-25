@@ -17,12 +17,19 @@ package storage
 import (
 	"context"
 	"fmt"
+	"io"
 	"net/http"
+	"strconv"
+	"strings"
+	"sync"
 	"testing"
+	"time"
 
 	"github.com/google/go-cmp/cmp"
 	"github.com/google/go-cmp/cmp/cmpopts"
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
+	"google.golang.org/api/option"
 )
 
 func TestSetHeadersFromContext(t *testing.T) {
@@ -93,6 +100,70 @@ func TestSetHeadersFromContext(t *testing.T) {
 				}
 			}
 		})
+	}
+}
+
+// TestXMLReaderRetryInvocationHeaders verifies that retried XML read requests
+// carry only the invocation headers for the current attempt. The underlying
+// *http.Request is reused across attempts, so headers from earlier attempts
+// must not leak into later ones.
+func TestXMLReaderRetryInvocationHeaders(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	const failures = 2
+	var (
+		mu         sync.Mutex
+		gotHeaders []string
+	)
+	hc, closeServer := newTestServer(func(w http.ResponseWriter, r *http.Request) {
+		mu.Lock()
+		gotHeaders = append(gotHeaders, r.Header.Get(xGoogHeaderKey))
+		n := len(gotHeaders)
+		mu.Unlock()
+		if n <= failures {
+			w.WriteHeader(http.StatusServiceUnavailable)
+			return
+		}
+		w.Header().Set("Content-Length", strconv.Itoa(len(readData)))
+		w.Write([]byte(readData))
+	})
+	defer closeServer()
+
+	client, err := NewClient(ctx, option.WithHTTPClient(hc))
+	if err != nil {
+		t.Fatalf("NewClient: %v", err)
+	}
+	defer client.Close()
+
+	r, err := client.Bucket("b").Object("o").Retryer(
+		WithBackoff(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}),
+		WithPolicy(RetryAlways),
+	).NewReader(ctx)
+	if err != nil {
+		t.Fatalf("NewReader: %v", err)
+	}
+	defer r.Close()
+	if _, err := io.ReadAll(r); err != nil {
+		t.Fatalf("ReadAll: %v", err)
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(gotHeaders) != failures+1 {
+		t.Fatalf("got %d requests, want %d", len(gotHeaders), failures+1)
+	}
+	for i, h := range gotHeaders {
+		attempt := i + 1
+		if got := strings.Count(h, "gccl-attempt-count/"); got != 1 {
+			t.Errorf("attempt %d: %q has %d gccl-attempt-count tokens, want 1", attempt, h, got)
+		}
+		if want := fmt.Sprintf("gccl-attempt-count/%d", attempt); !strings.Contains(h, want) {
+			t.Errorf("attempt %d: %q does not contain %q", attempt, h, want)
+		}
+		if got := strings.Count(h, "gccl-invocation-id/"); got != 1 {
+			t.Errorf("attempt %d: %q has %d gccl-invocation-id tokens, want 1", attempt, h, got)
+		}
 	}
 }
 
