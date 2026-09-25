@@ -1,5 +1,23 @@
 # Changes
 
+## [1.58.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.57.0...bigtable/v1.58.0) (2026-09-25)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+* **bigtable:** Support hot duration, disabled, and effective backup policy ([#20573](https://github.com/googleapis/google-cloud-go/issues/20573)) ([da2bfcc](https://github.com/googleapis/google-cloud-go/commit/da2bfcc3bcf396acbd3fbbbbfb50cb7feb184496))
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate ([#20570](https://github.com/googleapis/google-cloud-go/issues/20570)) ([cc91d66](https://github.com/googleapis/google-cloud-go/commit/cc91d66d3435de4bed07ffec7abc226cdcdbf29c))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
+
+### Bug Fixes
+
+* **bigtable:** Detect omitted MutateRows response entries in ApplyBulk ([#20557](https://github.com/googleapis/google-cloud-go/issues/20557)) ([68b3f33](https://github.com/googleapis/google-cloud-go/commit/68b3f3321bd5ba7d72a60b425345a4680023925b))
+* **bigtable:** Fix TestRetryApplyBulk_OverallRequestFailure test interceptor ([#20574](https://github.com/googleapis/google-cloud-go/issues/20574)) ([25bc085](https://github.com/googleapis/google-cloud-go/commit/25bc085c8fde602f7027cb48532f204be9e0dbd5))
+* **various:** Address format directive issues ([#20547](https://github.com/googleapis/google-cloud-go/issues/20547)) ([e2e1047](https://github.com/googleapis/google-cloud-go/commit/e2e104731999b3bfc75ed0b8f2d71844ced3b073))
+
 ## [1.57.0](https://github.com/googleapis/google-cloud-go/compare/bigtable/v1.56.0...bigtable/v1.57.0) (2026-09-10)
 
 
