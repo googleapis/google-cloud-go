@@ -9742,7 +9742,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			}
 
 			// First call should have placeholder.
-			verifySpanAttributes(t, attrsSpan, "projects/_/buckets/"+bucketName, "global")
+			verifySpanAttributes(t, attrsSpan, "//storage.googleapis.com/projects/_/buckets/"+bucketName, "global")
 
 			// Wait for background fetch to complete and populate cache.
 			select {
@@ -9776,7 +9776,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			}
 
 			// Second call should have resolved attributes.
-			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
+			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("//storage.googleapis.com/projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
 		})
 	}
 }

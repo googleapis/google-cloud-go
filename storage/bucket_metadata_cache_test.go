@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"regexp"
 	"sync"
 	"sync/atomic"
 	"testing"
@@ -50,7 +51,7 @@ func TestCacheNilSafety(t *testing.T) {
 	}
 	cache.put("b1", bucketMetadata{})
 	cache.evict("b1")
-	cache.fetchBackground("b1")
+	cache.fetchBackground(context.Background(), "b1")
 }
 
 func TestCacheConcurrentSafe(t *testing.T) {
@@ -86,7 +87,7 @@ func TestCacheFetchBackground(t *testing.T) {
 	doneChan := make(chan struct{}, 1)
 	cache.fetchDone = doneChan
 
-	cache.fetchBackground("foo")
+	cache.fetchBackground(context.Background(), "foo")
 
 	select {
 	case <-doneChan:
@@ -121,7 +122,7 @@ func TestCacheFetchBackgroundSingleFlight(t *testing.T) {
 
 	// Fire 10 calls concurrently
 	for i := 0; i < 10; i++ {
-		go cache.fetchBackground("foo")
+		go cache.fetchBackground(context.Background(), "foo")
 	}
 
 	// Wait for all 10 calls to finish.
@@ -156,7 +157,7 @@ func TestCacheFetchBackgroundErrorPlaceholder(t *testing.T) {
 	doneChan := make(chan struct{}, 1)
 	cache.fetchDone = doneChan
 
-	cache.fetchBackground("failedBucket")
+	cache.fetchBackground(context.Background(), "failedBucket")
 
 	select {
 	case <-doneChan:
@@ -169,7 +170,7 @@ func TestCacheFetchBackgroundErrorPlaceholder(t *testing.T) {
 		t.Fatalf("expected placeholder to be stored on failure")
 	}
 
-	expectedResource := "projects/_/buckets/failedBucket"
+	expectedResource := "//storage.googleapis.com/projects/_/buckets/failedBucket"
 	expectedLocation := "global"
 
 	if entry.resource != expectedResource || entry.location != expectedLocation {
@@ -190,12 +191,12 @@ func TestCacheFetchBackgroundTransientErrorEviction(t *testing.T) {
 
 	// Populate cache with placeholder first (simulate startSpanWithBucket).
 	cache.put("failedBucket", bucketMetadata{
-		resource:    "projects/_/buckets/failedBucket",
+		resource:    "//storage.googleapis.com/projects/_/buckets/failedBucket",
 		location:    "global",
 		placeholder: true,
 	})
 
-	cache.fetchBackground("failedBucket")
+	cache.fetchBackground(context.Background(), "failedBucket")
 
 	select {
 	case <-doneChan:
@@ -259,7 +260,7 @@ func TestOpportunisticCacheFill(t *testing.T) {
 		t.Fatalf("expected cache to be populated synchronously by Attrs")
 	}
 
-	wantResource := "projects/987654321/buckets/" + bucketName
+	wantResource := "//storage.googleapis.com/projects/987654321/buckets/" + bucketName
 	if entry.resource != wantResource {
 		t.Errorf("got resource %q, want %q", entry.resource, wantResource)
 	}
@@ -267,3 +268,98 @@ func TestOpportunisticCacheFill(t *testing.T) {
 		t.Errorf("got location %q, want %q", entry.location, "us-east1")
 	}
 }
+
+// TestGetMetadataFromAttrsResourceNameFormat verifies that the resource name
+// emitted in the gcp.resource.destination.id span attribute is a well-formed
+// full resource name.
+//
+// Cloud Trace's App Hub extractor validates this attribute with
+// IsWellFormedApiResourceName, which requires the "//{service}/{path}" form. A
+// bare "projects/{p}/buckets/{b}" path is rejected and the span is silently
+// dropped from App Hub enrichment with no error surfaced to the caller, so a
+// regression here is invisible outside of an end-to-end test.
+func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
+	for _, tc := range []struct {
+		name         string
+		location     string
+		locationType string
+		project      string
+		bucket       string
+		wantResource string
+		wantLocation string
+	}{
+		{
+			name:         "region is lowercased",
+			location:     "US-EAST1",
+			locationType: "region",
+			project:      "525947918171",
+			bucket:       "my-bucket",
+			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantLocation: "us-east1",
+		},
+		{
+			name:         "zone is lowercased",
+			location:     "US-CENTRAL1-A",
+			locationType: "zone",
+			project:      "525947918171",
+			bucket:       "my-bucket",
+			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantLocation: "us-central1-a",
+		},
+		{
+			name:         "multi-region falls back to global",
+			location:     "US",
+			locationType: "multi-region",
+			project:      "525947918171",
+			bucket:       "my-bucket",
+			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantLocation: "global",
+		},
+		{
+			name:         "project already in projects/ form (gRPC)",
+			location:     "US-EAST1",
+			locationType: "region",
+			project:      "projects/525947918171",
+			bucket:       "my-bucket",
+			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantLocation: "us-east1",
+		},
+		{
+			name:         "unknown project number",
+			location:     "",
+			locationType: "",
+			project:      "0",
+			bucket:       "my-bucket",
+			wantResource: "//storage.googleapis.com/projects/_/buckets/my-bucket",
+			wantLocation: "global",
+		},
+		{
+			name:         "empty project",
+			location:     "",
+			locationType: "",
+			project:      "",
+			bucket:       "my-bucket",
+			wantResource: "//storage.googleapis.com/projects/_/buckets/my-bucket",
+			wantLocation: "global",
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			gotResource, gotLocation := getMetadataFromAttrs(tc.location, tc.locationType, tc.project, tc.bucket)
+			if gotResource != tc.wantResource {
+				t.Errorf("resource: got %q, want %q", gotResource, tc.wantResource)
+			}
+			if gotLocation != tc.wantLocation {
+				t.Errorf("location: got %q, want %q", gotLocation, tc.wantLocation)
+			}
+			// Guard the exact shape the App Hub extractor requires, independent
+			// of the expectations above.
+			if !wellFormedResourceName.MatchString(gotResource) {
+				t.Errorf("resource %q does not match %v; App Hub linkage will silently fail", gotResource, wellFormedResourceName)
+			}
+		})
+	}
+}
+
+// wellFormedResourceName mirrors the constraint enforced by Cloud Trace's
+// IsWellFormedApiResourceName for GCS bucket destinations.
+var wellFormedResourceName = regexp.MustCompile(`^//storage\.googleapis\.com/projects/[^/]+/buckets/[^/]+$`)
