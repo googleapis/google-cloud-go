@@ -109,8 +109,22 @@ func newGRPCSpannerClient(ctx context.Context, sc *sessionClient, channelID uint
 }
 
 func (g *grpcSpannerClient) newBuiltinMetricsTracer(ctx context.Context) *builtinMetricsTracer {
-	mt := g.metricsTracerFactory.createBuiltinMetricsTracer(ctx)
-	return &mt
+	return g.metricsTracerFactory.newBuiltinMetricsTracer(ctx)
+}
+
+func contextWithBuiltinMetricsTracer(ctx context.Context, mt *builtinMetricsTracer) context.Context {
+	if mt == nil {
+		return ctx
+	}
+	return context.WithValue(ctx, metricsTracerKey, mt)
+}
+
+func setBuiltinMetricsOperationStatus(mt *builtinMetricsTracer, err error) {
+	if mt == nil {
+		return
+	}
+	statusCode, _ := status.FromError(err)
+	mt.currOp.setStatus(statusCode.Code().String())
 }
 
 func (g *grpcSpannerClient) CallOptions() *vkit.CallOptions {
@@ -128,30 +142,27 @@ func (g *grpcSpannerClient) Connection() *grpc.ClientConn {
 func (g *grpcSpannerClient) CreateSession(ctx context.Context, req *spannerpb.CreateSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.CreateSession(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
 func (g *grpcSpannerClient) BatchCreateSessions(ctx context.Context, req *spannerpb.BatchCreateSessionsRequest, opts ...gax.CallOption) (*spannerpb.BatchCreateSessionsResponse, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.BatchCreateSessions(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
 func (g *grpcSpannerClient) GetSession(ctx context.Context, req *spannerpb.GetSessionRequest, opts ...gax.CallOption) (*spannerpb.Session, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.GetSession(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -162,10 +173,9 @@ func (g *grpcSpannerClient) ListSessions(ctx context.Context, req *spannerpb.Lis
 func (g *grpcSpannerClient) DeleteSession(ctx context.Context, req *spannerpb.DeleteSessionRequest, opts ...gax.CallOption) error {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	err := g.raw.DeleteSession(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return err
 }
 
@@ -231,10 +241,9 @@ func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.Execu
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.ExecuteSql(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -263,10 +272,9 @@ func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.ExecuteBatchDml(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -275,10 +283,9 @@ func (g *grpcSpannerClient) Read(ctx context.Context, req *spannerpb.ReadRequest
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.Read(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -305,10 +312,9 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.BeginTransaction(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -317,20 +323,18 @@ func (g *grpcSpannerClient) Commit(ctx context.Context, req *spannerpb.CommitReq
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.Commit(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
 func (g *grpcSpannerClient) Rollback(ctx context.Context, req *spannerpb.RollbackRequest, opts ...gax.CallOption) error {
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	err := g.raw.Rollback(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return err
 }
 
@@ -339,10 +343,9 @@ func (g *grpcSpannerClient) PartitionQuery(ctx context.Context, req *spannerpb.P
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.PartitionQuery(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
@@ -351,10 +354,9 @@ func (g *grpcSpannerClient) PartitionRead(ctx context.Context, req *spannerpb.Pa
 	setSpanAttributes(span, req)
 	mt := g.newBuiltinMetricsTracer(ctx)
 	defer recordOperationCompletion(mt)
-	ctx = context.WithValue(ctx, metricsTracerKey, mt)
+	ctx = contextWithBuiltinMetricsTracer(ctx, mt)
 	resp, err := g.raw.PartitionRead(ctx, req, g.optsWithNextRequestID(opts)...)
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	setBuiltinMetricsOperationStatus(mt, err)
 	return resp, err
 }
 
