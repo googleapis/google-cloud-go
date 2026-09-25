@@ -260,17 +260,21 @@ func (c *cachedStreamingReadClient) Header() (metadata.MD, error) {
 // call on the span and on the current metrics attempt. It does not wait for
 // the response headers when neither built-in metrics nor the span use them.
 func captureStreamServerTiming(span oteltrace.Span, mt *builtinMetricsTracer, client grpc.ClientStream) {
-	if mt == nil || mt.currOp.currAttempt == nil {
-		return
-	}
-	if !mt.builtInEnabled && !span.IsRecording() {
+	hasAttempt := mt != nil && mt.currOp.currAttempt != nil
+	builtInEnabled := hasAttempt && mt.builtInEnabled
+	recording := span.IsRecording()
+	if !builtInEnabled && !recording {
 		return
 	}
 	md, _ := client.Header()
 	latencyMap := parseServerTimingHeader(md)
-	setGFEAndAFESpanAttributes(span, latencyMap)
-	mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-	mt.currOp.currAttempt.setDirectPathUsed(client.Context())
+	if recording {
+		setGFEAndAFESpanAttributes(span, latencyMap)
+	}
+	if hasAttempt {
+		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
+		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
+	}
 }
 
 func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {

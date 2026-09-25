@@ -154,8 +154,10 @@ func TestCaptureStreamServerTiming(t *testing.T) {
 		wantSpanAttrs   map[string]float64
 	}{
 		{name: "built-in metrics disabled and span not recording"},
-		{name: "nil tracer", noTracer: true, recording: true},
-		{name: "no current attempt", builtInEnabled: true, recording: true, noAttempt: true},
+		{name: "nil tracer and span recording", noTracer: true, recording: true, wantHeaderCalls: 1, wantSpanAttrs: map[string]float64{"gfe.latency_ms": 123, "afe.latency_ms": 45}},
+		{name: "nil tracer and span not recording", noTracer: true},
+		{name: "no current attempt and span not recording", builtInEnabled: true, noAttempt: true},
+		{name: "no current attempt and span recording", builtInEnabled: true, noAttempt: true, recording: true, wantHeaderCalls: 1, wantSpanAttrs: map[string]float64{"gfe.latency_ms": 123, "afe.latency_ms": 45}},
 		{name: "built-in metrics enabled", builtInEnabled: true, wantHeaderCalls: 1},
 		{name: "span recording", recording: true, wantHeaderCalls: 1, wantSpanAttrs: map[string]float64{"gfe.latency_ms": 123, "afe.latency_ms": 45}},
 		{name: "built-in metrics enabled and span recording", builtInEnabled: true, recording: true, wantHeaderCalls: 1, wantSpanAttrs: map[string]float64{"gfe.latency_ms": 123, "afe.latency_ms": 45}},
@@ -177,7 +179,7 @@ func TestCaptureStreamServerTiming(t *testing.T) {
 			if stream.headerCalls != tc.wantHeaderCalls {
 				t.Fatalf("Header() calls = %d, want %d", stream.headerCalls, tc.wantHeaderCalls)
 			}
-			if tc.wantHeaderCalls > 0 {
+			if tc.wantHeaderCalls > 0 && !tc.noTracer && !tc.noAttempt {
 				if got, want := mt.currOp.currAttempt.serverTimingMetrics[gfeTimingHeader], 123*time.Millisecond; got != want {
 					t.Errorf("server timing %q = %v, want %v", gfeTimingHeader, got, want)
 				}
