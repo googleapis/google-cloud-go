@@ -19,6 +19,7 @@ package spanner
 import (
 	"context"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"time"
 
@@ -30,6 +31,7 @@ import (
 	oteltrace "go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/peer"
 	"google.golang.org/grpc/status"
 )
@@ -226,6 +228,51 @@ func setGFEAndAFESpanAttributes(span oteltrace.Span, latencyMap map[string]time.
 	}
 }
 
+// cachedExecuteStreamingSQLClient caches the response headers of the stream,
+// so that server-timing capture and GFE latency sinks share a single Header call.
+type cachedExecuteStreamingSQLClient struct {
+	spannerpb.Spanner_ExecuteStreamingSqlClient
+	once sync.Once
+	md   metadata.MD
+	err  error
+}
+
+func (c *cachedExecuteStreamingSQLClient) Header() (metadata.MD, error) {
+	c.once.Do(func() { c.md, c.err = c.Spanner_ExecuteStreamingSqlClient.Header() })
+	return c.md, c.err
+}
+
+// cachedStreamingReadClient caches the response headers of the stream,
+// so that server-timing capture and GFE latency sinks share a single Header call.
+type cachedStreamingReadClient struct {
+	spannerpb.Spanner_StreamingReadClient
+	once sync.Once
+	md   metadata.MD
+	err  error
+}
+
+func (c *cachedStreamingReadClient) Header() (metadata.MD, error) {
+	c.once.Do(func() { c.md, c.err = c.Spanner_StreamingReadClient.Header() })
+	return c.md, c.err
+}
+
+// captureStreamServerTiming records the server-timing header of a streaming
+// call on the span and on the current metrics attempt. It does not wait for
+// the response headers when neither built-in metrics nor the span use them.
+func captureStreamServerTiming(span oteltrace.Span, mt *builtinMetricsTracer, client grpc.ClientStream) {
+	if mt == nil || mt.currOp.currAttempt == nil {
+		return
+	}
+	if !mt.builtInEnabled && !span.IsRecording() {
+		return
+	}
+	md, _ := client.Header()
+	latencyMap := parseServerTimingHeader(md)
+	setGFEAndAFESpanAttributes(span, latencyMap)
+	mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
+	mt.currOp.currAttempt.setDirectPathUsed(client.Context())
+}
+
 func (g *grpcSpannerClient) ExecuteSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (*spannerpb.ResultSet, error) {
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
@@ -244,18 +291,13 @@ func (g *grpcSpannerClient) ExecuteStreamingSql(ctx context.Context, req *spanne
 	// Note: This method does not add g.optsWithNextRequestID to inject x-goog-spanner-request-id
 	// as it is already manually added when creating Stream iterators for ExecuteStreamingSql.
 	client, err := g.raw.ExecuteStreamingSql(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
-	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
+	if client == nil {
 		return client, err
 	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
-	}
-	return client, err
+	cached := &cachedExecuteStreamingSQLClient{Spanner_ExecuteStreamingSqlClient: client}
+	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	captureStreamServerTiming(span, mt, cached)
+	return cached, err
 }
 
 func (g *grpcSpannerClient) ExecuteBatchDml(ctx context.Context, req *spannerpb.ExecuteBatchDmlRequest, opts ...gax.CallOption) (*spannerpb.ExecuteBatchDmlResponse, error) {
@@ -288,18 +330,13 @@ func (g *grpcSpannerClient) StreamingRead(ctx context.Context, req *spannerpb.Re
 	span := oteltrace.SpanFromContext(ctx)
 	setSpanAttributes(span, req)
 	client, err := g.raw.StreamingRead(peer.NewContext(ctx, &peer.Peer{}), req, opts...)
-	mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-	if !ok {
+	if client == nil {
 		return client, err
 	}
-	if mt != nil && client != nil && mt.currOp.currAttempt != nil {
-		md, _ := client.Header()
-		latencyMap := parseServerTimingHeader(md)
-		setGFEAndAFESpanAttributes(span, latencyMap)
-		mt.currOp.currAttempt.setServerTimingMetrics(latencyMap)
-		mt.currOp.currAttempt.setDirectPathUsed(client.Context())
-	}
-	return client, err
+	cached := &cachedStreamingReadClient{Spanner_StreamingReadClient: client}
+	mt, _ := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
+	captureStreamServerTiming(span, mt, cached)
+	return cached, err
 }
 
 func (g *grpcSpannerClient) BeginTransaction(ctx context.Context, req *spannerpb.BeginTransactionRequest, opts ...gax.CallOption) (*spannerpb.Transaction, error) {
