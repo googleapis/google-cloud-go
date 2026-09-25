@@ -22,6 +22,12 @@ import (
 // type for collecting custom ClientOption values.
 type customClientConfig struct {
 	jobCreationMode JobCreationMode
+
+	// maxRetries controls the maximum number of retry attempts for retryable errors.
+	// When set to 0 (default), retries continue indefinitely until context cancellation.
+	// When set to a positive value N, after N consecutive retryable failures,
+	// the operation returns a RetryExhaustedError containing all N errors for debugging.
+	maxRetries int
 }
 
 type customClientOption interface {
@@ -70,4 +76,37 @@ type applierJobCreationMode struct {
 
 func (s *applierJobCreationMode) ApplyCustomClientOpt(c *customClientConfig) {
 	c.jobCreationMode = s.mode
+}
+
+// WithMaxRetries is a ClientOption that configures the maximum number of retry
+// attempts for retryable errors during BigQuery operations.
+//
+// When maxRetries is 0 or less (the default), retries continue indefinitely with
+// exponential backoff until the context is cancelled or the operation succeeds.
+//
+// When maxRetries is a positive value N, after N consecutive retryable failures,
+// the operation returns a `RetryExhaustedError` that contains all N errors for
+// debugging purposes.
+//
+// This is useful for:
+//   - Preventing indefinite retries in automated pipelines
+//   - Debugging persistent failures by examining all error messages
+//   - Implementing fail-fast behavior for known transient issues
+//
+// Example usage:
+//
+//	client, err := bigquery.NewClient(ctx, projectID,
+//	    bigquery.WithMaxRetries(5),
+//	)
+func WithMaxRetries(maxRetries int) option.ClientOption {
+	return &applierMaxRetries{maxRetries: maxRetries}
+}
+
+type applierMaxRetries struct {
+	internaloption.EmbeddableAdapter
+	maxRetries int
+}
+
+func (s *applierMaxRetries) ApplyCustomClientOpt(c *customClientConfig) {
+	c.maxRetries = s.maxRetries
 }
