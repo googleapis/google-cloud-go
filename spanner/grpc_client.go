@@ -123,8 +123,7 @@ func setBuiltinMetricsOperationStatus(mt *builtinMetricsTracer, err error) {
 	if mt == nil {
 		return
 	}
-	statusCode, _ := status.FromError(err)
-	mt.currOp.setStatus(statusCode.Code().String())
+	mt.currOp.setStatus(status.Code(err).String())
 }
 
 func (g *grpcSpannerClient) CallOptions() *vkit.CallOptions {
