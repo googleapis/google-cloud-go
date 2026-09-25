@@ -13,7 +13,7 @@ require (
 	github.com/google/btree v1.1.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/cloud-bigtable-clients-test v0.0.4
+	github.com/googleapis/cloud-bigtable-clients-test v0.0.5
 	github.com/googleapis/gax-go/v2 v2.23.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.43.0
 	go.opentelemetry.io/otel v1.44.0
