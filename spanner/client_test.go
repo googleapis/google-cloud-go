@@ -2050,7 +2050,7 @@ func TestLocationAwareExecuteSql_CooldownRoutesToNextReplicaAndEndpointBecomesEl
 	}
 }
 
-func TestLocationAwareExecuteSql_CooldownRetriesAlternateReplicaWhenAllRoutedReplicasCoolingDown(t *testing.T) {
+func TestLocationAwareExecuteSql_CooldownFallsBackWhenAllRoutedReplicasCoolingDown(t *testing.T) {
 	t.Parallel()
 
 	harness, clientOpts, teardown := NewSharedBackendSpannerReplicaHarness(t, 2)
@@ -2128,13 +2128,13 @@ func TestLocationAwareExecuteSql_CooldownRetriesAlternateReplicaWhenAllRoutedRep
 	replicaARequests := harness.Replicas[0].Requests(MethodExecuteSql)
 	replicaBRequests := harness.Replicas[1].Requests(MethodExecuteSql)
 	defaultRequests := harness.DefaultReplica.Requests(MethodExecuteSql)
-	if got, want := len(replicaARequests), 2; got != want {
+	if got, want := len(replicaARequests), 1; got != want {
 		t.Fatalf("replica A ExecuteSql request count = %d, want %d", got, want)
 	}
 	if got, want := len(replicaBRequests), 1; got != want {
 		t.Fatalf("replica B ExecuteSql request count = %d, want %d", got, want)
 	}
-	if got, want := len(defaultRequests), 0; got != want {
+	if got, want := len(defaultRequests), 1; got != want {
 		t.Fatalf("default ExecuteSql request count = %d, want %d", got, want)
 	}
 }

@@ -246,6 +246,11 @@ func TestEndpointLifecycleManager_RequestEndpointRecreationCreatesEndpoint(t *te
 	)
 	defer manager.shutdown()
 
+	manager.recordRealTraffic("replica-2:443")
+	waitForCondition(t, time.Second, func() bool {
+		return cache.GetIfPresent("replica-2:443") != nil
+	})
+	cache.Evict("replica-2:443")
 	manager.requestEndpointRecreation("replica-2:443")
 
 	waitForCondition(t, time.Second, func() bool {
@@ -253,6 +258,88 @@ func TestEndpointLifecycleManager_RequestEndpointRecreationCreatesEndpoint(t *te
 			cache.GetIfPresent("replica-2:443") != nil &&
 			manager.isManaged("replica-2:443")
 	})
+}
+
+func TestEndpointLifecycleManager_RequestEndpointRecreationRefusesRemovedAddress(t *testing.T) {
+	cache := newLifecycleTestCache("default:443", func(_ context.Context, address string) channelEndpoint {
+		return &lifecycleTestEndpoint{address: address}
+	})
+	manager := newEndpointLifecycleManagerWithOptions(cache, time.Hour, time.Hour, time.Now)
+	defer manager.shutdown()
+
+	manager.updateActiveAddresses(map[string]struct{}{"removed:443": {}})
+	manager.updateActiveAddresses(nil)
+	getCalls := cache.getCallCount("removed:443")
+
+	manager.requestEndpointRecreation("removed:443")
+
+	if manager.isManaged("removed:443") {
+		t.Fatal("removed address was managed again")
+	}
+	if got := cache.getCallCount("removed:443"); got != getCalls {
+		t.Fatalf("Get call count = %d, want %d", got, getCalls)
+	}
+	if endpoint := cache.GetIfPresent("removed:443"); endpoint != nil {
+		t.Fatal("removed endpoint was recreated")
+	}
+}
+
+func TestEndpointLifecycleManager_CreateCannotResurrectConcurrentlyRemovedAddress(t *testing.T) {
+	cache := newLifecycleTestCache("default:443", func(_ context.Context, address string) channelEndpoint {
+		return &lifecycleTestEndpoint{address: address}
+	})
+	manager := newEndpointLifecycleManagerWithOptions(cache, time.Hour, time.Hour, time.Now)
+	defer manager.shutdown()
+
+	manager.updateActiveAddresses(map[string]struct{}{"racing:443": {}})
+
+	reconcileStarted := make(chan struct{})
+	releaseReconcile := make(chan struct{})
+	removalAttempted := make(chan struct{})
+	manager.testHooks = &endpointLifecycleManagerTestHooks{
+		beforeCreateReconcile: func() {
+			close(reconcileStarted)
+			<-releaseReconcile
+		},
+		beforeRemovalLock: func() {
+			close(removalAttempted)
+		},
+	}
+	manager.requestEndpointRecreation("racing:443")
+	select {
+	case <-reconcileStarted:
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for endpoint reconciliation")
+	}
+
+	removed := make(chan struct{})
+	go func() {
+		manager.updateActiveAddresses(nil)
+		close(removed)
+	}()
+	select {
+	case <-removalAttempted:
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for concurrent removal attempt")
+	}
+	select {
+	case <-removed:
+		t.Fatal("removal completed while endpoint reconciliation lock was held")
+	default:
+	}
+	close(releaseReconcile)
+
+	select {
+	case <-removed:
+	case <-time.After(time.Second):
+		t.Fatal("timed out waiting for concurrent removal")
+	}
+	if endpoint := cache.GetIfPresent("racing:443"); endpoint != nil {
+		t.Fatal("concurrently removed endpoint was resurrected")
+	}
+	if manager.isManaged("racing:443") {
+		t.Fatal("concurrently removed address was managed again")
+	}
 }
 
 func TestEndpointLifecycleManager_ProbeEvictsTransientFailureEndpoint(t *testing.T) {
@@ -342,7 +429,7 @@ func TestEndpointLifecycleManager_ShutdownCancelsPendingCreation(t *testing.T) {
 		time.Now,
 	)
 
-	manager.requestEndpointRecreation("replica-5:443")
+	manager.recordRealTraffic("replica-5:443")
 
 	select {
 	case <-started:
