@@ -21,6 +21,7 @@ import (
 	"net/http"
 	"os"
 	"strings"
+	"time"
 
 	internalTrace "cloud.google.com/go/internal/trace"
 	"cloud.google.com/go/storage/internal"
@@ -177,4 +178,36 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// recordRetryBackoffEvent creates a T5 RetryBackoff child span and adds a
+// gcp.storage.retry.backoff span event to the active span in ctx.
+func recordRetryBackoffEvent(ctx context.Context, attempt int, startTime time.Time, invocationID string) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+	endTime := time.Now()
+	if startTime.IsZero() {
+		startTime = endTime
+	} else if endTime.Before(startTime) {
+		endTime = startTime
+	}
+	attrs := make([]attribute.KeyValue, 0, 2)
+	attrs = append(attrs,
+		attribute.Int("gcp.storage.retry.attempt", attempt),
+	)
+	if invocationID != "" {
+		attrs = append(attrs, attribute.String("gcp.storage.gccl-invocation-id", fmt.Sprintf("gccl-invocation-id/%s", invocationID)))
+	}
+	span.AddEvent("gcp.storage.retry.backoff", trace.WithAttributes(attrs...))
+
+	// Create a child span for the backoff duration so it appears as a visual
+	// block in Trace Explorer waterfall charts.
+	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(startTime))
+	backoffSpan.SetAttributes(attrs...)
+	backoffSpan.End(trace.WithTimestamp(endTime))
 }
