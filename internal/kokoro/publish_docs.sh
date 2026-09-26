@@ -35,6 +35,9 @@ else
   godocfx -project $RELEASE_PROJECT_ID -new-modules cloud.google.com/go google.golang.org/appengine/v2
 fi
 
+# Generate help package documentation.
+go run ./internal/help
+
 for f in $(find obj/api -name docs.metadata); do
   # Extract the module name and version from the docs.metadata file.
   module=$(cat $f | grep name | sed 's/.*"\(.*\)"/\1/')
