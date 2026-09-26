@@ -278,7 +278,7 @@ func startSending(t *testing.T, queuedMsgs chan int32, processTimeSecs *int32, i
 
 	t.Logf("Sending some messages to update distribution to %d. This new distribution will be used "+
 		"when the next batch of messages go out.", initialProcessSecs)
-	for i := 0; i < 10; i++ {
+	for range 10 {
 		recvdWg.Add(1)
 		msg++
 		queuedMsgs <- msg
@@ -288,7 +288,7 @@ func startSending(t *testing.T, queuedMsgs chan int32, processTimeSecs *int32, i
 
 	t.Logf("Sending many messages to update distribution to %d. This new distribution will be used "+
 		"when the next batch of messages go out.", finalProcessSecs)
-	for i := 0; i < 100; i++ {
+	for range 100 {
 		recvdWg.Add(1)
 		msg++
 		queuedMsgs <- msg // Send many messages to drastically change distribution
