@@ -24,19 +24,67 @@ import (
 
 	"cloud.google.com/go/auth"
 	"cloud.google.com/go/auth/credentials"
+	"cloud.google.com/go/auth/internal"
 	"cloud.google.com/go/auth/internal/compute"
 	"golang.org/x/time/rate"
 	"google.golang.org/grpc"
 	grpcgoogle "google.golang.org/grpc/credentials/google"
 )
 
+const directPathInterconnectInfix = "-direct."
+
 var logRateLimiter = rate.Sometimes{Interval: 1 * time.Second}
 
+func isDirectPathXdsOverInterconnectUsed(endpoint string, o *Options) bool {
+	if valStr, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
+		if b, err := strconv.ParseBool(valStr); err == nil {
+			return b
+		}
+	}
+	if o != nil && o.InternalOptions != nil && o.InternalOptions.EnableDirectPathXdsOverInterconnect {
+		return true
+	}
+	if strings.Contains(endpoint, directPathInterconnectInfix) || strings.Contains(endpoint, "force-xds") {
+		return true
+	}
+	return false
+}
+
+func hasUniverseDomainHost(endpoint, universeDomain string) bool {
+	host := strings.TrimPrefix(endpoint, "google-c2p:///")
+	host = strings.TrimPrefix(host, "dns:///")
+	if idx := strings.Index(host, "://"); idx != -1 {
+		host = host[idx+3:]
+	}
+	if idx := strings.IndexAny(host, "/?#"); idx != -1 {
+		host = host[:idx]
+	}
+	if h, _, err := net.SplitHostPort(host); err == nil {
+		host = h
+	} else if colonIdx := strings.Index(host, ":"); colonIdx != -1 {
+		host = host[:colonIdx]
+	}
+	return host == universeDomain || strings.HasSuffix(host, "."+universeDomain)
+}
+
+func canUseDirectPathWithUniverseDomain(endpoint string, opts *Options) bool {
+	if opts != nil && opts.clientUniverseDomain() != internal.DefaultUniverseDomain {
+		return false
+	}
+	if isDirectPathXdsOverInterconnectUsed(endpoint, opts) && strings.Contains(endpoint, ".") {
+		return hasUniverseDomainHost(endpoint, internal.DefaultUniverseDomain)
+	}
+	return true
+}
+
 func isDirectPathEnabled(endpoint string, opts *Options) bool {
-	if opts.InternalOptions != nil && !opts.InternalOptions.EnableDirectPath {
+	if opts != nil && opts.InternalOptions != nil && !opts.InternalOptions.EnableDirectPath {
 		return false
 	}
 	if !checkDirectPathEndPoint(endpoint) {
+		return false
+	}
+	if !canUseDirectPathWithUniverseDomain(endpoint, opts) {
 		return false
 	}
 	if b, _ := strconv.ParseBool(os.Getenv(disableDirectPathEnvVar)); b {
@@ -46,10 +94,10 @@ func isDirectPathEnabled(endpoint string, opts *Options) bool {
 }
 
 func checkDirectPathEndPoint(endpoint string) bool {
-	// Only [dns:///]host[:port] is supported, not other schemes (e.g., "tcp://" or "unix://").
-	// Also don't try direct path if the user has chosen an alternate name resolver
-	// (i.e., via ":///" prefix).
-	if strings.Contains(endpoint, "://") && !strings.HasPrefix(endpoint, "dns:///") {
+	// Only [dns:///]host[:port] or google-c2p:/// is supported, not other schemes (e.g., "tcp://" or "unix://").
+	if strings.Contains(endpoint, "://") &&
+		!strings.HasPrefix(endpoint, "dns:///") &&
+		!strings.HasPrefix(endpoint, "google-c2p:///") {
 		return false
 	}
 
@@ -84,7 +132,10 @@ func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, o *Options) bool
 	if tp == nil {
 		return false
 	}
-	if o.InternalOptions != nil && o.InternalOptions.EnableNonDefaultSAForDirectPath {
+	if o != nil && o.InternalOptions != nil && o.InternalOptions.EnableNonDefaultSAForDirectPath {
+		return true
+	}
+	if isDirectPathXdsOverInterconnectUsed("", o) {
 		return true
 	}
 	return isTokenProviderComputeEngine(tp)
@@ -96,19 +147,39 @@ func isDirectPathXdsUsed(o *Options) bool {
 		return true
 	}
 	// Method 2: Enable DirectPath xDS by option;
-	if o.InternalOptions != nil && o.InternalOptions.EnableDirectPathXds {
+	if o != nil && o.InternalOptions != nil && o.InternalOptions.EnableDirectPathXds {
+		return true
+	}
+	if isDirectPathXdsOverInterconnectUsed("", o) {
 		return true
 	}
 	return false
 }
 
 func isDirectPathBoundTokenEnabled(opts *InternalOptions) bool {
+	if opts == nil {
+		return false
+	}
 	for _, ev := range opts.AllowHardBoundTokens {
 		if ev == "ALTS" {
 			return true
 		}
 	}
 	return false
+}
+
+func canUseDirectPath(endpoint string, opts *Options, creds *auth.Credentials) bool {
+	if !isDirectPathEnabled(endpoint, opts) {
+		return false
+	}
+	interconnect := isDirectPathXdsOverInterconnectUsed(endpoint, opts)
+	if !compute.OnComputeEngine() && !interconnect {
+		return false
+	}
+	if interconnect {
+		return creds != nil && creds.TokenProvider != nil
+	}
+	return isTokenProviderDirectPathCompatible(creds, opts)
 }
 
 // configureDirectPath returns some dial options and an endpoint to use if the
@@ -118,10 +189,11 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 	logRateLimiter.Do(func() {
 		logDirectPathMisconfig(endpoint, creds, opts)
 	})
-	if isDirectPathEnabled(endpoint, opts) && compute.OnComputeEngine() && isTokenProviderDirectPathCompatible(creds, opts) {
+	if canUseDirectPath(endpoint, opts, creds) {
+		interconnect := isDirectPathXdsOverInterconnectUsed(endpoint, opts)
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
 		defaultCredetialsOptions := grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds, endpoint: endpoint}}
-		if isDirectPathBoundTokenEnabled(opts.InternalOptions) && isTokenProviderComputeEngine(creds) {
+		if !interconnect && opts != nil && isDirectPathBoundTokenEnabled(opts.InternalOptions) && isTokenProviderComputeEngine(creds) {
 			optsClone := opts.resolveDetectOptions()
 			optsClone.TokenBindingType = credentials.ALTSHardBinding
 			altsCreds, err := credentials.DetectDefault(optsClone)
@@ -135,13 +207,43 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 		if timeoutDialerOption != nil {
 			grpcOpts = append(grpcOpts, timeoutDialerOption)
 		}
+		cleanAddr := strings.TrimPrefix(endpoint, "google-c2p:///")
+		cleanAddr = strings.TrimPrefix(cleanAddr, "dns:///")
+		if qIdx := strings.Index(cleanAddr, "?"); qIdx != -1 {
+			cleanAddr = cleanAddr[:qIdx]
+		}
+		if host, _, err := net.SplitHostPort(cleanAddr); err == nil {
+			cleanAddr = host
+		}
+		if interconnect {
+			if strings.HasSuffix(cleanAddr, ".googleapis.com") && !strings.Contains(cleanAddr, directPathInterconnectInfix) {
+				authority := cleanAddr
+				cleanAddr = strings.TrimSuffix(cleanAddr, ".googleapis.com") + directPathInterconnectInfix + "googleapis.com"
+				grpcOpts = append(grpcOpts, grpc.WithAuthority(authority))
+			} else if strings.Contains(cleanAddr, directPathInterconnectInfix) {
+				authority := strings.Replace(cleanAddr, directPathInterconnectInfix, ".", 1)
+				grpcOpts = append(grpcOpts, grpc.WithAuthority(authority))
+			}
+		}
 		// Check if google-c2p resolver is enabled for DirectPath
-		if isDirectPathXdsUsed(opts) {
-			// google-c2p resolver target must not have a port number
-			if addr, _, err := net.SplitHostPort(endpoint); err == nil {
-				endpoint = "google-c2p:///" + addr
-			} else {
-				endpoint = "google-c2p:///" + endpoint
+		if strings.HasPrefix(endpoint, "google-c2p:///") {
+			if interconnect {
+				rawQuery := ""
+				if qIdx := strings.Index(endpoint, "?"); qIdx != -1 {
+					rawQuery = endpoint[qIdx+1:]
+				}
+				if rawQuery == "" {
+					endpoint = "google-c2p:///" + cleanAddr + "?force-xds"
+				} else if !strings.Contains(rawQuery, "force-xds") {
+					endpoint = "google-c2p:///" + cleanAddr + "?" + rawQuery + "&force-xds"
+				} else {
+					endpoint = "google-c2p:///" + cleanAddr + "?" + rawQuery
+				}
+			}
+		} else if isDirectPathXdsUsed(opts) || interconnect {
+			endpoint = "google-c2p:///" + cleanAddr
+			if interconnect {
+				endpoint += "?force-xds"
 			}
 		} else {
 			if !strings.HasPrefix(endpoint, "dns:///") {
@@ -165,12 +267,13 @@ func logDirectPathMisconfig(endpoint string, creds *auth.Credentials, o *Options
 	if !isDirectPathEnabled(endpoint, o) {
 		o.logger().Warn("DirectPath is disabled. To enable, please set the EnableDirectPath option along with the EnableDirectPathXds option.")
 	} else {
+		interconnect := isDirectPathXdsOverInterconnectUsed(endpoint, o)
 		// Case 2: credential is not correctly set
-		if !isTokenProviderDirectPathCompatible(creds, o) {
+		if !interconnect && !isTokenProviderDirectPathCompatible(creds, o) {
 			o.logger().Warn("DirectPath is disabled. Please make sure the token source is fetched from GCE metadata server and the default service account is used.")
 		}
 		// Case 3: not running on GCE
-		if !compute.OnComputeEngine() {
+		if !interconnect && !compute.OnComputeEngine() {
 			o.logger().Warn("DirectPath is disabled. DirectPath is only available in a GCE environment.")
 		}
 	}
