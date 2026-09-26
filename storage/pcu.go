@@ -183,6 +183,7 @@ func (w *Writer) initPCU(ctx context.Context) error {
 
 	// Track PCU operations using client feature tracking header.
 	ctx = addFeatureAttributes(ctx, featurePCU)
+	recordWriterTraceAttributes(w.ctx, w)
 
 	bgCtx := contextWithoutMetrics(ctx)
 	pCtx, cancel := context.WithCancel(bgCtx)

@@ -350,3 +350,227 @@ func TestEndSpanEviction(t *testing.T) {
 		})
 	}
 }
+
+func TestRecordWriterTraceAttributes(t *testing.T) {
+	testCases := []struct {
+		name      string
+		writer    *Writer
+		wantAttrs map[string]interface{}
+	}{
+		{
+			name: "resumable",
+			writer: &Writer{
+				ChunkSize:            256 * 1024,
+				Append:               false,
+				EnableParallelUpload: false,
+				ObjectAttrs:          ObjectAttrs{Name: "test-file.txt"},
+			},
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.write.mode":   "resumable",
+				"gcp.storage.payload.size": int64(256 * 1024),
+				"gcp.storage.object.name":  "test-file.txt",
+			},
+		},
+		{
+			name: "oneshot",
+			writer: &Writer{
+				ChunkSize:            0,
+				Append:               false,
+				EnableParallelUpload: false,
+				ObjectAttrs:          ObjectAttrs{Name: "test-oneshot.txt"},
+			},
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.write.mode":   "oneshot",
+				"gcp.storage.payload.size": int64(0),
+				"gcp.storage.object.name":  "test-oneshot.txt",
+			},
+		},
+		{
+			name: "oneshot_negative_chunk",
+			writer: &Writer{
+				ChunkSize:            -1,
+				Append:               false,
+				EnableParallelUpload: false,
+				ObjectAttrs:          ObjectAttrs{Name: "test-oneshot-neg.txt"},
+			},
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.write.mode":   "oneshot",
+				"gcp.storage.payload.size": int64(-1),
+				"gcp.storage.object.name":  "test-oneshot-neg.txt",
+			},
+		},
+		{
+			name: "appendable",
+			writer: &Writer{
+				ChunkSize:            256 * 1024,
+				Append:               true,
+				EnableParallelUpload: false,
+				ObjectAttrs:          ObjectAttrs{Name: "test-append.txt"},
+			},
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.write.mode":   "appendable",
+				"gcp.storage.payload.size": int64(256 * 1024),
+				"gcp.storage.object.name":  "test-append.txt",
+			},
+		},
+		{
+			name: "parallel",
+			writer: &Writer{
+				ChunkSize:            256 * 1024,
+				Append:               false,
+				EnableParallelUpload: true,
+				ParallelUploadConfig: ParallelUploadConfig{
+					PartSize:       16 * 1024 * 1024,
+					MaxConcurrency: 4,
+				},
+				ObjectAttrs: ObjectAttrs{Name: "test-parallel.txt"},
+			},
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.write.mode":            "parallel",
+				"gcp.storage.payload.size":          int64(256 * 1024),
+				"gcp.storage.object.name":           "test-parallel.txt",
+				"gcp.storage.parallel.part_size":   int64(16 * 1024 * 1024),
+				"gcp.storage.parallel.concurrency": int64(4),
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			spanName := "Object.Writer"
+			ctx, _ = startSpan(ctx, spanName)
+			recordWriterTraceAttributes(ctx, tc.writer)
+			endSpan(ctx, nil)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			gotSpan := spans[0]
+
+			for k, wantVal := range tc.wantAttrs {
+				found := false
+				for _, a := range gotSpan.Attributes {
+					if string(a.Key) == k {
+						found = true
+						switch v := wantVal.(type) {
+						case string:
+							if got := a.Value.AsString(); got != v {
+								t.Errorf("key %q: got %v, want %v", k, got, v)
+							}
+						case int64:
+							if got := a.Value.AsInt64(); got != v {
+								t.Errorf("key %q: got %v, want %v", k, got, v)
+							}
+						case bool:
+							if got := a.Value.AsBool(); got != v {
+								t.Errorf("key %q: got %v, want %v", k, got, v)
+							}
+						}
+					}
+				}
+				if !found {
+					t.Errorf("attribute %q not found on span", k)
+				}
+			}
+		})
+	}
+}
+
+func TestRecordReaderTraceAttributes(t *testing.T) {
+	testCases := []struct {
+		name       string
+		readMode   string
+		offset     int64
+		length     int64
+		objectName string
+		wantAttrs  map[string]interface{}
+	}{
+		{
+			name:       "range",
+			readMode:   "range",
+			offset:     100,
+			length:     500,
+			objectName: "read-obj.txt",
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.read.mode":      "range",
+				"gcp.storage.payload.offset": int64(100),
+				"gcp.storage.payload.size":   int64(500),
+				"gcp.storage.object.name":    "read-obj.txt",
+			},
+		},
+		{
+			name:       "full",
+			readMode:   "full",
+			offset:     0,
+			length:     -1,
+			objectName: "read-full.txt",
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.read.mode":   "full",
+				"gcp.storage.object.name": "read-full.txt",
+			},
+		},
+		{
+			name:       "multi_range",
+			readMode:   "multi_range",
+			offset:     0,
+			length:     0,
+			objectName: "read-mrd.txt",
+			wantAttrs: map[string]interface{}{
+				"gcp.storage.read.mode":   "multi_range",
+				"gcp.storage.object.name": "read-mrd.txt",
+			},
+		},
+	}
+
+	for _, tc := range testCases {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			spanName := "Object.Reader"
+			ctx, _ = startSpan(ctx, spanName)
+			recordReaderTraceAttributes(ctx, tc.readMode, tc.offset, tc.length, tc.objectName)
+			endSpan(ctx, nil)
+
+			spans := te.Spans()
+			if len(spans) != 1 {
+				t.Fatalf("expected 1 span, got %d", len(spans))
+			}
+			gotSpan := spans[0]
+
+			for k, wantVal := range tc.wantAttrs {
+				found := false
+				for _, a := range gotSpan.Attributes {
+					if string(a.Key) == k {
+						found = true
+						switch v := wantVal.(type) {
+						case string:
+							if got := a.Value.AsString(); got != v {
+								t.Errorf("key %q: got %v, want %v", k, got, v)
+							}
+						case int64:
+							if got := a.Value.AsInt64(); got != v {
+								t.Errorf("key %q: got %v, want %v", k, got, v)
+							}
+						}
+					}
+				}
+				if !found {
+					t.Errorf("attribute %q not found on span", k)
+				}
+			}
+		})
+	}
+}
