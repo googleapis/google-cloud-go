@@ -28,6 +28,10 @@ import (
 
 	"cloud.google.com/go/spanner/executor/apiv1/executorpb"
 	"cloud.google.com/go/spanner/test/cloudexecutor/executor"
+	texporter "github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/trace"
+	"go.opentelemetry.io/otel"
+	"go.opentelemetry.io/otel/propagation"
+	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"golang.org/x/oauth2"
 	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
@@ -38,11 +42,14 @@ import (
 )
 
 var (
-	proxyPort      = flag.String("proxy_port", "", "Proxy port to start worker proxy on.")
-	spannerPort    = flag.String("spanner_port", "", "Port of Spanner Frontend to which to send requests.")
-	cert           = flag.String("cert", "", "Certificate used to connect to Spanner GFE.")
-	serviceKeyFile = flag.String("service_key_file", "", "Service key file used to set authentication.")
-	ipAddress      = "127.0.0.1"
+	proxyPort          = flag.String("proxy_port", "", "Proxy port to start worker proxy on.")
+	spannerPort        = flag.String("spanner_port", "", "Port of Spanner Frontend to which to send requests.")
+	cert               = flag.String("cert", "", "Certificate used to connect to Spanner GFE.")
+	rootCert           = flag.String("root_cert", "", "Root certificate used for calls to Cloud Trace.")
+	serviceKeyFile     = flag.String("service_key_file", "", "Service key file used to set authentication.")
+	ipAddress          = "127.0.0.1"
+	cloudTraceEndpoint = "staging-cloudtrace.sandbox.googleapis.com:443"
+	projectID          = "spanner-cloud-systest"
 )
 
 func main() {
@@ -60,18 +67,34 @@ func main() {
 	if *cert == "" {
 		log.Fatalf("Certificate need to be assigned in order to start worker proxy.")
 	}
+	if *rootCert == "" {
+		log.Fatalf("Root certificate need to be assigned in order to start worker proxy.")
+	}
 
 	lis, err := net.Listen("tcp", fmt.Sprintf(":%s", *proxyPort))
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	ctx := context.Background()
+
+	// Enable opentelemetry tracing.
+	os.Setenv("GOOGLE_API_GO_EXPERIMENTAL_TELEMETRY_PLATFORM_TRACING", "opentelemetry")
+	// Set up OpenTelemetry tracing.
+	traceClientOpts := getClientOptionsForCloudTrace()
+	tp := getOpenTelemetryTracerProvider(ctx, traceClientOpts)
+	defer func() { _ = tp.Shutdown(ctx) }()
+
+	// Register the tracer provider and text map propagator(to propagate trace context) globally.
+	otel.SetTracerProvider(tp)
+	otel.SetTextMapPropagator(propagation.TraceContext{})
+
 	// Create a new gRPC server
 	grpcServer := grpc.NewServer()
 
 	clientOptions := getClientOptionsForSysTests()
 	// Create a new cloud proxy server
-	cloudProxyServer, err := executor.NewCloudProxyServer(context.Background(), clientOptions)
+	cloudProxyServer, err := executor.NewCloudProxyServer(ctx, clientOptions, traceClientOpts)
 	if err != nil {
 		log.Fatalf("Creating Cloud Proxy Server failed: %v", err)
 	}
@@ -88,6 +111,49 @@ func main() {
 	if err != nil {
 		log.Printf("Failed to start server on proxyPort: %s\n", *proxyPort)
 	}
+}
+
+// getOpenTelemetryTracerProvider sets up the OpenTelemetry by configuring exporter and sampler.
+func getOpenTelemetryTracerProvider(ctx context.Context, traceClientOpts []option.ClientOption) *sdktrace.TracerProvider {
+	traceExporter, err := texporter.New(
+		texporter.WithContext(ctx),
+		texporter.WithTraceClientOptions(traceClientOpts),
+		texporter.WithProjectID(projectID),
+	)
+	if err != nil {
+		log.Fatalf("unable to set up tracing: %v", err)
+	}
+	return sdktrace.NewTracerProvider(
+		sdktrace.WithBatcher(traceExporter),
+		sdktrace.WithSampler(sdktrace.ParentBased(sdktrace.TraceIDRatioBased(0.01))),
+	)
+}
+
+// Constructs client options needed to interact with Cloud Trace APIs.
+func getClientOptionsForCloudTrace() []option.ClientOption {
+	var traceClientOpts []option.ClientOption
+	traceClientOpts = append(traceClientOpts, option.WithEndpoint(cloudTraceEndpoint))
+	traceClientOpts = append(traceClientOpts, option.WithGRPCDialOption(grpc.WithTransportCredentials(getRootCredentials())))
+
+	const (
+		cloudPlatformScope = "https://www.googleapis.com/auth/cloud-platform"
+		traceAppendScope   = "https://www.googleapis.com/auth/trace.append"
+		traceReadScope     = "https://www.googleapis.com/auth/trace.readonly"
+	)
+
+	log.Println("Reading service key file in executor code for cloud trace client")
+	cloudSystestCredentialsJSON, err := os.ReadFile(*serviceKeyFile)
+	if err != nil {
+		log.Fatal(err)
+	}
+	tokenSource, err := google.JWTAccessTokenSourceWithScope([]byte(cloudSystestCredentialsJSON), cloudPlatformScope, traceAppendScope, traceReadScope)
+	if err != nil {
+		log.Fatal(err)
+	}
+	traceClientOpts = append(traceClientOpts, option.WithTokenSource(tokenSource))
+	traceClientOpts = append(traceClientOpts, option.WithCredentialsFile(*serviceKeyFile))
+
+	return traceClientOpts
 }
 
 // Constructs client options needed to run executor for systests
@@ -143,6 +209,17 @@ func getCredentials() credentials.TransportCredentials {
 	if err != nil {
 		log.Println(err)
 	}
+	fmt.Printf("CAcert credentials: %v", creds)
+	return creds
+}
+
+// Fetches the root credentials for rootCert file.
+func getRootCredentials() credentials.TransportCredentials {
+	creds, err := credentials.NewClientTLSFromFile(*rootCert, "")
+	if err != nil {
+		log.Println(err)
+	}
+	fmt.Printf("Root credentials: %v", creds)
 	return creds
 }
 
