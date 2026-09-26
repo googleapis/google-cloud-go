@@ -960,6 +960,19 @@ type Array []Expr
 
 func (Array) isExpr() {}
 
+// ExprList represents a comma-separated list of expressions
+type ExprList []Expr
+
+func (ExprList) isExpr() {}
+
+// Lambda represents a lambda expression https://docs.cloud.google.com/spanner/docs/reference/standard-sql/functions-reference#lambdas
+type Lambda struct {
+	Key   Expr
+	Value Expr
+}
+
+func (Lambda) isExpr() {}
+
 // StructLiteral represents a struct literal.
 // https://cloud.google.com/spanner/docs/query-syntax#struct_type
 type StructLiteral struct {
