@@ -74,27 +74,43 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
-	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
-		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
-		ctx = context.WithValue(ctx, bucketContextKey, bucket)
-		isBucket := strings.HasPrefix(name, "Bucket.") || strings.HasPrefix(name, "ACL.") || strings.HasPrefix(name, "storage.IAM.")
-		ctx = context.WithValue(ctx, isBucketContextKey, isBucket)
+	var cache *bucketMetadataCache
+	if client != nil && client.bucketMetadataCache != nil {
+		cache = client.bucketMetadataCache
+	} else if c, ok := ctx.Value(cacheContextKey).(*bucketMetadataCache); ok {
+		cache = c
+	}
 
-		cache := client.bucketMetadataCache
-		meta, hit := cache.get(bucket)
-		if !hit {
-			placeholder := bucketMetadata{
-				resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
-				location:    "global",
-				placeholder: true,
+	if bucket != "" {
+		var attrs []attribute.KeyValue
+		if cache != nil {
+			if ctx.Value(cacheContextKey) == nil {
+				ctx = context.WithValue(ctx, cacheContextKey, cache)
+				ctx = context.WithValue(ctx, bucketContextKey, bucket)
+				isBucket := strings.HasPrefix(name, "Bucket.") || strings.HasPrefix(name, "ACL.") || strings.HasPrefix(name, "storage.IAM.")
+				ctx = context.WithValue(ctx, isBucketContextKey, isBucket)
 			}
-			cache.put(bucket, placeholder)
-			cache.fetchBackground(bucket)
-			meta = placeholder
-		}
-		attrs := []attribute.KeyValue{
-			attribute.String("gcp.resource.destination.id", meta.resource),
-			attribute.String("gcp.resource.destination.location", meta.location),
+
+			meta, hit := cache.get(bucket)
+			if !hit {
+				placeholder := bucketMetadata{
+					resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
+					location:    "global",
+					placeholder: true,
+				}
+				cache.put(bucket, placeholder)
+				cache.fetchBackground(bucket)
+				meta = placeholder
+			}
+			attrs = []attribute.KeyValue{
+				attribute.String("gcp.resource.destination.id", meta.resource),
+				attribute.String("gcp.resource.destination.location", meta.location),
+			}
+		} else {
+			attrs = []attribute.KeyValue{
+				attribute.String("gcp.resource.destination.id", fmt.Sprintf("projects/_/buckets/%s", bucket)),
+				attribute.String("gcp.resource.destination.location", "global"),
+			}
 		}
 		ctx = contextWithTraceAttributes(ctx, attrs)
 	}
@@ -177,4 +193,17 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// recordObjectTraceAttributes attaches the object name attribute to object metadata spans.
+func recordObjectTraceAttributes(ctx context.Context, objectName string) {
+	if !isOTelTracingDevEnabled() || objectName == "" {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+
+	span.SetAttributes(attribute.String("gcp.storage.object.name", objectName))
 }

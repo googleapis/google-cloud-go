@@ -1068,6 +1068,7 @@ func (o *ObjectHandle) Key(encryptionKey []byte) *ObjectHandle {
 func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error) {
 	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Attrs")
 	defer func() { endSpan(ctx, err) }()
+	recordObjectTraceAttributes(ctx, o.object)
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -1082,6 +1083,7 @@ func (o *ObjectHandle) Attrs(ctx context.Context) (attrs *ObjectAttrs, err error
 func (o *ObjectHandle) Update(ctx context.Context, uattrs ObjectAttrsToUpdate) (oa *ObjectAttrs, err error) {
 	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Update")
 	defer func() { endSpan(ctx, err) }()
+	recordObjectTraceAttributes(ctx, o.object)
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -1160,6 +1162,7 @@ type ObjectAttrsToUpdate struct {
 func (o *ObjectHandle) Delete(ctx context.Context) (err error) {
 	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Delete")
 	defer func() { endSpan(ctx, err) }()
+	recordObjectTraceAttributes(ctx, o.object)
 	if err := o.validate(); err != nil {
 		return err
 	}
