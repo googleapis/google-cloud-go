@@ -218,7 +218,7 @@ func TestStartSpanWithBucket(t *testing.T) {
 			setupCache: func(c *bucketMetadataCache) {
 				// empty cache
 			},
-			wantResource: "//storage.googleapis.com/projects/_/buckets/bucket-miss",
+			wantResource: storageResourceNamePrefix + "projects/_/buckets/bucket-miss",
 			wantLocation: "global",
 			verifyCache:  true,
 		},

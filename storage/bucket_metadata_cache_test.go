@@ -170,7 +170,7 @@ func TestCacheFetchBackgroundErrorPlaceholder(t *testing.T) {
 		t.Fatalf("expected placeholder to be stored on failure")
 	}
 
-	expectedResource := "//storage.googleapis.com/projects/_/buckets/failedBucket"
+	expectedResource := storageResourceNamePrefix + "projects/_/buckets/failedBucket"
 	expectedLocation := "global"
 
 	if entry.resource != expectedResource || entry.location != expectedLocation {
@@ -191,7 +191,7 @@ func TestCacheFetchBackgroundTransientErrorEviction(t *testing.T) {
 
 	// Populate cache with placeholder first (simulate startSpanWithBucket).
 	cache.put("failedBucket", bucketMetadata{
-		resource:    "//storage.googleapis.com/projects/_/buckets/failedBucket",
+		resource:    storageResourceNamePrefix + "projects/_/buckets/failedBucket",
 		location:    "global",
 		placeholder: true,
 	})
@@ -260,7 +260,7 @@ func TestOpportunisticCacheFill(t *testing.T) {
 		t.Fatalf("expected cache to be populated synchronously by Attrs")
 	}
 
-	wantResource := "//storage.googleapis.com/projects/987654321/buckets/" + bucketName
+	wantResource := storageResourceNamePrefix + "projects/987654321/buckets/" + bucketName
 	if entry.resource != wantResource {
 		t.Errorf("got resource %q, want %q", entry.resource, wantResource)
 	}
@@ -294,7 +294,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "region",
 			project:      "525947918171",
 			bucket:       "my-bucket",
-			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
 			wantLocation: "us-east1",
 		},
 		{
@@ -303,7 +303,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "zone",
 			project:      "525947918171",
 			bucket:       "my-bucket",
-			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
 			wantLocation: "us-central1-a",
 		},
 		{
@@ -312,7 +312,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "multi-region",
 			project:      "525947918171",
 			bucket:       "my-bucket",
-			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
 			wantLocation: "global",
 		},
 		{
@@ -321,7 +321,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "region",
 			project:      "projects/525947918171",
 			bucket:       "my-bucket",
-			wantResource: "//storage.googleapis.com/projects/525947918171/buckets/my-bucket",
+			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
 			wantLocation: "us-east1",
 		},
 		{
@@ -330,7 +330,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "",
 			project:      "0",
 			bucket:       "my-bucket",
-			wantResource: "//storage.googleapis.com/projects/_/buckets/my-bucket",
+			wantResource: storageResourceNamePrefix + "projects/_/buckets/my-bucket",
 			wantLocation: "global",
 		},
 		{
@@ -339,7 +339,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "",
 			project:      "",
 			bucket:       "my-bucket",
-			wantResource: "//storage.googleapis.com/projects/_/buckets/my-bucket",
+			wantResource: storageResourceNamePrefix + "projects/_/buckets/my-bucket",
 			wantLocation: "global",
 		},
 	} {
