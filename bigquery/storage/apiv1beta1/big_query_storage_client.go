@@ -404,6 +404,41 @@ func NewBigQueryStorageClient(ctx context.Context, opts ...option.ClientOption) 
 		client.CallOptions.FinalizeStream = append(client.CallOptions.FinalizeStream, gax.WithClientMetrics(metrics))
 		client.CallOptions.SplitReadStream = append(client.CallOptions.SplitReadStream, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateReadSession = append(client.CallOptions.CreateReadSession, gax.WithClientTracing(tracing))
+		client.CallOptions.ReadRows = append(client.CallOptions.ReadRows, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateReadSessionStreams = append(client.CallOptions.BatchCreateReadSessionStreams, gax.WithClientTracing(tracing))
+		client.CallOptions.FinalizeStream = append(client.CallOptions.FinalizeStream, gax.WithClientTracing(tracing))
+		client.CallOptions.SplitReadStream = append(client.CallOptions.SplitReadStream, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateReadSession = append(client.CallOptions.CreateReadSession, gax.WithClientLogging(logging))
+		client.CallOptions.ReadRows = append(client.CallOptions.ReadRows, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateReadSessionStreams = append(client.CallOptions.BatchCreateReadSessionStreams, gax.WithClientLogging(logging))
+		client.CallOptions.FinalizeStream = append(client.CallOptions.FinalizeStream, gax.WithClientLogging(logging))
+		client.CallOptions.SplitReadStream = append(client.CallOptions.SplitReadStream, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -506,6 +541,41 @@ func NewBigQueryStorageRESTClient(ctx context.Context, opts ...option.ClientOpti
 		callOpts.FinalizeStream = append(callOpts.FinalizeStream, gax.WithClientMetrics(metrics))
 		callOpts.SplitReadStream = append(callOpts.SplitReadStream, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateReadSession = append(callOpts.CreateReadSession, gax.WithClientTracing(tracing))
+		callOpts.ReadRows = append(callOpts.ReadRows, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateReadSessionStreams = append(callOpts.BatchCreateReadSessionStreams, gax.WithClientTracing(tracing))
+		callOpts.FinalizeStream = append(callOpts.FinalizeStream, gax.WithClientTracing(tracing))
+		callOpts.SplitReadStream = append(callOpts.SplitReadStream, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateReadSession = append(callOpts.CreateReadSession, gax.WithClientLogging(logging))
+		callOpts.ReadRows = append(callOpts.ReadRows, gax.WithClientLogging(logging))
+		callOpts.BatchCreateReadSessionStreams = append(callOpts.BatchCreateReadSessionStreams, gax.WithClientLogging(logging))
+		callOpts.FinalizeStream = append(callOpts.FinalizeStream, gax.WithClientLogging(logging))
+		callOpts.SplitReadStream = append(callOpts.SplitReadStream, gax.WithClientLogging(logging))
+	}
 
 	return &BigQueryStorageClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -552,9 +622,6 @@ func (c *bigQueryStorageGRPCClient) CreateReadSession(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/CreateReadSession")
 	}
@@ -576,9 +643,6 @@ func (c *bigQueryStorageGRPCClient) ReadRows(ctx context.Context, req *storagepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetReadPosition().GetStream().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/ReadRows")
 	}
@@ -602,9 +666,6 @@ func (c *bigQueryStorageGRPCClient) BatchCreateReadSessionStreams(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetSession().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/BatchCreateReadSessionStreams")
 	}
@@ -626,9 +687,6 @@ func (c *bigQueryStorageGRPCClient) FinalizeStream(ctx context.Context, req *sto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetStream().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/FinalizeStream")
 	}
@@ -646,9 +704,6 @@ func (c *bigQueryStorageGRPCClient) SplitReadStream(ctx context.Context, req *st
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetOriginalStream().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/SplitReadStream")
 	}
@@ -696,9 +751,6 @@ func (c *bigQueryStorageRESTClient) CreateReadSession(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/CreateReadSession")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{table_reference.project_id=projects/*}")
@@ -763,9 +815,6 @@ func (c *bigQueryStorageRESTClient) ReadRows(ctx context.Context, req *storagepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetReadPosition().GetStream().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/ReadRows")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{read_position.stream.name=projects/*/streams/*}")
@@ -869,9 +918,6 @@ func (c *bigQueryStorageRESTClient) BatchCreateReadSessionStreams(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetSession().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/BatchCreateReadSessionStreams")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{session.name=projects/*/sessions/*}")
@@ -940,9 +986,6 @@ func (c *bigQueryStorageRESTClient) FinalizeStream(ctx context.Context, req *sto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetStream().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/FinalizeStream")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{stream.name=projects/*/streams/*}")
@@ -996,9 +1039,6 @@ func (c *bigQueryStorageRESTClient) SplitReadStream(ctx context.Context, req *st
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetOriginalStream().GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1beta1.BigQueryStorage/SplitReadStream")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{original_stream.name=projects/*/streams/*}")

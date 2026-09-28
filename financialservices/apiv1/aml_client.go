@@ -978,6 +978,119 @@ func NewAMLClient(ctx context.Context, opts ...option.ClientOption) (*AMLClient,
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportRegisteredParties = append(client.CallOptions.ImportRegisteredParties, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportRegisteredParties = append(client.CallOptions.ExportRegisteredParties, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportModelMetadata = append(client.CallOptions.ExportModelMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEngineConfigs = append(client.CallOptions.ListEngineConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEngineConfig = append(client.CallOptions.GetEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEngineConfig = append(client.CallOptions.CreateEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEngineConfig = append(client.CallOptions.UpdateEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportEngineConfigMetadata = append(client.CallOptions.ExportEngineConfigMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEngineConfig = append(client.CallOptions.DeleteEngineConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEngineVersion = append(client.CallOptions.GetEngineVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEngineVersions = append(client.CallOptions.ListEngineVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPredictionResults = append(client.CallOptions.ListPredictionResults, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPredictionResult = append(client.CallOptions.GetPredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePredictionResult = append(client.CallOptions.CreatePredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePredictionResult = append(client.CallOptions.UpdatePredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportPredictionResultMetadata = append(client.CallOptions.ExportPredictionResultMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePredictionResult = append(client.CallOptions.DeletePredictionResult, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBacktestResults = append(client.CallOptions.ListBacktestResults, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBacktestResult = append(client.CallOptions.GetBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBacktestResult = append(client.CallOptions.CreateBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBacktestResult = append(client.CallOptions.UpdateBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportBacktestResultMetadata = append(client.CallOptions.ExportBacktestResultMetadata, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBacktestResult = append(client.CallOptions.DeleteBacktestResult, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListInstances = append(client.CallOptions.ListInstances, gax.WithClientLogging(logging))
+		client.CallOptions.GetInstance = append(client.CallOptions.GetInstance, gax.WithClientLogging(logging))
+		client.CallOptions.CreateInstance = append(client.CallOptions.CreateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateInstance = append(client.CallOptions.UpdateInstance, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteInstance = append(client.CallOptions.DeleteInstance, gax.WithClientLogging(logging))
+		client.CallOptions.ImportRegisteredParties = append(client.CallOptions.ImportRegisteredParties, gax.WithClientLogging(logging))
+		client.CallOptions.ExportRegisteredParties = append(client.CallOptions.ExportRegisteredParties, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataset = append(client.CallOptions.UpdateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientLogging(logging))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientLogging(logging))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateModel = append(client.CallOptions.UpdateModel, gax.WithClientLogging(logging))
+		client.CallOptions.ExportModelMetadata = append(client.CallOptions.ExportModelMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListEngineConfigs = append(client.CallOptions.ListEngineConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetEngineConfig = append(client.CallOptions.GetEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEngineConfig = append(client.CallOptions.CreateEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEngineConfig = append(client.CallOptions.UpdateEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ExportEngineConfigMetadata = append(client.CallOptions.ExportEngineConfigMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEngineConfig = append(client.CallOptions.DeleteEngineConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetEngineVersion = append(client.CallOptions.GetEngineVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListEngineVersions = append(client.CallOptions.ListEngineVersions, gax.WithClientLogging(logging))
+		client.CallOptions.ListPredictionResults = append(client.CallOptions.ListPredictionResults, gax.WithClientLogging(logging))
+		client.CallOptions.GetPredictionResult = append(client.CallOptions.GetPredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePredictionResult = append(client.CallOptions.CreatePredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePredictionResult = append(client.CallOptions.UpdatePredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.ExportPredictionResultMetadata = append(client.CallOptions.ExportPredictionResultMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePredictionResult = append(client.CallOptions.DeletePredictionResult, gax.WithClientLogging(logging))
+		client.CallOptions.ListBacktestResults = append(client.CallOptions.ListBacktestResults, gax.WithClientLogging(logging))
+		client.CallOptions.GetBacktestResult = append(client.CallOptions.GetBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBacktestResult = append(client.CallOptions.CreateBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBacktestResult = append(client.CallOptions.UpdateBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.ExportBacktestResultMetadata = append(client.CallOptions.ExportBacktestResultMetadata, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBacktestResult = append(client.CallOptions.DeleteBacktestResult, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1129,6 +1242,119 @@ func NewAMLRESTClient(ctx context.Context, opts ...option.ClientOption) (*AMLCli
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientTracing(tracing))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientTracing(tracing))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientTracing(tracing))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientTracing(tracing))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientTracing(tracing))
+		callOpts.ImportRegisteredParties = append(callOpts.ImportRegisteredParties, gax.WithClientTracing(tracing))
+		callOpts.ExportRegisteredParties = append(callOpts.ExportRegisteredParties, gax.WithClientTracing(tracing))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientTracing(tracing))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientTracing(tracing))
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientTracing(tracing))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientTracing(tracing))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientTracing(tracing))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientTracing(tracing))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientTracing(tracing))
+		callOpts.ExportModelMetadata = append(callOpts.ExportModelMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientTracing(tracing))
+		callOpts.ListEngineConfigs = append(callOpts.ListEngineConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetEngineConfig = append(callOpts.GetEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateEngineConfig = append(callOpts.CreateEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateEngineConfig = append(callOpts.UpdateEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.ExportEngineConfigMetadata = append(callOpts.ExportEngineConfigMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeleteEngineConfig = append(callOpts.DeleteEngineConfig, gax.WithClientTracing(tracing))
+		callOpts.GetEngineVersion = append(callOpts.GetEngineVersion, gax.WithClientTracing(tracing))
+		callOpts.ListEngineVersions = append(callOpts.ListEngineVersions, gax.WithClientTracing(tracing))
+		callOpts.ListPredictionResults = append(callOpts.ListPredictionResults, gax.WithClientTracing(tracing))
+		callOpts.GetPredictionResult = append(callOpts.GetPredictionResult, gax.WithClientTracing(tracing))
+		callOpts.CreatePredictionResult = append(callOpts.CreatePredictionResult, gax.WithClientTracing(tracing))
+		callOpts.UpdatePredictionResult = append(callOpts.UpdatePredictionResult, gax.WithClientTracing(tracing))
+		callOpts.ExportPredictionResultMetadata = append(callOpts.ExportPredictionResultMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeletePredictionResult = append(callOpts.DeletePredictionResult, gax.WithClientTracing(tracing))
+		callOpts.ListBacktestResults = append(callOpts.ListBacktestResults, gax.WithClientTracing(tracing))
+		callOpts.GetBacktestResult = append(callOpts.GetBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.CreateBacktestResult = append(callOpts.CreateBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.UpdateBacktestResult = append(callOpts.UpdateBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.ExportBacktestResultMetadata = append(callOpts.ExportBacktestResultMetadata, gax.WithClientTracing(tracing))
+		callOpts.DeleteBacktestResult = append(callOpts.DeleteBacktestResult, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "financialservices",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/financialservices/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "financialservices.googleapis.com",
+			}),
+		)
+
+		callOpts.ListInstances = append(callOpts.ListInstances, gax.WithClientLogging(logging))
+		callOpts.GetInstance = append(callOpts.GetInstance, gax.WithClientLogging(logging))
+		callOpts.CreateInstance = append(callOpts.CreateInstance, gax.WithClientLogging(logging))
+		callOpts.UpdateInstance = append(callOpts.UpdateInstance, gax.WithClientLogging(logging))
+		callOpts.DeleteInstance = append(callOpts.DeleteInstance, gax.WithClientLogging(logging))
+		callOpts.ImportRegisteredParties = append(callOpts.ImportRegisteredParties, gax.WithClientLogging(logging))
+		callOpts.ExportRegisteredParties = append(callOpts.ExportRegisteredParties, gax.WithClientLogging(logging))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientLogging(logging))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientLogging(logging))
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientLogging(logging))
+		callOpts.UpdateDataset = append(callOpts.UpdateDataset, gax.WithClientLogging(logging))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientLogging(logging))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientLogging(logging))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientLogging(logging))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientLogging(logging))
+		callOpts.UpdateModel = append(callOpts.UpdateModel, gax.WithClientLogging(logging))
+		callOpts.ExportModelMetadata = append(callOpts.ExportModelMetadata, gax.WithClientLogging(logging))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientLogging(logging))
+		callOpts.ListEngineConfigs = append(callOpts.ListEngineConfigs, gax.WithClientLogging(logging))
+		callOpts.GetEngineConfig = append(callOpts.GetEngineConfig, gax.WithClientLogging(logging))
+		callOpts.CreateEngineConfig = append(callOpts.CreateEngineConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateEngineConfig = append(callOpts.UpdateEngineConfig, gax.WithClientLogging(logging))
+		callOpts.ExportEngineConfigMetadata = append(callOpts.ExportEngineConfigMetadata, gax.WithClientLogging(logging))
+		callOpts.DeleteEngineConfig = append(callOpts.DeleteEngineConfig, gax.WithClientLogging(logging))
+		callOpts.GetEngineVersion = append(callOpts.GetEngineVersion, gax.WithClientLogging(logging))
+		callOpts.ListEngineVersions = append(callOpts.ListEngineVersions, gax.WithClientLogging(logging))
+		callOpts.ListPredictionResults = append(callOpts.ListPredictionResults, gax.WithClientLogging(logging))
+		callOpts.GetPredictionResult = append(callOpts.GetPredictionResult, gax.WithClientLogging(logging))
+		callOpts.CreatePredictionResult = append(callOpts.CreatePredictionResult, gax.WithClientLogging(logging))
+		callOpts.UpdatePredictionResult = append(callOpts.UpdatePredictionResult, gax.WithClientLogging(logging))
+		callOpts.ExportPredictionResultMetadata = append(callOpts.ExportPredictionResultMetadata, gax.WithClientLogging(logging))
+		callOpts.DeletePredictionResult = append(callOpts.DeletePredictionResult, gax.WithClientLogging(logging))
+		callOpts.ListBacktestResults = append(callOpts.ListBacktestResults, gax.WithClientLogging(logging))
+		callOpts.GetBacktestResult = append(callOpts.GetBacktestResult, gax.WithClientLogging(logging))
+		callOpts.CreateBacktestResult = append(callOpts.CreateBacktestResult, gax.WithClientLogging(logging))
+		callOpts.UpdateBacktestResult = append(callOpts.UpdateBacktestResult, gax.WithClientLogging(logging))
+		callOpts.ExportBacktestResultMetadata = append(callOpts.ExportBacktestResultMetadata, gax.WithClientLogging(logging))
+		callOpts.DeleteBacktestResult = append(callOpts.DeleteBacktestResult, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1185,9 +1411,6 @@ func (c *aMLGRPCClient) ListInstances(ctx context.Context, req *financialservice
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListInstances")
 	}
@@ -1237,9 +1460,6 @@ func (c *aMLGRPCClient) GetInstance(ctx context.Context, req *financialservicesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetInstance")
 	}
@@ -1261,9 +1481,6 @@ func (c *aMLGRPCClient) CreateInstance(ctx context.Context, req *financialservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateInstance")
 	}
@@ -1318,9 +1535,6 @@ func (c *aMLGRPCClient) DeleteInstance(ctx context.Context, req *financialservic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteInstance")
 	}
@@ -1348,9 +1562,6 @@ func (c *aMLGRPCClient) ImportRegisteredParties(ctx context.Context, req *financ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ImportRegisteredParties")
 	}
@@ -1378,9 +1589,6 @@ func (c *aMLGRPCClient) ExportRegisteredParties(ctx context.Context, req *financ
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportRegisteredParties")
 	}
@@ -1408,9 +1616,6 @@ func (c *aMLGRPCClient) ListDatasets(ctx context.Context, req *financialservices
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListDatasets")
 	}
@@ -1460,9 +1665,6 @@ func (c *aMLGRPCClient) GetDataset(ctx context.Context, req *financialservicespb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetDataset")
 	}
@@ -1484,9 +1686,6 @@ func (c *aMLGRPCClient) CreateDataset(ctx context.Context, req *financialservice
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateDataset")
 	}
@@ -1541,9 +1740,6 @@ func (c *aMLGRPCClient) DeleteDataset(ctx context.Context, req *financialservice
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteDataset")
 	}
@@ -1571,9 +1767,6 @@ func (c *aMLGRPCClient) ListModels(ctx context.Context, req *financialservicespb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListModels")
 	}
@@ -1623,9 +1816,6 @@ func (c *aMLGRPCClient) GetModel(ctx context.Context, req *financialservicespb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetModel")
 	}
@@ -1647,9 +1837,6 @@ func (c *aMLGRPCClient) CreateModel(ctx context.Context, req *financialservicesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateModel")
 	}
@@ -1704,9 +1891,6 @@ func (c *aMLGRPCClient) ExportModelMetadata(ctx context.Context, req *financials
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportModelMetadata")
 	}
@@ -1734,9 +1918,6 @@ func (c *aMLGRPCClient) DeleteModel(ctx context.Context, req *financialservicesp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteModel")
 	}
@@ -1764,9 +1945,6 @@ func (c *aMLGRPCClient) ListEngineConfigs(ctx context.Context, req *financialser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListEngineConfigs")
 	}
@@ -1816,9 +1994,6 @@ func (c *aMLGRPCClient) GetEngineConfig(ctx context.Context, req *financialservi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineConfig")
 	}
@@ -1840,9 +2015,6 @@ func (c *aMLGRPCClient) CreateEngineConfig(ctx context.Context, req *financialse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateEngineConfig")
 	}
@@ -1897,9 +2069,6 @@ func (c *aMLGRPCClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetEngineConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportEngineConfigMetadata")
 	}
@@ -1927,9 +2096,6 @@ func (c *aMLGRPCClient) DeleteEngineConfig(ctx context.Context, req *financialse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteEngineConfig")
 	}
@@ -1957,9 +2123,6 @@ func (c *aMLGRPCClient) GetEngineVersion(ctx context.Context, req *financialserv
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineVersion")
 	}
@@ -1981,9 +2144,6 @@ func (c *aMLGRPCClient) ListEngineVersions(ctx context.Context, req *financialse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListEngineVersions")
 	}
@@ -2033,9 +2193,6 @@ func (c *aMLGRPCClient) ListPredictionResults(ctx context.Context, req *financia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListPredictionResults")
 	}
@@ -2085,9 +2242,6 @@ func (c *aMLGRPCClient) GetPredictionResult(ctx context.Context, req *financials
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetPredictionResult")
 	}
@@ -2109,9 +2263,6 @@ func (c *aMLGRPCClient) CreatePredictionResult(ctx context.Context, req *financi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreatePredictionResult")
 	}
@@ -2166,9 +2317,6 @@ func (c *aMLGRPCClient) ExportPredictionResultMetadata(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetPredictionResult()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportPredictionResultMetadata")
 	}
@@ -2196,9 +2344,6 @@ func (c *aMLGRPCClient) DeletePredictionResult(ctx context.Context, req *financi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeletePredictionResult")
 	}
@@ -2226,9 +2371,6 @@ func (c *aMLGRPCClient) ListBacktestResults(ctx context.Context, req *financials
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ListBacktestResults")
 	}
@@ -2278,9 +2420,6 @@ func (c *aMLGRPCClient) GetBacktestResult(ctx context.Context, req *financialser
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetBacktestResult")
 	}
@@ -2302,9 +2441,6 @@ func (c *aMLGRPCClient) CreateBacktestResult(ctx context.Context, req *financial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateBacktestResult")
 	}
@@ -2359,9 +2495,6 @@ func (c *aMLGRPCClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetBacktestResult()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportBacktestResultMetadata")
 	}
@@ -2389,9 +2522,6 @@ func (c *aMLGRPCClient) DeleteBacktestResult(ctx context.Context, req *financial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteBacktestResult")
 	}
@@ -2691,9 +2821,6 @@ func (c *aMLRESTClient) GetInstance(ctx context.Context, req *financialservicesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
@@ -2759,9 +2886,6 @@ func (c *aMLRESTClient) CreateInstance(ctx context.Context, req *financialservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/instances")
@@ -2904,9 +3028,6 @@ func (c *aMLRESTClient) DeleteInstance(ctx context.Context, req *financialservic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteInstance")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}")
@@ -2977,9 +3098,6 @@ func (c *aMLRESTClient) ImportRegisteredParties(ctx context.Context, req *financ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ImportRegisteredParties")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:importRegisteredParties")
@@ -3050,9 +3168,6 @@ func (c *aMLRESTClient) ExportRegisteredParties(ctx context.Context, req *financ
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportRegisteredParties")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*}:exportRegisteredParties")
@@ -3198,9 +3313,6 @@ func (c *aMLRESTClient) GetDataset(ctx context.Context, req *financialservicespb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/datasets/*}")
@@ -3266,9 +3378,6 @@ func (c *aMLRESTClient) CreateDataset(ctx context.Context, req *financialservice
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/datasets")
@@ -3411,9 +3520,6 @@ func (c *aMLRESTClient) DeleteDataset(ctx context.Context, req *financialservice
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/datasets/*}")
@@ -3559,9 +3665,6 @@ func (c *aMLRESTClient) GetModel(ctx context.Context, req *financialservicespb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/models/*}")
@@ -3627,9 +3730,6 @@ func (c *aMLRESTClient) CreateModel(ctx context.Context, req *financialservicesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/models")
@@ -3778,9 +3878,6 @@ func (c *aMLRESTClient) ExportModelMetadata(ctx context.Context, req *financials
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetModel()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportModelMetadata")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{model=projects/*/locations/*/instances/*/models/*}:exportMetadata")
@@ -3845,9 +3942,6 @@ func (c *aMLRESTClient) DeleteModel(ctx context.Context, req *financialservicesp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/models/*}")
@@ -3993,9 +4087,6 @@ func (c *aMLRESTClient) GetEngineConfig(ctx context.Context, req *financialservi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/engineConfigs/*}")
@@ -4061,9 +4152,6 @@ func (c *aMLRESTClient) CreateEngineConfig(ctx context.Context, req *financialse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateEngineConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/engineConfigs")
@@ -4212,9 +4300,6 @@ func (c *aMLRESTClient) ExportEngineConfigMetadata(ctx context.Context, req *fin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetEngineConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportEngineConfigMetadata")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{engine_config=projects/*/locations/*/instances/*/engineConfigs/*}:exportMetadata")
@@ -4279,9 +4364,6 @@ func (c *aMLRESTClient) DeleteEngineConfig(ctx context.Context, req *financialse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteEngineConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/engineConfigs/*}")
@@ -4343,9 +4425,6 @@ func (c *aMLRESTClient) GetEngineVersion(ctx context.Context, req *financialserv
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetEngineVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/engineVersions/*}")
@@ -4568,9 +4647,6 @@ func (c *aMLRESTClient) GetPredictionResult(ctx context.Context, req *financials
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetPredictionResult")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/predictionResults/*}")
@@ -4636,9 +4712,6 @@ func (c *aMLRESTClient) CreatePredictionResult(ctx context.Context, req *financi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreatePredictionResult")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/predictionResults")
@@ -4787,9 +4860,6 @@ func (c *aMLRESTClient) ExportPredictionResultMetadata(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetPredictionResult()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportPredictionResultMetadata")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{prediction_result=projects/*/locations/*/instances/*/predictionResults/*}:exportMetadata")
@@ -4854,9 +4924,6 @@ func (c *aMLRESTClient) DeletePredictionResult(ctx context.Context, req *financi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeletePredictionResult")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/predictionResults/*}")
@@ -5002,9 +5069,6 @@ func (c *aMLRESTClient) GetBacktestResult(ctx context.Context, req *financialser
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/GetBacktestResult")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/backtestResults/*}")
@@ -5070,9 +5134,6 @@ func (c *aMLRESTClient) CreateBacktestResult(ctx context.Context, req *financial
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/CreateBacktestResult")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/backtestResults")
@@ -5221,9 +5282,6 @@ func (c *aMLRESTClient) ExportBacktestResultMetadata(ctx context.Context, req *f
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetBacktestResult()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/ExportBacktestResultMetadata")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{backtest_result=projects/*/locations/*/instances/*/backtestResults/*}:exportMetadata")
@@ -5288,9 +5346,6 @@ func (c *aMLRESTClient) DeleteBacktestResult(ctx context.Context, req *financial
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//financialservices.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.financialservices.v1.AML/DeleteBacktestResult")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/backtestResults/*}")

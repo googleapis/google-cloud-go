@@ -1024,8 +1024,17 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if !ok {
-			return invoker(ctx, method, req, reply, cc, opts...)
+		if !ok || mt == nil {
+			span := otrace.SpanFromContext(ctx)
+			if !span.IsRecording() {
+				return invoker(ctx, method, req, reply, cc, opts...)
+			}
+			// Built-in metrics are disabled, but the server timing span
+			// attributes are still recorded for traced calls.
+			var md metadata.MD
+			err := invoker(ctx, method, req, reply, cc, append(opts, grpc.Header(&md))...)
+			setGFEAndAFESpanAttributes(span, parseServerTimingHeader(md))
+			return err
 		}
 
 		mt.method = method
@@ -1604,12 +1613,12 @@ type BatchWriteResponseIterator struct {
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
+	mt := r.meterTracerFactory.newBuiltinMetricsTracer(r.ctx)
 	defer func() {
-		if mt.method != "" {
+		if mt != nil && mt.method != "" {
 			statusCode, _ := convertToGrpcStatusErr(r.err)
 			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+			recordOperationCompletion(mt)
 		}
 	}()
 	for {

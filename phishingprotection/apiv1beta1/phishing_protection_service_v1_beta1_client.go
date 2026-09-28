@@ -199,6 +199,33 @@ func NewPhishingProtectionServiceV1Beta1Client(ctx context.Context, opts ...opti
 
 		client.CallOptions.ReportPhishing = append(client.CallOptions.ReportPhishing, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "phishingprotection",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/phishingprotection/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "phishingprotection.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReportPhishing = append(client.CallOptions.ReportPhishing, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "phishingprotection",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/phishingprotection/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "phishingprotection.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReportPhishing = append(client.CallOptions.ReportPhishing, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -290,6 +317,33 @@ func NewPhishingProtectionServiceV1Beta1RESTClient(ctx context.Context, opts ...
 
 		callOpts.ReportPhishing = append(callOpts.ReportPhishing, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "phishingprotection",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/phishingprotection/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "phishingprotection.googleapis.com",
+			}),
+		)
+
+		callOpts.ReportPhishing = append(callOpts.ReportPhishing, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "phishingprotection",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/phishingprotection/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "phishingprotection.googleapis.com",
+			}),
+		)
+
+		callOpts.ReportPhishing = append(callOpts.ReportPhishing, gax.WithClientLogging(logging))
+	}
 
 	return &PhishingProtectionServiceV1Beta1Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -336,9 +390,6 @@ func (c *phishingProtectionServiceV1Beta1GRPCClient) ReportPhishing(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//phishingprotection.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1/ReportPhishing")
 	}
@@ -386,9 +437,6 @@ func (c *phishingProtectionServiceV1Beta1RESTClient) ReportPhishing(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//phishingprotection.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.phishingprotection.v1beta1.PhishingProtectionServiceV1Beta1/ReportPhishing")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{parent=projects/*}/phishing:report")

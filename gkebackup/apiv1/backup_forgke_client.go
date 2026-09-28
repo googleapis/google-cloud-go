@@ -1339,6 +1339,127 @@ func NewBackupForGKEClient(ctx context.Context, opts ...option.ClientOption) (*B
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gkebackup",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkebackup/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkebackup.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateBackupPlan = append(client.CallOptions.CreateBackupPlan, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupPlans = append(client.CallOptions.ListBackupPlans, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupPlan = append(client.CallOptions.GetBackupPlan, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackupPlan = append(client.CallOptions.UpdateBackupPlan, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackupPlan = append(client.CallOptions.DeleteBackupPlan, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackupChannel = append(client.CallOptions.CreateBackupChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupChannels = append(client.CallOptions.ListBackupChannels, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupChannel = append(client.CallOptions.GetBackupChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackupChannel = append(client.CallOptions.UpdateBackupChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackupChannel = append(client.CallOptions.DeleteBackupChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupPlanBindings = append(client.CallOptions.ListBackupPlanBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupPlanBinding = append(client.CallOptions.GetBackupPlanBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVolumeBackups = append(client.CallOptions.ListVolumeBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVolumeBackup = append(client.CallOptions.GetVolumeBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRestorePlan = append(client.CallOptions.CreateRestorePlan, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRestorePlans = append(client.CallOptions.ListRestorePlans, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRestorePlan = append(client.CallOptions.GetRestorePlan, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRestorePlan = append(client.CallOptions.UpdateRestorePlan, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRestorePlan = append(client.CallOptions.DeleteRestorePlan, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRestoreChannel = append(client.CallOptions.CreateRestoreChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRestoreChannels = append(client.CallOptions.ListRestoreChannels, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRestoreChannel = append(client.CallOptions.GetRestoreChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRestoreChannel = append(client.CallOptions.UpdateRestoreChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRestoreChannel = append(client.CallOptions.DeleteRestoreChannel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRestorePlanBindings = append(client.CallOptions.ListRestorePlanBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRestorePlanBinding = append(client.CallOptions.GetRestorePlanBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRestore = append(client.CallOptions.CreateRestore, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRestores = append(client.CallOptions.ListRestores, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRestore = append(client.CallOptions.GetRestore, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRestore = append(client.CallOptions.UpdateRestore, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRestore = append(client.CallOptions.DeleteRestore, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVolumeRestores = append(client.CallOptions.ListVolumeRestores, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVolumeRestore = append(client.CallOptions.GetVolumeRestore, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupIndexDownloadUrl = append(client.CallOptions.GetBackupIndexDownloadUrl, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gkebackup",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkebackup/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "gkebackup.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateBackupPlan = append(client.CallOptions.CreateBackupPlan, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupPlans = append(client.CallOptions.ListBackupPlans, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupPlan = append(client.CallOptions.GetBackupPlan, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackupPlan = append(client.CallOptions.UpdateBackupPlan, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackupPlan = append(client.CallOptions.DeleteBackupPlan, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackupChannel = append(client.CallOptions.CreateBackupChannel, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupChannels = append(client.CallOptions.ListBackupChannels, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupChannel = append(client.CallOptions.GetBackupChannel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackupChannel = append(client.CallOptions.UpdateBackupChannel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackupChannel = append(client.CallOptions.DeleteBackupChannel, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupPlanBindings = append(client.CallOptions.ListBackupPlanBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupPlanBinding = append(client.CallOptions.GetBackupPlanBinding, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ListVolumeBackups = append(client.CallOptions.ListVolumeBackups, gax.WithClientLogging(logging))
+		client.CallOptions.GetVolumeBackup = append(client.CallOptions.GetVolumeBackup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRestorePlan = append(client.CallOptions.CreateRestorePlan, gax.WithClientLogging(logging))
+		client.CallOptions.ListRestorePlans = append(client.CallOptions.ListRestorePlans, gax.WithClientLogging(logging))
+		client.CallOptions.GetRestorePlan = append(client.CallOptions.GetRestorePlan, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRestorePlan = append(client.CallOptions.UpdateRestorePlan, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRestorePlan = append(client.CallOptions.DeleteRestorePlan, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRestoreChannel = append(client.CallOptions.CreateRestoreChannel, gax.WithClientLogging(logging))
+		client.CallOptions.ListRestoreChannels = append(client.CallOptions.ListRestoreChannels, gax.WithClientLogging(logging))
+		client.CallOptions.GetRestoreChannel = append(client.CallOptions.GetRestoreChannel, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRestoreChannel = append(client.CallOptions.UpdateRestoreChannel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRestoreChannel = append(client.CallOptions.DeleteRestoreChannel, gax.WithClientLogging(logging))
+		client.CallOptions.ListRestorePlanBindings = append(client.CallOptions.ListRestorePlanBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetRestorePlanBinding = append(client.CallOptions.GetRestorePlanBinding, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRestore = append(client.CallOptions.CreateRestore, gax.WithClientLogging(logging))
+		client.CallOptions.ListRestores = append(client.CallOptions.ListRestores, gax.WithClientLogging(logging))
+		client.CallOptions.GetRestore = append(client.CallOptions.GetRestore, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRestore = append(client.CallOptions.UpdateRestore, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRestore = append(client.CallOptions.DeleteRestore, gax.WithClientLogging(logging))
+		client.CallOptions.ListVolumeRestores = append(client.CallOptions.ListVolumeRestores, gax.WithClientLogging(logging))
+		client.CallOptions.GetVolumeRestore = append(client.CallOptions.GetVolumeRestore, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupIndexDownloadUrl = append(client.CallOptions.GetBackupIndexDownloadUrl, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1494,6 +1615,127 @@ func NewBackupForGKERESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "gkebackup",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkebackup/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "gkebackup.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateBackupPlan = append(callOpts.CreateBackupPlan, gax.WithClientTracing(tracing))
+		callOpts.ListBackupPlans = append(callOpts.ListBackupPlans, gax.WithClientTracing(tracing))
+		callOpts.GetBackupPlan = append(callOpts.GetBackupPlan, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackupPlan = append(callOpts.UpdateBackupPlan, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackupPlan = append(callOpts.DeleteBackupPlan, gax.WithClientTracing(tracing))
+		callOpts.CreateBackupChannel = append(callOpts.CreateBackupChannel, gax.WithClientTracing(tracing))
+		callOpts.ListBackupChannels = append(callOpts.ListBackupChannels, gax.WithClientTracing(tracing))
+		callOpts.GetBackupChannel = append(callOpts.GetBackupChannel, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackupChannel = append(callOpts.UpdateBackupChannel, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackupChannel = append(callOpts.DeleteBackupChannel, gax.WithClientTracing(tracing))
+		callOpts.ListBackupPlanBindings = append(callOpts.ListBackupPlanBindings, gax.WithClientTracing(tracing))
+		callOpts.GetBackupPlanBinding = append(callOpts.GetBackupPlanBinding, gax.WithClientTracing(tracing))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientTracing(tracing))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientTracing(tracing))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientTracing(tracing))
+		callOpts.ListVolumeBackups = append(callOpts.ListVolumeBackups, gax.WithClientTracing(tracing))
+		callOpts.GetVolumeBackup = append(callOpts.GetVolumeBackup, gax.WithClientTracing(tracing))
+		callOpts.CreateRestorePlan = append(callOpts.CreateRestorePlan, gax.WithClientTracing(tracing))
+		callOpts.ListRestorePlans = append(callOpts.ListRestorePlans, gax.WithClientTracing(tracing))
+		callOpts.GetRestorePlan = append(callOpts.GetRestorePlan, gax.WithClientTracing(tracing))
+		callOpts.UpdateRestorePlan = append(callOpts.UpdateRestorePlan, gax.WithClientTracing(tracing))
+		callOpts.DeleteRestorePlan = append(callOpts.DeleteRestorePlan, gax.WithClientTracing(tracing))
+		callOpts.CreateRestoreChannel = append(callOpts.CreateRestoreChannel, gax.WithClientTracing(tracing))
+		callOpts.ListRestoreChannels = append(callOpts.ListRestoreChannels, gax.WithClientTracing(tracing))
+		callOpts.GetRestoreChannel = append(callOpts.GetRestoreChannel, gax.WithClientTracing(tracing))
+		callOpts.UpdateRestoreChannel = append(callOpts.UpdateRestoreChannel, gax.WithClientTracing(tracing))
+		callOpts.DeleteRestoreChannel = append(callOpts.DeleteRestoreChannel, gax.WithClientTracing(tracing))
+		callOpts.ListRestorePlanBindings = append(callOpts.ListRestorePlanBindings, gax.WithClientTracing(tracing))
+		callOpts.GetRestorePlanBinding = append(callOpts.GetRestorePlanBinding, gax.WithClientTracing(tracing))
+		callOpts.CreateRestore = append(callOpts.CreateRestore, gax.WithClientTracing(tracing))
+		callOpts.ListRestores = append(callOpts.ListRestores, gax.WithClientTracing(tracing))
+		callOpts.GetRestore = append(callOpts.GetRestore, gax.WithClientTracing(tracing))
+		callOpts.UpdateRestore = append(callOpts.UpdateRestore, gax.WithClientTracing(tracing))
+		callOpts.DeleteRestore = append(callOpts.DeleteRestore, gax.WithClientTracing(tracing))
+		callOpts.ListVolumeRestores = append(callOpts.ListVolumeRestores, gax.WithClientTracing(tracing))
+		callOpts.GetVolumeRestore = append(callOpts.GetVolumeRestore, gax.WithClientTracing(tracing))
+		callOpts.GetBackupIndexDownloadUrl = append(callOpts.GetBackupIndexDownloadUrl, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "gkebackup",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/gkebackup/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "gkebackup.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateBackupPlan = append(callOpts.CreateBackupPlan, gax.WithClientLogging(logging))
+		callOpts.ListBackupPlans = append(callOpts.ListBackupPlans, gax.WithClientLogging(logging))
+		callOpts.GetBackupPlan = append(callOpts.GetBackupPlan, gax.WithClientLogging(logging))
+		callOpts.UpdateBackupPlan = append(callOpts.UpdateBackupPlan, gax.WithClientLogging(logging))
+		callOpts.DeleteBackupPlan = append(callOpts.DeleteBackupPlan, gax.WithClientLogging(logging))
+		callOpts.CreateBackupChannel = append(callOpts.CreateBackupChannel, gax.WithClientLogging(logging))
+		callOpts.ListBackupChannels = append(callOpts.ListBackupChannels, gax.WithClientLogging(logging))
+		callOpts.GetBackupChannel = append(callOpts.GetBackupChannel, gax.WithClientLogging(logging))
+		callOpts.UpdateBackupChannel = append(callOpts.UpdateBackupChannel, gax.WithClientLogging(logging))
+		callOpts.DeleteBackupChannel = append(callOpts.DeleteBackupChannel, gax.WithClientLogging(logging))
+		callOpts.ListBackupPlanBindings = append(callOpts.ListBackupPlanBindings, gax.WithClientLogging(logging))
+		callOpts.GetBackupPlanBinding = append(callOpts.GetBackupPlanBinding, gax.WithClientLogging(logging))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientLogging(logging))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientLogging(logging))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientLogging(logging))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientLogging(logging))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientLogging(logging))
+		callOpts.ListVolumeBackups = append(callOpts.ListVolumeBackups, gax.WithClientLogging(logging))
+		callOpts.GetVolumeBackup = append(callOpts.GetVolumeBackup, gax.WithClientLogging(logging))
+		callOpts.CreateRestorePlan = append(callOpts.CreateRestorePlan, gax.WithClientLogging(logging))
+		callOpts.ListRestorePlans = append(callOpts.ListRestorePlans, gax.WithClientLogging(logging))
+		callOpts.GetRestorePlan = append(callOpts.GetRestorePlan, gax.WithClientLogging(logging))
+		callOpts.UpdateRestorePlan = append(callOpts.UpdateRestorePlan, gax.WithClientLogging(logging))
+		callOpts.DeleteRestorePlan = append(callOpts.DeleteRestorePlan, gax.WithClientLogging(logging))
+		callOpts.CreateRestoreChannel = append(callOpts.CreateRestoreChannel, gax.WithClientLogging(logging))
+		callOpts.ListRestoreChannels = append(callOpts.ListRestoreChannels, gax.WithClientLogging(logging))
+		callOpts.GetRestoreChannel = append(callOpts.GetRestoreChannel, gax.WithClientLogging(logging))
+		callOpts.UpdateRestoreChannel = append(callOpts.UpdateRestoreChannel, gax.WithClientLogging(logging))
+		callOpts.DeleteRestoreChannel = append(callOpts.DeleteRestoreChannel, gax.WithClientLogging(logging))
+		callOpts.ListRestorePlanBindings = append(callOpts.ListRestorePlanBindings, gax.WithClientLogging(logging))
+		callOpts.GetRestorePlanBinding = append(callOpts.GetRestorePlanBinding, gax.WithClientLogging(logging))
+		callOpts.CreateRestore = append(callOpts.CreateRestore, gax.WithClientLogging(logging))
+		callOpts.ListRestores = append(callOpts.ListRestores, gax.WithClientLogging(logging))
+		callOpts.GetRestore = append(callOpts.GetRestore, gax.WithClientLogging(logging))
+		callOpts.UpdateRestore = append(callOpts.UpdateRestore, gax.WithClientLogging(logging))
+		callOpts.DeleteRestore = append(callOpts.DeleteRestore, gax.WithClientLogging(logging))
+		callOpts.ListVolumeRestores = append(callOpts.ListVolumeRestores, gax.WithClientLogging(logging))
+		callOpts.GetVolumeRestore = append(callOpts.GetVolumeRestore, gax.WithClientLogging(logging))
+		callOpts.GetBackupIndexDownloadUrl = append(callOpts.GetBackupIndexDownloadUrl, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1550,9 +1792,6 @@ func (c *backupForGKEGRPCClient) CreateBackupPlan(ctx context.Context, req *gkeb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateBackupPlan")
 	}
@@ -1580,9 +1819,6 @@ func (c *backupForGKEGRPCClient) ListBackupPlans(ctx context.Context, req *gkeba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListBackupPlans")
 	}
@@ -1632,9 +1868,6 @@ func (c *backupForGKEGRPCClient) GetBackupPlan(ctx context.Context, req *gkeback
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupPlan")
 	}
@@ -1683,9 +1916,6 @@ func (c *backupForGKEGRPCClient) DeleteBackupPlan(ctx context.Context, req *gkeb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteBackupPlan")
 	}
@@ -1713,9 +1943,6 @@ func (c *backupForGKEGRPCClient) CreateBackupChannel(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateBackupChannel")
 	}
@@ -1743,9 +1970,6 @@ func (c *backupForGKEGRPCClient) ListBackupChannels(ctx context.Context, req *gk
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListBackupChannels")
 	}
@@ -1795,9 +2019,6 @@ func (c *backupForGKEGRPCClient) GetBackupChannel(ctx context.Context, req *gkeb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupChannel")
 	}
@@ -1846,9 +2067,6 @@ func (c *backupForGKEGRPCClient) DeleteBackupChannel(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteBackupChannel")
 	}
@@ -1876,9 +2094,6 @@ func (c *backupForGKEGRPCClient) ListBackupPlanBindings(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListBackupPlanBindings")
 	}
@@ -1928,9 +2143,6 @@ func (c *backupForGKEGRPCClient) GetBackupPlanBinding(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupPlanBinding")
 	}
@@ -1952,9 +2164,6 @@ func (c *backupForGKEGRPCClient) CreateBackup(ctx context.Context, req *gkebacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateBackup")
 	}
@@ -1982,9 +2191,6 @@ func (c *backupForGKEGRPCClient) ListBackups(ctx context.Context, req *gkebackup
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListBackups")
 	}
@@ -2034,9 +2240,6 @@ func (c *backupForGKEGRPCClient) GetBackup(ctx context.Context, req *gkebackuppb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackup")
 	}
@@ -2085,9 +2288,6 @@ func (c *backupForGKEGRPCClient) DeleteBackup(ctx context.Context, req *gkebacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteBackup")
 	}
@@ -2115,9 +2315,6 @@ func (c *backupForGKEGRPCClient) ListVolumeBackups(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListVolumeBackups")
 	}
@@ -2167,9 +2364,6 @@ func (c *backupForGKEGRPCClient) GetVolumeBackup(ctx context.Context, req *gkeba
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetVolumeBackup")
 	}
@@ -2191,9 +2385,6 @@ func (c *backupForGKEGRPCClient) CreateRestorePlan(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateRestorePlan")
 	}
@@ -2221,9 +2412,6 @@ func (c *backupForGKEGRPCClient) ListRestorePlans(ctx context.Context, req *gkeb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListRestorePlans")
 	}
@@ -2273,9 +2461,6 @@ func (c *backupForGKEGRPCClient) GetRestorePlan(ctx context.Context, req *gkebac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestorePlan")
 	}
@@ -2324,9 +2509,6 @@ func (c *backupForGKEGRPCClient) DeleteRestorePlan(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteRestorePlan")
 	}
@@ -2354,9 +2536,6 @@ func (c *backupForGKEGRPCClient) CreateRestoreChannel(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateRestoreChannel")
 	}
@@ -2384,9 +2563,6 @@ func (c *backupForGKEGRPCClient) ListRestoreChannels(ctx context.Context, req *g
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListRestoreChannels")
 	}
@@ -2436,9 +2612,6 @@ func (c *backupForGKEGRPCClient) GetRestoreChannel(ctx context.Context, req *gke
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestoreChannel")
 	}
@@ -2487,9 +2660,6 @@ func (c *backupForGKEGRPCClient) DeleteRestoreChannel(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteRestoreChannel")
 	}
@@ -2517,9 +2687,6 @@ func (c *backupForGKEGRPCClient) ListRestorePlanBindings(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListRestorePlanBindings")
 	}
@@ -2569,9 +2736,6 @@ func (c *backupForGKEGRPCClient) GetRestorePlanBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestorePlanBinding")
 	}
@@ -2593,9 +2757,6 @@ func (c *backupForGKEGRPCClient) CreateRestore(ctx context.Context, req *gkeback
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateRestore")
 	}
@@ -2623,9 +2784,6 @@ func (c *backupForGKEGRPCClient) ListRestores(ctx context.Context, req *gkebacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListRestores")
 	}
@@ -2675,9 +2833,6 @@ func (c *backupForGKEGRPCClient) GetRestore(ctx context.Context, req *gkebackupp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestore")
 	}
@@ -2726,9 +2881,6 @@ func (c *backupForGKEGRPCClient) DeleteRestore(ctx context.Context, req *gkeback
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteRestore")
 	}
@@ -2756,9 +2908,6 @@ func (c *backupForGKEGRPCClient) ListVolumeRestores(ctx context.Context, req *gk
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/ListVolumeRestores")
 	}
@@ -2808,9 +2957,6 @@ func (c *backupForGKEGRPCClient) GetVolumeRestore(ctx context.Context, req *gkeb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetVolumeRestore")
 	}
@@ -2832,9 +2978,6 @@ func (c *backupForGKEGRPCClient) GetBackupIndexDownloadUrl(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetBackup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupIndexDownloadUrl")
 	}
@@ -2926,9 +3069,6 @@ func (c *backupForGKEGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -2950,9 +3090,6 @@ func (c *backupForGKEGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -2974,9 +3111,6 @@ func (c *backupForGKEGRPCClient) TestIamPermissions(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -3124,9 +3258,6 @@ func (c *backupForGKERESTClient) CreateBackupPlan(ctx context.Context, req *gkeb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateBackupPlan")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/backupPlans")
@@ -3272,9 +3403,6 @@ func (c *backupForGKERESTClient) GetBackupPlan(ctx context.Context, req *gkeback
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupPlan")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPlans/*}")
@@ -3407,9 +3535,6 @@ func (c *backupForGKERESTClient) DeleteBackupPlan(ctx context.Context, req *gkeb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteBackupPlan")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPlans/*}")
@@ -3481,9 +3606,6 @@ func (c *backupForGKERESTClient) CreateBackupChannel(ctx context.Context, req *g
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateBackupChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/backupChannels")
@@ -3629,9 +3751,6 @@ func (c *backupForGKERESTClient) GetBackupChannel(ctx context.Context, req *gkeb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupChannels/*}")
@@ -3767,9 +3886,6 @@ func (c *backupForGKERESTClient) DeleteBackupChannel(ctx context.Context, req *g
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteBackupChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupChannels/*}")
@@ -3915,9 +4031,6 @@ func (c *backupForGKERESTClient) GetBackupPlanBinding(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupPlanBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupChannels/*/backupPlanBindings/*}")
@@ -3982,9 +4095,6 @@ func (c *backupForGKERESTClient) CreateBackup(ctx context.Context, req *gkebacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/backupPlans/*}/backups")
@@ -4133,9 +4243,6 @@ func (c *backupForGKERESTClient) GetBackup(ctx context.Context, req *gkebackuppb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPlans/*/backups/*}")
@@ -4271,9 +4378,6 @@ func (c *backupForGKERESTClient) DeleteBackup(ctx context.Context, req *gkebacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPlans/*/backups/*}")
@@ -4419,9 +4523,6 @@ func (c *backupForGKERESTClient) GetVolumeBackup(ctx context.Context, req *gkeba
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetVolumeBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPlans/*/backups/*/volumeBackups/*}")
@@ -4484,9 +4585,6 @@ func (c *backupForGKERESTClient) CreateRestorePlan(ctx context.Context, req *gke
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateRestorePlan")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/restorePlans")
@@ -4632,9 +4730,6 @@ func (c *backupForGKERESTClient) GetRestorePlan(ctx context.Context, req *gkebac
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestorePlan")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restorePlans/*}")
@@ -4770,9 +4865,6 @@ func (c *backupForGKERESTClient) DeleteRestorePlan(ctx context.Context, req *gke
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteRestorePlan")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restorePlans/*}")
@@ -4844,9 +4936,6 @@ func (c *backupForGKERESTClient) CreateRestoreChannel(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateRestoreChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/restoreChannels")
@@ -4992,9 +5081,6 @@ func (c *backupForGKERESTClient) GetRestoreChannel(ctx context.Context, req *gke
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestoreChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restoreChannels/*}")
@@ -5127,9 +5213,6 @@ func (c *backupForGKERESTClient) DeleteRestoreChannel(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteRestoreChannel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restoreChannels/*}")
@@ -5275,9 +5358,6 @@ func (c *backupForGKERESTClient) GetRestorePlanBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestorePlanBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restoreChannels/*/restorePlanBindings/*}")
@@ -5340,9 +5420,6 @@ func (c *backupForGKERESTClient) CreateRestore(ctx context.Context, req *gkeback
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/CreateRestore")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/restorePlans/*}/restores")
@@ -5488,9 +5565,6 @@ func (c *backupForGKERESTClient) GetRestore(ctx context.Context, req *gkebackupp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetRestore")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restorePlans/*/restores/*}")
@@ -5626,9 +5700,6 @@ func (c *backupForGKERESTClient) DeleteRestore(ctx context.Context, req *gkeback
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/DeleteRestore")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restorePlans/*/restores/*}")
@@ -5774,9 +5845,6 @@ func (c *backupForGKERESTClient) GetVolumeRestore(ctx context.Context, req *gkeb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetVolumeRestore")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/restorePlans/*/restores/*/volumeRestores/*}")
@@ -5831,9 +5899,6 @@ func (c *backupForGKERESTClient) GetBackupIndexDownloadUrl(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//gkebackup.googleapis.com/%v", req.GetBackup()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.gkebackup.v1.BackupForGKE/GetBackupIndexDownloadUrl")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{backup=projects/*/locations/*/backupPlans/*/backups/*}:getBackupIndexDownloadUrl")
@@ -6027,9 +6092,6 @@ func (c *backupForGKERESTClient) GetIamPolicy(ctx context.Context, req *iampb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/backupPlans/*}:getIamPolicy")
@@ -6094,9 +6156,6 @@ func (c *backupForGKERESTClient) SetIamPolicy(ctx context.Context, req *iampb.Se
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/backupPlans/*}:setIamPolicy")
@@ -6163,9 +6222,6 @@ func (c *backupForGKERESTClient) TestIamPermissions(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/backupPlans/*}:testIamPermissions")

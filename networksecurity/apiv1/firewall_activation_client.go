@@ -534,6 +534,79 @@ func NewFirewallActivationClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFirewallEndpoints = append(client.CallOptions.ListFirewallEndpoints, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProjectFirewallEndpoints = append(client.CallOptions.ListProjectFirewallEndpoints, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFirewallEndpoint = append(client.CallOptions.GetFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProjectFirewallEndpoint = append(client.CallOptions.GetProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFirewallEndpoint = append(client.CallOptions.CreateFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateProjectFirewallEndpoint = append(client.CallOptions.CreateProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFirewallEndpoint = append(client.CallOptions.DeleteFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProjectFirewallEndpoint = append(client.CallOptions.DeleteProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFirewallEndpoint = append(client.CallOptions.UpdateFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProjectFirewallEndpoint = append(client.CallOptions.UpdateProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFirewallEndpointAssociations = append(client.CallOptions.ListFirewallEndpointAssociations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFirewallEndpointAssociation = append(client.CallOptions.GetFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFirewallEndpointAssociation = append(client.CallOptions.CreateFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFirewallEndpointAssociation = append(client.CallOptions.DeleteFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFirewallEndpointAssociation = append(client.CallOptions.UpdateFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListFirewallEndpoints = append(client.CallOptions.ListFirewallEndpoints, gax.WithClientLogging(logging))
+		client.CallOptions.ListProjectFirewallEndpoints = append(client.CallOptions.ListProjectFirewallEndpoints, gax.WithClientLogging(logging))
+		client.CallOptions.GetFirewallEndpoint = append(client.CallOptions.GetFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.GetProjectFirewallEndpoint = append(client.CallOptions.GetProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFirewallEndpoint = append(client.CallOptions.CreateFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.CreateProjectFirewallEndpoint = append(client.CallOptions.CreateProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFirewallEndpoint = append(client.CallOptions.DeleteFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProjectFirewallEndpoint = append(client.CallOptions.DeleteProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFirewallEndpoint = append(client.CallOptions.UpdateFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProjectFirewallEndpoint = append(client.CallOptions.UpdateProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		client.CallOptions.ListFirewallEndpointAssociations = append(client.CallOptions.ListFirewallEndpointAssociations, gax.WithClientLogging(logging))
+		client.CallOptions.GetFirewallEndpointAssociation = append(client.CallOptions.GetFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFirewallEndpointAssociation = append(client.CallOptions.CreateFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFirewallEndpointAssociation = append(client.CallOptions.DeleteFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFirewallEndpointAssociation = append(client.CallOptions.UpdateFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -664,6 +737,79 @@ func NewFirewallActivationRESTClient(ctx context.Context, opts ...option.ClientO
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFirewallEndpoints = append(callOpts.ListFirewallEndpoints, gax.WithClientTracing(tracing))
+		callOpts.ListProjectFirewallEndpoints = append(callOpts.ListProjectFirewallEndpoints, gax.WithClientTracing(tracing))
+		callOpts.GetFirewallEndpoint = append(callOpts.GetFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.GetProjectFirewallEndpoint = append(callOpts.GetProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.CreateFirewallEndpoint = append(callOpts.CreateFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.CreateProjectFirewallEndpoint = append(callOpts.CreateProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.DeleteFirewallEndpoint = append(callOpts.DeleteFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.DeleteProjectFirewallEndpoint = append(callOpts.DeleteProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.UpdateFirewallEndpoint = append(callOpts.UpdateFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.UpdateProjectFirewallEndpoint = append(callOpts.UpdateProjectFirewallEndpoint, gax.WithClientTracing(tracing))
+		callOpts.ListFirewallEndpointAssociations = append(callOpts.ListFirewallEndpointAssociations, gax.WithClientTracing(tracing))
+		callOpts.GetFirewallEndpointAssociation = append(callOpts.GetFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		callOpts.CreateFirewallEndpointAssociation = append(callOpts.CreateFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		callOpts.DeleteFirewallEndpointAssociation = append(callOpts.DeleteFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		callOpts.UpdateFirewallEndpointAssociation = append(callOpts.UpdateFirewallEndpointAssociation, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networksecurity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networksecurity/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networksecurity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListFirewallEndpoints = append(callOpts.ListFirewallEndpoints, gax.WithClientLogging(logging))
+		callOpts.ListProjectFirewallEndpoints = append(callOpts.ListProjectFirewallEndpoints, gax.WithClientLogging(logging))
+		callOpts.GetFirewallEndpoint = append(callOpts.GetFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.GetProjectFirewallEndpoint = append(callOpts.GetProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.CreateFirewallEndpoint = append(callOpts.CreateFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.CreateProjectFirewallEndpoint = append(callOpts.CreateProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.DeleteFirewallEndpoint = append(callOpts.DeleteFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.DeleteProjectFirewallEndpoint = append(callOpts.DeleteProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.UpdateFirewallEndpoint = append(callOpts.UpdateFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.UpdateProjectFirewallEndpoint = append(callOpts.UpdateProjectFirewallEndpoint, gax.WithClientLogging(logging))
+		callOpts.ListFirewallEndpointAssociations = append(callOpts.ListFirewallEndpointAssociations, gax.WithClientLogging(logging))
+		callOpts.GetFirewallEndpointAssociation = append(callOpts.GetFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		callOpts.CreateFirewallEndpointAssociation = append(callOpts.CreateFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		callOpts.DeleteFirewallEndpointAssociation = append(callOpts.DeleteFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		callOpts.UpdateFirewallEndpointAssociation = append(callOpts.UpdateFirewallEndpointAssociation, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -720,9 +866,6 @@ func (c *firewallActivationGRPCClient) ListFirewallEndpoints(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/ListFirewallEndpoints")
 	}
@@ -772,9 +915,6 @@ func (c *firewallActivationGRPCClient) ListProjectFirewallEndpoints(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/ListProjectFirewallEndpoints")
 	}
@@ -824,9 +964,6 @@ func (c *firewallActivationGRPCClient) GetFirewallEndpoint(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/GetFirewallEndpoint")
 	}
@@ -848,9 +985,6 @@ func (c *firewallActivationGRPCClient) GetProjectFirewallEndpoint(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/GetProjectFirewallEndpoint")
 	}
@@ -872,9 +1006,6 @@ func (c *firewallActivationGRPCClient) CreateFirewallEndpoint(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/CreateFirewallEndpoint")
 	}
@@ -902,9 +1033,6 @@ func (c *firewallActivationGRPCClient) CreateProjectFirewallEndpoint(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/CreateProjectFirewallEndpoint")
 	}
@@ -932,9 +1060,6 @@ func (c *firewallActivationGRPCClient) DeleteFirewallEndpoint(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/DeleteFirewallEndpoint")
 	}
@@ -962,9 +1087,6 @@ func (c *firewallActivationGRPCClient) DeleteProjectFirewallEndpoint(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/DeleteProjectFirewallEndpoint")
 	}
@@ -1046,9 +1168,6 @@ func (c *firewallActivationGRPCClient) ListFirewallEndpointAssociations(ctx cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/ListFirewallEndpointAssociations")
 	}
@@ -1098,9 +1217,6 @@ func (c *firewallActivationGRPCClient) GetFirewallEndpointAssociation(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/GetFirewallEndpointAssociation")
 	}
@@ -1122,9 +1238,6 @@ func (c *firewallActivationGRPCClient) CreateFirewallEndpointAssociation(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/CreateFirewallEndpointAssociation")
 	}
@@ -1152,9 +1265,6 @@ func (c *firewallActivationGRPCClient) DeleteFirewallEndpointAssociation(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/DeleteFirewallEndpointAssociation")
 	}
@@ -1279,9 +1389,6 @@ func (c *firewallActivationGRPCClient) GetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1303,9 +1410,6 @@ func (c *firewallActivationGRPCClient) SetIamPolicy(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1327,9 +1431,6 @@ func (c *firewallActivationGRPCClient) TestIamPermissions(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1637,9 +1738,6 @@ func (c *firewallActivationRESTClient) GetFirewallEndpoint(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/GetFirewallEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/firewallEndpoints/*}")
@@ -1694,9 +1792,6 @@ func (c *firewallActivationRESTClient) GetProjectFirewallEndpoint(ctx context.Co
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/GetProjectFirewallEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/firewallEndpoints/*}")
@@ -1762,9 +1857,6 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpoint(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/CreateFirewallEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=organizations/*/locations/*}/firewallEndpoints")
@@ -1837,9 +1929,6 @@ func (c *firewallActivationRESTClient) CreateProjectFirewallEndpoint(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/CreateProjectFirewallEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/firewallEndpoints")
@@ -1904,9 +1993,6 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpoint(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/DeleteFirewallEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=organizations/*/locations/*/firewallEndpoints/*}")
@@ -1971,9 +2057,6 @@ func (c *firewallActivationRESTClient) DeleteProjectFirewallEndpoint(ctx context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/DeleteProjectFirewallEndpoint")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/firewallEndpoints/*}")
@@ -2275,9 +2358,6 @@ func (c *firewallActivationRESTClient) GetFirewallEndpointAssociation(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/GetFirewallEndpointAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/firewallEndpointAssociations/*}")
@@ -2345,9 +2425,6 @@ func (c *firewallActivationRESTClient) CreateFirewallEndpointAssociation(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/CreateFirewallEndpointAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/firewallEndpointAssociations")
@@ -2412,9 +2489,6 @@ func (c *firewallActivationRESTClient) DeleteFirewallEndpointAssociation(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networksecurity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networksecurity.v1.FirewallActivation/DeleteFirewallEndpointAssociation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/firewallEndpointAssociations/*}")
@@ -2708,9 +2782,6 @@ func (c *firewallActivationRESTClient) GetIamPolicy(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:getIamPolicy")
@@ -2775,9 +2846,6 @@ func (c *firewallActivationRESTClient) SetIamPolicy(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:setIamPolicy")
@@ -2844,9 +2912,6 @@ func (c *firewallActivationRESTClient) TestIamPermissions(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/addressGroups/*}:testIamPermissions")

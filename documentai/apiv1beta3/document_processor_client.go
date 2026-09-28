@@ -673,6 +673,87 @@ func NewDocumentProcessorClient(ctx context.Context, opts ...option.ClientOption
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ProcessDocument = append(client.CallOptions.ProcessDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchProcessDocuments = append(client.CallOptions.BatchProcessDocuments, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchProcessorTypes = append(client.CallOptions.FetchProcessorTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProcessorTypes = append(client.CallOptions.ListProcessorTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProcessorType = append(client.CallOptions.GetProcessorType, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProcessors = append(client.CallOptions.ListProcessors, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProcessor = append(client.CallOptions.GetProcessor, gax.WithClientTracing(tracing))
+		client.CallOptions.TrainProcessorVersion = append(client.CallOptions.TrainProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProcessorVersion = append(client.CallOptions.GetProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProcessorVersions = append(client.CallOptions.ListProcessorVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProcessorVersion = append(client.CallOptions.DeleteProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeployProcessorVersion = append(client.CallOptions.DeployProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeployProcessorVersion = append(client.CallOptions.UndeployProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateProcessor = append(client.CallOptions.CreateProcessor, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProcessor = append(client.CallOptions.DeleteProcessor, gax.WithClientTracing(tracing))
+		client.CallOptions.EnableProcessor = append(client.CallOptions.EnableProcessor, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableProcessor = append(client.CallOptions.DisableProcessor, gax.WithClientTracing(tracing))
+		client.CallOptions.SetDefaultProcessorVersion = append(client.CallOptions.SetDefaultProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ReviewDocument = append(client.CallOptions.ReviewDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.EvaluateProcessorVersion = append(client.CallOptions.EvaluateProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEvaluations = append(client.CallOptions.ListEvaluations, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportProcessorVersion = append(client.CallOptions.ImportProcessorVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ProcessDocument = append(client.CallOptions.ProcessDocument, gax.WithClientLogging(logging))
+		client.CallOptions.BatchProcessDocuments = append(client.CallOptions.BatchProcessDocuments, gax.WithClientLogging(logging))
+		client.CallOptions.FetchProcessorTypes = append(client.CallOptions.FetchProcessorTypes, gax.WithClientLogging(logging))
+		client.CallOptions.ListProcessorTypes = append(client.CallOptions.ListProcessorTypes, gax.WithClientLogging(logging))
+		client.CallOptions.GetProcessorType = append(client.CallOptions.GetProcessorType, gax.WithClientLogging(logging))
+		client.CallOptions.ListProcessors = append(client.CallOptions.ListProcessors, gax.WithClientLogging(logging))
+		client.CallOptions.GetProcessor = append(client.CallOptions.GetProcessor, gax.WithClientLogging(logging))
+		client.CallOptions.TrainProcessorVersion = append(client.CallOptions.TrainProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetProcessorVersion = append(client.CallOptions.GetProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListProcessorVersions = append(client.CallOptions.ListProcessorVersions, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProcessorVersion = append(client.CallOptions.DeleteProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeployProcessorVersion = append(client.CallOptions.DeployProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.UndeployProcessorVersion = append(client.CallOptions.UndeployProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.CreateProcessor = append(client.CallOptions.CreateProcessor, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProcessor = append(client.CallOptions.DeleteProcessor, gax.WithClientLogging(logging))
+		client.CallOptions.EnableProcessor = append(client.CallOptions.EnableProcessor, gax.WithClientLogging(logging))
+		client.CallOptions.DisableProcessor = append(client.CallOptions.DisableProcessor, gax.WithClientLogging(logging))
+		client.CallOptions.SetDefaultProcessorVersion = append(client.CallOptions.SetDefaultProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ReviewDocument = append(client.CallOptions.ReviewDocument, gax.WithClientLogging(logging))
+		client.CallOptions.EvaluateProcessorVersion = append(client.CallOptions.EvaluateProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetEvaluation = append(client.CallOptions.GetEvaluation, gax.WithClientLogging(logging))
+		client.CallOptions.ListEvaluations = append(client.CallOptions.ListEvaluations, gax.WithClientLogging(logging))
+		client.CallOptions.ImportProcessorVersion = append(client.CallOptions.ImportProcessorVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -810,6 +891,87 @@ func NewDocumentProcessorRESTClient(ctx context.Context, opts ...option.ClientOp
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.ProcessDocument = append(callOpts.ProcessDocument, gax.WithClientTracing(tracing))
+		callOpts.BatchProcessDocuments = append(callOpts.BatchProcessDocuments, gax.WithClientTracing(tracing))
+		callOpts.FetchProcessorTypes = append(callOpts.FetchProcessorTypes, gax.WithClientTracing(tracing))
+		callOpts.ListProcessorTypes = append(callOpts.ListProcessorTypes, gax.WithClientTracing(tracing))
+		callOpts.GetProcessorType = append(callOpts.GetProcessorType, gax.WithClientTracing(tracing))
+		callOpts.ListProcessors = append(callOpts.ListProcessors, gax.WithClientTracing(tracing))
+		callOpts.GetProcessor = append(callOpts.GetProcessor, gax.WithClientTracing(tracing))
+		callOpts.TrainProcessorVersion = append(callOpts.TrainProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.GetProcessorVersion = append(callOpts.GetProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.ListProcessorVersions = append(callOpts.ListProcessorVersions, gax.WithClientTracing(tracing))
+		callOpts.DeleteProcessorVersion = append(callOpts.DeleteProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.DeployProcessorVersion = append(callOpts.DeployProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.UndeployProcessorVersion = append(callOpts.UndeployProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.CreateProcessor = append(callOpts.CreateProcessor, gax.WithClientTracing(tracing))
+		callOpts.DeleteProcessor = append(callOpts.DeleteProcessor, gax.WithClientTracing(tracing))
+		callOpts.EnableProcessor = append(callOpts.EnableProcessor, gax.WithClientTracing(tracing))
+		callOpts.DisableProcessor = append(callOpts.DisableProcessor, gax.WithClientTracing(tracing))
+		callOpts.SetDefaultProcessorVersion = append(callOpts.SetDefaultProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.ReviewDocument = append(callOpts.ReviewDocument, gax.WithClientTracing(tracing))
+		callOpts.EvaluateProcessorVersion = append(callOpts.EvaluateProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientTracing(tracing))
+		callOpts.ListEvaluations = append(callOpts.ListEvaluations, gax.WithClientTracing(tracing))
+		callOpts.ImportProcessorVersion = append(callOpts.ImportProcessorVersion, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "documentai",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/documentai/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "documentai.googleapis.com",
+			}),
+		)
+
+		callOpts.ProcessDocument = append(callOpts.ProcessDocument, gax.WithClientLogging(logging))
+		callOpts.BatchProcessDocuments = append(callOpts.BatchProcessDocuments, gax.WithClientLogging(logging))
+		callOpts.FetchProcessorTypes = append(callOpts.FetchProcessorTypes, gax.WithClientLogging(logging))
+		callOpts.ListProcessorTypes = append(callOpts.ListProcessorTypes, gax.WithClientLogging(logging))
+		callOpts.GetProcessorType = append(callOpts.GetProcessorType, gax.WithClientLogging(logging))
+		callOpts.ListProcessors = append(callOpts.ListProcessors, gax.WithClientLogging(logging))
+		callOpts.GetProcessor = append(callOpts.GetProcessor, gax.WithClientLogging(logging))
+		callOpts.TrainProcessorVersion = append(callOpts.TrainProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.GetProcessorVersion = append(callOpts.GetProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.ListProcessorVersions = append(callOpts.ListProcessorVersions, gax.WithClientLogging(logging))
+		callOpts.DeleteProcessorVersion = append(callOpts.DeleteProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.DeployProcessorVersion = append(callOpts.DeployProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.UndeployProcessorVersion = append(callOpts.UndeployProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.CreateProcessor = append(callOpts.CreateProcessor, gax.WithClientLogging(logging))
+		callOpts.DeleteProcessor = append(callOpts.DeleteProcessor, gax.WithClientLogging(logging))
+		callOpts.EnableProcessor = append(callOpts.EnableProcessor, gax.WithClientLogging(logging))
+		callOpts.DisableProcessor = append(callOpts.DisableProcessor, gax.WithClientLogging(logging))
+		callOpts.SetDefaultProcessorVersion = append(callOpts.SetDefaultProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.ReviewDocument = append(callOpts.ReviewDocument, gax.WithClientLogging(logging))
+		callOpts.EvaluateProcessorVersion = append(callOpts.EvaluateProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.GetEvaluation = append(callOpts.GetEvaluation, gax.WithClientLogging(logging))
+		callOpts.ListEvaluations = append(callOpts.ListEvaluations, gax.WithClientLogging(logging))
+		callOpts.ImportProcessorVersion = append(callOpts.ImportProcessorVersion, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -866,9 +1028,6 @@ func (c *documentProcessorGRPCClient) ProcessDocument(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ProcessDocument")
 	}
@@ -890,9 +1049,6 @@ func (c *documentProcessorGRPCClient) BatchProcessDocuments(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/BatchProcessDocuments")
 	}
@@ -920,9 +1076,6 @@ func (c *documentProcessorGRPCClient) FetchProcessorTypes(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/FetchProcessorTypes")
 	}
@@ -944,9 +1097,6 @@ func (c *documentProcessorGRPCClient) ListProcessorTypes(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ListProcessorTypes")
 	}
@@ -996,9 +1146,6 @@ func (c *documentProcessorGRPCClient) GetProcessorType(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetProcessorType")
 	}
@@ -1020,9 +1167,6 @@ func (c *documentProcessorGRPCClient) ListProcessors(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ListProcessors")
 	}
@@ -1072,9 +1216,6 @@ func (c *documentProcessorGRPCClient) GetProcessor(ctx context.Context, req *doc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetProcessor")
 	}
@@ -1096,9 +1237,6 @@ func (c *documentProcessorGRPCClient) TrainProcessorVersion(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/TrainProcessorVersion")
 	}
@@ -1126,9 +1264,6 @@ func (c *documentProcessorGRPCClient) GetProcessorVersion(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetProcessorVersion")
 	}
@@ -1150,9 +1285,6 @@ func (c *documentProcessorGRPCClient) ListProcessorVersions(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ListProcessorVersions")
 	}
@@ -1202,9 +1334,6 @@ func (c *documentProcessorGRPCClient) DeleteProcessorVersion(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DeleteProcessorVersion")
 	}
@@ -1232,9 +1361,6 @@ func (c *documentProcessorGRPCClient) DeployProcessorVersion(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DeployProcessorVersion")
 	}
@@ -1262,9 +1388,6 @@ func (c *documentProcessorGRPCClient) UndeployProcessorVersion(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/UndeployProcessorVersion")
 	}
@@ -1292,9 +1415,6 @@ func (c *documentProcessorGRPCClient) CreateProcessor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/CreateProcessor")
 	}
@@ -1316,9 +1436,6 @@ func (c *documentProcessorGRPCClient) DeleteProcessor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DeleteProcessor")
 	}
@@ -1346,9 +1463,6 @@ func (c *documentProcessorGRPCClient) EnableProcessor(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/EnableProcessor")
 	}
@@ -1376,9 +1490,6 @@ func (c *documentProcessorGRPCClient) DisableProcessor(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DisableProcessor")
 	}
@@ -1406,9 +1517,6 @@ func (c *documentProcessorGRPCClient) SetDefaultProcessorVersion(ctx context.Con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessor()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/SetDefaultProcessorVersion")
 	}
@@ -1436,9 +1544,6 @@ func (c *documentProcessorGRPCClient) ReviewDocument(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetHumanReviewConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ReviewDocument")
 	}
@@ -1466,9 +1571,6 @@ func (c *documentProcessorGRPCClient) EvaluateProcessorVersion(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessorVersion()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/EvaluateProcessorVersion")
 	}
@@ -1496,9 +1598,6 @@ func (c *documentProcessorGRPCClient) GetEvaluation(ctx context.Context, req *do
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetEvaluation")
 	}
@@ -1520,9 +1619,6 @@ func (c *documentProcessorGRPCClient) ListEvaluations(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ListEvaluations")
 	}
@@ -1572,9 +1668,6 @@ func (c *documentProcessorGRPCClient) ImportProcessorVersion(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ImportProcessorVersion")
 	}
@@ -1779,9 +1872,6 @@ func (c *documentProcessorRESTClient) ProcessDocument(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ProcessDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*}:process")
@@ -1843,9 +1933,6 @@ func (c *documentProcessorRESTClient) BatchProcessDocuments(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/BatchProcessDocuments")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*}:batchProcess")
@@ -1909,9 +1996,6 @@ func (c *documentProcessorRESTClient) FetchProcessorTypes(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/FetchProcessorTypes")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{parent=projects/*/locations/*}:fetchProcessorTypes")
@@ -2044,9 +2128,6 @@ func (c *documentProcessorRESTClient) GetProcessorType(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetProcessorType")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processorTypes/*}")
@@ -2179,9 +2260,6 @@ func (c *documentProcessorRESTClient) GetProcessor(ctx context.Context, req *doc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetProcessor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*}")
@@ -2244,9 +2322,6 @@ func (c *documentProcessorRESTClient) TrainProcessorVersion(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/TrainProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{parent=projects/*/locations/*/processors/*}/processorVersions:train")
@@ -2308,9 +2383,6 @@ func (c *documentProcessorRESTClient) GetProcessorVersion(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*/processorVersions/*}")
@@ -2444,9 +2516,6 @@ func (c *documentProcessorRESTClient) DeleteProcessorVersion(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DeleteProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*/processorVersions/*}")
@@ -2514,9 +2583,6 @@ func (c *documentProcessorRESTClient) DeployProcessorVersion(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DeployProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*/processorVersions/*}:deploy")
@@ -2584,9 +2650,6 @@ func (c *documentProcessorRESTClient) UndeployProcessorVersion(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/UndeployProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*/processorVersions/*}:undeploy")
@@ -2661,9 +2724,6 @@ func (c *documentProcessorRESTClient) CreateProcessor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/CreateProcessor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{parent=projects/*/locations/*}/processors")
@@ -2719,9 +2779,6 @@ func (c *documentProcessorRESTClient) DeleteProcessor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DeleteProcessor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*}")
@@ -2789,9 +2846,6 @@ func (c *documentProcessorRESTClient) EnableProcessor(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/EnableProcessor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*}:enable")
@@ -2859,9 +2913,6 @@ func (c *documentProcessorRESTClient) DisableProcessor(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/DisableProcessor")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*}:disable")
@@ -2933,9 +2984,6 @@ func (c *documentProcessorRESTClient) SetDefaultProcessorVersion(ctx context.Con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessor()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/SetDefaultProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{processor=projects/*/locations/*/processors/*}:setDefaultProcessorVersion")
@@ -3006,9 +3054,6 @@ func (c *documentProcessorRESTClient) ReviewDocument(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetHumanReviewConfig()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ReviewDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{human_review_config=projects/*/locations/*/processors/*/humanReviewConfig}:reviewDocument")
@@ -3077,9 +3122,6 @@ func (c *documentProcessorRESTClient) EvaluateProcessorVersion(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetProcessorVersion()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/EvaluateProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{processor_version=projects/*/locations/*/processors/*/processorVersions/*}:evaluateProcessorVersion")
@@ -3141,9 +3183,6 @@ func (c *documentProcessorRESTClient) GetEvaluation(ctx context.Context, req *do
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/GetEvaluation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{name=projects/*/locations/*/processors/*/processorVersions/*/evaluations/*}")
@@ -3282,9 +3321,6 @@ func (c *documentProcessorRESTClient) ImportProcessorVersion(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//documentai.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.documentai.v1beta3.DocumentProcessorService/ImportProcessorVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta3/{parent=projects/*/locations/*/processors/*}/processorVersions:importProcessorVersion")

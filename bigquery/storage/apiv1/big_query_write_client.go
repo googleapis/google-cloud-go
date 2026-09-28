@@ -368,6 +368,43 @@ func NewBigQueryWriteClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.BatchCommitWriteStreams = append(client.CallOptions.BatchCommitWriteStreams, gax.WithClientMetrics(metrics))
 		client.CallOptions.FlushRows = append(client.CallOptions.FlushRows, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWriteStream = append(client.CallOptions.CreateWriteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.AppendRows = append(client.CallOptions.AppendRows, gax.WithClientTracing(tracing))
+		client.CallOptions.GetWriteStream = append(client.CallOptions.GetWriteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.FinalizeWriteStream = append(client.CallOptions.FinalizeWriteStream, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCommitWriteStreams = append(client.CallOptions.BatchCommitWriteStreams, gax.WithClientTracing(tracing))
+		client.CallOptions.FlushRows = append(client.CallOptions.FlushRows, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerystorage",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/storage/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerystorage.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateWriteStream = append(client.CallOptions.CreateWriteStream, gax.WithClientLogging(logging))
+		client.CallOptions.AppendRows = append(client.CallOptions.AppendRows, gax.WithClientLogging(logging))
+		client.CallOptions.GetWriteStream = append(client.CallOptions.GetWriteStream, gax.WithClientLogging(logging))
+		client.CallOptions.FinalizeWriteStream = append(client.CallOptions.FinalizeWriteStream, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCommitWriteStreams = append(client.CallOptions.BatchCommitWriteStreams, gax.WithClientLogging(logging))
+		client.CallOptions.FlushRows = append(client.CallOptions.FlushRows, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -404,9 +441,6 @@ func (c *bigQueryWriteGRPCClient) CreateWriteStream(ctx context.Context, req *st
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1.BigQueryWrite/CreateWriteStream")
 	}
@@ -448,9 +482,6 @@ func (c *bigQueryWriteGRPCClient) GetWriteStream(ctx context.Context, req *stora
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1.BigQueryWrite/GetWriteStream")
 	}
@@ -472,9 +503,6 @@ func (c *bigQueryWriteGRPCClient) FinalizeWriteStream(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1.BigQueryWrite/FinalizeWriteStream")
 	}
@@ -496,9 +524,6 @@ func (c *bigQueryWriteGRPCClient) BatchCommitWriteStreams(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1.BigQueryWrite/BatchCommitWriteStreams")
 	}
@@ -520,9 +545,6 @@ func (c *bigQueryWriteGRPCClient) FlushRows(ctx context.Context, req *storagepb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerystorage.googleapis.com/%v", req.GetWriteStream()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.storage.v1.BigQueryWrite/FlushRows")
 	}

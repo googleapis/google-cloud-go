@@ -866,6 +866,121 @@ func NewTranslationClient(ctx context.Context, opts ...option.ClientOption) (*Tr
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "translate",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/translate/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "translate.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.TranslateText = append(client.CallOptions.TranslateText, gax.WithClientTracing(tracing))
+		client.CallOptions.RomanizeText = append(client.CallOptions.RomanizeText, gax.WithClientTracing(tracing))
+		client.CallOptions.DetectLanguage = append(client.CallOptions.DetectLanguage, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSupportedLanguages = append(client.CallOptions.GetSupportedLanguages, gax.WithClientTracing(tracing))
+		client.CallOptions.TranslateDocument = append(client.CallOptions.TranslateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchTranslateText = append(client.CallOptions.BatchTranslateText, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchTranslateDocument = append(client.CallOptions.BatchTranslateDocument, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGlossary = append(client.CallOptions.CreateGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGlossary = append(client.CallOptions.UpdateGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGlossaries = append(client.CallOptions.ListGlossaries, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGlossary = append(client.CallOptions.GetGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGlossary = append(client.CallOptions.DeleteGlossary, gax.WithClientTracing(tracing))
+		client.CallOptions.GetGlossaryEntry = append(client.CallOptions.GetGlossaryEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.ListGlossaryEntries = append(client.CallOptions.ListGlossaryEntries, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateGlossaryEntry = append(client.CallOptions.CreateGlossaryEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateGlossaryEntry = append(client.CallOptions.UpdateGlossaryEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteGlossaryEntry = append(client.CallOptions.DeleteGlossaryEntry, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAdaptiveMtDataset = append(client.CallOptions.CreateAdaptiveMtDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAdaptiveMtDataset = append(client.CallOptions.DeleteAdaptiveMtDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAdaptiveMtDataset = append(client.CallOptions.GetAdaptiveMtDataset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAdaptiveMtDatasets = append(client.CallOptions.ListAdaptiveMtDatasets, gax.WithClientTracing(tracing))
+		client.CallOptions.AdaptiveMtTranslate = append(client.CallOptions.AdaptiveMtTranslate, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAdaptiveMtFile = append(client.CallOptions.GetAdaptiveMtFile, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAdaptiveMtFile = append(client.CallOptions.DeleteAdaptiveMtFile, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportAdaptiveMtFile = append(client.CallOptions.ImportAdaptiveMtFile, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAdaptiveMtFiles = append(client.CallOptions.ListAdaptiveMtFiles, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAdaptiveMtSentences = append(client.CallOptions.ListAdaptiveMtSentences, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientTracing(tracing))
+		client.CallOptions.ListExamples = append(client.CallOptions.ListExamples, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientTracing(tracing))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientTracing(tracing))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "translate",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/translate/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "translate.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.TranslateText = append(client.CallOptions.TranslateText, gax.WithClientLogging(logging))
+		client.CallOptions.RomanizeText = append(client.CallOptions.RomanizeText, gax.WithClientLogging(logging))
+		client.CallOptions.DetectLanguage = append(client.CallOptions.DetectLanguage, gax.WithClientLogging(logging))
+		client.CallOptions.GetSupportedLanguages = append(client.CallOptions.GetSupportedLanguages, gax.WithClientLogging(logging))
+		client.CallOptions.TranslateDocument = append(client.CallOptions.TranslateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.BatchTranslateText = append(client.CallOptions.BatchTranslateText, gax.WithClientLogging(logging))
+		client.CallOptions.BatchTranslateDocument = append(client.CallOptions.BatchTranslateDocument, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGlossary = append(client.CallOptions.CreateGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGlossary = append(client.CallOptions.UpdateGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.ListGlossaries = append(client.CallOptions.ListGlossaries, gax.WithClientLogging(logging))
+		client.CallOptions.GetGlossary = append(client.CallOptions.GetGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGlossary = append(client.CallOptions.DeleteGlossary, gax.WithClientLogging(logging))
+		client.CallOptions.GetGlossaryEntry = append(client.CallOptions.GetGlossaryEntry, gax.WithClientLogging(logging))
+		client.CallOptions.ListGlossaryEntries = append(client.CallOptions.ListGlossaryEntries, gax.WithClientLogging(logging))
+		client.CallOptions.CreateGlossaryEntry = append(client.CallOptions.CreateGlossaryEntry, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateGlossaryEntry = append(client.CallOptions.UpdateGlossaryEntry, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteGlossaryEntry = append(client.CallOptions.DeleteGlossaryEntry, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataset = append(client.CallOptions.CreateDataset, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataset = append(client.CallOptions.GetDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ListDatasets = append(client.CallOptions.ListDatasets, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataset = append(client.CallOptions.DeleteDataset, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAdaptiveMtDataset = append(client.CallOptions.CreateAdaptiveMtDataset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAdaptiveMtDataset = append(client.CallOptions.DeleteAdaptiveMtDataset, gax.WithClientLogging(logging))
+		client.CallOptions.GetAdaptiveMtDataset = append(client.CallOptions.GetAdaptiveMtDataset, gax.WithClientLogging(logging))
+		client.CallOptions.ListAdaptiveMtDatasets = append(client.CallOptions.ListAdaptiveMtDatasets, gax.WithClientLogging(logging))
+		client.CallOptions.AdaptiveMtTranslate = append(client.CallOptions.AdaptiveMtTranslate, gax.WithClientLogging(logging))
+		client.CallOptions.GetAdaptiveMtFile = append(client.CallOptions.GetAdaptiveMtFile, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAdaptiveMtFile = append(client.CallOptions.DeleteAdaptiveMtFile, gax.WithClientLogging(logging))
+		client.CallOptions.ImportAdaptiveMtFile = append(client.CallOptions.ImportAdaptiveMtFile, gax.WithClientLogging(logging))
+		client.CallOptions.ListAdaptiveMtFiles = append(client.CallOptions.ListAdaptiveMtFiles, gax.WithClientLogging(logging))
+		client.CallOptions.ListAdaptiveMtSentences = append(client.CallOptions.ListAdaptiveMtSentences, gax.WithClientLogging(logging))
+		client.CallOptions.ImportData = append(client.CallOptions.ImportData, gax.WithClientLogging(logging))
+		client.CallOptions.ExportData = append(client.CallOptions.ExportData, gax.WithClientLogging(logging))
+		client.CallOptions.ListExamples = append(client.CallOptions.ListExamples, gax.WithClientLogging(logging))
+		client.CallOptions.CreateModel = append(client.CallOptions.CreateModel, gax.WithClientLogging(logging))
+		client.CallOptions.ListModels = append(client.CallOptions.ListModels, gax.WithClientLogging(logging))
+		client.CallOptions.GetModel = append(client.CallOptions.GetModel, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteModel = append(client.CallOptions.DeleteModel, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1017,6 +1132,121 @@ func NewTranslationRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "translate",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/translate/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "translate.googleapis.com",
+			}),
+		)
+
+		callOpts.TranslateText = append(callOpts.TranslateText, gax.WithClientTracing(tracing))
+		callOpts.RomanizeText = append(callOpts.RomanizeText, gax.WithClientTracing(tracing))
+		callOpts.DetectLanguage = append(callOpts.DetectLanguage, gax.WithClientTracing(tracing))
+		callOpts.GetSupportedLanguages = append(callOpts.GetSupportedLanguages, gax.WithClientTracing(tracing))
+		callOpts.TranslateDocument = append(callOpts.TranslateDocument, gax.WithClientTracing(tracing))
+		callOpts.BatchTranslateText = append(callOpts.BatchTranslateText, gax.WithClientTracing(tracing))
+		callOpts.BatchTranslateDocument = append(callOpts.BatchTranslateDocument, gax.WithClientTracing(tracing))
+		callOpts.CreateGlossary = append(callOpts.CreateGlossary, gax.WithClientTracing(tracing))
+		callOpts.UpdateGlossary = append(callOpts.UpdateGlossary, gax.WithClientTracing(tracing))
+		callOpts.ListGlossaries = append(callOpts.ListGlossaries, gax.WithClientTracing(tracing))
+		callOpts.GetGlossary = append(callOpts.GetGlossary, gax.WithClientTracing(tracing))
+		callOpts.DeleteGlossary = append(callOpts.DeleteGlossary, gax.WithClientTracing(tracing))
+		callOpts.GetGlossaryEntry = append(callOpts.GetGlossaryEntry, gax.WithClientTracing(tracing))
+		callOpts.ListGlossaryEntries = append(callOpts.ListGlossaryEntries, gax.WithClientTracing(tracing))
+		callOpts.CreateGlossaryEntry = append(callOpts.CreateGlossaryEntry, gax.WithClientTracing(tracing))
+		callOpts.UpdateGlossaryEntry = append(callOpts.UpdateGlossaryEntry, gax.WithClientTracing(tracing))
+		callOpts.DeleteGlossaryEntry = append(callOpts.DeleteGlossaryEntry, gax.WithClientTracing(tracing))
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientTracing(tracing))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientTracing(tracing))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientTracing(tracing))
+		callOpts.CreateAdaptiveMtDataset = append(callOpts.CreateAdaptiveMtDataset, gax.WithClientTracing(tracing))
+		callOpts.DeleteAdaptiveMtDataset = append(callOpts.DeleteAdaptiveMtDataset, gax.WithClientTracing(tracing))
+		callOpts.GetAdaptiveMtDataset = append(callOpts.GetAdaptiveMtDataset, gax.WithClientTracing(tracing))
+		callOpts.ListAdaptiveMtDatasets = append(callOpts.ListAdaptiveMtDatasets, gax.WithClientTracing(tracing))
+		callOpts.AdaptiveMtTranslate = append(callOpts.AdaptiveMtTranslate, gax.WithClientTracing(tracing))
+		callOpts.GetAdaptiveMtFile = append(callOpts.GetAdaptiveMtFile, gax.WithClientTracing(tracing))
+		callOpts.DeleteAdaptiveMtFile = append(callOpts.DeleteAdaptiveMtFile, gax.WithClientTracing(tracing))
+		callOpts.ImportAdaptiveMtFile = append(callOpts.ImportAdaptiveMtFile, gax.WithClientTracing(tracing))
+		callOpts.ListAdaptiveMtFiles = append(callOpts.ListAdaptiveMtFiles, gax.WithClientTracing(tracing))
+		callOpts.ListAdaptiveMtSentences = append(callOpts.ListAdaptiveMtSentences, gax.WithClientTracing(tracing))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientTracing(tracing))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientTracing(tracing))
+		callOpts.ListExamples = append(callOpts.ListExamples, gax.WithClientTracing(tracing))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientTracing(tracing))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientTracing(tracing))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientTracing(tracing))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "translate",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/translate/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "translate.googleapis.com",
+			}),
+		)
+
+		callOpts.TranslateText = append(callOpts.TranslateText, gax.WithClientLogging(logging))
+		callOpts.RomanizeText = append(callOpts.RomanizeText, gax.WithClientLogging(logging))
+		callOpts.DetectLanguage = append(callOpts.DetectLanguage, gax.WithClientLogging(logging))
+		callOpts.GetSupportedLanguages = append(callOpts.GetSupportedLanguages, gax.WithClientLogging(logging))
+		callOpts.TranslateDocument = append(callOpts.TranslateDocument, gax.WithClientLogging(logging))
+		callOpts.BatchTranslateText = append(callOpts.BatchTranslateText, gax.WithClientLogging(logging))
+		callOpts.BatchTranslateDocument = append(callOpts.BatchTranslateDocument, gax.WithClientLogging(logging))
+		callOpts.CreateGlossary = append(callOpts.CreateGlossary, gax.WithClientLogging(logging))
+		callOpts.UpdateGlossary = append(callOpts.UpdateGlossary, gax.WithClientLogging(logging))
+		callOpts.ListGlossaries = append(callOpts.ListGlossaries, gax.WithClientLogging(logging))
+		callOpts.GetGlossary = append(callOpts.GetGlossary, gax.WithClientLogging(logging))
+		callOpts.DeleteGlossary = append(callOpts.DeleteGlossary, gax.WithClientLogging(logging))
+		callOpts.GetGlossaryEntry = append(callOpts.GetGlossaryEntry, gax.WithClientLogging(logging))
+		callOpts.ListGlossaryEntries = append(callOpts.ListGlossaryEntries, gax.WithClientLogging(logging))
+		callOpts.CreateGlossaryEntry = append(callOpts.CreateGlossaryEntry, gax.WithClientLogging(logging))
+		callOpts.UpdateGlossaryEntry = append(callOpts.UpdateGlossaryEntry, gax.WithClientLogging(logging))
+		callOpts.DeleteGlossaryEntry = append(callOpts.DeleteGlossaryEntry, gax.WithClientLogging(logging))
+		callOpts.CreateDataset = append(callOpts.CreateDataset, gax.WithClientLogging(logging))
+		callOpts.GetDataset = append(callOpts.GetDataset, gax.WithClientLogging(logging))
+		callOpts.ListDatasets = append(callOpts.ListDatasets, gax.WithClientLogging(logging))
+		callOpts.DeleteDataset = append(callOpts.DeleteDataset, gax.WithClientLogging(logging))
+		callOpts.CreateAdaptiveMtDataset = append(callOpts.CreateAdaptiveMtDataset, gax.WithClientLogging(logging))
+		callOpts.DeleteAdaptiveMtDataset = append(callOpts.DeleteAdaptiveMtDataset, gax.WithClientLogging(logging))
+		callOpts.GetAdaptiveMtDataset = append(callOpts.GetAdaptiveMtDataset, gax.WithClientLogging(logging))
+		callOpts.ListAdaptiveMtDatasets = append(callOpts.ListAdaptiveMtDatasets, gax.WithClientLogging(logging))
+		callOpts.AdaptiveMtTranslate = append(callOpts.AdaptiveMtTranslate, gax.WithClientLogging(logging))
+		callOpts.GetAdaptiveMtFile = append(callOpts.GetAdaptiveMtFile, gax.WithClientLogging(logging))
+		callOpts.DeleteAdaptiveMtFile = append(callOpts.DeleteAdaptiveMtFile, gax.WithClientLogging(logging))
+		callOpts.ImportAdaptiveMtFile = append(callOpts.ImportAdaptiveMtFile, gax.WithClientLogging(logging))
+		callOpts.ListAdaptiveMtFiles = append(callOpts.ListAdaptiveMtFiles, gax.WithClientLogging(logging))
+		callOpts.ListAdaptiveMtSentences = append(callOpts.ListAdaptiveMtSentences, gax.WithClientLogging(logging))
+		callOpts.ImportData = append(callOpts.ImportData, gax.WithClientLogging(logging))
+		callOpts.ExportData = append(callOpts.ExportData, gax.WithClientLogging(logging))
+		callOpts.ListExamples = append(callOpts.ListExamples, gax.WithClientLogging(logging))
+		callOpts.CreateModel = append(callOpts.CreateModel, gax.WithClientLogging(logging))
+		callOpts.ListModels = append(callOpts.ListModels, gax.WithClientLogging(logging))
+		callOpts.GetModel = append(callOpts.GetModel, gax.WithClientLogging(logging))
+		callOpts.DeleteModel = append(callOpts.DeleteModel, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1073,9 +1303,6 @@ func (c *translationGRPCClient) TranslateText(ctx context.Context, req *translat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/TranslateText")
 	}
@@ -1097,9 +1324,6 @@ func (c *translationGRPCClient) RomanizeText(ctx context.Context, req *translate
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/RomanizeText")
 	}
@@ -1121,9 +1345,6 @@ func (c *translationGRPCClient) DetectLanguage(ctx context.Context, req *transla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DetectLanguage")
 	}
@@ -1145,9 +1366,6 @@ func (c *translationGRPCClient) GetSupportedLanguages(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetSupportedLanguages")
 	}
@@ -1190,9 +1408,6 @@ func (c *translationGRPCClient) BatchTranslateText(ctx context.Context, req *tra
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/BatchTranslateText")
 	}
@@ -1220,9 +1435,6 @@ func (c *translationGRPCClient) BatchTranslateDocument(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/BatchTranslateDocument")
 	}
@@ -1250,9 +1462,6 @@ func (c *translationGRPCClient) CreateGlossary(ctx context.Context, req *transla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateGlossary")
 	}
@@ -1307,9 +1516,6 @@ func (c *translationGRPCClient) ListGlossaries(ctx context.Context, req *transla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListGlossaries")
 	}
@@ -1359,9 +1565,6 @@ func (c *translationGRPCClient) GetGlossary(ctx context.Context, req *translatep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetGlossary")
 	}
@@ -1383,9 +1586,6 @@ func (c *translationGRPCClient) DeleteGlossary(ctx context.Context, req *transla
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteGlossary")
 	}
@@ -1413,9 +1613,6 @@ func (c *translationGRPCClient) GetGlossaryEntry(ctx context.Context, req *trans
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetGlossaryEntry")
 	}
@@ -1437,9 +1634,6 @@ func (c *translationGRPCClient) ListGlossaryEntries(ctx context.Context, req *tr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListGlossaryEntries")
 	}
@@ -1489,9 +1683,6 @@ func (c *translationGRPCClient) CreateGlossaryEntry(ctx context.Context, req *tr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateGlossaryEntry")
 	}
@@ -1534,9 +1725,6 @@ func (c *translationGRPCClient) DeleteGlossaryEntry(ctx context.Context, req *tr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteGlossaryEntry")
 	}
@@ -1554,9 +1742,6 @@ func (c *translationGRPCClient) CreateDataset(ctx context.Context, req *translat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateDataset")
 	}
@@ -1584,9 +1769,6 @@ func (c *translationGRPCClient) GetDataset(ctx context.Context, req *translatepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetDataset")
 	}
@@ -1608,9 +1790,6 @@ func (c *translationGRPCClient) ListDatasets(ctx context.Context, req *translate
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListDatasets")
 	}
@@ -1660,9 +1839,6 @@ func (c *translationGRPCClient) DeleteDataset(ctx context.Context, req *translat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteDataset")
 	}
@@ -1690,9 +1866,6 @@ func (c *translationGRPCClient) CreateAdaptiveMtDataset(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateAdaptiveMtDataset")
 	}
@@ -1714,9 +1887,6 @@ func (c *translationGRPCClient) DeleteAdaptiveMtDataset(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteAdaptiveMtDataset")
 	}
@@ -1734,9 +1904,6 @@ func (c *translationGRPCClient) GetAdaptiveMtDataset(ctx context.Context, req *t
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetAdaptiveMtDataset")
 	}
@@ -1758,9 +1925,6 @@ func (c *translationGRPCClient) ListAdaptiveMtDatasets(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListAdaptiveMtDatasets")
 	}
@@ -1810,9 +1974,6 @@ func (c *translationGRPCClient) AdaptiveMtTranslate(ctx context.Context, req *tr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/AdaptiveMtTranslate")
 	}
@@ -1834,9 +1995,6 @@ func (c *translationGRPCClient) GetAdaptiveMtFile(ctx context.Context, req *tran
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetAdaptiveMtFile")
 	}
@@ -1858,9 +2016,6 @@ func (c *translationGRPCClient) DeleteAdaptiveMtFile(ctx context.Context, req *t
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteAdaptiveMtFile")
 	}
@@ -1878,9 +2033,6 @@ func (c *translationGRPCClient) ImportAdaptiveMtFile(ctx context.Context, req *t
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ImportAdaptiveMtFile")
 	}
@@ -1902,9 +2054,6 @@ func (c *translationGRPCClient) ListAdaptiveMtFiles(ctx context.Context, req *tr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListAdaptiveMtFiles")
 	}
@@ -1954,9 +2103,6 @@ func (c *translationGRPCClient) ListAdaptiveMtSentences(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListAdaptiveMtSentences")
 	}
@@ -2060,9 +2206,6 @@ func (c *translationGRPCClient) ListExamples(ctx context.Context, req *translate
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListExamples")
 	}
@@ -2112,9 +2255,6 @@ func (c *translationGRPCClient) CreateModel(ctx context.Context, req *translatep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateModel")
 	}
@@ -2142,9 +2282,6 @@ func (c *translationGRPCClient) ListModels(ctx context.Context, req *translatepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ListModels")
 	}
@@ -2194,9 +2331,6 @@ func (c *translationGRPCClient) GetModel(ctx context.Context, req *translatepb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetModel")
 	}
@@ -2218,9 +2352,6 @@ func (c *translationGRPCClient) DeleteModel(ctx context.Context, req *translatep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteModel")
 	}
@@ -2463,9 +2594,6 @@ func (c *translationRESTClient) TranslateText(ctx context.Context, req *translat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/TranslateText")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}:translateText")
@@ -2526,9 +2654,6 @@ func (c *translationRESTClient) RomanizeText(ctx context.Context, req *translate
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/RomanizeText")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}:romanizeText")
@@ -2589,9 +2714,6 @@ func (c *translationRESTClient) DetectLanguage(ctx context.Context, req *transla
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DetectLanguage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}:detectLanguage")
@@ -2652,9 +2774,6 @@ func (c *translationRESTClient) GetSupportedLanguages(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetSupportedLanguages")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}/supportedLanguages")
@@ -2781,9 +2900,6 @@ func (c *translationRESTClient) BatchTranslateText(ctx context.Context, req *tra
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/BatchTranslateText")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}:batchTranslateText")
@@ -2857,9 +2973,6 @@ func (c *translationRESTClient) BatchTranslateDocument(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/BatchTranslateDocument")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}:batchTranslateDocument")
@@ -2929,9 +3042,6 @@ func (c *translationRESTClient) CreateGlossary(ctx context.Context, req *transla
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateGlossary")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}/glossaries")
@@ -3152,9 +3262,6 @@ func (c *translationRESTClient) GetGlossary(ctx context.Context, req *translatep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetGlossary")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/glossaries/*}")
@@ -3211,9 +3318,6 @@ func (c *translationRESTClient) DeleteGlossary(ctx context.Context, req *transla
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteGlossary")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/glossaries/*}")
@@ -3275,9 +3379,6 @@ func (c *translationRESTClient) GetGlossaryEntry(ctx context.Context, req *trans
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetGlossaryEntry")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/glossaries/*/glossaryEntries/*}")
@@ -3417,9 +3518,6 @@ func (c *translationRESTClient) CreateGlossaryEntry(ctx context.Context, req *tr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateGlossaryEntry")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*/glossaries/*}/glossaryEntries")
@@ -3535,9 +3633,6 @@ func (c *translationRESTClient) DeleteGlossaryEntry(ctx context.Context, req *tr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteGlossaryEntry")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/glossaries/*/glossaryEntries/*}")
@@ -3584,9 +3679,6 @@ func (c *translationRESTClient) CreateDataset(ctx context.Context, req *translat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}/datasets")
@@ -3648,9 +3740,6 @@ func (c *translationRESTClient) GetDataset(ctx context.Context, req *translatepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/datasets/*}")
@@ -3783,9 +3872,6 @@ func (c *translationRESTClient) DeleteDataset(ctx context.Context, req *translat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/datasets/*}")
@@ -3854,9 +3940,6 @@ func (c *translationRESTClient) CreateAdaptiveMtDataset(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateAdaptiveMtDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}/adaptiveMtDatasets")
@@ -3912,9 +3995,6 @@ func (c *translationRESTClient) DeleteAdaptiveMtDataset(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteAdaptiveMtDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/adaptiveMtDatasets/*}")
@@ -3954,9 +4034,6 @@ func (c *translationRESTClient) GetAdaptiveMtDataset(ctx context.Context, req *t
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetAdaptiveMtDataset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/adaptiveMtDatasets/*}")
@@ -4098,9 +4175,6 @@ func (c *translationRESTClient) AdaptiveMtTranslate(ctx context.Context, req *tr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/AdaptiveMtTranslate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}:adaptiveMtTranslate")
@@ -4155,9 +4229,6 @@ func (c *translationRESTClient) GetAdaptiveMtFile(ctx context.Context, req *tran
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetAdaptiveMtFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/adaptiveMtDatasets/*/adaptiveMtFiles/*}")
@@ -4212,9 +4283,6 @@ func (c *translationRESTClient) DeleteAdaptiveMtFile(ctx context.Context, req *t
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteAdaptiveMtFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/adaptiveMtDatasets/*/adaptiveMtFiles/*}")
@@ -4261,9 +4329,6 @@ func (c *translationRESTClient) ImportAdaptiveMtFile(ctx context.Context, req *t
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/ImportAdaptiveMtFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*/adaptiveMtDatasets/*}:importAdaptiveMtFile")
@@ -4696,9 +4761,6 @@ func (c *translationRESTClient) CreateModel(ctx context.Context, req *translatep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/CreateModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}/models")
@@ -4841,9 +4903,6 @@ func (c *translationRESTClient) GetModel(ctx context.Context, req *translatepb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/GetModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/models/*}")
@@ -4898,9 +4957,6 @@ func (c *translationRESTClient) DeleteModel(ctx context.Context, req *translatep
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//translate.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.translation.v3.TranslationService/DeleteModel")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/models/*}")

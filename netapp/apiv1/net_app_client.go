@@ -1823,6 +1823,185 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "netapp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/netapp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "netapp.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListStoragePools = append(client.CallOptions.ListStoragePools, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateStoragePool = append(client.CallOptions.CreateStoragePool, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStoragePool = append(client.CallOptions.GetStoragePool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateStoragePool = append(client.CallOptions.UpdateStoragePool, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteStoragePool = append(client.CallOptions.DeleteStoragePool, gax.WithClientTracing(tracing))
+		client.CallOptions.ValidateDirectoryService = append(client.CallOptions.ValidateDirectoryService, gax.WithClientTracing(tracing))
+		client.CallOptions.SwitchActiveReplicaZone = append(client.CallOptions.SwitchActiveReplicaZone, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVolumes = append(client.CallOptions.ListVolumes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVolume = append(client.CallOptions.GetVolume, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateVolume = append(client.CallOptions.CreateVolume, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVolume = append(client.CallOptions.UpdateVolume, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVolume = append(client.CallOptions.DeleteVolume, gax.WithClientTracing(tracing))
+		client.CallOptions.RevertVolume = append(client.CallOptions.RevertVolume, gax.WithClientTracing(tracing))
+		client.CallOptions.EstablishVolumePeering = append(client.CallOptions.EstablishVolumePeering, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSnapshot = append(client.CallOptions.CreateSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSnapshot = append(client.CallOptions.DeleteSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSnapshot = append(client.CallOptions.UpdateSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.ListActiveDirectories = append(client.CallOptions.ListActiveDirectories, gax.WithClientTracing(tracing))
+		client.CallOptions.GetActiveDirectory = append(client.CallOptions.GetActiveDirectory, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateActiveDirectory = append(client.CallOptions.CreateActiveDirectory, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateActiveDirectory = append(client.CallOptions.UpdateActiveDirectory, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteActiveDirectory = append(client.CallOptions.DeleteActiveDirectory, gax.WithClientTracing(tracing))
+		client.CallOptions.ListKmsConfigs = append(client.CallOptions.ListKmsConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateKmsConfig = append(client.CallOptions.CreateKmsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetKmsConfig = append(client.CallOptions.GetKmsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateKmsConfig = append(client.CallOptions.UpdateKmsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.EncryptVolumes = append(client.CallOptions.EncryptVolumes, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifyKmsConfig = append(client.CallOptions.VerifyKmsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteKmsConfig = append(client.CallOptions.DeleteKmsConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReplications = append(client.CallOptions.ListReplications, gax.WithClientTracing(tracing))
+		client.CallOptions.GetReplication = append(client.CallOptions.GetReplication, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateReplication = append(client.CallOptions.CreateReplication, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteReplication = append(client.CallOptions.DeleteReplication, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateReplication = append(client.CallOptions.UpdateReplication, gax.WithClientTracing(tracing))
+		client.CallOptions.StopReplication = append(client.CallOptions.StopReplication, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeReplication = append(client.CallOptions.ResumeReplication, gax.WithClientTracing(tracing))
+		client.CallOptions.ReverseReplicationDirection = append(client.CallOptions.ReverseReplicationDirection, gax.WithClientTracing(tracing))
+		client.CallOptions.EstablishPeering = append(client.CallOptions.EstablishPeering, gax.WithClientTracing(tracing))
+		client.CallOptions.SyncReplication = append(client.CallOptions.SyncReplication, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackupVault = append(client.CallOptions.CreateBackupVault, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupVault = append(client.CallOptions.GetBackupVault, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupVaults = append(client.CallOptions.ListBackupVaults, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackupVault = append(client.CallOptions.UpdateBackupVault, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackupVault = append(client.CallOptions.DeleteBackupVault, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateBackupPolicy = append(client.CallOptions.CreateBackupPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetBackupPolicy = append(client.CallOptions.GetBackupPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupPolicies = append(client.CallOptions.ListBackupPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackupPolicy = append(client.CallOptions.UpdateBackupPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteBackupPolicy = append(client.CallOptions.DeleteBackupPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListQuotaRules = append(client.CallOptions.ListQuotaRules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetQuotaRule = append(client.CallOptions.GetQuotaRule, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateQuotaRule = append(client.CallOptions.CreateQuotaRule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateQuotaRule = append(client.CallOptions.UpdateQuotaRule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteQuotaRule = append(client.CallOptions.DeleteQuotaRule, gax.WithClientTracing(tracing))
+		client.CallOptions.RestoreBackupFiles = append(client.CallOptions.RestoreBackupFiles, gax.WithClientTracing(tracing))
+		client.CallOptions.ListHostGroups = append(client.CallOptions.ListHostGroups, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHostGroup = append(client.CallOptions.GetHostGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateHostGroup = append(client.CallOptions.CreateHostGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHostGroup = append(client.CallOptions.UpdateHostGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteHostGroup = append(client.CallOptions.DeleteHostGroup, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteOntapPost = append(client.CallOptions.ExecuteOntapPost, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteOntapGet = append(client.CallOptions.ExecuteOntapGet, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteOntapDelete = append(client.CallOptions.ExecuteOntapDelete, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteOntapPatch = append(client.CallOptions.ExecuteOntapPatch, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "netapp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/netapp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "netapp.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListStoragePools = append(client.CallOptions.ListStoragePools, gax.WithClientLogging(logging))
+		client.CallOptions.CreateStoragePool = append(client.CallOptions.CreateStoragePool, gax.WithClientLogging(logging))
+		client.CallOptions.GetStoragePool = append(client.CallOptions.GetStoragePool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateStoragePool = append(client.CallOptions.UpdateStoragePool, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteStoragePool = append(client.CallOptions.DeleteStoragePool, gax.WithClientLogging(logging))
+		client.CallOptions.ValidateDirectoryService = append(client.CallOptions.ValidateDirectoryService, gax.WithClientLogging(logging))
+		client.CallOptions.SwitchActiveReplicaZone = append(client.CallOptions.SwitchActiveReplicaZone, gax.WithClientLogging(logging))
+		client.CallOptions.ListVolumes = append(client.CallOptions.ListVolumes, gax.WithClientLogging(logging))
+		client.CallOptions.GetVolume = append(client.CallOptions.GetVolume, gax.WithClientLogging(logging))
+		client.CallOptions.CreateVolume = append(client.CallOptions.CreateVolume, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVolume = append(client.CallOptions.UpdateVolume, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVolume = append(client.CallOptions.DeleteVolume, gax.WithClientLogging(logging))
+		client.CallOptions.RevertVolume = append(client.CallOptions.RevertVolume, gax.WithClientLogging(logging))
+		client.CallOptions.EstablishVolumePeering = append(client.CallOptions.EstablishVolumePeering, gax.WithClientLogging(logging))
+		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientLogging(logging))
+		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSnapshot = append(client.CallOptions.CreateSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSnapshot = append(client.CallOptions.DeleteSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSnapshot = append(client.CallOptions.UpdateSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.ListActiveDirectories = append(client.CallOptions.ListActiveDirectories, gax.WithClientLogging(logging))
+		client.CallOptions.GetActiveDirectory = append(client.CallOptions.GetActiveDirectory, gax.WithClientLogging(logging))
+		client.CallOptions.CreateActiveDirectory = append(client.CallOptions.CreateActiveDirectory, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateActiveDirectory = append(client.CallOptions.UpdateActiveDirectory, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteActiveDirectory = append(client.CallOptions.DeleteActiveDirectory, gax.WithClientLogging(logging))
+		client.CallOptions.ListKmsConfigs = append(client.CallOptions.ListKmsConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.CreateKmsConfig = append(client.CallOptions.CreateKmsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetKmsConfig = append(client.CallOptions.GetKmsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateKmsConfig = append(client.CallOptions.UpdateKmsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.EncryptVolumes = append(client.CallOptions.EncryptVolumes, gax.WithClientLogging(logging))
+		client.CallOptions.VerifyKmsConfig = append(client.CallOptions.VerifyKmsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteKmsConfig = append(client.CallOptions.DeleteKmsConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListReplications = append(client.CallOptions.ListReplications, gax.WithClientLogging(logging))
+		client.CallOptions.GetReplication = append(client.CallOptions.GetReplication, gax.WithClientLogging(logging))
+		client.CallOptions.CreateReplication = append(client.CallOptions.CreateReplication, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteReplication = append(client.CallOptions.DeleteReplication, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateReplication = append(client.CallOptions.UpdateReplication, gax.WithClientLogging(logging))
+		client.CallOptions.StopReplication = append(client.CallOptions.StopReplication, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeReplication = append(client.CallOptions.ResumeReplication, gax.WithClientLogging(logging))
+		client.CallOptions.ReverseReplicationDirection = append(client.CallOptions.ReverseReplicationDirection, gax.WithClientLogging(logging))
+		client.CallOptions.EstablishPeering = append(client.CallOptions.EstablishPeering, gax.WithClientLogging(logging))
+		client.CallOptions.SyncReplication = append(client.CallOptions.SyncReplication, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackupVault = append(client.CallOptions.CreateBackupVault, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupVault = append(client.CallOptions.GetBackupVault, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupVaults = append(client.CallOptions.ListBackupVaults, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackupVault = append(client.CallOptions.UpdateBackupVault, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackupVault = append(client.CallOptions.DeleteBackupVault, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackup = append(client.CallOptions.CreateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackup = append(client.CallOptions.GetBackup, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackups = append(client.CallOptions.ListBackups, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackup = append(client.CallOptions.DeleteBackup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackup = append(client.CallOptions.UpdateBackup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateBackupPolicy = append(client.CallOptions.CreateBackupPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetBackupPolicy = append(client.CallOptions.GetBackupPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupPolicies = append(client.CallOptions.ListBackupPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackupPolicy = append(client.CallOptions.UpdateBackupPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteBackupPolicy = append(client.CallOptions.DeleteBackupPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListQuotaRules = append(client.CallOptions.ListQuotaRules, gax.WithClientLogging(logging))
+		client.CallOptions.GetQuotaRule = append(client.CallOptions.GetQuotaRule, gax.WithClientLogging(logging))
+		client.CallOptions.CreateQuotaRule = append(client.CallOptions.CreateQuotaRule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateQuotaRule = append(client.CallOptions.UpdateQuotaRule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteQuotaRule = append(client.CallOptions.DeleteQuotaRule, gax.WithClientLogging(logging))
+		client.CallOptions.RestoreBackupFiles = append(client.CallOptions.RestoreBackupFiles, gax.WithClientLogging(logging))
+		client.CallOptions.ListHostGroups = append(client.CallOptions.ListHostGroups, gax.WithClientLogging(logging))
+		client.CallOptions.GetHostGroup = append(client.CallOptions.GetHostGroup, gax.WithClientLogging(logging))
+		client.CallOptions.CreateHostGroup = append(client.CallOptions.CreateHostGroup, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHostGroup = append(client.CallOptions.UpdateHostGroup, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteHostGroup = append(client.CallOptions.DeleteHostGroup, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteOntapPost = append(client.CallOptions.ExecuteOntapPost, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteOntapGet = append(client.CallOptions.ExecuteOntapGet, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteOntapDelete = append(client.CallOptions.ExecuteOntapDelete, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteOntapPatch = append(client.CallOptions.ExecuteOntapPatch, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -2006,6 +2185,185 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "netapp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/netapp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "netapp.googleapis.com",
+			}),
+		)
+
+		callOpts.ListStoragePools = append(callOpts.ListStoragePools, gax.WithClientTracing(tracing))
+		callOpts.CreateStoragePool = append(callOpts.CreateStoragePool, gax.WithClientTracing(tracing))
+		callOpts.GetStoragePool = append(callOpts.GetStoragePool, gax.WithClientTracing(tracing))
+		callOpts.UpdateStoragePool = append(callOpts.UpdateStoragePool, gax.WithClientTracing(tracing))
+		callOpts.DeleteStoragePool = append(callOpts.DeleteStoragePool, gax.WithClientTracing(tracing))
+		callOpts.ValidateDirectoryService = append(callOpts.ValidateDirectoryService, gax.WithClientTracing(tracing))
+		callOpts.SwitchActiveReplicaZone = append(callOpts.SwitchActiveReplicaZone, gax.WithClientTracing(tracing))
+		callOpts.ListVolumes = append(callOpts.ListVolumes, gax.WithClientTracing(tracing))
+		callOpts.GetVolume = append(callOpts.GetVolume, gax.WithClientTracing(tracing))
+		callOpts.CreateVolume = append(callOpts.CreateVolume, gax.WithClientTracing(tracing))
+		callOpts.UpdateVolume = append(callOpts.UpdateVolume, gax.WithClientTracing(tracing))
+		callOpts.DeleteVolume = append(callOpts.DeleteVolume, gax.WithClientTracing(tracing))
+		callOpts.RevertVolume = append(callOpts.RevertVolume, gax.WithClientTracing(tracing))
+		callOpts.EstablishVolumePeering = append(callOpts.EstablishVolumePeering, gax.WithClientTracing(tracing))
+		callOpts.ListSnapshots = append(callOpts.ListSnapshots, gax.WithClientTracing(tracing))
+		callOpts.GetSnapshot = append(callOpts.GetSnapshot, gax.WithClientTracing(tracing))
+		callOpts.CreateSnapshot = append(callOpts.CreateSnapshot, gax.WithClientTracing(tracing))
+		callOpts.DeleteSnapshot = append(callOpts.DeleteSnapshot, gax.WithClientTracing(tracing))
+		callOpts.UpdateSnapshot = append(callOpts.UpdateSnapshot, gax.WithClientTracing(tracing))
+		callOpts.ListActiveDirectories = append(callOpts.ListActiveDirectories, gax.WithClientTracing(tracing))
+		callOpts.GetActiveDirectory = append(callOpts.GetActiveDirectory, gax.WithClientTracing(tracing))
+		callOpts.CreateActiveDirectory = append(callOpts.CreateActiveDirectory, gax.WithClientTracing(tracing))
+		callOpts.UpdateActiveDirectory = append(callOpts.UpdateActiveDirectory, gax.WithClientTracing(tracing))
+		callOpts.DeleteActiveDirectory = append(callOpts.DeleteActiveDirectory, gax.WithClientTracing(tracing))
+		callOpts.ListKmsConfigs = append(callOpts.ListKmsConfigs, gax.WithClientTracing(tracing))
+		callOpts.CreateKmsConfig = append(callOpts.CreateKmsConfig, gax.WithClientTracing(tracing))
+		callOpts.GetKmsConfig = append(callOpts.GetKmsConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateKmsConfig = append(callOpts.UpdateKmsConfig, gax.WithClientTracing(tracing))
+		callOpts.EncryptVolumes = append(callOpts.EncryptVolumes, gax.WithClientTracing(tracing))
+		callOpts.VerifyKmsConfig = append(callOpts.VerifyKmsConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteKmsConfig = append(callOpts.DeleteKmsConfig, gax.WithClientTracing(tracing))
+		callOpts.ListReplications = append(callOpts.ListReplications, gax.WithClientTracing(tracing))
+		callOpts.GetReplication = append(callOpts.GetReplication, gax.WithClientTracing(tracing))
+		callOpts.CreateReplication = append(callOpts.CreateReplication, gax.WithClientTracing(tracing))
+		callOpts.DeleteReplication = append(callOpts.DeleteReplication, gax.WithClientTracing(tracing))
+		callOpts.UpdateReplication = append(callOpts.UpdateReplication, gax.WithClientTracing(tracing))
+		callOpts.StopReplication = append(callOpts.StopReplication, gax.WithClientTracing(tracing))
+		callOpts.ResumeReplication = append(callOpts.ResumeReplication, gax.WithClientTracing(tracing))
+		callOpts.ReverseReplicationDirection = append(callOpts.ReverseReplicationDirection, gax.WithClientTracing(tracing))
+		callOpts.EstablishPeering = append(callOpts.EstablishPeering, gax.WithClientTracing(tracing))
+		callOpts.SyncReplication = append(callOpts.SyncReplication, gax.WithClientTracing(tracing))
+		callOpts.CreateBackupVault = append(callOpts.CreateBackupVault, gax.WithClientTracing(tracing))
+		callOpts.GetBackupVault = append(callOpts.GetBackupVault, gax.WithClientTracing(tracing))
+		callOpts.ListBackupVaults = append(callOpts.ListBackupVaults, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackupVault = append(callOpts.UpdateBackupVault, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackupVault = append(callOpts.DeleteBackupVault, gax.WithClientTracing(tracing))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientTracing(tracing))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientTracing(tracing))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientTracing(tracing))
+		callOpts.CreateBackupPolicy = append(callOpts.CreateBackupPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetBackupPolicy = append(callOpts.GetBackupPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListBackupPolicies = append(callOpts.ListBackupPolicies, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackupPolicy = append(callOpts.UpdateBackupPolicy, gax.WithClientTracing(tracing))
+		callOpts.DeleteBackupPolicy = append(callOpts.DeleteBackupPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListQuotaRules = append(callOpts.ListQuotaRules, gax.WithClientTracing(tracing))
+		callOpts.GetQuotaRule = append(callOpts.GetQuotaRule, gax.WithClientTracing(tracing))
+		callOpts.CreateQuotaRule = append(callOpts.CreateQuotaRule, gax.WithClientTracing(tracing))
+		callOpts.UpdateQuotaRule = append(callOpts.UpdateQuotaRule, gax.WithClientTracing(tracing))
+		callOpts.DeleteQuotaRule = append(callOpts.DeleteQuotaRule, gax.WithClientTracing(tracing))
+		callOpts.RestoreBackupFiles = append(callOpts.RestoreBackupFiles, gax.WithClientTracing(tracing))
+		callOpts.ListHostGroups = append(callOpts.ListHostGroups, gax.WithClientTracing(tracing))
+		callOpts.GetHostGroup = append(callOpts.GetHostGroup, gax.WithClientTracing(tracing))
+		callOpts.CreateHostGroup = append(callOpts.CreateHostGroup, gax.WithClientTracing(tracing))
+		callOpts.UpdateHostGroup = append(callOpts.UpdateHostGroup, gax.WithClientTracing(tracing))
+		callOpts.DeleteHostGroup = append(callOpts.DeleteHostGroup, gax.WithClientTracing(tracing))
+		callOpts.ExecuteOntapPost = append(callOpts.ExecuteOntapPost, gax.WithClientTracing(tracing))
+		callOpts.ExecuteOntapGet = append(callOpts.ExecuteOntapGet, gax.WithClientTracing(tracing))
+		callOpts.ExecuteOntapDelete = append(callOpts.ExecuteOntapDelete, gax.WithClientTracing(tracing))
+		callOpts.ExecuteOntapPatch = append(callOpts.ExecuteOntapPatch, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "netapp",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/netapp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "netapp.googleapis.com",
+			}),
+		)
+
+		callOpts.ListStoragePools = append(callOpts.ListStoragePools, gax.WithClientLogging(logging))
+		callOpts.CreateStoragePool = append(callOpts.CreateStoragePool, gax.WithClientLogging(logging))
+		callOpts.GetStoragePool = append(callOpts.GetStoragePool, gax.WithClientLogging(logging))
+		callOpts.UpdateStoragePool = append(callOpts.UpdateStoragePool, gax.WithClientLogging(logging))
+		callOpts.DeleteStoragePool = append(callOpts.DeleteStoragePool, gax.WithClientLogging(logging))
+		callOpts.ValidateDirectoryService = append(callOpts.ValidateDirectoryService, gax.WithClientLogging(logging))
+		callOpts.SwitchActiveReplicaZone = append(callOpts.SwitchActiveReplicaZone, gax.WithClientLogging(logging))
+		callOpts.ListVolumes = append(callOpts.ListVolumes, gax.WithClientLogging(logging))
+		callOpts.GetVolume = append(callOpts.GetVolume, gax.WithClientLogging(logging))
+		callOpts.CreateVolume = append(callOpts.CreateVolume, gax.WithClientLogging(logging))
+		callOpts.UpdateVolume = append(callOpts.UpdateVolume, gax.WithClientLogging(logging))
+		callOpts.DeleteVolume = append(callOpts.DeleteVolume, gax.WithClientLogging(logging))
+		callOpts.RevertVolume = append(callOpts.RevertVolume, gax.WithClientLogging(logging))
+		callOpts.EstablishVolumePeering = append(callOpts.EstablishVolumePeering, gax.WithClientLogging(logging))
+		callOpts.ListSnapshots = append(callOpts.ListSnapshots, gax.WithClientLogging(logging))
+		callOpts.GetSnapshot = append(callOpts.GetSnapshot, gax.WithClientLogging(logging))
+		callOpts.CreateSnapshot = append(callOpts.CreateSnapshot, gax.WithClientLogging(logging))
+		callOpts.DeleteSnapshot = append(callOpts.DeleteSnapshot, gax.WithClientLogging(logging))
+		callOpts.UpdateSnapshot = append(callOpts.UpdateSnapshot, gax.WithClientLogging(logging))
+		callOpts.ListActiveDirectories = append(callOpts.ListActiveDirectories, gax.WithClientLogging(logging))
+		callOpts.GetActiveDirectory = append(callOpts.GetActiveDirectory, gax.WithClientLogging(logging))
+		callOpts.CreateActiveDirectory = append(callOpts.CreateActiveDirectory, gax.WithClientLogging(logging))
+		callOpts.UpdateActiveDirectory = append(callOpts.UpdateActiveDirectory, gax.WithClientLogging(logging))
+		callOpts.DeleteActiveDirectory = append(callOpts.DeleteActiveDirectory, gax.WithClientLogging(logging))
+		callOpts.ListKmsConfigs = append(callOpts.ListKmsConfigs, gax.WithClientLogging(logging))
+		callOpts.CreateKmsConfig = append(callOpts.CreateKmsConfig, gax.WithClientLogging(logging))
+		callOpts.GetKmsConfig = append(callOpts.GetKmsConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateKmsConfig = append(callOpts.UpdateKmsConfig, gax.WithClientLogging(logging))
+		callOpts.EncryptVolumes = append(callOpts.EncryptVolumes, gax.WithClientLogging(logging))
+		callOpts.VerifyKmsConfig = append(callOpts.VerifyKmsConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteKmsConfig = append(callOpts.DeleteKmsConfig, gax.WithClientLogging(logging))
+		callOpts.ListReplications = append(callOpts.ListReplications, gax.WithClientLogging(logging))
+		callOpts.GetReplication = append(callOpts.GetReplication, gax.WithClientLogging(logging))
+		callOpts.CreateReplication = append(callOpts.CreateReplication, gax.WithClientLogging(logging))
+		callOpts.DeleteReplication = append(callOpts.DeleteReplication, gax.WithClientLogging(logging))
+		callOpts.UpdateReplication = append(callOpts.UpdateReplication, gax.WithClientLogging(logging))
+		callOpts.StopReplication = append(callOpts.StopReplication, gax.WithClientLogging(logging))
+		callOpts.ResumeReplication = append(callOpts.ResumeReplication, gax.WithClientLogging(logging))
+		callOpts.ReverseReplicationDirection = append(callOpts.ReverseReplicationDirection, gax.WithClientLogging(logging))
+		callOpts.EstablishPeering = append(callOpts.EstablishPeering, gax.WithClientLogging(logging))
+		callOpts.SyncReplication = append(callOpts.SyncReplication, gax.WithClientLogging(logging))
+		callOpts.CreateBackupVault = append(callOpts.CreateBackupVault, gax.WithClientLogging(logging))
+		callOpts.GetBackupVault = append(callOpts.GetBackupVault, gax.WithClientLogging(logging))
+		callOpts.ListBackupVaults = append(callOpts.ListBackupVaults, gax.WithClientLogging(logging))
+		callOpts.UpdateBackupVault = append(callOpts.UpdateBackupVault, gax.WithClientLogging(logging))
+		callOpts.DeleteBackupVault = append(callOpts.DeleteBackupVault, gax.WithClientLogging(logging))
+		callOpts.CreateBackup = append(callOpts.CreateBackup, gax.WithClientLogging(logging))
+		callOpts.GetBackup = append(callOpts.GetBackup, gax.WithClientLogging(logging))
+		callOpts.ListBackups = append(callOpts.ListBackups, gax.WithClientLogging(logging))
+		callOpts.DeleteBackup = append(callOpts.DeleteBackup, gax.WithClientLogging(logging))
+		callOpts.UpdateBackup = append(callOpts.UpdateBackup, gax.WithClientLogging(logging))
+		callOpts.CreateBackupPolicy = append(callOpts.CreateBackupPolicy, gax.WithClientLogging(logging))
+		callOpts.GetBackupPolicy = append(callOpts.GetBackupPolicy, gax.WithClientLogging(logging))
+		callOpts.ListBackupPolicies = append(callOpts.ListBackupPolicies, gax.WithClientLogging(logging))
+		callOpts.UpdateBackupPolicy = append(callOpts.UpdateBackupPolicy, gax.WithClientLogging(logging))
+		callOpts.DeleteBackupPolicy = append(callOpts.DeleteBackupPolicy, gax.WithClientLogging(logging))
+		callOpts.ListQuotaRules = append(callOpts.ListQuotaRules, gax.WithClientLogging(logging))
+		callOpts.GetQuotaRule = append(callOpts.GetQuotaRule, gax.WithClientLogging(logging))
+		callOpts.CreateQuotaRule = append(callOpts.CreateQuotaRule, gax.WithClientLogging(logging))
+		callOpts.UpdateQuotaRule = append(callOpts.UpdateQuotaRule, gax.WithClientLogging(logging))
+		callOpts.DeleteQuotaRule = append(callOpts.DeleteQuotaRule, gax.WithClientLogging(logging))
+		callOpts.RestoreBackupFiles = append(callOpts.RestoreBackupFiles, gax.WithClientLogging(logging))
+		callOpts.ListHostGroups = append(callOpts.ListHostGroups, gax.WithClientLogging(logging))
+		callOpts.GetHostGroup = append(callOpts.GetHostGroup, gax.WithClientLogging(logging))
+		callOpts.CreateHostGroup = append(callOpts.CreateHostGroup, gax.WithClientLogging(logging))
+		callOpts.UpdateHostGroup = append(callOpts.UpdateHostGroup, gax.WithClientLogging(logging))
+		callOpts.DeleteHostGroup = append(callOpts.DeleteHostGroup, gax.WithClientLogging(logging))
+		callOpts.ExecuteOntapPost = append(callOpts.ExecuteOntapPost, gax.WithClientLogging(logging))
+		callOpts.ExecuteOntapGet = append(callOpts.ExecuteOntapGet, gax.WithClientLogging(logging))
+		callOpts.ExecuteOntapDelete = append(callOpts.ExecuteOntapDelete, gax.WithClientLogging(logging))
+		callOpts.ExecuteOntapPatch = append(callOpts.ExecuteOntapPatch, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -2062,9 +2420,6 @@ func (c *gRPCClient) ListStoragePools(ctx context.Context, req *netapppb.ListSto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListStoragePools")
 	}
@@ -2114,9 +2469,6 @@ func (c *gRPCClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateStoragePool")
 	}
@@ -2144,9 +2496,6 @@ func (c *gRPCClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetStoragePool")
 	}
@@ -2195,9 +2544,6 @@ func (c *gRPCClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteStoragePool")
 	}
@@ -2225,9 +2571,6 @@ func (c *gRPCClient) ValidateDirectoryService(ctx context.Context, req *netapppb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ValidateDirectoryService")
 	}
@@ -2255,9 +2598,6 @@ func (c *gRPCClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SwitchActiveReplicaZone")
 	}
@@ -2285,9 +2625,6 @@ func (c *gRPCClient) ListVolumes(ctx context.Context, req *netapppb.ListVolumesR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListVolumes")
 	}
@@ -2337,9 +2674,6 @@ func (c *gRPCClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetVolume")
 	}
@@ -2361,9 +2695,6 @@ func (c *gRPCClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateVolume")
 	}
@@ -2418,9 +2749,6 @@ func (c *gRPCClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteVolume")
 	}
@@ -2448,9 +2776,6 @@ func (c *gRPCClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RevertVolume")
 	}
@@ -2478,9 +2803,6 @@ func (c *gRPCClient) EstablishVolumePeering(ctx context.Context, req *netapppb.E
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishVolumePeering")
 	}
@@ -2508,9 +2830,6 @@ func (c *gRPCClient) ListSnapshots(ctx context.Context, req *netapppb.ListSnapsh
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListSnapshots")
 	}
@@ -2560,9 +2879,6 @@ func (c *gRPCClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetSnapshot")
 	}
@@ -2584,9 +2900,6 @@ func (c *gRPCClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateSnapshot")
 	}
@@ -2614,9 +2927,6 @@ func (c *gRPCClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteSnapshot")
 	}
@@ -2671,9 +2981,6 @@ func (c *gRPCClient) ListActiveDirectories(ctx context.Context, req *netapppb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListActiveDirectories")
 	}
@@ -2723,9 +3030,6 @@ func (c *gRPCClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetActiveDirectory")
 	}
@@ -2747,9 +3051,6 @@ func (c *gRPCClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateActiveDirectory")
 	}
@@ -2804,9 +3105,6 @@ func (c *gRPCClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteActiveDirectory")
 	}
@@ -2834,9 +3132,6 @@ func (c *gRPCClient) ListKmsConfigs(ctx context.Context, req *netapppb.ListKmsCo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListKmsConfigs")
 	}
@@ -2886,9 +3181,6 @@ func (c *gRPCClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateKmsConfig")
 	}
@@ -2916,9 +3208,6 @@ func (c *gRPCClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetKmsConfig")
 	}
@@ -2967,9 +3256,6 @@ func (c *gRPCClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EncryptVolumes")
 	}
@@ -2997,9 +3283,6 @@ func (c *gRPCClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/VerifyKmsConfig")
 	}
@@ -3021,9 +3304,6 @@ func (c *gRPCClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteKmsConfig")
 	}
@@ -3051,9 +3331,6 @@ func (c *gRPCClient) ListReplications(ctx context.Context, req *netapppb.ListRep
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListReplications")
 	}
@@ -3103,9 +3380,6 @@ func (c *gRPCClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetReplication")
 	}
@@ -3127,9 +3401,6 @@ func (c *gRPCClient) CreateReplication(ctx context.Context, req *netapppb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateReplication")
 	}
@@ -3157,9 +3428,6 @@ func (c *gRPCClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteReplication")
 	}
@@ -3214,9 +3482,6 @@ func (c *gRPCClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/StopReplication")
 	}
@@ -3244,9 +3509,6 @@ func (c *gRPCClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ResumeReplication")
 	}
@@ -3274,9 +3536,6 @@ func (c *gRPCClient) ReverseReplicationDirection(ctx context.Context, req *netap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ReverseReplicationDirection")
 	}
@@ -3304,9 +3563,6 @@ func (c *gRPCClient) EstablishPeering(ctx context.Context, req *netapppb.Establi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishPeering")
 	}
@@ -3334,9 +3590,6 @@ func (c *gRPCClient) SyncReplication(ctx context.Context, req *netapppb.SyncRepl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SyncReplication")
 	}
@@ -3364,9 +3617,6 @@ func (c *gRPCClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupVault")
 	}
@@ -3394,9 +3644,6 @@ func (c *gRPCClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupVault")
 	}
@@ -3418,9 +3665,6 @@ func (c *gRPCClient) ListBackupVaults(ctx context.Context, req *netapppb.ListBac
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListBackupVaults")
 	}
@@ -3497,9 +3741,6 @@ func (c *gRPCClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupVault")
 	}
@@ -3527,9 +3768,6 @@ func (c *gRPCClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackup")
 	}
@@ -3557,9 +3795,6 @@ func (c *gRPCClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackup")
 	}
@@ -3581,9 +3816,6 @@ func (c *gRPCClient) ListBackups(ctx context.Context, req *netapppb.ListBackupsR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListBackups")
 	}
@@ -3633,9 +3865,6 @@ func (c *gRPCClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackup")
 	}
@@ -3690,9 +3919,6 @@ func (c *gRPCClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupPolicy")
 	}
@@ -3720,9 +3946,6 @@ func (c *gRPCClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupPolicy")
 	}
@@ -3744,9 +3967,6 @@ func (c *gRPCClient) ListBackupPolicies(ctx context.Context, req *netapppb.ListB
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListBackupPolicies")
 	}
@@ -3823,9 +4043,6 @@ func (c *gRPCClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupPolicy")
 	}
@@ -3853,9 +4070,6 @@ func (c *gRPCClient) ListQuotaRules(ctx context.Context, req *netapppb.ListQuota
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListQuotaRules")
 	}
@@ -3905,9 +4119,6 @@ func (c *gRPCClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetQuotaRule")
 	}
@@ -3929,9 +4140,6 @@ func (c *gRPCClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateQuotaRule")
 	}
@@ -3986,9 +4194,6 @@ func (c *gRPCClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteQuotaRule")
 	}
@@ -4016,9 +4221,6 @@ func (c *gRPCClient) RestoreBackupFiles(ctx context.Context, req *netapppb.Resto
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RestoreBackupFiles")
 	}
@@ -4046,9 +4248,6 @@ func (c *gRPCClient) ListHostGroups(ctx context.Context, req *netapppb.ListHostG
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListHostGroups")
 	}
@@ -4098,9 +4297,6 @@ func (c *gRPCClient) GetHostGroup(ctx context.Context, req *netapppb.GetHostGrou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetHostGroup")
 	}
@@ -4122,9 +4318,6 @@ func (c *gRPCClient) CreateHostGroup(ctx context.Context, req *netapppb.CreateHo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateHostGroup")
 	}
@@ -4179,9 +4372,6 @@ func (c *gRPCClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteHostGroup")
 	}
@@ -4573,9 +4763,6 @@ func (c *restClient) CreateStoragePool(ctx context.Context, req *netapppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateStoragePool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/storagePools")
@@ -4637,9 +4824,6 @@ func (c *restClient) GetStoragePool(ctx context.Context, req *netapppb.GetStorag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetStoragePool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}")
@@ -4769,9 +4953,6 @@ func (c *restClient) DeleteStoragePool(ctx context.Context, req *netapppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteStoragePool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}")
@@ -4840,9 +5021,6 @@ func (c *restClient) ValidateDirectoryService(ctx context.Context, req *netapppb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ValidateDirectoryService")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}:validateDirectoryService")
@@ -4911,9 +5089,6 @@ func (c *restClient) SwitchActiveReplicaZone(ctx context.Context, req *netapppb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SwitchActiveReplicaZone")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}:switch")
@@ -5059,9 +5234,6 @@ func (c *restClient) GetVolume(ctx context.Context, req *netapppb.GetVolumeReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetVolume")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}")
@@ -5124,9 +5296,6 @@ func (c *restClient) CreateVolume(ctx context.Context, req *netapppb.CreateVolum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateVolume")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/volumes")
@@ -5266,9 +5435,6 @@ func (c *restClient) DeleteVolume(ctx context.Context, req *netapppb.DeleteVolum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteVolume")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}")
@@ -5338,9 +5504,6 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RevertVolume")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:revert")
@@ -5409,9 +5572,6 @@ func (c *restClient) EstablishVolumePeering(ctx context.Context, req *netapppb.E
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishVolumePeering")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:establishPeering")
@@ -5557,9 +5717,6 @@ func (c *restClient) GetSnapshot(ctx context.Context, req *netapppb.GetSnapshotR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetSnapshot")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/snapshots/*}")
@@ -5622,9 +5779,6 @@ func (c *restClient) CreateSnapshot(ctx context.Context, req *netapppb.CreateSna
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateSnapshot")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/volumes/*}/snapshots")
@@ -5686,9 +5840,6 @@ func (c *restClient) DeleteSnapshot(ctx context.Context, req *netapppb.DeleteSna
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteSnapshot")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/snapshots/*}")
@@ -5909,9 +6060,6 @@ func (c *restClient) GetActiveDirectory(ctx context.Context, req *netapppb.GetAc
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetActiveDirectory")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/activeDirectories/*}")
@@ -5975,9 +6123,6 @@ func (c *restClient) CreateActiveDirectory(ctx context.Context, req *netapppb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateActiveDirectory")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/activeDirectories")
@@ -6114,9 +6259,6 @@ func (c *restClient) DeleteActiveDirectory(ctx context.Context, req *netapppb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteActiveDirectory")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/activeDirectories/*}")
@@ -6270,9 +6412,6 @@ func (c *restClient) CreateKmsConfig(ctx context.Context, req *netapppb.CreateKm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateKmsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/kmsConfigs")
@@ -6334,9 +6473,6 @@ func (c *restClient) GetKmsConfig(ctx context.Context, req *netapppb.GetKmsConfi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetKmsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}")
@@ -6473,9 +6609,6 @@ func (c *restClient) EncryptVolumes(ctx context.Context, req *netapppb.EncryptVo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EncryptVolumes")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}:encrypt")
@@ -6543,9 +6676,6 @@ func (c *restClient) VerifyKmsConfig(ctx context.Context, req *netapppb.VerifyKm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/VerifyKmsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}:verify")
@@ -6600,9 +6730,6 @@ func (c *restClient) DeleteKmsConfig(ctx context.Context, req *netapppb.DeleteKm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteKmsConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/kmsConfigs/*}")
@@ -6748,9 +6875,6 @@ func (c *restClient) GetReplication(ctx context.Context, req *netapppb.GetReplic
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetReplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}")
@@ -6813,9 +6937,6 @@ func (c *restClient) CreateReplication(ctx context.Context, req *netapppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateReplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/volumes/*}/replications")
@@ -6877,9 +6998,6 @@ func (c *restClient) DeleteReplication(ctx context.Context, req *netapppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteReplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}")
@@ -7022,9 +7140,6 @@ func (c *restClient) StopReplication(ctx context.Context, req *netapppb.StopRepl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/StopReplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:stop")
@@ -7092,9 +7207,6 @@ func (c *restClient) ResumeReplication(ctx context.Context, req *netapppb.Resume
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ResumeReplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:resume")
@@ -7163,9 +7275,6 @@ func (c *restClient) ReverseReplicationDirection(ctx context.Context, req *netap
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ReverseReplicationDirection")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:reverseDirection")
@@ -7233,9 +7342,6 @@ func (c *restClient) EstablishPeering(ctx context.Context, req *netapppb.Establi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/EstablishPeering")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:establishPeering")
@@ -7304,9 +7410,6 @@ func (c *restClient) SyncReplication(ctx context.Context, req *netapppb.SyncRepl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/SyncReplication")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/replications/*}:sync")
@@ -7376,9 +7479,6 @@ func (c *restClient) CreateBackupVault(ctx context.Context, req *netapppb.Create
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupVault")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/backupVaults")
@@ -7440,9 +7540,6 @@ func (c *restClient) GetBackupVault(ctx context.Context, req *netapppb.GetBackup
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupVault")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*}")
@@ -7656,9 +7753,6 @@ func (c *restClient) DeleteBackupVault(ctx context.Context, req *netapppb.Delete
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupVault")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*}")
@@ -7731,9 +7825,6 @@ func (c *restClient) CreateBackup(ctx context.Context, req *netapppb.CreateBacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/backupVaults/*}/backups")
@@ -7795,9 +7886,6 @@ func (c *restClient) GetBackup(ctx context.Context, req *netapppb.GetBackupReque
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*/backups/*}")
@@ -7936,9 +8024,6 @@ func (c *restClient) DeleteBackup(ctx context.Context, req *netapppb.DeleteBacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupVaults/*/backups/*}")
@@ -8083,9 +8168,6 @@ func (c *restClient) CreateBackupPolicy(ctx context.Context, req *netapppb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateBackupPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/backupPolicies")
@@ -8147,9 +8229,6 @@ func (c *restClient) GetBackupPolicy(ctx context.Context, req *netapppb.GetBacku
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetBackupPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPolicies/*}")
@@ -8363,9 +8442,6 @@ func (c *restClient) DeleteBackupPolicy(ctx context.Context, req *netapppb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteBackupPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/backupPolicies/*}")
@@ -8511,9 +8587,6 @@ func (c *restClient) GetQuotaRule(ctx context.Context, req *netapppb.GetQuotaRul
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetQuotaRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/quotaRules/*}")
@@ -8576,9 +8649,6 @@ func (c *restClient) CreateQuotaRule(ctx context.Context, req *netapppb.CreateQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateQuotaRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/volumes/*}/quotaRules")
@@ -8715,9 +8785,6 @@ func (c *restClient) DeleteQuotaRule(ctx context.Context, req *netapppb.DeleteQu
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteQuotaRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*/quotaRules/*}")
@@ -8785,9 +8852,6 @@ func (c *restClient) RestoreBackupFiles(ctx context.Context, req *netapppb.Resto
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RestoreBackupFiles")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:restore")
@@ -8934,9 +8998,6 @@ func (c *restClient) GetHostGroup(ctx context.Context, req *netapppb.GetHostGrou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetHostGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/hostGroups/*}")
@@ -8999,9 +9060,6 @@ func (c *restClient) CreateHostGroup(ctx context.Context, req *netapppb.CreateHo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/CreateHostGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/hostGroups")
@@ -9138,9 +9196,6 @@ func (c *restClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//netapp.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/DeleteHostGroup")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/hostGroups/*}")

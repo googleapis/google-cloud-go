@@ -304,6 +304,37 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetTrace = append(client.CallOptions.GetTrace, gax.WithClientMetrics(metrics))
 		client.CallOptions.PatchTraces = append(client.CallOptions.PatchTraces, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTraces = append(client.CallOptions.ListTraces, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTrace = append(client.CallOptions.GetTrace, gax.WithClientTracing(tracing))
+		client.CallOptions.PatchTraces = append(client.CallOptions.PatchTraces, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListTraces = append(client.CallOptions.ListTraces, gax.WithClientLogging(logging))
+		client.CallOptions.GetTrace = append(client.CallOptions.GetTrace, gax.WithClientLogging(logging))
+		client.CallOptions.PatchTraces = append(client.CallOptions.PatchTraces, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -400,6 +431,37 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListTraces = append(callOpts.ListTraces, gax.WithClientMetrics(metrics))
 		callOpts.GetTrace = append(callOpts.GetTrace, gax.WithClientMetrics(metrics))
 		callOpts.PatchTraces = append(callOpts.PatchTraces, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTraces = append(callOpts.ListTraces, gax.WithClientTracing(tracing))
+		callOpts.GetTrace = append(callOpts.GetTrace, gax.WithClientTracing(tracing))
+		callOpts.PatchTraces = append(callOpts.PatchTraces, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudtrace",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/trace/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudtrace.googleapis.com",
+			}),
+		)
+
+		callOpts.ListTraces = append(callOpts.ListTraces, gax.WithClientLogging(logging))
+		callOpts.GetTrace = append(callOpts.GetTrace, gax.WithClientLogging(logging))
+		callOpts.PatchTraces = append(callOpts.PatchTraces, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil

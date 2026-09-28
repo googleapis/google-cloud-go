@@ -331,6 +331,43 @@ func NewCloudApiRegistryClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudapiregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apiregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudapiregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMcpServer = append(client.CallOptions.GetMcpServer, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMcpServers = append(client.CallOptions.ListMcpServers, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMcpTool = append(client.CallOptions.GetMcpTool, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMcpTools = append(client.CallOptions.ListMcpTools, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudapiregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apiregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudapiregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetMcpServer = append(client.CallOptions.GetMcpServer, gax.WithClientLogging(logging))
+		client.CallOptions.ListMcpServers = append(client.CallOptions.ListMcpServers, gax.WithClientLogging(logging))
+		client.CallOptions.GetMcpTool = append(client.CallOptions.GetMcpTool, gax.WithClientLogging(logging))
+		client.CallOptions.ListMcpTools = append(client.CallOptions.ListMcpTools, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -428,6 +465,43 @@ func NewCloudApiRegistryRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudapiregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apiregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudapiregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.GetMcpServer = append(callOpts.GetMcpServer, gax.WithClientTracing(tracing))
+		callOpts.ListMcpServers = append(callOpts.ListMcpServers, gax.WithClientTracing(tracing))
+		callOpts.GetMcpTool = append(callOpts.GetMcpTool, gax.WithClientTracing(tracing))
+		callOpts.ListMcpTools = append(callOpts.ListMcpTools, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudapiregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apiregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudapiregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.GetMcpServer = append(callOpts.GetMcpServer, gax.WithClientLogging(logging))
+		callOpts.ListMcpServers = append(callOpts.ListMcpServers, gax.WithClientLogging(logging))
+		callOpts.GetMcpTool = append(callOpts.GetMcpTool, gax.WithClientLogging(logging))
+		callOpts.ListMcpTools = append(callOpts.ListMcpTools, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &CloudApiRegistryClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -474,9 +548,6 @@ func (c *cloudApiRegistryGRPCClient) GetMcpServer(ctx context.Context, req *apir
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudapiregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apiregistry.v1.CloudApiRegistry/GetMcpServer")
 	}
@@ -498,9 +569,6 @@ func (c *cloudApiRegistryGRPCClient) ListMcpServers(ctx context.Context, req *ap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudapiregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apiregistry.v1.CloudApiRegistry/ListMcpServers")
 	}
@@ -550,9 +618,6 @@ func (c *cloudApiRegistryGRPCClient) GetMcpTool(ctx context.Context, req *apireg
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudapiregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apiregistry.v1.CloudApiRegistry/GetMcpTool")
 	}
@@ -574,9 +639,6 @@ func (c *cloudApiRegistryGRPCClient) ListMcpTools(ctx context.Context, req *apir
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudapiregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apiregistry.v1.CloudApiRegistry/ListMcpTools")
 	}
@@ -710,9 +772,6 @@ func (c *cloudApiRegistryRESTClient) GetMcpServer(ctx context.Context, req *apir
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudapiregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apiregistry.v1.CloudApiRegistry/GetMcpServer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mcpServers/*}")
@@ -851,9 +910,6 @@ func (c *cloudApiRegistryRESTClient) GetMcpTool(ctx context.Context, req *apireg
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudapiregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apiregistry.v1.CloudApiRegistry/GetMcpTool")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/mcpServers/*/mcpTools/*}")

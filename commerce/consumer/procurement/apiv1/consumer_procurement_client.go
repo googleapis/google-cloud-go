@@ -355,6 +355,43 @@ func NewConsumerProcurementClient(ctx context.Context, opts ...option.ClientOpti
 		client.CallOptions.CancelOrder = append(client.CallOptions.CancelOrder, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PlaceOrder = append(client.CallOptions.PlaceOrder, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOrder = append(client.CallOptions.GetOrder, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOrders = append(client.CallOptions.ListOrders, gax.WithClientTracing(tracing))
+		client.CallOptions.ModifyOrder = append(client.CallOptions.ModifyOrder, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOrder = append(client.CallOptions.CancelOrder, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.PlaceOrder = append(client.CallOptions.PlaceOrder, gax.WithClientLogging(logging))
+		client.CallOptions.GetOrder = append(client.CallOptions.GetOrder, gax.WithClientLogging(logging))
+		client.CallOptions.ListOrders = append(client.CallOptions.ListOrders, gax.WithClientLogging(logging))
+		client.CallOptions.ModifyOrder = append(client.CallOptions.ModifyOrder, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOrder = append(client.CallOptions.CancelOrder, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -474,6 +511,43 @@ func NewConsumerProcurementRESTClient(ctx context.Context, opts ...option.Client
 		callOpts.CancelOrder = append(callOpts.CancelOrder, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		callOpts.PlaceOrder = append(callOpts.PlaceOrder, gax.WithClientTracing(tracing))
+		callOpts.GetOrder = append(callOpts.GetOrder, gax.WithClientTracing(tracing))
+		callOpts.ListOrders = append(callOpts.ListOrders, gax.WithClientTracing(tracing))
+		callOpts.ModifyOrder = append(callOpts.ModifyOrder, gax.WithClientTracing(tracing))
+		callOpts.CancelOrder = append(callOpts.CancelOrder, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudcommerceconsumerprocurement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/commerce/consumer/procurement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudcommerceconsumerprocurement.googleapis.com",
+			}),
+		)
+
+		callOpts.PlaceOrder = append(callOpts.PlaceOrder, gax.WithClientLogging(logging))
+		callOpts.GetOrder = append(callOpts.GetOrder, gax.WithClientLogging(logging))
+		callOpts.ListOrders = append(callOpts.ListOrders, gax.WithClientLogging(logging))
+		callOpts.ModifyOrder = append(callOpts.ModifyOrder, gax.WithClientLogging(logging))
+		callOpts.CancelOrder = append(callOpts.CancelOrder, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -530,9 +604,6 @@ func (c *consumerProcurementGRPCClient) PlaceOrder(ctx context.Context, req *pro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudcommerceconsumerprocurement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/PlaceOrder")
 	}
@@ -734,9 +805,6 @@ func (c *consumerProcurementRESTClient) PlaceOrder(ctx context.Context, req *pro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudcommerceconsumerprocurement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.commerce.consumer.procurement.v1.ConsumerProcurementService/PlaceOrder")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=billingAccounts/*}/orders:place")

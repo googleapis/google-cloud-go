@@ -4,7 +4,7 @@ go 1.26.0
 
 require (
 	cloud.google.com/go/longrunning v1.2.0
-	github.com/googleapis/gax-go/v2 v2.23.0
+	github.com/googleapis/gax-go/v2 v2.26.2
 	go.opentelemetry.io/otel/trace v1.45.0
 	google.golang.org/api v0.293.0
 	google.golang.org/genproto v0.0.0-20260810153831-ec0a7760b754
