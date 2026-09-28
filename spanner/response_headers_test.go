@@ -23,12 +23,14 @@ import (
 	"reflect"
 	"slices"
 	"sort"
+	"strings"
 	"sync"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/google/go-cmp/cmp"
 	"github.com/googleapis/gax-go/v2"
 	"go.opencensus.io/stats/view"
 	"go.opentelemetry.io/otel"
@@ -767,10 +769,10 @@ func openCensusLatencySums(t *testing.T, methods []string) map[string]int64 {
 	return sums
 }
 
-// TestStreamCreationFailureRecordsNoBuiltInMetrics verifies that a query or
-// read whose stream is rejected before it reaches Spanner records no built-in
-// metrics for the streaming method.
-func TestStreamCreationFailureRecordsNoBuiltInMetrics(t *testing.T) {
+// TestStreamCreationFailureRecordsBuiltInMetrics verifies that a query or
+// read whose stream fails to open records one failed attempt and operation
+// for the streaming method.
+func TestStreamCreationFailureRecordsBuiltInMetrics(t *testing.T) {
 	reject := grpc.WithChainStreamInterceptor(func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
 		return nil, status.Error(codes.InvalidArgument, "rejected before sending")
 	})
@@ -809,11 +811,52 @@ func TestStreamCreationFailureRecordsNoBuiltInMetrics(t *testing.T) {
 			if err := tc.run(ctx, client); ErrCode(err) != codes.InvalidArgument {
 				t.Fatalf("error = %v, want code %v", err, codes.InvalidArgument)
 			}
-			if got := builtInMetricsOfMethod(collectTestMetrics(t, reader), tc.method); len(got) != 0 {
-				t.Errorf("built-in metrics of %s = %v, want none", tc.method, got)
+			want := map[string]int64{
+				"attempt_count":                1,
+				"attempt_latencies":            1,
+				"gfe_connectivity_error_count": 1,
+				"operation_count":              1,
+				"operation_latencies":          1,
+			}
+			got := builtInMetricValues(collectTestMetrics(t, reader), tc.method, "InvalidArgument")
+			if diff := cmp.Diff(want, got); diff != "" {
+				t.Errorf("built-in metrics of %s mismatch (-want +got):\n%s", tc.method, diff)
 			}
 		})
 	}
+}
+
+// builtInMetricValues returns the value of each built-in client metric
+// recorded for the given method and status code, keyed by metric name without its
+// prefix. Counters are summed and histograms report their number of
+// recordings.
+func builtInMetricValues(rm metricdata.ResourceMetrics, method, code string) map[string]int64 {
+	values := map[string]int64{}
+	matches := func(a attribute.Set) bool {
+		m, _ := a.Value(attribute.Key(metricLabelKeyMethod))
+		s, _ := a.Value(attribute.Key(metricLabelKeyStatus))
+		return m.AsString() == method && s.AsString() == code
+	}
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			name := strings.TrimPrefix(m.Name, clientMetricsPrefix)
+			switch data := m.Data.(type) {
+			case metricdata.Sum[int64]:
+				for _, dp := range data.DataPoints {
+					if matches(dp.Attributes) {
+						values[name] += dp.Value
+					}
+				}
+			case metricdata.Histogram[float64]:
+				for _, dp := range data.DataPoints {
+					if matches(dp.Attributes) {
+						values[name] += int64(dp.Count)
+					}
+				}
+			}
+		}
+	}
+	return values
 }
 
 // builtInMetricsOfMethod returns the names of the metrics that have a data
