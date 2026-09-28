@@ -5,16 +5,16 @@ go 1.26.0
 require (
 	cloud.google.com/go v0.123.0
 	cloud.google.com/go/compute/metadata v0.9.0
-	cloud.google.com/go/iam v1.11.0
+	cloud.google.com/go/iam v1.12.0
 	cloud.google.com/go/longrunning v1.2.0
-	cloud.google.com/go/monitoring v1.29.0
+	cloud.google.com/go/monitoring v1.30.0
 	github.com/GoogleCloudPlatform/opentelemetry-operations-go/exporter/metric v0.57.0
 	github.com/envoyproxy/go-control-plane/envoy v1.37.0
 	github.com/google/btree v1.1.3
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
 	github.com/googleapis/cloud-bigtable-clients-test v0.0.5
-	github.com/googleapis/gax-go/v2 v2.23.0
+	github.com/googleapis/gax-go/v2 v2.26.2
 	go.opentelemetry.io/contrib/detectors/gcp v1.44.0
 	go.opentelemetry.io/otel v1.45.0
 	go.opentelemetry.io/otel/metric v1.45.0
@@ -23,10 +23,10 @@ require (
 	go.opentelemetry.io/otel/trace v1.45.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.22.0
-	google.golang.org/api v0.287.1
-	google.golang.org/genproto v0.0.0-20260519071638-aa98bba5eb94
-	google.golang.org/genproto/googleapis/api v0.0.0-20260630182238-925bb5da69e7
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260630182238-925bb5da69e7
+	google.golang.org/api v0.288.0
+	google.golang.org/genproto v0.0.0-20260715232425-e75dac1f907d
+	google.golang.org/genproto/googleapis/api v0.0.0-20260715232425-e75dac1f907d
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260715232425-e75dac1f907d
 	google.golang.org/grpc v1.83.2
 	google.golang.org/protobuf v1.36.11
 	rsc.io/binaryregexp v0.2.0

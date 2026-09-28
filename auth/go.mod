@@ -7,7 +7,7 @@ require (
 	github.com/google/go-cmp v0.7.0
 	github.com/google/s2a-go v0.1.9
 	github.com/googleapis/enterprise-certificate-proxy v0.3.17
-	github.com/googleapis/gax-go/v2 v2.23.0
+	github.com/googleapis/gax-go/v2 v2.26.2
 	go.opentelemetry.io/contrib/instrumentation/google.golang.org/grpc/otelgrpc v0.67.0
 	go.opentelemetry.io/contrib/instrumentation/net/http/otelhttp v0.67.0
 	go.opentelemetry.io/otel v1.45.0
@@ -15,8 +15,8 @@ require (
 	go.opentelemetry.io/otel/trace v1.45.0
 	golang.org/x/net v0.58.0
 	golang.org/x/time v0.15.0
-	google.golang.org/api v0.287.1
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260630182238-925bb5da69e7
+	google.golang.org/api v0.288.0
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260715232425-e75dac1f907d
 	google.golang.org/grpc v1.83.2
 	google.golang.org/protobuf v1.36.11
 )

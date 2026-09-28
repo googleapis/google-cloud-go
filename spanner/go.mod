@@ -8,13 +8,13 @@ retract v1.84.0 // due to https://github.com/googleapis/google-cloud-go/issues/1
 
 require (
 	cloud.google.com/go v0.123.0
-	cloud.google.com/go/iam v1.11.0
+	cloud.google.com/go/iam v1.12.0
 	cloud.google.com/go/longrunning v1.2.0
-	cloud.google.com/go/monitoring v1.29.0
+	cloud.google.com/go/monitoring v1.30.0
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.6.0
 	github.com/google/go-cmp v0.7.0
 	github.com/google/uuid v1.6.0
-	github.com/googleapis/gax-go/v2 v2.23.0
+	github.com/googleapis/gax-go/v2 v2.26.2
 	github.com/planetscale/vtprotobuf v0.6.1-0.20240319094008-0393e58bdf10
 	go.opencensus.io v0.24.0
 	go.opentelemetry.io/contrib/detectors/gcp v1.44.0
@@ -26,10 +26,10 @@ require (
 	golang.org/x/crypto v0.55.0
 	golang.org/x/oauth2 v0.36.0
 	golang.org/x/sync v0.22.0
-	google.golang.org/api v0.287.1
-	google.golang.org/genproto v0.0.0-20260319201613-d00831a3d3e7
-	google.golang.org/genproto/googleapis/api v0.0.0-20260630182238-925bb5da69e7
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20260630182238-925bb5da69e7
+	google.golang.org/api v0.288.0
+	google.golang.org/genproto v0.0.0-20260715232425-e75dac1f907d
+	google.golang.org/genproto/googleapis/api v0.0.0-20260715232425-e75dac1f907d
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20260715232425-e75dac1f907d
 	google.golang.org/grpc v1.83.2
 	google.golang.org/protobuf v1.36.11
 )
