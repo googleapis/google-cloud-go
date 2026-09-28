@@ -349,6 +349,41 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ModerateText = append(client.CallOptions.ModerateText, gax.WithClientMetrics(metrics))
 		client.CallOptions.AnnotateText = append(client.CallOptions.AnnotateText, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "language",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/language/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "language.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AnalyzeSentiment = append(client.CallOptions.AnalyzeSentiment, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeEntities = append(client.CallOptions.AnalyzeEntities, gax.WithClientTracing(tracing))
+		client.CallOptions.ClassifyText = append(client.CallOptions.ClassifyText, gax.WithClientTracing(tracing))
+		client.CallOptions.ModerateText = append(client.CallOptions.ModerateText, gax.WithClientTracing(tracing))
+		client.CallOptions.AnnotateText = append(client.CallOptions.AnnotateText, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "language",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/language/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "language.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AnalyzeSentiment = append(client.CallOptions.AnalyzeSentiment, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeEntities = append(client.CallOptions.AnalyzeEntities, gax.WithClientLogging(logging))
+		client.CallOptions.ClassifyText = append(client.CallOptions.ClassifyText, gax.WithClientLogging(logging))
+		client.CallOptions.ModerateText = append(client.CallOptions.ModerateText, gax.WithClientLogging(logging))
+		client.CallOptions.AnnotateText = append(client.CallOptions.AnnotateText, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -444,6 +479,41 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ClassifyText = append(callOpts.ClassifyText, gax.WithClientMetrics(metrics))
 		callOpts.ModerateText = append(callOpts.ModerateText, gax.WithClientMetrics(metrics))
 		callOpts.AnnotateText = append(callOpts.AnnotateText, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "language",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/language/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "language.googleapis.com",
+			}),
+		)
+
+		callOpts.AnalyzeSentiment = append(callOpts.AnalyzeSentiment, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeEntities = append(callOpts.AnalyzeEntities, gax.WithClientTracing(tracing))
+		callOpts.ClassifyText = append(callOpts.ClassifyText, gax.WithClientTracing(tracing))
+		callOpts.ModerateText = append(callOpts.ModerateText, gax.WithClientTracing(tracing))
+		callOpts.AnnotateText = append(callOpts.AnnotateText, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "language",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/language/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "language.googleapis.com",
+			}),
+		)
+
+		callOpts.AnalyzeSentiment = append(callOpts.AnalyzeSentiment, gax.WithClientLogging(logging))
+		callOpts.AnalyzeEntities = append(callOpts.AnalyzeEntities, gax.WithClientLogging(logging))
+		callOpts.ClassifyText = append(callOpts.ClassifyText, gax.WithClientLogging(logging))
+		callOpts.ModerateText = append(callOpts.ModerateText, gax.WithClientLogging(logging))
+		callOpts.AnnotateText = append(callOpts.AnnotateText, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil

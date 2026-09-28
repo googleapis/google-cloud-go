@@ -276,6 +276,45 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetMigrationSubtask = append(client.CallOptions.GetMigrationSubtask, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListMigrationSubtasks = append(client.CallOptions.ListMigrationSubtasks, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquerymigration",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/migration/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerymigration.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMigrationWorkflow = append(client.CallOptions.CreateMigrationWorkflow, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMigrationWorkflow = append(client.CallOptions.GetMigrationWorkflow, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMigrationWorkflows = append(client.CallOptions.ListMigrationWorkflows, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMigrationWorkflow = append(client.CallOptions.DeleteMigrationWorkflow, gax.WithClientTracing(tracing))
+		client.CallOptions.StartMigrationWorkflow = append(client.CallOptions.StartMigrationWorkflow, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMigrationSubtask = append(client.CallOptions.GetMigrationSubtask, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMigrationSubtasks = append(client.CallOptions.ListMigrationSubtasks, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquerymigration",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/migration/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquerymigration.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMigrationWorkflow = append(client.CallOptions.CreateMigrationWorkflow, gax.WithClientLogging(logging))
+		client.CallOptions.GetMigrationWorkflow = append(client.CallOptions.GetMigrationWorkflow, gax.WithClientLogging(logging))
+		client.CallOptions.ListMigrationWorkflows = append(client.CallOptions.ListMigrationWorkflows, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMigrationWorkflow = append(client.CallOptions.DeleteMigrationWorkflow, gax.WithClientLogging(logging))
+		client.CallOptions.StartMigrationWorkflow = append(client.CallOptions.StartMigrationWorkflow, gax.WithClientLogging(logging))
+		client.CallOptions.GetMigrationSubtask = append(client.CallOptions.GetMigrationSubtask, gax.WithClientLogging(logging))
+		client.CallOptions.ListMigrationSubtasks = append(client.CallOptions.ListMigrationSubtasks, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -312,9 +351,6 @@ func (c *gRPCClient) CreateMigrationWorkflow(ctx context.Context, req *migration
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/CreateMigrationWorkflow")
 	}
@@ -336,9 +372,6 @@ func (c *gRPCClient) GetMigrationWorkflow(ctx context.Context, req *migrationpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/GetMigrationWorkflow")
 	}
@@ -360,9 +393,6 @@ func (c *gRPCClient) ListMigrationWorkflows(ctx context.Context, req *migrationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/ListMigrationWorkflows")
 	}
@@ -412,9 +442,6 @@ func (c *gRPCClient) DeleteMigrationWorkflow(ctx context.Context, req *migration
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/DeleteMigrationWorkflow")
 	}
@@ -432,9 +459,6 @@ func (c *gRPCClient) StartMigrationWorkflow(ctx context.Context, req *migrationp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/StartMigrationWorkflow")
 	}
@@ -452,9 +476,6 @@ func (c *gRPCClient) GetMigrationSubtask(ctx context.Context, req *migrationpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/GetMigrationSubtask")
 	}
@@ -476,9 +497,6 @@ func (c *gRPCClient) ListMigrationSubtasks(ctx context.Context, req *migrationpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquerymigration.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.migration.v2.MigrationService/ListMigrationSubtasks")
 	}

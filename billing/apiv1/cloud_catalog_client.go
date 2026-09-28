@@ -212,6 +212,35 @@ func NewCloudCatalogClient(ctx context.Context, opts ...option.ClientOption) (*C
 		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListSkus = append(client.CallOptions.ListSkus, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSkus = append(client.CallOptions.ListSkus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientLogging(logging))
+		client.CallOptions.ListSkus = append(client.CallOptions.ListSkus, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -306,6 +335,35 @@ func NewCloudCatalogRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientMetrics(metrics))
 		callOpts.ListSkus = append(callOpts.ListSkus, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientTracing(tracing))
+		callOpts.ListSkus = append(callOpts.ListSkus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudbilling",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/billing/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudbilling.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientLogging(logging))
+		callOpts.ListSkus = append(callOpts.ListSkus, gax.WithClientLogging(logging))
+	}
 
 	return &CloudCatalogClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -398,9 +456,6 @@ func (c *cloudCatalogGRPCClient) ListSkus(ctx context.Context, req *billingpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudbilling.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.billing.v1.CloudCatalog/ListSkus")
 	}

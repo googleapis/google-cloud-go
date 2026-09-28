@@ -570,6 +570,79 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListParameters = append(client.CallOptions.ListParameters, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParameter = append(client.CallOptions.GetParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateParameter = append(client.CallOptions.CreateParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateParameter = append(client.CallOptions.UpdateParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteParameter = append(client.CallOptions.DeleteParameter, gax.WithClientTracing(tracing))
+		client.CallOptions.ListParameterVersions = append(client.CallOptions.ListParameterVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParameterVersion = append(client.CallOptions.GetParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.RenderParameterVersion = append(client.CallOptions.RenderParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateParameterVersion = append(client.CallOptions.CreateParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateParameterVersion = append(client.CallOptions.UpdateParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteParameterVersion = append(client.CallOptions.DeleteParameterVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTemplates = append(client.CallOptions.ListTemplates, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTemplate = append(client.CallOptions.CreateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTemplate = append(client.CallOptions.UpdateTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTemplate = append(client.CallOptions.DeleteTemplate, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTemplateVersions = append(client.CallOptions.ListTemplateVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTemplateVersion = append(client.CallOptions.GetTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTemplateVersion = append(client.CallOptions.CreateTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTemplateVersion = append(client.CallOptions.UpdateTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTemplateVersion = append(client.CallOptions.DeleteTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.RenderTemplateVersion = append(client.CallOptions.RenderTemplateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListParameters = append(client.CallOptions.ListParameters, gax.WithClientLogging(logging))
+		client.CallOptions.GetParameter = append(client.CallOptions.GetParameter, gax.WithClientLogging(logging))
+		client.CallOptions.CreateParameter = append(client.CallOptions.CreateParameter, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateParameter = append(client.CallOptions.UpdateParameter, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteParameter = append(client.CallOptions.DeleteParameter, gax.WithClientLogging(logging))
+		client.CallOptions.ListParameterVersions = append(client.CallOptions.ListParameterVersions, gax.WithClientLogging(logging))
+		client.CallOptions.GetParameterVersion = append(client.CallOptions.GetParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.RenderParameterVersion = append(client.CallOptions.RenderParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.CreateParameterVersion = append(client.CallOptions.CreateParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateParameterVersion = append(client.CallOptions.UpdateParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteParameterVersion = append(client.CallOptions.DeleteParameterVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListTemplates = append(client.CallOptions.ListTemplates, gax.WithClientLogging(logging))
+		client.CallOptions.GetTemplate = append(client.CallOptions.GetTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTemplate = append(client.CallOptions.CreateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTemplate = append(client.CallOptions.UpdateTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTemplate = append(client.CallOptions.DeleteTemplate, gax.WithClientLogging(logging))
+		client.CallOptions.ListTemplateVersions = append(client.CallOptions.ListTemplateVersions, gax.WithClientLogging(logging))
+		client.CallOptions.GetTemplateVersion = append(client.CallOptions.GetTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTemplateVersion = append(client.CallOptions.CreateTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTemplateVersion = append(client.CallOptions.UpdateTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTemplateVersion = append(client.CallOptions.DeleteTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.RenderTemplateVersion = append(client.CallOptions.RenderTemplateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -684,6 +757,79 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListParameters = append(callOpts.ListParameters, gax.WithClientTracing(tracing))
+		callOpts.GetParameter = append(callOpts.GetParameter, gax.WithClientTracing(tracing))
+		callOpts.CreateParameter = append(callOpts.CreateParameter, gax.WithClientTracing(tracing))
+		callOpts.UpdateParameter = append(callOpts.UpdateParameter, gax.WithClientTracing(tracing))
+		callOpts.DeleteParameter = append(callOpts.DeleteParameter, gax.WithClientTracing(tracing))
+		callOpts.ListParameterVersions = append(callOpts.ListParameterVersions, gax.WithClientTracing(tracing))
+		callOpts.GetParameterVersion = append(callOpts.GetParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.RenderParameterVersion = append(callOpts.RenderParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.CreateParameterVersion = append(callOpts.CreateParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.UpdateParameterVersion = append(callOpts.UpdateParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteParameterVersion = append(callOpts.DeleteParameterVersion, gax.WithClientTracing(tracing))
+		callOpts.ListTemplates = append(callOpts.ListTemplates, gax.WithClientTracing(tracing))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientTracing(tracing))
+		callOpts.CreateTemplate = append(callOpts.CreateTemplate, gax.WithClientTracing(tracing))
+		callOpts.UpdateTemplate = append(callOpts.UpdateTemplate, gax.WithClientTracing(tracing))
+		callOpts.DeleteTemplate = append(callOpts.DeleteTemplate, gax.WithClientTracing(tracing))
+		callOpts.ListTemplateVersions = append(callOpts.ListTemplateVersions, gax.WithClientTracing(tracing))
+		callOpts.GetTemplateVersion = append(callOpts.GetTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.CreateTemplateVersion = append(callOpts.CreateTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.UpdateTemplateVersion = append(callOpts.UpdateTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteTemplateVersion = append(callOpts.DeleteTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.RenderTemplateVersion = append(callOpts.RenderTemplateVersion, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "parametermanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/parametermanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "parametermanager.googleapis.com",
+			}),
+		)
+
+		callOpts.ListParameters = append(callOpts.ListParameters, gax.WithClientLogging(logging))
+		callOpts.GetParameter = append(callOpts.GetParameter, gax.WithClientLogging(logging))
+		callOpts.CreateParameter = append(callOpts.CreateParameter, gax.WithClientLogging(logging))
+		callOpts.UpdateParameter = append(callOpts.UpdateParameter, gax.WithClientLogging(logging))
+		callOpts.DeleteParameter = append(callOpts.DeleteParameter, gax.WithClientLogging(logging))
+		callOpts.ListParameterVersions = append(callOpts.ListParameterVersions, gax.WithClientLogging(logging))
+		callOpts.GetParameterVersion = append(callOpts.GetParameterVersion, gax.WithClientLogging(logging))
+		callOpts.RenderParameterVersion = append(callOpts.RenderParameterVersion, gax.WithClientLogging(logging))
+		callOpts.CreateParameterVersion = append(callOpts.CreateParameterVersion, gax.WithClientLogging(logging))
+		callOpts.UpdateParameterVersion = append(callOpts.UpdateParameterVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteParameterVersion = append(callOpts.DeleteParameterVersion, gax.WithClientLogging(logging))
+		callOpts.ListTemplates = append(callOpts.ListTemplates, gax.WithClientLogging(logging))
+		callOpts.GetTemplate = append(callOpts.GetTemplate, gax.WithClientLogging(logging))
+		callOpts.CreateTemplate = append(callOpts.CreateTemplate, gax.WithClientLogging(logging))
+		callOpts.UpdateTemplate = append(callOpts.UpdateTemplate, gax.WithClientLogging(logging))
+		callOpts.DeleteTemplate = append(callOpts.DeleteTemplate, gax.WithClientLogging(logging))
+		callOpts.ListTemplateVersions = append(callOpts.ListTemplateVersions, gax.WithClientLogging(logging))
+		callOpts.GetTemplateVersion = append(callOpts.GetTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.CreateTemplateVersion = append(callOpts.CreateTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.UpdateTemplateVersion = append(callOpts.UpdateTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteTemplateVersion = append(callOpts.DeleteTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.RenderTemplateVersion = append(callOpts.RenderTemplateVersion, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -730,9 +876,6 @@ func (c *gRPCClient) ListParameters(ctx context.Context, req *parametermanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListParameters")
 	}
@@ -782,9 +925,6 @@ func (c *gRPCClient) GetParameter(ctx context.Context, req *parametermanagerpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameter")
 	}
@@ -806,9 +946,6 @@ func (c *gRPCClient) CreateParameter(ctx context.Context, req *parametermanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameter")
 	}
@@ -851,9 +988,6 @@ func (c *gRPCClient) DeleteParameter(ctx context.Context, req *parametermanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameter")
 	}
@@ -871,9 +1005,6 @@ func (c *gRPCClient) ListParameterVersions(ctx context.Context, req *parameterma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListParameterVersions")
 	}
@@ -923,9 +1054,6 @@ func (c *gRPCClient) GetParameterVersion(ctx context.Context, req *parametermana
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameterVersion")
 	}
@@ -947,9 +1075,6 @@ func (c *gRPCClient) RenderParameterVersion(ctx context.Context, req *parameterm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderParameterVersion")
 	}
@@ -971,9 +1096,6 @@ func (c *gRPCClient) CreateParameterVersion(ctx context.Context, req *parameterm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameterVersion")
 	}
@@ -1016,9 +1138,6 @@ func (c *gRPCClient) DeleteParameterVersion(ctx context.Context, req *parameterm
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameterVersion")
 	}
@@ -1036,9 +1155,6 @@ func (c *gRPCClient) ListTemplates(ctx context.Context, req *parametermanagerpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListTemplates")
 	}
@@ -1088,9 +1204,6 @@ func (c *gRPCClient) GetTemplate(ctx context.Context, req *parametermanagerpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplate")
 	}
@@ -1112,9 +1225,6 @@ func (c *gRPCClient) CreateTemplate(ctx context.Context, req *parametermanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplate")
 	}
@@ -1157,9 +1267,6 @@ func (c *gRPCClient) DeleteTemplate(ctx context.Context, req *parametermanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplate")
 	}
@@ -1177,9 +1284,6 @@ func (c *gRPCClient) ListTemplateVersions(ctx context.Context, req *parameterman
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/ListTemplateVersions")
 	}
@@ -1229,9 +1333,6 @@ func (c *gRPCClient) GetTemplateVersion(ctx context.Context, req *parametermanag
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplateVersion")
 	}
@@ -1253,9 +1354,6 @@ func (c *gRPCClient) CreateTemplateVersion(ctx context.Context, req *parameterma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplateVersion")
 	}
@@ -1298,9 +1396,6 @@ func (c *gRPCClient) DeleteTemplateVersion(ctx context.Context, req *parameterma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplateVersion")
 	}
@@ -1318,9 +1413,6 @@ func (c *gRPCClient) RenderTemplateVersion(ctx context.Context, req *parameterma
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderTemplateVersion")
 	}
@@ -1510,9 +1602,6 @@ func (c *restClient) GetParameter(ctx context.Context, req *parametermanagerpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameter")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*}")
@@ -1578,9 +1667,6 @@ func (c *restClient) CreateParameter(ctx context.Context, req *parametermanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameter")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/parameters")
@@ -1709,9 +1795,6 @@ func (c *restClient) DeleteParameter(ctx context.Context, req *parametermanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameter")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*}")
@@ -1838,9 +1921,6 @@ func (c *restClient) GetParameterVersion(ctx context.Context, req *parametermana
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetParameterVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*/versions/*}")
@@ -1895,9 +1975,6 @@ func (c *restClient) RenderParameterVersion(ctx context.Context, req *parameterm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderParameterVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*/versions/*}:render")
@@ -1963,9 +2040,6 @@ func (c *restClient) CreateParameterVersion(ctx context.Context, req *parameterm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateParameterVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/parameters/*}/versions")
@@ -2094,9 +2168,6 @@ func (c *restClient) DeleteParameterVersion(ctx context.Context, req *parameterm
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteParameterVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/parameters/*/versions/*}")
@@ -2220,9 +2291,6 @@ func (c *restClient) GetTemplate(ctx context.Context, req *parametermanagerpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*}")
@@ -2288,9 +2356,6 @@ func (c *restClient) CreateTemplate(ctx context.Context, req *parametermanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/templates")
@@ -2419,9 +2484,6 @@ func (c *restClient) DeleteTemplate(ctx context.Context, req *parametermanagerpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplate")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*}")
@@ -2548,9 +2610,6 @@ func (c *restClient) GetTemplateVersion(ctx context.Context, req *parametermanag
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/GetTemplateVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*/versions/*}")
@@ -2616,9 +2675,6 @@ func (c *restClient) CreateTemplateVersion(ctx context.Context, req *parameterma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/CreateTemplateVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/templates/*}/versions")
@@ -2747,9 +2803,6 @@ func (c *restClient) DeleteTemplateVersion(ctx context.Context, req *parameterma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/DeleteTemplateVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*/versions/*}")
@@ -2790,9 +2843,6 @@ func (c *restClient) RenderTemplateVersion(ctx context.Context, req *parameterma
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//parametermanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.parametermanager.v1.ParameterManager/RenderTemplateVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/templates/*/versions/*}:render")

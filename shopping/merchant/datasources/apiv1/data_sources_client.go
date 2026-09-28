@@ -378,6 +378,43 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DeleteDataSource = append(client.CallOptions.DeleteDataSource, gax.WithClientMetrics(metrics))
 		client.CallOptions.FetchDataSource = append(client.CallOptions.FetchDataSource, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDataSource = append(client.CallOptions.GetDataSource, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataSources = append(client.CallOptions.ListDataSources, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataSource = append(client.CallOptions.CreateDataSource, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataSource = append(client.CallOptions.UpdateDataSource, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataSource = append(client.CallOptions.DeleteDataSource, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchDataSource = append(client.CallOptions.FetchDataSource, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetDataSource = append(client.CallOptions.GetDataSource, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataSources = append(client.CallOptions.ListDataSources, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataSource = append(client.CallOptions.CreateDataSource, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataSource = append(client.CallOptions.UpdateDataSource, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataSource = append(client.CallOptions.DeleteDataSource, gax.WithClientLogging(logging))
+		client.CallOptions.FetchDataSource = append(client.CallOptions.FetchDataSource, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -476,6 +513,43 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.DeleteDataSource = append(callOpts.DeleteDataSource, gax.WithClientMetrics(metrics))
 		callOpts.FetchDataSource = append(callOpts.FetchDataSource, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDataSource = append(callOpts.GetDataSource, gax.WithClientTracing(tracing))
+		callOpts.ListDataSources = append(callOpts.ListDataSources, gax.WithClientTracing(tracing))
+		callOpts.CreateDataSource = append(callOpts.CreateDataSource, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataSource = append(callOpts.UpdateDataSource, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataSource = append(callOpts.DeleteDataSource, gax.WithClientTracing(tracing))
+		callOpts.FetchDataSource = append(callOpts.FetchDataSource, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/datasources/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetDataSource = append(callOpts.GetDataSource, gax.WithClientLogging(logging))
+		callOpts.ListDataSources = append(callOpts.ListDataSources, gax.WithClientLogging(logging))
+		callOpts.CreateDataSource = append(callOpts.CreateDataSource, gax.WithClientLogging(logging))
+		callOpts.UpdateDataSource = append(callOpts.UpdateDataSource, gax.WithClientLogging(logging))
+		callOpts.DeleteDataSource = append(callOpts.DeleteDataSource, gax.WithClientLogging(logging))
+		callOpts.FetchDataSource = append(callOpts.FetchDataSource, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -522,9 +596,6 @@ func (c *gRPCClient) GetDataSource(ctx context.Context, req *datasourcespb.GetDa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/GetDataSource")
 	}
@@ -546,9 +617,6 @@ func (c *gRPCClient) ListDataSources(ctx context.Context, req *datasourcespb.Lis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/ListDataSources")
 	}
@@ -598,9 +666,6 @@ func (c *gRPCClient) CreateDataSource(ctx context.Context, req *datasourcespb.Cr
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/CreateDataSource")
 	}
@@ -643,9 +708,6 @@ func (c *gRPCClient) DeleteDataSource(ctx context.Context, req *datasourcespb.De
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/DeleteDataSource")
 	}
@@ -663,9 +725,6 @@ func (c *gRPCClient) FetchDataSource(ctx context.Context, req *datasourcespb.Fet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/FetchDataSource")
 	}
@@ -697,9 +756,6 @@ func (c *restClient) GetDataSource(ctx context.Context, req *datasourcespb.GetDa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/GetDataSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/datasources/v1/{name=accounts/*/dataSources/*}")
@@ -840,9 +896,6 @@ func (c *restClient) CreateDataSource(ctx context.Context, req *datasourcespb.Cr
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/CreateDataSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/datasources/v1/{parent=accounts/*}/dataSources")
@@ -966,9 +1019,6 @@ func (c *restClient) DeleteDataSource(ctx context.Context, req *datasourcespb.De
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/DeleteDataSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/datasources/v1/{name=accounts/*/dataSources/*}")
@@ -1018,9 +1068,6 @@ func (c *restClient) FetchDataSource(ctx context.Context, req *datasourcespb.Fet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.datasources.v1.DataSourcesService/FetchDataSource")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/datasources/v1/{name=accounts/*/dataSources/*}:fetch")

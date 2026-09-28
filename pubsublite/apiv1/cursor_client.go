@@ -304,6 +304,45 @@ func NewCursorClient(ctx context.Context, opts ...option.ClientOption) (*CursorC
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "pubsublite",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsublite/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsublite.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StreamingCommitCursor = append(client.CallOptions.StreamingCommitCursor, gax.WithClientTracing(tracing))
+		client.CallOptions.CommitCursor = append(client.CallOptions.CommitCursor, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPartitionCursors = append(client.CallOptions.ListPartitionCursors, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "pubsublite",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/pubsublite/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "pubsublite.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.StreamingCommitCursor = append(client.CallOptions.StreamingCommitCursor, gax.WithClientLogging(logging))
+		client.CallOptions.CommitCursor = append(client.CallOptions.CommitCursor, gax.WithClientLogging(logging))
+		client.CallOptions.ListPartitionCursors = append(client.CallOptions.ListPartitionCursors, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -381,9 +420,6 @@ func (c *cursorGRPCClient) ListPartitionCursors(ctx context.Context, req *pubsub
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//pubsublite.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.pubsublite.v1.CursorService/ListPartitionCursors")
 	}

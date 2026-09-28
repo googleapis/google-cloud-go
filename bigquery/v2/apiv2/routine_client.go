@@ -370,6 +370,41 @@ func NewRoutineClient(ctx context.Context, opts ...option.ClientOption) (*Routin
 		client.CallOptions.DeleteRoutine = append(client.CallOptions.DeleteRoutine, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListRoutines = append(client.CallOptions.ListRoutines, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetRoutine = append(client.CallOptions.GetRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertRoutine = append(client.CallOptions.InsertRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRoutine = append(client.CallOptions.UpdateRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRoutine = append(client.CallOptions.DeleteRoutine, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRoutines = append(client.CallOptions.ListRoutines, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetRoutine = append(client.CallOptions.GetRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.InsertRoutine = append(client.CallOptions.InsertRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRoutine = append(client.CallOptions.UpdateRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRoutine = append(client.CallOptions.DeleteRoutine, gax.WithClientLogging(logging))
+		client.CallOptions.ListRoutines = append(client.CallOptions.ListRoutines, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -465,6 +500,41 @@ func NewRoutineRESTClient(ctx context.Context, opts ...option.ClientOption) (*Ro
 		callOpts.DeleteRoutine = append(callOpts.DeleteRoutine, gax.WithClientMetrics(metrics))
 		callOpts.ListRoutines = append(callOpts.ListRoutines, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetRoutine = append(callOpts.GetRoutine, gax.WithClientTracing(tracing))
+		callOpts.InsertRoutine = append(callOpts.InsertRoutine, gax.WithClientTracing(tracing))
+		callOpts.UpdateRoutine = append(callOpts.UpdateRoutine, gax.WithClientTracing(tracing))
+		callOpts.DeleteRoutine = append(callOpts.DeleteRoutine, gax.WithClientTracing(tracing))
+		callOpts.ListRoutines = append(callOpts.ListRoutines, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetRoutine = append(callOpts.GetRoutine, gax.WithClientLogging(logging))
+		callOpts.InsertRoutine = append(callOpts.InsertRoutine, gax.WithClientLogging(logging))
+		callOpts.UpdateRoutine = append(callOpts.UpdateRoutine, gax.WithClientLogging(logging))
+		callOpts.DeleteRoutine = append(callOpts.DeleteRoutine, gax.WithClientLogging(logging))
+		callOpts.ListRoutines = append(callOpts.ListRoutines, gax.WithClientLogging(logging))
+	}
 
 	return &RoutineClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -511,9 +581,6 @@ func (c *routineGRPCClient) GetRoutine(ctx context.Context, req *bigquerypb.GetR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/GetRoutine")
 	}
@@ -535,9 +602,6 @@ func (c *routineGRPCClient) InsertRoutine(ctx context.Context, req *bigquerypb.I
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v", req.GetProjectId(), req.GetDatasetId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/InsertRoutine")
 	}
@@ -559,9 +623,6 @@ func (c *routineGRPCClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/UpdateRoutine")
 	}
@@ -583,9 +644,6 @@ func (c *routineGRPCClient) DeleteRoutine(ctx context.Context, req *bigquerypb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/DeleteRoutine")
 	}
@@ -603,9 +661,6 @@ func (c *routineGRPCClient) ListRoutines(ctx context.Context, req *bigquerypb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v", req.GetProjectId(), req.GetDatasetId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/ListRoutines")
 	}
@@ -668,9 +723,6 @@ func (c *routineRESTClient) GetRoutine(ctx context.Context, req *bigquerypb.GetR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/GetRoutine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines/{routine_id=*}")
@@ -729,9 +781,6 @@ func (c *routineRESTClient) InsertRoutine(ctx context.Context, req *bigquerypb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v", req.GetProjectId(), req.GetDatasetId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/InsertRoutine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines")
@@ -791,9 +840,6 @@ func (c *routineRESTClient) UpdateRoutine(ctx context.Context, req *bigquerypb.U
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/UpdateRoutine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines/{routine_id=*}")
@@ -845,9 +891,6 @@ func (c *routineRESTClient) DeleteRoutine(ctx context.Context, req *bigquerypb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v/datasets/%v/routines/%v", req.GetProjectId(), req.GetDatasetId(), req.GetRoutineId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.RoutineService/DeleteRoutine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/datasets/{dataset_id=*}/routines/{routine_id=*}")

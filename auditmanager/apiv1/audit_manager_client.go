@@ -568,6 +568,67 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "auditmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/auditmanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "auditmanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAuditSchedule = append(client.CallOptions.CreateAuditSchedule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAuditSchedule = append(client.CallOptions.UpdateAuditSchedule, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuditSchedule = append(client.CallOptions.GetAuditSchedule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAuditSchedules = append(client.CallOptions.ListAuditSchedules, gax.WithClientTracing(tracing))
+		client.CallOptions.EnrollResource = append(client.CallOptions.EnrollResource, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateAuditScopeReport = append(client.CallOptions.GenerateAuditScopeReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateAuditReport = append(client.CallOptions.GenerateAuditReport, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAuditReports = append(client.CallOptions.ListAuditReports, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAuditReport = append(client.CallOptions.GetAuditReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetResourceEnrollmentStatus = append(client.CallOptions.GetResourceEnrollmentStatus, gax.WithClientTracing(tracing))
+		client.CallOptions.ListResourceEnrollmentStatuses = append(client.CallOptions.ListResourceEnrollmentStatuses, gax.WithClientTracing(tracing))
+		client.CallOptions.ListControls = append(client.CallOptions.ListControls, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "auditmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/auditmanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "auditmanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateAuditSchedule = append(client.CallOptions.CreateAuditSchedule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAuditSchedule = append(client.CallOptions.UpdateAuditSchedule, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuditSchedule = append(client.CallOptions.GetAuditSchedule, gax.WithClientLogging(logging))
+		client.CallOptions.ListAuditSchedules = append(client.CallOptions.ListAuditSchedules, gax.WithClientLogging(logging))
+		client.CallOptions.EnrollResource = append(client.CallOptions.EnrollResource, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateAuditScopeReport = append(client.CallOptions.GenerateAuditScopeReport, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateAuditReport = append(client.CallOptions.GenerateAuditReport, gax.WithClientLogging(logging))
+		client.CallOptions.ListAuditReports = append(client.CallOptions.ListAuditReports, gax.WithClientLogging(logging))
+		client.CallOptions.GetAuditReport = append(client.CallOptions.GetAuditReport, gax.WithClientLogging(logging))
+		client.CallOptions.GetResourceEnrollmentStatus = append(client.CallOptions.GetResourceEnrollmentStatus, gax.WithClientLogging(logging))
+		client.CallOptions.ListResourceEnrollmentStatuses = append(client.CallOptions.ListResourceEnrollmentStatuses, gax.WithClientLogging(logging))
+		client.CallOptions.ListControls = append(client.CallOptions.ListControls, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -692,6 +753,67 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "auditmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/auditmanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "auditmanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateAuditSchedule = append(callOpts.CreateAuditSchedule, gax.WithClientTracing(tracing))
+		callOpts.UpdateAuditSchedule = append(callOpts.UpdateAuditSchedule, gax.WithClientTracing(tracing))
+		callOpts.GetAuditSchedule = append(callOpts.GetAuditSchedule, gax.WithClientTracing(tracing))
+		callOpts.ListAuditSchedules = append(callOpts.ListAuditSchedules, gax.WithClientTracing(tracing))
+		callOpts.EnrollResource = append(callOpts.EnrollResource, gax.WithClientTracing(tracing))
+		callOpts.GenerateAuditScopeReport = append(callOpts.GenerateAuditScopeReport, gax.WithClientTracing(tracing))
+		callOpts.GenerateAuditReport = append(callOpts.GenerateAuditReport, gax.WithClientTracing(tracing))
+		callOpts.ListAuditReports = append(callOpts.ListAuditReports, gax.WithClientTracing(tracing))
+		callOpts.GetAuditReport = append(callOpts.GetAuditReport, gax.WithClientTracing(tracing))
+		callOpts.GetResourceEnrollmentStatus = append(callOpts.GetResourceEnrollmentStatus, gax.WithClientTracing(tracing))
+		callOpts.ListResourceEnrollmentStatuses = append(callOpts.ListResourceEnrollmentStatuses, gax.WithClientTracing(tracing))
+		callOpts.ListControls = append(callOpts.ListControls, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "auditmanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/auditmanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "auditmanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateAuditSchedule = append(callOpts.CreateAuditSchedule, gax.WithClientLogging(logging))
+		callOpts.UpdateAuditSchedule = append(callOpts.UpdateAuditSchedule, gax.WithClientLogging(logging))
+		callOpts.GetAuditSchedule = append(callOpts.GetAuditSchedule, gax.WithClientLogging(logging))
+		callOpts.ListAuditSchedules = append(callOpts.ListAuditSchedules, gax.WithClientLogging(logging))
+		callOpts.EnrollResource = append(callOpts.EnrollResource, gax.WithClientLogging(logging))
+		callOpts.GenerateAuditScopeReport = append(callOpts.GenerateAuditScopeReport, gax.WithClientLogging(logging))
+		callOpts.GenerateAuditReport = append(callOpts.GenerateAuditReport, gax.WithClientLogging(logging))
+		callOpts.ListAuditReports = append(callOpts.ListAuditReports, gax.WithClientLogging(logging))
+		callOpts.GetAuditReport = append(callOpts.GetAuditReport, gax.WithClientLogging(logging))
+		callOpts.GetResourceEnrollmentStatus = append(callOpts.GetResourceEnrollmentStatus, gax.WithClientLogging(logging))
+		callOpts.ListResourceEnrollmentStatuses = append(callOpts.ListResourceEnrollmentStatuses, gax.WithClientLogging(logging))
+		callOpts.ListControls = append(callOpts.ListControls, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -748,9 +870,6 @@ func (c *gRPCClient) CreateAuditSchedule(ctx context.Context, req *auditmanagerp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/CreateAuditSchedule")
 	}
@@ -793,9 +912,6 @@ func (c *gRPCClient) GetAuditSchedule(ctx context.Context, req *auditmanagerpb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditSchedule")
 	}
@@ -817,9 +933,6 @@ func (c *gRPCClient) ListAuditSchedules(ctx context.Context, req *auditmanagerpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListAuditSchedules")
 	}
@@ -938,9 +1051,6 @@ func (c *gRPCClient) ListAuditReports(ctx context.Context, req *auditmanagerpb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListAuditReports")
 	}
@@ -990,9 +1100,6 @@ func (c *gRPCClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditReport")
 	}
@@ -1014,9 +1121,6 @@ func (c *gRPCClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetResourceEnrollmentStatus")
 	}
@@ -1038,9 +1142,6 @@ func (c *gRPCClient) ListResourceEnrollmentStatuses(ctx context.Context, req *au
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListResourceEnrollmentStatuses")
 	}
@@ -1090,9 +1191,6 @@ func (c *gRPCClient) ListControls(ctx context.Context, req *auditmanagerpb.ListC
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/ListControls")
 	}
@@ -1341,9 +1439,6 @@ func (c *restClient) CreateAuditSchedule(ctx context.Context, req *auditmanagerp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/CreateAuditSchedule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/auditSchedules")
@@ -1469,9 +1564,6 @@ func (c *restClient) GetAuditSchedule(ctx context.Context, req *auditmanagerpb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditSchedule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/auditSchedules/*}")
@@ -1884,9 +1976,6 @@ func (c *restClient) GetAuditReport(ctx context.Context, req *auditmanagerpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetAuditReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=folders/*/locations/*/auditReports/*}")
@@ -1941,9 +2030,6 @@ func (c *restClient) GetResourceEnrollmentStatus(ctx context.Context, req *audit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//auditmanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.auditmanager.v1.AuditManager/GetResourceEnrollmentStatus")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/resourceEnrollmentStatuses/*}")

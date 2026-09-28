@@ -293,6 +293,41 @@ func NewDomainMappingsClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.UpdateDomainMapping = append(client.CallOptions.UpdateDomainMapping, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteDomainMapping = append(client.CallOptions.DeleteDomainMapping, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDomainMappings = append(client.CallOptions.ListDomainMappings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDomainMapping = append(client.CallOptions.GetDomainMapping, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDomainMapping = append(client.CallOptions.CreateDomainMapping, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDomainMapping = append(client.CallOptions.UpdateDomainMapping, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDomainMapping = append(client.CallOptions.DeleteDomainMapping, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDomainMappings = append(client.CallOptions.ListDomainMappings, gax.WithClientLogging(logging))
+		client.CallOptions.GetDomainMapping = append(client.CallOptions.GetDomainMapping, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDomainMapping = append(client.CallOptions.CreateDomainMapping, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDomainMapping = append(client.CallOptions.UpdateDomainMapping, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDomainMapping = append(client.CallOptions.DeleteDomainMapping, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -403,6 +438,41 @@ func NewDomainMappingsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.CreateDomainMapping = append(callOpts.CreateDomainMapping, gax.WithClientMetrics(metrics))
 		callOpts.UpdateDomainMapping = append(callOpts.UpdateDomainMapping, gax.WithClientMetrics(metrics))
 		callOpts.DeleteDomainMapping = append(callOpts.DeleteDomainMapping, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDomainMappings = append(callOpts.ListDomainMappings, gax.WithClientTracing(tracing))
+		callOpts.GetDomainMapping = append(callOpts.GetDomainMapping, gax.WithClientTracing(tracing))
+		callOpts.CreateDomainMapping = append(callOpts.CreateDomainMapping, gax.WithClientTracing(tracing))
+		callOpts.UpdateDomainMapping = append(callOpts.UpdateDomainMapping, gax.WithClientTracing(tracing))
+		callOpts.DeleteDomainMapping = append(callOpts.DeleteDomainMapping, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "appengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/appengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "appengine.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDomainMappings = append(callOpts.ListDomainMappings, gax.WithClientLogging(logging))
+		callOpts.GetDomainMapping = append(callOpts.GetDomainMapping, gax.WithClientLogging(logging))
+		callOpts.CreateDomainMapping = append(callOpts.CreateDomainMapping, gax.WithClientLogging(logging))
+		callOpts.UpdateDomainMapping = append(callOpts.UpdateDomainMapping, gax.WithClientLogging(logging))
+		callOpts.DeleteDomainMapping = append(callOpts.DeleteDomainMapping, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
