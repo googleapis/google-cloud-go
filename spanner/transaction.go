@@ -31,7 +31,6 @@ import (
 	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"google.golang.org/api/iterator"
-	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
@@ -400,6 +399,9 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 				}
 				return client, t.updateTxState(err)
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "ReadWithOptions"); err != nil {
@@ -755,6 +757,9 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 				}
 				return client, t.updateTxState(err)
 			}
+			if !gfeLatencySinksEnabled(t.ct != nil, t.otConfig) {
+				return client, nil
+			}
 			md, err := client.Header()
 			if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 				if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "query"); err != nil {
@@ -958,7 +963,7 @@ func (t *ReadOnlyTransaction) begin(ctx context.Context) error {
 			},
 		},
 		RequestOptions: createRequestOptions(sppb.RequestOptions_PRIORITY_UNSPECIFIED, "", "", t.clientContext),
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	}, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "begin_BeginTransaction"); err != nil {
@@ -1427,7 +1432,7 @@ func (t *ReadWriteTransaction) update(ctx context.Context, stmt Statement, opts 
 		hasInlineBeginTransaction = true
 	}
 	var md metadata.MD
-	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
+	resultSet, err := sh.getClient().ExecuteSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), t.disableRouteToLeader), req, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "update"); err != nil {
@@ -1536,7 +1541,7 @@ func (t *ReadWriteTransaction) batchUpdateWithOptions(ctx context.Context, stmts
 		Seqno:          atomic.AddInt64(&t.sequenceNumber, 1),
 		RequestOptions: createRequestOptions(opts.Priority, opts.RequestTag, t.txOpts.TransactionTag, mergeClientContext(t.clientContext, opts.ClientContext)),
 		LastStatements: opts.LastStatement,
-	}, gax.WithGRPCOptions(grpc.Header(&md)))
+	}, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 
 	if getGFELatencyMetricsFlag() && md != nil && t.ct != nil {
 		if err := createContextAndCaptureGFELatencyMetrics(ctx, t.ct, md, "batchUpdateWithOptions"); err != nil {
@@ -1935,7 +1940,7 @@ func (t *ReadWriteTransaction) commit(ctx context.Context, options CommitOptions
 		if includeMutations {
 			req.Mutations = mutationProtos
 		}
-		return client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), req, gax.WithGRPCOptions(grpc.Header(&md)))
+		return client.Commit(contextWithOutgoingMetadata(ctx, t.sh.getMetadata(), t.disableRouteToLeader), req, gfeLatencyHeaderOptions(&md, t.ct != nil, t.otConfig)...)
 	}
 	// Initial commit attempt with mutations
 	res, err := performCommit(true)
