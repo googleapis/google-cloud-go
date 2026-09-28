@@ -255,6 +255,33 @@ func NewLoyaltyCustomerMatchClient(ctx context.Context, opts ...option.ClientOpt
 
 		client.CallOptions.ManageLoyaltyCustomerMatch = append(client.CallOptions.ManageLoyaltyCustomerMatch, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/loyaltycustomers/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ManageLoyaltyCustomerMatch = append(client.CallOptions.ManageLoyaltyCustomerMatch, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/loyaltycustomers/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ManageLoyaltyCustomerMatch = append(client.CallOptions.ManageLoyaltyCustomerMatch, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -358,6 +385,33 @@ func NewLoyaltyCustomerMatchRESTClient(ctx context.Context, opts ...option.Clien
 
 		callOpts.ManageLoyaltyCustomerMatch = append(callOpts.ManageLoyaltyCustomerMatch, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/loyaltycustomers/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.ManageLoyaltyCustomerMatch = append(callOpts.ManageLoyaltyCustomerMatch, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/loyaltycustomers/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.ManageLoyaltyCustomerMatch = append(callOpts.ManageLoyaltyCustomerMatch, gax.WithClientLogging(logging))
+	}
 
 	return &LoyaltyCustomerMatchClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -404,9 +458,6 @@ func (c *loyaltyCustomerMatchGRPCClient) ManageLoyaltyCustomerMatch(ctx context.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerMatchService/ManageLoyaltyCustomerMatch")
 	}
@@ -468,9 +519,6 @@ func (c *loyaltyCustomerMatchRESTClient) ManageLoyaltyCustomerMatch(ctx context.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.loyaltycustomers.v1.LoyaltyCustomerMatchService/ManageLoyaltyCustomerMatch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/loyaltyCustomers/v1/{parent=accounts/*}/loyaltyCustomers:manage")

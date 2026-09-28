@@ -198,6 +198,33 @@ func NewKeyDashboardClient(ctx context.Context, opts ...option.ClientOption) (*K
 
 		client.CallOptions.ListCryptoKeys = append(client.CallOptions.ListCryptoKeys, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCryptoKeys = append(client.CallOptions.ListCryptoKeys, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListCryptoKeys = append(client.CallOptions.ListCryptoKeys, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -289,6 +316,33 @@ func NewKeyDashboardRESTClient(ctx context.Context, opts ...option.ClientOption)
 
 		callOpts.ListCryptoKeys = append(callOpts.ListCryptoKeys, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCryptoKeys = append(callOpts.ListCryptoKeys, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "kmsinventory",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/kms/inventory/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "kmsinventory.googleapis.com",
+			}),
+		)
+
+		callOpts.ListCryptoKeys = append(callOpts.ListCryptoKeys, gax.WithClientLogging(logging))
+	}
 
 	return &KeyDashboardClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -335,9 +389,6 @@ func (c *keyDashboardGRPCClient) ListCryptoKeys(ctx context.Context, req *invent
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//kmsinventory.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.kms.inventory.v1.KeyDashboardService/ListCryptoKeys")
 	}

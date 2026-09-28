@@ -342,6 +342,43 @@ func NewIngestionClient(ctx context.Context, opts ...option.ClientOption) (*Inge
 		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientMetrics(metrics))
 		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.IngestAudienceMembers = append(client.CallOptions.IngestAudienceMembers, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveAllAudienceMembers = append(client.CallOptions.RemoveAllAudienceMembers, gax.WithClientTracing(tracing))
+		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientTracing(tracing))
+		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.IngestAudienceMembers = append(client.CallOptions.IngestAudienceMembers, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveAudienceMembers = append(client.CallOptions.RemoveAudienceMembers, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveAllAudienceMembers = append(client.CallOptions.RemoveAllAudienceMembers, gax.WithClientLogging(logging))
+		client.CallOptions.IngestEvents = append(client.CallOptions.IngestEvents, gax.WithClientLogging(logging))
+		client.CallOptions.IngestAdEvents = append(client.CallOptions.IngestAdEvents, gax.WithClientLogging(logging))
+		client.CallOptions.RetrieveRequestStatus = append(client.CallOptions.RetrieveRequestStatus, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -437,6 +474,43 @@ func NewIngestionRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientMetrics(metrics))
 		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientMetrics(metrics))
 		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.IngestAudienceMembers = append(callOpts.IngestAudienceMembers, gax.WithClientTracing(tracing))
+		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientTracing(tracing))
+		callOpts.RemoveAllAudienceMembers = append(callOpts.RemoveAllAudienceMembers, gax.WithClientTracing(tracing))
+		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientTracing(tracing))
+		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientTracing(tracing))
+		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.IngestAudienceMembers = append(callOpts.IngestAudienceMembers, gax.WithClientLogging(logging))
+		callOpts.RemoveAudienceMembers = append(callOpts.RemoveAudienceMembers, gax.WithClientLogging(logging))
+		callOpts.RemoveAllAudienceMembers = append(callOpts.RemoveAllAudienceMembers, gax.WithClientLogging(logging))
+		callOpts.IngestEvents = append(callOpts.IngestEvents, gax.WithClientLogging(logging))
+		callOpts.IngestAdEvents = append(callOpts.IngestAdEvents, gax.WithClientLogging(logging))
+		callOpts.RetrieveRequestStatus = append(callOpts.RetrieveRequestStatus, gax.WithClientLogging(logging))
 	}
 
 	return &IngestionClient{internalClient: c, CallOptions: callOpts}, nil

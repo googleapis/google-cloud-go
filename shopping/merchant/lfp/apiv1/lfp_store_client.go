@@ -312,6 +312,39 @@ func NewLfpStoreClient(ctx context.Context, opts ...option.ClientOption) (*LfpSt
 		client.CallOptions.DeleteLfpStore = append(client.CallOptions.DeleteLfpStore, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLfpStores = append(client.CallOptions.ListLfpStores, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLfpStore = append(client.CallOptions.GetLfpStore, gax.WithClientTracing(tracing))
+		client.CallOptions.InsertLfpStore = append(client.CallOptions.InsertLfpStore, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteLfpStore = append(client.CallOptions.DeleteLfpStore, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLfpStores = append(client.CallOptions.ListLfpStores, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetLfpStore = append(client.CallOptions.GetLfpStore, gax.WithClientLogging(logging))
+		client.CallOptions.InsertLfpStore = append(client.CallOptions.InsertLfpStore, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteLfpStore = append(client.CallOptions.DeleteLfpStore, gax.WithClientLogging(logging))
+		client.CallOptions.ListLfpStores = append(client.CallOptions.ListLfpStores, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -408,6 +441,39 @@ func NewLfpStoreRESTClient(ctx context.Context, opts ...option.ClientOption) (*L
 		callOpts.DeleteLfpStore = append(callOpts.DeleteLfpStore, gax.WithClientMetrics(metrics))
 		callOpts.ListLfpStores = append(callOpts.ListLfpStores, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLfpStore = append(callOpts.GetLfpStore, gax.WithClientTracing(tracing))
+		callOpts.InsertLfpStore = append(callOpts.InsertLfpStore, gax.WithClientTracing(tracing))
+		callOpts.DeleteLfpStore = append(callOpts.DeleteLfpStore, gax.WithClientTracing(tracing))
+		callOpts.ListLfpStores = append(callOpts.ListLfpStores, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/lfp/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetLfpStore = append(callOpts.GetLfpStore, gax.WithClientLogging(logging))
+		callOpts.InsertLfpStore = append(callOpts.InsertLfpStore, gax.WithClientLogging(logging))
+		callOpts.DeleteLfpStore = append(callOpts.DeleteLfpStore, gax.WithClientLogging(logging))
+		callOpts.ListLfpStores = append(callOpts.ListLfpStores, gax.WithClientLogging(logging))
+	}
 
 	return &LfpStoreClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -454,9 +520,6 @@ func (c *lfpStoreGRPCClient) GetLfpStore(ctx context.Context, req *lfppb.GetLfpS
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpStoreService/GetLfpStore")
 	}
@@ -478,9 +541,6 @@ func (c *lfpStoreGRPCClient) InsertLfpStore(ctx context.Context, req *lfppb.Inse
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpStoreService/InsertLfpStore")
 	}
@@ -502,9 +562,6 @@ func (c *lfpStoreGRPCClient) DeleteLfpStore(ctx context.Context, req *lfppb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpStoreService/DeleteLfpStore")
 	}
@@ -522,9 +579,6 @@ func (c *lfpStoreGRPCClient) ListLfpStores(ctx context.Context, req *lfppb.ListL
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpStoreService/ListLfpStores")
 	}
@@ -588,9 +642,6 @@ func (c *lfpStoreRESTClient) GetLfpStore(ctx context.Context, req *lfppb.GetLfpS
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpStoreService/GetLfpStore")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/lfp/v1/{name=accounts/*/lfpStores/*}")
@@ -653,9 +704,6 @@ func (c *lfpStoreRESTClient) InsertLfpStore(ctx context.Context, req *lfppb.Inse
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpStoreService/InsertLfpStore")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/lfp/v1/{parent=accounts/*}/lfpStores:insert")
@@ -710,9 +758,6 @@ func (c *lfpStoreRESTClient) DeleteLfpStore(ctx context.Context, req *lfppb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.lfp.v1.LfpStoreService/DeleteLfpStore")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/lfp/v1/{name=accounts/*/lfpStores/*}")

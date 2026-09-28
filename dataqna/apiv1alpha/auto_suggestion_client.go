@@ -222,6 +222,33 @@ func NewAutoSuggestionClient(ctx context.Context, opts ...option.ClientOption) (
 
 		client.CallOptions.SuggestQueries = append(client.CallOptions.SuggestQueries, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SuggestQueries = append(client.CallOptions.SuggestQueries, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SuggestQueries = append(client.CallOptions.SuggestQueries, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -327,6 +354,33 @@ func NewAutoSuggestionRESTClient(ctx context.Context, opts ...option.ClientOptio
 
 		callOpts.SuggestQueries = append(callOpts.SuggestQueries, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		callOpts.SuggestQueries = append(callOpts.SuggestQueries, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataqna",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataqna/apiv1alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataqna.googleapis.com",
+			}),
+		)
+
+		callOpts.SuggestQueries = append(callOpts.SuggestQueries, gax.WithClientLogging(logging))
+	}
 
 	return &AutoSuggestionClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -373,9 +427,6 @@ func (c *autoSuggestionGRPCClient) SuggestQueries(ctx context.Context, req *data
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.AutoSuggestionService/SuggestQueries")
 	}
@@ -413,9 +464,6 @@ func (c *autoSuggestionRESTClient) SuggestQueries(ctx context.Context, req *data
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataqna.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataqna.v1alpha.AutoSuggestionService/SuggestQueries")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha/{parent=projects/*/locations/*}:suggestQueries")

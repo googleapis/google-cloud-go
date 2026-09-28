@@ -632,6 +632,55 @@ func NewOsConfigZonalClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.GetVulnerabilityReport = append(client.CallOptions.GetVulnerabilityReport, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListVulnerabilityReports = append(client.CallOptions.ListVulnerabilityReports, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateOSPolicyAssignment = append(client.CallOptions.CreateOSPolicyAssignment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateOSPolicyAssignment = append(client.CallOptions.UpdateOSPolicyAssignment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOSPolicyAssignment = append(client.CallOptions.GetOSPolicyAssignment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOSPolicyAssignments = append(client.CallOptions.ListOSPolicyAssignments, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOSPolicyAssignmentRevisions = append(client.CallOptions.ListOSPolicyAssignmentRevisions, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOSPolicyAssignment = append(client.CallOptions.DeleteOSPolicyAssignment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOSPolicyAssignmentReport = append(client.CallOptions.GetOSPolicyAssignmentReport, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOSPolicyAssignmentReports = append(client.CallOptions.ListOSPolicyAssignmentReports, gax.WithClientTracing(tracing))
+		client.CallOptions.GetInventory = append(client.CallOptions.GetInventory, gax.WithClientTracing(tracing))
+		client.CallOptions.ListInventories = append(client.CallOptions.ListInventories, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVulnerabilityReport = append(client.CallOptions.GetVulnerabilityReport, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVulnerabilityReports = append(client.CallOptions.ListVulnerabilityReports, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateOSPolicyAssignment = append(client.CallOptions.CreateOSPolicyAssignment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateOSPolicyAssignment = append(client.CallOptions.UpdateOSPolicyAssignment, gax.WithClientLogging(logging))
+		client.CallOptions.GetOSPolicyAssignment = append(client.CallOptions.GetOSPolicyAssignment, gax.WithClientLogging(logging))
+		client.CallOptions.ListOSPolicyAssignments = append(client.CallOptions.ListOSPolicyAssignments, gax.WithClientLogging(logging))
+		client.CallOptions.ListOSPolicyAssignmentRevisions = append(client.CallOptions.ListOSPolicyAssignmentRevisions, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOSPolicyAssignment = append(client.CallOptions.DeleteOSPolicyAssignment, gax.WithClientLogging(logging))
+		client.CallOptions.GetOSPolicyAssignmentReport = append(client.CallOptions.GetOSPolicyAssignmentReport, gax.WithClientLogging(logging))
+		client.CallOptions.ListOSPolicyAssignmentReports = append(client.CallOptions.ListOSPolicyAssignmentReports, gax.WithClientLogging(logging))
+		client.CallOptions.GetInventory = append(client.CallOptions.GetInventory, gax.WithClientLogging(logging))
+		client.CallOptions.ListInventories = append(client.CallOptions.ListInventories, gax.WithClientLogging(logging))
+		client.CallOptions.GetVulnerabilityReport = append(client.CallOptions.GetVulnerabilityReport, gax.WithClientLogging(logging))
+		client.CallOptions.ListVulnerabilityReports = append(client.CallOptions.ListVulnerabilityReports, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -753,6 +802,55 @@ func NewOsConfigZonalRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.GetVulnerabilityReport = append(callOpts.GetVulnerabilityReport, gax.WithClientMetrics(metrics))
 		callOpts.ListVulnerabilityReports = append(callOpts.ListVulnerabilityReports, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateOSPolicyAssignment = append(callOpts.CreateOSPolicyAssignment, gax.WithClientTracing(tracing))
+		callOpts.UpdateOSPolicyAssignment = append(callOpts.UpdateOSPolicyAssignment, gax.WithClientTracing(tracing))
+		callOpts.GetOSPolicyAssignment = append(callOpts.GetOSPolicyAssignment, gax.WithClientTracing(tracing))
+		callOpts.ListOSPolicyAssignments = append(callOpts.ListOSPolicyAssignments, gax.WithClientTracing(tracing))
+		callOpts.ListOSPolicyAssignmentRevisions = append(callOpts.ListOSPolicyAssignmentRevisions, gax.WithClientTracing(tracing))
+		callOpts.DeleteOSPolicyAssignment = append(callOpts.DeleteOSPolicyAssignment, gax.WithClientTracing(tracing))
+		callOpts.GetOSPolicyAssignmentReport = append(callOpts.GetOSPolicyAssignmentReport, gax.WithClientTracing(tracing))
+		callOpts.ListOSPolicyAssignmentReports = append(callOpts.ListOSPolicyAssignmentReports, gax.WithClientTracing(tracing))
+		callOpts.GetInventory = append(callOpts.GetInventory, gax.WithClientTracing(tracing))
+		callOpts.ListInventories = append(callOpts.ListInventories, gax.WithClientTracing(tracing))
+		callOpts.GetVulnerabilityReport = append(callOpts.GetVulnerabilityReport, gax.WithClientTracing(tracing))
+		callOpts.ListVulnerabilityReports = append(callOpts.ListVulnerabilityReports, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateOSPolicyAssignment = append(callOpts.CreateOSPolicyAssignment, gax.WithClientLogging(logging))
+		callOpts.UpdateOSPolicyAssignment = append(callOpts.UpdateOSPolicyAssignment, gax.WithClientLogging(logging))
+		callOpts.GetOSPolicyAssignment = append(callOpts.GetOSPolicyAssignment, gax.WithClientLogging(logging))
+		callOpts.ListOSPolicyAssignments = append(callOpts.ListOSPolicyAssignments, gax.WithClientLogging(logging))
+		callOpts.ListOSPolicyAssignmentRevisions = append(callOpts.ListOSPolicyAssignmentRevisions, gax.WithClientLogging(logging))
+		callOpts.DeleteOSPolicyAssignment = append(callOpts.DeleteOSPolicyAssignment, gax.WithClientLogging(logging))
+		callOpts.GetOSPolicyAssignmentReport = append(callOpts.GetOSPolicyAssignmentReport, gax.WithClientLogging(logging))
+		callOpts.ListOSPolicyAssignmentReports = append(callOpts.ListOSPolicyAssignmentReports, gax.WithClientLogging(logging))
+		callOpts.GetInventory = append(callOpts.GetInventory, gax.WithClientLogging(logging))
+		callOpts.ListInventories = append(callOpts.ListInventories, gax.WithClientLogging(logging))
+		callOpts.GetVulnerabilityReport = append(callOpts.GetVulnerabilityReport, gax.WithClientLogging(logging))
+		callOpts.ListVulnerabilityReports = append(callOpts.ListVulnerabilityReports, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -809,9 +907,6 @@ func (c *osConfigZonalGRPCClient) CreateOSPolicyAssignment(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/CreateOSPolicyAssignment")
 	}
@@ -866,9 +961,6 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignment(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetOSPolicyAssignment")
 	}
@@ -890,9 +982,6 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignments(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/ListOSPolicyAssignments")
 	}
@@ -942,9 +1031,6 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentRevisions(ctx context.Co
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/ListOSPolicyAssignmentRevisions")
 	}
@@ -994,9 +1080,6 @@ func (c *osConfigZonalGRPCClient) DeleteOSPolicyAssignment(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/DeleteOSPolicyAssignment")
 	}
@@ -1024,9 +1107,6 @@ func (c *osConfigZonalGRPCClient) GetOSPolicyAssignmentReport(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetOSPolicyAssignmentReport")
 	}
@@ -1048,9 +1128,6 @@ func (c *osConfigZonalGRPCClient) ListOSPolicyAssignmentReports(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/ListOSPolicyAssignmentReports")
 	}
@@ -1100,9 +1177,6 @@ func (c *osConfigZonalGRPCClient) GetInventory(ctx context.Context, req *osconfi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetInventory")
 	}
@@ -1124,9 +1198,6 @@ func (c *osConfigZonalGRPCClient) ListInventories(ctx context.Context, req *osco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/ListInventories")
 	}
@@ -1176,9 +1247,6 @@ func (c *osConfigZonalGRPCClient) GetVulnerabilityReport(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetVulnerabilityReport")
 	}
@@ -1200,9 +1268,6 @@ func (c *osConfigZonalGRPCClient) ListVulnerabilityReports(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/ListVulnerabilityReports")
 	}
@@ -1282,9 +1347,6 @@ func (c *osConfigZonalRESTClient) CreateOSPolicyAssignment(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/CreateOSPolicyAssignment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/osPolicyAssignments")
@@ -1433,9 +1495,6 @@ func (c *osConfigZonalRESTClient) GetOSPolicyAssignment(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetOSPolicyAssignment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/osPolicyAssignments/*}")
@@ -1659,9 +1718,6 @@ func (c *osConfigZonalRESTClient) DeleteOSPolicyAssignment(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/DeleteOSPolicyAssignment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/osPolicyAssignments/*}")
@@ -1724,9 +1780,6 @@ func (c *osConfigZonalRESTClient) GetOSPolicyAssignmentReport(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetOSPolicyAssignmentReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/osPolicyAssignments/*/report}")
@@ -1867,9 +1920,6 @@ func (c *osConfigZonalRESTClient) GetInventory(ctx context.Context, req *osconfi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetInventory")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/inventory}")
@@ -2009,9 +2059,6 @@ func (c *osConfigZonalRESTClient) GetVulnerabilityReport(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//osconfig.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.osconfig.v1.OsConfigZonalService/GetVulnerabilityReport")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/vulnerabilityReport}")

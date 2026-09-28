@@ -413,6 +413,49 @@ func NewSessionClient(ctx context.Context, opts ...option.ClientOption) (*Sessio
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "ces",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ces/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "ces.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RunSession = append(client.CallOptions.RunSession, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamRunSession = append(client.CallOptions.StreamRunSession, gax.WithClientTracing(tracing))
+		client.CallOptions.BidiRunSession = append(client.CallOptions.BidiRunSession, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "ces",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ces/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "ces.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.RunSession = append(client.CallOptions.RunSession, gax.WithClientLogging(logging))
+		client.CallOptions.StreamRunSession = append(client.CallOptions.StreamRunSession, gax.WithClientLogging(logging))
+		client.CallOptions.BidiRunSession = append(client.CallOptions.BidiRunSession, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -511,6 +554,49 @@ func NewSessionRESTClient(ctx context.Context, opts ...option.ClientOption) (*Se
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "ces",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ces/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ces.googleapis.com",
+			}),
+		)
+
+		callOpts.RunSession = append(callOpts.RunSession, gax.WithClientTracing(tracing))
+		callOpts.StreamRunSession = append(callOpts.StreamRunSession, gax.WithClientTracing(tracing))
+		callOpts.BidiRunSession = append(callOpts.BidiRunSession, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "ces",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/ces/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "ces.googleapis.com",
+			}),
+		)
+
+		callOpts.RunSession = append(callOpts.RunSession, gax.WithClientLogging(logging))
+		callOpts.StreamRunSession = append(callOpts.StreamRunSession, gax.WithClientLogging(logging))
+		callOpts.BidiRunSession = append(callOpts.BidiRunSession, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	return &SessionClient{internalClient: c, CallOptions: callOpts}, nil
