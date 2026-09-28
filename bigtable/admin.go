@@ -205,6 +205,10 @@ func appProfilePath(project, instance, appProfile string) string {
 	return fmt.Sprintf("%s/appProfiles/%s", instancePrefix(project, instance), appProfile)
 }
 
+func memoryLayerPath(project, instance, cluster string) string {
+	return fmt.Sprintf("%s/clusters/%s/memoryLayer", instancePrefix(project, instance), cluster)
+}
+
 // EncryptionInfo represents the encryption info of a table.
 type EncryptionInfo struct {
 	Status        *Status
@@ -2109,6 +2113,143 @@ func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) *AutoscalingConfig {
 	}
 }
 
+// MemoryConfig represents the configuration of a cluster's memory layer.
+type MemoryConfig struct {
+	// Output only. Reporting the current size of the memory layer in GiB.
+	StorageSizeGiB int32
+}
+
+// MemoryLayerConfig contains the information necessary to update a cluster's
+// memory layer.
+type MemoryLayerConfig struct {
+	// ClusterID specifies the unique name of the cluster. Required.
+	ClusterID string
+
+	// MemoryConfig is the configuration of this memory layer. Set an empty
+	// MemoryConfig (&MemoryConfig{}) to enable the memory layer. Leave nil to
+	// disable the memory layer.
+	MemoryConfig *MemoryConfig
+
+	// Optional. The etag for this memory layer.
+	// This may be sent on update requests to ensure that the client has an
+	// up-to-date value before proceeding. The server returns an ABORTED error on
+	// a mismatched etag.
+	Etag string
+}
+
+// MemoryLayerInfo represents information about a cluster's memory layer.
+type MemoryLayerInfo struct {
+	// ClusterID is the name of the cluster this memory layer belongs to.
+	ClusterID string
+
+	// MemoryConfig is the configuration of this memory layer, or nil if disabled.
+	MemoryConfig *MemoryConfig
+
+	// State is the current state of the memory layer.
+	State string
+
+	// Etag is the etag for this memory layer.
+	Etag string
+}
+
+func protoToMemoryLayerInfo(ml *btapb.MemoryLayer) *MemoryLayerInfo {
+	if ml == nil {
+		return nil
+	}
+	trimmed := strings.TrimSuffix(ml.Name, "/memoryLayer")
+	nameParts := strings.Split(trimmed, "/")
+	clusterID := nameParts[len(nameParts)-1]
+	mli := &MemoryLayerInfo{
+		ClusterID: clusterID,
+		State:     ml.State.String(),
+		Etag:      ml.Etag,
+	}
+	if ml.MemoryConfig != nil {
+		mli.MemoryConfig = &MemoryConfig{
+			StorageSizeGiB: ml.MemoryConfig.StorageSizeGib,
+		}
+	}
+	return mli
+}
+
+// UpdateMemoryLayer updates the memory layer of a cluster.
+// To enable the memory layer, set MemoryConfig on conf to a non-nil value (e.g. &MemoryConfig{}).
+// To disable the memory layer, leave MemoryConfig on conf nil.
+func (iac *InstanceAdminClient) UpdateMemoryLayer(ctx context.Context, instanceID string, conf MemoryLayerConfig) error {
+	if conf.ClusterID == "" {
+		return errors.New("ClusterID is required")
+	}
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	ml := &btapb.MemoryLayer{
+		Name: memoryLayerPath(iac.project, instanceID, conf.ClusterID),
+		Etag: conf.Etag,
+	}
+	if conf.MemoryConfig != nil {
+		ml.MemoryConfig = &btapb.MemoryLayer_MemoryConfig{
+			StorageSizeGib: conf.MemoryConfig.StorageSizeGiB,
+		}
+	}
+	req := &btapb.UpdateMemoryLayerRequest{
+		MemoryLayer: ml,
+		UpdateMask: &field_mask.FieldMask{
+			Paths: []string{"memory_config"},
+		},
+	}
+	lro, err := iac.iClient.UpdateMemoryLayer(ctx, req)
+	if err != nil {
+		return err
+	}
+	resp := btapb.MemoryLayer{}
+	return longrunning.InternalNewOperation(iac.lroClient, lro).Wait(ctx, &resp)
+}
+
+// GetMemoryLayer fetches the memory layer of a cluster in an instance.
+func (iac *InstanceAdminClient) GetMemoryLayer(ctx context.Context, instanceID, clusterID string) (*MemoryLayerInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.GetMemoryLayerRequest{
+		Name: memoryLayerPath(iac.project, instanceID, clusterID),
+	}
+	var ml *btapb.MemoryLayer
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		ml, err = iac.iClient.GetMemoryLayer(ctx, req)
+		return err
+	}, adminRetryOptions...)
+	if err != nil {
+		return nil, err
+	}
+	return protoToMemoryLayerInfo(ml), nil
+}
+
+// MemoryLayers lists the memory layers for all clusters in an instance. If any
+// location (cluster) is unavailable due to some transient conditions,
+// MemoryLayers returns partial results and ErrPartiallyUnavailable error with
+// unavailable locations list.
+func (iac *InstanceAdminClient) MemoryLayers(ctx context.Context, instanceID string) ([]*MemoryLayerInfo, error) {
+	ctx = mergeOutgoingMetadata(ctx, iac.md)
+	req := &btapb.ListMemoryLayersRequest{
+		Parent: instancePrefix(iac.project, instanceID) + "/clusters/-",
+	}
+	var res *btapb.ListMemoryLayersResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, _ gax.CallSettings) error {
+		var err error
+		res, err = iac.iClient.ListMemoryLayers(ctx, req)
+		return err
+	}, adminRetryOptions...)
+	if err != nil {
+		return nil, err
+	}
+
+	var mlis []*MemoryLayerInfo
+	for _, ml := range res.MemoryLayers {
+		mlis = append(mlis, protoToMemoryLayerInfo(ml))
+	}
+	if len(res.FailedLocations) > 0 {
+		return mlis, ErrPartiallyUnavailable{res.FailedLocations}
+	}
+	return mlis, nil
+}
+
 // InstanceIAM returns the instance's IAM handle.
 func (iac *InstanceAdminClient) InstanceIAM(instanceID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(iac.iClient, "projects/"+iac.project+"/instances/"+instanceID)
@@ -2161,10 +2302,14 @@ func setIsolation(profile *btapb.AppProfile, isolation AppProfileIsolation) erro
 	if isolation != nil {
 		switch cfg := isolation.(type) {
 		case *StandardIsolation:
+			stdIsolation := &btapb.AppProfile_StandardIsolation{
+				Priority: btapb.AppProfile_Priority(cfg.Priority),
+			}
+			if cfg.MemoryConfig != nil {
+				stdIsolation.MemoryConfig = &btapb.AppProfile_StandardIsolation_MemoryConfig{}
+			}
 			profile.Isolation = &btapb.AppProfile_StandardIsolation_{
-				StandardIsolation: &btapb.AppProfile_StandardIsolation{
-					Priority: btapb.AppProfile_Priority(cfg.Priority),
-				},
+				StandardIsolation: stdIsolation,
 			}
 		case *DataBoostIsolationReadOnly:
 			dataBoostProto := &btapb.AppProfile_DataBoostIsolationReadOnly{}
@@ -2353,10 +2498,22 @@ type AppProfileIsolation interface {
 // StandardIsolation configures standard traffic isolation.
 type StandardIsolation struct {
 	Priority AppProfilePriority
+	// Optional. The memory config to use for requests with this app profile.
+	//
+	// If set, eligible single-row requests (currently limited to ReadRows)
+	// using this app profile will be routed to the memory layer. All eligible
+	// writes populate the memory layer.
+	MemoryConfig *StandardIsolationMemoryConfig
 }
 
 func (*StandardIsolation) isAppProfileIsolation()   {}
 func (*StandardIsolation) getFieldMaskPath() string { return "standard_isolation" }
+
+// StandardIsolationMemoryConfig configures the cluster's memory layer, to be
+// used by requests from this app profile.
+// StandardIsolationMemoryConfig can only be set if the AppProfile uses single
+// cluster routing and the configured cluster has a memory layer enabled.
+type StandardIsolationMemoryConfig struct{}
 
 // AppProfilePriority represents possible priorities for an app profile.
 type AppProfilePriority int32
