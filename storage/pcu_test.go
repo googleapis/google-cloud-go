@@ -15,9 +15,12 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"runtime"
 	"strings"
 	"sync"
@@ -934,7 +937,10 @@ func TestPCUState_DoCleanup(t *testing.T) {
 		partsToCreate     int
 		interimsToCreate  int
 		failDeletesFor    map[string]bool
+		notExistFor       map[string]bool
 		expectDeleteCalls int
+		// expectLogged is the set of objects expected to be reported as failed deletes.
+		expectLogged []string
 	}{
 		{
 			name:              "CleanupAlways should clean up all",
@@ -952,6 +958,23 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				"interim-0": true,
 			},
 			expectDeleteCalls: 4,
+			expectLogged:      []string{"part-1", "interim-0"},
+		},
+		{
+			// Parts consumed by a successful compose with DeleteSourceObjects are
+			// already gone; cleanup should not report them.
+			name:             "Already deleted objects are not logged",
+			partsToCreate:    3,
+			interimsToCreate: 1,
+			notExistFor: map[string]bool{
+				"part-0": true,
+				"part-1": true,
+			},
+			failDeletesFor: map[string]bool{
+				"part-2": true,
+			},
+			expectDeleteCalls: 4,
+			expectLogged:      []string{"part-2"},
 		},
 	}
 
@@ -977,6 +1000,9 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				mu.Unlock()
 
 				// Simulate failure based on the object's dummy name.
+				if tc.notExistFor[h.object] {
+					return fmt.Errorf("mock: %w", ErrObjectNotExist)
+				}
 				if shouldFail, ok := tc.failDeletesFor[h.object]; ok && shouldFail {
 					return errors.New("mock delete error")
 				}
@@ -993,12 +1019,26 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				state.intermediateMap[name] = &ObjectHandle{object: name}
 			}
 
+			// Capture cleanup logs.
+			var logBuf bytes.Buffer
+			log.SetOutput(&logBuf)
+			defer log.SetOutput(os.Stderr)
+
 			// Execute.
 			state.doCleanup()
 
 			// Assertions.
 			if deleteCalls != tc.expectDeleteCalls {
 				t.Errorf("Expected %d delete calls, but got %d", tc.expectDeleteCalls, deleteCalls)
+			}
+			logs := logBuf.String()
+			if got := strings.Count(logs, "failed to delete temporary part"); got != len(tc.expectLogged) {
+				t.Errorf("got %d logged delete failures, want %d; logs:\n%s", got, len(tc.expectLogged), logs)
+			}
+			for _, name := range tc.expectLogged {
+				if !strings.Contains(logs, fmt.Sprintf("%q", name)) {
+					t.Errorf("expected delete failure for %q to be logged; logs:\n%s", name, logs)
+				}
 			}
 		})
 	}

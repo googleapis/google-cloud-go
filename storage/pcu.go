@@ -605,8 +605,10 @@ func (s *pcuState) doCleanup() {
 		cleanupCtx, cancel := context.WithTimeout(context.WithoutCancel(s.ctx), 5*time.Minute)
 		defer cancel()
 		// Only log cleanup errors here since its best effort and will rely on bucket
-		// lifecycle policies if cleanup fails.
-		if err := s.deleteFn(cleanupCtx, h); err != nil {
+		// lifecycle policies if cleanup fails. Objects that no longer exist were
+		// already removed by a successful compose with DeleteSourceObjects, so
+		// they are not reported.
+		if err := s.deleteFn(cleanupCtx, h); err != nil && !errors.Is(err, ErrObjectNotExist) {
 			log.Printf("storage: failed to delete temporary part %q during parallel upload cleanup: %v", h.object, err)
 		}
 	}
