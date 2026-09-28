@@ -20,41 +20,33 @@ import (
 	"context"
 	"log"
 
-	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 )
 
-// EnableTracing demonstrates how to configure OpenTelemetry tracing with a
-// Google Cloud Go client library. Set GOOGLE_SDK_GO_TRACING=true in the
+// EnableTracing demonstrates how to configure OpenTelemetry tracing for
+// Google Cloud Go client libraries. Set GOOGLE_SDK_GO_TRACING=true in the
 // environment before starting the application to enable client span emission.
-func EnableTracing(ctx context.Context) error {
+// The returned cleanup function should be deferred by the caller to flush
+// spans before application exit.
+func EnableTracing(ctx context.Context) (func(), error) {
 	exporter, err := otlptracegrpc.New(ctx)
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	tp := sdktrace.NewTracerProvider(sdktrace.WithBatcher(exporter))
-	defer func() {
-		if err := tp.Shutdown(context.Background()); err != nil {
-			log.Printf("failed to shutdown TracerProvider: %v", err)
-		}
-	}()
-
 	otel.SetTracerProvider(tp)
 	otel.SetTextMapPropagator(propagation.TraceContext{})
 
-	client, err := secretmanager.NewClient(ctx)
-	if err != nil {
-		return err
+	cleanup := func() {
+		if err := tp.Shutdown(context.WithoutCancel(ctx)); err != nil {
+			log.Printf("failed to shutdown TracerProvider: %v", err)
+		}
 	}
-	defer client.Close()
-
-	// Use the client to make requests...
-
-	return nil
+	return cleanup, nil
 }
 
 // [END go_observability_tracing]
