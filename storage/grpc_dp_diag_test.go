@@ -194,6 +194,17 @@ func TestDirectPathDiagnostic_Interconnect(t *testing.T) {
 			},
 			want: reasonNoAuth,
 		},
+		{
+			name: "interconnect enabled with api key returns api_key",
+			opts: []option.ClientOption{
+				internaloption.EnableDirectPath(true),
+				internaloption.EnableDirectPathXds(),
+				experimental.WithDirectPathXdsOverInterconnect(),
+				option.WithEndpoint("storage.googleapis.com:443"),
+				option.WithAPIKey("fake-api-key"),
+			},
+			want: reasonAPIKey,
+		},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			if got := directPathDiagnostic(context.Background(), tc.opts...); got != tc.want {

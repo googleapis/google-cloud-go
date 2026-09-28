@@ -87,29 +87,22 @@ func directPathDiagnostic(ctx context.Context, opts ...option.ClientOption) stri
 		return reasonCustomHTTPClient
 	}
 
-	if interconnectEnabled {
-		if res.ResolvedWithoutAuthentication() {
-			return reasonNoAuth
-		}
-		if res.ResolvedWithAPIKeyIsCustom() {
-			return reasonAPIKey
-		}
-		return reasonUndetermined
-	}
-
-	if !metadata.OnGCE() {
+	if !interconnectEnabled && !metadata.OnGCE() {
 		return reasonNotOnGCE
 	}
 
-	return authDiagnostic(res)
+	return authDiagnostic(res, interconnectEnabled)
 }
 
-func authDiagnostic(res *internaloption.UnsafeResolver) string {
+func authDiagnostic(res *internaloption.UnsafeResolver, interconnectEnabled bool) string {
 	if res.ResolvedWithoutAuthentication() {
 		return reasonNoAuth
 	}
 	if res.ResolvedWithAPIKeyIsCustom() {
 		return reasonAPIKey
+	}
+	if interconnectEnabled {
+		return reasonUndetermined
 	}
 
 	// Verify that a default service account is attached.
