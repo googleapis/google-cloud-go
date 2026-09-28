@@ -282,22 +282,20 @@ func executeWithReadStallTimeout(
 		// pick either case. Prefer the real result over reporting a stall.
 		select {
 		case <-done:
-			if innerErr == nil {
-				cancel = nil
-			}
-			return innerErr
 		default:
+			cancel()
+			<-done
+			if onStall != nil {
+				onStall(stallTimeout)
+			}
+			return context.DeadlineExceeded
 		}
-		cancel()
-		<-done
-		if onStall != nil {
-			onStall(stallTimeout)
-		}
-		return context.DeadlineExceeded
 	case <-done:
-		if innerErr == nil {
-			cancel = nil
-		}
+	}
+	if innerErr == nil {
+		// Keep the stream context alive for the caller; it is released when
+		// the parent context is cancelled.
+		cancel = nil
 	}
 	return innerErr
 }
