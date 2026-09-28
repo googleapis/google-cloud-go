@@ -1006,42 +1006,76 @@ func TestPCUState_DoCleanup(t *testing.T) {
 
 func TestPCUState_Close(t *testing.T) {
 	tests := []struct {
-		name          string
-		numParts      int
-		mockErr       error
-		expectCompose bool
-		expectError   bool
+		name string
+		// workerErr is set as firstErr before close, simulating a failed part upload.
+		workerErr error
+		// composeErr is returned by composeParts.
+		composeErr error
+		// finalComposeSucceeded simulates the final compose succeeding before
+		// composeParts returns (e.g. a CRC32C mismatch detected afterwards).
+		finalComposeSucceeded bool
+		expectCompose         bool
+		expectError           bool
+		expectCleanup         bool
 	}{
 		{
-			name:          "Successful Upload",
-			numParts:      2,
-			mockErr:       nil,
-			expectCompose: true,
-			expectError:   false,
+			name:                  "Successful Upload",
+			finalComposeSucceeded: true,
+			expectCompose:         true,
 		},
 		{
 			name:          "Worker Error - Aborts Compose",
-			numParts:      2,
-			mockErr:       fmt.Errorf("upload failed"),
-			expectCompose: false,
+			workerErr:     fmt.Errorf("upload failed"),
 			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			name:          "Compose Error",
+			composeErr:    fmt.Errorf("compose failed"),
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			// setError ignores context.Canceled, so firstErr stays nil; cleanup
+			// must still run or the uploaded parts leak.
+			name:          "Context Canceled During Compose",
+			composeErr:    context.Canceled,
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			name:          "Wrapped Context Canceled During Compose",
+			composeErr:    fmt.Errorf("Post \"https://storage.googleapis.com\": %w", context.Canceled),
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			// Sources were already deleted by the final compose.
+			name:                  "Error After Final Compose Succeeded",
+			composeErr:            fmt.Errorf("crc32c mismatch"),
+			finalComposeSucceeded: true,
+			expectCompose:         true,
+			expectError:           true,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			var mu sync.Mutex
 			composeCalled := false
-			cleanupCalled := false
+			cleanupCh := make(chan struct{}, 1)
 			ctx := context.Background()
 			objName := "test-object"
 
 			state := &pcuState{
 				ctx:      ctx,
+				cancel:   func() {},
 				started:  true,
 				uploadCh: make(chan uploadTask, 10),
 				resultCh: make(chan uploadResult, 10),
-				partMap:  make(map[int]*ObjectHandle),
+				partMap:  map[int]*ObjectHandle{1: {object: "tmp1"}, 2: {object: "tmp2"}},
 				w: &Writer{
 					ctx: ctx,
 					ObjectAttrs: ObjectAttrs{
@@ -1055,30 +1089,23 @@ func TestPCUState_Close(t *testing.T) {
 				},
 				composePartsFn: func(s *pcuState) error {
 					composeCalled = true
-					return nil
+					if tc.finalComposeSucceeded {
+						s.mu.Lock()
+						s.finalComposeSucceeded = true
+						s.mu.Unlock()
+					}
+					return tc.composeErr
 				},
 				doCleanupFn: func(s *pcuState) {
-					mu.Lock()
-					cleanupCalled = true
-					mu.Unlock()
+					cleanupCh <- struct{}{}
 				},
 			}
-
-			// Pre-populate handles if testing success/failure.
-			if tc.numParts > 0 {
-				for i := 1; i <= tc.numParts; i++ {
-					state.partMap[i] = &ObjectHandle{object: "tmp"}
-				}
+			if tc.workerErr != nil {
+				state.firstErr = tc.workerErr
 			}
 
-			if tc.mockErr != nil {
-				state.firstErr = tc.mockErr
-			}
-
-			// Execute.
 			err := state.close()
 
-			// Assertions.
 			if (err != nil) != tc.expectError {
 				t.Errorf("expectError %v, got err: %v", tc.expectError, err)
 			}
@@ -1086,13 +1113,20 @@ func TestPCUState_Close(t *testing.T) {
 				t.Errorf("expectCompose %v, but composeCalled was %v", tc.expectCompose, composeCalled)
 			}
 
-			// Wait for background cleanup to execute if failure is expected.
-			time.Sleep(10 * time.Millisecond)
-			mu.Lock()
-			if cleanupCalled != tc.expectError {
-				t.Errorf("cleanupCalled = %v; want %v", cleanupCalled, tc.expectError)
+			// Cleanup runs in the background.
+			if tc.expectCleanup {
+				select {
+				case <-cleanupCh:
+				case <-time.After(time.Second):
+					t.Errorf("cleanup was not executed; temporary parts would leak")
+				}
+			} else {
+				select {
+				case <-cleanupCh:
+					t.Errorf("cleanup executed unexpectedly")
+				case <-time.After(50 * time.Millisecond):
+				}
 			}
-			mu.Unlock()
 		})
 	}
 }

@@ -441,19 +441,17 @@ func (s *pcuState) close() error {
 		close(s.resultCh)
 		s.collectorWG.Wait()
 
-		// Manual cleanup is only attempted if the upload failed or the final compose did not succeed.
-		// If the upload and composition succeed, the GCS compose operations will delete the source
-		// parts automatically (via DeleteSourceObjects = true).
-		// We do it in the background to not block returning.
+		// Manual cleanup is attempted unless the final compose succeeded. On success,
+		// the compose operations delete the source parts automatically (via
+		// DeleteSourceObjects = true). The check must not depend on firstErr, since
+		// setError ignores context.Canceled and a cancelled upload would otherwise
+		// leak its temporary parts. doCleanup uses a context detached from
+		// cancellation. We do it in the background to not block returning.
 		defer func() {
 			s.mu.Lock()
-			hasErr := s.firstErr != nil
 			finalSucceeded := s.finalComposeSucceeded
 			s.mu.Unlock()
-			if hasErr && !finalSucceeded {
-				s.mu.Lock()
-				s.ctx = context.WithoutCancel(s.ctx)
-				s.mu.Unlock()
+			if !finalSucceeded {
 				go s.doCleanupFn(s)
 			}
 		}()
