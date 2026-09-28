@@ -17,7 +17,9 @@ package grpctransport
 import (
 	"context"
 	"net"
+	"net/url"
 	"os"
+	"sort"
 	"strconv"
 	"strings"
 	"time"
@@ -35,6 +37,64 @@ const directPathInterconnectInfix = "-direct."
 
 var logRateLimiter = rate.Sometimes{Interval: 1 * time.Second}
 
+func parseTarget(endpoint string) (host string, query url.Values, err error) {
+	raw := endpoint
+	if !strings.Contains(raw, "://") {
+		raw = "//" + raw
+	}
+	u, err := url.Parse(raw)
+	if err != nil {
+		return "", nil, err
+	}
+	target := u.Host
+	if target == "" {
+		target = strings.TrimPrefix(u.Path, "/")
+	}
+	if slashIdx := strings.Index(target, "/"); slashIdx != -1 {
+		target = target[:slashIdx]
+	}
+	if h, _, err := net.SplitHostPort(target); err == nil {
+		host = h
+	} else {
+		host = target
+	}
+	return host, u.Query(), nil
+}
+
+func encodeQuery(v url.Values) string {
+	if len(v) == 0 {
+		return ""
+	}
+	var buf strings.Builder
+	keys := make([]string, 0, len(v))
+	for k := range v {
+		keys = append(keys, k)
+	}
+	sort.Strings(keys)
+	for _, k := range keys {
+		vs := v[k]
+		keyEscaped := url.QueryEscape(k)
+		if len(vs) == 0 {
+			if buf.Len() > 0 {
+				buf.WriteByte('&')
+			}
+			buf.WriteString(keyEscaped)
+			continue
+		}
+		for _, val := range vs {
+			if buf.Len() > 0 {
+				buf.WriteByte('&')
+			}
+			buf.WriteString(keyEscaped)
+			if val != "" {
+				buf.WriteByte('=')
+				buf.WriteString(url.QueryEscape(val))
+			}
+		}
+	}
+	return buf.String()
+}
+
 func isDirectPathXdsOverInterconnectUsed(endpoint string, o *Options) bool {
 	if valStr, ok := os.LookupEnv(enableDirectPathXdsOverInterconnectEnvVar); ok {
 		if b, err := strconv.ParseBool(valStr); err == nil {
@@ -51,18 +111,9 @@ func isDirectPathXdsOverInterconnectUsed(endpoint string, o *Options) bool {
 }
 
 func hasUniverseDomainHost(endpoint, universeDomain string) bool {
-	host := strings.TrimPrefix(endpoint, "google-c2p:///")
-	host = strings.TrimPrefix(host, "dns:///")
-	if idx := strings.Index(host, "://"); idx != -1 {
-		host = host[idx+3:]
-	}
-	if idx := strings.IndexAny(host, "/?#"); idx != -1 {
-		host = host[:idx]
-	}
-	if h, _, err := net.SplitHostPort(host); err == nil {
-		host = h
-	} else if colonIdx := strings.Index(host, ":"); colonIdx != -1 {
-		host = host[:colonIdx]
+	host, _, err := parseTarget(endpoint)
+	if err != nil {
+		return false
 	}
 	return host == universeDomain || strings.HasSuffix(host, "."+universeDomain)
 }
@@ -78,7 +129,7 @@ func canUseDirectPathWithUniverseDomain(endpoint string, opts *Options) bool {
 }
 
 func isDirectPathEnabled(endpoint string, opts *Options) bool {
-	if opts != nil && opts.InternalOptions != nil && !opts.InternalOptions.EnableDirectPath {
+	if opts == nil || opts.InternalOptions == nil || !opts.InternalOptions.EnableDirectPath {
 		return false
 	}
 	if !checkDirectPathEndPoint(endpoint) {
@@ -135,9 +186,6 @@ func isTokenProviderDirectPathCompatible(tp auth.TokenProvider, o *Options) bool
 	if o != nil && o.InternalOptions != nil && o.InternalOptions.EnableNonDefaultSAForDirectPath {
 		return true
 	}
-	if isDirectPathXdsOverInterconnectUsed("", o) {
-		return true
-	}
 	return isTokenProviderComputeEngine(tp)
 }
 
@@ -148,9 +196,6 @@ func isDirectPathXdsUsed(o *Options) bool {
 	}
 	// Method 2: Enable DirectPath xDS by option;
 	if o != nil && o.InternalOptions != nil && o.InternalOptions.EnableDirectPathXds {
-		return true
-	}
-	if isDirectPathXdsOverInterconnectUsed("", o) {
 		return true
 	}
 	return false
@@ -185,14 +230,24 @@ func canUseDirectPath(endpoint string, opts *Options, creds *auth.Credentials) b
 // configureDirectPath returns some dial options and an endpoint to use if the
 // configuration allows the use of direct path. If it does not the provided
 // grpcOpts and endpoint are returned.
-func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials) ([]grpc.DialOption, string, error) {
+func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint string, creds *auth.Credentials, metadata map[string]string) ([]grpc.DialOption, string, error) {
 	logRateLimiter.Do(func() {
 		logDirectPathMisconfig(endpoint, creds, opts)
 	})
 	if canUseDirectPath(endpoint, opts, creds) {
 		interconnect := isDirectPathXdsOverInterconnectUsed(endpoint, opts)
 		// Overwrite all of the previously specific DialOptions, DirectPath uses its own set of credentials and certificates.
-		defaultCredetialsOptions := grpcgoogle.DefaultCredentialsOptions{PerRPCCreds: &grpcCredentialsProvider{creds: creds, endpoint: endpoint}}
+		perRPCCreds := &grpcCredentialsProvider{
+			creds:    creds,
+			endpoint: endpoint,
+			metadata: metadata,
+		}
+		if opts != nil {
+			perRPCCreds.clientUniverseDomain = opts.UniverseDomain
+		}
+		defaultCredetialsOptions := grpcgoogle.DefaultCredentialsOptions{
+			PerRPCCreds: perRPCCreds,
+		}
 		if !interconnect && opts != nil && isDirectPathBoundTokenEnabled(opts.InternalOptions) && isTokenProviderComputeEngine(creds) {
 			optsClone := opts.resolveDetectOptions()
 			optsClone.TokenBindingType = credentials.ALTSHardBinding
@@ -207,13 +262,9 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 		if timeoutDialerOption != nil {
 			grpcOpts = append(grpcOpts, timeoutDialerOption)
 		}
-		cleanAddr := strings.TrimPrefix(endpoint, "google-c2p:///")
-		cleanAddr = strings.TrimPrefix(cleanAddr, "dns:///")
-		if qIdx := strings.Index(cleanAddr, "?"); qIdx != -1 {
-			cleanAddr = cleanAddr[:qIdx]
-		}
-		if host, _, err := net.SplitHostPort(cleanAddr); err == nil {
-			cleanAddr = host
+		cleanAddr, query, err := parseTarget(endpoint)
+		if err != nil {
+			return nil, "", err
 		}
 		if interconnect {
 			if strings.HasSuffix(cleanAddr, ".googleapis.com") && !strings.Contains(cleanAddr, directPathInterconnectInfix) {
@@ -228,17 +279,13 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 		// Check if google-c2p resolver is enabled for DirectPath
 		if strings.HasPrefix(endpoint, "google-c2p:///") {
 			if interconnect {
-				rawQuery := ""
-				if qIdx := strings.Index(endpoint, "?"); qIdx != -1 {
-					rawQuery = endpoint[qIdx+1:]
+				if !query.Has("force-xds") {
+					query["force-xds"] = nil
 				}
-				if rawQuery == "" {
-					endpoint = "google-c2p:///" + cleanAddr + "?force-xds"
-				} else if !strings.Contains(rawQuery, "force-xds") {
-					endpoint = "google-c2p:///" + cleanAddr + "?" + rawQuery + "&force-xds"
-				} else {
-					endpoint = "google-c2p:///" + cleanAddr + "?" + rawQuery
-				}
+			}
+			endpoint = "google-c2p:///" + cleanAddr
+			if q := encodeQuery(query); q != "" {
+				endpoint += "?" + q
 			}
 		} else if isDirectPathXdsUsed(opts) || interconnect {
 			endpoint = "google-c2p:///" + cleanAddr
@@ -262,6 +309,19 @@ func configureDirectPath(grpcOpts []grpc.DialOption, opts *Options, endpoint str
 }
 
 func logDirectPathMisconfig(endpoint string, creds *auth.Credentials, o *Options) {
+	if o == nil {
+		return
+	}
+	if isDirectPathXdsOverInterconnectUsed(endpoint, o) {
+		if !canUseDirectPathWithUniverseDomain(endpoint, o) {
+			o.logger().Warn("DirectPath over Interconnect is disabled. Non-default universe domain is not supported.")
+		} else if creds == nil || creds.TokenProvider == nil {
+			o.logger().Warn("DirectPath over Interconnect is disabled. Valid credentials are required.")
+		} else if !isDirectPathEnabled(endpoint, o) {
+			o.logger().Warn("DirectPath is disabled. To enable, please set the EnableDirectPath option along with the EnableDirectPathXds option.")
+		}
+		return
+	}
 
 	// Case 1: does not enable DirectPath
 	if !isDirectPathEnabled(endpoint, o) {

@@ -379,7 +379,7 @@ func dial(ctx context.Context, secure bool, opts *Options) (*grpc.ClientConn, er
 			}),
 		)
 		// Attempt Direct Path
-		grpcOpts, transportCreds.Endpoint, err = configureDirectPath(grpcOpts, opts, transportCreds.Endpoint, creds)
+		grpcOpts, transportCreds.Endpoint, err = configureDirectPath(grpcOpts, opts, transportCreds.Endpoint, creds, metadata)
 		if err != nil {
 			return nil, err
 		}
