@@ -1006,8 +1006,18 @@ func (c *httpStorageClient) newRangeReaderXML(ctx context.Context, params *newRa
 		return nil, err
 	}
 
+	// req is reused across retry attempts and setHeadersFromCtx merges
+	// x-goog-api-client values into the existing header. Snapshot the value
+	// set before any attempt and restore it on each attempt so tokens from
+	// earlier attempts (e.g. gccl-attempt-count/1) do not leak into later ones.
+	baseXGoogHeader := slices.Clone(req.Header.Values(xGoogHeaderKey))
+
 	reopen := readerReopen(ctx, req.Header, params, s,
 		func(ctx context.Context) (*http.Response, error) {
+			req.Header.Del(xGoogHeaderKey)
+			for _, v := range baseXGoogHeader {
+				req.Header.Add(xGoogHeaderKey, v)
+			}
 			setHeadersFromCtx(ctx, req.Header)
 
 			if c.dynamicReadReqStallTimeout == nil {
