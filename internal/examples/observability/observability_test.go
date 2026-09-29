@@ -107,6 +107,84 @@ func TestObservabilitySignals(t *testing.T) {
 	}
 }
 
+func TestFeatureFlags(t *testing.T) {
+	fakeSrv := startFakeServer(t)
+
+	tests := []struct {
+		name    string
+		metrics string
+		tracing string
+		logging string
+		wantM3  bool
+		wantT3  bool
+		wantL3  bool
+	}{
+		{name: "all_disabled"},
+		{name: "metrics_only", metrics: "true", wantM3: true},
+		{name: "tracing_only", tracing: "true", wantT3: true},
+		{name: "logging_only", logging: "true", wantL3: true},
+	}
+
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			t.Setenv("GOOGLE_SDK_GO_METRICS", tc.metrics)
+			t.Setenv("GOOGLE_SDK_GO_TRACING", tc.tracing)
+			t.Setenv("GOOGLE_SDK_GO_LOGGING", tc.logging)
+			gax.TestOnlyResetIsFeatureEnabled()
+			t.Cleanup(gax.TestOnlyResetIsFeatureEnabled)
+
+			env := newTestEnv(t, fakeSrv, slog.LevelDebug)
+			if err := env.callGetSecret("projects/test-project/secrets/missing", 0); status.Code(err) != grpccodes.NotFound {
+				t.Fatalf("GetSecret status=%v, want NotFound", status.Code(err))
+			}
+
+			if got := env.hasClientSpan(); got != tc.wantT3 {
+				t.Errorf("hasClientSpan()=%v, want %v", got, tc.wantT3)
+			}
+			if got := env.hasDurationMetric(t); got != tc.wantM3 {
+				t.Errorf("hasDurationMetric()=%v, want %v", got, tc.wantM3)
+			}
+			if got := env.hasErrorLogs(); got != tc.wantL3 {
+				t.Errorf("hasErrorLogs()=%v, want %v", got, tc.wantL3)
+			}
+		})
+	}
+}
+
+func (e *testEnv) hasClientSpan() bool {
+	for _, s := range e.traceExp.GetSpans() {
+		if s.Name == "SecretManager.GetSecret" {
+			return true
+		}
+	}
+	return false
+}
+
+func (e *testEnv) hasDurationMetric(t *testing.T) bool {
+	t.Helper()
+	var rm metricdata.ResourceMetrics
+	if err := e.metricReader.Collect(context.Background(), &rm); err != nil {
+		t.Fatalf("metricReader.Collect: %v", err)
+	}
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == "gcp.client.request.duration" {
+				return true
+			}
+		}
+	}
+	return false
+}
+
+func (e *testEnv) hasErrorLogs() bool {
+	for _, entry := range e.logSink.Entries() {
+		if entry.Level == slog.LevelWarn || entry.Attrs["error.type"] != nil {
+			return true
+		}
+	}
+	return false
+}
+
 func (e *testEnv) assertSpans(t *testing.T, tc signalTestCase) (t3 *tracetest.SpanStub, t4s []*tracetest.SpanStub) {
 	t.Helper()
 	var t3s []*tracetest.SpanStub
