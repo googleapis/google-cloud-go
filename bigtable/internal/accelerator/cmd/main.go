@@ -134,7 +134,6 @@ func main() {
 	if *fallback {
 		fc, err := accelerator.NewFallbackChannel(ctx, channel, *project, *instance, *appProfile, opts...)
 		if err != nil {
-			_ = channel.Close()
 			log.Fatalf("failed to construct classic fallback channel: %v", err)
 		}
 		srv = accelerator.NewServer(*udsPath, fc)
