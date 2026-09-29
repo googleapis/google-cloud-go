@@ -200,20 +200,62 @@ func newTestEnv(t *testing.T, addr string, fakeSrv *fakeSecretManagerServer, min
 	}
 }
 
-func (e *testEnv) collectSpans() (t3 *tracetest.SpanStub, t4s []*tracetest.SpanStub) {
-	spans := e.traceExp.GetSpans()
-	for i := range spans {
-		switch spans[i].Name {
+func (e *testEnv) callGetSecret(secretName string, retries int) error {
+	var callOpts []gax.CallOption
+	if retries > 0 {
+		attempts := 0
+		callOpts = append(callOpts, gax.WithRetry(func() gax.Retryer {
+			return gax.OnErrorFunc(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}, func(error) bool {
+				attempts++
+				return attempts <= retries
+			})
+		}))
+	}
+	_, err := e.client.GetSecret(context.Background(), &secretmanagerpb.GetSecretRequest{
+		Name: secretName,
+	}, callOpts...)
+	return err
+}
+
+func (e *testEnv) assertSpans(t *testing.T, wantAttempts int, wantStatus codes.Code, wantErrorType any) (t3 *tracetest.SpanStub, t4s []*tracetest.SpanStub) {
+	t.Helper()
+	for _, s := range e.traceExp.GetSpans() {
+		switch s.Name {
 		case "SecretManager.GetSecret":
-			t3 = &spans[i]
+			t3 = &s
 		case "google.cloud.secretmanager.v1.SecretManagerService/GetSecret":
-			t4s = append(t4s, &spans[i])
+			t4s = append(t4s, &s)
+		}
+	}
+	if t3 == nil || len(t4s) != wantAttempts {
+		t.Fatalf("got t3=%v, len(t4s)=%d; want non-nil t3 and %d t4 spans", t3, len(t4s), wantAttempts)
+	}
+	if t3.SpanKind != trace.SpanKindClient || t3.Status.Code != wantStatus {
+		t.Errorf("t3 kind=%v status=%v, want Client/%v", t3.SpanKind, t3.Status.Code, wantStatus)
+	}
+	if gotErrType := spanAttrs(t3.Attributes)["error.type"]; gotErrType != wantErrorType {
+		t.Errorf("t3 error.type=%v, want %v", gotErrType, wantErrorType)
+	}
+
+	traceparents := e.fakeSrv.takeTraceparents()
+	if len(traceparents) != wantAttempts {
+		t.Fatalf("got %d incoming traceparents, want %d", len(traceparents), wantAttempts)
+	}
+	for i, t4 := range t4s {
+		if t4.Parent.SpanID() != t3.SpanContext.SpanID() {
+			t.Errorf("t4[%d] parent=%v, want t3 spanID=%v", i, t4.Parent.SpanID(), t3.SpanContext.SpanID())
+		}
+		wantTP := fmt.Sprintf("00-%s-%s-01", t4.SpanContext.TraceID(), t4.SpanContext.SpanID())
+		if traceparents[i] != wantTP {
+			t.Errorf("traceparents[%d]=%q, want %q", i, traceparents[i], wantTP)
 		}
 	}
 	return t3, t4s
 }
 
-func (e *testEnv) collectErrorLogs() (l3WarnLogs, l4DebugLogs []capturedLog) {
+func (e *testEnv) assertLogs(t *testing.T, t3 *tracetest.SpanStub, t4s []*tracetest.SpanStub, wantWarn, wantDebug int, wantErrorType any, retries int) {
+	t.Helper()
+	var l3WarnLogs, l4DebugLogs []capturedLog
 	for _, entry := range e.logSink.Entries() {
 		if entry.Level == slog.LevelWarn {
 			l3WarnLogs = append(l3WarnLogs, entry)
@@ -221,7 +263,27 @@ func (e *testEnv) collectErrorLogs() (l3WarnLogs, l4DebugLogs []capturedLog) {
 			l4DebugLogs = append(l4DebugLogs, entry)
 		}
 	}
-	return l3WarnLogs, l4DebugLogs
+	if len(l3WarnLogs) != wantWarn || len(l4DebugLogs) != wantDebug {
+		t.Fatalf("got %d WARN and %d DEBUG error logs, want %d and %d", len(l3WarnLogs), len(l4DebugLogs), wantWarn, wantDebug)
+	}
+
+	for _, l3 := range l3WarnLogs {
+		if l3.Message != "gcp.client.request" || l3.Attrs["error.type"] != wantErrorType || l3.Attrs["resend_count"] != int64(retries) {
+			t.Errorf("unexpected L3 WARN log: msg=%q attrs=%v", l3.Message, l3.Attrs)
+		}
+		if l3.SpanContext.TraceID() != t3.SpanContext.TraceID() || l3.SpanContext.SpanID() != t3.SpanContext.SpanID() {
+			t.Errorf("L3 log trace/span=%s/%s, want %s/%s", l3.SpanContext.TraceID(), l3.SpanContext.SpanID(), t3.SpanContext.TraceID(), t3.SpanContext.SpanID())
+		}
+	}
+
+	for i, l4 := range l4DebugLogs {
+		if l4.SpanContext.TraceID() != t3.SpanContext.TraceID() || l4.SpanContext.SpanID() != t4s[i].SpanContext.SpanID() {
+			t.Errorf("L4 log[%d] trace/span=%s/%s, want %s/%s", i, l4.SpanContext.TraceID(), l4.SpanContext.SpanID(), t3.SpanContext.TraceID(), t4s[i].SpanContext.SpanID())
+		}
+		if l4.Attrs["gcp.client.service"] != "secretmanager" {
+			t.Errorf("L4 log[%d] gcp.client.service=%v, want secretmanager", i, l4.Attrs["gcp.client.service"])
+		}
+	}
 }
 
 func (e *testEnv) assertDurationMetric(t *testing.T) {
@@ -311,72 +373,13 @@ func TestObservabilitySignals(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			env := newTestEnv(t, l.Addr().String(), fakeSrv, tc.minLogLevel)
 
-			var callOpts []gax.CallOption
-			if tc.retries > 0 {
-				attempts := 0
-				callOpts = append(callOpts, gax.WithRetry(func() gax.Retryer {
-					return gax.OnErrorFunc(gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}, func(error) bool {
-						attempts++
-						return attempts <= tc.retries
-					})
-				}))
-			}
-
-			_, err := env.client.GetSecret(context.Background(), &secretmanagerpb.GetSecretRequest{
-				Name: tc.secretName,
-			}, callOpts...)
+			err := env.callGetSecret(tc.secretName, tc.retries)
 			if got := status.Code(err); got != tc.wantRPCCode {
 				t.Fatalf("GetSecret status=%v, want %v (err=%v)", got, tc.wantRPCCode, err)
 			}
 
-			t3, t4s := env.collectSpans()
-			if t3 == nil || len(t4s) != tc.wantAttempts {
-				t.Fatalf("got t3=%v, len(t4s)=%d; want non-nil t3 and %d t4 spans", t3, len(t4s), tc.wantAttempts)
-			}
-			if t3.SpanKind != trace.SpanKindClient || t3.Status.Code != tc.wantSpanStatus {
-				t.Errorf("t3 kind=%v status=%v, want Client/%v", t3.SpanKind, t3.Status.Code, tc.wantSpanStatus)
-			}
-			if gotErrType := spanAttrs(t3.Attributes)["error.type"]; gotErrType != tc.wantErrorType {
-				t.Errorf("t3 error.type=%v, want %v", gotErrType, tc.wantErrorType)
-			}
-
-			traceparents := env.fakeSrv.takeTraceparents()
-			if len(traceparents) != tc.wantAttempts {
-				t.Fatalf("got %d incoming traceparents, want %d", len(traceparents), tc.wantAttempts)
-			}
-			for i, t4 := range t4s {
-				if t4.Parent.SpanID() != t3.SpanContext.SpanID() {
-					t.Errorf("t4[%d] parent=%v, want t3 spanID=%v", i, t4.Parent.SpanID(), t3.SpanContext.SpanID())
-				}
-				wantTP := fmt.Sprintf("00-%s-%s-01", t4.SpanContext.TraceID(), t4.SpanContext.SpanID())
-				if traceparents[i] != wantTP {
-					t.Errorf("traceparents[%d]=%q, want %q", i, traceparents[i], wantTP)
-				}
-			}
-
-			l3WarnLogs, l4DebugLogs := env.collectErrorLogs()
-			if len(l3WarnLogs) != tc.wantWarnLogs || len(l4DebugLogs) != tc.wantDebugLogs {
-				t.Fatalf("got %d WARN and %d DEBUG error logs, want %d and %d", len(l3WarnLogs), len(l4DebugLogs), tc.wantWarnLogs, tc.wantDebugLogs)
-			}
-
-			for _, l3 := range l3WarnLogs {
-				if l3.Message != "gcp.client.request" || l3.Attrs["error.type"] != tc.wantErrorType || l3.Attrs["resend_count"] != int64(tc.retries) {
-					t.Errorf("unexpected L3 WARN log: msg=%q attrs=%v", l3.Message, l3.Attrs)
-				}
-				if l3.SpanContext.TraceID() != t3.SpanContext.TraceID() || l3.SpanContext.SpanID() != t3.SpanContext.SpanID() {
-					t.Errorf("L3 log trace/span=%s/%s, want %s/%s", l3.SpanContext.TraceID(), l3.SpanContext.SpanID(), t3.SpanContext.TraceID(), t3.SpanContext.SpanID())
-				}
-			}
-
-			for i, l4 := range l4DebugLogs {
-				if l4.SpanContext.TraceID() != t3.SpanContext.TraceID() || l4.SpanContext.SpanID() != t4s[i].SpanContext.SpanID() {
-					t.Errorf("L4 log[%d] trace/span=%s/%s, want %s/%s", i, l4.SpanContext.TraceID(), l4.SpanContext.SpanID(), t3.SpanContext.TraceID(), t4s[i].SpanContext.SpanID())
-				}
-				if l4.Attrs["gcp.client.service"] != "secretmanager" {
-					t.Errorf("L4 log[%d] gcp.client.service=%v, want secretmanager", i, l4.Attrs["gcp.client.service"])
-				}
-			}
-
+			t3, t4s := env.assertSpans(t, tc.wantAttempts, tc.wantSpanStatus, tc.wantErrorType)
+			env.assertLogs(t, t3, t4s, tc.wantWarnLogs, tc.wantDebugLogs, tc.wantErrorType, tc.retries)
 			env.assertDurationMetric(t)
 		})
 	}
