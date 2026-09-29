@@ -311,22 +311,16 @@ func (t *txReadOnly) ReadWithOptions(ctx context.Context, table string, keys Key
 	)
 	kset, err := keys.keySetProto()
 	if err != nil {
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                err}
+		return &RowIterator{err: err}
 	}
 	if sh, ts, err = t.acquire(ctx); err != nil {
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                err}
+		return &RowIterator{err: err}
 	}
 	// Cloud Spanner will return "Session not found" on bad sessions.
 	client := sh.getClient()
 	if client == nil {
 		// Might happen if transaction is closed in the middle of a API call.
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                errSessionClosed(sh)}
+		return &RowIterator{err: errSessionClosed(sh)}
 	}
 	index := t.ro.Index
 	limit := t.ro.Limit
@@ -721,10 +715,7 @@ func (t *txReadOnly) query(ctx context.Context, statement Statement, options Que
 	defer func() { endSpan(ctx, ri.err) }()
 	req, sh, err := t.prepareExecuteSQL(ctx, statement, options)
 	if err != nil {
-		return &RowIterator{
-			meterTracerFactory: t.sm.sc.metricsTracerFactory,
-			err:                err,
-		}
+		return &RowIterator{err: err}
 	}
 	var setTransactionID func(transactionID)
 	if _, ok := req.Transaction.GetSelector().(*sppb.TransactionSelector_Begin); ok {
