@@ -28,7 +28,6 @@ import (
 	secretmanagerpb "cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel"
-	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/propagation"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
@@ -64,13 +63,14 @@ func startFakeServer(t *testing.T) *fakeSecretManagerServer {
 }
 
 func (f *fakeSecretManagerServer) GetSecret(ctx context.Context, req *secretmanagerpb.GetSecretRequest) (*secretmanagerpb.Secret, error) {
+	var tp string
 	if md, ok := metadata.FromIncomingContext(ctx); ok {
-		if vals := md.Get("traceparent"); len(vals) > 0 {
-			f.mu.Lock()
-			f.traceparents = append(f.traceparents, vals[0])
-			f.mu.Unlock()
-		}
+		tp = strings.Join(md.Get("traceparent"), ",")
 	}
+	f.mu.Lock()
+	f.traceparents = append(f.traceparents, tp)
+	f.mu.Unlock()
+
 	if strings.HasSuffix(req.GetName(), "/ok") {
 		return &secretmanagerpb.Secret{Name: req.GetName()}, nil
 	}
@@ -236,12 +236,4 @@ func (e *testEnv) callGetSecret(secretName string, retries int) error {
 		Name: secretName,
 	}, callOpts...)
 	return err
-}
-
-func spanAttrs(attrs []attribute.KeyValue) map[string]any {
-	m := make(map[string]any, len(attrs))
-	for _, kv := range attrs {
-		m[string(kv.Key)] = kv.Value.AsInterface()
-	}
-	return m
 }

@@ -21,6 +21,7 @@ import (
 	"testing"
 
 	gax "github.com/googleapis/gax-go/v2"
+	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
@@ -38,7 +39,7 @@ type signalTestCase struct {
 	wantSpanStatus codes.Code
 	wantErrorType  any
 	wantAttempts   int
-	wantWarnLogs   int
+	wantWarnLog    bool
 	wantDebugLogs  int
 }
 
@@ -61,7 +62,7 @@ func TestObservabilitySignals(t *testing.T) {
 			wantSpanStatus: codes.Ok,
 			wantErrorType:  nil,
 			wantAttempts:   1,
-			wantWarnLogs:   0,
+			wantWarnLog:    false,
 			wantDebugLogs:  0,
 		},
 		{
@@ -73,7 +74,7 @@ func TestObservabilitySignals(t *testing.T) {
 			wantSpanStatus: codes.Error,
 			wantErrorType:  "NOT_FOUND",
 			wantAttempts:   3,
-			wantWarnLogs:   1,
+			wantWarnLog:    true,
 			wantDebugLogs:  0,
 		},
 		{
@@ -85,7 +86,7 @@ func TestObservabilitySignals(t *testing.T) {
 			wantSpanStatus: codes.Error,
 			wantErrorType:  "NOT_FOUND",
 			wantAttempts:   3,
-			wantWarnLogs:   1,
+			wantWarnLog:    true,
 			wantDebugLogs:  3,
 		},
 	}
@@ -101,24 +102,26 @@ func TestObservabilitySignals(t *testing.T) {
 
 			t3, t4s := env.assertSpans(t, tc)
 			env.assertLogs(t, tc, t3, t4s)
-			env.assertDurationMetric(t)
+			env.assertDurationMetric(t, tc)
 		})
 	}
 }
 
 func (e *testEnv) assertSpans(t *testing.T, tc signalTestCase) (t3 *tracetest.SpanStub, t4s []*tracetest.SpanStub) {
 	t.Helper()
+	var t3s []*tracetest.SpanStub
 	for _, s := range e.traceExp.GetSpans() {
 		switch s.Name {
 		case "SecretManager.GetSecret":
-			t3 = &s
+			t3s = append(t3s, &s)
 		case "google.cloud.secretmanager.v1.SecretManagerService/GetSecret":
 			t4s = append(t4s, &s)
 		}
 	}
-	if t3 == nil || len(t4s) != tc.wantAttempts {
-		t.Fatalf("got t3=%v, len(t4s)=%d; want non-nil t3 and %d t4 spans", t3, len(t4s), tc.wantAttempts)
+	if len(t3s) != 1 || len(t4s) != tc.wantAttempts {
+		t.Fatalf("got len(t3s)=%d, len(t4s)=%d; want 1 t3 and %d t4 spans", len(t3s), len(t4s), tc.wantAttempts)
 	}
+	t3 = t3s[0]
 	if t3.SpanKind != trace.SpanKindClient || t3.Status.Code != tc.wantSpanStatus {
 		t.Errorf("t3 kind=%v status=%v, want Client/%v", t3.SpanKind, t3.Status.Code, tc.wantSpanStatus)
 	}
@@ -146,14 +149,21 @@ func (e *testEnv) assertLogs(t *testing.T, tc signalTestCase, t3 *tracetest.Span
 	t.Helper()
 	var l3WarnLogs, l4DebugLogs []capturedLog
 	for _, entry := range e.logSink.Entries() {
-		if entry.Level == slog.LevelWarn {
+		switch {
+		case entry.Level == slog.LevelWarn:
 			l3WarnLogs = append(l3WarnLogs, entry)
-		} else if entry.Level == slog.LevelDebug && entry.Attrs["error.type"] != nil {
+		case entry.Level == slog.LevelDebug && entry.Attrs["error.type"] != nil:
 			l4DebugLogs = append(l4DebugLogs, entry)
+		case entry.Level > slog.LevelDebug:
+			t.Errorf("unexpected log entry: %+v", entry)
 		}
 	}
-	if len(l3WarnLogs) != tc.wantWarnLogs || len(l4DebugLogs) != tc.wantDebugLogs {
-		t.Fatalf("got %d WARN and %d DEBUG error logs, want %d and %d", len(l3WarnLogs), len(l4DebugLogs), tc.wantWarnLogs, tc.wantDebugLogs)
+	wantWarn := 0
+	if tc.wantWarnLog {
+		wantWarn = 1
+	}
+	if len(l3WarnLogs) != wantWarn || len(l4DebugLogs) != tc.wantDebugLogs {
+		t.Fatalf("got %d WARN and %d DEBUG error logs, want %d and %d", len(l3WarnLogs), len(l4DebugLogs), wantWarn, tc.wantDebugLogs)
 	}
 
 	for _, l3 := range l3WarnLogs {
@@ -175,7 +185,7 @@ func (e *testEnv) assertLogs(t *testing.T, tc signalTestCase, t3 *tracetest.Span
 	}
 }
 
-func (e *testEnv) assertDurationMetric(t *testing.T) {
+func (e *testEnv) assertDurationMetric(t *testing.T, tc signalTestCase) {
 	t.Helper()
 	var rm metricdata.ResourceMetrics
 	if err := e.metricReader.Collect(context.Background(), &rm); err != nil {
@@ -183,10 +193,26 @@ func (e *testEnv) assertDurationMetric(t *testing.T) {
 	}
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
-			if m.Name == "gcp.client.request.duration" {
-				return
+			if m.Name != "gcp.client.request.duration" {
+				continue
 			}
+			hist, ok := m.Data.(metricdata.Histogram[float64])
+			if !ok || len(hist.DataPoints) != 1 || hist.DataPoints[0].Count != 1 {
+				t.Fatalf("unexpected duration metric data: %+v", m.Data)
+			}
+			if gotErrType := spanAttrs(hist.DataPoints[0].Attributes.ToSlice())["error.type"]; gotErrType != tc.wantErrorType {
+				t.Errorf("duration metric error.type=%v, want %v", gotErrType, tc.wantErrorType)
+			}
+			return
 		}
 	}
 	t.Fatal("expected gcp.client.request.duration metric")
+}
+
+func spanAttrs(attrs []attribute.KeyValue) map[string]any {
+	m := make(map[string]any, len(attrs))
+	for _, kv := range attrs {
+		m[string(kv.Key)] = kv.Value.AsInterface()
+	}
+	return m
 }
