@@ -92,7 +92,7 @@ runPresubmitTests() {
   fi
 }
 
-SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/$KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH...$KOKORO_GIT_COMMIT |
+SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/${KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH:-main}...${KOKORO_GIT_COMMIT:-HEAD} |
   grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' | xargs dirname | sort -u || true)
 
 if [ -z "$SIGNIFICANT_CHANGES" ]; then
