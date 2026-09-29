@@ -108,15 +108,21 @@ func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, re
 	}
 
 	// Extract the single row key. validateSingleRowReadRequest (called by the
-	// session stream's SendMsg) already ensured exactly one key or a
-	// closed-closed single-row range, so both branches are safe here.
+	// session stream's SendMsg) should have ensured exactly one key or a
+	// closed-closed single-row range, but we re-validate the range case
+	// defensively to avoid silent data omission on malformed inputs.
 	var key string
 	switch {
 	case req.Rows != nil && len(req.Rows.RowKeys) == 1:
 		key = string(req.Rows.RowKeys[0])
 	case req.Rows != nil && len(req.Rows.RowRanges) == 1:
-		// Closed-closed single-row range — start_key_closed equals end_key_closed.
-		key = string(req.Rows.RowRanges[0].GetStartKeyClosed())
+		r := req.Rows.RowRanges[0]
+		start := r.GetStartKeyClosed()
+		if len(start) == 0 || string(start) != string(r.GetEndKeyClosed()) {
+			return nil, status.Errorf(codes.Unimplemented,
+				"accelerator fallback: unsupported row range shape")
+		}
+		key = string(start)
 	default:
 		// Unimplemented, not Internal: shape-based rejections must use
 		// Unimplemented so the caller's per-method native fallback breaker fires.

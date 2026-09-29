@@ -16,6 +16,7 @@ package accelerator
 
 import (
 	"context"
+	"errors"
 	"io"
 	"sync/atomic"
 
@@ -129,14 +130,7 @@ func (fc *FallbackChannel) NewStream(ctx context.Context, desc *grpc.StreamDesc,
 
 // Close shuts down both the session Channel and the classic fallback.
 func (fc *FallbackChannel) Close() error {
-	var firstErr error
-	if err := fc.session.Close(); err != nil {
-		firstErr = err
-	}
-	if err := fc.classic.Close(); err != nil && firstErr == nil {
-		firstErr = err
-	}
-	return firstErr
+	return errors.Join(fc.session.Close(), fc.classic.Close())
 }
 
 // fallbackReadRowsStream implements grpc.ClientStream for the ReadRows RPC.
@@ -173,10 +167,25 @@ type fallbackReadRowsStream struct {
 	terminalErr error
 }
 
-func (s *fallbackReadRowsStream) Header() (gmetadata.MD, error) { return nil, nil }
-func (s *fallbackReadRowsStream) Trailer() gmetadata.MD         { return nil }
-func (s *fallbackReadRowsStream) CloseSend() error              { return nil }
-func (s *fallbackReadRowsStream) Context() context.Context      { return s.ctx }
+func (s *fallbackReadRowsStream) Header() (gmetadata.MD, error) {
+	if s.inner != nil {
+		return s.inner.Header()
+	}
+	return nil, nil
+}
+func (s *fallbackReadRowsStream) Trailer() gmetadata.MD {
+	if s.inner != nil {
+		return s.inner.Trailer()
+	}
+	return nil
+}
+func (s *fallbackReadRowsStream) CloseSend() error {
+	if s.inner != nil {
+		return s.inner.CloseSend()
+	}
+	return nil
+}
+func (s *fallbackReadRowsStream) Context() context.Context { return s.ctx }
 
 // SendMsg buffers the request and forwards it to the session stream (if any).
 // An Unimplemented from the session stream means the request shape is not
