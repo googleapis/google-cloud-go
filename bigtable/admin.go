@@ -2185,9 +2185,7 @@ func (iac *InstanceAdminClient) UpdateMemoryLayer(ctx context.Context, instanceI
 		Etag: conf.Etag,
 	}
 	if conf.MemoryConfig != nil {
-		ml.MemoryConfig = &btapb.MemoryLayer_MemoryConfig{
-			StorageSizeGib: conf.MemoryConfig.StorageSizeGiB,
-		}
+		ml.MemoryConfig = &btapb.MemoryLayer_MemoryConfig{}
 	}
 	req := &btapb.UpdateMemoryLayerRequest{
 		MemoryLayer: ml,
