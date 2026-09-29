@@ -378,6 +378,7 @@ func (t *BatchReadOnlyTransaction) Execute(ctx context.Context, p *Partition) *R
 		requestIDHeaderProviderFromSpannerClient(client),
 		true,
 		false,
+		t.prsPool,
 	)
 }
 
