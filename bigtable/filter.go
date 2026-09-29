@@ -39,14 +39,14 @@ type rawProtoFilter struct{ f *btpb.RowFilter }
 func (r rawProtoFilter) String() string         { return r.f.String() }
 func (r rawProtoFilter) proto() *btpb.RowFilter { return r.f }
 
-// RawProtoFilter wraps an existing RowFilter proto as a Filter.
+// InternalRawProtoFilter wraps an existing RowFilter proto as a Filter.
 // Intended for use by the accelerator's classic fallback only — callers that
 // already hold a serialized RowFilter proto do not need to deserialize and
 // re-encode it through the Go Filter API. Panics on nil input; callers must
 // guard with a nil check before calling (e.g. if req.Filter != nil).
-func RawProtoFilter(f *btpb.RowFilter) Filter {
+func InternalRawProtoFilter(f *btpb.RowFilter) Filter {
 	if f == nil {
-		panic("bigtable: RawProtoFilter called with nil RowFilter")
+		panic("bigtable: InternalRawProtoFilter called with nil RowFilter")
 	}
 	return rawProtoFilter{f}
 }

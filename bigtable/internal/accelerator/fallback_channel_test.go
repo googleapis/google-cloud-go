@@ -294,6 +294,42 @@ func TestFallbackChannel_Invoke_UnimplementedTripsBreaker(t *testing.T) {
 	}
 }
 
+// TestFallbackChannel_Invoke_SessionSuccess verifies the happy path: session
+// Invoke succeeds, the breaker is not tripped, and classic is never called.
+func TestFallbackChannel_Invoke_SessionSuccess(t *testing.T) {
+	sc := &mockSessionClient{
+		table: &mockSessionTableAPI{
+			mutateRowFn: func(_ context.Context, _ *v2pb.SessionMutateRowRequest) (*v2pb.SessionMutateRowResponse, error) {
+				return &v2pb.SessionMutateRowResponse{}, nil
+			},
+		},
+	}
+	sessionChannel := newTestChannel(t, sc)
+
+	classicCalls := 0
+	mock := &mockTableAPI{
+		applyFn: func(_ context.Context, _ string, _ *bigtable.Mutation, _ ...bigtable.ApplyOption) error {
+			classicCalls++
+			return nil
+		},
+	}
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{testTableName: mock})
+	fc := newTestFallbackChannel(sessionChannel, cf)
+
+	req := &v2pb.MutateRowRequest{TableName: testTableName, RowKey: []byte("k")}
+	for i := 0; i < 3; i++ {
+		if err := fc.Invoke(context.Background(), v2pb.Bigtable_MutateRow_FullMethodName, req, &v2pb.MutateRowResponse{}); err != nil {
+			t.Fatalf("Invoke[%d]: %v", i, err)
+		}
+	}
+	if fc.tripped.Load() {
+		t.Error("session success should not trip breaker")
+	}
+	if classicCalls != 0 {
+		t.Errorf("classic calls = %d, want 0", classicCalls)
+	}
+}
+
 // TestFallbackChannel_Invoke_BreakersSticky verifies that once tripped, all
 // subsequent Invokes go to classic without touching session.
 func TestFallbackChannel_Invoke_BreakerSticky(t *testing.T) {

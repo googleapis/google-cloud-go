@@ -163,7 +163,7 @@ func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, re
 
 	var opts []bigtable.ReadOption
 	if req.Filter != nil {
-		opts = append(opts, bigtable.RowFilter(bigtable.RawProtoFilter(req.Filter)))
+		opts = append(opts, bigtable.RowFilter(bigtable.InternalRawProtoFilter(req.Filter)))
 	}
 
 	row, err := tbl.ReadRow(ctx, key, opts...)
@@ -179,7 +179,7 @@ func (f *classicFallback) MutateRow(ctx context.Context, res adapters.Resource, 
 	if err != nil {
 		return err
 	}
-	m := bigtable.NewMutationFromProto(req.Mutations)
+	m := bigtable.InternalNewMutationFromProto(req.Mutations)
 	return tbl.Apply(ctx, string(req.RowKey), m)
 }
 

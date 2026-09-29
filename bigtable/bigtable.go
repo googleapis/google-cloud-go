@@ -1024,7 +1024,7 @@ func NewMutation() *Mutation {
 	return new(Mutation)
 }
 
-// NewMutationFromProto constructs a Mutation from a slice of proto Mutation ops.
+// InternalNewMutationFromProto constructs a Mutation from a slice of proto Mutation ops.
 // Intended for use by the accelerator's classic fallback, which already holds
 // []*btpb.Mutation from the incoming MutateRowRequest and wraps them directly
 // rather than re-encoding through the Go Mutation API.
@@ -1032,7 +1032,7 @@ func NewMutation() *Mutation {
 // This function must live in the bigtable package because Mutation.ops is an
 // unexported field; it cannot be moved to an internal package without a
 // circular dependency.
-func NewMutationFromProto(ops []*btpb.Mutation) *Mutation {
+func InternalNewMutationFromProto(ops []*btpb.Mutation) *Mutation {
 	m := NewMutation()
 	m.ops = ops
 	return m
