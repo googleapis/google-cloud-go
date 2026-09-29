@@ -46,7 +46,7 @@ type classicFallback struct {
 // spins up session infrastructure — it is a pure classic-path fallback.
 func newClassicFallback(ctx context.Context, project, instance, appProfile string, opts ...option.ClientOption) (*classicFallback, error) {
 	c, err := bigtable.NewClientWithConfig(ctx, project, instance, bigtable.ClientConfig{
-		AppProfile:     appProfile,
+		AppProfile: appProfile,
 		// make sure this only goes through classic path
 		DisableSession: true,
 	}, opts...)
@@ -102,15 +102,11 @@ func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, er
 // returns a ReadRowsResponse (possibly with no chunks for a missing row).
 // req must have already passed validateSingleRowReadRequest.
 func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, req *v2pb.ReadRowsRequest) (*v2pb.ReadRowsResponse, error) {
-	tbl, err := f.tableAPI(res)
-	if err != nil {
-		return nil, err
-	}
-
-	// Extract the single row key. validateSingleRowReadRequest (called by the
-	// session stream's SendMsg) should have ensured exactly one key or a
-	// closed-closed single-row range, but we re-validate the range case
-	// defensively to avoid silent data omission on malformed inputs.
+	// Extract and validate the row key before touching the table handle.
+	// validateSingleRowReadRequest (called by the session stream's SendMsg)
+	// should have ensured exactly one key or a closed-closed single-row range,
+	// but we re-validate the range case defensively to avoid silent data
+	// omission on malformed inputs.
 	var key string
 	switch {
 	case req.Rows != nil && len(req.Rows.RowKeys) == 1:
@@ -131,6 +127,11 @@ func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, re
 		return nil, status.Errorf(codes.Unimplemented,
 			"accelerator fallback: unsupported row set shape (keys=%d, ranges=%d)",
 			len(req.Rows.GetRowKeys()), len(req.Rows.GetRowRanges()))
+	}
+
+	tbl, err := f.tableAPI(res)
+	if err != nil {
+		return nil, err
 	}
 
 	var opts []bigtable.ReadOption
@@ -157,6 +158,9 @@ func (f *classicFallback) MutateRow(ctx context.Context, res adapters.Resource, 
 
 // Close shuts down the underlying bigtable.Client.
 func (f *classicFallback) Close() error {
+	if f.c == nil {
+		return nil
+	}
 	return f.c.Close()
 }
 
