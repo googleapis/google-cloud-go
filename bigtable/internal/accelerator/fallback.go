@@ -36,9 +36,11 @@ import (
 // Resource handles are cached by full V2 resource name, so repeated RPCs to
 // the same table / authorized view / materialized view share one handle.
 type classicFallback struct {
-	c      *bigtable.Client
-	mu     sync.Mutex
-	tables map[string]bigtable.TableAPI // keyed by full V2 resource name
+	c        *bigtable.Client
+	project  string
+	instance string
+	mu       sync.Mutex
+	tables   map[string]bigtable.TableAPI // keyed by full V2 resource name
 }
 
 // newClassicFallback constructs a classic bigtable.Client scoped to
@@ -46,72 +48,104 @@ type classicFallback struct {
 // spins up session infrastructure — it is a pure classic-path fallback.
 func newClassicFallback(ctx context.Context, project, instance, appProfile string, opts ...option.ClientOption) (*classicFallback, error) {
 	c, err := bigtable.NewClientWithConfig(ctx, project, instance, bigtable.ClientConfig{
-		AppProfile: appProfile,
-		// make sure this only goes through classic path
+		AppProfile:     appProfile,
 		DisableSession: true,
 	}, opts...)
 	if err != nil {
 		return nil, err
 	}
 	return &classicFallback{
-		c:      c,
-		tables: make(map[string]bigtable.TableAPI),
+		c:        c,
+		project:  project,
+		instance: instance,
+		tables:   make(map[string]bigtable.TableAPI),
 	}, nil
 }
 
 // tableAPI returns a cached bigtable.TableAPI for the given resource.
 // The cache key is the full V2 resource name so table, authorized-view, and
 // materialized-view keys never collide.
+//
+// Table construction (Open*) is done outside the lock since it is pure
+// in-memory struct initialisation with no I/O. The lock only guards the
+// cache map. If two goroutines race on the same name the second gets the
+// already-stored handle; both handles are equivalent.
 func (f *classicFallback) tableAPI(res adapters.Resource) (bigtable.TableAPI, error) {
 	f.mu.Lock()
-	defer f.mu.Unlock()
-
 	if t, ok := f.tables[res.Name]; ok {
+		f.mu.Unlock()
 		return t, nil
 	}
+	f.mu.Unlock()
 
-	var t bigtable.TableAPI
+	// Build the handle outside the lock.
+	t, err := f.buildTableHandle(res)
+	if err != nil {
+		return nil, err
+	}
+
+	f.mu.Lock()
+	// Double-check: another goroutine may have raced us and stored a handle.
+	if existing, ok := f.tables[res.Name]; ok {
+		f.mu.Unlock()
+		return existing, nil
+	}
+	f.tables[res.Name] = t
+	f.mu.Unlock()
+	return t, nil
+}
+
+// buildTableHandle constructs a bigtable.TableAPI for res. It validates that
+// the resource belongs to f.project/f.instance before extracting the leaf IDs,
+// so cross-project/cross-instance routing is caught as an internal error.
+func (f *classicFallback) buildTableHandle(res adapters.Resource) (bigtable.TableAPI, error) {
 	switch res.Kind {
 	case adapters.ResourceTable:
-		tableID, err := classicLeafID(res.Name, "tables/")
+		tableID, err := f.parseTableID(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		t = f.c.OpenTable(tableID)
+		return f.c.OpenTable(tableID), nil
 	case adapters.ResourceAuthorizedView:
-		tableID, viewID, err := classicAVLeafIDs(res.Name)
+		tableID, viewID, err := f.parseAVIDs(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		t = f.c.OpenAuthorizedView(tableID, viewID)
+		return f.c.OpenAuthorizedView(tableID, viewID), nil
 	case adapters.ResourceMaterializedView:
-		viewID, err := classicLeafID(res.Name, "materializedViews/")
+		mvID, err := f.parseMVID(res.Name)
 		if err != nil {
 			return nil, err
 		}
-		t = f.c.OpenMaterializedView(viewID)
+		return f.c.OpenMaterializedView(mvID), nil
 	default:
 		return nil, status.Errorf(codes.Internal, "accelerator fallback: unknown resource kind %v", res.Kind)
 	}
-
-	f.tables[res.Name] = t
-	return t, nil
 }
 
 // ReadRow executes a single-row read via the classic bigtable.Client and
 // returns a ReadRowsResponse (possibly with no chunks for a missing row).
 // req must have already passed validateSingleRowReadRequest.
 func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, req *v2pb.ReadRowsRequest) (*v2pb.ReadRowsResponse, error) {
-	// Extract and validate the row key before touching the table handle.
-	// validateSingleRowReadRequest (called by the session stream's SendMsg)
-	// should have ensured exactly one key or a closed-closed single-row range,
-	// but we re-validate the range case defensively to avoid silent data
-	// omission on malformed inputs.
+	// Fetch the table handle first to fail fast on resource mismatches (wrong
+	// project/instance, unknown resource kind) before doing key extraction.
+	tbl, err := f.tableAPI(res)
+	if err != nil {
+		return nil, err
+	}
+
+	// Extract and validate the row key. validateSingleRowReadRequest (called by
+	// the session stream's SendMsg) should have ensured exactly one key or a
+	// closed-closed single-row range with no overlap. We re-validate explicitly
+	// here as a defensive guard: the cases are mutually exclusive (RowKeys XOR
+	// RowRanges) to catch any request where both fields are set.
 	var key string
+	nKeys := len(req.Rows.GetRowKeys())
+	nRanges := len(req.Rows.GetRowRanges())
 	switch {
-	case req.Rows != nil && len(req.Rows.RowKeys) == 1:
+	case nKeys == 1 && nRanges == 0:
 		key = string(req.Rows.RowKeys[0])
-	case req.Rows != nil && len(req.Rows.RowRanges) == 1:
+	case nKeys == 0 && nRanges == 1:
 		r := req.Rows.RowRanges[0]
 		start := r.GetStartKeyClosed()
 		if len(start) == 0 || string(start) != string(r.GetEndKeyClosed()) {
@@ -126,12 +160,7 @@ func (f *classicFallback) ReadRow(ctx context.Context, res adapters.Resource, re
 		// first, but is kept as a defensive guard.
 		return nil, status.Errorf(codes.Unimplemented,
 			"accelerator fallback: unsupported row set shape (keys=%d, ranges=%d)",
-			len(req.Rows.GetRowKeys()), len(req.Rows.GetRowRanges()))
-	}
-
-	tbl, err := f.tableAPI(res)
-	if err != nil {
-		return nil, err
+			nKeys, nRanges)
 	}
 
 	var opts []bigtable.ReadOption
@@ -164,43 +193,64 @@ func (f *classicFallback) Close() error {
 	return f.c.Close()
 }
 
-// classicLeafID extracts the trailing leaf ID from a fully-qualified V2
-// resource name, given the segment prefix immediately before the leaf.
-// For example, classicLeafID("projects/P/instances/I/tables/T", "tables/")
-// returns "T". The scope has already been validated by Channel.openHandle, so
-// any malformed name here is an internal invariant violation.
-func classicLeafID(name, segPrefix string) (string, error) {
-	idx := strings.LastIndex(name, segPrefix)
-	if idx < 0 {
+// parseTableID validates that name belongs to f.project/f.instance and
+// returns the bare table ID (the leaf after "tables/").
+// Example: "projects/p/instances/i/tables/T" → "T".
+func (f *classicFallback) parseTableID(name string) (string, error) {
+	prefix := "projects/" + f.project + "/instances/" + f.instance + "/tables/"
+	if !strings.HasPrefix(name, prefix) {
 		return "", status.Errorf(codes.Internal,
-			"accelerator fallback: cannot find %q in resource name %q", segPrefix, name)
+			"accelerator fallback: table resource %q does not belong to project %q instance %q",
+			name, f.project, f.instance)
 	}
-	leaf := name[idx+len(segPrefix):]
-	if leaf == "" || strings.Contains(leaf, "/") {
+	tableID := strings.TrimPrefix(name, prefix)
+	if tableID == "" || strings.ContainsRune(tableID, '/') {
 		return "", status.Errorf(codes.Internal,
-			"accelerator fallback: malformed leaf in resource name %q", name)
+			"accelerator fallback: malformed table name %q", name)
 	}
-	return leaf, nil
+	return tableID, nil
 }
 
-// classicAVLeafIDs extracts the table and authorized-view leaf IDs from a
-// fully-qualified authorized-view resource name of the form
-// "projects/P/instances/I/tables/T/authorizedViews/V".
-func classicAVLeafIDs(name string) (tableID, viewID string, err error) {
+// parseAVIDs validates that name belongs to f.project/f.instance and returns
+// the bare table and authorized-view IDs.
+// Example: "projects/p/instances/i/tables/T/authorizedViews/V" → ("T", "V").
+func (f *classicFallback) parseAVIDs(name string) (tableID, viewID string, err error) {
+	tablePrefix := "projects/" + f.project + "/instances/" + f.instance + "/tables/"
+	if !strings.HasPrefix(name, tablePrefix) {
+		return "", "", status.Errorf(codes.Internal,
+			"accelerator fallback: authorized-view resource %q does not belong to project %q instance %q",
+			name, f.project, f.instance)
+	}
+	rest := strings.TrimPrefix(name, tablePrefix) // "T/authorizedViews/V"
 	const avSeg = "/authorizedViews/"
-	idx := strings.Index(name, avSeg)
-	if idx < 0 {
+	idx := strings.Index(rest, avSeg)
+	if idx <= 0 {
 		return "", "", status.Errorf(codes.Internal,
 			"accelerator fallback: not an authorized-view name: %q", name)
 	}
-	viewID = name[idx+len(avSeg):]
-	tableID, err = classicLeafID(name[:idx], "tables/")
-	if err != nil {
-		return "", "", err
-	}
-	if viewID == "" || strings.Contains(viewID, "/") {
+	tableID = rest[:idx]
+	viewID = rest[idx+len(avSeg):]
+	if strings.ContainsRune(tableID, '/') || viewID == "" || strings.ContainsRune(viewID, '/') {
 		return "", "", status.Errorf(codes.Internal,
 			"accelerator fallback: malformed authorized-view name: %q", name)
 	}
 	return tableID, viewID, nil
+}
+
+// parseMVID validates that name belongs to f.project/f.instance and returns
+// the bare materialized-view ID (the leaf after "materializedViews/").
+// Example: "projects/p/instances/i/materializedViews/MV" → "MV".
+func (f *classicFallback) parseMVID(name string) (string, error) {
+	prefix := "projects/" + f.project + "/instances/" + f.instance + "/materializedViews/"
+	if !strings.HasPrefix(name, prefix) {
+		return "", status.Errorf(codes.Internal,
+			"accelerator fallback: materialized-view resource %q does not belong to project %q instance %q",
+			name, f.project, f.instance)
+	}
+	mvID := strings.TrimPrefix(name, prefix)
+	if mvID == "" || strings.ContainsRune(mvID, '/') {
+		return "", status.Errorf(codes.Internal,
+			"accelerator fallback: malformed materialized-view name %q", name)
+	}
+	return mvID, nil
 }

@@ -172,6 +172,65 @@ func TestRowToReadRowsResponse_Labels(t *testing.T) {
 	}
 }
 
+func TestRowToReadRowsResponse_MultiFamilyMultiQualifier(t *testing.T) {
+	// Two families each with two qualifiers: cf1:{q1,q2}, cf2:{q1,q2}.
+	// Verifies family transitions reset the qualifier tracking, and qualifier
+	// transitions within a family set the Qualifier field correctly.
+	row := bigtable.Row{
+		"cf1": {
+			{Column: "cf1:q1", Timestamp: 1, Value: []byte("v11")},
+			{Column: "cf1:q2", Timestamp: 2, Value: []byte("v12")},
+		},
+		"cf2": {
+			{Column: "cf2:q1", Timestamp: 3, Value: []byte("v21")},
+			{Column: "cf2:q2", Timestamp: 4, Value: []byte("v22")},
+		},
+	}
+	resp := rowToReadRowsResponse(row, []byte("k"))
+	if len(resp.Chunks) != 4 {
+		t.Fatalf("got %d chunks, want 4", len(resp.Chunks))
+	}
+	// Families must appear in alphabetical order: cf1, cf2.
+	// Chunk 0: cf1/q1 — RowKey, FamilyName, Qualifier all set.
+	c0 := resp.Chunks[0]
+	if string(c0.RowKey) != "k" {
+		t.Errorf("chunk[0].RowKey = %q, want k", c0.RowKey)
+	}
+	if c0.FamilyName == nil || c0.FamilyName.Value != "cf1" {
+		t.Errorf("chunk[0].FamilyName = %v, want cf1", c0.FamilyName)
+	}
+	if c0.Qualifier == nil || string(c0.Qualifier.Value) != "q1" {
+		t.Errorf("chunk[0].Qualifier = %v, want q1", c0.Qualifier)
+	}
+	// Chunk 1: cf1/q2 — no FamilyName (same family), Qualifier set (new qualifier).
+	c1 := resp.Chunks[1]
+	if c1.FamilyName != nil {
+		t.Errorf("chunk[1].FamilyName = %v, want nil (same family)", c1.FamilyName)
+	}
+	if c1.Qualifier == nil || string(c1.Qualifier.Value) != "q2" {
+		t.Errorf("chunk[1].Qualifier = %v, want q2", c1.Qualifier)
+	}
+	// Chunk 2: cf2/q1 — FamilyName set (family transition), Qualifier set (reset).
+	c2 := resp.Chunks[2]
+	if c2.FamilyName == nil || c2.FamilyName.Value != "cf2" {
+		t.Errorf("chunk[2].FamilyName = %v, want cf2", c2.FamilyName)
+	}
+	if c2.Qualifier == nil || string(c2.Qualifier.Value) != "q1" {
+		t.Errorf("chunk[2].Qualifier = %v, want q1", c2.Qualifier)
+	}
+	// Chunk 3: cf2/q2 — no FamilyName, Qualifier set, CommitRow.
+	c3 := resp.Chunks[3]
+	if c3.FamilyName != nil {
+		t.Errorf("chunk[3].FamilyName = %v, want nil (same family)", c3.FamilyName)
+	}
+	if c3.Qualifier == nil || string(c3.Qualifier.Value) != "q2" {
+		t.Errorf("chunk[3].Qualifier = %v, want q2", c3.Qualifier)
+	}
+	if _, ok := c3.RowStatus.(*v2pb.ReadRowsResponse_CellChunk_CommitRow); !ok {
+		t.Errorf("chunk[3] missing CommitRow")
+	}
+}
+
 // Verify the CommitRow oneof encoding — callers depend on the concrete type.
 func TestRowToReadRowsResponse_CommitRowType(t *testing.T) {
 	row := bigtable.Row{"cf": {{Column: "cf:q", Timestamp: 1, Value: []byte("v")}}}

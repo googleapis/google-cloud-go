@@ -21,7 +21,6 @@ import (
 
 	"cloud.google.com/go/bigtable"
 	v2pb "cloud.google.com/go/bigtable/apiv2/bigtablepb"
-	"cloud.google.com/go/bigtable/internal/accelerator/adapters"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	gmetadata "google.golang.org/grpc/metadata"
@@ -389,10 +388,4 @@ func TestFallbackChannel_Close_ClassicCloseNilClientNoError(t *testing.T) {
 	}
 }
 
-// --- adapters.Resource extraction from testTableName -----------------------
-
-func init() {
-	// Verify that our testTableName is parseable by the adapters, so tests that
-	// call ExtractResource don't fail for an unrelated reason.
-	_ = adapters.Resource{Kind: adapters.ResourceTable, Name: testTableName}
-}
+// testTableName and newClassicFallbackWithMock are defined in fallback_test.go.

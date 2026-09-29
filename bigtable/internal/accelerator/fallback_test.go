@@ -62,6 +62,11 @@ func (m *mockTableAPI) ApplyReadModifyWrite(_ context.Context, _ string, _ *bigt
 	panic("mockTableAPI.ApplyReadModifyWrite not implemented")
 }
 
+// --- helpers -----------------------------------------------------------------
+
+// testProject and testInstance are defined in resourcename_test.go.
+const testTableName = "projects/p/instances/i/tables/t"
+
 // newClassicFallbackWithMock builds a classicFallback without dialing a real
 // Bigtable server by pre-populating the table cache with mocks. The supplied
 // mocks map must use full V2 resource names as keys.
@@ -70,53 +75,65 @@ func newClassicFallbackWithMock(mocks map[string]bigtable.TableAPI) *classicFall
 	for k, v := range mocks {
 		tables[k] = v
 	}
-	return &classicFallback{c: nil, mu: sync.Mutex{}, tables: tables}
-}
-
-// --- classicLeafID -----------------------------------------------------------
-
-func TestClassicLeafID_HappyPath(t *testing.T) {
-	tests := []struct {
-		name, segPrefix, want string
-	}{
-		{"projects/p/instances/i/tables/T", "tables/", "T"},
-		{"projects/p/instances/i/materializedViews/MV", "materializedViews/", "MV"},
-	}
-	for _, tc := range tests {
-		got, err := classicLeafID(tc.name, tc.segPrefix)
-		if err != nil {
-			t.Errorf("classicLeafID(%q, %q) error: %v", tc.name, tc.segPrefix, err)
-		} else if got != tc.want {
-			t.Errorf("classicLeafID(%q, %q) = %q, want %q", tc.name, tc.segPrefix, got, tc.want)
-		}
+	return &classicFallback{
+		c:        nil,
+		project:  testProject,
+		instance: testInstance,
+		mu:       sync.Mutex{},
+		tables:   tables,
 	}
 }
 
-func TestClassicLeafID_MissingPrefix(t *testing.T) {
-	_, err := classicLeafID("projects/p/instances/i/tables/T", "materializedViews/")
+// --- parseTableID ------------------------------------------------------------
+
+func TestParseTableID_HappyPath(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	got, err := cf.parseTableID("projects/p/instances/i/tables/T")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got != "T" {
+		t.Errorf("parseTableID = %q, want %q", got, "T")
+	}
+}
+
+func TestParseTableID_WrongProject(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, err := cf.parseTableID("projects/OTHER/instances/i/tables/T")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
 	}
 }
 
-func TestClassicLeafID_EmptyLeaf(t *testing.T) {
-	_, err := classicLeafID("projects/p/instances/i/tables/", "tables/")
+func TestParseTableID_WrongInstance(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, err := cf.parseTableID("projects/p/instances/OTHER/tables/T")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
 	}
 }
 
-func TestClassicLeafID_LeafWithSlash(t *testing.T) {
-	_, err := classicLeafID("projects/p/instances/i/tables/T/extra", "tables/")
+func TestParseTableID_EmptyLeaf(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, err := cf.parseTableID("projects/p/instances/i/tables/")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
 	}
 }
 
-// --- classicAVLeafIDs --------------------------------------------------------
+func TestParseTableID_LeafWithSlash(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, err := cf.parseTableID("projects/p/instances/i/tables/T/extra")
+	if status.Code(err) != codes.Internal {
+		t.Errorf("got %v, want codes.Internal", err)
+	}
+}
 
-func TestClassicAVLeafIDs_HappyPath(t *testing.T) {
-	tableID, viewID, err := classicAVLeafIDs("projects/p/instances/i/tables/T/authorizedViews/V")
+// --- parseAVIDs --------------------------------------------------------------
+
+func TestParseAVIDs_HappyPath(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	tableID, viewID, err := cf.parseAVIDs("projects/p/instances/i/tables/T/authorizedViews/V")
 	if err != nil {
 		t.Fatalf("unexpected error: %v", err)
 	}
@@ -128,23 +145,60 @@ func TestClassicAVLeafIDs_HappyPath(t *testing.T) {
 	}
 }
 
-func TestClassicAVLeafIDs_MissingSegment(t *testing.T) {
-	_, _, err := classicAVLeafIDs("projects/p/instances/i/tables/T")
+func TestParseAVIDs_WrongProject(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, _, err := cf.parseAVIDs("projects/OTHER/instances/i/tables/T/authorizedViews/V")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
 	}
 }
 
-func TestClassicAVLeafIDs_EmptyViewID(t *testing.T) {
-	_, _, err := classicAVLeafIDs("projects/p/instances/i/tables/T/authorizedViews/")
+func TestParseAVIDs_MissingSegment(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, _, err := cf.parseAVIDs("projects/p/instances/i/tables/T")
 	if status.Code(err) != codes.Internal {
 		t.Errorf("got %v, want codes.Internal", err)
 	}
 }
 
-// --- classicFallback.ReadRow range validation --------------------------------
+func TestParseAVIDs_EmptyViewID(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, _, err := cf.parseAVIDs("projects/p/instances/i/tables/T/authorizedViews/")
+	if status.Code(err) != codes.Internal {
+		t.Errorf("got %v, want codes.Internal", err)
+	}
+}
 
-const testTableName = "projects/p/instances/i/tables/t"
+// --- parseMVID ---------------------------------------------------------------
+
+func TestParseMVID_HappyPath(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	got, err := cf.parseMVID("projects/p/instances/i/materializedViews/MV")
+	if err != nil {
+		t.Fatalf("unexpected error: %v", err)
+	}
+	if got != "MV" {
+		t.Errorf("parseMVID = %q, want MV", got)
+	}
+}
+
+func TestParseMVID_WrongProject(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, err := cf.parseMVID("projects/OTHER/instances/i/materializedViews/MV")
+	if status.Code(err) != codes.Internal {
+		t.Errorf("got %v, want codes.Internal", err)
+	}
+}
+
+func TestParseMVID_EmptyLeaf(t *testing.T) {
+	cf := &classicFallback{project: "p", instance: "i"}
+	_, err := cf.parseMVID("projects/p/instances/i/materializedViews/")
+	if status.Code(err) != codes.Internal {
+		t.Errorf("got %v, want codes.Internal", err)
+	}
+}
+
+// --- classicFallback.ReadRow -------------------------------------------------
 
 func TestClassicFallbackReadRow_RowKeyPath(t *testing.T) {
 	var gotKey string
@@ -200,7 +254,9 @@ func TestClassicFallbackReadRow_ClosedClosedRange(t *testing.T) {
 }
 
 func TestClassicFallbackReadRow_NonSingleRowRange_ReturnsUnimplemented(t *testing.T) {
-	cf := newClassicFallbackWithMock(nil)
+	// Pre-populate a mock so tableAPI (called first) succeeds; the shape
+	// validation that follows it returns Unimplemented.
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{testTableName: &mockTableAPI{}})
 
 	req := &v2pb.ReadRowsRequest{
 		TableName: testTableName,
@@ -217,12 +273,11 @@ func TestClassicFallbackReadRow_NonSingleRowRange_ReturnsUnimplemented(t *testin
 }
 
 func TestClassicFallbackReadRow_EmptyStartKey_ReturnsUnimplemented(t *testing.T) {
-	cf := newClassicFallbackWithMock(nil)
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{testTableName: &mockTableAPI{}})
 
 	req := &v2pb.ReadRowsRequest{
 		TableName: testTableName,
 		Rows: &v2pb.RowSet{RowRanges: []*v2pb.RowRange{{
-			// start_key_closed not set → GetStartKeyClosed() returns nil/empty
 			EndKey: &v2pb.RowRange_EndKeyClosed{EndKeyClosed: []byte("k")},
 		}}},
 	}
@@ -233,8 +288,29 @@ func TestClassicFallbackReadRow_EmptyStartKey_ReturnsUnimplemented(t *testing.T)
 	}
 }
 
+func TestClassicFallbackReadRow_BothKeysAndRanges_ReturnsUnimplemented(t *testing.T) {
+	// Both RowKeys and RowRanges set — the XOR check in ReadRow catches this.
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{testTableName: &mockTableAPI{}})
+
+	req := &v2pb.ReadRowsRequest{
+		TableName: testTableName,
+		Rows: &v2pb.RowSet{
+			RowKeys: [][]byte{[]byte("k")},
+			RowRanges: []*v2pb.RowRange{{
+				StartKey: &v2pb.RowRange_StartKeyClosed{StartKeyClosed: []byte("k")},
+				EndKey:   &v2pb.RowRange_EndKeyClosed{EndKeyClosed: []byte("k")},
+			}},
+		},
+	}
+	res := adapters.Resource{Kind: adapters.ResourceTable, Name: testTableName}
+	_, err := cf.ReadRow(context.Background(), res, req)
+	if status.Code(err) != codes.Unimplemented {
+		t.Errorf("got %v, want codes.Unimplemented", err)
+	}
+}
+
 func TestClassicFallbackReadRow_DefaultCase_ReturnsUnimplemented(t *testing.T) {
-	cf := newClassicFallbackWithMock(nil)
+	cf := newClassicFallbackWithMock(map[string]bigtable.TableAPI{testTableName: &mockTableAPI{}})
 
 	// No RowKeys and no RowRanges — hits the default case.
 	req := &v2pb.ReadRowsRequest{
