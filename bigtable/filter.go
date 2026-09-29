@@ -30,6 +30,27 @@ type Filter interface {
 	proto() *btpb.RowFilter
 }
 
+// rawProtoFilter wraps an existing RowFilter proto for use as a Filter.
+// It is used by the accelerator's classic fallback, which already holds the
+// proto from the incoming request and does not need to go through the Go
+// Filter API.
+type rawProtoFilter struct{ f *btpb.RowFilter }
+
+func (r rawProtoFilter) String() string         { return r.f.String() }
+func (r rawProtoFilter) proto() *btpb.RowFilter { return r.f }
+
+// RawProtoFilter wraps an existing RowFilter proto as a Filter.
+// Intended for use by the accelerator's classic fallback only — callers that
+// already hold a serialized RowFilter proto do not need to deserialize and
+// re-encode it through the Go Filter API. Panics on nil input; callers must
+// guard with a nil check before calling (e.g. if req.Filter != nil).
+func RawProtoFilter(f *btpb.RowFilter) Filter {
+	if f == nil {
+		panic("bigtable: RawProtoFilter called with nil RowFilter")
+	}
+	return rawProtoFilter{f}
+}
+
 // ChainFilters returns a filter that applies a sequence of filters.
 func ChainFilters(sub ...Filter) Filter { return chainFilter{sub} }
 
