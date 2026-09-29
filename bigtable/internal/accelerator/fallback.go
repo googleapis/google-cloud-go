@@ -36,11 +36,10 @@ import (
 // Resource handles are cached by full V2 resource name, so repeated RPCs to
 // the same table / authorized view / materialized view share one handle.
 type classicFallback struct {
-	c        *bigtable.Client
-	project  string
-	instance string
-	mu       sync.Mutex
-	tables   map[string]bigtable.TableAPI // keyed by full V2 resource name
+	c           *bigtable.Client
+	scopePrefix string // "projects/<project>/instances/<instance>/"
+	mu          sync.Mutex
+	tables      map[string]bigtable.TableAPI // keyed by full V2 resource name
 }
 
 // newClassicFallback constructs a classic bigtable.Client scoped to
@@ -55,10 +54,9 @@ func newClassicFallback(ctx context.Context, project, instance, appProfile strin
 		return nil, err
 	}
 	return &classicFallback{
-		c:        c,
-		project:  project,
-		instance: instance,
-		tables:   make(map[string]bigtable.TableAPI),
+		c:           c,
+		scopePrefix: scopePrefixFor(project, instance),
+		tables:      make(map[string]bigtable.TableAPI),
 	}, nil
 }
 
@@ -193,64 +191,47 @@ func (f *classicFallback) Close() error {
 	return f.c.Close()
 }
 
-// parseTableID validates that name belongs to f.project/f.instance and
-// returns the bare table ID (the leaf after "tables/").
-// Example: "projects/p/instances/i/tables/T" → "T".
+// parseTableID validates that name is in this fallback's scope and returns
+// the table leaf ID. Reuses the package-level scopePrefixFor / leafAfter
+// helpers from resourcename.go (same logic as Channel.parseTableName).
 func (f *classicFallback) parseTableID(name string) (string, error) {
-	prefix := "projects/" + f.project + "/instances/" + f.instance + "/tables/"
-	if !strings.HasPrefix(name, prefix) {
+	rest, ok := strings.CutPrefix(name, f.scopePrefix)
+	if !ok {
 		return "", status.Errorf(codes.Internal,
-			"accelerator fallback: table resource %q does not belong to project %q instance %q",
-			name, f.project, f.instance)
+			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
-	tableID := strings.TrimPrefix(name, prefix)
-	if tableID == "" || strings.ContainsRune(tableID, '/') {
-		return "", status.Errorf(codes.Internal,
-			"accelerator fallback: malformed table name %q", name)
-	}
-	return tableID, nil
+	return leafAfter(name, rest, "tables/")
 }
 
-// parseAVIDs validates that name belongs to f.project/f.instance and returns
-// the bare table and authorized-view IDs.
-// Example: "projects/p/instances/i/tables/T/authorizedViews/V" → ("T", "V").
+// parseAVIDs validates that name is in this fallback's scope and returns
+// the table and authorized-view leaf IDs.
+// Mirrors Channel.parseAuthorizedViewName.
 func (f *classicFallback) parseAVIDs(name string) (tableID, viewID string, err error) {
-	tablePrefix := "projects/" + f.project + "/instances/" + f.instance + "/tables/"
-	if !strings.HasPrefix(name, tablePrefix) {
+	rest, ok := strings.CutPrefix(name, f.scopePrefix)
+	if !ok {
 		return "", "", status.Errorf(codes.Internal,
-			"accelerator fallback: authorized-view resource %q does not belong to project %q instance %q",
-			name, f.project, f.instance)
+			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
-	rest := strings.TrimPrefix(name, tablePrefix) // "T/authorizedViews/V"
-	const avSeg = "/authorizedViews/"
-	idx := strings.Index(rest, avSeg)
-	if idx <= 0 {
-		return "", "", status.Errorf(codes.Internal,
-			"accelerator fallback: not an authorized-view name: %q", name)
+	afterTables, ok := strings.CutPrefix(rest, "tables/")
+	if !ok {
+		return "", "", malformedResource(name)
 	}
-	tableID = rest[:idx]
-	viewID = rest[idx+len(avSeg):]
-	if strings.ContainsRune(tableID, '/') || viewID == "" || strings.ContainsRune(viewID, '/') {
-		return "", "", status.Errorf(codes.Internal,
-			"accelerator fallback: malformed authorized-view name: %q", name)
+	tableID, viewID, ok = strings.Cut(afterTables, "/authorizedViews/")
+	if !ok || tableID == "" || viewID == "" ||
+		strings.Contains(tableID, "/") || strings.Contains(viewID, "/") {
+		return "", "", malformedResource(name)
 	}
 	return tableID, viewID, nil
 }
 
-// parseMVID validates that name belongs to f.project/f.instance and returns
-// the bare materialized-view ID (the leaf after "materializedViews/").
-// Example: "projects/p/instances/i/materializedViews/MV" → "MV".
+// parseMVID validates that name is in this fallback's scope and returns
+// the materialized-view leaf ID.
+// Mirrors Channel.parseMaterializedViewName.
 func (f *classicFallback) parseMVID(name string) (string, error) {
-	prefix := "projects/" + f.project + "/instances/" + f.instance + "/materializedViews/"
-	if !strings.HasPrefix(name, prefix) {
+	rest, ok := strings.CutPrefix(name, f.scopePrefix)
+	if !ok {
 		return "", status.Errorf(codes.Internal,
-			"accelerator fallback: materialized-view resource %q does not belong to project %q instance %q",
-			name, f.project, f.instance)
+			"accelerator fallback: resource %q is not in scope %s", name, strings.TrimSuffix(f.scopePrefix, "/"))
 	}
-	mvID := strings.TrimPrefix(name, prefix)
-	if mvID == "" || strings.ContainsRune(mvID, '/') {
-		return "", status.Errorf(codes.Internal,
-			"accelerator fallback: malformed materialized-view name %q", name)
-	}
-	return mvID, nil
+	return leafAfter(name, rest, "materializedViews/")
 }
