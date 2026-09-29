@@ -268,6 +268,51 @@ func NewLintingRESTClient(ctx context.Context, opts ...option.ClientOption) (*Li
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.GetStyleGuide = append(callOpts.GetStyleGuide, gax.WithClientTracing(tracing))
+		callOpts.UpdateStyleGuide = append(callOpts.UpdateStyleGuide, gax.WithClientTracing(tracing))
+		callOpts.GetStyleGuideContents = append(callOpts.GetStyleGuideContents, gax.WithClientTracing(tracing))
+		callOpts.LintSpec = append(callOpts.LintSpec, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "apihub",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apihub/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "apihub.googleapis.com",
+			}),
+		)
+
+		callOpts.GetStyleGuide = append(callOpts.GetStyleGuide, gax.WithClientLogging(logging))
+		callOpts.UpdateStyleGuide = append(callOpts.UpdateStyleGuide, gax.WithClientLogging(logging))
+		callOpts.GetStyleGuideContents = append(callOpts.GetStyleGuideContents, gax.WithClientLogging(logging))
+		callOpts.LintSpec = append(callOpts.LintSpec, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &LintingClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -329,9 +374,6 @@ func (c *lintingRESTClient) GetStyleGuide(ctx context.Context, req *apihubpb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.LintingService/GetStyleGuide")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/styleGuide}")
@@ -454,9 +496,6 @@ func (c *lintingRESTClient) GetStyleGuideContents(ctx context.Context, req *apih
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.LintingService/GetStyleGuideContents")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/plugins/*/styleGuide}:contents")
@@ -519,9 +558,6 @@ func (c *lintingRESTClient) LintSpec(ctx context.Context, req *apihubpb.LintSpec
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//apihub.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.apihub.v1.LintingService/LintSpec")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/apis/*/versions/*/specs/*}:lint")

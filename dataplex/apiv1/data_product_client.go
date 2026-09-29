@@ -478,6 +478,71 @@ func NewDataProductClient(ctx context.Context, opts ...option.ClientOption) (*Da
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataProduct = append(client.CallOptions.CreateDataProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataProduct = append(client.CallOptions.DeleteDataProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataProduct = append(client.CallOptions.GetDataProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataProducts = append(client.CallOptions.ListDataProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataProduct = append(client.CallOptions.UpdateDataProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.RequestDataProductAccess = append(client.CallOptions.RequestDataProductAccess, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDataAsset = append(client.CallOptions.CreateDataAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDataAsset = append(client.CallOptions.UpdateDataAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDataAsset = append(client.CallOptions.DeleteDataAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDataAsset = append(client.CallOptions.GetDataAsset, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDataAssets = append(client.CallOptions.ListDataAssets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDataProduct = append(client.CallOptions.CreateDataProduct, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataProduct = append(client.CallOptions.DeleteDataProduct, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataProduct = append(client.CallOptions.GetDataProduct, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataProducts = append(client.CallOptions.ListDataProducts, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataProduct = append(client.CallOptions.UpdateDataProduct, gax.WithClientLogging(logging))
+		client.CallOptions.RequestDataProductAccess = append(client.CallOptions.RequestDataProductAccess, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDataAsset = append(client.CallOptions.CreateDataAsset, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDataAsset = append(client.CallOptions.UpdateDataAsset, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDataAsset = append(client.CallOptions.DeleteDataAsset, gax.WithClientLogging(logging))
+		client.CallOptions.GetDataAsset = append(client.CallOptions.GetDataAsset, gax.WithClientLogging(logging))
+		client.CallOptions.ListDataAssets = append(client.CallOptions.ListDataAssets, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -605,6 +670,71 @@ func NewDataProductRESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataProduct = append(callOpts.CreateDataProduct, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataProduct = append(callOpts.DeleteDataProduct, gax.WithClientTracing(tracing))
+		callOpts.GetDataProduct = append(callOpts.GetDataProduct, gax.WithClientTracing(tracing))
+		callOpts.ListDataProducts = append(callOpts.ListDataProducts, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataProduct = append(callOpts.UpdateDataProduct, gax.WithClientTracing(tracing))
+		callOpts.RequestDataProductAccess = append(callOpts.RequestDataProductAccess, gax.WithClientTracing(tracing))
+		callOpts.CreateDataAsset = append(callOpts.CreateDataAsset, gax.WithClientTracing(tracing))
+		callOpts.UpdateDataAsset = append(callOpts.UpdateDataAsset, gax.WithClientTracing(tracing))
+		callOpts.DeleteDataAsset = append(callOpts.DeleteDataAsset, gax.WithClientTracing(tracing))
+		callOpts.GetDataAsset = append(callOpts.GetDataAsset, gax.WithClientTracing(tracing))
+		callOpts.ListDataAssets = append(callOpts.ListDataAssets, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataplex",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataplex/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataplex.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDataProduct = append(callOpts.CreateDataProduct, gax.WithClientLogging(logging))
+		callOpts.DeleteDataProduct = append(callOpts.DeleteDataProduct, gax.WithClientLogging(logging))
+		callOpts.GetDataProduct = append(callOpts.GetDataProduct, gax.WithClientLogging(logging))
+		callOpts.ListDataProducts = append(callOpts.ListDataProducts, gax.WithClientLogging(logging))
+		callOpts.UpdateDataProduct = append(callOpts.UpdateDataProduct, gax.WithClientLogging(logging))
+		callOpts.RequestDataProductAccess = append(callOpts.RequestDataProductAccess, gax.WithClientLogging(logging))
+		callOpts.CreateDataAsset = append(callOpts.CreateDataAsset, gax.WithClientLogging(logging))
+		callOpts.UpdateDataAsset = append(callOpts.UpdateDataAsset, gax.WithClientLogging(logging))
+		callOpts.DeleteDataAsset = append(callOpts.DeleteDataAsset, gax.WithClientLogging(logging))
+		callOpts.GetDataAsset = append(callOpts.GetDataAsset, gax.WithClientLogging(logging))
+		callOpts.ListDataAssets = append(callOpts.ListDataAssets, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -661,9 +791,6 @@ func (c *dataProductGRPCClient) CreateDataProduct(ctx context.Context, req *data
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/CreateDataProduct")
 	}
@@ -691,9 +818,6 @@ func (c *dataProductGRPCClient) DeleteDataProduct(ctx context.Context, req *data
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/DeleteDataProduct")
 	}
@@ -721,9 +845,6 @@ func (c *dataProductGRPCClient) GetDataProduct(ctx context.Context, req *dataple
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/GetDataProduct")
 	}
@@ -745,9 +866,6 @@ func (c *dataProductGRPCClient) ListDataProducts(ctx context.Context, req *datap
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/ListDataProducts")
 	}
@@ -824,9 +942,6 @@ func (c *dataProductGRPCClient) RequestDataProductAccess(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/RequestDataProductAccess")
 	}
@@ -848,9 +963,6 @@ func (c *dataProductGRPCClient) CreateDataAsset(ctx context.Context, req *datapl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/CreateDataAsset")
 	}
@@ -905,9 +1017,6 @@ func (c *dataProductGRPCClient) DeleteDataAsset(ctx context.Context, req *datapl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/DeleteDataAsset")
 	}
@@ -935,9 +1044,6 @@ func (c *dataProductGRPCClient) GetDataAsset(ctx context.Context, req *dataplexp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/GetDataAsset")
 	}
@@ -959,9 +1065,6 @@ func (c *dataProductGRPCClient) ListDataAssets(ctx context.Context, req *dataple
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/ListDataAssets")
 	}
@@ -1081,9 +1184,6 @@ func (c *dataProductGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1105,9 +1205,6 @@ func (c *dataProductGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1129,9 +1226,6 @@ func (c *dataProductGRPCClient) TestIamPermissions(ctx context.Context, req *iam
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -1284,9 +1378,6 @@ func (c *dataProductRESTClient) CreateDataProduct(ctx context.Context, req *data
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/CreateDataProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/dataProducts")
@@ -1355,9 +1446,6 @@ func (c *dataProductRESTClient) DeleteDataProduct(ctx context.Context, req *data
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/DeleteDataProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataProducts/*}")
@@ -1419,9 +1507,6 @@ func (c *dataProductRESTClient) GetDataProduct(ctx context.Context, req *dataple
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/GetDataProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataProducts/*}")
@@ -1646,9 +1731,6 @@ func (c *dataProductRESTClient) RequestDataProductAccess(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/RequestDataProductAccess")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataProducts/*}:requestAccess")
@@ -1716,9 +1798,6 @@ func (c *dataProductRESTClient) CreateDataAsset(ctx context.Context, req *datapl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/CreateDataAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataProducts/*}/dataAssets")
@@ -1864,9 +1943,6 @@ func (c *dataProductRESTClient) DeleteDataAsset(ctx context.Context, req *datapl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/DeleteDataAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataProducts/*/dataAssets/*}")
@@ -1928,9 +2004,6 @@ func (c *dataProductRESTClient) GetDataAsset(ctx context.Context, req *dataplexp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dataplex.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dataplex.v1.DataProductService/GetDataAsset")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataProducts/*/dataAssets/*}")
@@ -2223,9 +2296,6 @@ func (c *dataProductRESTClient) GetIamPolicy(ctx context.Context, req *iampb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/lakes/*}:getIamPolicy")
@@ -2290,9 +2360,6 @@ func (c *dataProductRESTClient) SetIamPolicy(ctx context.Context, req *iampb.Set
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/lakes/*}:setIamPolicy")
@@ -2359,9 +2426,6 @@ func (c *dataProductRESTClient) TestIamPermissions(ctx context.Context, req *iam
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/lakes/*}:testIamPermissions")

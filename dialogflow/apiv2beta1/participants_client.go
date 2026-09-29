@@ -701,6 +701,67 @@ func NewParticipantsClient(ctx context.Context, opts ...option.ClientOption) (*P
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateParticipant = append(client.CallOptions.CreateParticipant, gax.WithClientTracing(tracing))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientTracing(tracing))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientTracing(tracing))
+		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientTracing(tracing))
+		client.CallOptions.SuggestKnowledgeAssist = append(client.CallOptions.SuggestKnowledgeAssist, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSuggestions = append(client.CallOptions.ListSuggestions, gax.WithClientTracing(tracing))
+		client.CallOptions.CompileSuggestion = append(client.CallOptions.CompileSuggestion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateParticipant = append(client.CallOptions.CreateParticipant, gax.WithClientLogging(logging))
+		client.CallOptions.GetParticipant = append(client.CallOptions.GetParticipant, gax.WithClientLogging(logging))
+		client.CallOptions.ListParticipants = append(client.CallOptions.ListParticipants, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateParticipant = append(client.CallOptions.UpdateParticipant, gax.WithClientLogging(logging))
+		client.CallOptions.AnalyzeContent = append(client.CallOptions.AnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.StreamingAnalyzeContent = append(client.CallOptions.StreamingAnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.BidiStreamingAnalyzeContent = append(client.CallOptions.BidiStreamingAnalyzeContent, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestArticles = append(client.CallOptions.SuggestArticles, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestFaqAnswers = append(client.CallOptions.SuggestFaqAnswers, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestSmartReplies = append(client.CallOptions.SuggestSmartReplies, gax.WithClientLogging(logging))
+		client.CallOptions.SuggestKnowledgeAssist = append(client.CallOptions.SuggestKnowledgeAssist, gax.WithClientLogging(logging))
+		client.CallOptions.ListSuggestions = append(client.CallOptions.ListSuggestions, gax.WithClientLogging(logging))
+		client.CallOptions.CompileSuggestion = append(client.CallOptions.CompileSuggestion, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -810,6 +871,67 @@ func NewParticipantsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateParticipant = append(callOpts.CreateParticipant, gax.WithClientTracing(tracing))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientTracing(tracing))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientTracing(tracing))
+		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientTracing(tracing))
+		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientTracing(tracing))
+		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientTracing(tracing))
+		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientTracing(tracing))
+		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientTracing(tracing))
+		callOpts.SuggestKnowledgeAssist = append(callOpts.SuggestKnowledgeAssist, gax.WithClientTracing(tracing))
+		callOpts.ListSuggestions = append(callOpts.ListSuggestions, gax.WithClientTracing(tracing))
+		callOpts.CompileSuggestion = append(callOpts.CompileSuggestion, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/apiv2beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateParticipant = append(callOpts.CreateParticipant, gax.WithClientLogging(logging))
+		callOpts.GetParticipant = append(callOpts.GetParticipant, gax.WithClientLogging(logging))
+		callOpts.ListParticipants = append(callOpts.ListParticipants, gax.WithClientLogging(logging))
+		callOpts.UpdateParticipant = append(callOpts.UpdateParticipant, gax.WithClientLogging(logging))
+		callOpts.AnalyzeContent = append(callOpts.AnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.StreamingAnalyzeContent = append(callOpts.StreamingAnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.BidiStreamingAnalyzeContent = append(callOpts.BidiStreamingAnalyzeContent, gax.WithClientLogging(logging))
+		callOpts.SuggestArticles = append(callOpts.SuggestArticles, gax.WithClientLogging(logging))
+		callOpts.SuggestFaqAnswers = append(callOpts.SuggestFaqAnswers, gax.WithClientLogging(logging))
+		callOpts.SuggestSmartReplies = append(callOpts.SuggestSmartReplies, gax.WithClientLogging(logging))
+		callOpts.SuggestKnowledgeAssist = append(callOpts.SuggestKnowledgeAssist, gax.WithClientLogging(logging))
+		callOpts.ListSuggestions = append(callOpts.ListSuggestions, gax.WithClientLogging(logging))
+		callOpts.CompileSuggestion = append(callOpts.CompileSuggestion, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &ParticipantsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -856,9 +978,6 @@ func (c *participantsGRPCClient) CreateParticipant(ctx context.Context, req *dia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/CreateParticipant")
 	}
@@ -880,9 +999,6 @@ func (c *participantsGRPCClient) GetParticipant(ctx context.Context, req *dialog
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/GetParticipant")
 	}
@@ -904,9 +1020,6 @@ func (c *participantsGRPCClient) ListParticipants(ctx context.Context, req *dial
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/ListParticipants")
 	}
@@ -977,9 +1090,6 @@ func (c *participantsGRPCClient) AnalyzeContent(ctx context.Context, req *dialog
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParticipant()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/AnalyzeContent")
 	}
@@ -1041,9 +1151,6 @@ func (c *participantsGRPCClient) SuggestArticles(ctx context.Context, req *dialo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestArticles")
 	}
@@ -1065,9 +1172,6 @@ func (c *participantsGRPCClient) SuggestFaqAnswers(ctx context.Context, req *dia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestFaqAnswers")
 	}
@@ -1089,9 +1193,6 @@ func (c *participantsGRPCClient) SuggestSmartReplies(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestSmartReplies")
 	}
@@ -1113,9 +1214,6 @@ func (c *participantsGRPCClient) SuggestKnowledgeAssist(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestKnowledgeAssist")
 	}
@@ -1385,9 +1483,6 @@ func (c *participantsRESTClient) CreateParticipant(ctx context.Context, req *dia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/CreateParticipant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{parent=projects/*/conversations/*}/participants")
@@ -1442,9 +1537,6 @@ func (c *participantsRESTClient) GetParticipant(ctx context.Context, req *dialog
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/GetParticipant")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{name=projects/*/conversations/*/participants/*}")
@@ -1656,9 +1748,6 @@ func (c *participantsRESTClient) AnalyzeContent(ctx context.Context, req *dialog
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParticipant()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/AnalyzeContent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{participant=projects/*/conversations/*/participants/*}:analyzeContent")
@@ -1756,9 +1845,6 @@ func (c *participantsRESTClient) SuggestArticles(ctx context.Context, req *dialo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestArticles")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestArticles")
@@ -1820,9 +1906,6 @@ func (c *participantsRESTClient) SuggestFaqAnswers(ctx context.Context, req *dia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestFaqAnswers")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestFaqAnswers")
@@ -1884,9 +1967,6 @@ func (c *participantsRESTClient) SuggestSmartReplies(ctx context.Context, req *d
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestSmartReplies")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestSmartReplies")
@@ -1947,9 +2027,6 @@ func (c *participantsRESTClient) SuggestKnowledgeAssist(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.v2beta1.Participants/SuggestKnowledgeAssist")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta1/{parent=projects/*/conversations/*/participants/*}/suggestions:suggestKnowledgeAssist")

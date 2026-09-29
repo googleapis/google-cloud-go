@@ -660,6 +660,65 @@ func NewPlaybooksClient(ctx context.Context, opts ...option.ClientOption) (*Play
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePlaybook = append(client.CallOptions.CreatePlaybook, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePlaybook = append(client.CallOptions.DeletePlaybook, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPlaybooks = append(client.CallOptions.ListPlaybooks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPlaybook = append(client.CallOptions.GetPlaybook, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportPlaybook = append(client.CallOptions.ExportPlaybook, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportPlaybook = append(client.CallOptions.ImportPlaybook, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePlaybook = append(client.CallOptions.UpdatePlaybook, gax.WithClientTracing(tracing))
+		client.CallOptions.CreatePlaybookVersion = append(client.CallOptions.CreatePlaybookVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPlaybookVersion = append(client.CallOptions.GetPlaybookVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.RestorePlaybookVersion = append(client.CallOptions.RestorePlaybookVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPlaybookVersions = append(client.CallOptions.ListPlaybookVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePlaybookVersion = append(client.CallOptions.DeletePlaybookVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePlaybook = append(client.CallOptions.CreatePlaybook, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePlaybook = append(client.CallOptions.DeletePlaybook, gax.WithClientLogging(logging))
+		client.CallOptions.ListPlaybooks = append(client.CallOptions.ListPlaybooks, gax.WithClientLogging(logging))
+		client.CallOptions.GetPlaybook = append(client.CallOptions.GetPlaybook, gax.WithClientLogging(logging))
+		client.CallOptions.ExportPlaybook = append(client.CallOptions.ExportPlaybook, gax.WithClientLogging(logging))
+		client.CallOptions.ImportPlaybook = append(client.CallOptions.ImportPlaybook, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePlaybook = append(client.CallOptions.UpdatePlaybook, gax.WithClientLogging(logging))
+		client.CallOptions.CreatePlaybookVersion = append(client.CallOptions.CreatePlaybookVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetPlaybookVersion = append(client.CallOptions.GetPlaybookVersion, gax.WithClientLogging(logging))
+		client.CallOptions.RestorePlaybookVersion = append(client.CallOptions.RestorePlaybookVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListPlaybookVersions = append(client.CallOptions.ListPlaybookVersions, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePlaybookVersion = append(client.CallOptions.DeletePlaybookVersion, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -784,6 +843,65 @@ func NewPlaybooksRESTClient(ctx context.Context, opts ...option.ClientOption) (*
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePlaybook = append(callOpts.CreatePlaybook, gax.WithClientTracing(tracing))
+		callOpts.DeletePlaybook = append(callOpts.DeletePlaybook, gax.WithClientTracing(tracing))
+		callOpts.ListPlaybooks = append(callOpts.ListPlaybooks, gax.WithClientTracing(tracing))
+		callOpts.GetPlaybook = append(callOpts.GetPlaybook, gax.WithClientTracing(tracing))
+		callOpts.ExportPlaybook = append(callOpts.ExportPlaybook, gax.WithClientTracing(tracing))
+		callOpts.ImportPlaybook = append(callOpts.ImportPlaybook, gax.WithClientTracing(tracing))
+		callOpts.UpdatePlaybook = append(callOpts.UpdatePlaybook, gax.WithClientTracing(tracing))
+		callOpts.CreatePlaybookVersion = append(callOpts.CreatePlaybookVersion, gax.WithClientTracing(tracing))
+		callOpts.GetPlaybookVersion = append(callOpts.GetPlaybookVersion, gax.WithClientTracing(tracing))
+		callOpts.RestorePlaybookVersion = append(callOpts.RestorePlaybookVersion, gax.WithClientTracing(tracing))
+		callOpts.ListPlaybookVersions = append(callOpts.ListPlaybookVersions, gax.WithClientTracing(tracing))
+		callOpts.DeletePlaybookVersion = append(callOpts.DeletePlaybookVersion, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dialogflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dialogflow/cx/apiv3beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dialogflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePlaybook = append(callOpts.CreatePlaybook, gax.WithClientLogging(logging))
+		callOpts.DeletePlaybook = append(callOpts.DeletePlaybook, gax.WithClientLogging(logging))
+		callOpts.ListPlaybooks = append(callOpts.ListPlaybooks, gax.WithClientLogging(logging))
+		callOpts.GetPlaybook = append(callOpts.GetPlaybook, gax.WithClientLogging(logging))
+		callOpts.ExportPlaybook = append(callOpts.ExportPlaybook, gax.WithClientLogging(logging))
+		callOpts.ImportPlaybook = append(callOpts.ImportPlaybook, gax.WithClientLogging(logging))
+		callOpts.UpdatePlaybook = append(callOpts.UpdatePlaybook, gax.WithClientLogging(logging))
+		callOpts.CreatePlaybookVersion = append(callOpts.CreatePlaybookVersion, gax.WithClientLogging(logging))
+		callOpts.GetPlaybookVersion = append(callOpts.GetPlaybookVersion, gax.WithClientLogging(logging))
+		callOpts.RestorePlaybookVersion = append(callOpts.RestorePlaybookVersion, gax.WithClientLogging(logging))
+		callOpts.ListPlaybookVersions = append(callOpts.ListPlaybookVersions, gax.WithClientLogging(logging))
+		callOpts.DeletePlaybookVersion = append(callOpts.DeletePlaybookVersion, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -840,9 +958,6 @@ func (c *playbooksGRPCClient) CreatePlaybook(ctx context.Context, req *cxpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybook")
 	}
@@ -864,9 +979,6 @@ func (c *playbooksGRPCClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybook")
 	}
@@ -884,9 +996,6 @@ func (c *playbooksGRPCClient) ListPlaybooks(ctx context.Context, req *cxpb.ListP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybooks")
 	}
@@ -936,9 +1045,6 @@ func (c *playbooksGRPCClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybook")
 	}
@@ -960,9 +1066,6 @@ func (c *playbooksGRPCClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ExportPlaybook")
 	}
@@ -990,9 +1093,6 @@ func (c *playbooksGRPCClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ImportPlaybook")
 	}
@@ -1041,9 +1141,6 @@ func (c *playbooksGRPCClient) CreatePlaybookVersion(ctx context.Context, req *cx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybookVersion")
 	}
@@ -1065,9 +1162,6 @@ func (c *playbooksGRPCClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybookVersion")
 	}
@@ -1089,9 +1183,6 @@ func (c *playbooksGRPCClient) RestorePlaybookVersion(ctx context.Context, req *c
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/RestorePlaybookVersion")
 	}
@@ -1113,9 +1204,6 @@ func (c *playbooksGRPCClient) ListPlaybookVersions(ctx context.Context, req *cxp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ListPlaybookVersions")
 	}
@@ -1165,9 +1253,6 @@ func (c *playbooksGRPCClient) DeletePlaybookVersion(ctx context.Context, req *cx
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybookVersion")
 	}
@@ -1363,9 +1448,6 @@ func (c *playbooksRESTClient) CreatePlaybook(ctx context.Context, req *cxpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybook")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/playbooks")
@@ -1420,9 +1502,6 @@ func (c *playbooksRESTClient) DeletePlaybook(ctx context.Context, req *cxpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybook")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*}")
@@ -1540,9 +1619,6 @@ func (c *playbooksRESTClient) GetPlaybook(ctx context.Context, req *cxpb.GetPlay
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybook")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*}")
@@ -1606,9 +1682,6 @@ func (c *playbooksRESTClient) ExportPlaybook(ctx context.Context, req *cxpb.Expo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ExportPlaybook")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*}:export")
@@ -1676,9 +1749,6 @@ func (c *playbooksRESTClient) ImportPlaybook(ctx context.Context, req *cxpb.Impo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/ImportPlaybook")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*}/playbooks:import")
@@ -1815,9 +1885,6 @@ func (c *playbooksRESTClient) CreatePlaybookVersion(ctx context.Context, req *cx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/CreatePlaybookVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{parent=projects/*/locations/*/agents/*/playbooks/*}/versions")
@@ -1872,9 +1939,6 @@ func (c *playbooksRESTClient) GetPlaybookVersion(ctx context.Context, req *cxpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/GetPlaybookVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}")
@@ -1936,9 +2000,6 @@ func (c *playbooksRESTClient) RestorePlaybookVersion(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/RestorePlaybookVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}:restore")
@@ -2071,9 +2132,6 @@ func (c *playbooksRESTClient) DeletePlaybookVersion(ctx context.Context, req *cx
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//dialogflow.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.dialogflow.cx.v3beta1.Playbooks/DeletePlaybookVersion")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3beta1/{name=projects/*/locations/*/agents/*/playbooks/*/versions/*}")

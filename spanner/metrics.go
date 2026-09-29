@@ -620,6 +620,10 @@ type attemptTracer struct {
 
 	directPathUsed      bool // Indicates if DirectPath was used for the attempt.
 	serverTimingMetrics map[string]time.Duration
+
+	// rpcStarted indicates if the streaming RPC of the attempt reached the
+	// metrics stream interceptor.
+	rpcStarted bool
 }
 
 // setStartTime sets the start time for the operation.

@@ -292,6 +292,47 @@ func NewExecutionsClient(ctx context.Context, opts ...option.ClientOption) (*Exe
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientTracing(tracing))
+		client.CallOptions.ListExecutions = append(client.CallOptions.ListExecutions, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteExecution = append(client.CallOptions.DeleteExecution, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelExecution = append(client.CallOptions.CancelExecution, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetExecution = append(client.CallOptions.GetExecution, gax.WithClientLogging(logging))
+		client.CallOptions.ListExecutions = append(client.CallOptions.ListExecutions, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteExecution = append(client.CallOptions.DeleteExecution, gax.WithClientLogging(logging))
+		client.CallOptions.CancelExecution = append(client.CallOptions.CancelExecution, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+		client.CallOptions.WaitOperation = append(client.CallOptions.WaitOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -406,6 +447,47 @@ func NewExecutionsRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		callOpts.GetExecution = append(callOpts.GetExecution, gax.WithClientTracing(tracing))
+		callOpts.ListExecutions = append(callOpts.ListExecutions, gax.WithClientTracing(tracing))
+		callOpts.DeleteExecution = append(callOpts.DeleteExecution, gax.WithClientTracing(tracing))
+		callOpts.CancelExecution = append(callOpts.CancelExecution, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "run",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/run/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "run.googleapis.com",
+			}),
+		)
+
+		callOpts.GetExecution = append(callOpts.GetExecution, gax.WithClientLogging(logging))
+		callOpts.ListExecutions = append(callOpts.ListExecutions, gax.WithClientLogging(logging))
+		callOpts.DeleteExecution = append(callOpts.DeleteExecution, gax.WithClientLogging(logging))
+		callOpts.CancelExecution = append(callOpts.CancelExecution, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+		callOpts.WaitOperation = append(callOpts.WaitOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -462,9 +544,6 @@ func (c *executionsGRPCClient) GetExecution(ctx context.Context, req *runpb.GetE
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Executions/GetExecution")
 	}
@@ -486,9 +565,6 @@ func (c *executionsGRPCClient) ListExecutions(ctx context.Context, req *runpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Executions/ListExecutions")
 	}
@@ -538,9 +614,6 @@ func (c *executionsGRPCClient) DeleteExecution(ctx context.Context, req *runpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Executions/DeleteExecution")
 	}
@@ -568,9 +641,6 @@ func (c *executionsGRPCClient) CancelExecution(ctx context.Context, req *runpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Executions/CancelExecution")
 	}
@@ -720,9 +790,6 @@ func (c *executionsRESTClient) GetExecution(ctx context.Context, req *runpb.GetE
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Executions/GetExecution")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/jobs/*/executions/*}")
@@ -865,9 +932,6 @@ func (c *executionsRESTClient) DeleteExecution(ctx context.Context, req *runpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Executions/DeleteExecution")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/jobs/*/executions/*}")
@@ -935,9 +999,6 @@ func (c *executionsRESTClient) CancelExecution(ctx context.Context, req *runpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//run.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.run.v2.Executions/CancelExecution")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2/{name=projects/*/locations/*/jobs/*/executions/*}:cancel")

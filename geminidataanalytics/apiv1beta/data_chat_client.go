@@ -646,6 +646,59 @@ func NewDataChatClient(ctx context.Context, opts ...option.ClientOption) (*DataC
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "geminidataanalytics",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/geminidataanalytics/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "geminidataanalytics.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Chat = append(client.CallOptions.Chat, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateConversation = append(client.CallOptions.CreateConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteConversation = append(client.CallOptions.DeleteConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateConversation = append(client.CallOptions.UpdateConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetConversation = append(client.CallOptions.GetConversation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListConversations = append(client.CallOptions.ListConversations, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMessages = append(client.CallOptions.ListMessages, gax.WithClientTracing(tracing))
+		client.CallOptions.QueryData = append(client.CallOptions.QueryData, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "geminidataanalytics",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/geminidataanalytics/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "geminidataanalytics.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.Chat = append(client.CallOptions.Chat, gax.WithClientLogging(logging))
+		client.CallOptions.CreateConversation = append(client.CallOptions.CreateConversation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteConversation = append(client.CallOptions.DeleteConversation, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateConversation = append(client.CallOptions.UpdateConversation, gax.WithClientLogging(logging))
+		client.CallOptions.GetConversation = append(client.CallOptions.GetConversation, gax.WithClientLogging(logging))
+		client.CallOptions.ListConversations = append(client.CallOptions.ListConversations, gax.WithClientLogging(logging))
+		client.CallOptions.ListMessages = append(client.CallOptions.ListMessages, gax.WithClientLogging(logging))
+		client.CallOptions.QueryData = append(client.CallOptions.QueryData, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -752,6 +805,59 @@ func NewDataChatRESTClient(ctx context.Context, opts ...option.ClientOption) (*D
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "geminidataanalytics",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/geminidataanalytics/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "geminidataanalytics.googleapis.com",
+			}),
+		)
+
+		callOpts.Chat = append(callOpts.Chat, gax.WithClientTracing(tracing))
+		callOpts.CreateConversation = append(callOpts.CreateConversation, gax.WithClientTracing(tracing))
+		callOpts.DeleteConversation = append(callOpts.DeleteConversation, gax.WithClientTracing(tracing))
+		callOpts.UpdateConversation = append(callOpts.UpdateConversation, gax.WithClientTracing(tracing))
+		callOpts.GetConversation = append(callOpts.GetConversation, gax.WithClientTracing(tracing))
+		callOpts.ListConversations = append(callOpts.ListConversations, gax.WithClientTracing(tracing))
+		callOpts.ListMessages = append(callOpts.ListMessages, gax.WithClientTracing(tracing))
+		callOpts.QueryData = append(callOpts.QueryData, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "geminidataanalytics",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/geminidataanalytics/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "geminidataanalytics.googleapis.com",
+			}),
+		)
+
+		callOpts.Chat = append(callOpts.Chat, gax.WithClientLogging(logging))
+		callOpts.CreateConversation = append(callOpts.CreateConversation, gax.WithClientLogging(logging))
+		callOpts.DeleteConversation = append(callOpts.DeleteConversation, gax.WithClientLogging(logging))
+		callOpts.UpdateConversation = append(callOpts.UpdateConversation, gax.WithClientLogging(logging))
+		callOpts.GetConversation = append(callOpts.GetConversation, gax.WithClientLogging(logging))
+		callOpts.ListConversations = append(callOpts.ListConversations, gax.WithClientLogging(logging))
+		callOpts.ListMessages = append(callOpts.ListMessages, gax.WithClientLogging(logging))
+		callOpts.QueryData = append(callOpts.QueryData, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &DataChatClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -798,9 +904,6 @@ func (c *dataChatGRPCClient) Chat(ctx context.Context, req *geminidataanalyticsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/Chat")
 	}
@@ -824,9 +927,6 @@ func (c *dataChatGRPCClient) CreateConversation(ctx context.Context, req *gemini
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/CreateConversation")
 	}
@@ -848,9 +948,6 @@ func (c *dataChatGRPCClient) DeleteConversation(ctx context.Context, req *gemini
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/DeleteConversation")
 	}
@@ -889,9 +986,6 @@ func (c *dataChatGRPCClient) GetConversation(ctx context.Context, req *geminidat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/GetConversation")
 	}
@@ -913,9 +1007,6 @@ func (c *dataChatGRPCClient) ListConversations(ctx context.Context, req *geminid
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/ListConversations")
 	}
@@ -965,9 +1056,6 @@ func (c *dataChatGRPCClient) ListMessages(ctx context.Context, req *geminidataan
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/ListMessages")
 	}
@@ -1017,9 +1105,6 @@ func (c *dataChatGRPCClient) QueryData(ctx context.Context, req *geminidataanaly
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/QueryData")
 	}
@@ -1236,9 +1321,6 @@ func (c *dataChatRESTClient) Chat(ctx context.Context, req *geminidataanalyticsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetProject()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/Chat")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}:chat")
@@ -1353,9 +1435,6 @@ func (c *dataChatRESTClient) CreateConversation(ctx context.Context, req *gemini
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/CreateConversation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}/conversations")
@@ -1410,9 +1489,6 @@ func (c *dataChatRESTClient) DeleteConversation(ctx context.Context, req *gemini
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/DeleteConversation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/conversations/*}")
@@ -1523,9 +1599,6 @@ func (c *dataChatRESTClient) GetConversation(ctx context.Context, req *geminidat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/GetConversation")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{name=projects/*/locations/*/conversations/*}")
@@ -1748,9 +1821,6 @@ func (c *dataChatRESTClient) QueryData(ctx context.Context, req *geminidataanaly
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//geminidataanalytics.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.geminidataanalytics.v1beta.DataChatService/QueryData")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta/{parent=projects/*/locations/*}:queryData")

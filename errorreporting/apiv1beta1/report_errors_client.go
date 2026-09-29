@@ -225,6 +225,33 @@ func NewReportErrorsClient(ctx context.Context, opts ...option.ClientOption) (*R
 
 		client.CallOptions.ReportErrorEvent = append(client.CallOptions.ReportErrorEvent, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReportErrorEvent = append(client.CallOptions.ReportErrorEvent, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReportErrorEvent = append(client.CallOptions.ReportErrorEvent, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -316,6 +343,33 @@ func NewReportErrorsRESTClient(ctx context.Context, opts ...option.ClientOption)
 
 		callOpts.ReportErrorEvent = append(callOpts.ReportErrorEvent, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.ReportErrorEvent = append(callOpts.ReportErrorEvent, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "clouderrorreporting",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/errorreporting/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "clouderrorreporting.googleapis.com",
+			}),
+		)
+
+		callOpts.ReportErrorEvent = append(callOpts.ReportErrorEvent, gax.WithClientLogging(logging))
+	}
 
 	return &ReportErrorsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -362,9 +416,6 @@ func (c *reportErrorsGRPCClient) ReportErrorEvent(ctx context.Context, req *erro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ReportErrorsService/ReportErrorEvent")
 	}
@@ -428,9 +479,6 @@ func (c *reportErrorsRESTClient) ReportErrorEvent(ctx context.Context, req *erro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//clouderrorreporting.googleapis.com/%v", req.GetProjectName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.clouderrorreporting.v1beta1.ReportErrorsService/ReportErrorEvent")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1beta1/{project_name=projects/*}/events:report")

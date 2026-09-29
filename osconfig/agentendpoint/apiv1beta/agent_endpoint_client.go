@@ -294,6 +294,43 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.LookupEffectiveGuestPolicy = append(client.CallOptions.LookupEffectiveGuestPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.RegisterAgent = append(client.CallOptions.RegisterAgent, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReceiveTaskNotification = append(client.CallOptions.ReceiveTaskNotification, gax.WithClientTracing(tracing))
+		client.CallOptions.StartNextTask = append(client.CallOptions.StartNextTask, gax.WithClientTracing(tracing))
+		client.CallOptions.ReportTaskProgress = append(client.CallOptions.ReportTaskProgress, gax.WithClientTracing(tracing))
+		client.CallOptions.ReportTaskComplete = append(client.CallOptions.ReportTaskComplete, gax.WithClientTracing(tracing))
+		client.CallOptions.LookupEffectiveGuestPolicy = append(client.CallOptions.LookupEffectiveGuestPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.RegisterAgent = append(client.CallOptions.RegisterAgent, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "osconfig",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/osconfig/agentendpoint/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "osconfig.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ReceiveTaskNotification = append(client.CallOptions.ReceiveTaskNotification, gax.WithClientLogging(logging))
+		client.CallOptions.StartNextTask = append(client.CallOptions.StartNextTask, gax.WithClientLogging(logging))
+		client.CallOptions.ReportTaskProgress = append(client.CallOptions.ReportTaskProgress, gax.WithClientLogging(logging))
+		client.CallOptions.ReportTaskComplete = append(client.CallOptions.ReportTaskComplete, gax.WithClientLogging(logging))
+		client.CallOptions.LookupEffectiveGuestPolicy = append(client.CallOptions.LookupEffectiveGuestPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.RegisterAgent = append(client.CallOptions.RegisterAgent, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 

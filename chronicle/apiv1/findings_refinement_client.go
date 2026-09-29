@@ -492,6 +492,57 @@ func NewFindingsRefinementClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFindingsRefinement = append(client.CallOptions.GetFindingsRefinement, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFindingsRefinements = append(client.CallOptions.ListFindingsRefinements, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFindingsRefinement = append(client.CallOptions.CreateFindingsRefinement, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFindingsRefinement = append(client.CallOptions.UpdateFindingsRefinement, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFindingsRefinementDeployment = append(client.CallOptions.GetFindingsRefinementDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFindingsRefinementDeployment = append(client.CallOptions.UpdateFindingsRefinementDeployment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAllFindingsRefinementDeployments = append(client.CallOptions.ListAllFindingsRefinementDeployments, gax.WithClientTracing(tracing))
+		client.CallOptions.ComputeFindingsRefinementActivity = append(client.CallOptions.ComputeFindingsRefinementActivity, gax.WithClientTracing(tracing))
+		client.CallOptions.ComputeAllFindingsRefinementActivities = append(client.CallOptions.ComputeAllFindingsRefinementActivities, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetFindingsRefinement = append(client.CallOptions.GetFindingsRefinement, gax.WithClientLogging(logging))
+		client.CallOptions.ListFindingsRefinements = append(client.CallOptions.ListFindingsRefinements, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFindingsRefinement = append(client.CallOptions.CreateFindingsRefinement, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFindingsRefinement = append(client.CallOptions.UpdateFindingsRefinement, gax.WithClientLogging(logging))
+		client.CallOptions.GetFindingsRefinementDeployment = append(client.CallOptions.GetFindingsRefinementDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFindingsRefinementDeployment = append(client.CallOptions.UpdateFindingsRefinementDeployment, gax.WithClientLogging(logging))
+		client.CallOptions.ListAllFindingsRefinementDeployments = append(client.CallOptions.ListAllFindingsRefinementDeployments, gax.WithClientLogging(logging))
+		client.CallOptions.ComputeFindingsRefinementActivity = append(client.CallOptions.ComputeFindingsRefinementActivity, gax.WithClientLogging(logging))
+		client.CallOptions.ComputeAllFindingsRefinementActivities = append(client.CallOptions.ComputeAllFindingsRefinementActivities, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -597,6 +648,57 @@ func NewFindingsRefinementRESTClient(ctx context.Context, opts ...option.ClientO
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFindingsRefinement = append(callOpts.GetFindingsRefinement, gax.WithClientTracing(tracing))
+		callOpts.ListFindingsRefinements = append(callOpts.ListFindingsRefinements, gax.WithClientTracing(tracing))
+		callOpts.CreateFindingsRefinement = append(callOpts.CreateFindingsRefinement, gax.WithClientTracing(tracing))
+		callOpts.UpdateFindingsRefinement = append(callOpts.UpdateFindingsRefinement, gax.WithClientTracing(tracing))
+		callOpts.GetFindingsRefinementDeployment = append(callOpts.GetFindingsRefinementDeployment, gax.WithClientTracing(tracing))
+		callOpts.UpdateFindingsRefinementDeployment = append(callOpts.UpdateFindingsRefinementDeployment, gax.WithClientTracing(tracing))
+		callOpts.ListAllFindingsRefinementDeployments = append(callOpts.ListAllFindingsRefinementDeployments, gax.WithClientTracing(tracing))
+		callOpts.ComputeFindingsRefinementActivity = append(callOpts.ComputeFindingsRefinementActivity, gax.WithClientTracing(tracing))
+		callOpts.ComputeAllFindingsRefinementActivities = append(callOpts.ComputeAllFindingsRefinementActivities, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.GetFindingsRefinement = append(callOpts.GetFindingsRefinement, gax.WithClientLogging(logging))
+		callOpts.ListFindingsRefinements = append(callOpts.ListFindingsRefinements, gax.WithClientLogging(logging))
+		callOpts.CreateFindingsRefinement = append(callOpts.CreateFindingsRefinement, gax.WithClientLogging(logging))
+		callOpts.UpdateFindingsRefinement = append(callOpts.UpdateFindingsRefinement, gax.WithClientLogging(logging))
+		callOpts.GetFindingsRefinementDeployment = append(callOpts.GetFindingsRefinementDeployment, gax.WithClientLogging(logging))
+		callOpts.UpdateFindingsRefinementDeployment = append(callOpts.UpdateFindingsRefinementDeployment, gax.WithClientLogging(logging))
+		callOpts.ListAllFindingsRefinementDeployments = append(callOpts.ListAllFindingsRefinementDeployments, gax.WithClientLogging(logging))
+		callOpts.ComputeFindingsRefinementActivity = append(callOpts.ComputeFindingsRefinementActivity, gax.WithClientLogging(logging))
+		callOpts.ComputeAllFindingsRefinementActivities = append(callOpts.ComputeAllFindingsRefinementActivities, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &FindingsRefinementClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -643,9 +745,6 @@ func (c *findingsRefinementGRPCClient) GetFindingsRefinement(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/GetFindingsRefinement")
 	}
@@ -667,9 +766,6 @@ func (c *findingsRefinementGRPCClient) ListFindingsRefinements(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/ListFindingsRefinements")
 	}
@@ -719,9 +815,6 @@ func (c *findingsRefinementGRPCClient) CreateFindingsRefinement(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/CreateFindingsRefinement")
 	}
@@ -764,9 +857,6 @@ func (c *findingsRefinementGRPCClient) GetFindingsRefinementDeployment(ctx conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/GetFindingsRefinementDeployment")
 	}
@@ -809,9 +899,6 @@ func (c *findingsRefinementGRPCClient) ListAllFindingsRefinementDeployments(ctx 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/ListAllFindingsRefinementDeployments")
 	}
@@ -861,9 +948,6 @@ func (c *findingsRefinementGRPCClient) ComputeFindingsRefinementActivity(ctx con
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/ComputeFindingsRefinementActivity")
 	}
@@ -885,9 +969,6 @@ func (c *findingsRefinementGRPCClient) ComputeAllFindingsRefinementActivities(ct
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/ComputeAllFindingsRefinementActivities")
 	}
@@ -1027,9 +1108,6 @@ func (c *findingsRefinementRESTClient) GetFindingsRefinement(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/GetFindingsRefinement")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/findingsRefinements/*}")
@@ -1169,9 +1247,6 @@ func (c *findingsRefinementRESTClient) CreateFindingsRefinement(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/CreateFindingsRefinement")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/findingsRefinements")
@@ -1294,9 +1369,6 @@ func (c *findingsRefinementRESTClient) GetFindingsRefinementDeployment(ctx conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/GetFindingsRefinementDeployment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/findingsRefinements/*/deployment}")
@@ -1506,9 +1578,6 @@ func (c *findingsRefinementRESTClient) ComputeFindingsRefinementActivity(ctx con
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/ComputeFindingsRefinementActivity")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/findingsRefinements/*}:computeFindingsRefinementActivity")
@@ -1569,9 +1638,6 @@ func (c *findingsRefinementRESTClient) ComputeAllFindingsRefinementActivities(ct
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetInstance()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FindingsRefinementService/ComputeAllFindingsRefinementActivities")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{instance=projects/*/locations/*/instances/*}:computeAllFindingsRefinementActivities")

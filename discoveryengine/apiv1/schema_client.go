@@ -468,6 +468,47 @@ func NewSchemaClient(ctx context.Context, opts ...option.ClientOption) (*SchemaC
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSchemas = append(client.CallOptions.ListSchemas, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSchema = append(client.CallOptions.CreateSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSchema = append(client.CallOptions.UpdateSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSchema = append(client.CallOptions.DeleteSchema, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSchema = append(client.CallOptions.GetSchema, gax.WithClientLogging(logging))
+		client.CallOptions.ListSchemas = append(client.CallOptions.ListSchemas, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSchema = append(client.CallOptions.CreateSchema, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSchema = append(client.CallOptions.UpdateSchema, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSchema = append(client.CallOptions.DeleteSchema, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -582,6 +623,47 @@ func NewSchemaRESTClient(ctx context.Context, opts ...option.ClientOption) (*Sch
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientTracing(tracing))
+		callOpts.ListSchemas = append(callOpts.ListSchemas, gax.WithClientTracing(tracing))
+		callOpts.CreateSchema = append(callOpts.CreateSchema, gax.WithClientTracing(tracing))
+		callOpts.UpdateSchema = append(callOpts.UpdateSchema, gax.WithClientTracing(tracing))
+		callOpts.DeleteSchema = append(callOpts.DeleteSchema, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSchema = append(callOpts.GetSchema, gax.WithClientLogging(logging))
+		callOpts.ListSchemas = append(callOpts.ListSchemas, gax.WithClientLogging(logging))
+		callOpts.CreateSchema = append(callOpts.CreateSchema, gax.WithClientLogging(logging))
+		callOpts.UpdateSchema = append(callOpts.UpdateSchema, gax.WithClientLogging(logging))
+		callOpts.DeleteSchema = append(callOpts.DeleteSchema, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -638,9 +720,6 @@ func (c *schemaGRPCClient) GetSchema(ctx context.Context, req *discoveryenginepb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SchemaService/GetSchema")
 	}
@@ -662,9 +741,6 @@ func (c *schemaGRPCClient) ListSchemas(ctx context.Context, req *discoveryengine
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SchemaService/ListSchemas")
 	}
@@ -714,9 +790,6 @@ func (c *schemaGRPCClient) CreateSchema(ctx context.Context, req *discoveryengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SchemaService/CreateSchema")
 	}
@@ -771,9 +844,6 @@ func (c *schemaGRPCClient) DeleteSchema(ctx context.Context, req *discoveryengin
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SchemaService/DeleteSchema")
 	}
@@ -902,9 +972,6 @@ func (c *schemaRESTClient) GetSchema(ctx context.Context, req *discoveryenginepb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SchemaService/GetSchema")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/schemas/*}")
@@ -1045,9 +1112,6 @@ func (c *schemaRESTClient) CreateSchema(ctx context.Context, req *discoveryengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SchemaService/CreateSchema")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataStores/*}/schemas")
@@ -1180,9 +1244,6 @@ func (c *schemaRESTClient) DeleteSchema(ctx context.Context, req *discoveryengin
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SchemaService/DeleteSchema")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/schemas/*}")

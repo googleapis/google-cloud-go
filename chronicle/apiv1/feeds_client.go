@@ -550,6 +550,67 @@ func NewFeedsClient(ctx context.Context, opts ...option.ClientOption) (*FeedsCli
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FetchServiceAccountForCustomer = append(client.CallOptions.FetchServiceAccountForCustomer, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateFeed = append(client.CallOptions.CreateFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFeed = append(client.CallOptions.GetFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFeed = append(client.CallOptions.DeleteFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.EnableFeed = append(client.CallOptions.EnableFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableFeed = append(client.CallOptions.DisableFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFeeds = append(client.CallOptions.ListFeeds, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFeedPacks = append(client.CallOptions.ListFeedPacks, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFeedPack = append(client.CallOptions.GetFeedPack, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFeed = append(client.CallOptions.UpdateFeed, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFeedSourceTypeSchemas = append(client.CallOptions.ListFeedSourceTypeSchemas, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLogTypeSchemas = append(client.CallOptions.ListLogTypeSchemas, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportPushLogs = append(client.CallOptions.ImportPushLogs, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateSecret = append(client.CallOptions.GenerateSecret, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.FetchServiceAccountForCustomer = append(client.CallOptions.FetchServiceAccountForCustomer, gax.WithClientLogging(logging))
+		client.CallOptions.CreateFeed = append(client.CallOptions.CreateFeed, gax.WithClientLogging(logging))
+		client.CallOptions.GetFeed = append(client.CallOptions.GetFeed, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFeed = append(client.CallOptions.DeleteFeed, gax.WithClientLogging(logging))
+		client.CallOptions.EnableFeed = append(client.CallOptions.EnableFeed, gax.WithClientLogging(logging))
+		client.CallOptions.DisableFeed = append(client.CallOptions.DisableFeed, gax.WithClientLogging(logging))
+		client.CallOptions.ListFeeds = append(client.CallOptions.ListFeeds, gax.WithClientLogging(logging))
+		client.CallOptions.ListFeedPacks = append(client.CallOptions.ListFeedPacks, gax.WithClientLogging(logging))
+		client.CallOptions.GetFeedPack = append(client.CallOptions.GetFeedPack, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFeed = append(client.CallOptions.UpdateFeed, gax.WithClientLogging(logging))
+		client.CallOptions.ListFeedSourceTypeSchemas = append(client.CallOptions.ListFeedSourceTypeSchemas, gax.WithClientLogging(logging))
+		client.CallOptions.ListLogTypeSchemas = append(client.CallOptions.ListLogTypeSchemas, gax.WithClientLogging(logging))
+		client.CallOptions.ImportPushLogs = append(client.CallOptions.ImportPushLogs, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateSecret = append(client.CallOptions.GenerateSecret, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -658,6 +719,67 @@ func NewFeedsRESTClient(ctx context.Context, opts ...option.ClientOption) (*Feed
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.FetchServiceAccountForCustomer = append(callOpts.FetchServiceAccountForCustomer, gax.WithClientTracing(tracing))
+		callOpts.CreateFeed = append(callOpts.CreateFeed, gax.WithClientTracing(tracing))
+		callOpts.GetFeed = append(callOpts.GetFeed, gax.WithClientTracing(tracing))
+		callOpts.DeleteFeed = append(callOpts.DeleteFeed, gax.WithClientTracing(tracing))
+		callOpts.EnableFeed = append(callOpts.EnableFeed, gax.WithClientTracing(tracing))
+		callOpts.DisableFeed = append(callOpts.DisableFeed, gax.WithClientTracing(tracing))
+		callOpts.ListFeeds = append(callOpts.ListFeeds, gax.WithClientTracing(tracing))
+		callOpts.ListFeedPacks = append(callOpts.ListFeedPacks, gax.WithClientTracing(tracing))
+		callOpts.GetFeedPack = append(callOpts.GetFeedPack, gax.WithClientTracing(tracing))
+		callOpts.UpdateFeed = append(callOpts.UpdateFeed, gax.WithClientTracing(tracing))
+		callOpts.ListFeedSourceTypeSchemas = append(callOpts.ListFeedSourceTypeSchemas, gax.WithClientTracing(tracing))
+		callOpts.ListLogTypeSchemas = append(callOpts.ListLogTypeSchemas, gax.WithClientTracing(tracing))
+		callOpts.ImportPushLogs = append(callOpts.ImportPushLogs, gax.WithClientTracing(tracing))
+		callOpts.GenerateSecret = append(callOpts.GenerateSecret, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "chronicle",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/chronicle/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "chronicle.googleapis.com",
+			}),
+		)
+
+		callOpts.FetchServiceAccountForCustomer = append(callOpts.FetchServiceAccountForCustomer, gax.WithClientLogging(logging))
+		callOpts.CreateFeed = append(callOpts.CreateFeed, gax.WithClientLogging(logging))
+		callOpts.GetFeed = append(callOpts.GetFeed, gax.WithClientLogging(logging))
+		callOpts.DeleteFeed = append(callOpts.DeleteFeed, gax.WithClientLogging(logging))
+		callOpts.EnableFeed = append(callOpts.EnableFeed, gax.WithClientLogging(logging))
+		callOpts.DisableFeed = append(callOpts.DisableFeed, gax.WithClientLogging(logging))
+		callOpts.ListFeeds = append(callOpts.ListFeeds, gax.WithClientLogging(logging))
+		callOpts.ListFeedPacks = append(callOpts.ListFeedPacks, gax.WithClientLogging(logging))
+		callOpts.GetFeedPack = append(callOpts.GetFeedPack, gax.WithClientLogging(logging))
+		callOpts.UpdateFeed = append(callOpts.UpdateFeed, gax.WithClientLogging(logging))
+		callOpts.ListFeedSourceTypeSchemas = append(callOpts.ListFeedSourceTypeSchemas, gax.WithClientLogging(logging))
+		callOpts.ListLogTypeSchemas = append(callOpts.ListLogTypeSchemas, gax.WithClientLogging(logging))
+		callOpts.ImportPushLogs = append(callOpts.ImportPushLogs, gax.WithClientLogging(logging))
+		callOpts.GenerateSecret = append(callOpts.GenerateSecret, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	return &FeedsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -704,9 +826,6 @@ func (c *feedsGRPCClient) FetchServiceAccountForCustomer(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/FetchServiceAccountForCustomer")
 	}
@@ -728,9 +847,6 @@ func (c *feedsGRPCClient) CreateFeed(ctx context.Context, req *chroniclepb.Creat
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/CreateFeed")
 	}
@@ -752,9 +868,6 @@ func (c *feedsGRPCClient) GetFeed(ctx context.Context, req *chroniclepb.GetFeedR
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/GetFeed")
 	}
@@ -776,9 +889,6 @@ func (c *feedsGRPCClient) DeleteFeed(ctx context.Context, req *chroniclepb.Delet
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/DeleteFeed")
 	}
@@ -796,9 +906,6 @@ func (c *feedsGRPCClient) EnableFeed(ctx context.Context, req *chroniclepb.Enabl
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/EnableFeed")
 	}
@@ -820,9 +927,6 @@ func (c *feedsGRPCClient) DisableFeed(ctx context.Context, req *chroniclepb.Disa
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/DisableFeed")
 	}
@@ -844,9 +948,6 @@ func (c *feedsGRPCClient) ListFeeds(ctx context.Context, req *chroniclepb.ListFe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/ListFeeds")
 	}
@@ -896,9 +997,6 @@ func (c *feedsGRPCClient) ListFeedPacks(ctx context.Context, req *chroniclepb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/ListFeedPacks")
 	}
@@ -948,9 +1046,6 @@ func (c *feedsGRPCClient) GetFeedPack(ctx context.Context, req *chroniclepb.GetF
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/GetFeedPack")
 	}
@@ -993,9 +1088,6 @@ func (c *feedsGRPCClient) ListFeedSourceTypeSchemas(ctx context.Context, req *ch
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/ListFeedSourceTypeSchemas")
 	}
@@ -1045,9 +1137,6 @@ func (c *feedsGRPCClient) ListLogTypeSchemas(ctx context.Context, req *chronicle
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/ListLogTypeSchemas")
 	}
@@ -1097,9 +1186,6 @@ func (c *feedsGRPCClient) ImportPushLogs(ctx context.Context, req *chroniclepb.I
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/ImportPushLogs")
 	}
@@ -1121,9 +1207,6 @@ func (c *feedsGRPCClient) GenerateSecret(ctx context.Context, req *chroniclepb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/GenerateSecret")
 	}
@@ -1264,9 +1347,6 @@ func (c *feedsRESTClient) FetchServiceAccountForCustomer(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/FetchServiceAccountForCustomer")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/feedServiceAccounts:fetchServiceAccountForCustomer")
@@ -1328,9 +1408,6 @@ func (c *feedsRESTClient) CreateFeed(ctx context.Context, req *chroniclepb.Creat
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/CreateFeed")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*}/feeds")
@@ -1385,9 +1462,6 @@ func (c *feedsRESTClient) GetFeed(ctx context.Context, req *chroniclepb.GetFeedR
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/GetFeed")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/feeds/*}")
@@ -1445,9 +1519,6 @@ func (c *feedsRESTClient) DeleteFeed(ctx context.Context, req *chroniclepb.Delet
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/DeleteFeed")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/feeds/*}")
@@ -1493,9 +1564,6 @@ func (c *feedsRESTClient) EnableFeed(ctx context.Context, req *chroniclepb.Enabl
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/EnableFeed")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/feeds/*}:enable")
@@ -1556,9 +1624,6 @@ func (c *feedsRESTClient) DisableFeed(ctx context.Context, req *chroniclepb.Disa
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/DisableFeed")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/feeds/*}:disable")
@@ -1769,9 +1834,6 @@ func (c *feedsRESTClient) GetFeedPack(ctx context.Context, req *chroniclepb.GetF
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/GetFeedPack")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/feedPacks/*}")
@@ -2059,9 +2121,6 @@ func (c *feedsRESTClient) ImportPushLogs(ctx context.Context, req *chroniclepb.I
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/ImportPushLogs")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/instances/*/feeds/*}:importPushLogs")
@@ -2126,9 +2185,6 @@ func (c *feedsRESTClient) GenerateSecret(ctx context.Context, req *chroniclepb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//chronicle.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.chronicle.v1.FeedsService/GenerateSecret")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/instances/*/feeds/*}:generateSecret")

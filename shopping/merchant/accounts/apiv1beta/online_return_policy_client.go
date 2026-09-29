@@ -343,6 +343,41 @@ func NewOnlineReturnPolicyClient(ctx context.Context, opts ...option.ClientOptio
 		client.CallOptions.UpdateOnlineReturnPolicy = append(client.CallOptions.UpdateOnlineReturnPolicy, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteOnlineReturnPolicy = append(client.CallOptions.DeleteOnlineReturnPolicy, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetOnlineReturnPolicy = append(client.CallOptions.GetOnlineReturnPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOnlineReturnPolicies = append(client.CallOptions.ListOnlineReturnPolicies, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateOnlineReturnPolicy = append(client.CallOptions.CreateOnlineReturnPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateOnlineReturnPolicy = append(client.CallOptions.UpdateOnlineReturnPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOnlineReturnPolicy = append(client.CallOptions.DeleteOnlineReturnPolicy, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetOnlineReturnPolicy = append(client.CallOptions.GetOnlineReturnPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.ListOnlineReturnPolicies = append(client.CallOptions.ListOnlineReturnPolicies, gax.WithClientLogging(logging))
+		client.CallOptions.CreateOnlineReturnPolicy = append(client.CallOptions.CreateOnlineReturnPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateOnlineReturnPolicy = append(client.CallOptions.UpdateOnlineReturnPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOnlineReturnPolicy = append(client.CallOptions.DeleteOnlineReturnPolicy, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -441,6 +476,41 @@ func NewOnlineReturnPolicyRESTClient(ctx context.Context, opts ...option.ClientO
 		callOpts.UpdateOnlineReturnPolicy = append(callOpts.UpdateOnlineReturnPolicy, gax.WithClientMetrics(metrics))
 		callOpts.DeleteOnlineReturnPolicy = append(callOpts.DeleteOnlineReturnPolicy, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetOnlineReturnPolicy = append(callOpts.GetOnlineReturnPolicy, gax.WithClientTracing(tracing))
+		callOpts.ListOnlineReturnPolicies = append(callOpts.ListOnlineReturnPolicies, gax.WithClientTracing(tracing))
+		callOpts.CreateOnlineReturnPolicy = append(callOpts.CreateOnlineReturnPolicy, gax.WithClientTracing(tracing))
+		callOpts.UpdateOnlineReturnPolicy = append(callOpts.UpdateOnlineReturnPolicy, gax.WithClientTracing(tracing))
+		callOpts.DeleteOnlineReturnPolicy = append(callOpts.DeleteOnlineReturnPolicy, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "merchantapi",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/merchant/accounts/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "merchantapi.googleapis.com",
+			}),
+		)
+
+		callOpts.GetOnlineReturnPolicy = append(callOpts.GetOnlineReturnPolicy, gax.WithClientLogging(logging))
+		callOpts.ListOnlineReturnPolicies = append(callOpts.ListOnlineReturnPolicies, gax.WithClientLogging(logging))
+		callOpts.CreateOnlineReturnPolicy = append(callOpts.CreateOnlineReturnPolicy, gax.WithClientLogging(logging))
+		callOpts.UpdateOnlineReturnPolicy = append(callOpts.UpdateOnlineReturnPolicy, gax.WithClientLogging(logging))
+		callOpts.DeleteOnlineReturnPolicy = append(callOpts.DeleteOnlineReturnPolicy, gax.WithClientLogging(logging))
+	}
 
 	return &OnlineReturnPolicyClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -487,9 +557,6 @@ func (c *onlineReturnPolicyGRPCClient) GetOnlineReturnPolicy(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService/GetOnlineReturnPolicy")
 	}
@@ -511,9 +578,6 @@ func (c *onlineReturnPolicyGRPCClient) ListOnlineReturnPolicies(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService/ListOnlineReturnPolicies")
 	}
@@ -563,9 +627,6 @@ func (c *onlineReturnPolicyGRPCClient) CreateOnlineReturnPolicy(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService/CreateOnlineReturnPolicy")
 	}
@@ -608,9 +669,6 @@ func (c *onlineReturnPolicyGRPCClient) DeleteOnlineReturnPolicy(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService/DeleteOnlineReturnPolicy")
 	}
@@ -642,9 +700,6 @@ func (c *onlineReturnPolicyRESTClient) GetOnlineReturnPolicy(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService/GetOnlineReturnPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/onlineReturnPolicies/*}")
@@ -784,9 +839,6 @@ func (c *onlineReturnPolicyRESTClient) CreateOnlineReturnPolicy(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService/CreateOnlineReturnPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{parent=accounts/*}/onlineReturnPolicies")
@@ -909,9 +961,6 @@ func (c *onlineReturnPolicyRESTClient) DeleteOnlineReturnPolicy(ctx context.Cont
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//merchantapi.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.merchant.accounts.v1beta.OnlineReturnPolicyService/DeleteOnlineReturnPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/accounts/v1beta/{name=accounts/*/onlineReturnPolicies/*}")

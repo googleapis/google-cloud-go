@@ -259,6 +259,37 @@ func NewAccountsClient(ctx context.Context, opts ...option.ClientOption) (*Accou
 		client.CallOptions.GetAccount = append(client.CallOptions.GetAccount, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateLabels = append(client.CallOptions.UpdateLabels, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListChildAccounts = append(client.CallOptions.ListChildAccounts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAccount = append(client.CallOptions.GetAccount, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateLabels = append(client.CallOptions.UpdateLabels, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListChildAccounts = append(client.CallOptions.ListChildAccounts, gax.WithClientLogging(logging))
+		client.CallOptions.GetAccount = append(client.CallOptions.GetAccount, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateLabels = append(client.CallOptions.UpdateLabels, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -352,6 +383,37 @@ func NewAccountsRESTClient(ctx context.Context, opts ...option.ClientOption) (*A
 		callOpts.GetAccount = append(callOpts.GetAccount, gax.WithClientMetrics(metrics))
 		callOpts.UpdateLabels = append(callOpts.UpdateLabels, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.ListChildAccounts = append(callOpts.ListChildAccounts, gax.WithClientTracing(tracing))
+		callOpts.GetAccount = append(callOpts.GetAccount, gax.WithClientTracing(tracing))
+		callOpts.UpdateLabels = append(callOpts.UpdateLabels, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "css",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shopping/css/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "css.googleapis.com",
+			}),
+		)
+
+		callOpts.ListChildAccounts = append(callOpts.ListChildAccounts, gax.WithClientLogging(logging))
+		callOpts.GetAccount = append(callOpts.GetAccount, gax.WithClientLogging(logging))
+		callOpts.UpdateLabels = append(callOpts.UpdateLabels, gax.WithClientLogging(logging))
+	}
 
 	return &AccountsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -398,9 +460,6 @@ func (c *accountsGRPCClient) ListChildAccounts(ctx context.Context, req *csspb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountsService/ListChildAccounts")
 	}
@@ -450,9 +509,6 @@ func (c *accountsGRPCClient) GetAccount(ctx context.Context, req *csspb.GetAccou
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountsService/GetAccount")
 	}
@@ -474,9 +530,6 @@ func (c *accountsGRPCClient) UpdateLabels(ctx context.Context, req *csspb.Update
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountsService/UpdateLabels")
 	}
@@ -600,9 +653,6 @@ func (c *accountsRESTClient) GetAccount(ctx context.Context, req *csspb.GetAccou
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountsService/GetAccount")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*}")
@@ -663,9 +713,6 @@ func (c *accountsRESTClient) UpdateLabels(ctx context.Context, req *csspb.Update
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//css.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.shopping.css.v1.AccountsService/UpdateLabels")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accounts/*}:updateLabels")

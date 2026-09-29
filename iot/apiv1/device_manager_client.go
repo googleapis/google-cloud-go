@@ -666,6 +666,69 @@ func NewDeviceManagerClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.BindDeviceToGateway = append(client.CallOptions.BindDeviceToGateway, gax.WithClientMetrics(metrics))
 		client.CallOptions.UnbindDeviceFromGateway = append(client.CallOptions.UnbindDeviceFromGateway, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudiot",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iot/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudiot.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDeviceRegistry = append(client.CallOptions.CreateDeviceRegistry, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDeviceRegistry = append(client.CallOptions.GetDeviceRegistry, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDeviceRegistry = append(client.CallOptions.UpdateDeviceRegistry, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDeviceRegistry = append(client.CallOptions.DeleteDeviceRegistry, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeviceRegistries = append(client.CallOptions.ListDeviceRegistries, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateDevice = append(client.CallOptions.CreateDevice, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDevice = append(client.CallOptions.GetDevice, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDevice = append(client.CallOptions.UpdateDevice, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDevice = append(client.CallOptions.DeleteDevice, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDevices = append(client.CallOptions.ListDevices, gax.WithClientTracing(tracing))
+		client.CallOptions.ModifyCloudToDeviceConfig = append(client.CallOptions.ModifyCloudToDeviceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeviceConfigVersions = append(client.CallOptions.ListDeviceConfigVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDeviceStates = append(client.CallOptions.ListDeviceStates, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.SendCommandToDevice = append(client.CallOptions.SendCommandToDevice, gax.WithClientTracing(tracing))
+		client.CallOptions.BindDeviceToGateway = append(client.CallOptions.BindDeviceToGateway, gax.WithClientTracing(tracing))
+		client.CallOptions.UnbindDeviceFromGateway = append(client.CallOptions.UnbindDeviceFromGateway, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudiot",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iot/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudiot.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateDeviceRegistry = append(client.CallOptions.CreateDeviceRegistry, gax.WithClientLogging(logging))
+		client.CallOptions.GetDeviceRegistry = append(client.CallOptions.GetDeviceRegistry, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDeviceRegistry = append(client.CallOptions.UpdateDeviceRegistry, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDeviceRegistry = append(client.CallOptions.DeleteDeviceRegistry, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeviceRegistries = append(client.CallOptions.ListDeviceRegistries, gax.WithClientLogging(logging))
+		client.CallOptions.CreateDevice = append(client.CallOptions.CreateDevice, gax.WithClientLogging(logging))
+		client.CallOptions.GetDevice = append(client.CallOptions.GetDevice, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDevice = append(client.CallOptions.UpdateDevice, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDevice = append(client.CallOptions.DeleteDevice, gax.WithClientLogging(logging))
+		client.CallOptions.ListDevices = append(client.CallOptions.ListDevices, gax.WithClientLogging(logging))
+		client.CallOptions.ModifyCloudToDeviceConfig = append(client.CallOptions.ModifyCloudToDeviceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeviceConfigVersions = append(client.CallOptions.ListDeviceConfigVersions, gax.WithClientLogging(logging))
+		client.CallOptions.ListDeviceStates = append(client.CallOptions.ListDeviceStates, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.SendCommandToDevice = append(client.CallOptions.SendCommandToDevice, gax.WithClientLogging(logging))
+		client.CallOptions.BindDeviceToGateway = append(client.CallOptions.BindDeviceToGateway, gax.WithClientLogging(logging))
+		client.CallOptions.UnbindDeviceFromGateway = append(client.CallOptions.UnbindDeviceFromGateway, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -775,6 +838,69 @@ func NewDeviceManagerRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.BindDeviceToGateway = append(callOpts.BindDeviceToGateway, gax.WithClientMetrics(metrics))
 		callOpts.UnbindDeviceFromGateway = append(callOpts.UnbindDeviceFromGateway, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudiot",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iot/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudiot.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDeviceRegistry = append(callOpts.CreateDeviceRegistry, gax.WithClientTracing(tracing))
+		callOpts.GetDeviceRegistry = append(callOpts.GetDeviceRegistry, gax.WithClientTracing(tracing))
+		callOpts.UpdateDeviceRegistry = append(callOpts.UpdateDeviceRegistry, gax.WithClientTracing(tracing))
+		callOpts.DeleteDeviceRegistry = append(callOpts.DeleteDeviceRegistry, gax.WithClientTracing(tracing))
+		callOpts.ListDeviceRegistries = append(callOpts.ListDeviceRegistries, gax.WithClientTracing(tracing))
+		callOpts.CreateDevice = append(callOpts.CreateDevice, gax.WithClientTracing(tracing))
+		callOpts.GetDevice = append(callOpts.GetDevice, gax.WithClientTracing(tracing))
+		callOpts.UpdateDevice = append(callOpts.UpdateDevice, gax.WithClientTracing(tracing))
+		callOpts.DeleteDevice = append(callOpts.DeleteDevice, gax.WithClientTracing(tracing))
+		callOpts.ListDevices = append(callOpts.ListDevices, gax.WithClientTracing(tracing))
+		callOpts.ModifyCloudToDeviceConfig = append(callOpts.ModifyCloudToDeviceConfig, gax.WithClientTracing(tracing))
+		callOpts.ListDeviceConfigVersions = append(callOpts.ListDeviceConfigVersions, gax.WithClientTracing(tracing))
+		callOpts.ListDeviceStates = append(callOpts.ListDeviceStates, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.SendCommandToDevice = append(callOpts.SendCommandToDevice, gax.WithClientTracing(tracing))
+		callOpts.BindDeviceToGateway = append(callOpts.BindDeviceToGateway, gax.WithClientTracing(tracing))
+		callOpts.UnbindDeviceFromGateway = append(callOpts.UnbindDeviceFromGateway, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudiot",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iot/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudiot.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateDeviceRegistry = append(callOpts.CreateDeviceRegistry, gax.WithClientLogging(logging))
+		callOpts.GetDeviceRegistry = append(callOpts.GetDeviceRegistry, gax.WithClientLogging(logging))
+		callOpts.UpdateDeviceRegistry = append(callOpts.UpdateDeviceRegistry, gax.WithClientLogging(logging))
+		callOpts.DeleteDeviceRegistry = append(callOpts.DeleteDeviceRegistry, gax.WithClientLogging(logging))
+		callOpts.ListDeviceRegistries = append(callOpts.ListDeviceRegistries, gax.WithClientLogging(logging))
+		callOpts.CreateDevice = append(callOpts.CreateDevice, gax.WithClientLogging(logging))
+		callOpts.GetDevice = append(callOpts.GetDevice, gax.WithClientLogging(logging))
+		callOpts.UpdateDevice = append(callOpts.UpdateDevice, gax.WithClientLogging(logging))
+		callOpts.DeleteDevice = append(callOpts.DeleteDevice, gax.WithClientLogging(logging))
+		callOpts.ListDevices = append(callOpts.ListDevices, gax.WithClientLogging(logging))
+		callOpts.ModifyCloudToDeviceConfig = append(callOpts.ModifyCloudToDeviceConfig, gax.WithClientLogging(logging))
+		callOpts.ListDeviceConfigVersions = append(callOpts.ListDeviceConfigVersions, gax.WithClientLogging(logging))
+		callOpts.ListDeviceStates = append(callOpts.ListDeviceStates, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.SendCommandToDevice = append(callOpts.SendCommandToDevice, gax.WithClientLogging(logging))
+		callOpts.BindDeviceToGateway = append(callOpts.BindDeviceToGateway, gax.WithClientLogging(logging))
+		callOpts.UnbindDeviceFromGateway = append(callOpts.UnbindDeviceFromGateway, gax.WithClientLogging(logging))
+	}
 
 	return &DeviceManagerClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -821,9 +947,6 @@ func (c *deviceManagerGRPCClient) CreateDeviceRegistry(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/CreateDeviceRegistry")
 	}
@@ -845,9 +968,6 @@ func (c *deviceManagerGRPCClient) GetDeviceRegistry(ctx context.Context, req *io
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/GetDeviceRegistry")
 	}
@@ -890,9 +1010,6 @@ func (c *deviceManagerGRPCClient) DeleteDeviceRegistry(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/DeleteDeviceRegistry")
 	}
@@ -910,9 +1027,6 @@ func (c *deviceManagerGRPCClient) ListDeviceRegistries(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ListDeviceRegistries")
 	}
@@ -962,9 +1076,6 @@ func (c *deviceManagerGRPCClient) CreateDevice(ctx context.Context, req *iotpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/CreateDevice")
 	}
@@ -986,9 +1097,6 @@ func (c *deviceManagerGRPCClient) GetDevice(ctx context.Context, req *iotpb.GetD
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/GetDevice")
 	}
@@ -1031,9 +1139,6 @@ func (c *deviceManagerGRPCClient) DeleteDevice(ctx context.Context, req *iotpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/DeleteDevice")
 	}
@@ -1051,9 +1156,6 @@ func (c *deviceManagerGRPCClient) ListDevices(ctx context.Context, req *iotpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ListDevices")
 	}
@@ -1103,9 +1205,6 @@ func (c *deviceManagerGRPCClient) ModifyCloudToDeviceConfig(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ModifyCloudToDeviceConfig")
 	}
@@ -1127,9 +1226,6 @@ func (c *deviceManagerGRPCClient) ListDeviceConfigVersions(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ListDeviceConfigVersions")
 	}
@@ -1151,9 +1247,6 @@ func (c *deviceManagerGRPCClient) ListDeviceStates(ctx context.Context, req *iot
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ListDeviceStates")
 	}
@@ -1175,9 +1268,6 @@ func (c *deviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.S
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/SetIamPolicy")
 	}
@@ -1199,9 +1289,6 @@ func (c *deviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/GetIamPolicy")
 	}
@@ -1223,9 +1310,6 @@ func (c *deviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *i
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/TestIamPermissions")
 	}
@@ -1247,9 +1331,6 @@ func (c *deviceManagerGRPCClient) SendCommandToDevice(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/SendCommandToDevice")
 	}
@@ -1271,9 +1352,6 @@ func (c *deviceManagerGRPCClient) BindDeviceToGateway(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/BindDeviceToGateway")
 	}
@@ -1295,9 +1373,6 @@ func (c *deviceManagerGRPCClient) UnbindDeviceFromGateway(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/UnbindDeviceFromGateway")
 	}
@@ -1340,9 +1415,6 @@ func (c *deviceManagerRESTClient) CreateDeviceRegistry(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/CreateDeviceRegistry")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/registries")
@@ -1397,9 +1469,6 @@ func (c *deviceManagerRESTClient) GetDeviceRegistry(ctx context.Context, req *io
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/GetDeviceRegistry")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*}")
@@ -1522,9 +1591,6 @@ func (c *deviceManagerRESTClient) DeleteDeviceRegistry(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/DeleteDeviceRegistry")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*}")
@@ -1649,9 +1715,6 @@ func (c *deviceManagerRESTClient) CreateDevice(ctx context.Context, req *iotpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/CreateDevice")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/registries/*}/devices")
@@ -1713,9 +1776,6 @@ func (c *deviceManagerRESTClient) GetDevice(ctx context.Context, req *iotpb.GetD
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/GetDevice")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*/devices/*}")
@@ -1838,9 +1898,6 @@ func (c *deviceManagerRESTClient) DeleteDevice(ctx context.Context, req *iotpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/DeleteDevice")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*/devices/*}")
@@ -1992,9 +2049,6 @@ func (c *deviceManagerRESTClient) ModifyCloudToDeviceConfig(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ModifyCloudToDeviceConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*/devices/*}:modifyCloudToDeviceConfig")
@@ -2053,9 +2107,6 @@ func (c *deviceManagerRESTClient) ListDeviceConfigVersions(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ListDeviceConfigVersions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*/devices/*}/configVersions")
@@ -2114,9 +2165,6 @@ func (c *deviceManagerRESTClient) ListDeviceStates(ctx context.Context, req *iot
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/ListDeviceStates")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*/devices/*}/states")
@@ -2178,9 +2226,6 @@ func (c *deviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.S
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/registries/*}:setIamPolicy")
@@ -2243,9 +2288,6 @@ func (c *deviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/registries/*}:getIamPolicy")
@@ -2308,9 +2350,6 @@ func (c *deviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *i
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/registries/*}:testIamPermissions")
@@ -2385,9 +2424,6 @@ func (c *deviceManagerRESTClient) SendCommandToDevice(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/SendCommandToDevice")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/registries/*/devices/*}:sendCommandToDevice")
@@ -2448,9 +2484,6 @@ func (c *deviceManagerRESTClient) BindDeviceToGateway(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/BindDeviceToGateway")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/registries/*}:bindDeviceToGateway")
@@ -2511,9 +2544,6 @@ func (c *deviceManagerRESTClient) UnbindDeviceFromGateway(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudiot.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.iot.v1.DeviceManager/UnbindDeviceFromGateway")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/registries/*}:unbindDeviceFromGateway")
