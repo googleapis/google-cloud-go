@@ -70,6 +70,10 @@ func (e *stallTimeoutError) Temporary() bool {
 	return true
 }
 
+func (e *stallTimeoutError) Timeout() bool {
+	return true
+}
+
 func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 	done := make(chan struct{})
 	cmd := &gRPCWriterCommandWrite{p: p, done: done}
