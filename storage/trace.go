@@ -20,6 +20,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	"strconv"
 	"strings"
 
 	internalTrace "cloud.google.com/go/internal/trace"
@@ -76,11 +77,29 @@ func tracer() trace.Tracer {
 // operations, or "gs://<bucket>/" when object is empty. If client has a bucket
 // metadata cache, the span also gets the gcp.resource.destination.* attributes.
 func startSpanWithBucket(ctx context.Context, client *Client, bucket, object, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	return startSpanForResource(ctx, client, bucket, object, defaultGen, name, opts...)
+}
+
+// startSpanWithObject starts an operation span for an operation on o. It is
+// like startSpanWithBucket, except that gcp.storage.uri also includes the
+// object generation ("gs://<bucket>/<object>#<generation>") when one is set on
+// o.
+func startSpanWithObject(ctx context.Context, o *ObjectHandle, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+	return startSpanForResource(ctx, o.c, o.bucket, o.object, o.gen, name, opts...)
+}
+
+// startSpanForResource implements startSpanWithBucket and startSpanWithObject.
+// gen is appended to gcp.storage.uri only if object is non-empty and gen >= 0.
+func startSpanForResource(ctx context.Context, client *Client, bucket, object string, gen int64, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
 	if bucket != "" {
-		opts = append(opts, trace.WithAttributes(attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+object)))
+		uri := "gs://" + bucket + "/" + object
+		if object != "" && gen >= 0 {
+			uri += "#" + strconv.FormatInt(gen, 10)
+		}
+		opts = append(opts, trace.WithAttributes(attribute.String(storageURIAttrKey, uri)))
 	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
