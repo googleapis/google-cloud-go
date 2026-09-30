@@ -1724,7 +1724,7 @@ func (w *gRPCWriter) writerRetryConfig() *retryConfig {
 			return true
 		}
 		if oldr.policy == RetryIdempotent && !w.settings.idempotent &&
-			(w.streamSender == nil || !w.streamSender.canResumeSession()) {
+			!w.streamSender.canResumeSession() {
 			return false
 		}
 		return oldr.runShouldRetry(err, retryCtx)
