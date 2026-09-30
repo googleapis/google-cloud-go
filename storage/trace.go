@@ -54,8 +54,6 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 const (
 	defaultTracerName = "cloud.google.com/go/storage"
 	gcpClientArtifact = "cloud.google.com/go/storage"
-	// TODO: Decide whether object names in gcp.storage.uri must be redacted
-	// before the dev tracing flag is removed.
 	storageURIAttrKey = "gcp.storage.uri"
 )
 
@@ -73,9 +71,7 @@ func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
-// startSpanWithBucket starts a span for an operation on bucket, or on object
-// within it if object is non-empty.
-func startSpanWithBucket(ctx context.Context, client *Client, bucket, object, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+func startSpanWithBucket(ctx context.Context, client *Client, bucket string, object string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
 	}
