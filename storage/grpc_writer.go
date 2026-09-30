@@ -238,7 +238,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name)))
+		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.checkAndResetProgress)))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
@@ -292,6 +292,7 @@ type gRPCWriter struct {
 	chunkRetryDeadline time.Duration
 	abandonRetriesTime time.Time
 	attempts           int
+	progressMade       bool
 	lastErr            error
 	streamSender       gRPCBidiWriteBufferSender
 
@@ -301,6 +302,14 @@ type gRPCWriter struct {
 	forcedStreamResult error
 	streamResult       error
 	donec              chan struct{}
+}
+
+func (w *gRPCWriter) checkAndResetProgress() bool {
+	if w.progressMade {
+		w.progressMade = false
+		return true
+	}
+	return false
 }
 
 func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
@@ -378,6 +387,8 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		return
 	}
 
+	prevConfirmed := w.bufBaseOffset + int64(max(0, w.bufFlushedIdx))
+
 	w.bufFlushedIdx = int(c.flushOffset - w.bufBaseOffset)
 	if w.bufFlushedIdx >= len(w.buf) {
 		// We can clear w.buf
@@ -387,16 +398,19 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		w.buf = w.buf[:0]
 	}
 
-	// We made forward progress on the network! Reset the retry stopwatch.
-	w.abandonRetriesTime = time.Time{}
-	w.attempts = 0
-
 	w.setSize(c.flushOffset)
 	w.progress(c.flushOffset)
 
-	// Restart the stopwatch if there is still more data waiting to be sent.
-	if w.chunkRetryDeadline > 0 && w.isActive() {
-		w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+	if c.flushOffset > prevConfirmed || c.resource != nil {
+		// We made forward progress on the network! Reset the retry stopwatch.
+		w.abandonRetriesTime = time.Time{}
+		w.attempts = 0
+		w.progressMade = true
+
+		// Restart the stopwatch if there is still more data waiting to be sent.
+		if w.chunkRetryDeadline > 0 && w.isActive() {
+			w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
+		}
 	}
 }
 
@@ -498,7 +512,7 @@ Loop:
 		if w.bufUnsentIdx < 0 {
 			w.bufUnsentIdx = 0
 		}
-		w.bufFlushedIdx = -1
+		w.bufFlushedIdx = 0
 	}
 
 	// Send any full quantum in w.buf, possibly including a flush
