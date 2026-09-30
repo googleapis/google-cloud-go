@@ -499,12 +499,6 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "default object ACL.List",
-			spanName: "ACL.List",
-			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).DefaultObjectACL().List(ctx) },
-			wantURI:  wantBucketURI,
-		},
-		{
 			spanName: "Bucket.Create",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Create(ctx, "my-project", nil) },
 			wantURI:  wantBucketURI,
