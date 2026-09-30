@@ -120,7 +120,7 @@ func toRawNotification(n *Notification) *raw.Notification {
 // returned Notification's ID can be used to refer to it.
 // Note: gRPC is not supported.
 func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (ret *Notification, err error) {
-	ctx, _ = startSpanWithBucket(ctx, b.c, b.name, "Bucket.AddNotification")
+	ctx, _ = startSpanWithBucket(ctx, b.c, b.name, "Bucket.AddNotification", withStorageURI(b.name, ""))
 	defer func() { endSpan(ctx, err) }()
 
 	if n.ID != "" {
@@ -142,7 +142,7 @@ func (b *BucketHandle) AddNotification(ctx context.Context, n *Notification) (re
 // indexed by notification ID.
 // Note: gRPC is not supported.
 func (b *BucketHandle) Notifications(ctx context.Context) (n map[string]*Notification, err error) {
-	ctx, _ = startSpanWithBucket(ctx, b.c, b.name, "Bucket.Notifications")
+	ctx, _ = startSpanWithBucket(ctx, b.c, b.name, "Bucket.Notifications", withStorageURI(b.name, ""))
 	defer func() { endSpan(ctx, err) }()
 
 	opts := makeStorageOpts(true, b.retry, b.userProject)
@@ -161,7 +161,7 @@ func notificationsToMap(rns []*raw.Notification) map[string]*Notification {
 // DeleteNotification deletes the notification with the given ID.
 // Note: gRPC is not supported.
 func (b *BucketHandle) DeleteNotification(ctx context.Context, id string) (err error) {
-	ctx, _ = startSpanWithBucket(ctx, b.c, b.name, "Bucket.DeleteNotification")
+	ctx, _ = startSpanWithBucket(ctx, b.c, b.name, "Bucket.DeleteNotification", withStorageURI(b.name, ""))
 	defer func() { endSpan(ctx, err) }()
 
 	opts := makeStorageOpts(true, b.retry, b.userProject)

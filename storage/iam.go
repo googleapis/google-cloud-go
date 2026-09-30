@@ -46,7 +46,7 @@ func (c *iamClient) Get(ctx context.Context, resource string) (p *iampb.Policy, 
 }
 
 func (c *iamClient) GetWithVersion(ctx context.Context, resource string, requestedPolicyVersion int32) (p *iampb.Policy, err error) {
-	ctx, _ = startSpanWithBucket(ctx, c.client, c.bucket, "storage.IAM.Get")
+	ctx, _ = startSpanWithBucket(ctx, c.client, c.bucket, "storage.IAM.Get", withStorageURI(c.bucket, ""))
 	defer func() { endSpan(ctx, err) }()
 
 	o := makeStorageOpts(true, c.retry, c.userProject)
@@ -54,7 +54,7 @@ func (c *iamClient) GetWithVersion(ctx context.Context, resource string, request
 }
 
 func (c *iamClient) Set(ctx context.Context, resource string, p *iampb.Policy) (err error) {
-	ctx, _ = startSpanWithBucket(ctx, c.client, c.bucket, "storage.IAM.Set")
+	ctx, _ = startSpanWithBucket(ctx, c.client, c.bucket, "storage.IAM.Set", withStorageURI(c.bucket, ""))
 	defer func() { endSpan(ctx, err) }()
 
 	isIdempotent := len(p.Etag) > 0
@@ -63,7 +63,7 @@ func (c *iamClient) Set(ctx context.Context, resource string, p *iampb.Policy) (
 }
 
 func (c *iamClient) Test(ctx context.Context, resource string, perms []string) (permissions []string, err error) {
-	ctx, _ = startSpanWithBucket(ctx, c.client, c.bucket, "storage.IAM.Test")
+	ctx, _ = startSpanWithBucket(ctx, c.client, c.bucket, "storage.IAM.Test", withStorageURI(c.bucket, ""))
 	defer func() { endSpan(ctx, err) }()
 
 	o := makeStorageOpts(true, c.retry, c.userProject)

@@ -179,14 +179,16 @@ func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
 
-// storageURIAttrKey is the attribute key for the fully-qualified GCS object URI.
+// storageURIAttrKey is the attribute key for the fully-qualified GCS URI of
+// the resource an operation targets.
 const storageURIAttrKey = "gcp.storage.uri"
 
 // withStorageURI returns a span start option that sets the gcp.storage.uri
-// attribute to "gs://<bucket>/<object>" on object-scoped operation spans.
-// It is a no-op if dev tracing is disabled or if bucket or object is empty.
+// attribute. For object-scoped operations the value is "gs://<bucket>/<object>";
+// for bucket-scoped operations (object == "") it is "gs://<bucket>/".
+// It is a no-op if dev tracing is disabled or bucket is empty.
 func withStorageURI(bucket, object string) trace.SpanStartOption {
-	if !isOTelTracingDevEnabled() || bucket == "" || object == "" {
+	if !isOTelTracingDevEnabled() || bucket == "" {
 		return trace.WithAttributes()
 	}
 	return trace.WithAttributes(attribute.String(storageURIAttrKey, fmt.Sprintf("gs://%s/%s", bucket, object)))
