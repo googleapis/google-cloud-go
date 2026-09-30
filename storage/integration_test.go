@@ -31,7 +31,6 @@ import (
 	"hash/crc32"
 	"io"
 	"log"
-	"maps"
 	"math"
 	"math/rand"
 	"mime/multipart"
@@ -1128,10 +1127,10 @@ func TestIntegration_MRDAddAfterClose(t *testing.T) {
 		h := testHelper{t}
 		content := []byte("read after close")
 		obj := client.Bucket(bucket).Object("MRDAddAfterClose" + uidSpaceObjects.New())
+		defer h.mustDeleteObject(obj)
 		if err := writeObject(ctx, obj, "text/plain", content); err != nil {
 			t.Fatal(err)
 		}
-		defer h.mustDeleteObject(obj)
 
 		mrd, err := obj.NewMultiRangeDownloader(ctx)
 		if err != nil {
@@ -5012,6 +5011,7 @@ func TestIntegration_AppendableEmptyObject(t *testing.T) {
 	multiTransportTest(skipAllButRapid(context.Background(), "Appendable write test"), t, func(t *testing.T, ctx context.Context, bucket, _ string, client *Client) {
 		h := testHelper{t}
 		obj := client.Bucket(bucket).Object("appendable-empty-" + uidSpaceObjects.New())
+		defer h.mustDeleteObject(obj)
 
 		w := setRapidForRCU(obj.NewWriter(ctx))
 		w.Append = true
@@ -5019,7 +5019,6 @@ func TestIntegration_AppendableEmptyObject(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("Writer.Close: %v", err)
 		}
-		defer h.mustDeleteObject(obj)
 
 		attrs := h.mustObjectAttrs(obj)
 		if attrs.Size != 0 {
@@ -5074,6 +5073,7 @@ func TestIntegration_RCU_IngestOnRead(t *testing.T) {
 		writer := testConfigGRPC(ctx, t)
 		defer writer.Close()
 		wobj := writer.Bucket(bucket).Object(name)
+		defer h.mustDeleteObject(wobj)
 		w := wobj.NewWriter(ctx)
 		if _, err := w.Write(content); err != nil {
 			t.Fatalf("Writer.Write: %v", err)
@@ -5081,7 +5081,6 @@ func TestIntegration_RCU_IngestOnRead(t *testing.T) {
 		if err := w.Close(); err != nil {
 			t.Fatalf("Writer.Close: %v", err)
 		}
-		defer h.mustDeleteObject(wobj)
 
 		obj := client.Bucket(bucket).Object(name)
 		for _, desc := range []string{"first read (ingest)", "second read"} {
@@ -5127,10 +5126,10 @@ func TestIntegration_RCU_HTTPAndJSONReads(t *testing.T) {
 		content := []byte("Hello, RCU reads via HTTP and JSON!")
 		name := "rcu-http-json-" + uidSpaceObjects.New()
 		wobj := client.Bucket(bucket).Object(name)
+		defer h.mustDeleteObject(wobj)
 		if err := writeObject(ctx, wobj, "text/plain", content); err != nil {
 			t.Fatal(err)
 		}
-		defer h.mustDeleteObject(wobj)
 
 		xmlClient := testConfig(ctx, t)
 		defer xmlClient.Close()
@@ -9670,7 +9669,12 @@ func initRCUBuckets(ctx context.Context, client *Client) {
 	runnerZone = detectRunnerZone(ctx)
 	log.Printf("RCU: runner zone %q", runnerZone)
 
-	for _, b := range slices.Sorted(maps.Keys(rcuBuckets)) {
+	var names []string
+	for b := range rcuBuckets {
+		names = append(names, b)
+	}
+	slices.Sort(names)
+	for _, b := range names {
 		cacheZone := rcuBuckets[b]
 		if _, err := client.Bucket(b).Attrs(ctx); err != nil {
 			log.Printf("RCU: bucket %q not accessible: %v", b, err)
