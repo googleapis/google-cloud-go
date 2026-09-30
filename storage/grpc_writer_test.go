@@ -881,3 +881,55 @@ func TestGRPCWriter_ChunkRetryDeadline_PartialQuantumCloseStaleTimer(t *testing.
 		t.Fatalf("expected retry on Close tail to fail with transient network error, got: %v", err)
 	}
 }
+
+func TestGRPCWriter_ChunkTransferTimeoutPlumbing(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	c := &grpcStorageClient{settings: &settings{}}
+	wantTimeout := 150 * time.Millisecond
+	iw, err := c.OpenWriter(&openWriterParams{
+		ctx:                  ctx,
+		bucket:               "b",
+		attrs:                &ObjectAttrs{Name: "o"},
+		chunkTransferTimeout: wantTimeout,
+		donec:                make(chan struct{}),
+		setError:             func(error) {},
+		progress:             func(int64) {},
+		setObj:               func(*ObjectAttrs) {},
+		setSize:              func(int64) {},
+	})
+	if err != nil {
+		t.Fatalf("OpenWriter failed: %v", err)
+	}
+	gw, ok := iw.(*gRPCWriter)
+	if !ok {
+		t.Fatalf("expected *gRPCWriter, got %T", iw)
+	}
+	if gw.chunkTransferTimeout != wantTimeout {
+		t.Errorf("gw.chunkTransferTimeout = %v, want %v", gw.chunkTransferTimeout, wantTimeout)
+	}
+	_ = gw.CloseWithError(context.Canceled)
+}
+
+func TestStallTimeoutError(t *testing.T) {
+	err := &stallTimeoutError{
+		timeout: 250 * time.Millisecond,
+		stage:   "BidiWriteObject",
+	}
+	if !errors.Is(err, errStallTimeout) {
+		t.Errorf("expected errors.Is(err, errStallTimeout) to be true")
+	}
+	if errors.Is(err, context.Canceled) {
+		t.Errorf("stallTimeoutError must not match context.Canceled")
+	}
+	if !ShouldRetry(err) {
+		t.Errorf("expected ShouldRetry(stallTimeoutError) to be true")
+	}
+	if !ShouldRetry(errStallTimeout) {
+		t.Errorf("expected ShouldRetry(errStallTimeout) to be true")
+	}
+	if got := checkCanceled(err); !errors.Is(got, errStallTimeout) {
+		t.Errorf("checkCanceled(stallTimeoutError) = %v, want errStallTimeout", got)
+	}
+}
