@@ -967,6 +967,71 @@ func NewProductSearchClient(ctx context.Context, opts ...option.ClientOption) (*
 		client.CallOptions.PurgeProducts = append(client.CallOptions.PurgeProducts, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProductSet = append(client.CallOptions.CreateProductSet, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProductSets = append(client.CallOptions.ListProductSets, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProductSet = append(client.CallOptions.GetProductSet, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProductSet = append(client.CallOptions.UpdateProductSet, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProductSet = append(client.CallOptions.DeleteProductSet, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateProduct = append(client.CallOptions.CreateProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProduct = append(client.CallOptions.UpdateProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProduct = append(client.CallOptions.DeleteProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateReferenceImage = append(client.CallOptions.CreateReferenceImage, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteReferenceImage = append(client.CallOptions.DeleteReferenceImage, gax.WithClientTracing(tracing))
+		client.CallOptions.ListReferenceImages = append(client.CallOptions.ListReferenceImages, gax.WithClientTracing(tracing))
+		client.CallOptions.GetReferenceImage = append(client.CallOptions.GetReferenceImage, gax.WithClientTracing(tracing))
+		client.CallOptions.AddProductToProductSet = append(client.CallOptions.AddProductToProductSet, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveProductFromProductSet = append(client.CallOptions.RemoveProductFromProductSet, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProductsInProductSet = append(client.CallOptions.ListProductsInProductSet, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportProductSets = append(client.CallOptions.ImportProductSets, gax.WithClientTracing(tracing))
+		client.CallOptions.PurgeProducts = append(client.CallOptions.PurgeProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProductSet = append(client.CallOptions.CreateProductSet, gax.WithClientLogging(logging))
+		client.CallOptions.ListProductSets = append(client.CallOptions.ListProductSets, gax.WithClientLogging(logging))
+		client.CallOptions.GetProductSet = append(client.CallOptions.GetProductSet, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProductSet = append(client.CallOptions.UpdateProductSet, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProductSet = append(client.CallOptions.DeleteProductSet, gax.WithClientLogging(logging))
+		client.CallOptions.CreateProduct = append(client.CallOptions.CreateProduct, gax.WithClientLogging(logging))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientLogging(logging))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProduct = append(client.CallOptions.UpdateProduct, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProduct = append(client.CallOptions.DeleteProduct, gax.WithClientLogging(logging))
+		client.CallOptions.CreateReferenceImage = append(client.CallOptions.CreateReferenceImage, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteReferenceImage = append(client.CallOptions.DeleteReferenceImage, gax.WithClientLogging(logging))
+		client.CallOptions.ListReferenceImages = append(client.CallOptions.ListReferenceImages, gax.WithClientLogging(logging))
+		client.CallOptions.GetReferenceImage = append(client.CallOptions.GetReferenceImage, gax.WithClientLogging(logging))
+		client.CallOptions.AddProductToProductSet = append(client.CallOptions.AddProductToProductSet, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveProductFromProductSet = append(client.CallOptions.RemoveProductFromProductSet, gax.WithClientLogging(logging))
+		client.CallOptions.ListProductsInProductSet = append(client.CallOptions.ListProductsInProductSet, gax.WithClientLogging(logging))
+		client.CallOptions.ImportProductSets = append(client.CallOptions.ImportProductSets, gax.WithClientLogging(logging))
+		client.CallOptions.PurgeProducts = append(client.CallOptions.PurgeProducts, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1108,6 +1173,71 @@ func NewProductSearchRESTClient(ctx context.Context, opts ...option.ClientOption
 		callOpts.PurgeProducts = append(callOpts.PurgeProducts, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProductSet = append(callOpts.CreateProductSet, gax.WithClientTracing(tracing))
+		callOpts.ListProductSets = append(callOpts.ListProductSets, gax.WithClientTracing(tracing))
+		callOpts.GetProductSet = append(callOpts.GetProductSet, gax.WithClientTracing(tracing))
+		callOpts.UpdateProductSet = append(callOpts.UpdateProductSet, gax.WithClientTracing(tracing))
+		callOpts.DeleteProductSet = append(callOpts.DeleteProductSet, gax.WithClientTracing(tracing))
+		callOpts.CreateProduct = append(callOpts.CreateProduct, gax.WithClientTracing(tracing))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientTracing(tracing))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientTracing(tracing))
+		callOpts.UpdateProduct = append(callOpts.UpdateProduct, gax.WithClientTracing(tracing))
+		callOpts.DeleteProduct = append(callOpts.DeleteProduct, gax.WithClientTracing(tracing))
+		callOpts.CreateReferenceImage = append(callOpts.CreateReferenceImage, gax.WithClientTracing(tracing))
+		callOpts.DeleteReferenceImage = append(callOpts.DeleteReferenceImage, gax.WithClientTracing(tracing))
+		callOpts.ListReferenceImages = append(callOpts.ListReferenceImages, gax.WithClientTracing(tracing))
+		callOpts.GetReferenceImage = append(callOpts.GetReferenceImage, gax.WithClientTracing(tracing))
+		callOpts.AddProductToProductSet = append(callOpts.AddProductToProductSet, gax.WithClientTracing(tracing))
+		callOpts.RemoveProductFromProductSet = append(callOpts.RemoveProductFromProductSet, gax.WithClientTracing(tracing))
+		callOpts.ListProductsInProductSet = append(callOpts.ListProductsInProductSet, gax.WithClientTracing(tracing))
+		callOpts.ImportProductSets = append(callOpts.ImportProductSets, gax.WithClientTracing(tracing))
+		callOpts.PurgeProducts = append(callOpts.PurgeProducts, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "vision",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/vision/v2/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "vision.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProductSet = append(callOpts.CreateProductSet, gax.WithClientLogging(logging))
+		callOpts.ListProductSets = append(callOpts.ListProductSets, gax.WithClientLogging(logging))
+		callOpts.GetProductSet = append(callOpts.GetProductSet, gax.WithClientLogging(logging))
+		callOpts.UpdateProductSet = append(callOpts.UpdateProductSet, gax.WithClientLogging(logging))
+		callOpts.DeleteProductSet = append(callOpts.DeleteProductSet, gax.WithClientLogging(logging))
+		callOpts.CreateProduct = append(callOpts.CreateProduct, gax.WithClientLogging(logging))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientLogging(logging))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientLogging(logging))
+		callOpts.UpdateProduct = append(callOpts.UpdateProduct, gax.WithClientLogging(logging))
+		callOpts.DeleteProduct = append(callOpts.DeleteProduct, gax.WithClientLogging(logging))
+		callOpts.CreateReferenceImage = append(callOpts.CreateReferenceImage, gax.WithClientLogging(logging))
+		callOpts.DeleteReferenceImage = append(callOpts.DeleteReferenceImage, gax.WithClientLogging(logging))
+		callOpts.ListReferenceImages = append(callOpts.ListReferenceImages, gax.WithClientLogging(logging))
+		callOpts.GetReferenceImage = append(callOpts.GetReferenceImage, gax.WithClientLogging(logging))
+		callOpts.AddProductToProductSet = append(callOpts.AddProductToProductSet, gax.WithClientLogging(logging))
+		callOpts.RemoveProductFromProductSet = append(callOpts.RemoveProductFromProductSet, gax.WithClientLogging(logging))
+		callOpts.ListProductsInProductSet = append(callOpts.ListProductsInProductSet, gax.WithClientLogging(logging))
+		callOpts.ImportProductSets = append(callOpts.ImportProductSets, gax.WithClientLogging(logging))
+		callOpts.PurgeProducts = append(callOpts.PurgeProducts, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1164,9 +1294,6 @@ func (c *productSearchGRPCClient) CreateProductSet(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/CreateProductSet")
 	}
@@ -1188,9 +1315,6 @@ func (c *productSearchGRPCClient) ListProductSets(ctx context.Context, req *visi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/ListProductSets")
 	}
@@ -1240,9 +1364,6 @@ func (c *productSearchGRPCClient) GetProductSet(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/GetProductSet")
 	}
@@ -1285,9 +1406,6 @@ func (c *productSearchGRPCClient) DeleteProductSet(ctx context.Context, req *vis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/DeleteProductSet")
 	}
@@ -1305,9 +1423,6 @@ func (c *productSearchGRPCClient) CreateProduct(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/CreateProduct")
 	}
@@ -1329,9 +1444,6 @@ func (c *productSearchGRPCClient) ListProducts(ctx context.Context, req *visionp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/ListProducts")
 	}
@@ -1381,9 +1493,6 @@ func (c *productSearchGRPCClient) GetProduct(ctx context.Context, req *visionpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/GetProduct")
 	}
@@ -1426,9 +1535,6 @@ func (c *productSearchGRPCClient) DeleteProduct(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/DeleteProduct")
 	}
@@ -1446,9 +1552,6 @@ func (c *productSearchGRPCClient) CreateReferenceImage(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/CreateReferenceImage")
 	}
@@ -1470,9 +1573,6 @@ func (c *productSearchGRPCClient) DeleteReferenceImage(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/DeleteReferenceImage")
 	}
@@ -1490,9 +1590,6 @@ func (c *productSearchGRPCClient) ListReferenceImages(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/ListReferenceImages")
 	}
@@ -1542,9 +1639,6 @@ func (c *productSearchGRPCClient) GetReferenceImage(ctx context.Context, req *vi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/GetReferenceImage")
 	}
@@ -1566,9 +1660,6 @@ func (c *productSearchGRPCClient) AddProductToProductSet(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/AddProductToProductSet")
 	}
@@ -1586,9 +1677,6 @@ func (c *productSearchGRPCClient) RemoveProductFromProductSet(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/RemoveProductFromProductSet")
 	}
@@ -1606,9 +1694,6 @@ func (c *productSearchGRPCClient) ListProductsInProductSet(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/ListProductsInProductSet")
 	}
@@ -1658,9 +1743,6 @@ func (c *productSearchGRPCClient) ImportProductSets(ctx context.Context, req *vi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/ImportProductSets")
 	}
@@ -1688,9 +1770,6 @@ func (c *productSearchGRPCClient) PurgeProducts(ctx context.Context, req *vision
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/PurgeProducts")
 	}
@@ -1768,9 +1847,6 @@ func (c *productSearchRESTClient) CreateProductSet(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/CreateProductSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/productSets")
@@ -1912,9 +1988,6 @@ func (c *productSearchRESTClient) GetProductSet(ctx context.Context, req *vision
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/GetProductSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/productSets/*}")
@@ -2048,9 +2121,6 @@ func (c *productSearchRESTClient) DeleteProductSet(ctx context.Context, req *vis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/DeleteProductSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/productSets/*}")
@@ -2109,9 +2179,6 @@ func (c *productSearchRESTClient) CreateProduct(ctx context.Context, req *vision
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/CreateProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/products")
@@ -2252,9 +2319,6 @@ func (c *productSearchRESTClient) GetProduct(ctx context.Context, req *visionpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/GetProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/products/*}")
@@ -2398,9 +2462,6 @@ func (c *productSearchRESTClient) DeleteProduct(ctx context.Context, req *vision
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/DeleteProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/products/*}")
@@ -2471,9 +2532,6 @@ func (c *productSearchRESTClient) CreateReferenceImage(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/CreateReferenceImage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/products/*}/referenceImages")
@@ -2534,9 +2592,6 @@ func (c *productSearchRESTClient) DeleteReferenceImage(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/DeleteReferenceImage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/products/*/referenceImages/*}")
@@ -2665,9 +2720,6 @@ func (c *productSearchRESTClient) GetReferenceImage(ctx context.Context, req *vi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/GetReferenceImage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/products/*/referenceImages/*}")
@@ -2735,9 +2787,6 @@ func (c *productSearchRESTClient) AddProductToProductSet(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/AddProductToProductSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/productSets/*}:addProduct")
@@ -2783,9 +2832,6 @@ func (c *productSearchRESTClient) RemoveProductFromProductSet(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/RemoveProductFromProductSet")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/productSets/*}:removeProduct")
@@ -2925,9 +2971,6 @@ func (c *productSearchRESTClient) ImportProductSets(ctx context.Context, req *vi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/ImportProductSets")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/productSets:import")
@@ -3018,9 +3061,6 @@ func (c *productSearchRESTClient) PurgeProducts(ctx context.Context, req *vision
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//vision.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.vision.v1.ProductSearch/PurgeProducts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/products:purge")

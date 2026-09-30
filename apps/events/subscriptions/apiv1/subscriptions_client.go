@@ -392,6 +392,45 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ReactivateSubscription = append(client.CallOptions.ReactivateSubscription, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "workspaceevents",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/events/subscriptions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "workspaceevents.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSubscription = append(client.CallOptions.CreateSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSubscription = append(client.CallOptions.DeleteSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSubscription = append(client.CallOptions.GetSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSubscriptions = append(client.CallOptions.ListSubscriptions, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSubscription = append(client.CallOptions.UpdateSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.ReactivateSubscription = append(client.CallOptions.ReactivateSubscription, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "workspaceevents",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/events/subscriptions/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "workspaceevents.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSubscription = append(client.CallOptions.CreateSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSubscription = append(client.CallOptions.DeleteSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.GetSubscription = append(client.CallOptions.GetSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.ListSubscriptions = append(client.CallOptions.ListSubscriptions, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSubscription = append(client.CallOptions.UpdateSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.ReactivateSubscription = append(client.CallOptions.ReactivateSubscription, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -505,6 +544,45 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ReactivateSubscription = append(callOpts.ReactivateSubscription, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "workspaceevents",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/events/subscriptions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "workspaceevents.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSubscription = append(callOpts.CreateSubscription, gax.WithClientTracing(tracing))
+		callOpts.DeleteSubscription = append(callOpts.DeleteSubscription, gax.WithClientTracing(tracing))
+		callOpts.GetSubscription = append(callOpts.GetSubscription, gax.WithClientTracing(tracing))
+		callOpts.ListSubscriptions = append(callOpts.ListSubscriptions, gax.WithClientTracing(tracing))
+		callOpts.UpdateSubscription = append(callOpts.UpdateSubscription, gax.WithClientTracing(tracing))
+		callOpts.ReactivateSubscription = append(callOpts.ReactivateSubscription, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "workspaceevents",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/apps/events/subscriptions/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "workspaceevents.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSubscription = append(callOpts.CreateSubscription, gax.WithClientLogging(logging))
+		callOpts.DeleteSubscription = append(callOpts.DeleteSubscription, gax.WithClientLogging(logging))
+		callOpts.GetSubscription = append(callOpts.GetSubscription, gax.WithClientLogging(logging))
+		callOpts.ListSubscriptions = append(callOpts.ListSubscriptions, gax.WithClientLogging(logging))
+		callOpts.UpdateSubscription = append(callOpts.UpdateSubscription, gax.WithClientLogging(logging))
+		callOpts.ReactivateSubscription = append(callOpts.ReactivateSubscription, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -585,9 +663,6 @@ func (c *gRPCClient) DeleteSubscription(ctx context.Context, req *subscriptionsp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workspaceevents.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.events.subscriptions.v1.SubscriptionsService/DeleteSubscription")
 	}
@@ -615,9 +690,6 @@ func (c *gRPCClient) GetSubscription(ctx context.Context, req *subscriptionspb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workspaceevents.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.events.subscriptions.v1.SubscriptionsService/GetSubscription")
 	}
@@ -712,9 +784,6 @@ func (c *gRPCClient) ReactivateSubscription(ctx context.Context, req *subscripti
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workspaceevents.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.events.subscriptions.v1.SubscriptionsService/ReactivateSubscription")
 	}
@@ -858,9 +927,6 @@ func (c *restClient) DeleteSubscription(ctx context.Context, req *subscriptionsp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workspaceevents.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.events.subscriptions.v1.SubscriptionsService/DeleteSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=subscriptions/*}")
@@ -924,9 +990,6 @@ func (c *restClient) GetSubscription(ctx context.Context, req *subscriptionspb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workspaceevents.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.events.subscriptions.v1.SubscriptionsService/GetSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=subscriptions/*}")
@@ -1154,9 +1217,6 @@ func (c *restClient) ReactivateSubscription(ctx context.Context, req *subscripti
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//workspaceevents.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.apps.events.subscriptions.v1.SubscriptionsService/ReactivateSubscription")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=subscriptions/*}:reactivate")

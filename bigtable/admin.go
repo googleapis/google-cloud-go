@@ -339,6 +339,16 @@ type TableAutomatedBackupPolicy struct {
 	// `projects/{project}/locations/{zone}`.
 	// This field can only set for tables in Enterprise Plus instances.
 	Locations []string
+	// Optional. The amount of time that the automated backups remain hot.
+	// If specified, the backups created by this policy are `HOT` backups.
+	// If not specified, the backups are `STANDARD` backups.
+	// The value must be at least 24 hours and at most 10 days, and can't
+	// exceed the policy's `RetentionPeriod`.
+	// Only SSD instances support `HOT` automated backups.
+	KeepHotDuration optional.Duration
+	// Optional. If `true`, automated backups are explicitly disabled on this
+	// table. This allows users to opt out of default enablement.
+	Disabled bool
 }
 
 func (*TableAutomatedBackupPolicy) isTableAutomatedBackupConfig() {}
@@ -376,19 +386,32 @@ func toAutomatedBackupConfigProto(automatedBackupConfig TableAutomatedBackupConf
 }
 
 func (abp *TableAutomatedBackupPolicy) toProto() (*btapb.Table_AutomatedBackupPolicy_, error) {
+	if abp.Disabled {
+		if abp.RetentionPeriod != nil || abp.Frequency != nil || len(abp.Locations) > 0 || abp.KeepHotDuration != nil {
+			return nil, errors.New("cannot specify other automated backup policy fields when Disabled is true")
+		}
+		return &btapb.Table_AutomatedBackupPolicy_{
+			AutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+				Disabled: true,
+			},
+		}, nil
+	}
 	pbAutomatedBackupPolicy := &btapb.Table_AutomatedBackupPolicy{
 		RetentionPeriod: durationpb.New(0),
 		Frequency:       durationpb.New(0),
 		Locations:       abp.Locations,
 	}
-	if abp.RetentionPeriod == nil && abp.Frequency == nil {
-		return nil, errors.New("at least one of RetentionPeriod and Frequency must be set")
+	if abp.RetentionPeriod == nil && abp.Frequency == nil && abp.KeepHotDuration == nil {
+		return nil, errors.New("at least one of RetentionPeriod, Frequency, or KeepHotDuration must be set")
 	}
 	if abp.RetentionPeriod != nil {
 		pbAutomatedBackupPolicy.RetentionPeriod = durationpb.New(optional.ToDuration(abp.RetentionPeriod))
 	}
 	if abp.Frequency != nil {
 		pbAutomatedBackupPolicy.Frequency = durationpb.New(optional.ToDuration(abp.Frequency))
+	}
+	if abp.KeepHotDuration != nil {
+		pbAutomatedBackupPolicy.KeepHotDuration = durationpb.New(optional.ToDuration(abp.KeepHotDuration))
 	}
 	return &btapb.Table_AutomatedBackupPolicy_{
 		AutomatedBackupPolicy: pbAutomatedBackupPolicy,
@@ -590,6 +613,8 @@ const (
 	retentionPeriodFieldMaskPath   = "retention_period"
 	frequencyFieldMaskPath         = "frequency"
 	locationsFieldMaskPath         = "locations"
+	keepHotDurationFieldMaskPath   = "keep_hot_duration"
+	disabledFieldMaskPath          = "disabled"
 	rowKeySchemaMaskPath           = "row_key_schema"
 	tieredStorageConfigFieldMask   = "tiered_storage_config"
 )
@@ -681,10 +706,14 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 	if err != nil {
 		return err
 	}
-	// If the AutomatedBackupPolicy is not at least partially specified, or if both fields are 0, then this is an
-	// incorrect configuration for updating the table, and should be rejected. Both fields could be zero if (1)
-	// they are set to zero, or (2) neither field was set and the policy was constructed using toProto().
-	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds == 0 && abc.AutomatedBackupPolicy.Frequency.Seconds == 0 {
+	if automatedBackupPolicy.Disabled {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+disabledFieldMaskPath)
+		req.Table.AutomatedBackupConfig = abc
+		return ac.updateTableAndWait(ctx, req)
+	}
+	// If the AutomatedBackupPolicy is not at least partially specified, or if all duration fields are 0, then this is an
+	// incorrect configuration for updating the table, and should be rejected.
+	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds == 0 && abc.AutomatedBackupPolicy.Frequency.Seconds == 0 && abc.AutomatedBackupPolicy.GetKeepHotDuration().GetSeconds() == 0 {
 		return errors.New("Invalid automated backup policy. If you're intending to disable automated backups, please use the UpdateTableDisableAutomatedBackupPolicy method instead")
 	}
 	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds != 0 {
@@ -698,6 +727,10 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 	if automatedBackupPolicy.Locations != nil {
 		// Update Locations
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+locationsFieldMaskPath)
+	}
+	if automatedBackupPolicy.KeepHotDuration != nil {
+		// Update KeepHotDuration
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+keepHotDurationFieldMaskPath)
 	}
 	req.Table.AutomatedBackupConfig = abc
 	return ac.updateTableAndWait(ctx, req)
@@ -784,11 +817,32 @@ type TableInfo struct {
 	// DeletionProtection indicates whether the table is protected against data loss
 	// DeletionProtection could be None depending on the table view
 	// for example when using NAME_ONLY, the response does not contain DeletionProtection and the value should be None
-	DeletionProtection    DeletionProtection
-	ChangeStreamRetention ChangeStreamRetention
-	AutomatedBackupConfig TableAutomatedBackupConfig
-	RowKeySchema          *StructType
-	TieredStorageConfig   *TieredStorageConfig
+	DeletionProtection             DeletionProtection
+	ChangeStreamRetention          ChangeStreamRetention
+	AutomatedBackupConfig          TableAutomatedBackupConfig
+	EffectiveAutomatedBackupPolicy *TableAutomatedBackupPolicy
+	RowKeySchema                   *StructType
+	TieredStorageConfig            *TieredStorageConfig
+}
+
+func protoToTableAutomatedBackupPolicy(pb *btapb.Table_AutomatedBackupPolicy) *TableAutomatedBackupPolicy {
+	if pb == nil {
+		return nil
+	}
+	abp := &TableAutomatedBackupPolicy{
+		Locations: pb.GetLocations(),
+		Disabled:  pb.GetDisabled(),
+	}
+	if pb.GetRetentionPeriod() != nil {
+		abp.RetentionPeriod = pb.GetRetentionPeriod().AsDuration()
+	}
+	if pb.GetFrequency() != nil {
+		abp.Frequency = pb.GetFrequency().AsDuration()
+	}
+	if pb.GetKeepHotDuration() != nil {
+		abp.KeepHotDuration = pb.GetKeepHotDuration().AsDuration()
+	}
+	return abp
 }
 
 // FamilyInfo represents information about a column family.
@@ -852,14 +906,13 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	if res.AutomatedBackupConfig != nil {
 		switch res.AutomatedBackupConfig.(type) {
 		case *btapb.Table_AutomatedBackupPolicy_:
-			ti.AutomatedBackupConfig = &TableAutomatedBackupPolicy{
-				RetentionPeriod: res.GetAutomatedBackupPolicy().GetRetentionPeriod().AsDuration(),
-				Frequency:       res.GetAutomatedBackupPolicy().GetFrequency().AsDuration(),
-				Locations:       res.GetAutomatedBackupPolicy().GetLocations(),
-			}
+			ti.AutomatedBackupConfig = protoToTableAutomatedBackupPolicy(res.GetAutomatedBackupPolicy())
 		default:
 			return nil, fmt.Errorf("error: Unknown type of automated backup configuration")
 		}
+	}
+	if res.GetEffectiveAutomatedBackupPolicy() != nil {
+		ti.EffectiveAutomatedBackupPolicy = protoToTableAutomatedBackupPolicy(res.GetEffectiveAutomatedBackupPolicy())
 	}
 	if res.RowKeySchema != nil {
 		structType := structProtoToType(res.RowKeySchema).(StructType)

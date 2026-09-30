@@ -31,7 +31,6 @@ import (
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp"
 	grpcgcppb "github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp/grpc_gcp"
-	"github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/metric"
 	"go.opentelemetry.io/otel/metric/noop"
@@ -1024,8 +1023,17 @@ func metricsInterceptor() grpc.UnaryClientInterceptor {
 		opts ...grpc.CallOption,
 	) error {
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
-		if !ok {
-			return invoker(ctx, method, req, reply, cc, opts...)
+		if !ok || mt == nil {
+			span := otrace.SpanFromContext(ctx)
+			if !span.IsRecording() {
+				return invoker(ctx, method, req, reply, cc, opts...)
+			}
+			// Built-in metrics are disabled, but the server timing span
+			// attributes are still recorded for traced calls.
+			var md metadata.MD
+			err := invoker(ctx, method, req, reply, cc, append(opts, grpc.Header(&md))...)
+			setGFEAndAFESpanAttributes(span, parseServerTimingHeader(md))
+			return err
 		}
 
 		mt.method = method
@@ -1063,16 +1071,21 @@ func metricsStreamInterceptor() grpc.StreamClientInterceptor {
 		streamer grpc.Streamer,
 		opts ...grpc.CallOption,
 	) (grpc.ClientStream, error) {
-		s, err := streamer(ctx, desc, cc, method, opts...)
-		if err != nil {
-			return nil, err
-		}
+		// Set the method before creating the stream, so that a stream that
+		// fails to open is recorded for its method.
 		mt, ok := ctx.Value(metricsTracerKey).(*builtinMetricsTracer)
 		if ok && mt != nil {
 			mt.method = method
 			if strings.HasPrefix(cc.Target(), "google-c2p") {
 				mt.currOp.setDirectPathEnabled(true)
 			}
+			if mt.currOp.currAttempt != nil {
+				mt.currOp.currAttempt.rpcStarted = true
+			}
+		}
+		s, err := streamer(ctx, desc, cc, method, opts...)
+		if err != nil {
+			return nil, err
 		}
 		return s, nil
 	}
@@ -1604,12 +1617,12 @@ type BatchWriteResponseIterator struct {
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *BatchWriteResponseIterator) Next() (*sppb.BatchWriteResponse, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
+	mt := r.meterTracerFactory.newBuiltinMetricsTracer(r.ctx)
 	defer func() {
-		if mt.method != "" {
+		if mt != nil && mt.method != "" {
 			statusCode, _ := convertToGrpcStatusErr(r.err)
 			mt.currOp.setStatus(statusCode.String())
-			recordOperationCompletion(&mt)
+			recordOperationCompletion(mt)
 		}
 	}()
 	for {
@@ -1733,23 +1746,12 @@ func (c *Client) BatchWriteWithOptions(ctx context.Context, mgs []*MutationGroup
 	}
 
 	rpc := func(ct context.Context) (sppb.Spanner_BatchWriteClient, error) {
-		var md metadata.MD
-		stream, rpcErr := sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
+		return sh.getClient().BatchWrite(contextWithOutgoingMetadata(ct, sh.getMetadata(), c.disableRouteToLeader), &sppb.BatchWriteRequest{
 			Session:                     sh.getID(),
 			MutationGroups:              mgsPb,
 			RequestOptions:              createRequestOptions(opts.Priority, "", opts.TransactionTag, mergeClientContext(c.clientContext, opts.ClientContext)),
 			ExcludeTxnFromChangeStreams: opts.ExcludeTxnFromChangeStreams,
-		}, gax.WithGRPCOptions(grpc.Header(&md)))
-
-		if getGFELatencyMetricsFlag() && md != nil && c.ct != nil {
-			if metricErr := createContextAndCaptureGFELatencyMetrics(ct, c.ct, md, "BatchWrite"); metricErr != nil {
-				trace.TracePrintf(ct, nil, "Error in recording GFE Latency. Try disabling and rerunning. Error: %v", err)
-			}
-		}
-		if metricErr := recordGFELatencyMetricsOT(ct, md, "BatchWrite", c.otConfig); metricErr != nil {
-			trace.TracePrintf(ct, nil, "Error in recording GFE Latency through OpenTelemetry. Error: %v", err)
-		}
-		return stream, rpcErr
+		})
 	}
 
 	release := func(err error) {

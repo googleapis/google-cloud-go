@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/chat/apiv1",
-    "version": "1.7.0"
+    "version": "1.8.0"
   },
   "snippets": [
     {
@@ -194,6 +194,52 @@
         }
       ],
       "title": "chat CreateMessage Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.CreateMessagePin",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.CreateMessagePin",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "CreateMessagePin"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.CreateMessagePinRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*chatpb.MessagePin",
+        "shortName": "CreateMessagePin"
+      },
+      "description": "CreateMessagePin creates a message pin.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.spaces.pins`\n- `https: //www.googleapis.com/auth/chat.spaces`",
+      "file": "Client/CreateMessagePin/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_CreateMessagePin_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat CreateMessagePin Sample"
     },
     {
       "clientMethod": {
@@ -468,6 +514,51 @@
         }
       ],
       "title": "chat DeleteMessage Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.DeleteMessagePin",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.DeleteMessagePin",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "DeleteMessagePin"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.DeleteMessagePinRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteMessagePin"
+      },
+      "description": "DeleteMessagePin deletes a message pin.\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.spaces.pins`\n- `https: //www.googleapis.com/auth/chat.spaces`",
+      "file": "Client/DeleteMessagePin/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_DeleteMessagePin_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat DeleteMessagePin Sample"
     },
     {
       "clientMethod": {
@@ -1247,6 +1338,52 @@
         }
       ],
       "title": "chat ListMemberships Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.chat.v1.Client",
+          "shortName": "Client"
+        },
+        "fullName": "google.chat.v1.Client.ListMessagePins",
+        "method": {
+          "fullName": "google.chat.v1.ChatService.ListMessagePins",
+          "service": {
+            "fullName": "google.chat.v1.ChatService",
+            "shortName": "ChatService"
+          },
+          "shortName": "ListMessagePins"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "chatpb.ListMessagePinsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "MessagePinIterator",
+        "shortName": "ListMessagePins"
+      },
+      "description": "ListMessagePins lists message pins in a space. Users can pin important messages in spaces\nfor easy access. For more information, see [Pin or unpin a conversation in\nGoogle Chat](https: //support.google.com/chat/answer/15622437).\n\nRequires [user\nauthentication](https: //developers.google.com/workspace/chat/authenticate-authorize-chat-user)\nwith one of the following [authorization\nscopes](https: //developers.google.com/workspace/chat/authenticate-authorize#chat-api-scopes): \n\n- `https: //www.googleapis.com/auth/chat.spaces.pins.readonly`\n- `https: //www.googleapis.com/auth/chat.spaces.pins`\n- `https: //www.googleapis.com/auth/chat.spaces.readonly`\n- `https: //www.googleapis.com/auth/chat.spaces`",
+      "file": "Client/ListMessagePins/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "chat_v1_generated_ChatService_ListMessagePins_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "chat ListMessagePins Sample"
     },
     {
       "clientMethod": {

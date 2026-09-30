@@ -1067,6 +1067,137 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "artifactregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/artifactregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "artifactregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDockerImages = append(client.CallOptions.ListDockerImages, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDockerImage = append(client.CallOptions.GetDockerImage, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMavenArtifacts = append(client.CallOptions.ListMavenArtifacts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMavenArtifact = append(client.CallOptions.GetMavenArtifact, gax.WithClientTracing(tracing))
+		client.CallOptions.ListNpmPackages = append(client.CallOptions.ListNpmPackages, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNpmPackage = append(client.CallOptions.GetNpmPackage, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPythonPackages = append(client.CallOptions.ListPythonPackages, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPythonPackage = append(client.CallOptions.GetPythonPackage, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportAptArtifacts = append(client.CallOptions.ImportAptArtifacts, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportYumArtifacts = append(client.CallOptions.ImportYumArtifacts, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPackages = append(client.CallOptions.ListPackages, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPackage = append(client.CallOptions.GetPackage, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePackage = append(client.CallOptions.DeletePackage, gax.WithClientTracing(tracing))
+		client.CallOptions.ListVersions = append(client.CallOptions.ListVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVersion = append(client.CallOptions.GetVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteVersion = append(client.CallOptions.DeleteVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchDeleteVersions = append(client.CallOptions.BatchDeleteVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVersion = append(client.CallOptions.UpdateVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListFiles = append(client.CallOptions.ListFiles, gax.WithClientTracing(tracing))
+		client.CallOptions.GetFile = append(client.CallOptions.GetFile, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteFile = append(client.CallOptions.DeleteFile, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateFile = append(client.CallOptions.UpdateFile, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTags = append(client.CallOptions.ListTags, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTag = append(client.CallOptions.GetTag, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTag = append(client.CallOptions.CreateTag, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTag = append(client.CallOptions.UpdateTag, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTag = append(client.CallOptions.DeleteTag, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRule = append(client.CallOptions.CreateRule, gax.WithClientTracing(tracing))
+		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRule = append(client.CallOptions.GetRule, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRule = append(client.CallOptions.UpdateRule, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRule = append(client.CallOptions.DeleteRule, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProjectSettings = append(client.CallOptions.GetProjectSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProjectSettings = append(client.CallOptions.UpdateProjectSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetVPCSCConfig = append(client.CallOptions.GetVPCSCConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateVPCSCConfig = append(client.CallOptions.UpdateVPCSCConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePackage = append(client.CallOptions.UpdatePackage, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAttachments = append(client.CallOptions.ListAttachments, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAttachment = append(client.CallOptions.GetAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAttachment = append(client.CallOptions.CreateAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAttachment = append(client.CallOptions.DeleteAttachment, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportArtifact = append(client.CallOptions.ExportArtifact, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "artifactregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/artifactregistry/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "artifactregistry.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListDockerImages = append(client.CallOptions.ListDockerImages, gax.WithClientLogging(logging))
+		client.CallOptions.GetDockerImage = append(client.CallOptions.GetDockerImage, gax.WithClientLogging(logging))
+		client.CallOptions.ListMavenArtifacts = append(client.CallOptions.ListMavenArtifacts, gax.WithClientLogging(logging))
+		client.CallOptions.GetMavenArtifact = append(client.CallOptions.GetMavenArtifact, gax.WithClientLogging(logging))
+		client.CallOptions.ListNpmPackages = append(client.CallOptions.ListNpmPackages, gax.WithClientLogging(logging))
+		client.CallOptions.GetNpmPackage = append(client.CallOptions.GetNpmPackage, gax.WithClientLogging(logging))
+		client.CallOptions.ListPythonPackages = append(client.CallOptions.ListPythonPackages, gax.WithClientLogging(logging))
+		client.CallOptions.GetPythonPackage = append(client.CallOptions.GetPythonPackage, gax.WithClientLogging(logging))
+		client.CallOptions.ImportAptArtifacts = append(client.CallOptions.ImportAptArtifacts, gax.WithClientLogging(logging))
+		client.CallOptions.ImportYumArtifacts = append(client.CallOptions.ImportYumArtifacts, gax.WithClientLogging(logging))
+		client.CallOptions.ListRepositories = append(client.CallOptions.ListRepositories, gax.WithClientLogging(logging))
+		client.CallOptions.GetRepository = append(client.CallOptions.GetRepository, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRepository = append(client.CallOptions.CreateRepository, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRepository = append(client.CallOptions.UpdateRepository, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRepository = append(client.CallOptions.DeleteRepository, gax.WithClientLogging(logging))
+		client.CallOptions.ListPackages = append(client.CallOptions.ListPackages, gax.WithClientLogging(logging))
+		client.CallOptions.GetPackage = append(client.CallOptions.GetPackage, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePackage = append(client.CallOptions.DeletePackage, gax.WithClientLogging(logging))
+		client.CallOptions.ListVersions = append(client.CallOptions.ListVersions, gax.WithClientLogging(logging))
+		client.CallOptions.GetVersion = append(client.CallOptions.GetVersion, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteVersion = append(client.CallOptions.DeleteVersion, gax.WithClientLogging(logging))
+		client.CallOptions.BatchDeleteVersions = append(client.CallOptions.BatchDeleteVersions, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVersion = append(client.CallOptions.UpdateVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListFiles = append(client.CallOptions.ListFiles, gax.WithClientLogging(logging))
+		client.CallOptions.GetFile = append(client.CallOptions.GetFile, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteFile = append(client.CallOptions.DeleteFile, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateFile = append(client.CallOptions.UpdateFile, gax.WithClientLogging(logging))
+		client.CallOptions.ListTags = append(client.CallOptions.ListTags, gax.WithClientLogging(logging))
+		client.CallOptions.GetTag = append(client.CallOptions.GetTag, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTag = append(client.CallOptions.CreateTag, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTag = append(client.CallOptions.UpdateTag, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTag = append(client.CallOptions.DeleteTag, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRule = append(client.CallOptions.CreateRule, gax.WithClientLogging(logging))
+		client.CallOptions.ListRules = append(client.CallOptions.ListRules, gax.WithClientLogging(logging))
+		client.CallOptions.GetRule = append(client.CallOptions.GetRule, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRule = append(client.CallOptions.UpdateRule, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRule = append(client.CallOptions.DeleteRule, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.GetProjectSettings = append(client.CallOptions.GetProjectSettings, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProjectSettings = append(client.CallOptions.UpdateProjectSettings, gax.WithClientLogging(logging))
+		client.CallOptions.GetVPCSCConfig = append(client.CallOptions.GetVPCSCConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateVPCSCConfig = append(client.CallOptions.UpdateVPCSCConfig, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePackage = append(client.CallOptions.UpdatePackage, gax.WithClientLogging(logging))
+		client.CallOptions.ListAttachments = append(client.CallOptions.ListAttachments, gax.WithClientLogging(logging))
+		client.CallOptions.GetAttachment = append(client.CallOptions.GetAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAttachment = append(client.CallOptions.CreateAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAttachment = append(client.CallOptions.DeleteAttachment, gax.WithClientLogging(logging))
+		client.CallOptions.ExportArtifact = append(client.CallOptions.ExportArtifact, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1242,6 +1373,137 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "artifactregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/artifactregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "artifactregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDockerImages = append(callOpts.ListDockerImages, gax.WithClientTracing(tracing))
+		callOpts.GetDockerImage = append(callOpts.GetDockerImage, gax.WithClientTracing(tracing))
+		callOpts.ListMavenArtifacts = append(callOpts.ListMavenArtifacts, gax.WithClientTracing(tracing))
+		callOpts.GetMavenArtifact = append(callOpts.GetMavenArtifact, gax.WithClientTracing(tracing))
+		callOpts.ListNpmPackages = append(callOpts.ListNpmPackages, gax.WithClientTracing(tracing))
+		callOpts.GetNpmPackage = append(callOpts.GetNpmPackage, gax.WithClientTracing(tracing))
+		callOpts.ListPythonPackages = append(callOpts.ListPythonPackages, gax.WithClientTracing(tracing))
+		callOpts.GetPythonPackage = append(callOpts.GetPythonPackage, gax.WithClientTracing(tracing))
+		callOpts.ImportAptArtifacts = append(callOpts.ImportAptArtifacts, gax.WithClientTracing(tracing))
+		callOpts.ImportYumArtifacts = append(callOpts.ImportYumArtifacts, gax.WithClientTracing(tracing))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientTracing(tracing))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientTracing(tracing))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientTracing(tracing))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientTracing(tracing))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientTracing(tracing))
+		callOpts.ListPackages = append(callOpts.ListPackages, gax.WithClientTracing(tracing))
+		callOpts.GetPackage = append(callOpts.GetPackage, gax.WithClientTracing(tracing))
+		callOpts.DeletePackage = append(callOpts.DeletePackage, gax.WithClientTracing(tracing))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientTracing(tracing))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientTracing(tracing))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientTracing(tracing))
+		callOpts.BatchDeleteVersions = append(callOpts.BatchDeleteVersions, gax.WithClientTracing(tracing))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientTracing(tracing))
+		callOpts.ListFiles = append(callOpts.ListFiles, gax.WithClientTracing(tracing))
+		callOpts.GetFile = append(callOpts.GetFile, gax.WithClientTracing(tracing))
+		callOpts.DeleteFile = append(callOpts.DeleteFile, gax.WithClientTracing(tracing))
+		callOpts.UpdateFile = append(callOpts.UpdateFile, gax.WithClientTracing(tracing))
+		callOpts.ListTags = append(callOpts.ListTags, gax.WithClientTracing(tracing))
+		callOpts.GetTag = append(callOpts.GetTag, gax.WithClientTracing(tracing))
+		callOpts.CreateTag = append(callOpts.CreateTag, gax.WithClientTracing(tracing))
+		callOpts.UpdateTag = append(callOpts.UpdateTag, gax.WithClientTracing(tracing))
+		callOpts.DeleteTag = append(callOpts.DeleteTag, gax.WithClientTracing(tracing))
+		callOpts.CreateRule = append(callOpts.CreateRule, gax.WithClientTracing(tracing))
+		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientTracing(tracing))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientTracing(tracing))
+		callOpts.UpdateRule = append(callOpts.UpdateRule, gax.WithClientTracing(tracing))
+		callOpts.DeleteRule = append(callOpts.DeleteRule, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.GetProjectSettings = append(callOpts.GetProjectSettings, gax.WithClientTracing(tracing))
+		callOpts.UpdateProjectSettings = append(callOpts.UpdateProjectSettings, gax.WithClientTracing(tracing))
+		callOpts.GetVPCSCConfig = append(callOpts.GetVPCSCConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdateVPCSCConfig = append(callOpts.UpdateVPCSCConfig, gax.WithClientTracing(tracing))
+		callOpts.UpdatePackage = append(callOpts.UpdatePackage, gax.WithClientTracing(tracing))
+		callOpts.ListAttachments = append(callOpts.ListAttachments, gax.WithClientTracing(tracing))
+		callOpts.GetAttachment = append(callOpts.GetAttachment, gax.WithClientTracing(tracing))
+		callOpts.CreateAttachment = append(callOpts.CreateAttachment, gax.WithClientTracing(tracing))
+		callOpts.DeleteAttachment = append(callOpts.DeleteAttachment, gax.WithClientTracing(tracing))
+		callOpts.ExportArtifact = append(callOpts.ExportArtifact, gax.WithClientTracing(tracing))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "artifactregistry",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/artifactregistry/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "artifactregistry.googleapis.com",
+			}),
+		)
+
+		callOpts.ListDockerImages = append(callOpts.ListDockerImages, gax.WithClientLogging(logging))
+		callOpts.GetDockerImage = append(callOpts.GetDockerImage, gax.WithClientLogging(logging))
+		callOpts.ListMavenArtifacts = append(callOpts.ListMavenArtifacts, gax.WithClientLogging(logging))
+		callOpts.GetMavenArtifact = append(callOpts.GetMavenArtifact, gax.WithClientLogging(logging))
+		callOpts.ListNpmPackages = append(callOpts.ListNpmPackages, gax.WithClientLogging(logging))
+		callOpts.GetNpmPackage = append(callOpts.GetNpmPackage, gax.WithClientLogging(logging))
+		callOpts.ListPythonPackages = append(callOpts.ListPythonPackages, gax.WithClientLogging(logging))
+		callOpts.GetPythonPackage = append(callOpts.GetPythonPackage, gax.WithClientLogging(logging))
+		callOpts.ImportAptArtifacts = append(callOpts.ImportAptArtifacts, gax.WithClientLogging(logging))
+		callOpts.ImportYumArtifacts = append(callOpts.ImportYumArtifacts, gax.WithClientLogging(logging))
+		callOpts.ListRepositories = append(callOpts.ListRepositories, gax.WithClientLogging(logging))
+		callOpts.GetRepository = append(callOpts.GetRepository, gax.WithClientLogging(logging))
+		callOpts.CreateRepository = append(callOpts.CreateRepository, gax.WithClientLogging(logging))
+		callOpts.UpdateRepository = append(callOpts.UpdateRepository, gax.WithClientLogging(logging))
+		callOpts.DeleteRepository = append(callOpts.DeleteRepository, gax.WithClientLogging(logging))
+		callOpts.ListPackages = append(callOpts.ListPackages, gax.WithClientLogging(logging))
+		callOpts.GetPackage = append(callOpts.GetPackage, gax.WithClientLogging(logging))
+		callOpts.DeletePackage = append(callOpts.DeletePackage, gax.WithClientLogging(logging))
+		callOpts.ListVersions = append(callOpts.ListVersions, gax.WithClientLogging(logging))
+		callOpts.GetVersion = append(callOpts.GetVersion, gax.WithClientLogging(logging))
+		callOpts.DeleteVersion = append(callOpts.DeleteVersion, gax.WithClientLogging(logging))
+		callOpts.BatchDeleteVersions = append(callOpts.BatchDeleteVersions, gax.WithClientLogging(logging))
+		callOpts.UpdateVersion = append(callOpts.UpdateVersion, gax.WithClientLogging(logging))
+		callOpts.ListFiles = append(callOpts.ListFiles, gax.WithClientLogging(logging))
+		callOpts.GetFile = append(callOpts.GetFile, gax.WithClientLogging(logging))
+		callOpts.DeleteFile = append(callOpts.DeleteFile, gax.WithClientLogging(logging))
+		callOpts.UpdateFile = append(callOpts.UpdateFile, gax.WithClientLogging(logging))
+		callOpts.ListTags = append(callOpts.ListTags, gax.WithClientLogging(logging))
+		callOpts.GetTag = append(callOpts.GetTag, gax.WithClientLogging(logging))
+		callOpts.CreateTag = append(callOpts.CreateTag, gax.WithClientLogging(logging))
+		callOpts.UpdateTag = append(callOpts.UpdateTag, gax.WithClientLogging(logging))
+		callOpts.DeleteTag = append(callOpts.DeleteTag, gax.WithClientLogging(logging))
+		callOpts.CreateRule = append(callOpts.CreateRule, gax.WithClientLogging(logging))
+		callOpts.ListRules = append(callOpts.ListRules, gax.WithClientLogging(logging))
+		callOpts.GetRule = append(callOpts.GetRule, gax.WithClientLogging(logging))
+		callOpts.UpdateRule = append(callOpts.UpdateRule, gax.WithClientLogging(logging))
+		callOpts.DeleteRule = append(callOpts.DeleteRule, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.GetProjectSettings = append(callOpts.GetProjectSettings, gax.WithClientLogging(logging))
+		callOpts.UpdateProjectSettings = append(callOpts.UpdateProjectSettings, gax.WithClientLogging(logging))
+		callOpts.GetVPCSCConfig = append(callOpts.GetVPCSCConfig, gax.WithClientLogging(logging))
+		callOpts.UpdateVPCSCConfig = append(callOpts.UpdateVPCSCConfig, gax.WithClientLogging(logging))
+		callOpts.UpdatePackage = append(callOpts.UpdatePackage, gax.WithClientLogging(logging))
+		callOpts.ListAttachments = append(callOpts.ListAttachments, gax.WithClientLogging(logging))
+		callOpts.GetAttachment = append(callOpts.GetAttachment, gax.WithClientLogging(logging))
+		callOpts.CreateAttachment = append(callOpts.CreateAttachment, gax.WithClientLogging(logging))
+		callOpts.DeleteAttachment = append(callOpts.DeleteAttachment, gax.WithClientLogging(logging))
+		callOpts.ExportArtifact = append(callOpts.ExportArtifact, gax.WithClientLogging(logging))
+		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
+		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1347,9 +1609,6 @@ func (c *gRPCClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetDockerImage")
 	}
@@ -1371,9 +1630,6 @@ func (c *gRPCClient) ListMavenArtifacts(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListMavenArtifacts")
 	}
@@ -1423,9 +1679,6 @@ func (c *gRPCClient) GetMavenArtifact(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetMavenArtifact")
 	}
@@ -1447,9 +1700,6 @@ func (c *gRPCClient) ListNpmPackages(ctx context.Context, req *artifactregistryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListNpmPackages")
 	}
@@ -1499,9 +1749,6 @@ func (c *gRPCClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetNpmPackage")
 	}
@@ -1523,9 +1770,6 @@ func (c *gRPCClient) ListPythonPackages(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListPythonPackages")
 	}
@@ -1575,9 +1819,6 @@ func (c *gRPCClient) GetPythonPackage(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPythonPackage")
 	}
@@ -1653,9 +1894,6 @@ func (c *gRPCClient) ListRepositories(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListRepositories")
 	}
@@ -1705,9 +1943,6 @@ func (c *gRPCClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRepository")
 	}
@@ -1729,9 +1964,6 @@ func (c *gRPCClient) CreateRepository(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRepository")
 	}
@@ -1780,9 +2012,6 @@ func (c *gRPCClient) DeleteRepository(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRepository")
 	}
@@ -1810,9 +2039,6 @@ func (c *gRPCClient) ListPackages(ctx context.Context, req *artifactregistrypb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListPackages")
 	}
@@ -1862,9 +2088,6 @@ func (c *gRPCClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPackage")
 	}
@@ -1886,9 +2109,6 @@ func (c *gRPCClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeletePackage")
 	}
@@ -2013,9 +2233,6 @@ func (c *gRPCClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/BatchDeleteVersions")
 	}
@@ -2064,9 +2281,6 @@ func (c *gRPCClient) ListFiles(ctx context.Context, req *artifactregistrypb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListFiles")
 	}
@@ -2116,9 +2330,6 @@ func (c *gRPCClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetFile")
 	}
@@ -2140,9 +2351,6 @@ func (c *gRPCClient) DeleteFile(ctx context.Context, req *artifactregistrypb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteFile")
 	}
@@ -2320,9 +2528,6 @@ func (c *gRPCClient) CreateRule(ctx context.Context, req *artifactregistrypb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRule")
 	}
@@ -2344,9 +2549,6 @@ func (c *gRPCClient) ListRules(ctx context.Context, req *artifactregistrypb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListRules")
 	}
@@ -2396,9 +2598,6 @@ func (c *gRPCClient) GetRule(ctx context.Context, req *artifactregistrypb.GetRul
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRule")
 	}
@@ -2441,9 +2640,6 @@ func (c *gRPCClient) DeleteRule(ctx context.Context, req *artifactregistrypb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRule")
 	}
@@ -2461,9 +2657,6 @@ func (c *gRPCClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/SetIamPolicy")
 	}
@@ -2485,9 +2678,6 @@ func (c *gRPCClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetIamPolicy")
 	}
@@ -2509,9 +2699,6 @@ func (c *gRPCClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/TestIamPermissions")
 	}
@@ -2533,9 +2720,6 @@ func (c *gRPCClient) GetProjectSettings(ctx context.Context, req *artifactregist
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetProjectSettings")
 	}
@@ -2578,9 +2762,6 @@ func (c *gRPCClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetVPCSCConfig")
 	}
@@ -2644,9 +2825,6 @@ func (c *gRPCClient) ListAttachments(ctx context.Context, req *artifactregistryp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ListAttachments")
 	}
@@ -2696,9 +2874,6 @@ func (c *gRPCClient) GetAttachment(ctx context.Context, req *artifactregistrypb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetAttachment")
 	}
@@ -2720,9 +2895,6 @@ func (c *gRPCClient) CreateAttachment(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateAttachment")
 	}
@@ -2750,9 +2922,6 @@ func (c *gRPCClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteAttachment")
 	}
@@ -2780,9 +2949,6 @@ func (c *gRPCClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ExportArtifact")
 	}
@@ -2996,9 +3162,6 @@ func (c *restClient) GetDockerImage(ctx context.Context, req *artifactregistrypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetDockerImage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/dockerImages/*}")
@@ -3131,9 +3294,6 @@ func (c *restClient) GetMavenArtifact(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetMavenArtifact")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/mavenArtifacts/*}")
@@ -3266,9 +3426,6 @@ func (c *restClient) GetNpmPackage(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetNpmPackage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/npmPackages/*}")
@@ -3401,9 +3558,6 @@ func (c *restClient) GetPythonPackage(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPythonPackage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/pythonPackages/*}")
@@ -3682,9 +3836,6 @@ func (c *restClient) GetRepository(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRepository")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
@@ -3748,9 +3899,6 @@ func (c *restClient) CreateRepository(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRepository")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*}/repositories")
@@ -3882,9 +4030,6 @@ func (c *restClient) DeleteRepository(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRepository")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*}")
@@ -4030,9 +4175,6 @@ func (c *restClient) GetPackage(ctx context.Context, req *artifactregistrypb.Get
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetPackage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*}")
@@ -4088,9 +4230,6 @@ func (c *restClient) DeletePackage(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeletePackage")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/packages/*}")
@@ -4368,9 +4507,6 @@ func (c *restClient) BatchDeleteVersions(ctx context.Context, req *artifactregis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/BatchDeleteVersions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*/packages/*}/versions:batchDelete")
@@ -4584,9 +4720,6 @@ func (c *restClient) GetFile(ctx context.Context, req *artifactregistrypb.GetFil
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/files/**}")
@@ -4643,9 +4776,6 @@ func (c *restClient) DeleteFile(ctx context.Context, req *artifactregistrypb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteFile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/files/*}")
@@ -5091,9 +5221,6 @@ func (c *restClient) CreateRule(ctx context.Context, req *artifactregistrypb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/rules")
@@ -5226,9 +5353,6 @@ func (c *restClient) GetRule(ctx context.Context, req *artifactregistrypb.GetRul
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/rules/*}")
@@ -5351,9 +5475,6 @@ func (c *restClient) DeleteRule(ctx context.Context, req *artifactregistrypb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteRule")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/rules/*}")
@@ -5399,9 +5520,6 @@ func (c *restClient) SetIamPolicy(ctx context.Context, req *iampb.SetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:setIamPolicy")
@@ -5459,9 +5577,6 @@ func (c *restClient) GetIamPolicy(ctx context.Context, req *iampb.GetIamPolicyRe
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:getIamPolicy")
@@ -5522,9 +5637,6 @@ func (c *restClient) TestIamPermissions(ctx context.Context, req *iampb.TestIamP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=projects/*/locations/*/repositories/*}:testIamPermissions")
@@ -5579,9 +5691,6 @@ func (c *restClient) GetProjectSettings(ctx context.Context, req *artifactregist
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetProjectSettings")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/projectSettings}")
@@ -5704,9 +5813,6 @@ func (c *restClient) GetVPCSCConfig(ctx context.Context, req *artifactregistrypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetVPCSCConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/vpcscConfig}")
@@ -5978,9 +6084,6 @@ func (c *restClient) GetAttachment(ctx context.Context, req *artifactregistrypb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/GetAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/attachments/*}")
@@ -6044,9 +6147,6 @@ func (c *restClient) CreateAttachment(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/CreateAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/repositories/*}/attachments")
@@ -6110,9 +6210,6 @@ func (c *restClient) DeleteAttachment(ctx context.Context, req *artifactregistry
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/DeleteAttachment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/repositories/*/attachments/*}")
@@ -6180,9 +6277,6 @@ func (c *restClient) ExportArtifact(ctx context.Context, req *artifactregistrypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//artifactregistry.googleapis.com/%v", req.GetRepository()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.devtools.artifactregistry.v1.ArtifactRegistry/ExportArtifact")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{repository=projects/*/locations/*/repositories/*}:exportArtifact")

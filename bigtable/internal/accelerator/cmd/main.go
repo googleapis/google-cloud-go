@@ -47,6 +47,8 @@ func main() {
 	project := flag.String("project", "", "GCP project ID (required)")
 	instance := flag.String("instance", "", "Bigtable instance ID (required)")
 	appProfile := flag.String("app-profile", "", "Bigtable app profile (optional)")
+	// Fallback flag for client without any native implementations
+	fallback := flag.Bool("fallback", false, "fall back to the classic bigtable.Client when the session backend returns Unimplemented (e.g. instance lacks session serving)")
 	// Endpoint overrides. When empty, NewChannel falls back to the
 	// default Bigtable data-plane endpoint (bigtable.googleapis.com:443). The
 	// spawning client supplies these when it targets a non-default endpoint or a
@@ -124,7 +126,20 @@ func main() {
 	if err != nil {
 		log.Fatalf("failed to construct accelerator channel: %v", err)
 	}
-	srv := accelerator.NewServer(*udsPath, channel)
+
+	// Build the server with either a bare session channel or a FallbackChannel.
+	// The FallbackChannel dials its own bigtable.Client (classic path) with the
+	// same opts so both paths share credentials and endpoint.
+	var srv *accelerator.Server
+	if *fallback {
+		fc, err := accelerator.NewFallbackChannel(ctx, channel, *project, *instance, *appProfile, opts...)
+		if err != nil {
+			log.Fatalf("failed to construct classic fallback channel: %v", err)
+		}
+		srv = accelerator.NewServer(*udsPath, fc)
+	} else {
+		srv = accelerator.NewServer(*udsPath, channel)
+	}
 	log.Printf("Starting accelerator daemon on UDS=%s project=%s instance=%s app-profile=%q data-endpoint=%q universe-domain=%q scopes=%q quota-project=%q user-agent=%q",
 		*udsPath, *project, *instance, *appProfile, *dataEndpoint, *universeDomain, *scopesFlag, *quotaProject, accelerator.ComposeUserAgent(*userAgent))
 

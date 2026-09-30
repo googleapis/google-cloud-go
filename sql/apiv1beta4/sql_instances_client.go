@@ -24,6 +24,8 @@ import (
 	"math"
 	"net/http"
 	"net/url"
+	"regexp"
+	"strings"
 	"time"
 
 	sqlpb "cloud.google.com/go/sql/apiv1beta4/sqlpb"
@@ -835,6 +837,117 @@ func NewSqlInstancesClient(ctx context.Context, opts ...option.ClientOption) (*S
 		client.CallOptions.PreCheckMajorVersionUpgrade = append(client.CallOptions.PreCheckMajorVersionUpgrade, gax.WithClientMetrics(metrics))
 		client.CallOptions.PointInTimeRestore = append(client.CallOptions.PointInTimeRestore, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AddServerCa = append(client.CallOptions.AddServerCa, gax.WithClientTracing(tracing))
+		client.CallOptions.AddServerCertificate = append(client.CallOptions.AddServerCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.AddEntraIdCertificate = append(client.CallOptions.AddEntraIdCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.Clone = append(client.CallOptions.Clone, gax.WithClientTracing(tracing))
+		client.CallOptions.Delete = append(client.CallOptions.Delete, gax.WithClientTracing(tracing))
+		client.CallOptions.DemoteMaster = append(client.CallOptions.DemoteMaster, gax.WithClientTracing(tracing))
+		client.CallOptions.Demote = append(client.CallOptions.Demote, gax.WithClientTracing(tracing))
+		client.CallOptions.Export = append(client.CallOptions.Export, gax.WithClientTracing(tracing))
+		client.CallOptions.Failover = append(client.CallOptions.Failover, gax.WithClientTracing(tracing))
+		client.CallOptions.Reencrypt = append(client.CallOptions.Reencrypt, gax.WithClientTracing(tracing))
+		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientTracing(tracing))
+		client.CallOptions.Import = append(client.CallOptions.Import, gax.WithClientTracing(tracing))
+		client.CallOptions.Insert = append(client.CallOptions.Insert, gax.WithClientTracing(tracing))
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServerCas = append(client.CallOptions.ListServerCas, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServerCertificates = append(client.CallOptions.ListServerCertificates, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEntraIdCertificates = append(client.CallOptions.ListEntraIdCertificates, gax.WithClientTracing(tracing))
+		client.CallOptions.Patch = append(client.CallOptions.Patch, gax.WithClientTracing(tracing))
+		client.CallOptions.PromoteReplica = append(client.CallOptions.PromoteReplica, gax.WithClientTracing(tracing))
+		client.CallOptions.Switchover = append(client.CallOptions.Switchover, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetSslConfig = append(client.CallOptions.ResetSslConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.Restart = append(client.CallOptions.Restart, gax.WithClientTracing(tracing))
+		client.CallOptions.RestoreBackup = append(client.CallOptions.RestoreBackup, gax.WithClientTracing(tracing))
+		client.CallOptions.RotateServerCa = append(client.CallOptions.RotateServerCa, gax.WithClientTracing(tracing))
+		client.CallOptions.RotateServerCertificate = append(client.CallOptions.RotateServerCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.RotateEntraIdCertificate = append(client.CallOptions.RotateEntraIdCertificate, gax.WithClientTracing(tracing))
+		client.CallOptions.StartReplica = append(client.CallOptions.StartReplica, gax.WithClientTracing(tracing))
+		client.CallOptions.StopReplica = append(client.CallOptions.StopReplica, gax.WithClientTracing(tracing))
+		client.CallOptions.TruncateLog = append(client.CallOptions.TruncateLog, gax.WithClientTracing(tracing))
+		client.CallOptions.Update = append(client.CallOptions.Update, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateEphemeral = append(client.CallOptions.CreateEphemeral, gax.WithClientTracing(tracing))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientTracing(tracing))
+		client.CallOptions.VerifyExternalSyncSettings = append(client.CallOptions.VerifyExternalSyncSettings, gax.WithClientTracing(tracing))
+		client.CallOptions.StartExternalSync = append(client.CallOptions.StartExternalSync, gax.WithClientTracing(tracing))
+		client.CallOptions.PerformDiskShrink = append(client.CallOptions.PerformDiskShrink, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDiskShrinkConfig = append(client.CallOptions.GetDiskShrinkConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetReplicaSize = append(client.CallOptions.ResetReplicaSize, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLatestRecoveryTime = append(client.CallOptions.GetLatestRecoveryTime, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteSql = append(client.CallOptions.ExecuteSql, gax.WithClientTracing(tracing))
+		client.CallOptions.AcquireSsrsLease = append(client.CallOptions.AcquireSsrsLease, gax.WithClientTracing(tracing))
+		client.CallOptions.ReleaseSsrsLease = append(client.CallOptions.ReleaseSsrsLease, gax.WithClientTracing(tracing))
+		client.CallOptions.PreCheckMajorVersionUpgrade = append(client.CallOptions.PreCheckMajorVersionUpgrade, gax.WithClientTracing(tracing))
+		client.CallOptions.PointInTimeRestore = append(client.CallOptions.PointInTimeRestore, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AddServerCa = append(client.CallOptions.AddServerCa, gax.WithClientLogging(logging))
+		client.CallOptions.AddServerCertificate = append(client.CallOptions.AddServerCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.AddEntraIdCertificate = append(client.CallOptions.AddEntraIdCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.Clone = append(client.CallOptions.Clone, gax.WithClientLogging(logging))
+		client.CallOptions.Delete = append(client.CallOptions.Delete, gax.WithClientLogging(logging))
+		client.CallOptions.DemoteMaster = append(client.CallOptions.DemoteMaster, gax.WithClientLogging(logging))
+		client.CallOptions.Demote = append(client.CallOptions.Demote, gax.WithClientLogging(logging))
+		client.CallOptions.Export = append(client.CallOptions.Export, gax.WithClientLogging(logging))
+		client.CallOptions.Failover = append(client.CallOptions.Failover, gax.WithClientLogging(logging))
+		client.CallOptions.Reencrypt = append(client.CallOptions.Reencrypt, gax.WithClientLogging(logging))
+		client.CallOptions.Get = append(client.CallOptions.Get, gax.WithClientLogging(logging))
+		client.CallOptions.Import = append(client.CallOptions.Import, gax.WithClientLogging(logging))
+		client.CallOptions.Insert = append(client.CallOptions.Insert, gax.WithClientLogging(logging))
+		client.CallOptions.List = append(client.CallOptions.List, gax.WithClientLogging(logging))
+		client.CallOptions.ListServerCas = append(client.CallOptions.ListServerCas, gax.WithClientLogging(logging))
+		client.CallOptions.ListServerCertificates = append(client.CallOptions.ListServerCertificates, gax.WithClientLogging(logging))
+		client.CallOptions.ListEntraIdCertificates = append(client.CallOptions.ListEntraIdCertificates, gax.WithClientLogging(logging))
+		client.CallOptions.Patch = append(client.CallOptions.Patch, gax.WithClientLogging(logging))
+		client.CallOptions.PromoteReplica = append(client.CallOptions.PromoteReplica, gax.WithClientLogging(logging))
+		client.CallOptions.Switchover = append(client.CallOptions.Switchover, gax.WithClientLogging(logging))
+		client.CallOptions.ResetSslConfig = append(client.CallOptions.ResetSslConfig, gax.WithClientLogging(logging))
+		client.CallOptions.Restart = append(client.CallOptions.Restart, gax.WithClientLogging(logging))
+		client.CallOptions.RestoreBackup = append(client.CallOptions.RestoreBackup, gax.WithClientLogging(logging))
+		client.CallOptions.RotateServerCa = append(client.CallOptions.RotateServerCa, gax.WithClientLogging(logging))
+		client.CallOptions.RotateServerCertificate = append(client.CallOptions.RotateServerCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.RotateEntraIdCertificate = append(client.CallOptions.RotateEntraIdCertificate, gax.WithClientLogging(logging))
+		client.CallOptions.StartReplica = append(client.CallOptions.StartReplica, gax.WithClientLogging(logging))
+		client.CallOptions.StopReplica = append(client.CallOptions.StopReplica, gax.WithClientLogging(logging))
+		client.CallOptions.TruncateLog = append(client.CallOptions.TruncateLog, gax.WithClientLogging(logging))
+		client.CallOptions.Update = append(client.CallOptions.Update, gax.WithClientLogging(logging))
+		client.CallOptions.CreateEphemeral = append(client.CallOptions.CreateEphemeral, gax.WithClientLogging(logging))
+		client.CallOptions.RescheduleMaintenance = append(client.CallOptions.RescheduleMaintenance, gax.WithClientLogging(logging))
+		client.CallOptions.VerifyExternalSyncSettings = append(client.CallOptions.VerifyExternalSyncSettings, gax.WithClientLogging(logging))
+		client.CallOptions.StartExternalSync = append(client.CallOptions.StartExternalSync, gax.WithClientLogging(logging))
+		client.CallOptions.PerformDiskShrink = append(client.CallOptions.PerformDiskShrink, gax.WithClientLogging(logging))
+		client.CallOptions.GetDiskShrinkConfig = append(client.CallOptions.GetDiskShrinkConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ResetReplicaSize = append(client.CallOptions.ResetReplicaSize, gax.WithClientLogging(logging))
+		client.CallOptions.GetLatestRecoveryTime = append(client.CallOptions.GetLatestRecoveryTime, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteSql = append(client.CallOptions.ExecuteSql, gax.WithClientLogging(logging))
+		client.CallOptions.AcquireSsrsLease = append(client.CallOptions.AcquireSsrsLease, gax.WithClientLogging(logging))
+		client.CallOptions.ReleaseSsrsLease = append(client.CallOptions.ReleaseSsrsLease, gax.WithClientLogging(logging))
+		client.CallOptions.PreCheckMajorVersionUpgrade = append(client.CallOptions.PreCheckMajorVersionUpgrade, gax.WithClientLogging(logging))
+		client.CallOptions.PointInTimeRestore = append(client.CallOptions.PointInTimeRestore, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -965,6 +1078,117 @@ func NewSqlInstancesRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.ReleaseSsrsLease = append(callOpts.ReleaseSsrsLease, gax.WithClientMetrics(metrics))
 		callOpts.PreCheckMajorVersionUpgrade = append(callOpts.PreCheckMajorVersionUpgrade, gax.WithClientMetrics(metrics))
 		callOpts.PointInTimeRestore = append(callOpts.PointInTimeRestore, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.AddServerCa = append(callOpts.AddServerCa, gax.WithClientTracing(tracing))
+		callOpts.AddServerCertificate = append(callOpts.AddServerCertificate, gax.WithClientTracing(tracing))
+		callOpts.AddEntraIdCertificate = append(callOpts.AddEntraIdCertificate, gax.WithClientTracing(tracing))
+		callOpts.Clone = append(callOpts.Clone, gax.WithClientTracing(tracing))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.DemoteMaster = append(callOpts.DemoteMaster, gax.WithClientTracing(tracing))
+		callOpts.Demote = append(callOpts.Demote, gax.WithClientTracing(tracing))
+		callOpts.Export = append(callOpts.Export, gax.WithClientTracing(tracing))
+		callOpts.Failover = append(callOpts.Failover, gax.WithClientTracing(tracing))
+		callOpts.Reencrypt = append(callOpts.Reencrypt, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.Import = append(callOpts.Import, gax.WithClientTracing(tracing))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+		callOpts.ListServerCas = append(callOpts.ListServerCas, gax.WithClientTracing(tracing))
+		callOpts.ListServerCertificates = append(callOpts.ListServerCertificates, gax.WithClientTracing(tracing))
+		callOpts.ListEntraIdCertificates = append(callOpts.ListEntraIdCertificates, gax.WithClientTracing(tracing))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientTracing(tracing))
+		callOpts.PromoteReplica = append(callOpts.PromoteReplica, gax.WithClientTracing(tracing))
+		callOpts.Switchover = append(callOpts.Switchover, gax.WithClientTracing(tracing))
+		callOpts.ResetSslConfig = append(callOpts.ResetSslConfig, gax.WithClientTracing(tracing))
+		callOpts.Restart = append(callOpts.Restart, gax.WithClientTracing(tracing))
+		callOpts.RestoreBackup = append(callOpts.RestoreBackup, gax.WithClientTracing(tracing))
+		callOpts.RotateServerCa = append(callOpts.RotateServerCa, gax.WithClientTracing(tracing))
+		callOpts.RotateServerCertificate = append(callOpts.RotateServerCertificate, gax.WithClientTracing(tracing))
+		callOpts.RotateEntraIdCertificate = append(callOpts.RotateEntraIdCertificate, gax.WithClientTracing(tracing))
+		callOpts.StartReplica = append(callOpts.StartReplica, gax.WithClientTracing(tracing))
+		callOpts.StopReplica = append(callOpts.StopReplica, gax.WithClientTracing(tracing))
+		callOpts.TruncateLog = append(callOpts.TruncateLog, gax.WithClientTracing(tracing))
+		callOpts.Update = append(callOpts.Update, gax.WithClientTracing(tracing))
+		callOpts.CreateEphemeral = append(callOpts.CreateEphemeral, gax.WithClientTracing(tracing))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientTracing(tracing))
+		callOpts.VerifyExternalSyncSettings = append(callOpts.VerifyExternalSyncSettings, gax.WithClientTracing(tracing))
+		callOpts.StartExternalSync = append(callOpts.StartExternalSync, gax.WithClientTracing(tracing))
+		callOpts.PerformDiskShrink = append(callOpts.PerformDiskShrink, gax.WithClientTracing(tracing))
+		callOpts.GetDiskShrinkConfig = append(callOpts.GetDiskShrinkConfig, gax.WithClientTracing(tracing))
+		callOpts.ResetReplicaSize = append(callOpts.ResetReplicaSize, gax.WithClientTracing(tracing))
+		callOpts.GetLatestRecoveryTime = append(callOpts.GetLatestRecoveryTime, gax.WithClientTracing(tracing))
+		callOpts.ExecuteSql = append(callOpts.ExecuteSql, gax.WithClientTracing(tracing))
+		callOpts.AcquireSsrsLease = append(callOpts.AcquireSsrsLease, gax.WithClientTracing(tracing))
+		callOpts.ReleaseSsrsLease = append(callOpts.ReleaseSsrsLease, gax.WithClientTracing(tracing))
+		callOpts.PreCheckMajorVersionUpgrade = append(callOpts.PreCheckMajorVersionUpgrade, gax.WithClientTracing(tracing))
+		callOpts.PointInTimeRestore = append(callOpts.PointInTimeRestore, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "sqladmin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/sql/apiv1beta4",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "sqladmin.googleapis.com",
+			}),
+		)
+
+		callOpts.AddServerCa = append(callOpts.AddServerCa, gax.WithClientLogging(logging))
+		callOpts.AddServerCertificate = append(callOpts.AddServerCertificate, gax.WithClientLogging(logging))
+		callOpts.AddEntraIdCertificate = append(callOpts.AddEntraIdCertificate, gax.WithClientLogging(logging))
+		callOpts.Clone = append(callOpts.Clone, gax.WithClientLogging(logging))
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.DemoteMaster = append(callOpts.DemoteMaster, gax.WithClientLogging(logging))
+		callOpts.Demote = append(callOpts.Demote, gax.WithClientLogging(logging))
+		callOpts.Export = append(callOpts.Export, gax.WithClientLogging(logging))
+		callOpts.Failover = append(callOpts.Failover, gax.WithClientLogging(logging))
+		callOpts.Reencrypt = append(callOpts.Reencrypt, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.Import = append(callOpts.Import, gax.WithClientLogging(logging))
+		callOpts.Insert = append(callOpts.Insert, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+		callOpts.ListServerCas = append(callOpts.ListServerCas, gax.WithClientLogging(logging))
+		callOpts.ListServerCertificates = append(callOpts.ListServerCertificates, gax.WithClientLogging(logging))
+		callOpts.ListEntraIdCertificates = append(callOpts.ListEntraIdCertificates, gax.WithClientLogging(logging))
+		callOpts.Patch = append(callOpts.Patch, gax.WithClientLogging(logging))
+		callOpts.PromoteReplica = append(callOpts.PromoteReplica, gax.WithClientLogging(logging))
+		callOpts.Switchover = append(callOpts.Switchover, gax.WithClientLogging(logging))
+		callOpts.ResetSslConfig = append(callOpts.ResetSslConfig, gax.WithClientLogging(logging))
+		callOpts.Restart = append(callOpts.Restart, gax.WithClientLogging(logging))
+		callOpts.RestoreBackup = append(callOpts.RestoreBackup, gax.WithClientLogging(logging))
+		callOpts.RotateServerCa = append(callOpts.RotateServerCa, gax.WithClientLogging(logging))
+		callOpts.RotateServerCertificate = append(callOpts.RotateServerCertificate, gax.WithClientLogging(logging))
+		callOpts.RotateEntraIdCertificate = append(callOpts.RotateEntraIdCertificate, gax.WithClientLogging(logging))
+		callOpts.StartReplica = append(callOpts.StartReplica, gax.WithClientLogging(logging))
+		callOpts.StopReplica = append(callOpts.StopReplica, gax.WithClientLogging(logging))
+		callOpts.TruncateLog = append(callOpts.TruncateLog, gax.WithClientLogging(logging))
+		callOpts.Update = append(callOpts.Update, gax.WithClientLogging(logging))
+		callOpts.CreateEphemeral = append(callOpts.CreateEphemeral, gax.WithClientLogging(logging))
+		callOpts.RescheduleMaintenance = append(callOpts.RescheduleMaintenance, gax.WithClientLogging(logging))
+		callOpts.VerifyExternalSyncSettings = append(callOpts.VerifyExternalSyncSettings, gax.WithClientLogging(logging))
+		callOpts.StartExternalSync = append(callOpts.StartExternalSync, gax.WithClientLogging(logging))
+		callOpts.PerformDiskShrink = append(callOpts.PerformDiskShrink, gax.WithClientLogging(logging))
+		callOpts.GetDiskShrinkConfig = append(callOpts.GetDiskShrinkConfig, gax.WithClientLogging(logging))
+		callOpts.ResetReplicaSize = append(callOpts.ResetReplicaSize, gax.WithClientLogging(logging))
+		callOpts.GetLatestRecoveryTime = append(callOpts.GetLatestRecoveryTime, gax.WithClientLogging(logging))
+		callOpts.ExecuteSql = append(callOpts.ExecuteSql, gax.WithClientLogging(logging))
+		callOpts.AcquireSsrsLease = append(callOpts.AcquireSsrsLease, gax.WithClientLogging(logging))
+		callOpts.ReleaseSsrsLease = append(callOpts.ReleaseSsrsLease, gax.WithClientLogging(logging))
+		callOpts.PreCheckMajorVersionUpgrade = append(callOpts.PreCheckMajorVersionUpgrade, gax.WithClientLogging(logging))
+		callOpts.PointInTimeRestore = append(callOpts.PointInTimeRestore, gax.WithClientLogging(logging))
 	}
 
 	return &SqlInstancesClient{internalClient: c, CallOptions: callOpts}, nil
@@ -1260,7 +1484,19 @@ func (c *sqlInstancesGRPCClient) Import(ctx context.Context, req *sqlpb.SqlInsta
 }
 
 func (c *sqlInstancesGRPCClient) Insert(ctx context.Context, req *sqlpb.SqlInstancesInsertRequest, opts ...gax.CallOption) (*sqlpb.Operation, error) {
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
+		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])
+	}
+	if reg := regexp.MustCompile("(?P<region>.*)"); reg.MatchString(req.GetBody().GetRegion()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])) > 0 {
+		routingHeadersMap["region"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
@@ -1954,6 +2190,9 @@ func (c *sqlInstancesRESTClient) AddServerCa(ctx context.Context, req *sqlpb.Sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2014,6 +2253,9 @@ func (c *sqlInstancesRESTClient) AddServerCertificate(ctx context.Context, req *
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2070,6 +2312,9 @@ func (c *sqlInstancesRESTClient) AddEntraIdCertificate(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2132,6 +2377,9 @@ func (c *sqlInstancesRESTClient) Clone(ctx context.Context, req *sqlpb.SqlInstan
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2202,6 +2450,9 @@ func (c *sqlInstancesRESTClient) Delete(ctx context.Context, req *sqlpb.SqlInsta
 	if req.GetFinalBackupTtlDays() != 0 {
 		params.Add("finalBackupTtlDays", fmt.Sprintf("%v", req.GetFinalBackupTtlDays()))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2264,6 +2515,9 @@ func (c *sqlInstancesRESTClient) DemoteMaster(ctx context.Context, req *sqlpb.Sq
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2326,6 +2580,9 @@ func (c *sqlInstancesRESTClient) Demote(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2388,6 +2645,9 @@ func (c *sqlInstancesRESTClient) Export(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2456,6 +2716,9 @@ func (c *sqlInstancesRESTClient) Failover(ctx context.Context, req *sqlpb.SqlIns
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2517,6 +2780,9 @@ func (c *sqlInstancesRESTClient) Reencrypt(ctx context.Context, req *sqlpb.SqlIn
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2571,6 +2837,9 @@ func (c *sqlInstancesRESTClient) Get(ctx context.Context, req *sqlpb.SqlInstance
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2633,6 +2902,9 @@ func (c *sqlInstancesRESTClient) Import(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2694,11 +2966,26 @@ func (c *sqlInstancesRESTClient) Insert(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
 	// Build HTTP headers from client and context metadata.
-	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "project", url.QueryEscape(req.GetProject()))}
+	routingHeaders := ""
+	routingHeadersMap := make(map[string]string)
+	if reg := regexp.MustCompile("(.*)"); reg.MatchString(req.GetProject()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])) > 0 {
+		routingHeadersMap["project"] = url.QueryEscape(reg.FindStringSubmatch(req.GetProject())[1])
+	}
+	if reg := regexp.MustCompile("(?P<region>.*)"); reg.MatchString(req.GetBody().GetRegion()) && len(url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])) > 0 {
+		routingHeadersMap["region"] = url.QueryEscape(reg.FindStringSubmatch(req.GetBody().GetRegion())[1])
+	}
+	for headerName, headerValue := range routingHeadersMap {
+		routingHeaders = fmt.Sprintf("%s%s=%s&", routingHeaders, headerName, headerValue)
+	}
+	routingHeaders = strings.TrimSuffix(routingHeaders, "&")
+	hds := []string{"x-goog-request-params", routingHeaders}
 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
@@ -2763,6 +3050,9 @@ func (c *sqlInstancesRESTClient) List(ctx context.Context, req *sqlpb.SqlInstanc
 		params.Add("$alt", "json;enum-encoding=int")
 		if req.GetFilter() != "" {
 			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetLocation() != "" {
+			params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
 		}
 		if req.GetMaxResults() != 0 {
 			params.Add("maxResults", fmt.Sprintf("%v", req.GetMaxResults()))
@@ -2833,6 +3123,9 @@ func (c *sqlInstancesRESTClient) ListServerCas(ctx context.Context, req *sqlpb.S
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2892,6 +3185,9 @@ func (c *sqlInstancesRESTClient) ListServerCertificates(ctx context.Context, req
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -2949,6 +3245,9 @@ func (c *sqlInstancesRESTClient) ListEntraIdCertificates(ctx context.Context, re
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3011,6 +3310,9 @@ func (c *sqlInstancesRESTClient) Patch(ctx context.Context, req *sqlpb.SqlInstan
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 	if req != nil && req.ReconcilePscNetworking != nil {
 		params.Add("reconcilePscNetworking", fmt.Sprintf("%v", req.GetReconcilePscNetworking()))
 	}
@@ -3076,6 +3378,9 @@ func (c *sqlInstancesRESTClient) PromoteReplica(ctx context.Context, req *sqlpb.
 	if req.GetFailover() {
 		params.Add("failover", fmt.Sprintf("%v", req.GetFailover()))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3138,6 +3443,9 @@ func (c *sqlInstancesRESTClient) Switchover(ctx context.Context, req *sqlpb.SqlI
 		}
 		params.Add("dbTimeout", string(field[1:len(field)-1]))
 	}
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3193,6 +3501,9 @@ func (c *sqlInstancesRESTClient) ResetSslConfig(ctx context.Context, req *sqlpb.
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 	if req.GetMode() != 0 {
 		params.Add("mode", fmt.Sprintf("%v", req.GetMode()))
 	}
@@ -3250,6 +3561,9 @@ func (c *sqlInstancesRESTClient) Restart(ctx context.Context, req *sqlpb.SqlInst
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3312,6 +3626,9 @@ func (c *sqlInstancesRESTClient) RestoreBackup(ctx context.Context, req *sqlpb.S
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3376,6 +3693,9 @@ func (c *sqlInstancesRESTClient) RotateServerCa(ctx context.Context, req *sqlpb.
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3439,6 +3759,9 @@ func (c *sqlInstancesRESTClient) RotateServerCertificate(ctx context.Context, re
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3501,6 +3824,9 @@ func (c *sqlInstancesRESTClient) RotateEntraIdCertificate(ctx context.Context, r
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3555,6 +3881,9 @@ func (c *sqlInstancesRESTClient) StartReplica(ctx context.Context, req *sqlpb.Sq
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3609,6 +3938,9 @@ func (c *sqlInstancesRESTClient) StopReplica(ctx context.Context, req *sqlpb.Sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3671,6 +4003,9 @@ func (c *sqlInstancesRESTClient) TruncateLog(ctx context.Context, req *sqlpb.Sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3733,6 +4068,9 @@ func (c *sqlInstancesRESTClient) Update(ctx context.Context, req *sqlpb.SqlInsta
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3797,6 +4135,9 @@ func (c *sqlInstancesRESTClient) CreateEphemeral(ctx context.Context, req *sqlpb
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -3858,6 +4199,9 @@ func (c *sqlInstancesRESTClient) RescheduleMaintenance(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4039,6 +4383,9 @@ func (c *sqlInstancesRESTClient) PerformDiskShrink(ctx context.Context, req *sql
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4093,6 +4440,9 @@ func (c *sqlInstancesRESTClient) GetDiskShrinkConfig(ctx context.Context, req *s
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4207,6 +4557,9 @@ func (c *sqlInstancesRESTClient) GetLatestRecoveryTime(ctx context.Context, req 
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 	if req != nil && req.SourceInstanceDeletionTime != nil {
 		field, err := protojson.Marshal(req.GetSourceInstanceDeletionTime())
 		if err != nil {
@@ -4275,6 +4628,9 @@ func (c *sqlInstancesRESTClient) ExecuteSql(ctx context.Context, req *sqlpb.SqlI
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4336,6 +4692,9 @@ func (c *sqlInstancesRESTClient) AcquireSsrsLease(ctx context.Context, req *sqlp
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4390,6 +4749,9 @@ func (c *sqlInstancesRESTClient) ReleaseSsrsLease(ctx context.Context, req *sqlp
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 
@@ -4451,6 +4813,9 @@ func (c *sqlInstancesRESTClient) PreCheckMajorVersionUpgrade(ctx context.Context
 
 	params := url.Values{}
 	params.Add("$alt", "json;enum-encoding=int")
+	if req.GetLocation() != "" {
+		params.Add("location", fmt.Sprintf("%v", req.GetLocation()))
+	}
 
 	baseUrl.RawQuery = params.Encode()
 

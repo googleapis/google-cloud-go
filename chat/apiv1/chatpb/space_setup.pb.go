@@ -64,12 +64,24 @@ type SetUpSpaceRequest struct {
 	// If a `DIRECT_MESSAGE` space already exists, that space is returned instead
 	// of creating a new space.
 	Space *Space `protobuf:"bytes,1,opt,name=space,proto3" json:"space,omitempty"`
-	// Optional. A unique identifier for this request.
-	// A random UUID is recommended.
-	// Specifying an existing request ID returns the space created with that ID
-	// instead of creating a new space.
-	// Specifying an existing request ID from the same Chat app with a different
-	// authenticated user returns an error.
+	// Optional. A unique ID for this request. A random UUID is recommended.
+	// Specifying a request ID makes the request idempotent, which ensures that
+	// multiple identical requests with the same request ID result in only a
+	// single space being created. Subsequent requests with the same request ID
+	// return the existing space and do not update the space, even if the
+	// requested details differ from the current state.
+	//
+	// To use this field effectively:
+	//
+	// - Ensure that subsequent requests are identical and use the same
+	// authentication credentials as the original request.
+	// - If a space was already created with the provided request ID, the request
+	// returns that space. Note that the returned space might not be fully
+	// populated; the API echoes the space in your request with the
+	// system-assigned resource name populated. To retrieve the latest metadata
+	// for the space, call `GetSpace`.
+	// - Reusing an existing request ID with a different authenticated user
+	// results in an error.
 	RequestId string `protobuf:"bytes,2,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	// Optional. The Google Chat users or groups to invite to join the space. Omit
 	// the calling user, as they are added automatically.

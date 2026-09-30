@@ -446,6 +446,75 @@ func NewIcebergCatalogClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.CreateIcebergCatalog = append(client.CallOptions.CreateIcebergCatalog, gax.WithClientMetrics(metrics))
 		client.CallOptions.FailoverIcebergCatalog = append(client.CallOptions.FailoverIcebergCatalog, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetIcebergCatalogConfig = append(client.CallOptions.GetIcebergCatalogConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIcebergNamespaces = append(client.CallOptions.ListIcebergNamespaces, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckIcebergNamespaceExists = append(client.CallOptions.CheckIcebergNamespaceExists, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIcebergNamespace = append(client.CallOptions.GetIcebergNamespace, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIcebergNamespace = append(client.CallOptions.CreateIcebergNamespace, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIcebergNamespace = append(client.CallOptions.DeleteIcebergNamespace, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIcebergNamespace = append(client.CallOptions.UpdateIcebergNamespace, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIcebergTableIdentifiers = append(client.CallOptions.ListIcebergTableIdentifiers, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIcebergTable = append(client.CallOptions.CreateIcebergTable, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckIcebergTableExists = append(client.CallOptions.CheckIcebergTableExists, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIcebergTable = append(client.CallOptions.DeleteIcebergTable, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIcebergTable = append(client.CallOptions.GetIcebergTable, gax.WithClientTracing(tracing))
+		client.CallOptions.LoadIcebergTableCredentials = append(client.CallOptions.LoadIcebergTableCredentials, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIcebergTable = append(client.CallOptions.UpdateIcebergTable, gax.WithClientTracing(tracing))
+		client.CallOptions.RegisterIcebergTable = append(client.CallOptions.RegisterIcebergTable, gax.WithClientTracing(tracing))
+		client.CallOptions.ReportIcebergTableMetrics = append(client.CallOptions.ReportIcebergTableMetrics, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIcebergCatalog = append(client.CallOptions.GetIcebergCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.ListIcebergCatalogs = append(client.CallOptions.ListIcebergCatalogs, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteIcebergCatalog = append(client.CallOptions.DeleteIcebergCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateIcebergCatalog = append(client.CallOptions.UpdateIcebergCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateIcebergCatalog = append(client.CallOptions.CreateIcebergCatalog, gax.WithClientTracing(tracing))
+		client.CallOptions.FailoverIcebergCatalog = append(client.CallOptions.FailoverIcebergCatalog, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetIcebergCatalogConfig = append(client.CallOptions.GetIcebergCatalogConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListIcebergNamespaces = append(client.CallOptions.ListIcebergNamespaces, gax.WithClientLogging(logging))
+		client.CallOptions.CheckIcebergNamespaceExists = append(client.CallOptions.CheckIcebergNamespaceExists, gax.WithClientLogging(logging))
+		client.CallOptions.GetIcebergNamespace = append(client.CallOptions.GetIcebergNamespace, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIcebergNamespace = append(client.CallOptions.CreateIcebergNamespace, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIcebergNamespace = append(client.CallOptions.DeleteIcebergNamespace, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIcebergNamespace = append(client.CallOptions.UpdateIcebergNamespace, gax.WithClientLogging(logging))
+		client.CallOptions.ListIcebergTableIdentifiers = append(client.CallOptions.ListIcebergTableIdentifiers, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIcebergTable = append(client.CallOptions.CreateIcebergTable, gax.WithClientLogging(logging))
+		client.CallOptions.CheckIcebergTableExists = append(client.CallOptions.CheckIcebergTableExists, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIcebergTable = append(client.CallOptions.DeleteIcebergTable, gax.WithClientLogging(logging))
+		client.CallOptions.GetIcebergTable = append(client.CallOptions.GetIcebergTable, gax.WithClientLogging(logging))
+		client.CallOptions.LoadIcebergTableCredentials = append(client.CallOptions.LoadIcebergTableCredentials, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIcebergTable = append(client.CallOptions.UpdateIcebergTable, gax.WithClientLogging(logging))
+		client.CallOptions.RegisterIcebergTable = append(client.CallOptions.RegisterIcebergTable, gax.WithClientLogging(logging))
+		client.CallOptions.ReportIcebergTableMetrics = append(client.CallOptions.ReportIcebergTableMetrics, gax.WithClientLogging(logging))
+		client.CallOptions.GetIcebergCatalog = append(client.CallOptions.GetIcebergCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.ListIcebergCatalogs = append(client.CallOptions.ListIcebergCatalogs, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteIcebergCatalog = append(client.CallOptions.DeleteIcebergCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateIcebergCatalog = append(client.CallOptions.UpdateIcebergCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.CreateIcebergCatalog = append(client.CallOptions.CreateIcebergCatalog, gax.WithClientLogging(logging))
+		client.CallOptions.FailoverIcebergCatalog = append(client.CallOptions.FailoverIcebergCatalog, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -569,6 +638,75 @@ func NewIcebergCatalogRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.UpdateIcebergCatalog = append(callOpts.UpdateIcebergCatalog, gax.WithClientMetrics(metrics))
 		callOpts.CreateIcebergCatalog = append(callOpts.CreateIcebergCatalog, gax.WithClientMetrics(metrics))
 		callOpts.FailoverIcebergCatalog = append(callOpts.FailoverIcebergCatalog, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		callOpts.GetIcebergCatalogConfig = append(callOpts.GetIcebergCatalogConfig, gax.WithClientTracing(tracing))
+		callOpts.ListIcebergNamespaces = append(callOpts.ListIcebergNamespaces, gax.WithClientTracing(tracing))
+		callOpts.CheckIcebergNamespaceExists = append(callOpts.CheckIcebergNamespaceExists, gax.WithClientTracing(tracing))
+		callOpts.GetIcebergNamespace = append(callOpts.GetIcebergNamespace, gax.WithClientTracing(tracing))
+		callOpts.CreateIcebergNamespace = append(callOpts.CreateIcebergNamespace, gax.WithClientTracing(tracing))
+		callOpts.DeleteIcebergNamespace = append(callOpts.DeleteIcebergNamespace, gax.WithClientTracing(tracing))
+		callOpts.UpdateIcebergNamespace = append(callOpts.UpdateIcebergNamespace, gax.WithClientTracing(tracing))
+		callOpts.ListIcebergTableIdentifiers = append(callOpts.ListIcebergTableIdentifiers, gax.WithClientTracing(tracing))
+		callOpts.CreateIcebergTable = append(callOpts.CreateIcebergTable, gax.WithClientTracing(tracing))
+		callOpts.CheckIcebergTableExists = append(callOpts.CheckIcebergTableExists, gax.WithClientTracing(tracing))
+		callOpts.DeleteIcebergTable = append(callOpts.DeleteIcebergTable, gax.WithClientTracing(tracing))
+		callOpts.GetIcebergTable = append(callOpts.GetIcebergTable, gax.WithClientTracing(tracing))
+		callOpts.LoadIcebergTableCredentials = append(callOpts.LoadIcebergTableCredentials, gax.WithClientTracing(tracing))
+		callOpts.UpdateIcebergTable = append(callOpts.UpdateIcebergTable, gax.WithClientTracing(tracing))
+		callOpts.RegisterIcebergTable = append(callOpts.RegisterIcebergTable, gax.WithClientTracing(tracing))
+		callOpts.ReportIcebergTableMetrics = append(callOpts.ReportIcebergTableMetrics, gax.WithClientTracing(tracing))
+		callOpts.GetIcebergCatalog = append(callOpts.GetIcebergCatalog, gax.WithClientTracing(tracing))
+		callOpts.ListIcebergCatalogs = append(callOpts.ListIcebergCatalogs, gax.WithClientTracing(tracing))
+		callOpts.DeleteIcebergCatalog = append(callOpts.DeleteIcebergCatalog, gax.WithClientTracing(tracing))
+		callOpts.UpdateIcebergCatalog = append(callOpts.UpdateIcebergCatalog, gax.WithClientTracing(tracing))
+		callOpts.CreateIcebergCatalog = append(callOpts.CreateIcebergCatalog, gax.WithClientTracing(tracing))
+		callOpts.FailoverIcebergCatalog = append(callOpts.FailoverIcebergCatalog, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "biglake",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/biglake/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "biglake.googleapis.com",
+			}),
+		)
+
+		callOpts.GetIcebergCatalogConfig = append(callOpts.GetIcebergCatalogConfig, gax.WithClientLogging(logging))
+		callOpts.ListIcebergNamespaces = append(callOpts.ListIcebergNamespaces, gax.WithClientLogging(logging))
+		callOpts.CheckIcebergNamespaceExists = append(callOpts.CheckIcebergNamespaceExists, gax.WithClientLogging(logging))
+		callOpts.GetIcebergNamespace = append(callOpts.GetIcebergNamespace, gax.WithClientLogging(logging))
+		callOpts.CreateIcebergNamespace = append(callOpts.CreateIcebergNamespace, gax.WithClientLogging(logging))
+		callOpts.DeleteIcebergNamespace = append(callOpts.DeleteIcebergNamespace, gax.WithClientLogging(logging))
+		callOpts.UpdateIcebergNamespace = append(callOpts.UpdateIcebergNamespace, gax.WithClientLogging(logging))
+		callOpts.ListIcebergTableIdentifiers = append(callOpts.ListIcebergTableIdentifiers, gax.WithClientLogging(logging))
+		callOpts.CreateIcebergTable = append(callOpts.CreateIcebergTable, gax.WithClientLogging(logging))
+		callOpts.CheckIcebergTableExists = append(callOpts.CheckIcebergTableExists, gax.WithClientLogging(logging))
+		callOpts.DeleteIcebergTable = append(callOpts.DeleteIcebergTable, gax.WithClientLogging(logging))
+		callOpts.GetIcebergTable = append(callOpts.GetIcebergTable, gax.WithClientLogging(logging))
+		callOpts.LoadIcebergTableCredentials = append(callOpts.LoadIcebergTableCredentials, gax.WithClientLogging(logging))
+		callOpts.UpdateIcebergTable = append(callOpts.UpdateIcebergTable, gax.WithClientLogging(logging))
+		callOpts.RegisterIcebergTable = append(callOpts.RegisterIcebergTable, gax.WithClientLogging(logging))
+		callOpts.ReportIcebergTableMetrics = append(callOpts.ReportIcebergTableMetrics, gax.WithClientLogging(logging))
+		callOpts.GetIcebergCatalog = append(callOpts.GetIcebergCatalog, gax.WithClientLogging(logging))
+		callOpts.ListIcebergCatalogs = append(callOpts.ListIcebergCatalogs, gax.WithClientLogging(logging))
+		callOpts.DeleteIcebergCatalog = append(callOpts.DeleteIcebergCatalog, gax.WithClientLogging(logging))
+		callOpts.UpdateIcebergCatalog = append(callOpts.UpdateIcebergCatalog, gax.WithClientLogging(logging))
+		callOpts.CreateIcebergCatalog = append(callOpts.CreateIcebergCatalog, gax.WithClientLogging(logging))
+		callOpts.FailoverIcebergCatalog = append(callOpts.FailoverIcebergCatalog, gax.WithClientLogging(logging))
 	}
 
 	return &IcebergCatalogClient{internalClient: c, CallOptions: callOpts}, nil
@@ -697,9 +835,6 @@ func (c *icebergCatalogGRPCClient) GetIcebergNamespace(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/GetIcebergNamespace")
 	}
@@ -721,9 +856,6 @@ func (c *icebergCatalogGRPCClient) CreateIcebergNamespace(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/CreateIcebergNamespace")
 	}
@@ -745,9 +877,6 @@ func (c *icebergCatalogGRPCClient) DeleteIcebergNamespace(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/DeleteIcebergNamespace")
 	}
@@ -765,9 +894,6 @@ func (c *icebergCatalogGRPCClient) UpdateIcebergNamespace(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/UpdateIcebergNamespace")
 	}
@@ -789,9 +915,6 @@ func (c *icebergCatalogGRPCClient) ListIcebergTableIdentifiers(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/ListIcebergTableIdentifiers")
 	}
@@ -841,9 +964,6 @@ func (c *icebergCatalogGRPCClient) CreateIcebergTable(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/CreateIcebergTable")
 	}
@@ -879,9 +999,6 @@ func (c *icebergCatalogGRPCClient) DeleteIcebergTable(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/DeleteIcebergTable")
 	}
@@ -899,9 +1016,6 @@ func (c *icebergCatalogGRPCClient) GetIcebergTable(ctx context.Context, req *big
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/GetIcebergTable")
 	}
@@ -923,9 +1037,6 @@ func (c *icebergCatalogGRPCClient) LoadIcebergTableCredentials(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/LoadIcebergTableCredentials")
 	}
@@ -947,9 +1058,6 @@ func (c *icebergCatalogGRPCClient) UpdateIcebergTable(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/UpdateIcebergTable")
 	}
@@ -971,9 +1079,6 @@ func (c *icebergCatalogGRPCClient) RegisterIcebergTable(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/RegisterIcebergTable")
 	}
@@ -995,9 +1100,6 @@ func (c *icebergCatalogGRPCClient) ReportIcebergTableMetrics(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/ReportIcebergTableMetrics")
 	}
@@ -1015,9 +1117,6 @@ func (c *icebergCatalogGRPCClient) GetIcebergCatalog(ctx context.Context, req *b
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/GetIcebergCatalog")
 	}
@@ -1039,9 +1138,6 @@ func (c *icebergCatalogGRPCClient) ListIcebergCatalogs(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/ListIcebergCatalogs")
 	}
@@ -1091,9 +1187,6 @@ func (c *icebergCatalogGRPCClient) DeleteIcebergCatalog(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/DeleteIcebergCatalog")
 	}
@@ -1132,9 +1225,6 @@ func (c *icebergCatalogGRPCClient) CreateIcebergCatalog(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/CreateIcebergCatalog")
 	}
@@ -1369,9 +1459,6 @@ func (c *icebergCatalogRESTClient) GetIcebergNamespace(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/GetIcebergNamespace")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*}")
@@ -1433,9 +1520,6 @@ func (c *icebergCatalogRESTClient) CreateIcebergNamespace(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/CreateIcebergNamespace")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{parent=projects/*/catalogs/*}/namespaces")
@@ -1490,9 +1574,6 @@ func (c *icebergCatalogRESTClient) DeleteIcebergNamespace(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/DeleteIcebergNamespace")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*}")
@@ -1539,9 +1620,6 @@ func (c *icebergCatalogRESTClient) UpdateIcebergNamespace(ctx context.Context, r
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/UpdateIcebergNamespace")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*}/properties")
@@ -1680,9 +1758,6 @@ func (c *icebergCatalogRESTClient) CreateIcebergTable(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/CreateIcebergTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{parent=projects/*/catalogs/*/namespaces/*}/tables")
@@ -1780,9 +1855,6 @@ func (c *icebergCatalogRESTClient) DeleteIcebergTable(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/DeleteIcebergTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*/tables/*}")
@@ -1825,9 +1897,6 @@ func (c *icebergCatalogRESTClient) GetIcebergTable(ctx context.Context, req *big
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/GetIcebergTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*/tables/*}")
@@ -1885,9 +1954,6 @@ func (c *icebergCatalogRESTClient) LoadIcebergTableCredentials(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/LoadIcebergTableCredentials")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*/tables/*}/credentials")
@@ -1949,9 +2015,6 @@ func (c *icebergCatalogRESTClient) UpdateIcebergTable(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/UpdateIcebergTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*/tables/*}")
@@ -2012,9 +2075,6 @@ func (c *icebergCatalogRESTClient) RegisterIcebergTable(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/RegisterIcebergTable")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{parent=projects/*/catalogs/*/namespaces/*}/register")
@@ -2075,9 +2135,6 @@ func (c *icebergCatalogRESTClient) ReportIcebergTableMetrics(ctx context.Context
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/ReportIcebergTableMetrics")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/v1/{name=projects/*/catalogs/*/namespaces/*/tables/*}/metrics")
@@ -2117,9 +2174,6 @@ func (c *icebergCatalogRESTClient) GetIcebergCatalog(ctx context.Context, req *b
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/GetIcebergCatalog")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/extensions/{name=projects/*/catalogs/*}")
@@ -2262,9 +2316,6 @@ func (c *icebergCatalogRESTClient) DeleteIcebergCatalog(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/DeleteIcebergCatalog")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/extensions/{name=projects/*/catalogs/*}")
@@ -2388,9 +2439,6 @@ func (c *icebergCatalogRESTClient) CreateIcebergCatalog(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//biglake.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.biglake.v1.IcebergCatalogService/CreateIcebergCatalog")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/iceberg/v1/restcatalog/extensions/{parent=projects/*}/catalogs")

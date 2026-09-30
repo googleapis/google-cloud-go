@@ -1523,8 +1523,9 @@ func (x *StreamingRecognitionResult) GetLanguageCode() string {
 // Represents the natural language text to be processed.
 type TextInput struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// Required. The UTF-8 encoded natural language text to be processed.
+	// Optional. The UTF-8 encoded natural language text to be processed.
 	// Text length must not exceed 256 characters for virtual agent interactions.
+	// Only one of `text` and `companion_query` should be set - not both.
 	Text string `protobuf:"bytes,1,opt,name=text,proto3" json:"text,omitempty"`
 	// Required. The language of this conversational query. See [Language
 	// Support](https://cloud.google.com/dialogflow/docs/reference/language)
@@ -1962,7 +1963,7 @@ const file_google_cloud_dialogflow_v2_session_proto_rawDesc = "" +
 	"\x15SPEECH_ACTIVITY_BEGIN\x10\x05\x12\x17\n" +
 	"\x13SPEECH_ACTIVITY_END\x10\x06\"N\n" +
 	"\tTextInput\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x02R\x04text\x12(\n" +
+	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01R\x04text\x12(\n" +
 	"\rlanguage_code\x18\x02 \x01(\tB\x03\xe0A\x02R\flanguageCode\"\x88\x01\n" +
 	"\n" +
 	"EventInput\x12\x17\n" +

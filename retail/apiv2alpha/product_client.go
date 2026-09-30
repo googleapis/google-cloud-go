@@ -909,6 +909,61 @@ func NewProductClient(ctx context.Context, opts ...option.ClientOption) (*Produc
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProduct = append(client.CallOptions.CreateProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateProduct = append(client.CallOptions.UpdateProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteProduct = append(client.CallOptions.DeleteProduct, gax.WithClientTracing(tracing))
+		client.CallOptions.PurgeProducts = append(client.CallOptions.PurgeProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportProducts = append(client.CallOptions.ImportProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.ExportProducts = append(client.CallOptions.ExportProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.SetInventory = append(client.CallOptions.SetInventory, gax.WithClientTracing(tracing))
+		client.CallOptions.AddFulfillmentPlaces = append(client.CallOptions.AddFulfillmentPlaces, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveFulfillmentPlaces = append(client.CallOptions.RemoveFulfillmentPlaces, gax.WithClientTracing(tracing))
+		client.CallOptions.AddLocalInventories = append(client.CallOptions.AddLocalInventories, gax.WithClientTracing(tracing))
+		client.CallOptions.RemoveLocalInventories = append(client.CallOptions.RemoveLocalInventories, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateProduct = append(client.CallOptions.CreateProduct, gax.WithClientLogging(logging))
+		client.CallOptions.GetProduct = append(client.CallOptions.GetProduct, gax.WithClientLogging(logging))
+		client.CallOptions.ListProducts = append(client.CallOptions.ListProducts, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateProduct = append(client.CallOptions.UpdateProduct, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteProduct = append(client.CallOptions.DeleteProduct, gax.WithClientLogging(logging))
+		client.CallOptions.PurgeProducts = append(client.CallOptions.PurgeProducts, gax.WithClientLogging(logging))
+		client.CallOptions.ImportProducts = append(client.CallOptions.ImportProducts, gax.WithClientLogging(logging))
+		client.CallOptions.ExportProducts = append(client.CallOptions.ExportProducts, gax.WithClientLogging(logging))
+		client.CallOptions.SetInventory = append(client.CallOptions.SetInventory, gax.WithClientLogging(logging))
+		client.CallOptions.AddFulfillmentPlaces = append(client.CallOptions.AddFulfillmentPlaces, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveFulfillmentPlaces = append(client.CallOptions.RemoveFulfillmentPlaces, gax.WithClientLogging(logging))
+		client.CallOptions.AddLocalInventories = append(client.CallOptions.AddLocalInventories, gax.WithClientLogging(logging))
+		client.CallOptions.RemoveLocalInventories = append(client.CallOptions.RemoveLocalInventories, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -1031,6 +1086,61 @@ func NewProductRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProduct = append(callOpts.CreateProduct, gax.WithClientTracing(tracing))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientTracing(tracing))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientTracing(tracing))
+		callOpts.UpdateProduct = append(callOpts.UpdateProduct, gax.WithClientTracing(tracing))
+		callOpts.DeleteProduct = append(callOpts.DeleteProduct, gax.WithClientTracing(tracing))
+		callOpts.PurgeProducts = append(callOpts.PurgeProducts, gax.WithClientTracing(tracing))
+		callOpts.ImportProducts = append(callOpts.ImportProducts, gax.WithClientTracing(tracing))
+		callOpts.ExportProducts = append(callOpts.ExportProducts, gax.WithClientTracing(tracing))
+		callOpts.SetInventory = append(callOpts.SetInventory, gax.WithClientTracing(tracing))
+		callOpts.AddFulfillmentPlaces = append(callOpts.AddFulfillmentPlaces, gax.WithClientTracing(tracing))
+		callOpts.RemoveFulfillmentPlaces = append(callOpts.RemoveFulfillmentPlaces, gax.WithClientTracing(tracing))
+		callOpts.AddLocalInventories = append(callOpts.AddLocalInventories, gax.WithClientTracing(tracing))
+		callOpts.RemoveLocalInventories = append(callOpts.RemoveLocalInventories, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "retail",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/retail/apiv2alpha",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "retail.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateProduct = append(callOpts.CreateProduct, gax.WithClientLogging(logging))
+		callOpts.GetProduct = append(callOpts.GetProduct, gax.WithClientLogging(logging))
+		callOpts.ListProducts = append(callOpts.ListProducts, gax.WithClientLogging(logging))
+		callOpts.UpdateProduct = append(callOpts.UpdateProduct, gax.WithClientLogging(logging))
+		callOpts.DeleteProduct = append(callOpts.DeleteProduct, gax.WithClientLogging(logging))
+		callOpts.PurgeProducts = append(callOpts.PurgeProducts, gax.WithClientLogging(logging))
+		callOpts.ImportProducts = append(callOpts.ImportProducts, gax.WithClientLogging(logging))
+		callOpts.ExportProducts = append(callOpts.ExportProducts, gax.WithClientLogging(logging))
+		callOpts.SetInventory = append(callOpts.SetInventory, gax.WithClientLogging(logging))
+		callOpts.AddFulfillmentPlaces = append(callOpts.AddFulfillmentPlaces, gax.WithClientLogging(logging))
+		callOpts.RemoveFulfillmentPlaces = append(callOpts.RemoveFulfillmentPlaces, gax.WithClientLogging(logging))
+		callOpts.AddLocalInventories = append(callOpts.AddLocalInventories, gax.WithClientLogging(logging))
+		callOpts.RemoveLocalInventories = append(callOpts.RemoveLocalInventories, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -1087,9 +1197,6 @@ func (c *productGRPCClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/CreateProduct")
 	}
@@ -1111,9 +1218,6 @@ func (c *productGRPCClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/GetProduct")
 	}
@@ -1135,9 +1239,6 @@ func (c *productGRPCClient) ListProducts(ctx context.Context, req *retailpb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/ListProducts")
 	}
@@ -1208,9 +1309,6 @@ func (c *productGRPCClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/DeleteProduct")
 	}
@@ -1228,9 +1326,6 @@ func (c *productGRPCClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/PurgeProducts")
 	}
@@ -1258,9 +1353,6 @@ func (c *productGRPCClient) ImportProducts(ctx context.Context, req *retailpb.Im
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/ImportProducts")
 	}
@@ -1288,9 +1380,6 @@ func (c *productGRPCClient) ExportProducts(ctx context.Context, req *retailpb.Ex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/ExportProducts")
 	}
@@ -1345,9 +1434,6 @@ func (c *productGRPCClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/AddFulfillmentPlaces")
 	}
@@ -1375,9 +1461,6 @@ func (c *productGRPCClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/RemoveFulfillmentPlaces")
 	}
@@ -1405,9 +1488,6 @@ func (c *productGRPCClient) AddLocalInventories(ctx context.Context, req *retail
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/AddLocalInventories")
 	}
@@ -1435,9 +1515,6 @@ func (c *productGRPCClient) RemoveLocalInventories(ctx context.Context, req *ret
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/RemoveLocalInventories")
 	}
@@ -1557,9 +1634,6 @@ func (c *productRESTClient) CreateProduct(ctx context.Context, req *retailpb.Cre
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/CreateProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*/catalogs/*/branches/*}/products")
@@ -1614,9 +1688,6 @@ func (c *productRESTClient) GetProduct(ctx context.Context, req *retailpb.GetPro
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/GetProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/locations/*/catalogs/*/branches/*/products/**}")
@@ -1836,9 +1907,6 @@ func (c *productRESTClient) DeleteProduct(ctx context.Context, req *retailpb.Del
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/DeleteProduct")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{name=projects/*/locations/*/catalogs/*/branches/*/products/**}")
@@ -1900,9 +1968,6 @@ func (c *productRESTClient) PurgeProducts(ctx context.Context, req *retailpb.Pur
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/PurgeProducts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*/catalogs/*/branches/*}/products:purge")
@@ -1976,9 +2041,6 @@ func (c *productRESTClient) ImportProducts(ctx context.Context, req *retailpb.Im
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/ImportProducts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*/catalogs/*/branches/*}/products:import")
@@ -2046,9 +2108,6 @@ func (c *productRESTClient) ExportProducts(ctx context.Context, req *retailpb.Ex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/ExportProducts")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{parent=projects/*/locations/*/catalogs/*/branches/*}/products:export")
@@ -2260,9 +2319,6 @@ func (c *productRESTClient) AddFulfillmentPlaces(ctx context.Context, req *retai
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/AddFulfillmentPlaces")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:addFulfillmentPlaces")
@@ -2359,9 +2415,6 @@ func (c *productRESTClient) RemoveFulfillmentPlaces(ctx context.Context, req *re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/RemoveFulfillmentPlaces")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:removeFulfillmentPlaces")
@@ -2456,9 +2509,6 @@ func (c *productRESTClient) AddLocalInventories(ctx context.Context, req *retail
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/AddLocalInventories")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:addLocalInventories")
@@ -2551,9 +2601,6 @@ func (c *productRESTClient) RemoveLocalInventories(ctx context.Context, req *ret
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//retail.googleapis.com/%v", req.GetProduct()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.retail.v2alpha.ProductService/RemoveLocalInventories")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2alpha/{product=projects/*/locations/*/catalogs/*/branches/*/products/**}:removeLocalInventories")

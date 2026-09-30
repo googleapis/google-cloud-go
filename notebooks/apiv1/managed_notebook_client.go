@@ -552,6 +552,75 @@ func NewManagedNotebookClient(ctx context.Context, opts ...option.ClientOption) 
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "notebooks",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/notebooks/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "notebooks.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRuntimes = append(client.CallOptions.ListRuntimes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetRuntime = append(client.CallOptions.GetRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateRuntime = append(client.CallOptions.CreateRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateRuntime = append(client.CallOptions.UpdateRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteRuntime = append(client.CallOptions.DeleteRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.StartRuntime = append(client.CallOptions.StartRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.StopRuntime = append(client.CallOptions.StopRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.SwitchRuntime = append(client.CallOptions.SwitchRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetRuntime = append(client.CallOptions.ResetRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.UpgradeRuntime = append(client.CallOptions.UpgradeRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.ReportRuntimeEvent = append(client.CallOptions.ReportRuntimeEvent, gax.WithClientTracing(tracing))
+		client.CallOptions.RefreshRuntimeTokenInternal = append(client.CallOptions.RefreshRuntimeTokenInternal, gax.WithClientTracing(tracing))
+		client.CallOptions.DiagnoseRuntime = append(client.CallOptions.DiagnoseRuntime, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "notebooks",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/notebooks/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "notebooks.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListRuntimes = append(client.CallOptions.ListRuntimes, gax.WithClientLogging(logging))
+		client.CallOptions.GetRuntime = append(client.CallOptions.GetRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.CreateRuntime = append(client.CallOptions.CreateRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateRuntime = append(client.CallOptions.UpdateRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteRuntime = append(client.CallOptions.DeleteRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.StartRuntime = append(client.CallOptions.StartRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.StopRuntime = append(client.CallOptions.StopRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.SwitchRuntime = append(client.CallOptions.SwitchRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.ResetRuntime = append(client.CallOptions.ResetRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.UpgradeRuntime = append(client.CallOptions.UpgradeRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.ReportRuntimeEvent = append(client.CallOptions.ReportRuntimeEvent, gax.WithClientLogging(logging))
+		client.CallOptions.RefreshRuntimeTokenInternal = append(client.CallOptions.RefreshRuntimeTokenInternal, gax.WithClientLogging(logging))
+		client.CallOptions.DiagnoseRuntime = append(client.CallOptions.DiagnoseRuntime, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -599,9 +668,6 @@ func (c *managedNotebookGRPCClient) ListRuntimes(ctx context.Context, req *noteb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.ManagedNotebookService/ListRuntimes")
 	}
@@ -651,9 +717,6 @@ func (c *managedNotebookGRPCClient) GetRuntime(ctx context.Context, req *noteboo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.ManagedNotebookService/GetRuntime")
 	}
@@ -675,9 +738,6 @@ func (c *managedNotebookGRPCClient) CreateRuntime(ctx context.Context, req *note
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.ManagedNotebookService/CreateRuntime")
 	}
@@ -732,9 +792,6 @@ func (c *managedNotebookGRPCClient) DeleteRuntime(ctx context.Context, req *note
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.ManagedNotebookService/DeleteRuntime")
 	}
@@ -897,9 +954,6 @@ func (c *managedNotebookGRPCClient) ReportRuntimeEvent(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.ManagedNotebookService/ReportRuntimeEvent")
 	}
@@ -927,9 +981,6 @@ func (c *managedNotebookGRPCClient) RefreshRuntimeTokenInternal(ctx context.Cont
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.ManagedNotebookService/RefreshRuntimeTokenInternal")
 	}
@@ -951,9 +1002,6 @@ func (c *managedNotebookGRPCClient) DiagnoseRuntime(ctx context.Context, req *no
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//notebooks.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.notebooks.v1.ManagedNotebookService/DiagnoseRuntime")
 	}
@@ -1051,9 +1099,6 @@ func (c *managedNotebookGRPCClient) GetIamPolicy(ctx context.Context, req *iampb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1075,9 +1120,6 @@ func (c *managedNotebookGRPCClient) SetIamPolicy(ctx context.Context, req *iampb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1099,9 +1141,6 @@ func (c *managedNotebookGRPCClient) TestIamPermissions(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}

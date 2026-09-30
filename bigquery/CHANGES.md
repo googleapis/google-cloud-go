@@ -3,6 +3,18 @@
 
 
 
+## [1.85.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.84.0...bigquery/v1.85.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+
+### Bug Fixes
+
+* **various:** Address format directive issues ([#20547](https://github.com/googleapis/google-cloud-go/issues/20547)) ([e2e1047](https://github.com/googleapis/google-cloud-go/commit/e2e104731999b3bfc75ed0b8f2d71844ced3b073))
+
 ## [1.84.0](https://github.com/googleapis/google-cloud-go/compare/bigquery/v1.83.0...bigquery/v1.84.0) (2026-09-17)
 
 
