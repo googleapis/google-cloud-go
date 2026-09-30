@@ -59,6 +59,9 @@ func TestComputeTokenProvider(t *testing.T) {
 	for _, tc := range testCases {
 		t.Run(tc.name, func(t *testing.T) {
 			ts := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+				if got, want := r.Header.Get("Metadata-Flavor"), "Google"; got != want {
+					t.Errorf("Metadata-Flavor header: got %q, want %q", got, want)
+				}
 				if strings.HasSuffix(r.URL.String(), computeTokenURI) {
 					t.Errorf("got %q, want %q", r.URL.String(), computeTokenURI)
 				}

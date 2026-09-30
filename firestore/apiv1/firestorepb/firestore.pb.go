@@ -133,8 +133,10 @@ type GetDocumentRequest struct {
 	//	*GetDocumentRequest_Transaction
 	//	*GetDocumentRequest_ReadTime
 	ConsistencySelector isGetDocumentRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,10,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *GetDocumentRequest) Reset() {
@@ -202,6 +204,13 @@ func (x *GetDocumentRequest) GetReadTime() *timestamppb.Timestamp {
 		if x, ok := x.ConsistencySelector.(*GetDocumentRequest_ReadTime); ok {
 			return x.ReadTime
 		}
+	}
+	return nil
+}
+
+func (x *GetDocumentRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -287,9 +296,11 @@ type ListDocumentsRequest struct {
 	// [`update_time`][google.firestore.v1.Document.update_time] set.
 	//
 	// Requests with `show_missing` may not specify `where` or `order_by`.
-	ShowMissing   bool `protobuf:"varint,12,opt,name=show_missing,json=showMissing,proto3" json:"show_missing,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	ShowMissing bool `protobuf:"varint,12,opt,name=show_missing,json=showMissing,proto3" json:"show_missing,omitempty"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,13,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ListDocumentsRequest) Reset() {
@@ -396,6 +407,13 @@ func (x *ListDocumentsRequest) GetShowMissing() bool {
 	return false
 }
 
+func (x *ListDocumentsRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
+	}
+	return nil
+}
+
 type isListDocumentsRequest_ConsistencySelector interface {
 	isListDocumentsRequest_ConsistencySelector()
 }
@@ -497,9 +515,11 @@ type CreateDocumentRequest struct {
 	//
 	// If the document has a field that is not present in this mask, that field
 	// will not be returned in the response.
-	Mask          *DocumentMask `protobuf:"bytes,5,opt,name=mask,proto3" json:"mask,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Mask *DocumentMask `protobuf:"bytes,5,opt,name=mask,proto3" json:"mask,omitempty"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,6,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CreateDocumentRequest) Reset() {
@@ -567,6 +587,13 @@ func (x *CreateDocumentRequest) GetMask() *DocumentMask {
 	return nil
 }
 
+func (x *CreateDocumentRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
+	}
+	return nil
+}
+
 // The request for
 // [Firestore.UpdateDocument][google.firestore.v1.Firestore.UpdateDocument].
 type UpdateDocumentRequest struct {
@@ -590,8 +617,10 @@ type UpdateDocumentRequest struct {
 	// An optional precondition on the document.
 	// The request will fail if this is set and not met by the target document.
 	CurrentDocument *Precondition `protobuf:"bytes,4,opt,name=current_document,json=currentDocument,proto3" json:"current_document,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,5,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *UpdateDocumentRequest) Reset() {
@@ -652,6 +681,13 @@ func (x *UpdateDocumentRequest) GetCurrentDocument() *Precondition {
 	return nil
 }
 
+func (x *UpdateDocumentRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
+	}
+	return nil
+}
+
 // The request for
 // [Firestore.DeleteDocument][google.firestore.v1.Firestore.DeleteDocument].
 type DeleteDocumentRequest struct {
@@ -662,8 +698,10 @@ type DeleteDocumentRequest struct {
 	// An optional precondition on the document.
 	// The request will fail if this is set and not met by the target document.
 	CurrentDocument *Precondition `protobuf:"bytes,2,opt,name=current_document,json=currentDocument,proto3" json:"current_document,omitempty"`
-	unknownFields   protoimpl.UnknownFields
-	sizeCache       protoimpl.SizeCache
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,3,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *DeleteDocumentRequest) Reset() {
@@ -710,6 +748,13 @@ func (x *DeleteDocumentRequest) GetCurrentDocument() *Precondition {
 	return nil
 }
 
+func (x *DeleteDocumentRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
+	}
+	return nil
+}
+
 // The request for
 // [Firestore.BatchGetDocuments][google.firestore.v1.Firestore.BatchGetDocuments].
 type BatchGetDocumentsRequest struct {
@@ -736,8 +781,10 @@ type BatchGetDocumentsRequest struct {
 	//	*BatchGetDocumentsRequest_NewTransaction
 	//	*BatchGetDocumentsRequest_ReadTime
 	ConsistencySelector isBatchGetDocumentsRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,8,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *BatchGetDocumentsRequest) Reset() {
@@ -821,6 +868,13 @@ func (x *BatchGetDocumentsRequest) GetReadTime() *timestamppb.Timestamp {
 		if x, ok := x.ConsistencySelector.(*BatchGetDocumentsRequest_ReadTime); ok {
 			return x.ReadTime
 		}
+	}
+	return nil
+}
+
+func (x *BatchGetDocumentsRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -980,9 +1034,11 @@ type BeginTransactionRequest struct {
 	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
 	// The options for the transaction.
 	// Defaults to a read-write transaction.
-	Options       *TransactionOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Options *TransactionOptions `protobuf:"bytes,2,opt,name=options,proto3" json:"options,omitempty"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,3,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *BeginTransactionRequest) Reset() {
@@ -1025,6 +1081,13 @@ func (x *BeginTransactionRequest) GetDatabase() string {
 func (x *BeginTransactionRequest) GetOptions() *TransactionOptions {
 	if x != nil {
 		return x.Options
+	}
+	return nil
+}
+
+func (x *BeginTransactionRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -1087,9 +1150,11 @@ type CommitRequest struct {
 	// Always executed atomically and in order.
 	Writes []*Write `protobuf:"bytes,2,rep,name=writes,proto3" json:"writes,omitempty"`
 	// If set, applies all writes in this transaction, and commits it.
-	Transaction   []byte `protobuf:"bytes,3,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Transaction []byte `protobuf:"bytes,3,opt,name=transaction,proto3" json:"transaction,omitempty"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,4,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *CommitRequest) Reset() {
@@ -1139,6 +1204,13 @@ func (x *CommitRequest) GetWrites() []*Write {
 func (x *CommitRequest) GetTransaction() []byte {
 	if x != nil {
 		return x.Transaction
+	}
+	return nil
+}
+
+func (x *CommitRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -1209,9 +1281,11 @@ type RollbackRequest struct {
 	// `projects/{project_id}/databases/{database_id}`.
 	Database string `protobuf:"bytes,1,opt,name=database,proto3" json:"database,omitempty"`
 	// Required. The transaction to roll back.
-	Transaction   []byte `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Transaction []byte `protobuf:"bytes,2,opt,name=transaction,proto3" json:"transaction,omitempty"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,3,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *RollbackRequest) Reset() {
@@ -1258,6 +1332,13 @@ func (x *RollbackRequest) GetTransaction() []byte {
 	return nil
 }
 
+func (x *RollbackRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
+	}
+	return nil
+}
+
 // The request for [Firestore.RunQuery][google.firestore.v1.Firestore.RunQuery].
 type RunQueryRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1286,6 +1367,8 @@ type RunQueryRequest struct {
 	// Optional. Explain options for the query. If set, additional query
 	// statistics will be returned. If not, only query results will be returned.
 	ExplainOptions *ExplainOptions `protobuf:"bytes,10,opt,name=explain_options,json=explainOptions,proto3" json:"explain_options,omitempty"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,11,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1380,6 +1463,13 @@ func (x *RunQueryRequest) GetReadTime() *timestamppb.Timestamp {
 func (x *RunQueryRequest) GetExplainOptions() *ExplainOptions {
 	if x != nil {
 		return x.ExplainOptions
+	}
+	return nil
+}
+
+func (x *RunQueryRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -1584,8 +1674,10 @@ type ExecutePipelineRequest struct {
 	// executed. Only permitted in combination with `transaction` or
 	// `new_transaction`.
 	AutoCommitTransaction bool `protobuf:"varint,9,opt,name=auto_commit_transaction,json=autoCommitTransaction,proto3" json:"auto_commit_transaction,omitempty"`
-	unknownFields         protoimpl.UnknownFields
-	sizeCache             protoimpl.SizeCache
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,10,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ExecutePipelineRequest) Reset() {
@@ -1680,6 +1772,13 @@ func (x *ExecutePipelineRequest) GetAutoCommitTransaction() bool {
 		return x.AutoCommitTransaction
 	}
 	return false
+}
+
+func (x *ExecutePipelineRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
+	}
+	return nil
 }
 
 type isExecutePipelineRequest_PipelineType interface {
@@ -1858,6 +1957,8 @@ type RunAggregationQueryRequest struct {
 	// Optional. Explain options for the query. If set, additional query
 	// statistics will be returned. If not, only query results will be returned.
 	ExplainOptions *ExplainOptions `protobuf:"bytes,8,opt,name=explain_options,json=explainOptions,proto3" json:"explain_options,omitempty"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,9,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -1952,6 +2053,13 @@ func (x *RunAggregationQueryRequest) GetReadTime() *timestamppb.Timestamp {
 func (x *RunAggregationQueryRequest) GetExplainOptions() *ExplainOptions {
 	if x != nil {
 		return x.ExplainOptions
+	}
+	return nil
+}
+
+func (x *RunAggregationQueryRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -2144,8 +2252,10 @@ type PartitionQueryRequest struct {
 	//
 	//	*PartitionQueryRequest_ReadTime
 	ConsistencySelector isPartitionQueryRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,7,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *PartitionQueryRequest) Reset() {
@@ -2234,6 +2344,13 @@ func (x *PartitionQueryRequest) GetReadTime() *timestamppb.Timestamp {
 		if x, ok := x.ConsistencySelector.(*PartitionQueryRequest_ReadTime); ok {
 			return x.ReadTime
 		}
+	}
+	return nil
+}
+
+func (x *PartitionQueryRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -2384,9 +2501,11 @@ type WriteRequest struct {
 	// Leave this field unset when creating a new stream.
 	StreamToken []byte `protobuf:"bytes,4,opt,name=stream_token,json=streamToken,proto3" json:"stream_token,omitempty"`
 	// Labels associated with this write request.
-	Labels        map[string]string `protobuf:"bytes,5,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Labels map[string]string `protobuf:"bytes,5,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,6,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *WriteRequest) Reset() {
@@ -2450,6 +2569,13 @@ func (x *WriteRequest) GetStreamToken() []byte {
 func (x *WriteRequest) GetLabels() map[string]string {
 	if x != nil {
 		return x.Labels
+	}
+	return nil
+}
+
+func (x *WriteRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -2549,9 +2675,11 @@ type ListenRequest struct {
 	//	*ListenRequest_RemoveTarget
 	TargetChange isListenRequest_TargetChange `protobuf_oneof:"target_change"`
 	// Labels associated with this target change.
-	Labels        map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Labels map[string]string `protobuf:"bytes,4,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,5,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ListenRequest) Reset() {
@@ -2619,6 +2747,13 @@ func (x *ListenRequest) GetRemoveTarget() int32 {
 func (x *ListenRequest) GetLabels() map[string]string {
 	if x != nil {
 		return x.Labels
+	}
+	return nil
+}
+
+func (x *ListenRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -3100,8 +3235,10 @@ type ListCollectionIdsRequest struct {
 	//
 	//	*ListCollectionIdsRequest_ReadTime
 	ConsistencySelector isListCollectionIdsRequest_ConsistencySelector `protobuf_oneof:"consistency_selector"`
-	unknownFields       protoimpl.UnknownFields
-	sizeCache           protoimpl.SizeCache
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,5,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *ListCollectionIdsRequest) Reset() {
@@ -3167,6 +3304,13 @@ func (x *ListCollectionIdsRequest) GetReadTime() *timestamppb.Timestamp {
 		if x, ok := x.ConsistencySelector.(*ListCollectionIdsRequest_ReadTime); ok {
 			return x.ReadTime
 		}
+	}
+	return nil
+}
+
+func (x *ListCollectionIdsRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -3256,9 +3400,11 @@ type BatchWriteRequest struct {
 	// document more than once per request.
 	Writes []*Write `protobuf:"bytes,2,rep,name=writes,proto3" json:"writes,omitempty"`
 	// Labels associated with this batch write.
-	Labels        map[string]string `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Labels map[string]string `protobuf:"bytes,3,rep,name=labels,proto3" json:"labels,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// Optional. Any additional options for the request.
+	RequestOptions *RequestOptions `protobuf:"bytes,4,opt,name=request_options,json=requestOptions,proto3" json:"request_options,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
 }
 
 func (x *BatchWriteRequest) Reset() {
@@ -3308,6 +3454,13 @@ func (x *BatchWriteRequest) GetWrites() []*Write {
 func (x *BatchWriteRequest) GetLabels() map[string]string {
 	if x != nil {
 		return x.Labels
+	}
+	return nil
+}
+
+func (x *BatchWriteRequest) GetRequestOptions() *RequestOptions {
+	if x != nil {
+		return x.RequestOptions
 	}
 	return nil
 }
@@ -3511,13 +3664,15 @@ var File_google_firestore_v1_firestore_proto protoreflect.FileDescriptor
 
 const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\n" +
-	"#google/firestore/v1/firestore.proto\x12\x13google.firestore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x18google/api/routing.proto\x1a,google/firestore/v1/aggregation_result.proto\x1a google/firestore/v1/common.proto\x1a\"google/firestore/v1/document.proto\x1a'google/firestore/v1/explain_stats.proto\x1a\"google/firestore/v1/pipeline.proto\x1a\x1fgoogle/firestore/v1/query.proto\x1a'google/firestore/v1/query_profile.proto\x1a\x1fgoogle/firestore/v1/write.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xdb\x01\n" +
+	"#google/firestore/v1/firestore.proto\x12\x13google.firestore.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x18google/api/routing.proto\x1a,google/firestore/v1/aggregation_result.proto\x1a google/firestore/v1/common.proto\x1a\"google/firestore/v1/document.proto\x1a'google/firestore/v1/explain_stats.proto\x1a\"google/firestore/v1/pipeline.proto\x1a\x1fgoogle/firestore/v1/query.proto\x1a'google/firestore/v1/query_profile.proto\x1a\x1fgoogle/firestore/v1/write.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a\x1egoogle/protobuf/wrappers.proto\x1a\x17google/rpc/status.proto\"\xae\x02\n" +
 	"\x12GetDocumentRequest\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x125\n" +
 	"\x04mask\x18\x02 \x01(\v2!.google.firestore.v1.DocumentMaskR\x04mask\x12\"\n" +
 	"\vtransaction\x18\x03 \x01(\fH\x00R\vtransaction\x129\n" +
-	"\tread_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTimeB\x16\n" +
-	"\x14consistency_selector\"\x99\x03\n" +
+	"\tread_time\x18\x05 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTime\x12Q\n" +
+	"\x0frequest_options\x18\n" +
+	" \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\x16\n" +
+	"\x14consistency_selector\"\xec\x03\n" +
 	"\x14ListDocumentsRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12(\n" +
 	"\rcollection_id\x18\x02 \x01(\tB\x03\xe0A\x01R\fcollectionId\x12 \n" +
@@ -3529,57 +3684,65 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\vtransaction\x18\b \x01(\fH\x00R\vtransaction\x129\n" +
 	"\tread_time\x18\n" +
 	" \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTime\x12!\n" +
-	"\fshow_missing\x18\f \x01(\bR\vshowMissingB\x16\n" +
+	"\fshow_missing\x18\f \x01(\bR\vshowMissing\x12Q\n" +
+	"\x0frequest_options\x18\r \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\x16\n" +
 	"\x14consistency_selector\"|\n" +
 	"\x15ListDocumentsResponse\x12;\n" +
 	"\tdocuments\x18\x01 \x03(\v2\x1d.google.firestore.v1.DocumentR\tdocuments\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf6\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc9\x02\n" +
 	"\x15CreateDocumentRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12(\n" +
 	"\rcollection_id\x18\x02 \x01(\tB\x03\xe0A\x02R\fcollectionId\x12\x1f\n" +
 	"\vdocument_id\x18\x03 \x01(\tR\n" +
 	"documentId\x12>\n" +
 	"\bdocument\x18\x04 \x01(\v2\x1d.google.firestore.v1.DocumentB\x03\xe0A\x02R\bdocument\x125\n" +
-	"\x04mask\x18\x05 \x01(\v2!.google.firestore.v1.DocumentMaskR\x04mask\"\xa0\x02\n" +
+	"\x04mask\x18\x05 \x01(\v2!.google.firestore.v1.DocumentMaskR\x04mask\x12Q\n" +
+	"\x0frequest_options\x18\x06 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\xf3\x02\n" +
 	"\x15UpdateDocumentRequest\x12>\n" +
 	"\bdocument\x18\x01 \x01(\v2\x1d.google.firestore.v1.DocumentB\x03\xe0A\x02R\bdocument\x12B\n" +
 	"\vupdate_mask\x18\x02 \x01(\v2!.google.firestore.v1.DocumentMaskR\n" +
 	"updateMask\x125\n" +
 	"\x04mask\x18\x03 \x01(\v2!.google.firestore.v1.DocumentMaskR\x04mask\x12L\n" +
-	"\x10current_document\x18\x04 \x01(\v2!.google.firestore.v1.PreconditionR\x0fcurrentDocument\"~\n" +
+	"\x10current_document\x18\x04 \x01(\v2!.google.firestore.v1.PreconditionR\x0fcurrentDocument\x12Q\n" +
+	"\x0frequest_options\x18\x05 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\xd1\x01\n" +
 	"\x15DeleteDocumentRequest\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\x02R\x04name\x12L\n" +
-	"\x10current_document\x18\x02 \x01(\v2!.google.firestore.v1.PreconditionR\x0fcurrentDocument\"\xdb\x02\n" +
+	"\x10current_document\x18\x02 \x01(\v2!.google.firestore.v1.PreconditionR\x0fcurrentDocument\x12Q\n" +
+	"\x0frequest_options\x18\x03 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\xae\x03\n" +
 	"\x18BatchGetDocumentsRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12\x1c\n" +
 	"\tdocuments\x18\x02 \x03(\tR\tdocuments\x125\n" +
 	"\x04mask\x18\x03 \x01(\v2!.google.firestore.v1.DocumentMaskR\x04mask\x12\"\n" +
 	"\vtransaction\x18\x04 \x01(\fH\x00R\vtransaction\x12R\n" +
 	"\x0fnew_transaction\x18\x05 \x01(\v2'.google.firestore.v1.TransactionOptionsH\x00R\x0enewTransaction\x129\n" +
-	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTimeB\x16\n" +
+	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTime\x12Q\n" +
+	"\x0frequest_options\x18\b \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\x16\n" +
 	"\x14consistency_selector\"\xd3\x01\n" +
 	"\x19BatchGetDocumentsResponse\x125\n" +
 	"\x05found\x18\x01 \x01(\v2\x1d.google.firestore.v1.DocumentH\x00R\x05found\x12\x1a\n" +
 	"\amissing\x18\x02 \x01(\tH\x00R\amissing\x12 \n" +
 	"\vtransaction\x18\x03 \x01(\fR\vtransaction\x127\n" +
 	"\tread_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\breadTimeB\b\n" +
-	"\x06result\"}\n" +
+	"\x06result\"\xd0\x01\n" +
 	"\x17BeginTransactionRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12A\n" +
-	"\aoptions\x18\x02 \x01(\v2'.google.firestore.v1.TransactionOptionsR\aoptions\"<\n" +
+	"\aoptions\x18\x02 \x01(\v2'.google.firestore.v1.TransactionOptionsR\aoptions\x12Q\n" +
+	"\x0frequest_options\x18\x03 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"<\n" +
 	"\x18BeginTransactionResponse\x12 \n" +
-	"\vtransaction\x18\x01 \x01(\fR\vtransaction\"\x86\x01\n" +
+	"\vtransaction\x18\x01 \x01(\fR\vtransaction\"\xd9\x01\n" +
 	"\rCommitRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x122\n" +
 	"\x06writes\x18\x02 \x03(\v2\x1a.google.firestore.v1.WriteR\x06writes\x12 \n" +
-	"\vtransaction\x18\x03 \x01(\fR\vtransaction\"\x94\x01\n" +
+	"\vtransaction\x18\x03 \x01(\fR\vtransaction\x12Q\n" +
+	"\x0frequest_options\x18\x04 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\x94\x01\n" +
 	"\x0eCommitResponse\x12E\n" +
 	"\rwrite_results\x18\x01 \x03(\v2 .google.firestore.v1.WriteResultR\fwriteResults\x12;\n" +
 	"\vcommit_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"commitTime\"Y\n" +
+	"commitTime\"\xac\x01\n" +
 	"\x0fRollbackRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12%\n" +
-	"\vtransaction\x18\x02 \x01(\fB\x03\xe0A\x02R\vtransaction\"\xad\x03\n" +
+	"\vtransaction\x18\x02 \x01(\fB\x03\xe0A\x02R\vtransaction\x12Q\n" +
+	"\x0frequest_options\x18\x03 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\"\x80\x04\n" +
 	"\x0fRunQueryRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12Q\n" +
 	"\x10structured_query\x18\x02 \x01(\v2$.google.firestore.v1.StructuredQueryH\x00R\x0fstructuredQuery\x12\"\n" +
@@ -3587,7 +3750,8 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\x0fnew_transaction\x18\x06 \x01(\v2'.google.firestore.v1.TransactionOptionsH\x01R\x0enewTransaction\x129\n" +
 	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x01R\breadTime\x12Q\n" +
 	"\x0fexplain_options\x18\n" +
-	" \x01(\v2#.google.firestore.v1.ExplainOptionsB\x03\xe0A\x01R\x0eexplainOptionsB\f\n" +
+	" \x01(\v2#.google.firestore.v1.ExplainOptionsB\x03\xe0A\x01R\x0eexplainOptions\x12Q\n" +
+	"\x0frequest_options\x18\v \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\f\n" +
 	"\n" +
 	"query_typeB\x16\n" +
 	"\x14consistency_selector\"\xce\x02\n" +
@@ -3598,28 +3762,31 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\x0fskipped_results\x18\x04 \x01(\x05R\x0eskippedResults\x12\x14\n" +
 	"\x04done\x18\x06 \x01(\bH\x00R\x04done\x12L\n" +
 	"\x0fexplain_metrics\x18\v \x01(\v2#.google.firestore.v1.ExplainMetricsR\x0eexplainMetricsB\x17\n" +
-	"\x15continuation_selector\"\xae\x03\n" +
+	"\x15continuation_selector\"\x81\x04\n" +
 	"\x16ExecutePipelineRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12Z\n" +
 	"\x13structured_pipeline\x18\x02 \x01(\v2'.google.firestore.v1.StructuredPipelineH\x00R\x12structuredPipeline\x12\"\n" +
 	"\vtransaction\x18\x05 \x01(\fH\x01R\vtransaction\x12R\n" +
 	"\x0fnew_transaction\x18\x06 \x01(\v2'.google.firestore.v1.TransactionOptionsH\x01R\x0enewTransaction\x129\n" +
 	"\tread_time\x18\a \x01(\v2\x1a.google.protobuf.TimestampH\x01R\breadTime\x12;\n" +
-	"\x17auto_commit_transaction\x18\t \x01(\bB\x03\xe0A\x01R\x15autoCommitTransactionB\x0f\n" +
+	"\x17auto_commit_transaction\x18\t \x01(\bB\x03\xe0A\x01R\x15autoCommitTransaction\x12Q\n" +
+	"\x0frequest_options\x18\n" +
+	" \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\x0f\n" +
 	"\rpipeline_typeB\x16\n" +
 	"\x14consistency_selector\"\xff\x01\n" +
 	"\x17ExecutePipelineResponse\x12 \n" +
 	"\vtransaction\x18\x01 \x01(\fR\vtransaction\x127\n" +
 	"\aresults\x18\x02 \x03(\v2\x1d.google.firestore.v1.DocumentR\aresults\x12A\n" +
 	"\x0eexecution_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\rexecutionTime\x12F\n" +
-	"\rexplain_stats\x18\x04 \x01(\v2!.google.firestore.v1.ExplainStatsR\fexplainStats\"\xda\x03\n" +
+	"\rexplain_stats\x18\x04 \x01(\v2!.google.firestore.v1.ExplainStatsR\fexplainStats\"\xad\x04\n" +
 	"\x1aRunAggregationQueryRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12s\n" +
 	"\x1cstructured_aggregation_query\x18\x02 \x01(\v2/.google.firestore.v1.StructuredAggregationQueryH\x00R\x1astructuredAggregationQuery\x12\"\n" +
 	"\vtransaction\x18\x04 \x01(\fH\x01R\vtransaction\x12R\n" +
 	"\x0fnew_transaction\x18\x05 \x01(\v2'.google.firestore.v1.TransactionOptionsH\x01R\x0enewTransaction\x129\n" +
 	"\tread_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\breadTime\x12Q\n" +
-	"\x0fexplain_options\x18\b \x01(\v2#.google.firestore.v1.ExplainOptionsB\x03\xe0A\x01R\x0eexplainOptionsB\f\n" +
+	"\x0fexplain_options\x18\b \x01(\v2#.google.firestore.v1.ExplainOptionsB\x03\xe0A\x01R\x0eexplainOptions\x12Q\n" +
+	"\x0frequest_options\x18\t \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\f\n" +
 	"\n" +
 	"query_typeB\x16\n" +
 	"\x14consistency_selector\"\x86\x02\n" +
@@ -3628,7 +3795,7 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\vtransaction\x18\x02 \x01(\fR\vtransaction\x127\n" +
 	"\tread_time\x18\x03 \x01(\v2\x1a.google.protobuf.TimestampR\breadTime\x12L\n" +
 	"\x0fexplain_metrics\x18\n" +
-	" \x01(\v2#.google.firestore.v1.ExplainMetricsR\x0eexplainMetrics\"\xcd\x02\n" +
+	" \x01(\v2#.google.firestore.v1.ExplainMetricsR\x0eexplainMetrics\"\xa0\x03\n" +
 	"\x15PartitionQueryRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12Q\n" +
 	"\x10structured_query\x18\x02 \x01(\v2$.google.firestore.v1.StructuredQueryH\x00R\x0fstructuredQuery\x12'\n" +
@@ -3636,7 +3803,8 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\n" +
 	"page_token\x18\x04 \x01(\tR\tpageToken\x12\x1b\n" +
 	"\tpage_size\x18\x05 \x01(\x05R\bpageSize\x129\n" +
-	"\tread_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\breadTimeB\f\n" +
+	"\tread_time\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampH\x01R\breadTime\x12Q\n" +
+	"\x0frequest_options\x18\a \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\f\n" +
 	"\n" +
 	"query_typeB\x16\n" +
 	"\x14consistency_selector\"}\n" +
@@ -3644,13 +3812,14 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\n" +
 	"partitions\x18\x01 \x03(\v2\x1b.google.firestore.v1.CursorR\n" +
 	"partitions\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xa5\x02\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xf8\x02\n" +
 	"\fWriteRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12\x1b\n" +
 	"\tstream_id\x18\x02 \x01(\tR\bstreamId\x122\n" +
 	"\x06writes\x18\x03 \x03(\v2\x1a.google.firestore.v1.WriteR\x06writes\x12!\n" +
 	"\fstream_token\x18\x04 \x01(\fR\vstreamToken\x12E\n" +
-	"\x06labels\x18\x05 \x03(\v2-.google.firestore.v1.WriteRequest.LabelsEntryR\x06labels\x1a9\n" +
+	"\x06labels\x18\x05 \x03(\v2-.google.firestore.v1.WriteRequest.LabelsEntryR\x06labels\x12Q\n" +
+	"\x0frequest_options\x18\x06 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\xd3\x01\n" +
@@ -3659,13 +3828,14 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\fstream_token\x18\x02 \x01(\fR\vstreamToken\x12E\n" +
 	"\rwrite_results\x18\x03 \x03(\v2 .google.firestore.v1.WriteResultR\fwriteResults\x12;\n" +
 	"\vcommit_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
-	"commitTime\"\xa9\x02\n" +
+	"commitTime\"\xfc\x02\n" +
 	"\rListenRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x12<\n" +
 	"\n" +
 	"add_target\x18\x02 \x01(\v2\x1b.google.firestore.v1.TargetH\x00R\taddTarget\x12%\n" +
 	"\rremove_target\x18\x03 \x01(\x05H\x00R\fremoveTarget\x12F\n" +
-	"\x06labels\x18\x04 \x03(\v2..google.firestore.v1.ListenRequest.LabelsEntryR\x06labels\x1a9\n" +
+	"\x06labels\x18\x04 \x03(\v2..google.firestore.v1.ListenRequest.LabelsEntryR\x06labels\x12Q\n" +
+	"\x0frequest_options\x18\x05 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01B\x0f\n" +
@@ -3707,21 +3877,23 @@ const file_google_firestore_v1_firestore_proto_rawDesc = "" +
 	"\n" +
 	"\x06REMOVE\x10\x02\x12\v\n" +
 	"\aCURRENT\x10\x03\x12\t\n" +
-	"\x05RESET\x10\x04\"\xc6\x01\n" +
+	"\x05RESET\x10\x04\"\x99\x02\n" +
 	"\x18ListCollectionIdsRequest\x12\x1b\n" +
 	"\x06parent\x18\x01 \x01(\tB\x03\xe0A\x02R\x06parent\x12\x1b\n" +
 	"\tpage_size\x18\x02 \x01(\x05R\bpageSize\x12\x1d\n" +
 	"\n" +
 	"page_token\x18\x03 \x01(\tR\tpageToken\x129\n" +
-	"\tread_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTimeB\x16\n" +
+	"\tread_time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampH\x00R\breadTime\x12Q\n" +
+	"\x0frequest_options\x18\x05 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptionsB\x16\n" +
 	"\x14consistency_selector\"j\n" +
 	"\x19ListCollectionIdsResponse\x12%\n" +
 	"\x0ecollection_ids\x18\x01 \x03(\tR\rcollectionIds\x12&\n" +
-	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xef\x01\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xc2\x02\n" +
 	"\x11BatchWriteRequest\x12\x1f\n" +
 	"\bdatabase\x18\x01 \x01(\tB\x03\xe0A\x02R\bdatabase\x122\n" +
 	"\x06writes\x18\x02 \x03(\v2\x1a.google.firestore.v1.WriteR\x06writes\x12J\n" +
-	"\x06labels\x18\x03 \x03(\v22.google.firestore.v1.BatchWriteRequest.LabelsEntryR\x06labels\x1a9\n" +
+	"\x06labels\x18\x03 \x03(\v22.google.firestore.v1.BatchWriteRequest.LabelsEntryR\x06labels\x12Q\n" +
+	"\x0frequest_options\x18\x04 \x01(\v2#.google.firestore.v1.RequestOptionsB\x03\xe0A\x01R\x0erequestOptions\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x87\x01\n" +
@@ -3805,135 +3977,153 @@ var file_google_firestore_v1_firestore_proto_goTypes = []any{
 	nil,                                 // 36: google.firestore.v1.BatchWriteRequest.LabelsEntry
 	(*DocumentMask)(nil),                // 37: google.firestore.v1.DocumentMask
 	(*timestamppb.Timestamp)(nil),       // 38: google.protobuf.Timestamp
-	(*Document)(nil),                    // 39: google.firestore.v1.Document
-	(*Precondition)(nil),                // 40: google.firestore.v1.Precondition
-	(*TransactionOptions)(nil),          // 41: google.firestore.v1.TransactionOptions
-	(*Write)(nil),                       // 42: google.firestore.v1.Write
-	(*WriteResult)(nil),                 // 43: google.firestore.v1.WriteResult
-	(*StructuredQuery)(nil),             // 44: google.firestore.v1.StructuredQuery
-	(*ExplainOptions)(nil),              // 45: google.firestore.v1.ExplainOptions
-	(*ExplainMetrics)(nil),              // 46: google.firestore.v1.ExplainMetrics
-	(*StructuredPipeline)(nil),          // 47: google.firestore.v1.StructuredPipeline
-	(*ExplainStats)(nil),                // 48: google.firestore.v1.ExplainStats
-	(*StructuredAggregationQuery)(nil),  // 49: google.firestore.v1.StructuredAggregationQuery
-	(*AggregationResult)(nil),           // 50: google.firestore.v1.AggregationResult
-	(*Cursor)(nil),                      // 51: google.firestore.v1.Cursor
-	(*DocumentChange)(nil),              // 52: google.firestore.v1.DocumentChange
-	(*DocumentDelete)(nil),              // 53: google.firestore.v1.DocumentDelete
-	(*DocumentRemove)(nil),              // 54: google.firestore.v1.DocumentRemove
-	(*ExistenceFilter)(nil),             // 55: google.firestore.v1.ExistenceFilter
-	(*wrapperspb.Int32Value)(nil),       // 56: google.protobuf.Int32Value
-	(*status.Status)(nil),               // 57: google.rpc.Status
-	(*emptypb.Empty)(nil),               // 58: google.protobuf.Empty
+	(*RequestOptions)(nil),              // 39: google.firestore.v1.RequestOptions
+	(*Document)(nil),                    // 40: google.firestore.v1.Document
+	(*Precondition)(nil),                // 41: google.firestore.v1.Precondition
+	(*TransactionOptions)(nil),          // 42: google.firestore.v1.TransactionOptions
+	(*Write)(nil),                       // 43: google.firestore.v1.Write
+	(*WriteResult)(nil),                 // 44: google.firestore.v1.WriteResult
+	(*StructuredQuery)(nil),             // 45: google.firestore.v1.StructuredQuery
+	(*ExplainOptions)(nil),              // 46: google.firestore.v1.ExplainOptions
+	(*ExplainMetrics)(nil),              // 47: google.firestore.v1.ExplainMetrics
+	(*StructuredPipeline)(nil),          // 48: google.firestore.v1.StructuredPipeline
+	(*ExplainStats)(nil),                // 49: google.firestore.v1.ExplainStats
+	(*StructuredAggregationQuery)(nil),  // 50: google.firestore.v1.StructuredAggregationQuery
+	(*AggregationResult)(nil),           // 51: google.firestore.v1.AggregationResult
+	(*Cursor)(nil),                      // 52: google.firestore.v1.Cursor
+	(*DocumentChange)(nil),              // 53: google.firestore.v1.DocumentChange
+	(*DocumentDelete)(nil),              // 54: google.firestore.v1.DocumentDelete
+	(*DocumentRemove)(nil),              // 55: google.firestore.v1.DocumentRemove
+	(*ExistenceFilter)(nil),             // 56: google.firestore.v1.ExistenceFilter
+	(*wrapperspb.Int32Value)(nil),       // 57: google.protobuf.Int32Value
+	(*status.Status)(nil),               // 58: google.rpc.Status
+	(*emptypb.Empty)(nil),               // 59: google.protobuf.Empty
 }
 var file_google_firestore_v1_firestore_proto_depIdxs = []int32{
-	37, // 0: google.firestore.v1.GetDocumentRequest.mask:type_name -> google.firestore.v1.DocumentMask
-	38, // 1: google.firestore.v1.GetDocumentRequest.read_time:type_name -> google.protobuf.Timestamp
-	37, // 2: google.firestore.v1.ListDocumentsRequest.mask:type_name -> google.firestore.v1.DocumentMask
-	38, // 3: google.firestore.v1.ListDocumentsRequest.read_time:type_name -> google.protobuf.Timestamp
-	39, // 4: google.firestore.v1.ListDocumentsResponse.documents:type_name -> google.firestore.v1.Document
-	39, // 5: google.firestore.v1.CreateDocumentRequest.document:type_name -> google.firestore.v1.Document
-	37, // 6: google.firestore.v1.CreateDocumentRequest.mask:type_name -> google.firestore.v1.DocumentMask
-	39, // 7: google.firestore.v1.UpdateDocumentRequest.document:type_name -> google.firestore.v1.Document
-	37, // 8: google.firestore.v1.UpdateDocumentRequest.update_mask:type_name -> google.firestore.v1.DocumentMask
-	37, // 9: google.firestore.v1.UpdateDocumentRequest.mask:type_name -> google.firestore.v1.DocumentMask
-	40, // 10: google.firestore.v1.UpdateDocumentRequest.current_document:type_name -> google.firestore.v1.Precondition
-	40, // 11: google.firestore.v1.DeleteDocumentRequest.current_document:type_name -> google.firestore.v1.Precondition
-	37, // 12: google.firestore.v1.BatchGetDocumentsRequest.mask:type_name -> google.firestore.v1.DocumentMask
-	41, // 13: google.firestore.v1.BatchGetDocumentsRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
-	38, // 14: google.firestore.v1.BatchGetDocumentsRequest.read_time:type_name -> google.protobuf.Timestamp
-	39, // 15: google.firestore.v1.BatchGetDocumentsResponse.found:type_name -> google.firestore.v1.Document
-	38, // 16: google.firestore.v1.BatchGetDocumentsResponse.read_time:type_name -> google.protobuf.Timestamp
-	41, // 17: google.firestore.v1.BeginTransactionRequest.options:type_name -> google.firestore.v1.TransactionOptions
-	42, // 18: google.firestore.v1.CommitRequest.writes:type_name -> google.firestore.v1.Write
-	43, // 19: google.firestore.v1.CommitResponse.write_results:type_name -> google.firestore.v1.WriteResult
-	38, // 20: google.firestore.v1.CommitResponse.commit_time:type_name -> google.protobuf.Timestamp
-	44, // 21: google.firestore.v1.RunQueryRequest.structured_query:type_name -> google.firestore.v1.StructuredQuery
-	41, // 22: google.firestore.v1.RunQueryRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
-	38, // 23: google.firestore.v1.RunQueryRequest.read_time:type_name -> google.protobuf.Timestamp
-	45, // 24: google.firestore.v1.RunQueryRequest.explain_options:type_name -> google.firestore.v1.ExplainOptions
-	39, // 25: google.firestore.v1.RunQueryResponse.document:type_name -> google.firestore.v1.Document
-	38, // 26: google.firestore.v1.RunQueryResponse.read_time:type_name -> google.protobuf.Timestamp
-	46, // 27: google.firestore.v1.RunQueryResponse.explain_metrics:type_name -> google.firestore.v1.ExplainMetrics
-	47, // 28: google.firestore.v1.ExecutePipelineRequest.structured_pipeline:type_name -> google.firestore.v1.StructuredPipeline
-	41, // 29: google.firestore.v1.ExecutePipelineRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
-	38, // 30: google.firestore.v1.ExecutePipelineRequest.read_time:type_name -> google.protobuf.Timestamp
-	39, // 31: google.firestore.v1.ExecutePipelineResponse.results:type_name -> google.firestore.v1.Document
-	38, // 32: google.firestore.v1.ExecutePipelineResponse.execution_time:type_name -> google.protobuf.Timestamp
-	48, // 33: google.firestore.v1.ExecutePipelineResponse.explain_stats:type_name -> google.firestore.v1.ExplainStats
-	49, // 34: google.firestore.v1.RunAggregationQueryRequest.structured_aggregation_query:type_name -> google.firestore.v1.StructuredAggregationQuery
-	41, // 35: google.firestore.v1.RunAggregationQueryRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
-	38, // 36: google.firestore.v1.RunAggregationQueryRequest.read_time:type_name -> google.protobuf.Timestamp
-	45, // 37: google.firestore.v1.RunAggregationQueryRequest.explain_options:type_name -> google.firestore.v1.ExplainOptions
-	50, // 38: google.firestore.v1.RunAggregationQueryResponse.result:type_name -> google.firestore.v1.AggregationResult
-	38, // 39: google.firestore.v1.RunAggregationQueryResponse.read_time:type_name -> google.protobuf.Timestamp
-	46, // 40: google.firestore.v1.RunAggregationQueryResponse.explain_metrics:type_name -> google.firestore.v1.ExplainMetrics
-	44, // 41: google.firestore.v1.PartitionQueryRequest.structured_query:type_name -> google.firestore.v1.StructuredQuery
-	38, // 42: google.firestore.v1.PartitionQueryRequest.read_time:type_name -> google.protobuf.Timestamp
-	51, // 43: google.firestore.v1.PartitionQueryResponse.partitions:type_name -> google.firestore.v1.Cursor
-	42, // 44: google.firestore.v1.WriteRequest.writes:type_name -> google.firestore.v1.Write
-	32, // 45: google.firestore.v1.WriteRequest.labels:type_name -> google.firestore.v1.WriteRequest.LabelsEntry
-	43, // 46: google.firestore.v1.WriteResponse.write_results:type_name -> google.firestore.v1.WriteResult
-	38, // 47: google.firestore.v1.WriteResponse.commit_time:type_name -> google.protobuf.Timestamp
-	26, // 48: google.firestore.v1.ListenRequest.add_target:type_name -> google.firestore.v1.Target
-	33, // 49: google.firestore.v1.ListenRequest.labels:type_name -> google.firestore.v1.ListenRequest.LabelsEntry
-	27, // 50: google.firestore.v1.ListenResponse.target_change:type_name -> google.firestore.v1.TargetChange
-	52, // 51: google.firestore.v1.ListenResponse.document_change:type_name -> google.firestore.v1.DocumentChange
-	53, // 52: google.firestore.v1.ListenResponse.document_delete:type_name -> google.firestore.v1.DocumentDelete
-	54, // 53: google.firestore.v1.ListenResponse.document_remove:type_name -> google.firestore.v1.DocumentRemove
-	55, // 54: google.firestore.v1.ListenResponse.filter:type_name -> google.firestore.v1.ExistenceFilter
-	35, // 55: google.firestore.v1.Target.query:type_name -> google.firestore.v1.Target.QueryTarget
-	34, // 56: google.firestore.v1.Target.documents:type_name -> google.firestore.v1.Target.DocumentsTarget
-	38, // 57: google.firestore.v1.Target.read_time:type_name -> google.protobuf.Timestamp
-	56, // 58: google.firestore.v1.Target.expected_count:type_name -> google.protobuf.Int32Value
-	0,  // 59: google.firestore.v1.TargetChange.target_change_type:type_name -> google.firestore.v1.TargetChange.TargetChangeType
-	57, // 60: google.firestore.v1.TargetChange.cause:type_name -> google.rpc.Status
-	38, // 61: google.firestore.v1.TargetChange.read_time:type_name -> google.protobuf.Timestamp
-	38, // 62: google.firestore.v1.ListCollectionIdsRequest.read_time:type_name -> google.protobuf.Timestamp
-	42, // 63: google.firestore.v1.BatchWriteRequest.writes:type_name -> google.firestore.v1.Write
-	36, // 64: google.firestore.v1.BatchWriteRequest.labels:type_name -> google.firestore.v1.BatchWriteRequest.LabelsEntry
-	43, // 65: google.firestore.v1.BatchWriteResponse.write_results:type_name -> google.firestore.v1.WriteResult
-	57, // 66: google.firestore.v1.BatchWriteResponse.status:type_name -> google.rpc.Status
-	44, // 67: google.firestore.v1.Target.QueryTarget.structured_query:type_name -> google.firestore.v1.StructuredQuery
-	1,  // 68: google.firestore.v1.Firestore.GetDocument:input_type -> google.firestore.v1.GetDocumentRequest
-	2,  // 69: google.firestore.v1.Firestore.ListDocuments:input_type -> google.firestore.v1.ListDocumentsRequest
-	5,  // 70: google.firestore.v1.Firestore.UpdateDocument:input_type -> google.firestore.v1.UpdateDocumentRequest
-	6,  // 71: google.firestore.v1.Firestore.DeleteDocument:input_type -> google.firestore.v1.DeleteDocumentRequest
-	7,  // 72: google.firestore.v1.Firestore.BatchGetDocuments:input_type -> google.firestore.v1.BatchGetDocumentsRequest
-	9,  // 73: google.firestore.v1.Firestore.BeginTransaction:input_type -> google.firestore.v1.BeginTransactionRequest
-	11, // 74: google.firestore.v1.Firestore.Commit:input_type -> google.firestore.v1.CommitRequest
-	13, // 75: google.firestore.v1.Firestore.Rollback:input_type -> google.firestore.v1.RollbackRequest
-	14, // 76: google.firestore.v1.Firestore.RunQuery:input_type -> google.firestore.v1.RunQueryRequest
-	16, // 77: google.firestore.v1.Firestore.ExecutePipeline:input_type -> google.firestore.v1.ExecutePipelineRequest
-	18, // 78: google.firestore.v1.Firestore.RunAggregationQuery:input_type -> google.firestore.v1.RunAggregationQueryRequest
-	20, // 79: google.firestore.v1.Firestore.PartitionQuery:input_type -> google.firestore.v1.PartitionQueryRequest
-	22, // 80: google.firestore.v1.Firestore.Write:input_type -> google.firestore.v1.WriteRequest
-	24, // 81: google.firestore.v1.Firestore.Listen:input_type -> google.firestore.v1.ListenRequest
-	28, // 82: google.firestore.v1.Firestore.ListCollectionIds:input_type -> google.firestore.v1.ListCollectionIdsRequest
-	30, // 83: google.firestore.v1.Firestore.BatchWrite:input_type -> google.firestore.v1.BatchWriteRequest
-	4,  // 84: google.firestore.v1.Firestore.CreateDocument:input_type -> google.firestore.v1.CreateDocumentRequest
-	39, // 85: google.firestore.v1.Firestore.GetDocument:output_type -> google.firestore.v1.Document
-	3,  // 86: google.firestore.v1.Firestore.ListDocuments:output_type -> google.firestore.v1.ListDocumentsResponse
-	39, // 87: google.firestore.v1.Firestore.UpdateDocument:output_type -> google.firestore.v1.Document
-	58, // 88: google.firestore.v1.Firestore.DeleteDocument:output_type -> google.protobuf.Empty
-	8,  // 89: google.firestore.v1.Firestore.BatchGetDocuments:output_type -> google.firestore.v1.BatchGetDocumentsResponse
-	10, // 90: google.firestore.v1.Firestore.BeginTransaction:output_type -> google.firestore.v1.BeginTransactionResponse
-	12, // 91: google.firestore.v1.Firestore.Commit:output_type -> google.firestore.v1.CommitResponse
-	58, // 92: google.firestore.v1.Firestore.Rollback:output_type -> google.protobuf.Empty
-	15, // 93: google.firestore.v1.Firestore.RunQuery:output_type -> google.firestore.v1.RunQueryResponse
-	17, // 94: google.firestore.v1.Firestore.ExecutePipeline:output_type -> google.firestore.v1.ExecutePipelineResponse
-	19, // 95: google.firestore.v1.Firestore.RunAggregationQuery:output_type -> google.firestore.v1.RunAggregationQueryResponse
-	21, // 96: google.firestore.v1.Firestore.PartitionQuery:output_type -> google.firestore.v1.PartitionQueryResponse
-	23, // 97: google.firestore.v1.Firestore.Write:output_type -> google.firestore.v1.WriteResponse
-	25, // 98: google.firestore.v1.Firestore.Listen:output_type -> google.firestore.v1.ListenResponse
-	29, // 99: google.firestore.v1.Firestore.ListCollectionIds:output_type -> google.firestore.v1.ListCollectionIdsResponse
-	31, // 100: google.firestore.v1.Firestore.BatchWrite:output_type -> google.firestore.v1.BatchWriteResponse
-	39, // 101: google.firestore.v1.Firestore.CreateDocument:output_type -> google.firestore.v1.Document
-	85, // [85:102] is the sub-list for method output_type
-	68, // [68:85] is the sub-list for method input_type
-	68, // [68:68] is the sub-list for extension type_name
-	68, // [68:68] is the sub-list for extension extendee
-	0,  // [0:68] is the sub-list for field type_name
+	37,  // 0: google.firestore.v1.GetDocumentRequest.mask:type_name -> google.firestore.v1.DocumentMask
+	38,  // 1: google.firestore.v1.GetDocumentRequest.read_time:type_name -> google.protobuf.Timestamp
+	39,  // 2: google.firestore.v1.GetDocumentRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	37,  // 3: google.firestore.v1.ListDocumentsRequest.mask:type_name -> google.firestore.v1.DocumentMask
+	38,  // 4: google.firestore.v1.ListDocumentsRequest.read_time:type_name -> google.protobuf.Timestamp
+	39,  // 5: google.firestore.v1.ListDocumentsRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	40,  // 6: google.firestore.v1.ListDocumentsResponse.documents:type_name -> google.firestore.v1.Document
+	40,  // 7: google.firestore.v1.CreateDocumentRequest.document:type_name -> google.firestore.v1.Document
+	37,  // 8: google.firestore.v1.CreateDocumentRequest.mask:type_name -> google.firestore.v1.DocumentMask
+	39,  // 9: google.firestore.v1.CreateDocumentRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	40,  // 10: google.firestore.v1.UpdateDocumentRequest.document:type_name -> google.firestore.v1.Document
+	37,  // 11: google.firestore.v1.UpdateDocumentRequest.update_mask:type_name -> google.firestore.v1.DocumentMask
+	37,  // 12: google.firestore.v1.UpdateDocumentRequest.mask:type_name -> google.firestore.v1.DocumentMask
+	41,  // 13: google.firestore.v1.UpdateDocumentRequest.current_document:type_name -> google.firestore.v1.Precondition
+	39,  // 14: google.firestore.v1.UpdateDocumentRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	41,  // 15: google.firestore.v1.DeleteDocumentRequest.current_document:type_name -> google.firestore.v1.Precondition
+	39,  // 16: google.firestore.v1.DeleteDocumentRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	37,  // 17: google.firestore.v1.BatchGetDocumentsRequest.mask:type_name -> google.firestore.v1.DocumentMask
+	42,  // 18: google.firestore.v1.BatchGetDocumentsRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
+	38,  // 19: google.firestore.v1.BatchGetDocumentsRequest.read_time:type_name -> google.protobuf.Timestamp
+	39,  // 20: google.firestore.v1.BatchGetDocumentsRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	40,  // 21: google.firestore.v1.BatchGetDocumentsResponse.found:type_name -> google.firestore.v1.Document
+	38,  // 22: google.firestore.v1.BatchGetDocumentsResponse.read_time:type_name -> google.protobuf.Timestamp
+	42,  // 23: google.firestore.v1.BeginTransactionRequest.options:type_name -> google.firestore.v1.TransactionOptions
+	39,  // 24: google.firestore.v1.BeginTransactionRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	43,  // 25: google.firestore.v1.CommitRequest.writes:type_name -> google.firestore.v1.Write
+	39,  // 26: google.firestore.v1.CommitRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	44,  // 27: google.firestore.v1.CommitResponse.write_results:type_name -> google.firestore.v1.WriteResult
+	38,  // 28: google.firestore.v1.CommitResponse.commit_time:type_name -> google.protobuf.Timestamp
+	39,  // 29: google.firestore.v1.RollbackRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	45,  // 30: google.firestore.v1.RunQueryRequest.structured_query:type_name -> google.firestore.v1.StructuredQuery
+	42,  // 31: google.firestore.v1.RunQueryRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
+	38,  // 32: google.firestore.v1.RunQueryRequest.read_time:type_name -> google.protobuf.Timestamp
+	46,  // 33: google.firestore.v1.RunQueryRequest.explain_options:type_name -> google.firestore.v1.ExplainOptions
+	39,  // 34: google.firestore.v1.RunQueryRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	40,  // 35: google.firestore.v1.RunQueryResponse.document:type_name -> google.firestore.v1.Document
+	38,  // 36: google.firestore.v1.RunQueryResponse.read_time:type_name -> google.protobuf.Timestamp
+	47,  // 37: google.firestore.v1.RunQueryResponse.explain_metrics:type_name -> google.firestore.v1.ExplainMetrics
+	48,  // 38: google.firestore.v1.ExecutePipelineRequest.structured_pipeline:type_name -> google.firestore.v1.StructuredPipeline
+	42,  // 39: google.firestore.v1.ExecutePipelineRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
+	38,  // 40: google.firestore.v1.ExecutePipelineRequest.read_time:type_name -> google.protobuf.Timestamp
+	39,  // 41: google.firestore.v1.ExecutePipelineRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	40,  // 42: google.firestore.v1.ExecutePipelineResponse.results:type_name -> google.firestore.v1.Document
+	38,  // 43: google.firestore.v1.ExecutePipelineResponse.execution_time:type_name -> google.protobuf.Timestamp
+	49,  // 44: google.firestore.v1.ExecutePipelineResponse.explain_stats:type_name -> google.firestore.v1.ExplainStats
+	50,  // 45: google.firestore.v1.RunAggregationQueryRequest.structured_aggregation_query:type_name -> google.firestore.v1.StructuredAggregationQuery
+	42,  // 46: google.firestore.v1.RunAggregationQueryRequest.new_transaction:type_name -> google.firestore.v1.TransactionOptions
+	38,  // 47: google.firestore.v1.RunAggregationQueryRequest.read_time:type_name -> google.protobuf.Timestamp
+	46,  // 48: google.firestore.v1.RunAggregationQueryRequest.explain_options:type_name -> google.firestore.v1.ExplainOptions
+	39,  // 49: google.firestore.v1.RunAggregationQueryRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	51,  // 50: google.firestore.v1.RunAggregationQueryResponse.result:type_name -> google.firestore.v1.AggregationResult
+	38,  // 51: google.firestore.v1.RunAggregationQueryResponse.read_time:type_name -> google.protobuf.Timestamp
+	47,  // 52: google.firestore.v1.RunAggregationQueryResponse.explain_metrics:type_name -> google.firestore.v1.ExplainMetrics
+	45,  // 53: google.firestore.v1.PartitionQueryRequest.structured_query:type_name -> google.firestore.v1.StructuredQuery
+	38,  // 54: google.firestore.v1.PartitionQueryRequest.read_time:type_name -> google.protobuf.Timestamp
+	39,  // 55: google.firestore.v1.PartitionQueryRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	52,  // 56: google.firestore.v1.PartitionQueryResponse.partitions:type_name -> google.firestore.v1.Cursor
+	43,  // 57: google.firestore.v1.WriteRequest.writes:type_name -> google.firestore.v1.Write
+	32,  // 58: google.firestore.v1.WriteRequest.labels:type_name -> google.firestore.v1.WriteRequest.LabelsEntry
+	39,  // 59: google.firestore.v1.WriteRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	44,  // 60: google.firestore.v1.WriteResponse.write_results:type_name -> google.firestore.v1.WriteResult
+	38,  // 61: google.firestore.v1.WriteResponse.commit_time:type_name -> google.protobuf.Timestamp
+	26,  // 62: google.firestore.v1.ListenRequest.add_target:type_name -> google.firestore.v1.Target
+	33,  // 63: google.firestore.v1.ListenRequest.labels:type_name -> google.firestore.v1.ListenRequest.LabelsEntry
+	39,  // 64: google.firestore.v1.ListenRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	27,  // 65: google.firestore.v1.ListenResponse.target_change:type_name -> google.firestore.v1.TargetChange
+	53,  // 66: google.firestore.v1.ListenResponse.document_change:type_name -> google.firestore.v1.DocumentChange
+	54,  // 67: google.firestore.v1.ListenResponse.document_delete:type_name -> google.firestore.v1.DocumentDelete
+	55,  // 68: google.firestore.v1.ListenResponse.document_remove:type_name -> google.firestore.v1.DocumentRemove
+	56,  // 69: google.firestore.v1.ListenResponse.filter:type_name -> google.firestore.v1.ExistenceFilter
+	35,  // 70: google.firestore.v1.Target.query:type_name -> google.firestore.v1.Target.QueryTarget
+	34,  // 71: google.firestore.v1.Target.documents:type_name -> google.firestore.v1.Target.DocumentsTarget
+	38,  // 72: google.firestore.v1.Target.read_time:type_name -> google.protobuf.Timestamp
+	57,  // 73: google.firestore.v1.Target.expected_count:type_name -> google.protobuf.Int32Value
+	0,   // 74: google.firestore.v1.TargetChange.target_change_type:type_name -> google.firestore.v1.TargetChange.TargetChangeType
+	58,  // 75: google.firestore.v1.TargetChange.cause:type_name -> google.rpc.Status
+	38,  // 76: google.firestore.v1.TargetChange.read_time:type_name -> google.protobuf.Timestamp
+	38,  // 77: google.firestore.v1.ListCollectionIdsRequest.read_time:type_name -> google.protobuf.Timestamp
+	39,  // 78: google.firestore.v1.ListCollectionIdsRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	43,  // 79: google.firestore.v1.BatchWriteRequest.writes:type_name -> google.firestore.v1.Write
+	36,  // 80: google.firestore.v1.BatchWriteRequest.labels:type_name -> google.firestore.v1.BatchWriteRequest.LabelsEntry
+	39,  // 81: google.firestore.v1.BatchWriteRequest.request_options:type_name -> google.firestore.v1.RequestOptions
+	44,  // 82: google.firestore.v1.BatchWriteResponse.write_results:type_name -> google.firestore.v1.WriteResult
+	58,  // 83: google.firestore.v1.BatchWriteResponse.status:type_name -> google.rpc.Status
+	45,  // 84: google.firestore.v1.Target.QueryTarget.structured_query:type_name -> google.firestore.v1.StructuredQuery
+	1,   // 85: google.firestore.v1.Firestore.GetDocument:input_type -> google.firestore.v1.GetDocumentRequest
+	2,   // 86: google.firestore.v1.Firestore.ListDocuments:input_type -> google.firestore.v1.ListDocumentsRequest
+	5,   // 87: google.firestore.v1.Firestore.UpdateDocument:input_type -> google.firestore.v1.UpdateDocumentRequest
+	6,   // 88: google.firestore.v1.Firestore.DeleteDocument:input_type -> google.firestore.v1.DeleteDocumentRequest
+	7,   // 89: google.firestore.v1.Firestore.BatchGetDocuments:input_type -> google.firestore.v1.BatchGetDocumentsRequest
+	9,   // 90: google.firestore.v1.Firestore.BeginTransaction:input_type -> google.firestore.v1.BeginTransactionRequest
+	11,  // 91: google.firestore.v1.Firestore.Commit:input_type -> google.firestore.v1.CommitRequest
+	13,  // 92: google.firestore.v1.Firestore.Rollback:input_type -> google.firestore.v1.RollbackRequest
+	14,  // 93: google.firestore.v1.Firestore.RunQuery:input_type -> google.firestore.v1.RunQueryRequest
+	16,  // 94: google.firestore.v1.Firestore.ExecutePipeline:input_type -> google.firestore.v1.ExecutePipelineRequest
+	18,  // 95: google.firestore.v1.Firestore.RunAggregationQuery:input_type -> google.firestore.v1.RunAggregationQueryRequest
+	20,  // 96: google.firestore.v1.Firestore.PartitionQuery:input_type -> google.firestore.v1.PartitionQueryRequest
+	22,  // 97: google.firestore.v1.Firestore.Write:input_type -> google.firestore.v1.WriteRequest
+	24,  // 98: google.firestore.v1.Firestore.Listen:input_type -> google.firestore.v1.ListenRequest
+	28,  // 99: google.firestore.v1.Firestore.ListCollectionIds:input_type -> google.firestore.v1.ListCollectionIdsRequest
+	30,  // 100: google.firestore.v1.Firestore.BatchWrite:input_type -> google.firestore.v1.BatchWriteRequest
+	4,   // 101: google.firestore.v1.Firestore.CreateDocument:input_type -> google.firestore.v1.CreateDocumentRequest
+	40,  // 102: google.firestore.v1.Firestore.GetDocument:output_type -> google.firestore.v1.Document
+	3,   // 103: google.firestore.v1.Firestore.ListDocuments:output_type -> google.firestore.v1.ListDocumentsResponse
+	40,  // 104: google.firestore.v1.Firestore.UpdateDocument:output_type -> google.firestore.v1.Document
+	59,  // 105: google.firestore.v1.Firestore.DeleteDocument:output_type -> google.protobuf.Empty
+	8,   // 106: google.firestore.v1.Firestore.BatchGetDocuments:output_type -> google.firestore.v1.BatchGetDocumentsResponse
+	10,  // 107: google.firestore.v1.Firestore.BeginTransaction:output_type -> google.firestore.v1.BeginTransactionResponse
+	12,  // 108: google.firestore.v1.Firestore.Commit:output_type -> google.firestore.v1.CommitResponse
+	59,  // 109: google.firestore.v1.Firestore.Rollback:output_type -> google.protobuf.Empty
+	15,  // 110: google.firestore.v1.Firestore.RunQuery:output_type -> google.firestore.v1.RunQueryResponse
+	17,  // 111: google.firestore.v1.Firestore.ExecutePipeline:output_type -> google.firestore.v1.ExecutePipelineResponse
+	19,  // 112: google.firestore.v1.Firestore.RunAggregationQuery:output_type -> google.firestore.v1.RunAggregationQueryResponse
+	21,  // 113: google.firestore.v1.Firestore.PartitionQuery:output_type -> google.firestore.v1.PartitionQueryResponse
+	23,  // 114: google.firestore.v1.Firestore.Write:output_type -> google.firestore.v1.WriteResponse
+	25,  // 115: google.firestore.v1.Firestore.Listen:output_type -> google.firestore.v1.ListenResponse
+	29,  // 116: google.firestore.v1.Firestore.ListCollectionIds:output_type -> google.firestore.v1.ListCollectionIdsResponse
+	31,  // 117: google.firestore.v1.Firestore.BatchWrite:output_type -> google.firestore.v1.BatchWriteResponse
+	40,  // 118: google.firestore.v1.Firestore.CreateDocument:output_type -> google.firestore.v1.Document
+	102, // [102:119] is the sub-list for method output_type
+	85,  // [85:102] is the sub-list for method input_type
+	85,  // [85:85] is the sub-list for extension type_name
+	85,  // [85:85] is the sub-list for extension extendee
+	0,   // [0:85] is the sub-list for field type_name
 }
 
 func init() { file_google_firestore_v1_firestore_proto_init() }

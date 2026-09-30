@@ -150,6 +150,11 @@
                 "GetAutonomousDatabase"
               ]
             },
+            "GetAutonomousDatabaseRefreshableClones": {
+              "methods": [
+                "GetAutonomousDatabaseRefreshableClones"
+              ]
+            },
             "GetCloudExadataInfrastructure": {
               "methods": [
                 "GetCloudExadataInfrastructure"
@@ -373,6 +378,11 @@
             "ListPluggableDatabases": {
               "methods": [
                 "ListPluggableDatabases"
+              ]
+            },
+            "RefreshAutonomousDatabase": {
+              "methods": [
+                "RefreshAutonomousDatabase"
               ]
             },
             "RemoveVirtualMachineExadbVmCluster": {
@@ -575,6 +585,11 @@
                 "GetAutonomousDatabase"
               ]
             },
+            "GetAutonomousDatabaseRefreshableClones": {
+              "methods": [
+                "GetAutonomousDatabaseRefreshableClones"
+              ]
+            },
             "GetCloudExadataInfrastructure": {
               "methods": [
                 "GetCloudExadataInfrastructure"
@@ -798,6 +813,11 @@
             "ListPluggableDatabases": {
               "methods": [
                 "ListPluggableDatabases"
+              ]
+            },
+            "RefreshAutonomousDatabase": {
+              "methods": [
+                "RefreshAutonomousDatabase"
               ]
             },
             "RemoveVirtualMachineExadbVmCluster": {

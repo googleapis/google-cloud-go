@@ -25,6 +25,11 @@
                 "IngestEvents"
               ]
             },
+            "RemoveAllAudienceMembers": {
+              "methods": [
+                "RemoveAllAudienceMembers"
+              ]
+            },
             "RemoveAudienceMembers": {
               "methods": [
                 "RemoveAudienceMembers"
@@ -53,6 +58,11 @@
             "IngestEvents": {
               "methods": [
                 "IngestEvents"
+              ]
+            },
+            "RemoveAllAudienceMembers": {
+              "methods": [
+                "RemoveAllAudienceMembers"
               ]
             },
             "RemoveAudienceMembers": {

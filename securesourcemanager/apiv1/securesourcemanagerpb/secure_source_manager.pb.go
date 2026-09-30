@@ -173,6 +173,9 @@ const (
 	// Pull request events are triggered when a pull request is opened, closed,
 	// reopened, or edited.
 	Hook_PULL_REQUEST Hook_HookEventType = 2
+	// Triggers when a general comment is added, edited, or deleted on a pull
+	// request.
+	Hook_PULL_REQUEST_COMMENT Hook_HookEventType = 3
 )
 
 // Enum value maps for Hook_HookEventType.
@@ -181,11 +184,13 @@ var (
 		0: "UNSPECIFIED",
 		1: "PUSH",
 		2: "PULL_REQUEST",
+		3: "PULL_REQUEST_COMMENT",
 	}
 	Hook_HookEventType_value = map[string]int32{
-		"UNSPECIFIED":  0,
-		"PUSH":         1,
-		"PULL_REQUEST": 2,
+		"UNSPECIFIED":          0,
+		"PUSH":                 1,
+		"PULL_REQUEST":         2,
+		"PULL_REQUEST_COMMENT": 3,
 	}
 )
 
@@ -440,6 +445,59 @@ func (PullRequestComment_Review_ActionType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{8, 0, 0}
 }
 
+// The derived type of the reference (e.g., branch or tag) from the name.
+type Ref_RefType int32
+
+const (
+	// Unspecified ref type.
+	Ref_REF_TYPE_UNSPECIFIED Ref_RefType = 0
+	// Represents a branch.
+	Ref_REF_TYPE_BRANCH Ref_RefType = 1
+	// Represents a tag.
+	Ref_REF_TYPE_TAG Ref_RefType = 2
+)
+
+// Enum value maps for Ref_RefType.
+var (
+	Ref_RefType_name = map[int32]string{
+		0: "REF_TYPE_UNSPECIFIED",
+		1: "REF_TYPE_BRANCH",
+		2: "REF_TYPE_TAG",
+	}
+	Ref_RefType_value = map[string]int32{
+		"REF_TYPE_UNSPECIFIED": 0,
+		"REF_TYPE_BRANCH":      1,
+		"REF_TYPE_TAG":         2,
+	}
+)
+
+func (x Ref_RefType) Enum() *Ref_RefType {
+	p := new(Ref_RefType)
+	*p = x
+	return p
+}
+
+func (x Ref_RefType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (Ref_RefType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes[7].Descriptor()
+}
+
+func (Ref_RefType) Type() protoreflect.EnumType {
+	return &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes[7]
+}
+
+func (x Ref_RefType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use Ref_RefType.Descriptor instead.
+func (Ref_RefType) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{9, 0}
+}
+
 // Defines the type of object the TreeEntry represents.
 type TreeEntry_ObjectType int32
 
@@ -481,11 +539,11 @@ func (x TreeEntry_ObjectType) String() string {
 }
 
 func (TreeEntry_ObjectType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes[7].Descriptor()
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes[8].Descriptor()
 }
 
 func (TreeEntry_ObjectType) Type() protoreflect.EnumType {
-	return &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes[7]
+	return &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes[8]
 }
 
 func (x TreeEntry_ObjectType) Number() protoreflect.EnumNumber {
@@ -494,7 +552,7 @@ func (x TreeEntry_ObjectType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use TreeEntry_ObjectType.Descriptor instead.
 func (TreeEntry_ObjectType) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{51, 0}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{52, 0}
 }
 
 // A resource that represents a Secure Source Manager instance.
@@ -538,8 +596,12 @@ type Instance struct {
 	// Optional. Configuration for Workforce Identity Federation to support
 	// third party identity provider. If unset, defaults to the Google OIDC IdP.
 	WorkforceIdentityFederationConfig *Instance_WorkforceIdentityFederationConfig `protobuf:"bytes,14,opt,name=workforce_identity_federation_config,json=workforceIdentityFederationConfig,proto3" json:"workforce_identity_federation_config,omitempty"`
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
+	// Output only. Reserved for future use.
+	SatisfiesPzi bool `protobuf:"varint,18,opt,name=satisfies_pzi,json=satisfiesPzi,proto3" json:"satisfies_pzi,omitempty"`
+	// Output only. Reserved for future use.
+	SatisfiesPzs  bool `protobuf:"varint,19,opt,name=satisfies_pzs,json=satisfiesPzs,proto3" json:"satisfies_pzs,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Instance) Reset() {
@@ -640,6 +702,20 @@ func (x *Instance) GetWorkforceIdentityFederationConfig() *Instance_WorkforceIde
 		return x.WorkforceIdentityFederationConfig
 	}
 	return nil
+}
+
+func (x *Instance) GetSatisfiesPzi() bool {
+	if x != nil {
+		return x.SatisfiesPzi
+	}
+	return false
+}
+
+func (x *Instance) GetSatisfiesPzs() bool {
+	if x != nil {
+		return x.SatisfiesPzs
+	}
+	return false
 }
 
 // Metadata of a Secure Source Manager repository.
@@ -1625,6 +1701,71 @@ func (*PullRequestComment_Comment_) isPullRequestComment_CommentDetail() {}
 
 func (*PullRequestComment_Code_) isPullRequestComment_CommentDetail() {}
 
+// Ref represents a git reference within a repository.
+type Ref struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Identifier. Name of the git reference (e.g., 'refs/heads/foo' or
+	// 'refs/tags/v1.0').
+	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
+	// Output only. The target of the reference, which is a commit SHA.
+	Target string `protobuf:"bytes,2,opt,name=target,proto3" json:"target,omitempty"`
+	// Output only. The type of the reference.
+	Type          Ref_RefType `protobuf:"varint,3,opt,name=type,proto3,enum=google.cloud.securesourcemanager.v1.Ref_RefType" json:"type,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *Ref) Reset() {
+	*x = Ref{}
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[9]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *Ref) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*Ref) ProtoMessage() {}
+
+func (x *Ref) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[9]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use Ref.ProtoReflect.Descriptor instead.
+func (*Ref) Descriptor() ([]byte, []int) {
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{9}
+}
+
+func (x *Ref) GetName() string {
+	if x != nil {
+		return x.Name
+	}
+	return ""
+}
+
+func (x *Ref) GetTarget() string {
+	if x != nil {
+		return x.Target
+	}
+	return ""
+}
+
+func (x *Ref) GetType() Ref_RefType {
+	if x != nil {
+		return x.Type
+	}
+	return Ref_REF_TYPE_UNSPECIFIED
+}
+
 // ListInstancesRequest is the request to list instances.
 type ListInstancesRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -1645,7 +1786,7 @@ type ListInstancesRequest struct {
 
 func (x *ListInstancesRequest) Reset() {
 	*x = ListInstancesRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[9]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1657,7 +1798,7 @@ func (x *ListInstancesRequest) String() string {
 func (*ListInstancesRequest) ProtoMessage() {}
 
 func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[9]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1670,7 +1811,7 @@ func (x *ListInstancesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesRequest.ProtoReflect.Descriptor instead.
 func (*ListInstancesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{9}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *ListInstancesRequest) GetParent() string {
@@ -1722,7 +1863,7 @@ type ListInstancesResponse struct {
 
 func (x *ListInstancesResponse) Reset() {
 	*x = ListInstancesResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[10]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1734,7 +1875,7 @@ func (x *ListInstancesResponse) String() string {
 func (*ListInstancesResponse) ProtoMessage() {}
 
 func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[10]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1747,7 +1888,7 @@ func (x *ListInstancesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListInstancesResponse.ProtoReflect.Descriptor instead.
 func (*ListInstancesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{10}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{11}
 }
 
 func (x *ListInstancesResponse) GetInstances() []*Instance {
@@ -1782,7 +1923,7 @@ type GetInstanceRequest struct {
 
 func (x *GetInstanceRequest) Reset() {
 	*x = GetInstanceRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[11]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[12]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1794,7 +1935,7 @@ func (x *GetInstanceRequest) String() string {
 func (*GetInstanceRequest) ProtoMessage() {}
 
 func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[11]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[12]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1807,7 +1948,7 @@ func (x *GetInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetInstanceRequest.ProtoReflect.Descriptor instead.
 func (*GetInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{11}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{12}
 }
 
 func (x *GetInstanceRequest) GetName() string {
@@ -1846,7 +1987,7 @@ type CreateInstanceRequest struct {
 
 func (x *CreateInstanceRequest) Reset() {
 	*x = CreateInstanceRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[12]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1858,7 +1999,7 @@ func (x *CreateInstanceRequest) String() string {
 func (*CreateInstanceRequest) ProtoMessage() {}
 
 func (x *CreateInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[12]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1871,7 +2012,7 @@ func (x *CreateInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateInstanceRequest.ProtoReflect.Descriptor instead.
 func (*CreateInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{12}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{13}
 }
 
 func (x *CreateInstanceRequest) GetParent() string {
@@ -1929,7 +2070,7 @@ type DeleteInstanceRequest struct {
 
 func (x *DeleteInstanceRequest) Reset() {
 	*x = DeleteInstanceRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[13]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[14]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1941,7 +2082,7 @@ func (x *DeleteInstanceRequest) String() string {
 func (*DeleteInstanceRequest) ProtoMessage() {}
 
 func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[13]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[14]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1954,7 +2095,7 @@ func (x *DeleteInstanceRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteInstanceRequest.ProtoReflect.Descriptor instead.
 func (*DeleteInstanceRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{13}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{14}
 }
 
 func (x *DeleteInstanceRequest) GetName() string {
@@ -2005,7 +2146,7 @@ type OperationMetadata struct {
 
 func (x *OperationMetadata) Reset() {
 	*x = OperationMetadata{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[14]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[15]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2017,7 +2158,7 @@ func (x *OperationMetadata) String() string {
 func (*OperationMetadata) ProtoMessage() {}
 
 func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[14]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[15]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2030,7 +2171,7 @@ func (x *OperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OperationMetadata.ProtoReflect.Descriptor instead.
 func (*OperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{14}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{15}
 }
 
 func (x *OperationMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -2107,7 +2248,7 @@ type ListRepositoriesRequest struct {
 
 func (x *ListRepositoriesRequest) Reset() {
 	*x = ListRepositoriesRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[15]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[16]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2119,7 +2260,7 @@ func (x *ListRepositoriesRequest) String() string {
 func (*ListRepositoriesRequest) ProtoMessage() {}
 
 func (x *ListRepositoriesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[15]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[16]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2132,7 +2273,7 @@ func (x *ListRepositoriesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRepositoriesRequest.ProtoReflect.Descriptor instead.
 func (*ListRepositoriesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{15}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{16}
 }
 
 func (x *ListRepositoriesRequest) GetParent() string {
@@ -2182,7 +2323,7 @@ type ListRepositoriesResponse struct {
 
 func (x *ListRepositoriesResponse) Reset() {
 	*x = ListRepositoriesResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[16]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[17]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2194,7 +2335,7 @@ func (x *ListRepositoriesResponse) String() string {
 func (*ListRepositoriesResponse) ProtoMessage() {}
 
 func (x *ListRepositoriesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[16]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[17]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2207,7 +2348,7 @@ func (x *ListRepositoriesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListRepositoriesResponse.ProtoReflect.Descriptor instead.
 func (*ListRepositoriesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{16}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{17}
 }
 
 func (x *ListRepositoriesResponse) GetRepositories() []*Repository {
@@ -2237,7 +2378,7 @@ type GetRepositoryRequest struct {
 
 func (x *GetRepositoryRequest) Reset() {
 	*x = GetRepositoryRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[17]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[18]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2249,7 +2390,7 @@ func (x *GetRepositoryRequest) String() string {
 func (*GetRepositoryRequest) ProtoMessage() {}
 
 func (x *GetRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[17]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[18]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2262,7 +2403,7 @@ func (x *GetRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*GetRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{17}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{18}
 }
 
 func (x *GetRepositoryRequest) GetName() string {
@@ -2290,7 +2431,7 @@ type CreateRepositoryRequest struct {
 
 func (x *CreateRepositoryRequest) Reset() {
 	*x = CreateRepositoryRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[18]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[19]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2302,7 +2443,7 @@ func (x *CreateRepositoryRequest) String() string {
 func (*CreateRepositoryRequest) ProtoMessage() {}
 
 func (x *CreateRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[18]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[19]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2315,7 +2456,7 @@ func (x *CreateRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*CreateRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{18}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{19}
 }
 
 func (x *CreateRepositoryRequest) GetParent() string {
@@ -2359,7 +2500,7 @@ type UpdateRepositoryRequest struct {
 
 func (x *UpdateRepositoryRequest) Reset() {
 	*x = UpdateRepositoryRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[19]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2371,7 +2512,7 @@ func (x *UpdateRepositoryRequest) String() string {
 func (*UpdateRepositoryRequest) ProtoMessage() {}
 
 func (x *UpdateRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[19]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2384,7 +2525,7 @@ func (x *UpdateRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*UpdateRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{19}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *UpdateRepositoryRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -2424,7 +2565,7 @@ type DeleteRepositoryRequest struct {
 
 func (x *DeleteRepositoryRequest) Reset() {
 	*x = DeleteRepositoryRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[20]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2436,7 +2577,7 @@ func (x *DeleteRepositoryRequest) String() string {
 func (*DeleteRepositoryRequest) ProtoMessage() {}
 
 func (x *DeleteRepositoryRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[20]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2449,7 +2590,7 @@ func (x *DeleteRepositoryRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteRepositoryRequest.ProtoReflect.Descriptor instead.
 func (*DeleteRepositoryRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{20}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *DeleteRepositoryRequest) GetName() string {
@@ -2482,7 +2623,7 @@ type ListHooksRequest struct {
 
 func (x *ListHooksRequest) Reset() {
 	*x = ListHooksRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[21]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2494,7 +2635,7 @@ func (x *ListHooksRequest) String() string {
 func (*ListHooksRequest) ProtoMessage() {}
 
 func (x *ListHooksRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[21]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2507,7 +2648,7 @@ func (x *ListHooksRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListHooksRequest.ProtoReflect.Descriptor instead.
 func (*ListHooksRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{21}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *ListHooksRequest) GetParent() string {
@@ -2544,7 +2685,7 @@ type ListHooksResponse struct {
 
 func (x *ListHooksResponse) Reset() {
 	*x = ListHooksResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[22]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2556,7 +2697,7 @@ func (x *ListHooksResponse) String() string {
 func (*ListHooksResponse) ProtoMessage() {}
 
 func (x *ListHooksResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[22]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2569,7 +2710,7 @@ func (x *ListHooksResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListHooksResponse.ProtoReflect.Descriptor instead.
 func (*ListHooksResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{22}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *ListHooksResponse) GetHooks() []*Hook {
@@ -2599,7 +2740,7 @@ type GetHookRequest struct {
 
 func (x *GetHookRequest) Reset() {
 	*x = GetHookRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[23]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2611,7 +2752,7 @@ func (x *GetHookRequest) String() string {
 func (*GetHookRequest) ProtoMessage() {}
 
 func (x *GetHookRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[23]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2624,7 +2765,7 @@ func (x *GetHookRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetHookRequest.ProtoReflect.Descriptor instead.
 func (*GetHookRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{23}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *GetHookRequest) GetName() string {
@@ -2654,7 +2795,7 @@ type CreateHookRequest struct {
 
 func (x *CreateHookRequest) Reset() {
 	*x = CreateHookRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[24]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2666,7 +2807,7 @@ func (x *CreateHookRequest) String() string {
 func (*CreateHookRequest) ProtoMessage() {}
 
 func (x *CreateHookRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[24]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2679,7 +2820,7 @@ func (x *CreateHookRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateHookRequest.ProtoReflect.Descriptor instead.
 func (*CreateHookRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{24}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *CreateHookRequest) GetParent() string {
@@ -2720,7 +2861,7 @@ type UpdateHookRequest struct {
 
 func (x *UpdateHookRequest) Reset() {
 	*x = UpdateHookRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[25]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2732,7 +2873,7 @@ func (x *UpdateHookRequest) String() string {
 func (*UpdateHookRequest) ProtoMessage() {}
 
 func (x *UpdateHookRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[25]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2745,7 +2886,7 @@ func (x *UpdateHookRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateHookRequest.ProtoReflect.Descriptor instead.
 func (*UpdateHookRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{25}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *UpdateHookRequest) GetUpdateMask() *fieldmaskpb.FieldMask {
@@ -2775,7 +2916,7 @@ type DeleteHookRequest struct {
 
 func (x *DeleteHookRequest) Reset() {
 	*x = DeleteHookRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[26]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2787,7 +2928,7 @@ func (x *DeleteHookRequest) String() string {
 func (*DeleteHookRequest) ProtoMessage() {}
 
 func (x *DeleteHookRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[26]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2800,7 +2941,7 @@ func (x *DeleteHookRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteHookRequest.ProtoReflect.Descriptor instead.
 func (*DeleteHookRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{26}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *DeleteHookRequest) GetName() string {
@@ -2823,7 +2964,7 @@ type GetBranchRuleRequest struct {
 
 func (x *GetBranchRuleRequest) Reset() {
 	*x = GetBranchRuleRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[27]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2835,7 +2976,7 @@ func (x *GetBranchRuleRequest) String() string {
 func (*GetBranchRuleRequest) ProtoMessage() {}
 
 func (x *GetBranchRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[27]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2848,7 +2989,7 @@ func (x *GetBranchRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetBranchRuleRequest.ProtoReflect.Descriptor instead.
 func (*GetBranchRuleRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{27}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetBranchRuleRequest) GetName() string {
@@ -2870,7 +3011,7 @@ type CreateBranchRuleRequest struct {
 
 func (x *CreateBranchRuleRequest) Reset() {
 	*x = CreateBranchRuleRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[28]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2882,7 +3023,7 @@ func (x *CreateBranchRuleRequest) String() string {
 func (*CreateBranchRuleRequest) ProtoMessage() {}
 
 func (x *CreateBranchRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[28]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2895,7 +3036,7 @@ func (x *CreateBranchRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateBranchRuleRequest.ProtoReflect.Descriptor instead.
 func (*CreateBranchRuleRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{28}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *CreateBranchRuleRequest) GetParent() string {
@@ -2934,7 +3075,7 @@ type ListBranchRulesRequest struct {
 
 func (x *ListBranchRulesRequest) Reset() {
 	*x = ListBranchRulesRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[29]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[30]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2946,7 +3087,7 @@ func (x *ListBranchRulesRequest) String() string {
 func (*ListBranchRulesRequest) ProtoMessage() {}
 
 func (x *ListBranchRulesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[29]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[30]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2959,7 +3100,7 @@ func (x *ListBranchRulesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBranchRulesRequest.ProtoReflect.Descriptor instead.
 func (*ListBranchRulesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{29}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{30}
 }
 
 func (x *ListBranchRulesRequest) GetParent() string {
@@ -2996,7 +3137,7 @@ type DeleteBranchRuleRequest struct {
 
 func (x *DeleteBranchRuleRequest) Reset() {
 	*x = DeleteBranchRuleRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[30]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3008,7 +3149,7 @@ func (x *DeleteBranchRuleRequest) String() string {
 func (*DeleteBranchRuleRequest) ProtoMessage() {}
 
 func (x *DeleteBranchRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[30]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3021,7 +3162,7 @@ func (x *DeleteBranchRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteBranchRuleRequest.ProtoReflect.Descriptor instead.
 func (*DeleteBranchRuleRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{30}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *DeleteBranchRuleRequest) GetName() string {
@@ -3057,7 +3198,7 @@ type UpdateBranchRuleRequest struct {
 
 func (x *UpdateBranchRuleRequest) Reset() {
 	*x = UpdateBranchRuleRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[31]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3069,7 +3210,7 @@ func (x *UpdateBranchRuleRequest) String() string {
 func (*UpdateBranchRuleRequest) ProtoMessage() {}
 
 func (x *UpdateBranchRuleRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[31]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3082,7 +3223,7 @@ func (x *UpdateBranchRuleRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateBranchRuleRequest.ProtoReflect.Descriptor instead.
 func (*UpdateBranchRuleRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{31}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *UpdateBranchRuleRequest) GetBranchRule() *BranchRule {
@@ -3119,7 +3260,7 @@ type ListBranchRulesResponse struct {
 
 func (x *ListBranchRulesResponse) Reset() {
 	*x = ListBranchRulesResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[32]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3131,7 +3272,7 @@ func (x *ListBranchRulesResponse) String() string {
 func (*ListBranchRulesResponse) ProtoMessage() {}
 
 func (x *ListBranchRulesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[32]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3144,7 +3285,7 @@ func (x *ListBranchRulesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListBranchRulesResponse.ProtoReflect.Descriptor instead.
 func (*ListBranchRulesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{32}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *ListBranchRulesResponse) GetBranchRules() []*BranchRule {
@@ -3175,7 +3316,7 @@ type CreatePullRequestRequest struct {
 
 func (x *CreatePullRequestRequest) Reset() {
 	*x = CreatePullRequestRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[33]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3187,7 +3328,7 @@ func (x *CreatePullRequestRequest) String() string {
 func (*CreatePullRequestRequest) ProtoMessage() {}
 
 func (x *CreatePullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[33]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3200,7 +3341,7 @@ func (x *CreatePullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePullRequestRequest.ProtoReflect.Descriptor instead.
 func (*CreatePullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{33}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *CreatePullRequestRequest) GetParent() string {
@@ -3230,7 +3371,7 @@ type GetPullRequestRequest struct {
 
 func (x *GetPullRequestRequest) Reset() {
 	*x = GetPullRequestRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[34]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3242,7 +3383,7 @@ func (x *GetPullRequestRequest) String() string {
 func (*GetPullRequestRequest) ProtoMessage() {}
 
 func (x *GetPullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[34]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3255,7 +3396,7 @@ func (x *GetPullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPullRequestRequest.ProtoReflect.Descriptor instead.
 func (*GetPullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{34}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *GetPullRequestRequest) GetName() string {
@@ -3282,7 +3423,7 @@ type ListPullRequestsRequest struct {
 
 func (x *ListPullRequestsRequest) Reset() {
 	*x = ListPullRequestsRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[35]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3294,7 +3435,7 @@ func (x *ListPullRequestsRequest) String() string {
 func (*ListPullRequestsRequest) ProtoMessage() {}
 
 func (x *ListPullRequestsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[35]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3307,7 +3448,7 @@ func (x *ListPullRequestsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPullRequestsRequest.ProtoReflect.Descriptor instead.
 func (*ListPullRequestsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{35}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *ListPullRequestsRequest) GetParent() string {
@@ -3344,7 +3485,7 @@ type ListPullRequestsResponse struct {
 
 func (x *ListPullRequestsResponse) Reset() {
 	*x = ListPullRequestsResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[36]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3356,7 +3497,7 @@ func (x *ListPullRequestsResponse) String() string {
 func (*ListPullRequestsResponse) ProtoMessage() {}
 
 func (x *ListPullRequestsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[36]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3369,7 +3510,7 @@ func (x *ListPullRequestsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPullRequestsResponse.ProtoReflect.Descriptor instead.
 func (*ListPullRequestsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{36}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *ListPullRequestsResponse) GetPullRequests() []*PullRequest {
@@ -3403,7 +3544,7 @@ type UpdatePullRequestRequest struct {
 
 func (x *UpdatePullRequestRequest) Reset() {
 	*x = UpdatePullRequestRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[37]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3415,7 +3556,7 @@ func (x *UpdatePullRequestRequest) String() string {
 func (*UpdatePullRequestRequest) ProtoMessage() {}
 
 func (x *UpdatePullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[37]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3428,7 +3569,7 @@ func (x *UpdatePullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePullRequestRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{37}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{38}
 }
 
 func (x *UpdatePullRequestRequest) GetPullRequest() *PullRequest {
@@ -3458,7 +3599,7 @@ type MergePullRequestRequest struct {
 
 func (x *MergePullRequestRequest) Reset() {
 	*x = MergePullRequestRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[38]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3470,7 +3611,7 @@ func (x *MergePullRequestRequest) String() string {
 func (*MergePullRequestRequest) ProtoMessage() {}
 
 func (x *MergePullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[38]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3483,7 +3624,7 @@ func (x *MergePullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use MergePullRequestRequest.ProtoReflect.Descriptor instead.
 func (*MergePullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{38}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{39}
 }
 
 func (x *MergePullRequestRequest) GetName() string {
@@ -3506,7 +3647,7 @@ type OpenPullRequestRequest struct {
 
 func (x *OpenPullRequestRequest) Reset() {
 	*x = OpenPullRequestRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[39]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3518,7 +3659,7 @@ func (x *OpenPullRequestRequest) String() string {
 func (*OpenPullRequestRequest) ProtoMessage() {}
 
 func (x *OpenPullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[39]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3531,7 +3672,7 @@ func (x *OpenPullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenPullRequestRequest.ProtoReflect.Descriptor instead.
 func (*OpenPullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{39}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{40}
 }
 
 func (x *OpenPullRequestRequest) GetName() string {
@@ -3554,7 +3695,7 @@ type ClosePullRequestRequest struct {
 
 func (x *ClosePullRequestRequest) Reset() {
 	*x = ClosePullRequestRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[40]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3566,7 +3707,7 @@ func (x *ClosePullRequestRequest) String() string {
 func (*ClosePullRequestRequest) ProtoMessage() {}
 
 func (x *ClosePullRequestRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[40]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3579,7 +3720,7 @@ func (x *ClosePullRequestRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ClosePullRequestRequest.ProtoReflect.Descriptor instead.
 func (*ClosePullRequestRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{40}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{41}
 }
 
 func (x *ClosePullRequestRequest) GetName() string {
@@ -3608,7 +3749,7 @@ type ListPullRequestFileDiffsRequest struct {
 
 func (x *ListPullRequestFileDiffsRequest) Reset() {
 	*x = ListPullRequestFileDiffsRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[41]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3620,7 +3761,7 @@ func (x *ListPullRequestFileDiffsRequest) String() string {
 func (*ListPullRequestFileDiffsRequest) ProtoMessage() {}
 
 func (x *ListPullRequestFileDiffsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[41]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3633,7 +3774,7 @@ func (x *ListPullRequestFileDiffsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPullRequestFileDiffsRequest.ProtoReflect.Descriptor instead.
 func (*ListPullRequestFileDiffsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{41}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{42}
 }
 
 func (x *ListPullRequestFileDiffsRequest) GetName() string {
@@ -3671,7 +3812,7 @@ type ListPullRequestFileDiffsResponse struct {
 
 func (x *ListPullRequestFileDiffsResponse) Reset() {
 	*x = ListPullRequestFileDiffsResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[42]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3683,7 +3824,7 @@ func (x *ListPullRequestFileDiffsResponse) String() string {
 func (*ListPullRequestFileDiffsResponse) ProtoMessage() {}
 
 func (x *ListPullRequestFileDiffsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[42]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3696,7 +3837,7 @@ func (x *ListPullRequestFileDiffsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPullRequestFileDiffsResponse.ProtoReflect.Descriptor instead.
 func (*ListPullRequestFileDiffsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{42}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{43}
 }
 
 func (x *ListPullRequestFileDiffsResponse) GetFileDiffs() []*FileDiff {
@@ -3727,7 +3868,7 @@ type CreateIssueRequest struct {
 
 func (x *CreateIssueRequest) Reset() {
 	*x = CreateIssueRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[43]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3739,7 +3880,7 @@ func (x *CreateIssueRequest) String() string {
 func (*CreateIssueRequest) ProtoMessage() {}
 
 func (x *CreateIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[43]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3752,7 +3893,7 @@ func (x *CreateIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateIssueRequest.ProtoReflect.Descriptor instead.
 func (*CreateIssueRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{43}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{44}
 }
 
 func (x *CreateIssueRequest) GetParent() string {
@@ -3782,7 +3923,7 @@ type GetIssueRequest struct {
 
 func (x *GetIssueRequest) Reset() {
 	*x = GetIssueRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[44]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3794,7 +3935,7 @@ func (x *GetIssueRequest) String() string {
 func (*GetIssueRequest) ProtoMessage() {}
 
 func (x *GetIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[44]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3807,7 +3948,7 @@ func (x *GetIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetIssueRequest.ProtoReflect.Descriptor instead.
 func (*GetIssueRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{44}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{45}
 }
 
 func (x *GetIssueRequest) GetName() string {
@@ -3836,7 +3977,7 @@ type ListIssuesRequest struct {
 
 func (x *ListIssuesRequest) Reset() {
 	*x = ListIssuesRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[45]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3848,7 +3989,7 @@ func (x *ListIssuesRequest) String() string {
 func (*ListIssuesRequest) ProtoMessage() {}
 
 func (x *ListIssuesRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[45]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3861,7 +4002,7 @@ func (x *ListIssuesRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssuesRequest.ProtoReflect.Descriptor instead.
 func (*ListIssuesRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{45}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{46}
 }
 
 func (x *ListIssuesRequest) GetParent() string {
@@ -3905,7 +4046,7 @@ type ListIssuesResponse struct {
 
 func (x *ListIssuesResponse) Reset() {
 	*x = ListIssuesResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[46]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3917,7 +4058,7 @@ func (x *ListIssuesResponse) String() string {
 func (*ListIssuesResponse) ProtoMessage() {}
 
 func (x *ListIssuesResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[46]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3930,7 +4071,7 @@ func (x *ListIssuesResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssuesResponse.ProtoReflect.Descriptor instead.
 func (*ListIssuesResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{46}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{47}
 }
 
 func (x *ListIssuesResponse) GetIssues() []*Issue {
@@ -3964,7 +4105,7 @@ type UpdateIssueRequest struct {
 
 func (x *UpdateIssueRequest) Reset() {
 	*x = UpdateIssueRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[47]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3976,7 +4117,7 @@ func (x *UpdateIssueRequest) String() string {
 func (*UpdateIssueRequest) ProtoMessage() {}
 
 func (x *UpdateIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[47]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3989,7 +4130,7 @@ func (x *UpdateIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssueRequest.ProtoReflect.Descriptor instead.
 func (*UpdateIssueRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{47}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{48}
 }
 
 func (x *UpdateIssueRequest) GetIssue() *Issue {
@@ -4023,7 +4164,7 @@ type DeleteIssueRequest struct {
 
 func (x *DeleteIssueRequest) Reset() {
 	*x = DeleteIssueRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[48]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[49]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4035,7 +4176,7 @@ func (x *DeleteIssueRequest) String() string {
 func (*DeleteIssueRequest) ProtoMessage() {}
 
 func (x *DeleteIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[48]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[49]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4048,7 +4189,7 @@ func (x *DeleteIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteIssueRequest.ProtoReflect.Descriptor instead.
 func (*DeleteIssueRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{48}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{49}
 }
 
 func (x *DeleteIssueRequest) GetName() string {
@@ -4082,7 +4223,7 @@ type CloseIssueRequest struct {
 
 func (x *CloseIssueRequest) Reset() {
 	*x = CloseIssueRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[49]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[50]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4094,7 +4235,7 @@ func (x *CloseIssueRequest) String() string {
 func (*CloseIssueRequest) ProtoMessage() {}
 
 func (x *CloseIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[49]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[50]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4107,7 +4248,7 @@ func (x *CloseIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CloseIssueRequest.ProtoReflect.Descriptor instead.
 func (*CloseIssueRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{49}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{50}
 }
 
 func (x *CloseIssueRequest) GetName() string {
@@ -4141,7 +4282,7 @@ type OpenIssueRequest struct {
 
 func (x *OpenIssueRequest) Reset() {
 	*x = OpenIssueRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[50]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[51]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4153,7 +4294,7 @@ func (x *OpenIssueRequest) String() string {
 func (*OpenIssueRequest) ProtoMessage() {}
 
 func (x *OpenIssueRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[50]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[51]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4166,7 +4307,7 @@ func (x *OpenIssueRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use OpenIssueRequest.ProtoReflect.Descriptor instead.
 func (*OpenIssueRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{50}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{51}
 }
 
 func (x *OpenIssueRequest) GetName() string {
@@ -4204,7 +4345,7 @@ type TreeEntry struct {
 
 func (x *TreeEntry) Reset() {
 	*x = TreeEntry{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[51]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[52]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4216,7 +4357,7 @@ func (x *TreeEntry) String() string {
 func (*TreeEntry) ProtoMessage() {}
 
 func (x *TreeEntry) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[51]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[52]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4229,7 +4370,7 @@ func (x *TreeEntry) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use TreeEntry.ProtoReflect.Descriptor instead.
 func (*TreeEntry) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{51}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{52}
 }
 
 func (x *TreeEntry) GetType() TreeEntry_ObjectType {
@@ -4291,7 +4432,7 @@ type FetchTreeRequest struct {
 
 func (x *FetchTreeRequest) Reset() {
 	*x = FetchTreeRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[52]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[53]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4303,7 +4444,7 @@ func (x *FetchTreeRequest) String() string {
 func (*FetchTreeRequest) ProtoMessage() {}
 
 func (x *FetchTreeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[52]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[53]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4316,7 +4457,7 @@ func (x *FetchTreeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchTreeRequest.ProtoReflect.Descriptor instead.
 func (*FetchTreeRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{52}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{53}
 }
 
 func (x *FetchTreeRequest) GetRepository() string {
@@ -4367,7 +4508,7 @@ type FetchTreeResponse struct {
 
 func (x *FetchTreeResponse) Reset() {
 	*x = FetchTreeResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[53]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[54]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4379,7 +4520,7 @@ func (x *FetchTreeResponse) String() string {
 func (*FetchTreeResponse) ProtoMessage() {}
 
 func (x *FetchTreeResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[53]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[54]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4392,7 +4533,7 @@ func (x *FetchTreeResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchTreeResponse.ProtoReflect.Descriptor instead.
 func (*FetchTreeResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{53}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{54}
 }
 
 func (x *FetchTreeResponse) GetTreeEntries() []*TreeEntry {
@@ -4424,7 +4565,7 @@ type FetchBlobRequest struct {
 
 func (x *FetchBlobRequest) Reset() {
 	*x = FetchBlobRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[54]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[55]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4436,7 +4577,7 @@ func (x *FetchBlobRequest) String() string {
 func (*FetchBlobRequest) ProtoMessage() {}
 
 func (x *FetchBlobRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[54]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[55]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4449,7 +4590,7 @@ func (x *FetchBlobRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchBlobRequest.ProtoReflect.Descriptor instead.
 func (*FetchBlobRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{54}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{55}
 }
 
 func (x *FetchBlobRequest) GetRepository() string {
@@ -4479,7 +4620,7 @@ type FetchBlobResponse struct {
 
 func (x *FetchBlobResponse) Reset() {
 	*x = FetchBlobResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[55]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[56]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4491,7 +4632,7 @@ func (x *FetchBlobResponse) String() string {
 func (*FetchBlobResponse) ProtoMessage() {}
 
 func (x *FetchBlobResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[55]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[56]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4504,7 +4645,7 @@ func (x *FetchBlobResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use FetchBlobResponse.ProtoReflect.Descriptor instead.
 func (*FetchBlobResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{55}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{56}
 }
 
 func (x *FetchBlobResponse) GetSha() string {
@@ -4517,6 +4658,138 @@ func (x *FetchBlobResponse) GetSha() string {
 func (x *FetchBlobResponse) GetContent() string {
 	if x != nil {
 		return x.Content
+	}
+	return ""
+}
+
+// Request message for fetching git references from a repository.
+type FetchRefsRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. The format is
+	// `projects/{project_number}/locations/{location_id}/repositories/{repository_id}`.
+	// Specifies the repository to fetch the references from.
+	Repository string `protobuf:"bytes,1,opt,name=repository,proto3" json:"repository,omitempty"`
+	// Optional. The type of reference to fetch (eg. branch, tag). By default, all
+	// references are returned.
+	Type Ref_RefType `protobuf:"varint,2,opt,name=type,proto3,enum=google.cloud.securesourcemanager.v1.Ref_RefType" json:"type,omitempty"`
+	// Optional. Requested page size. If unspecified, a default size of 30 will be
+	// used. The maximum value is 100; values above 100 will be coerced to 100.
+	PageSize int32 `protobuf:"varint,3,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
+	// Optional. A token identifying a page of results the server should return.
+	PageToken     string `protobuf:"bytes,4,opt,name=page_token,json=pageToken,proto3" json:"page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchRefsRequest) Reset() {
+	*x = FetchRefsRequest{}
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[57]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchRefsRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchRefsRequest) ProtoMessage() {}
+
+func (x *FetchRefsRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[57]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchRefsRequest.ProtoReflect.Descriptor instead.
+func (*FetchRefsRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{57}
+}
+
+func (x *FetchRefsRequest) GetRepository() string {
+	if x != nil {
+		return x.Repository
+	}
+	return ""
+}
+
+func (x *FetchRefsRequest) GetType() Ref_RefType {
+	if x != nil {
+		return x.Type
+	}
+	return Ref_REF_TYPE_UNSPECIFIED
+}
+
+func (x *FetchRefsRequest) GetPageSize() int32 {
+	if x != nil {
+		return x.PageSize
+	}
+	return 0
+}
+
+func (x *FetchRefsRequest) GetPageToken() string {
+	if x != nil {
+		return x.PageToken
+	}
+	return ""
+}
+
+// Response message containing a list of git references.
+type FetchRefsResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The list of git references.
+	Refs []*Ref `protobuf:"bytes,1,rep,name=refs,proto3" json:"refs,omitempty"`
+	// A token identifying a page of results the server should return.
+	NextPageToken string `protobuf:"bytes,2,opt,name=next_page_token,json=nextPageToken,proto3" json:"next_page_token,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *FetchRefsResponse) Reset() {
+	*x = FetchRefsResponse{}
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[58]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *FetchRefsResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*FetchRefsResponse) ProtoMessage() {}
+
+func (x *FetchRefsResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[58]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use FetchRefsResponse.ProtoReflect.Descriptor instead.
+func (*FetchRefsResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{58}
+}
+
+func (x *FetchRefsResponse) GetRefs() []*Ref {
+	if x != nil {
+		return x.Refs
+	}
+	return nil
+}
+
+func (x *FetchRefsResponse) GetNextPageToken() string {
+	if x != nil {
+		return x.NextPageToken
 	}
 	return ""
 }
@@ -4538,7 +4811,7 @@ type ListPullRequestCommentsRequest struct {
 
 func (x *ListPullRequestCommentsRequest) Reset() {
 	*x = ListPullRequestCommentsRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[56]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[59]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4550,7 +4823,7 @@ func (x *ListPullRequestCommentsRequest) String() string {
 func (*ListPullRequestCommentsRequest) ProtoMessage() {}
 
 func (x *ListPullRequestCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[56]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[59]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4563,7 +4836,7 @@ func (x *ListPullRequestCommentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPullRequestCommentsRequest.ProtoReflect.Descriptor instead.
 func (*ListPullRequestCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{56}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{59}
 }
 
 func (x *ListPullRequestCommentsRequest) GetParent() string {
@@ -4601,7 +4874,7 @@ type ListPullRequestCommentsResponse struct {
 
 func (x *ListPullRequestCommentsResponse) Reset() {
 	*x = ListPullRequestCommentsResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[57]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[60]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4613,7 +4886,7 @@ func (x *ListPullRequestCommentsResponse) String() string {
 func (*ListPullRequestCommentsResponse) ProtoMessage() {}
 
 func (x *ListPullRequestCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[57]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[60]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4626,7 +4899,7 @@ func (x *ListPullRequestCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListPullRequestCommentsResponse.ProtoReflect.Descriptor instead.
 func (*ListPullRequestCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{57}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{60}
 }
 
 func (x *ListPullRequestCommentsResponse) GetPullRequestComments() []*PullRequestComment {
@@ -4658,7 +4931,7 @@ type CreatePullRequestCommentRequest struct {
 
 func (x *CreatePullRequestCommentRequest) Reset() {
 	*x = CreatePullRequestCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[58]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[61]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4670,7 +4943,7 @@ func (x *CreatePullRequestCommentRequest) String() string {
 func (*CreatePullRequestCommentRequest) ProtoMessage() {}
 
 func (x *CreatePullRequestCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[58]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[61]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4683,7 +4956,7 @@ func (x *CreatePullRequestCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreatePullRequestCommentRequest.ProtoReflect.Descriptor instead.
 func (*CreatePullRequestCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{58}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{61}
 }
 
 func (x *CreatePullRequestCommentRequest) GetParent() string {
@@ -4718,7 +4991,7 @@ type BatchCreatePullRequestCommentsRequest struct {
 
 func (x *BatchCreatePullRequestCommentsRequest) Reset() {
 	*x = BatchCreatePullRequestCommentsRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[59]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[62]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4730,7 +5003,7 @@ func (x *BatchCreatePullRequestCommentsRequest) String() string {
 func (*BatchCreatePullRequestCommentsRequest) ProtoMessage() {}
 
 func (x *BatchCreatePullRequestCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[59]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[62]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4743,7 +5016,7 @@ func (x *BatchCreatePullRequestCommentsRequest) ProtoReflect() protoreflect.Mess
 
 // Deprecated: Use BatchCreatePullRequestCommentsRequest.ProtoReflect.Descriptor instead.
 func (*BatchCreatePullRequestCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{59}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{62}
 }
 
 func (x *BatchCreatePullRequestCommentsRequest) GetParent() string {
@@ -4771,7 +5044,7 @@ type BatchCreatePullRequestCommentsResponse struct {
 
 func (x *BatchCreatePullRequestCommentsResponse) Reset() {
 	*x = BatchCreatePullRequestCommentsResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[60]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[63]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4783,7 +5056,7 @@ func (x *BatchCreatePullRequestCommentsResponse) String() string {
 func (*BatchCreatePullRequestCommentsResponse) ProtoMessage() {}
 
 func (x *BatchCreatePullRequestCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[60]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[63]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4796,7 +5069,7 @@ func (x *BatchCreatePullRequestCommentsResponse) ProtoReflect() protoreflect.Mes
 
 // Deprecated: Use BatchCreatePullRequestCommentsResponse.ProtoReflect.Descriptor instead.
 func (*BatchCreatePullRequestCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{60}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{63}
 }
 
 func (x *BatchCreatePullRequestCommentsResponse) GetPullRequestComments() []*PullRequestComment {
@@ -4821,7 +5094,7 @@ type UpdatePullRequestCommentRequest struct {
 
 func (x *UpdatePullRequestCommentRequest) Reset() {
 	*x = UpdatePullRequestCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[61]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[64]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4833,7 +5106,7 @@ func (x *UpdatePullRequestCommentRequest) String() string {
 func (*UpdatePullRequestCommentRequest) ProtoMessage() {}
 
 func (x *UpdatePullRequestCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[61]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[64]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4846,7 +5119,7 @@ func (x *UpdatePullRequestCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdatePullRequestCommentRequest.ProtoReflect.Descriptor instead.
 func (*UpdatePullRequestCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{61}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{64}
 }
 
 func (x *UpdatePullRequestCommentRequest) GetPullRequestComment() *PullRequestComment {
@@ -4877,7 +5150,7 @@ type DeletePullRequestCommentRequest struct {
 
 func (x *DeletePullRequestCommentRequest) Reset() {
 	*x = DeletePullRequestCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[62]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[65]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4889,7 +5162,7 @@ func (x *DeletePullRequestCommentRequest) String() string {
 func (*DeletePullRequestCommentRequest) ProtoMessage() {}
 
 func (x *DeletePullRequestCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[62]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[65]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4902,7 +5175,7 @@ func (x *DeletePullRequestCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeletePullRequestCommentRequest.ProtoReflect.Descriptor instead.
 func (*DeletePullRequestCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{62}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{65}
 }
 
 func (x *DeletePullRequestCommentRequest) GetName() string {
@@ -4925,7 +5198,7 @@ type GetPullRequestCommentRequest struct {
 
 func (x *GetPullRequestCommentRequest) Reset() {
 	*x = GetPullRequestCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[63]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[66]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4937,7 +5210,7 @@ func (x *GetPullRequestCommentRequest) String() string {
 func (*GetPullRequestCommentRequest) ProtoMessage() {}
 
 func (x *GetPullRequestCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[63]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[66]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -4950,7 +5223,7 @@ func (x *GetPullRequestCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetPullRequestCommentRequest.ProtoReflect.Descriptor instead.
 func (*GetPullRequestCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{63}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{66}
 }
 
 func (x *GetPullRequestCommentRequest) GetName() string {
@@ -4981,7 +5254,7 @@ type ResolvePullRequestCommentsRequest struct {
 
 func (x *ResolvePullRequestCommentsRequest) Reset() {
 	*x = ResolvePullRequestCommentsRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[64]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[67]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -4993,7 +5266,7 @@ func (x *ResolvePullRequestCommentsRequest) String() string {
 func (*ResolvePullRequestCommentsRequest) ProtoMessage() {}
 
 func (x *ResolvePullRequestCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[64]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[67]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5006,7 +5279,7 @@ func (x *ResolvePullRequestCommentsRequest) ProtoReflect() protoreflect.Message 
 
 // Deprecated: Use ResolvePullRequestCommentsRequest.ProtoReflect.Descriptor instead.
 func (*ResolvePullRequestCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{64}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{67}
 }
 
 func (x *ResolvePullRequestCommentsRequest) GetParent() string {
@@ -5041,7 +5314,7 @@ type ResolvePullRequestCommentsResponse struct {
 
 func (x *ResolvePullRequestCommentsResponse) Reset() {
 	*x = ResolvePullRequestCommentsResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[65]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[68]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5053,7 +5326,7 @@ func (x *ResolvePullRequestCommentsResponse) String() string {
 func (*ResolvePullRequestCommentsResponse) ProtoMessage() {}
 
 func (x *ResolvePullRequestCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[65]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[68]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5066,7 +5339,7 @@ func (x *ResolvePullRequestCommentsResponse) ProtoReflect() protoreflect.Message
 
 // Deprecated: Use ResolvePullRequestCommentsResponse.ProtoReflect.Descriptor instead.
 func (*ResolvePullRequestCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{65}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{68}
 }
 
 func (x *ResolvePullRequestCommentsResponse) GetPullRequestComments() []*PullRequestComment {
@@ -5097,7 +5370,7 @@ type UnresolvePullRequestCommentsRequest struct {
 
 func (x *UnresolvePullRequestCommentsRequest) Reset() {
 	*x = UnresolvePullRequestCommentsRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[66]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[69]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5109,7 +5382,7 @@ func (x *UnresolvePullRequestCommentsRequest) String() string {
 func (*UnresolvePullRequestCommentsRequest) ProtoMessage() {}
 
 func (x *UnresolvePullRequestCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[66]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[69]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5122,7 +5395,7 @@ func (x *UnresolvePullRequestCommentsRequest) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use UnresolvePullRequestCommentsRequest.ProtoReflect.Descriptor instead.
 func (*UnresolvePullRequestCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{66}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{69}
 }
 
 func (x *UnresolvePullRequestCommentsRequest) GetParent() string {
@@ -5157,7 +5430,7 @@ type UnresolvePullRequestCommentsResponse struct {
 
 func (x *UnresolvePullRequestCommentsResponse) Reset() {
 	*x = UnresolvePullRequestCommentsResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[67]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[70]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5169,7 +5442,7 @@ func (x *UnresolvePullRequestCommentsResponse) String() string {
 func (*UnresolvePullRequestCommentsResponse) ProtoMessage() {}
 
 func (x *UnresolvePullRequestCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[67]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[70]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5182,7 +5455,7 @@ func (x *UnresolvePullRequestCommentsResponse) ProtoReflect() protoreflect.Messa
 
 // Deprecated: Use UnresolvePullRequestCommentsResponse.ProtoReflect.Descriptor instead.
 func (*UnresolvePullRequestCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{67}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{70}
 }
 
 func (x *UnresolvePullRequestCommentsResponse) GetPullRequestComments() []*PullRequestComment {
@@ -5206,7 +5479,7 @@ type CreateIssueCommentRequest struct {
 
 func (x *CreateIssueCommentRequest) Reset() {
 	*x = CreateIssueCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[68]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[71]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5218,7 +5491,7 @@ func (x *CreateIssueCommentRequest) String() string {
 func (*CreateIssueCommentRequest) ProtoMessage() {}
 
 func (x *CreateIssueCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[68]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[71]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5231,7 +5504,7 @@ func (x *CreateIssueCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use CreateIssueCommentRequest.ProtoReflect.Descriptor instead.
 func (*CreateIssueCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{68}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{71}
 }
 
 func (x *CreateIssueCommentRequest) GetParent() string {
@@ -5261,7 +5534,7 @@ type GetIssueCommentRequest struct {
 
 func (x *GetIssueCommentRequest) Reset() {
 	*x = GetIssueCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[69]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[72]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5273,7 +5546,7 @@ func (x *GetIssueCommentRequest) String() string {
 func (*GetIssueCommentRequest) ProtoMessage() {}
 
 func (x *GetIssueCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[69]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[72]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5286,7 +5559,7 @@ func (x *GetIssueCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetIssueCommentRequest.ProtoReflect.Descriptor instead.
 func (*GetIssueCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{69}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{72}
 }
 
 func (x *GetIssueCommentRequest) GetName() string {
@@ -5313,7 +5586,7 @@ type ListIssueCommentsRequest struct {
 
 func (x *ListIssueCommentsRequest) Reset() {
 	*x = ListIssueCommentsRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[70]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[73]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5325,7 +5598,7 @@ func (x *ListIssueCommentsRequest) String() string {
 func (*ListIssueCommentsRequest) ProtoMessage() {}
 
 func (x *ListIssueCommentsRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[70]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[73]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5338,7 +5611,7 @@ func (x *ListIssueCommentsRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueCommentsRequest.ProtoReflect.Descriptor instead.
 func (*ListIssueCommentsRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{70}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{73}
 }
 
 func (x *ListIssueCommentsRequest) GetParent() string {
@@ -5375,7 +5648,7 @@ type ListIssueCommentsResponse struct {
 
 func (x *ListIssueCommentsResponse) Reset() {
 	*x = ListIssueCommentsResponse{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[71]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[74]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5387,7 +5660,7 @@ func (x *ListIssueCommentsResponse) String() string {
 func (*ListIssueCommentsResponse) ProtoMessage() {}
 
 func (x *ListIssueCommentsResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[71]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[74]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5400,7 +5673,7 @@ func (x *ListIssueCommentsResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ListIssueCommentsResponse.ProtoReflect.Descriptor instead.
 func (*ListIssueCommentsResponse) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{71}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{74}
 }
 
 func (x *ListIssueCommentsResponse) GetIssueComments() []*IssueComment {
@@ -5434,7 +5707,7 @@ type UpdateIssueCommentRequest struct {
 
 func (x *UpdateIssueCommentRequest) Reset() {
 	*x = UpdateIssueCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[72]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[75]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5446,7 +5719,7 @@ func (x *UpdateIssueCommentRequest) String() string {
 func (*UpdateIssueCommentRequest) ProtoMessage() {}
 
 func (x *UpdateIssueCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[72]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[75]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5459,7 +5732,7 @@ func (x *UpdateIssueCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use UpdateIssueCommentRequest.ProtoReflect.Descriptor instead.
 func (*UpdateIssueCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{72}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{75}
 }
 
 func (x *UpdateIssueCommentRequest) GetIssueComment() *IssueComment {
@@ -5489,7 +5762,7 @@ type DeleteIssueCommentRequest struct {
 
 func (x *DeleteIssueCommentRequest) Reset() {
 	*x = DeleteIssueCommentRequest{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[73]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[76]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5501,7 +5774,7 @@ func (x *DeleteIssueCommentRequest) String() string {
 func (*DeleteIssueCommentRequest) ProtoMessage() {}
 
 func (x *DeleteIssueCommentRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[73]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[76]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5514,7 +5787,7 @@ func (x *DeleteIssueCommentRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DeleteIssueCommentRequest.ProtoReflect.Descriptor instead.
 func (*DeleteIssueCommentRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{73}
+	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescGZIP(), []int{76}
 }
 
 func (x *DeleteIssueCommentRequest) GetName() string {
@@ -5541,7 +5814,7 @@ type Instance_HostConfig struct {
 
 func (x *Instance_HostConfig) Reset() {
 	*x = Instance_HostConfig{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[74]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[77]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5553,7 +5826,7 @@ func (x *Instance_HostConfig) String() string {
 func (*Instance_HostConfig) ProtoMessage() {}
 
 func (x *Instance_HostConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[74]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[77]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5623,7 +5896,7 @@ type Instance_PrivateConfig struct {
 
 func (x *Instance_PrivateConfig) Reset() {
 	*x = Instance_PrivateConfig{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[75]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[78]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5635,7 +5908,7 @@ func (x *Instance_PrivateConfig) String() string {
 func (*Instance_PrivateConfig) ProtoMessage() {}
 
 func (x *Instance_PrivateConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[75]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[78]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5705,7 +5978,7 @@ type Instance_WorkforceIdentityFederationConfig struct {
 
 func (x *Instance_WorkforceIdentityFederationConfig) Reset() {
 	*x = Instance_WorkforceIdentityFederationConfig{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[76]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[79]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5717,7 +5990,7 @@ func (x *Instance_WorkforceIdentityFederationConfig) String() string {
 func (*Instance_WorkforceIdentityFederationConfig) ProtoMessage() {}
 
 func (x *Instance_WorkforceIdentityFederationConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[76]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[79]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5761,7 +6034,7 @@ type Instance_PrivateConfig_CustomHostConfig struct {
 
 func (x *Instance_PrivateConfig_CustomHostConfig) Reset() {
 	*x = Instance_PrivateConfig_CustomHostConfig{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[78]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[81]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5773,7 +6046,7 @@ func (x *Instance_PrivateConfig_CustomHostConfig) String() string {
 func (*Instance_PrivateConfig_CustomHostConfig) ProtoMessage() {}
 
 func (x *Instance_PrivateConfig_CustomHostConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[78]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[81]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -5833,7 +6106,7 @@ type Repository_URIs struct {
 
 func (x *Repository_URIs) Reset() {
 	*x = Repository_URIs{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[79]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[82]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -5845,7 +6118,7 @@ func (x *Repository_URIs) String() string {
 func (*Repository_URIs) ProtoMessage() {}
 
 func (x *Repository_URIs) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[79]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[82]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6023,7 +6296,7 @@ type Repository_InitialConfig struct {
 
 func (x *Repository_InitialConfig) Reset() {
 	*x = Repository_InitialConfig{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[80]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[83]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6035,7 +6308,7 @@ func (x *Repository_InitialConfig) String() string {
 func (*Repository_InitialConfig) ProtoMessage() {}
 
 func (x *Repository_InitialConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[80]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[83]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6090,7 +6363,7 @@ type Repository_ScanConfig struct {
 
 func (x *Repository_ScanConfig) Reset() {
 	*x = Repository_ScanConfig{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[81]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[84]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6102,7 +6375,7 @@ func (x *Repository_ScanConfig) String() string {
 func (*Repository_ScanConfig) ProtoMessage() {}
 
 func (x *Repository_ScanConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[81]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[84]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6138,7 +6411,7 @@ type Repository_ScanConfig_SecretScanConfig struct {
 
 func (x *Repository_ScanConfig_SecretScanConfig) Reset() {
 	*x = Repository_ScanConfig_SecretScanConfig{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[82]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[85]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6150,7 +6423,7 @@ func (x *Repository_ScanConfig_SecretScanConfig) String() string {
 func (*Repository_ScanConfig_SecretScanConfig) ProtoMessage() {}
 
 func (x *Repository_ScanConfig_SecretScanConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[82]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[85]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6193,7 +6466,7 @@ type Hook_PushOption struct {
 
 func (x *Hook_PushOption) Reset() {
 	*x = Hook_PushOption{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[83]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[86]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6205,7 +6478,7 @@ func (x *Hook_PushOption) String() string {
 func (*Hook_PushOption) ProtoMessage() {}
 
 func (x *Hook_PushOption) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[83]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[86]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6239,7 +6512,7 @@ type BranchRule_Check struct {
 
 func (x *BranchRule_Check) Reset() {
 	*x = BranchRule_Check{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[84]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[87]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6251,7 +6524,7 @@ func (x *BranchRule_Check) String() string {
 func (*BranchRule_Check) ProtoMessage() {}
 
 func (x *BranchRule_Check) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[84]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[87]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6287,7 +6560,7 @@ type PullRequest_Branch struct {
 
 func (x *PullRequest_Branch) Reset() {
 	*x = PullRequest_Branch{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[86]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[89]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6299,7 +6572,7 @@ func (x *PullRequest_Branch) String() string {
 func (*PullRequest_Branch) ProtoMessage() {}
 
 func (x *PullRequest_Branch) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[86]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[89]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6344,7 +6617,7 @@ type PullRequestComment_Review struct {
 
 func (x *PullRequestComment_Review) Reset() {
 	*x = PullRequestComment_Review{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[87]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[90]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6356,7 +6629,7 @@ func (x *PullRequestComment_Review) String() string {
 func (*PullRequestComment_Review) ProtoMessage() {}
 
 func (x *PullRequestComment_Review) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[87]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[90]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6404,7 +6677,7 @@ type PullRequestComment_Comment struct {
 
 func (x *PullRequestComment_Comment) Reset() {
 	*x = PullRequestComment_Comment{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[88]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[91]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6416,7 +6689,7 @@ func (x *PullRequestComment_Comment) String() string {
 func (*PullRequestComment_Comment) ProtoMessage() {}
 
 func (x *PullRequestComment_Comment) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[88]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[91]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6462,7 +6735,7 @@ type PullRequestComment_Code struct {
 
 func (x *PullRequestComment_Code) Reset() {
 	*x = PullRequestComment_Code{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[89]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[92]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6474,7 +6747,7 @@ func (x *PullRequestComment_Code) String() string {
 func (*PullRequestComment_Code) ProtoMessage() {}
 
 func (x *PullRequestComment_Code) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[89]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[92]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6546,7 +6819,7 @@ type PullRequestComment_Position struct {
 
 func (x *PullRequestComment_Position) Reset() {
 	*x = PullRequestComment_Position{}
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[90]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[93]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -6558,7 +6831,7 @@ func (x *PullRequestComment_Position) String() string {
 func (*PullRequestComment_Position) ProtoMessage() {}
 
 func (x *PullRequestComment_Position) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[90]
+	mi := &file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes[93]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -6592,7 +6865,7 @@ var File_google_cloud_securesourcemanager_v1_secure_source_manager_proto protore
 
 const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDesc = "" +
 	"\n" +
-	"?google/cloud/securesourcemanager/v1/secure_source_manager.proto\x12#google.cloud.securesourcemanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\x9f\x10\n" +
+	"?google/cloud/securesourcemanager/v1/secure_source_manager.proto\x12#google.cloud.securesourcemanager.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1bgoogle/api/field_info.proto\x1a\x19google/api/resource.proto\x1a\x1egoogle/iam/v1/iam_policy.proto\x1a\x1agoogle/iam/v1/policy.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xf3\x10\n" +
 	"\bInstance\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12@\n" +
 	"\vcreate_time\x18\x02 \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\n" +
@@ -6609,7 +6882,9 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	"!cloudkms.googleapis.com/CryptoKeyR\x06kmsKey\x12^\n" +
 	"\vhost_config\x18\t \x01(\v28.google.cloud.securesourcemanager.v1.Instance.HostConfigB\x03\xe0A\x03R\n" +
 	"hostConfig\x12\xa5\x01\n" +
-	"$workforce_identity_federation_config\x18\x0e \x01(\v2O.google.cloud.securesourcemanager.v1.Instance.WorkforceIdentityFederationConfigB\x03\xe0A\x01R!workforceIdentityFederationConfig\x1az\n" +
+	"$workforce_identity_federation_config\x18\x0e \x01(\v2O.google.cloud.securesourcemanager.v1.Instance.WorkforceIdentityFederationConfigB\x03\xe0A\x01R!workforceIdentityFederationConfig\x12(\n" +
+	"\rsatisfies_pzi\x18\x12 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzi\x12(\n" +
+	"\rsatisfies_pzs\x18\x13 \x01(\bB\x03\xe0A\x03R\fsatisfiesPzs\x1az\n" +
 	"\n" +
 	"HostConfig\x12\x17\n" +
 	"\x04html\x18\x01 \x01(\tB\x03\xe0A\x03R\x04html\x12\x15\n" +
@@ -6689,7 +6964,7 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	"\aenabled\x18\x01 \x01(\bB\x03\xe0A\x01R\aenabled\x12U\n" +
 	"\x10inspect_template\x18\x02 \x01(\tB*\xe0A\x01\xfaA$\n" +
 	"\"dlp.googleapis.com/InspectTemplateR\x0finspectTemplate:u\xeaAr\n" +
-	"-securesourcemanager.googleapis.com/Repository\x12Aprojects/{project}/locations/{location}/repositories/{repository}\"\xe8\x05\n" +
+	"-securesourcemanager.googleapis.com/Repository\x12Aprojects/{project}/locations/{location}/repositories/{repository}\"\x82\x06\n" +
 	"\x04Hook\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\"\n" +
 	"\n" +
@@ -6707,11 +6982,12 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	" \x01(\tB\x03\xe0A\x01R\x14sensitiveQueryString\x1a6\n" +
 	"\n" +
 	"PushOption\x12(\n" +
-	"\rbranch_filter\x18\x01 \x01(\tB\x03\xe0A\x01R\fbranchFilter\"<\n" +
+	"\rbranch_filter\x18\x01 \x01(\tB\x03\xe0A\x01R\fbranchFilter\"V\n" +
 	"\rHookEventType\x12\x0f\n" +
 	"\vUNSPECIFIED\x10\x00\x12\b\n" +
 	"\x04PUSH\x10\x01\x12\x10\n" +
-	"\fPULL_REQUEST\x10\x02:|\xeaAy\n" +
+	"\fPULL_REQUEST\x10\x02\x12\x18\n" +
+	"\x14PULL_REQUEST_COMMENT\x10\x03:|\xeaAy\n" +
 	"'securesourcemanager.googleapis.com/Hook\x12Nprojects/{project}/locations/{location}/repositories/{repository}/hooks/{hook}\"\xa8\t\n" +
 	"\n" +
 	"BranchRule\x12\x17\n" +
@@ -6834,7 +7110,15 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	"\x04path\x18\x01 \x01(\tB\x03\xe0A\x02R\x04path\x12\x17\n" +
 	"\x04line\x18\x02 \x01(\x03B\x03\xe0A\x02R\x04line:\xb8\x01\xeaA\xb4\x01\n" +
 	"5securesourcemanager.googleapis.com/PullRequestComment\x12{projects/{project}/locations/{location}/repositories/{repository}/pullRequests/{pull_request}/pullRequestComments/{comment}B\x10\n" +
-	"\x0ecomment_detail\"\xe6\x01\n" +
+	"\x0ecomment_detail\"\xd2\x01\n" +
+	"\x03Ref\x12\x17\n" +
+	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12\x1b\n" +
+	"\x06target\x18\x02 \x01(\tB\x03\xe0A\x03R\x06target\x12I\n" +
+	"\x04type\x18\x03 \x01(\x0e20.google.cloud.securesourcemanager.v1.Ref.RefTypeB\x03\xe0A\x03R\x04type\"J\n" +
+	"\aRefType\x12\x18\n" +
+	"\x14REF_TYPE_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fREF_TYPE_BRANCH\x10\x01\x12\x10\n" +
+	"\fREF_TYPE_TAG\x10\x02\"\xe6\x01\n" +
 	"\x14ListInstancesRequest\x12K\n" +
 	"\x06parent\x18\x01 \x01(\tB3\xe0A\x02\xfaA-\x12+securesourcemanager.googleapis.com/InstanceR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -7057,7 +7341,19 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	"\x03sha\x18\x02 \x01(\tB\x03\xe0A\x02R\x03sha\"?\n" +
 	"\x11FetchBlobResponse\x12\x10\n" +
 	"\x03sha\x18\x01 \x01(\tR\x03sha\x12\x18\n" +
-	"\acontent\x18\x02 \x01(\tR\acontent\"\xbd\x01\n" +
+	"\acontent\x18\x02 \x01(\tR\acontent\"\xfa\x01\n" +
+	"\x10FetchRefsRequest\x12U\n" +
+	"\n" +
+	"repository\x18\x01 \x01(\tB5\xe0A\x02\xfaA/\n" +
+	"-securesourcemanager.googleapis.com/RepositoryR\n" +
+	"repository\x12I\n" +
+	"\x04type\x18\x02 \x01(\x0e20.google.cloud.securesourcemanager.v1.Ref.RefTypeB\x03\xe0A\x01R\x04type\x12 \n" +
+	"\tpage_size\x18\x03 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
+	"\n" +
+	"page_token\x18\x04 \x01(\tB\x03\xe0A\x01R\tpageToken\"y\n" +
+	"\x11FetchRefsResponse\x12<\n" +
+	"\x04refs\x18\x01 \x03(\v2(.google.cloud.securesourcemanager.v1.RefR\x04refs\x12&\n" +
+	"\x0fnext_page_token\x18\x02 \x01(\tR\rnextPageToken\"\xbd\x01\n" +
 	"\x1eListPullRequestCommentsRequest\x12U\n" +
 	"\x06parent\x18\x01 \x01(\tB=\xe0A\x02\xfaA7\x125securesourcemanager.googleapis.com/PullRequestCommentR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -7119,7 +7415,7 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	"updateMask\"h\n" +
 	"\x19DeleteIssueCommentRequest\x12K\n" +
 	"\x04name\x18\x01 \x01(\tB7\xe0A\x02\xfaA1\n" +
-	"/securesourcemanager.googleapis.com/IssueCommentR\x04name2\xfed\n" +
+	"/securesourcemanager.googleapis.com/IssueCommentR\x04name2\x85g\n" +
 	"\x13SecureSourceManager\x12\xc6\x01\n" +
 	"\rListInstances\x129.google.cloud.securesourcemanager.v1.ListInstancesRequest\x1a:.google.cloud.securesourcemanager.v1.ListInstancesResponse\">\xdaA\x06parent\x82\xd3\xe4\x93\x02/\x12-/v1/{parent=projects/*/locations/*}/instances\x12\xb3\x01\n" +
 	"\vGetInstance\x127.google.cloud.securesourcemanager.v1.GetInstanceRequest\x1a-.google.cloud.securesourcemanager.v1.Instance\"<\xdaA\x04name\x82\xd3\xe4\x93\x02/\x12-/v1/{name=projects/*/locations/*/instances/*}\x12\xea\x01\n" +
@@ -7177,7 +7473,8 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	"/google.cloud.securesourcemanager.v1.PullRequest\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02J:\x01*\"E/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*}:close\x12\x85\x02\n" +
 	"\x18ListPullRequestFileDiffs\x12D.google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsRequest\x1aE.google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsResponse\"\\\xdaA\x04name\x82\xd3\xe4\x93\x02O\x12M/v1/{name=projects/*/locations/*/repositories/*/pullRequests/*}:listFileDiffs\x12\xc4\x01\n" +
 	"\tFetchTree\x125.google.cloud.securesourcemanager.v1.FetchTreeRequest\x1a6.google.cloud.securesourcemanager.v1.FetchTreeResponse\"H\x82\xd3\xe4\x93\x02B\x12@/v1/{repository=projects/*/locations/*/repositories/*}:fetchTree\x12\xc4\x01\n" +
-	"\tFetchBlob\x125.google.cloud.securesourcemanager.v1.FetchBlobRequest\x1a6.google.cloud.securesourcemanager.v1.FetchBlobResponse\"H\x82\xd3\xe4\x93\x02B\x12@/v1/{repository=projects/*/locations/*/repositories/*}:fetchBlob\x12\x80\x02\n" +
+	"\tFetchBlob\x125.google.cloud.securesourcemanager.v1.FetchBlobRequest\x1a6.google.cloud.securesourcemanager.v1.FetchBlobResponse\"H\x82\xd3\xe4\x93\x02B\x12@/v1/{repository=projects/*/locations/*/repositories/*}:fetchBlob\x12\xc4\x01\n" +
+	"\tFetchRefs\x125.google.cloud.securesourcemanager.v1.FetchRefsRequest\x1a6.google.cloud.securesourcemanager.v1.FetchRefsResponse\"H\x82\xd3\xe4\x93\x02B\x12@/v1/{repository=projects/*/locations/*/repositories/*}:fetchRefs\x12\x80\x02\n" +
 	"\vCreateIssue\x127.google.cloud.securesourcemanager.v1.CreateIssueRequest\x1a\x1d.google.longrunning.Operation\"\x98\x01\xcaA>\n" +
 	")google.cloud.securesourcemanager.v1.Issue\x12\x11OperationMetadata\xdaA\fparent,issue\x82\xd3\xe4\x93\x02B:\x05issue\"9/v1/{parent=projects/*/locations/*/repositories/*}/issues\x12\xb6\x01\n" +
 	"\bGetIssue\x124.google.cloud.securesourcemanager.v1.GetIssueRequest\x1a*.google.cloud.securesourcemanager.v1.Issue\"H\xdaA\x04name\x82\xd3\xe4\x93\x02;\x129/v1/{name=projects/*/locations/*/repositories/*/issues/*}\x12\xc9\x01\n" +
@@ -7213,7 +7510,7 @@ const file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDe
 	"\x12UpdateIssueComment\x12>.google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest\x1a\x1d.google.longrunning.Operation\"\xd2\x01\xcaAE\n" +
 	"0google.cloud.securesourcemanager.v1.IssueComment\x12\x11OperationMetadata\xdaA\x19issue_comment,update_mask\x82\xd3\xe4\x93\x02h:\rissue_comment2W/v1/{issue_comment.name=projects/*/locations/*/repositories/*/issues/*/issueComments/*}\x12\xfb\x01\n" +
 	"\x12DeleteIssueComment\x12>.google.cloud.securesourcemanager.v1.DeleteIssueCommentRequest\x1a\x1d.google.longrunning.Operation\"\x85\x01\xcaA*\n" +
-	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02K*I/v1/{name=projects/*/locations/*/repositories/*/issues/*/issueComments/*}\x1aV\xcaA\"securesourcemanager.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xb9\x06\xeaAx\n" +
+	"\x15google.protobuf.Empty\x12\x11OperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x02K*I/v1/{name=projects/*/locations/*/repositories/*/issues/*/issueComments/*}\x1a\x95\x01\xcaA\"securesourcemanager.googleapis.com\xd2Amhttps://www.googleapis.com/auth/cloud-platform,https://www.googleapis.com/auth/securesourcemanager.read-writeB\xb9\x06\xeaAx\n" +
 	"!cloudkms.googleapis.com/CryptoKey\x12Sprojects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_key}\xeaA\\\n" +
 	"\x1fprivateca.googleapis.com/CaPool\x129projects/{project}/locations/{location}/caPools/{ca_pool}\xeaAY\n" +
 	"!iam.googleapis.com/ServiceAccount\x124projects/{project}/serviceAccounts/{service_account}\xeaAw\n" +
@@ -7233,8 +7530,8 @@ func file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDes
 	return file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDescData
 }
 
-var file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes = make([]protoimpl.EnumInfo, 8)
-var file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 91)
+var file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_msgTypes = make([]protoimpl.MessageInfo, 94)
 var file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_goTypes = []any{
 	(Instance_State)(0),                                // 0: google.cloud.securesourcemanager.v1.Instance.State
 	(Instance_StateNote)(0),                            // 1: google.cloud.securesourcemanager.v1.Instance.StateNote
@@ -7243,299 +7540,308 @@ var file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_goTypes
 	(FileDiff_Action)(0),                               // 4: google.cloud.securesourcemanager.v1.FileDiff.Action
 	(Issue_State)(0),                                   // 5: google.cloud.securesourcemanager.v1.Issue.State
 	(PullRequestComment_Review_ActionType)(0),          // 6: google.cloud.securesourcemanager.v1.PullRequestComment.Review.ActionType
-	(TreeEntry_ObjectType)(0),                          // 7: google.cloud.securesourcemanager.v1.TreeEntry.ObjectType
-	(*Instance)(nil),                                   // 8: google.cloud.securesourcemanager.v1.Instance
-	(*Repository)(nil),                                 // 9: google.cloud.securesourcemanager.v1.Repository
-	(*Hook)(nil),                                       // 10: google.cloud.securesourcemanager.v1.Hook
-	(*BranchRule)(nil),                                 // 11: google.cloud.securesourcemanager.v1.BranchRule
-	(*PullRequest)(nil),                                // 12: google.cloud.securesourcemanager.v1.PullRequest
-	(*FileDiff)(nil),                                   // 13: google.cloud.securesourcemanager.v1.FileDiff
-	(*Issue)(nil),                                      // 14: google.cloud.securesourcemanager.v1.Issue
-	(*IssueComment)(nil),                               // 15: google.cloud.securesourcemanager.v1.IssueComment
-	(*PullRequestComment)(nil),                         // 16: google.cloud.securesourcemanager.v1.PullRequestComment
-	(*ListInstancesRequest)(nil),                       // 17: google.cloud.securesourcemanager.v1.ListInstancesRequest
-	(*ListInstancesResponse)(nil),                      // 18: google.cloud.securesourcemanager.v1.ListInstancesResponse
-	(*GetInstanceRequest)(nil),                         // 19: google.cloud.securesourcemanager.v1.GetInstanceRequest
-	(*CreateInstanceRequest)(nil),                      // 20: google.cloud.securesourcemanager.v1.CreateInstanceRequest
-	(*DeleteInstanceRequest)(nil),                      // 21: google.cloud.securesourcemanager.v1.DeleteInstanceRequest
-	(*OperationMetadata)(nil),                          // 22: google.cloud.securesourcemanager.v1.OperationMetadata
-	(*ListRepositoriesRequest)(nil),                    // 23: google.cloud.securesourcemanager.v1.ListRepositoriesRequest
-	(*ListRepositoriesResponse)(nil),                   // 24: google.cloud.securesourcemanager.v1.ListRepositoriesResponse
-	(*GetRepositoryRequest)(nil),                       // 25: google.cloud.securesourcemanager.v1.GetRepositoryRequest
-	(*CreateRepositoryRequest)(nil),                    // 26: google.cloud.securesourcemanager.v1.CreateRepositoryRequest
-	(*UpdateRepositoryRequest)(nil),                    // 27: google.cloud.securesourcemanager.v1.UpdateRepositoryRequest
-	(*DeleteRepositoryRequest)(nil),                    // 28: google.cloud.securesourcemanager.v1.DeleteRepositoryRequest
-	(*ListHooksRequest)(nil),                           // 29: google.cloud.securesourcemanager.v1.ListHooksRequest
-	(*ListHooksResponse)(nil),                          // 30: google.cloud.securesourcemanager.v1.ListHooksResponse
-	(*GetHookRequest)(nil),                             // 31: google.cloud.securesourcemanager.v1.GetHookRequest
-	(*CreateHookRequest)(nil),                          // 32: google.cloud.securesourcemanager.v1.CreateHookRequest
-	(*UpdateHookRequest)(nil),                          // 33: google.cloud.securesourcemanager.v1.UpdateHookRequest
-	(*DeleteHookRequest)(nil),                          // 34: google.cloud.securesourcemanager.v1.DeleteHookRequest
-	(*GetBranchRuleRequest)(nil),                       // 35: google.cloud.securesourcemanager.v1.GetBranchRuleRequest
-	(*CreateBranchRuleRequest)(nil),                    // 36: google.cloud.securesourcemanager.v1.CreateBranchRuleRequest
-	(*ListBranchRulesRequest)(nil),                     // 37: google.cloud.securesourcemanager.v1.ListBranchRulesRequest
-	(*DeleteBranchRuleRequest)(nil),                    // 38: google.cloud.securesourcemanager.v1.DeleteBranchRuleRequest
-	(*UpdateBranchRuleRequest)(nil),                    // 39: google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest
-	(*ListBranchRulesResponse)(nil),                    // 40: google.cloud.securesourcemanager.v1.ListBranchRulesResponse
-	(*CreatePullRequestRequest)(nil),                   // 41: google.cloud.securesourcemanager.v1.CreatePullRequestRequest
-	(*GetPullRequestRequest)(nil),                      // 42: google.cloud.securesourcemanager.v1.GetPullRequestRequest
-	(*ListPullRequestsRequest)(nil),                    // 43: google.cloud.securesourcemanager.v1.ListPullRequestsRequest
-	(*ListPullRequestsResponse)(nil),                   // 44: google.cloud.securesourcemanager.v1.ListPullRequestsResponse
-	(*UpdatePullRequestRequest)(nil),                   // 45: google.cloud.securesourcemanager.v1.UpdatePullRequestRequest
-	(*MergePullRequestRequest)(nil),                    // 46: google.cloud.securesourcemanager.v1.MergePullRequestRequest
-	(*OpenPullRequestRequest)(nil),                     // 47: google.cloud.securesourcemanager.v1.OpenPullRequestRequest
-	(*ClosePullRequestRequest)(nil),                    // 48: google.cloud.securesourcemanager.v1.ClosePullRequestRequest
-	(*ListPullRequestFileDiffsRequest)(nil),            // 49: google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsRequest
-	(*ListPullRequestFileDiffsResponse)(nil),           // 50: google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsResponse
-	(*CreateIssueRequest)(nil),                         // 51: google.cloud.securesourcemanager.v1.CreateIssueRequest
-	(*GetIssueRequest)(nil),                            // 52: google.cloud.securesourcemanager.v1.GetIssueRequest
-	(*ListIssuesRequest)(nil),                          // 53: google.cloud.securesourcemanager.v1.ListIssuesRequest
-	(*ListIssuesResponse)(nil),                         // 54: google.cloud.securesourcemanager.v1.ListIssuesResponse
-	(*UpdateIssueRequest)(nil),                         // 55: google.cloud.securesourcemanager.v1.UpdateIssueRequest
-	(*DeleteIssueRequest)(nil),                         // 56: google.cloud.securesourcemanager.v1.DeleteIssueRequest
-	(*CloseIssueRequest)(nil),                          // 57: google.cloud.securesourcemanager.v1.CloseIssueRequest
-	(*OpenIssueRequest)(nil),                           // 58: google.cloud.securesourcemanager.v1.OpenIssueRequest
-	(*TreeEntry)(nil),                                  // 59: google.cloud.securesourcemanager.v1.TreeEntry
-	(*FetchTreeRequest)(nil),                           // 60: google.cloud.securesourcemanager.v1.FetchTreeRequest
-	(*FetchTreeResponse)(nil),                          // 61: google.cloud.securesourcemanager.v1.FetchTreeResponse
-	(*FetchBlobRequest)(nil),                           // 62: google.cloud.securesourcemanager.v1.FetchBlobRequest
-	(*FetchBlobResponse)(nil),                          // 63: google.cloud.securesourcemanager.v1.FetchBlobResponse
-	(*ListPullRequestCommentsRequest)(nil),             // 64: google.cloud.securesourcemanager.v1.ListPullRequestCommentsRequest
-	(*ListPullRequestCommentsResponse)(nil),            // 65: google.cloud.securesourcemanager.v1.ListPullRequestCommentsResponse
-	(*CreatePullRequestCommentRequest)(nil),            // 66: google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest
-	(*BatchCreatePullRequestCommentsRequest)(nil),      // 67: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsRequest
-	(*BatchCreatePullRequestCommentsResponse)(nil),     // 68: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsResponse
-	(*UpdatePullRequestCommentRequest)(nil),            // 69: google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest
-	(*DeletePullRequestCommentRequest)(nil),            // 70: google.cloud.securesourcemanager.v1.DeletePullRequestCommentRequest
-	(*GetPullRequestCommentRequest)(nil),               // 71: google.cloud.securesourcemanager.v1.GetPullRequestCommentRequest
-	(*ResolvePullRequestCommentsRequest)(nil),          // 72: google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsRequest
-	(*ResolvePullRequestCommentsResponse)(nil),         // 73: google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsResponse
-	(*UnresolvePullRequestCommentsRequest)(nil),        // 74: google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsRequest
-	(*UnresolvePullRequestCommentsResponse)(nil),       // 75: google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsResponse
-	(*CreateIssueCommentRequest)(nil),                  // 76: google.cloud.securesourcemanager.v1.CreateIssueCommentRequest
-	(*GetIssueCommentRequest)(nil),                     // 77: google.cloud.securesourcemanager.v1.GetIssueCommentRequest
-	(*ListIssueCommentsRequest)(nil),                   // 78: google.cloud.securesourcemanager.v1.ListIssueCommentsRequest
-	(*ListIssueCommentsResponse)(nil),                  // 79: google.cloud.securesourcemanager.v1.ListIssueCommentsResponse
-	(*UpdateIssueCommentRequest)(nil),                  // 80: google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest
-	(*DeleteIssueCommentRequest)(nil),                  // 81: google.cloud.securesourcemanager.v1.DeleteIssueCommentRequest
-	(*Instance_HostConfig)(nil),                        // 82: google.cloud.securesourcemanager.v1.Instance.HostConfig
-	(*Instance_PrivateConfig)(nil),                     // 83: google.cloud.securesourcemanager.v1.Instance.PrivateConfig
-	(*Instance_WorkforceIdentityFederationConfig)(nil), // 84: google.cloud.securesourcemanager.v1.Instance.WorkforceIdentityFederationConfig
-	nil, // 85: google.cloud.securesourcemanager.v1.Instance.LabelsEntry
-	(*Instance_PrivateConfig_CustomHostConfig)(nil), // 86: google.cloud.securesourcemanager.v1.Instance.PrivateConfig.CustomHostConfig
-	(*Repository_URIs)(nil),                         // 87: google.cloud.securesourcemanager.v1.Repository.URIs
-	(*Repository_InitialConfig)(nil),                // 88: google.cloud.securesourcemanager.v1.Repository.InitialConfig
-	(*Repository_ScanConfig)(nil),                   // 89: google.cloud.securesourcemanager.v1.Repository.ScanConfig
-	(*Repository_ScanConfig_SecretScanConfig)(nil),  // 90: google.cloud.securesourcemanager.v1.Repository.ScanConfig.SecretScanConfig
-	(*Hook_PushOption)(nil),                         // 91: google.cloud.securesourcemanager.v1.Hook.PushOption
-	(*BranchRule_Check)(nil),                        // 92: google.cloud.securesourcemanager.v1.BranchRule.Check
-	nil,                                             // 93: google.cloud.securesourcemanager.v1.BranchRule.AnnotationsEntry
-	(*PullRequest_Branch)(nil),                      // 94: google.cloud.securesourcemanager.v1.PullRequest.Branch
-	(*PullRequestComment_Review)(nil),               // 95: google.cloud.securesourcemanager.v1.PullRequestComment.Review
-	(*PullRequestComment_Comment)(nil),              // 96: google.cloud.securesourcemanager.v1.PullRequestComment.Comment
-	(*PullRequestComment_Code)(nil),                 // 97: google.cloud.securesourcemanager.v1.PullRequestComment.Code
-	(*PullRequestComment_Position)(nil),             // 98: google.cloud.securesourcemanager.v1.PullRequestComment.Position
-	(*timestamppb.Timestamp)(nil),                   // 99: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil),                   // 100: google.protobuf.FieldMask
-	(*iampb.GetIamPolicyRequest)(nil),               // 101: google.iam.v1.GetIamPolicyRequest
-	(*iampb.SetIamPolicyRequest)(nil),               // 102: google.iam.v1.SetIamPolicyRequest
-	(*iampb.TestIamPermissionsRequest)(nil),         // 103: google.iam.v1.TestIamPermissionsRequest
-	(*longrunningpb.Operation)(nil),                 // 104: google.longrunning.Operation
-	(*iampb.Policy)(nil),                            // 105: google.iam.v1.Policy
-	(*iampb.TestIamPermissionsResponse)(nil),        // 106: google.iam.v1.TestIamPermissionsResponse
+	(Ref_RefType)(0),                                   // 7: google.cloud.securesourcemanager.v1.Ref.RefType
+	(TreeEntry_ObjectType)(0),                          // 8: google.cloud.securesourcemanager.v1.TreeEntry.ObjectType
+	(*Instance)(nil),                                   // 9: google.cloud.securesourcemanager.v1.Instance
+	(*Repository)(nil),                                 // 10: google.cloud.securesourcemanager.v1.Repository
+	(*Hook)(nil),                                       // 11: google.cloud.securesourcemanager.v1.Hook
+	(*BranchRule)(nil),                                 // 12: google.cloud.securesourcemanager.v1.BranchRule
+	(*PullRequest)(nil),                                // 13: google.cloud.securesourcemanager.v1.PullRequest
+	(*FileDiff)(nil),                                   // 14: google.cloud.securesourcemanager.v1.FileDiff
+	(*Issue)(nil),                                      // 15: google.cloud.securesourcemanager.v1.Issue
+	(*IssueComment)(nil),                               // 16: google.cloud.securesourcemanager.v1.IssueComment
+	(*PullRequestComment)(nil),                         // 17: google.cloud.securesourcemanager.v1.PullRequestComment
+	(*Ref)(nil),                                        // 18: google.cloud.securesourcemanager.v1.Ref
+	(*ListInstancesRequest)(nil),                       // 19: google.cloud.securesourcemanager.v1.ListInstancesRequest
+	(*ListInstancesResponse)(nil),                      // 20: google.cloud.securesourcemanager.v1.ListInstancesResponse
+	(*GetInstanceRequest)(nil),                         // 21: google.cloud.securesourcemanager.v1.GetInstanceRequest
+	(*CreateInstanceRequest)(nil),                      // 22: google.cloud.securesourcemanager.v1.CreateInstanceRequest
+	(*DeleteInstanceRequest)(nil),                      // 23: google.cloud.securesourcemanager.v1.DeleteInstanceRequest
+	(*OperationMetadata)(nil),                          // 24: google.cloud.securesourcemanager.v1.OperationMetadata
+	(*ListRepositoriesRequest)(nil),                    // 25: google.cloud.securesourcemanager.v1.ListRepositoriesRequest
+	(*ListRepositoriesResponse)(nil),                   // 26: google.cloud.securesourcemanager.v1.ListRepositoriesResponse
+	(*GetRepositoryRequest)(nil),                       // 27: google.cloud.securesourcemanager.v1.GetRepositoryRequest
+	(*CreateRepositoryRequest)(nil),                    // 28: google.cloud.securesourcemanager.v1.CreateRepositoryRequest
+	(*UpdateRepositoryRequest)(nil),                    // 29: google.cloud.securesourcemanager.v1.UpdateRepositoryRequest
+	(*DeleteRepositoryRequest)(nil),                    // 30: google.cloud.securesourcemanager.v1.DeleteRepositoryRequest
+	(*ListHooksRequest)(nil),                           // 31: google.cloud.securesourcemanager.v1.ListHooksRequest
+	(*ListHooksResponse)(nil),                          // 32: google.cloud.securesourcemanager.v1.ListHooksResponse
+	(*GetHookRequest)(nil),                             // 33: google.cloud.securesourcemanager.v1.GetHookRequest
+	(*CreateHookRequest)(nil),                          // 34: google.cloud.securesourcemanager.v1.CreateHookRequest
+	(*UpdateHookRequest)(nil),                          // 35: google.cloud.securesourcemanager.v1.UpdateHookRequest
+	(*DeleteHookRequest)(nil),                          // 36: google.cloud.securesourcemanager.v1.DeleteHookRequest
+	(*GetBranchRuleRequest)(nil),                       // 37: google.cloud.securesourcemanager.v1.GetBranchRuleRequest
+	(*CreateBranchRuleRequest)(nil),                    // 38: google.cloud.securesourcemanager.v1.CreateBranchRuleRequest
+	(*ListBranchRulesRequest)(nil),                     // 39: google.cloud.securesourcemanager.v1.ListBranchRulesRequest
+	(*DeleteBranchRuleRequest)(nil),                    // 40: google.cloud.securesourcemanager.v1.DeleteBranchRuleRequest
+	(*UpdateBranchRuleRequest)(nil),                    // 41: google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest
+	(*ListBranchRulesResponse)(nil),                    // 42: google.cloud.securesourcemanager.v1.ListBranchRulesResponse
+	(*CreatePullRequestRequest)(nil),                   // 43: google.cloud.securesourcemanager.v1.CreatePullRequestRequest
+	(*GetPullRequestRequest)(nil),                      // 44: google.cloud.securesourcemanager.v1.GetPullRequestRequest
+	(*ListPullRequestsRequest)(nil),                    // 45: google.cloud.securesourcemanager.v1.ListPullRequestsRequest
+	(*ListPullRequestsResponse)(nil),                   // 46: google.cloud.securesourcemanager.v1.ListPullRequestsResponse
+	(*UpdatePullRequestRequest)(nil),                   // 47: google.cloud.securesourcemanager.v1.UpdatePullRequestRequest
+	(*MergePullRequestRequest)(nil),                    // 48: google.cloud.securesourcemanager.v1.MergePullRequestRequest
+	(*OpenPullRequestRequest)(nil),                     // 49: google.cloud.securesourcemanager.v1.OpenPullRequestRequest
+	(*ClosePullRequestRequest)(nil),                    // 50: google.cloud.securesourcemanager.v1.ClosePullRequestRequest
+	(*ListPullRequestFileDiffsRequest)(nil),            // 51: google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsRequest
+	(*ListPullRequestFileDiffsResponse)(nil),           // 52: google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsResponse
+	(*CreateIssueRequest)(nil),                         // 53: google.cloud.securesourcemanager.v1.CreateIssueRequest
+	(*GetIssueRequest)(nil),                            // 54: google.cloud.securesourcemanager.v1.GetIssueRequest
+	(*ListIssuesRequest)(nil),                          // 55: google.cloud.securesourcemanager.v1.ListIssuesRequest
+	(*ListIssuesResponse)(nil),                         // 56: google.cloud.securesourcemanager.v1.ListIssuesResponse
+	(*UpdateIssueRequest)(nil),                         // 57: google.cloud.securesourcemanager.v1.UpdateIssueRequest
+	(*DeleteIssueRequest)(nil),                         // 58: google.cloud.securesourcemanager.v1.DeleteIssueRequest
+	(*CloseIssueRequest)(nil),                          // 59: google.cloud.securesourcemanager.v1.CloseIssueRequest
+	(*OpenIssueRequest)(nil),                           // 60: google.cloud.securesourcemanager.v1.OpenIssueRequest
+	(*TreeEntry)(nil),                                  // 61: google.cloud.securesourcemanager.v1.TreeEntry
+	(*FetchTreeRequest)(nil),                           // 62: google.cloud.securesourcemanager.v1.FetchTreeRequest
+	(*FetchTreeResponse)(nil),                          // 63: google.cloud.securesourcemanager.v1.FetchTreeResponse
+	(*FetchBlobRequest)(nil),                           // 64: google.cloud.securesourcemanager.v1.FetchBlobRequest
+	(*FetchBlobResponse)(nil),                          // 65: google.cloud.securesourcemanager.v1.FetchBlobResponse
+	(*FetchRefsRequest)(nil),                           // 66: google.cloud.securesourcemanager.v1.FetchRefsRequest
+	(*FetchRefsResponse)(nil),                          // 67: google.cloud.securesourcemanager.v1.FetchRefsResponse
+	(*ListPullRequestCommentsRequest)(nil),             // 68: google.cloud.securesourcemanager.v1.ListPullRequestCommentsRequest
+	(*ListPullRequestCommentsResponse)(nil),            // 69: google.cloud.securesourcemanager.v1.ListPullRequestCommentsResponse
+	(*CreatePullRequestCommentRequest)(nil),            // 70: google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest
+	(*BatchCreatePullRequestCommentsRequest)(nil),      // 71: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsRequest
+	(*BatchCreatePullRequestCommentsResponse)(nil),     // 72: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsResponse
+	(*UpdatePullRequestCommentRequest)(nil),            // 73: google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest
+	(*DeletePullRequestCommentRequest)(nil),            // 74: google.cloud.securesourcemanager.v1.DeletePullRequestCommentRequest
+	(*GetPullRequestCommentRequest)(nil),               // 75: google.cloud.securesourcemanager.v1.GetPullRequestCommentRequest
+	(*ResolvePullRequestCommentsRequest)(nil),          // 76: google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsRequest
+	(*ResolvePullRequestCommentsResponse)(nil),         // 77: google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsResponse
+	(*UnresolvePullRequestCommentsRequest)(nil),        // 78: google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsRequest
+	(*UnresolvePullRequestCommentsResponse)(nil),       // 79: google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsResponse
+	(*CreateIssueCommentRequest)(nil),                  // 80: google.cloud.securesourcemanager.v1.CreateIssueCommentRequest
+	(*GetIssueCommentRequest)(nil),                     // 81: google.cloud.securesourcemanager.v1.GetIssueCommentRequest
+	(*ListIssueCommentsRequest)(nil),                   // 82: google.cloud.securesourcemanager.v1.ListIssueCommentsRequest
+	(*ListIssueCommentsResponse)(nil),                  // 83: google.cloud.securesourcemanager.v1.ListIssueCommentsResponse
+	(*UpdateIssueCommentRequest)(nil),                  // 84: google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest
+	(*DeleteIssueCommentRequest)(nil),                  // 85: google.cloud.securesourcemanager.v1.DeleteIssueCommentRequest
+	(*Instance_HostConfig)(nil),                        // 86: google.cloud.securesourcemanager.v1.Instance.HostConfig
+	(*Instance_PrivateConfig)(nil),                     // 87: google.cloud.securesourcemanager.v1.Instance.PrivateConfig
+	(*Instance_WorkforceIdentityFederationConfig)(nil), // 88: google.cloud.securesourcemanager.v1.Instance.WorkforceIdentityFederationConfig
+	nil, // 89: google.cloud.securesourcemanager.v1.Instance.LabelsEntry
+	(*Instance_PrivateConfig_CustomHostConfig)(nil), // 90: google.cloud.securesourcemanager.v1.Instance.PrivateConfig.CustomHostConfig
+	(*Repository_URIs)(nil),                         // 91: google.cloud.securesourcemanager.v1.Repository.URIs
+	(*Repository_InitialConfig)(nil),                // 92: google.cloud.securesourcemanager.v1.Repository.InitialConfig
+	(*Repository_ScanConfig)(nil),                   // 93: google.cloud.securesourcemanager.v1.Repository.ScanConfig
+	(*Repository_ScanConfig_SecretScanConfig)(nil),  // 94: google.cloud.securesourcemanager.v1.Repository.ScanConfig.SecretScanConfig
+	(*Hook_PushOption)(nil),                         // 95: google.cloud.securesourcemanager.v1.Hook.PushOption
+	(*BranchRule_Check)(nil),                        // 96: google.cloud.securesourcemanager.v1.BranchRule.Check
+	nil,                                             // 97: google.cloud.securesourcemanager.v1.BranchRule.AnnotationsEntry
+	(*PullRequest_Branch)(nil),                      // 98: google.cloud.securesourcemanager.v1.PullRequest.Branch
+	(*PullRequestComment_Review)(nil),               // 99: google.cloud.securesourcemanager.v1.PullRequestComment.Review
+	(*PullRequestComment_Comment)(nil),              // 100: google.cloud.securesourcemanager.v1.PullRequestComment.Comment
+	(*PullRequestComment_Code)(nil),                 // 101: google.cloud.securesourcemanager.v1.PullRequestComment.Code
+	(*PullRequestComment_Position)(nil),             // 102: google.cloud.securesourcemanager.v1.PullRequestComment.Position
+	(*timestamppb.Timestamp)(nil),                   // 103: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil),                   // 104: google.protobuf.FieldMask
+	(*iampb.GetIamPolicyRequest)(nil),               // 105: google.iam.v1.GetIamPolicyRequest
+	(*iampb.SetIamPolicyRequest)(nil),               // 106: google.iam.v1.SetIamPolicyRequest
+	(*iampb.TestIamPermissionsRequest)(nil),         // 107: google.iam.v1.TestIamPermissionsRequest
+	(*longrunningpb.Operation)(nil),                 // 108: google.longrunning.Operation
+	(*iampb.Policy)(nil),                            // 109: google.iam.v1.Policy
+	(*iampb.TestIamPermissionsResponse)(nil),        // 110: google.iam.v1.TestIamPermissionsResponse
 }
 var file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_depIdxs = []int32{
-	99,  // 0: google.cloud.securesourcemanager.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 1: google.cloud.securesourcemanager.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
-	85,  // 2: google.cloud.securesourcemanager.v1.Instance.labels:type_name -> google.cloud.securesourcemanager.v1.Instance.LabelsEntry
-	83,  // 3: google.cloud.securesourcemanager.v1.Instance.private_config:type_name -> google.cloud.securesourcemanager.v1.Instance.PrivateConfig
+	103, // 0: google.cloud.securesourcemanager.v1.Instance.create_time:type_name -> google.protobuf.Timestamp
+	103, // 1: google.cloud.securesourcemanager.v1.Instance.update_time:type_name -> google.protobuf.Timestamp
+	89,  // 2: google.cloud.securesourcemanager.v1.Instance.labels:type_name -> google.cloud.securesourcemanager.v1.Instance.LabelsEntry
+	87,  // 3: google.cloud.securesourcemanager.v1.Instance.private_config:type_name -> google.cloud.securesourcemanager.v1.Instance.PrivateConfig
 	0,   // 4: google.cloud.securesourcemanager.v1.Instance.state:type_name -> google.cloud.securesourcemanager.v1.Instance.State
 	1,   // 5: google.cloud.securesourcemanager.v1.Instance.state_note:type_name -> google.cloud.securesourcemanager.v1.Instance.StateNote
-	82,  // 6: google.cloud.securesourcemanager.v1.Instance.host_config:type_name -> google.cloud.securesourcemanager.v1.Instance.HostConfig
-	84,  // 7: google.cloud.securesourcemanager.v1.Instance.workforce_identity_federation_config:type_name -> google.cloud.securesourcemanager.v1.Instance.WorkforceIdentityFederationConfig
-	99,  // 8: google.cloud.securesourcemanager.v1.Repository.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 9: google.cloud.securesourcemanager.v1.Repository.update_time:type_name -> google.protobuf.Timestamp
-	87,  // 10: google.cloud.securesourcemanager.v1.Repository.uris:type_name -> google.cloud.securesourcemanager.v1.Repository.URIs
-	88,  // 11: google.cloud.securesourcemanager.v1.Repository.initial_config:type_name -> google.cloud.securesourcemanager.v1.Repository.InitialConfig
-	89,  // 12: google.cloud.securesourcemanager.v1.Repository.scan_config:type_name -> google.cloud.securesourcemanager.v1.Repository.ScanConfig
+	86,  // 6: google.cloud.securesourcemanager.v1.Instance.host_config:type_name -> google.cloud.securesourcemanager.v1.Instance.HostConfig
+	88,  // 7: google.cloud.securesourcemanager.v1.Instance.workforce_identity_federation_config:type_name -> google.cloud.securesourcemanager.v1.Instance.WorkforceIdentityFederationConfig
+	103, // 8: google.cloud.securesourcemanager.v1.Repository.create_time:type_name -> google.protobuf.Timestamp
+	103, // 9: google.cloud.securesourcemanager.v1.Repository.update_time:type_name -> google.protobuf.Timestamp
+	91,  // 10: google.cloud.securesourcemanager.v1.Repository.uris:type_name -> google.cloud.securesourcemanager.v1.Repository.URIs
+	92,  // 11: google.cloud.securesourcemanager.v1.Repository.initial_config:type_name -> google.cloud.securesourcemanager.v1.Repository.InitialConfig
+	93,  // 12: google.cloud.securesourcemanager.v1.Repository.scan_config:type_name -> google.cloud.securesourcemanager.v1.Repository.ScanConfig
 	2,   // 13: google.cloud.securesourcemanager.v1.Hook.events:type_name -> google.cloud.securesourcemanager.v1.Hook.HookEventType
-	99,  // 14: google.cloud.securesourcemanager.v1.Hook.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 15: google.cloud.securesourcemanager.v1.Hook.update_time:type_name -> google.protobuf.Timestamp
-	91,  // 16: google.cloud.securesourcemanager.v1.Hook.push_option:type_name -> google.cloud.securesourcemanager.v1.Hook.PushOption
-	99,  // 17: google.cloud.securesourcemanager.v1.BranchRule.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 18: google.cloud.securesourcemanager.v1.BranchRule.update_time:type_name -> google.protobuf.Timestamp
-	93,  // 19: google.cloud.securesourcemanager.v1.BranchRule.annotations:type_name -> google.cloud.securesourcemanager.v1.BranchRule.AnnotationsEntry
-	92,  // 20: google.cloud.securesourcemanager.v1.BranchRule.required_status_checks:type_name -> google.cloud.securesourcemanager.v1.BranchRule.Check
-	94,  // 21: google.cloud.securesourcemanager.v1.PullRequest.base:type_name -> google.cloud.securesourcemanager.v1.PullRequest.Branch
-	94,  // 22: google.cloud.securesourcemanager.v1.PullRequest.head:type_name -> google.cloud.securesourcemanager.v1.PullRequest.Branch
+	103, // 14: google.cloud.securesourcemanager.v1.Hook.create_time:type_name -> google.protobuf.Timestamp
+	103, // 15: google.cloud.securesourcemanager.v1.Hook.update_time:type_name -> google.protobuf.Timestamp
+	95,  // 16: google.cloud.securesourcemanager.v1.Hook.push_option:type_name -> google.cloud.securesourcemanager.v1.Hook.PushOption
+	103, // 17: google.cloud.securesourcemanager.v1.BranchRule.create_time:type_name -> google.protobuf.Timestamp
+	103, // 18: google.cloud.securesourcemanager.v1.BranchRule.update_time:type_name -> google.protobuf.Timestamp
+	97,  // 19: google.cloud.securesourcemanager.v1.BranchRule.annotations:type_name -> google.cloud.securesourcemanager.v1.BranchRule.AnnotationsEntry
+	96,  // 20: google.cloud.securesourcemanager.v1.BranchRule.required_status_checks:type_name -> google.cloud.securesourcemanager.v1.BranchRule.Check
+	98,  // 21: google.cloud.securesourcemanager.v1.PullRequest.base:type_name -> google.cloud.securesourcemanager.v1.PullRequest.Branch
+	98,  // 22: google.cloud.securesourcemanager.v1.PullRequest.head:type_name -> google.cloud.securesourcemanager.v1.PullRequest.Branch
 	3,   // 23: google.cloud.securesourcemanager.v1.PullRequest.state:type_name -> google.cloud.securesourcemanager.v1.PullRequest.State
-	99,  // 24: google.cloud.securesourcemanager.v1.PullRequest.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 25: google.cloud.securesourcemanager.v1.PullRequest.update_time:type_name -> google.protobuf.Timestamp
-	99,  // 26: google.cloud.securesourcemanager.v1.PullRequest.close_time:type_name -> google.protobuf.Timestamp
+	103, // 24: google.cloud.securesourcemanager.v1.PullRequest.create_time:type_name -> google.protobuf.Timestamp
+	103, // 25: google.cloud.securesourcemanager.v1.PullRequest.update_time:type_name -> google.protobuf.Timestamp
+	103, // 26: google.cloud.securesourcemanager.v1.PullRequest.close_time:type_name -> google.protobuf.Timestamp
 	4,   // 27: google.cloud.securesourcemanager.v1.FileDiff.action:type_name -> google.cloud.securesourcemanager.v1.FileDiff.Action
 	5,   // 28: google.cloud.securesourcemanager.v1.Issue.state:type_name -> google.cloud.securesourcemanager.v1.Issue.State
-	99,  // 29: google.cloud.securesourcemanager.v1.Issue.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 30: google.cloud.securesourcemanager.v1.Issue.update_time:type_name -> google.protobuf.Timestamp
-	99,  // 31: google.cloud.securesourcemanager.v1.Issue.close_time:type_name -> google.protobuf.Timestamp
-	99,  // 32: google.cloud.securesourcemanager.v1.IssueComment.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 33: google.cloud.securesourcemanager.v1.IssueComment.update_time:type_name -> google.protobuf.Timestamp
-	99,  // 34: google.cloud.securesourcemanager.v1.PullRequestComment.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 35: google.cloud.securesourcemanager.v1.PullRequestComment.update_time:type_name -> google.protobuf.Timestamp
-	95,  // 36: google.cloud.securesourcemanager.v1.PullRequestComment.review:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Review
-	96,  // 37: google.cloud.securesourcemanager.v1.PullRequestComment.comment:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Comment
-	97,  // 38: google.cloud.securesourcemanager.v1.PullRequestComment.code:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Code
-	8,   // 39: google.cloud.securesourcemanager.v1.ListInstancesResponse.instances:type_name -> google.cloud.securesourcemanager.v1.Instance
-	8,   // 40: google.cloud.securesourcemanager.v1.CreateInstanceRequest.instance:type_name -> google.cloud.securesourcemanager.v1.Instance
-	99,  // 41: google.cloud.securesourcemanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	99,  // 42: google.cloud.securesourcemanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	9,   // 43: google.cloud.securesourcemanager.v1.ListRepositoriesResponse.repositories:type_name -> google.cloud.securesourcemanager.v1.Repository
-	9,   // 44: google.cloud.securesourcemanager.v1.CreateRepositoryRequest.repository:type_name -> google.cloud.securesourcemanager.v1.Repository
-	100, // 45: google.cloud.securesourcemanager.v1.UpdateRepositoryRequest.update_mask:type_name -> google.protobuf.FieldMask
-	9,   // 46: google.cloud.securesourcemanager.v1.UpdateRepositoryRequest.repository:type_name -> google.cloud.securesourcemanager.v1.Repository
-	10,  // 47: google.cloud.securesourcemanager.v1.ListHooksResponse.hooks:type_name -> google.cloud.securesourcemanager.v1.Hook
-	10,  // 48: google.cloud.securesourcemanager.v1.CreateHookRequest.hook:type_name -> google.cloud.securesourcemanager.v1.Hook
-	100, // 49: google.cloud.securesourcemanager.v1.UpdateHookRequest.update_mask:type_name -> google.protobuf.FieldMask
-	10,  // 50: google.cloud.securesourcemanager.v1.UpdateHookRequest.hook:type_name -> google.cloud.securesourcemanager.v1.Hook
-	11,  // 51: google.cloud.securesourcemanager.v1.CreateBranchRuleRequest.branch_rule:type_name -> google.cloud.securesourcemanager.v1.BranchRule
-	11,  // 52: google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest.branch_rule:type_name -> google.cloud.securesourcemanager.v1.BranchRule
-	100, // 53: google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
-	11,  // 54: google.cloud.securesourcemanager.v1.ListBranchRulesResponse.branch_rules:type_name -> google.cloud.securesourcemanager.v1.BranchRule
-	12,  // 55: google.cloud.securesourcemanager.v1.CreatePullRequestRequest.pull_request:type_name -> google.cloud.securesourcemanager.v1.PullRequest
-	12,  // 56: google.cloud.securesourcemanager.v1.ListPullRequestsResponse.pull_requests:type_name -> google.cloud.securesourcemanager.v1.PullRequest
-	12,  // 57: google.cloud.securesourcemanager.v1.UpdatePullRequestRequest.pull_request:type_name -> google.cloud.securesourcemanager.v1.PullRequest
-	100, // 58: google.cloud.securesourcemanager.v1.UpdatePullRequestRequest.update_mask:type_name -> google.protobuf.FieldMask
-	13,  // 59: google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsResponse.file_diffs:type_name -> google.cloud.securesourcemanager.v1.FileDiff
-	14,  // 60: google.cloud.securesourcemanager.v1.CreateIssueRequest.issue:type_name -> google.cloud.securesourcemanager.v1.Issue
-	14,  // 61: google.cloud.securesourcemanager.v1.ListIssuesResponse.issues:type_name -> google.cloud.securesourcemanager.v1.Issue
-	14,  // 62: google.cloud.securesourcemanager.v1.UpdateIssueRequest.issue:type_name -> google.cloud.securesourcemanager.v1.Issue
-	100, // 63: google.cloud.securesourcemanager.v1.UpdateIssueRequest.update_mask:type_name -> google.protobuf.FieldMask
-	7,   // 64: google.cloud.securesourcemanager.v1.TreeEntry.type:type_name -> google.cloud.securesourcemanager.v1.TreeEntry.ObjectType
-	59,  // 65: google.cloud.securesourcemanager.v1.FetchTreeResponse.tree_entries:type_name -> google.cloud.securesourcemanager.v1.TreeEntry
-	16,  // 66: google.cloud.securesourcemanager.v1.ListPullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
-	16,  // 67: google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest.pull_request_comment:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
-	66,  // 68: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsRequest.requests:type_name -> google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest
-	16,  // 69: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
-	16,  // 70: google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest.pull_request_comment:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
-	100, // 71: google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	16,  // 72: google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
-	16,  // 73: google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
-	15,  // 74: google.cloud.securesourcemanager.v1.CreateIssueCommentRequest.issue_comment:type_name -> google.cloud.securesourcemanager.v1.IssueComment
-	15,  // 75: google.cloud.securesourcemanager.v1.ListIssueCommentsResponse.issue_comments:type_name -> google.cloud.securesourcemanager.v1.IssueComment
-	15,  // 76: google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest.issue_comment:type_name -> google.cloud.securesourcemanager.v1.IssueComment
-	100, // 77: google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest.update_mask:type_name -> google.protobuf.FieldMask
-	86,  // 78: google.cloud.securesourcemanager.v1.Instance.PrivateConfig.custom_host_config:type_name -> google.cloud.securesourcemanager.v1.Instance.PrivateConfig.CustomHostConfig
-	90,  // 79: google.cloud.securesourcemanager.v1.Repository.ScanConfig.secret_scan_config:type_name -> google.cloud.securesourcemanager.v1.Repository.ScanConfig.SecretScanConfig
-	6,   // 80: google.cloud.securesourcemanager.v1.PullRequestComment.Review.action_type:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Review.ActionType
-	98,  // 81: google.cloud.securesourcemanager.v1.PullRequestComment.Code.position:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Position
-	17,  // 82: google.cloud.securesourcemanager.v1.SecureSourceManager.ListInstances:input_type -> google.cloud.securesourcemanager.v1.ListInstancesRequest
-	19,  // 83: google.cloud.securesourcemanager.v1.SecureSourceManager.GetInstance:input_type -> google.cloud.securesourcemanager.v1.GetInstanceRequest
-	20,  // 84: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateInstance:input_type -> google.cloud.securesourcemanager.v1.CreateInstanceRequest
-	21,  // 85: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteInstance:input_type -> google.cloud.securesourcemanager.v1.DeleteInstanceRequest
-	23,  // 86: google.cloud.securesourcemanager.v1.SecureSourceManager.ListRepositories:input_type -> google.cloud.securesourcemanager.v1.ListRepositoriesRequest
-	25,  // 87: google.cloud.securesourcemanager.v1.SecureSourceManager.GetRepository:input_type -> google.cloud.securesourcemanager.v1.GetRepositoryRequest
-	26,  // 88: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateRepository:input_type -> google.cloud.securesourcemanager.v1.CreateRepositoryRequest
-	27,  // 89: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateRepository:input_type -> google.cloud.securesourcemanager.v1.UpdateRepositoryRequest
-	28,  // 90: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteRepository:input_type -> google.cloud.securesourcemanager.v1.DeleteRepositoryRequest
-	29,  // 91: google.cloud.securesourcemanager.v1.SecureSourceManager.ListHooks:input_type -> google.cloud.securesourcemanager.v1.ListHooksRequest
-	31,  // 92: google.cloud.securesourcemanager.v1.SecureSourceManager.GetHook:input_type -> google.cloud.securesourcemanager.v1.GetHookRequest
-	32,  // 93: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateHook:input_type -> google.cloud.securesourcemanager.v1.CreateHookRequest
-	33,  // 94: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateHook:input_type -> google.cloud.securesourcemanager.v1.UpdateHookRequest
-	34,  // 95: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteHook:input_type -> google.cloud.securesourcemanager.v1.DeleteHookRequest
-	101, // 96: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIamPolicyRepo:input_type -> google.iam.v1.GetIamPolicyRequest
-	102, // 97: google.cloud.securesourcemanager.v1.SecureSourceManager.SetIamPolicyRepo:input_type -> google.iam.v1.SetIamPolicyRequest
-	103, // 98: google.cloud.securesourcemanager.v1.SecureSourceManager.TestIamPermissionsRepo:input_type -> google.iam.v1.TestIamPermissionsRequest
-	36,  // 99: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateBranchRule:input_type -> google.cloud.securesourcemanager.v1.CreateBranchRuleRequest
-	37,  // 100: google.cloud.securesourcemanager.v1.SecureSourceManager.ListBranchRules:input_type -> google.cloud.securesourcemanager.v1.ListBranchRulesRequest
-	35,  // 101: google.cloud.securesourcemanager.v1.SecureSourceManager.GetBranchRule:input_type -> google.cloud.securesourcemanager.v1.GetBranchRuleRequest
-	39,  // 102: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateBranchRule:input_type -> google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest
-	38,  // 103: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteBranchRule:input_type -> google.cloud.securesourcemanager.v1.DeleteBranchRuleRequest
-	41,  // 104: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequest:input_type -> google.cloud.securesourcemanager.v1.CreatePullRequestRequest
-	42,  // 105: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequest:input_type -> google.cloud.securesourcemanager.v1.GetPullRequestRequest
-	43,  // 106: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequests:input_type -> google.cloud.securesourcemanager.v1.ListPullRequestsRequest
-	45,  // 107: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequest:input_type -> google.cloud.securesourcemanager.v1.UpdatePullRequestRequest
-	46,  // 108: google.cloud.securesourcemanager.v1.SecureSourceManager.MergePullRequest:input_type -> google.cloud.securesourcemanager.v1.MergePullRequestRequest
-	47,  // 109: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenPullRequest:input_type -> google.cloud.securesourcemanager.v1.OpenPullRequestRequest
-	48,  // 110: google.cloud.securesourcemanager.v1.SecureSourceManager.ClosePullRequest:input_type -> google.cloud.securesourcemanager.v1.ClosePullRequestRequest
-	49,  // 111: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestFileDiffs:input_type -> google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsRequest
-	60,  // 112: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchTree:input_type -> google.cloud.securesourcemanager.v1.FetchTreeRequest
-	62,  // 113: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchBlob:input_type -> google.cloud.securesourcemanager.v1.FetchBlobRequest
-	51,  // 114: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssue:input_type -> google.cloud.securesourcemanager.v1.CreateIssueRequest
-	52,  // 115: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssue:input_type -> google.cloud.securesourcemanager.v1.GetIssueRequest
-	53,  // 116: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssues:input_type -> google.cloud.securesourcemanager.v1.ListIssuesRequest
-	55,  // 117: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssue:input_type -> google.cloud.securesourcemanager.v1.UpdateIssueRequest
-	56,  // 118: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssue:input_type -> google.cloud.securesourcemanager.v1.DeleteIssueRequest
-	58,  // 119: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenIssue:input_type -> google.cloud.securesourcemanager.v1.OpenIssueRequest
-	57,  // 120: google.cloud.securesourcemanager.v1.SecureSourceManager.CloseIssue:input_type -> google.cloud.securesourcemanager.v1.CloseIssueRequest
-	71,  // 121: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequestComment:input_type -> google.cloud.securesourcemanager.v1.GetPullRequestCommentRequest
-	64,  // 122: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestComments:input_type -> google.cloud.securesourcemanager.v1.ListPullRequestCommentsRequest
-	66,  // 123: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequestComment:input_type -> google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest
-	69,  // 124: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequestComment:input_type -> google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest
-	70,  // 125: google.cloud.securesourcemanager.v1.SecureSourceManager.DeletePullRequestComment:input_type -> google.cloud.securesourcemanager.v1.DeletePullRequestCommentRequest
-	67,  // 126: google.cloud.securesourcemanager.v1.SecureSourceManager.BatchCreatePullRequestComments:input_type -> google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsRequest
-	72,  // 127: google.cloud.securesourcemanager.v1.SecureSourceManager.ResolvePullRequestComments:input_type -> google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsRequest
-	74,  // 128: google.cloud.securesourcemanager.v1.SecureSourceManager.UnresolvePullRequestComments:input_type -> google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsRequest
-	76,  // 129: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssueComment:input_type -> google.cloud.securesourcemanager.v1.CreateIssueCommentRequest
-	77,  // 130: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssueComment:input_type -> google.cloud.securesourcemanager.v1.GetIssueCommentRequest
-	78,  // 131: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssueComments:input_type -> google.cloud.securesourcemanager.v1.ListIssueCommentsRequest
-	80,  // 132: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssueComment:input_type -> google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest
-	81,  // 133: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssueComment:input_type -> google.cloud.securesourcemanager.v1.DeleteIssueCommentRequest
-	18,  // 134: google.cloud.securesourcemanager.v1.SecureSourceManager.ListInstances:output_type -> google.cloud.securesourcemanager.v1.ListInstancesResponse
-	8,   // 135: google.cloud.securesourcemanager.v1.SecureSourceManager.GetInstance:output_type -> google.cloud.securesourcemanager.v1.Instance
-	104, // 136: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateInstance:output_type -> google.longrunning.Operation
-	104, // 137: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteInstance:output_type -> google.longrunning.Operation
-	24,  // 138: google.cloud.securesourcemanager.v1.SecureSourceManager.ListRepositories:output_type -> google.cloud.securesourcemanager.v1.ListRepositoriesResponse
-	9,   // 139: google.cloud.securesourcemanager.v1.SecureSourceManager.GetRepository:output_type -> google.cloud.securesourcemanager.v1.Repository
-	104, // 140: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateRepository:output_type -> google.longrunning.Operation
-	104, // 141: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateRepository:output_type -> google.longrunning.Operation
-	104, // 142: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteRepository:output_type -> google.longrunning.Operation
-	30,  // 143: google.cloud.securesourcemanager.v1.SecureSourceManager.ListHooks:output_type -> google.cloud.securesourcemanager.v1.ListHooksResponse
-	10,  // 144: google.cloud.securesourcemanager.v1.SecureSourceManager.GetHook:output_type -> google.cloud.securesourcemanager.v1.Hook
-	104, // 145: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateHook:output_type -> google.longrunning.Operation
-	104, // 146: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateHook:output_type -> google.longrunning.Operation
-	104, // 147: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteHook:output_type -> google.longrunning.Operation
-	105, // 148: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIamPolicyRepo:output_type -> google.iam.v1.Policy
-	105, // 149: google.cloud.securesourcemanager.v1.SecureSourceManager.SetIamPolicyRepo:output_type -> google.iam.v1.Policy
-	106, // 150: google.cloud.securesourcemanager.v1.SecureSourceManager.TestIamPermissionsRepo:output_type -> google.iam.v1.TestIamPermissionsResponse
-	104, // 151: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateBranchRule:output_type -> google.longrunning.Operation
-	40,  // 152: google.cloud.securesourcemanager.v1.SecureSourceManager.ListBranchRules:output_type -> google.cloud.securesourcemanager.v1.ListBranchRulesResponse
-	11,  // 153: google.cloud.securesourcemanager.v1.SecureSourceManager.GetBranchRule:output_type -> google.cloud.securesourcemanager.v1.BranchRule
-	104, // 154: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateBranchRule:output_type -> google.longrunning.Operation
-	104, // 155: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteBranchRule:output_type -> google.longrunning.Operation
-	104, // 156: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequest:output_type -> google.longrunning.Operation
-	12,  // 157: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequest:output_type -> google.cloud.securesourcemanager.v1.PullRequest
-	44,  // 158: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequests:output_type -> google.cloud.securesourcemanager.v1.ListPullRequestsResponse
-	104, // 159: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequest:output_type -> google.longrunning.Operation
-	104, // 160: google.cloud.securesourcemanager.v1.SecureSourceManager.MergePullRequest:output_type -> google.longrunning.Operation
-	104, // 161: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenPullRequest:output_type -> google.longrunning.Operation
-	104, // 162: google.cloud.securesourcemanager.v1.SecureSourceManager.ClosePullRequest:output_type -> google.longrunning.Operation
-	50,  // 163: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestFileDiffs:output_type -> google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsResponse
-	61,  // 164: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchTree:output_type -> google.cloud.securesourcemanager.v1.FetchTreeResponse
-	63,  // 165: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchBlob:output_type -> google.cloud.securesourcemanager.v1.FetchBlobResponse
-	104, // 166: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssue:output_type -> google.longrunning.Operation
-	14,  // 167: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssue:output_type -> google.cloud.securesourcemanager.v1.Issue
-	54,  // 168: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssues:output_type -> google.cloud.securesourcemanager.v1.ListIssuesResponse
-	104, // 169: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssue:output_type -> google.longrunning.Operation
-	104, // 170: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssue:output_type -> google.longrunning.Operation
-	104, // 171: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenIssue:output_type -> google.longrunning.Operation
-	104, // 172: google.cloud.securesourcemanager.v1.SecureSourceManager.CloseIssue:output_type -> google.longrunning.Operation
-	16,  // 173: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequestComment:output_type -> google.cloud.securesourcemanager.v1.PullRequestComment
-	65,  // 174: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestComments:output_type -> google.cloud.securesourcemanager.v1.ListPullRequestCommentsResponse
-	104, // 175: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequestComment:output_type -> google.longrunning.Operation
-	104, // 176: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequestComment:output_type -> google.longrunning.Operation
-	104, // 177: google.cloud.securesourcemanager.v1.SecureSourceManager.DeletePullRequestComment:output_type -> google.longrunning.Operation
-	104, // 178: google.cloud.securesourcemanager.v1.SecureSourceManager.BatchCreatePullRequestComments:output_type -> google.longrunning.Operation
-	104, // 179: google.cloud.securesourcemanager.v1.SecureSourceManager.ResolvePullRequestComments:output_type -> google.longrunning.Operation
-	104, // 180: google.cloud.securesourcemanager.v1.SecureSourceManager.UnresolvePullRequestComments:output_type -> google.longrunning.Operation
-	104, // 181: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssueComment:output_type -> google.longrunning.Operation
-	15,  // 182: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssueComment:output_type -> google.cloud.securesourcemanager.v1.IssueComment
-	79,  // 183: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssueComments:output_type -> google.cloud.securesourcemanager.v1.ListIssueCommentsResponse
-	104, // 184: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssueComment:output_type -> google.longrunning.Operation
-	104, // 185: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssueComment:output_type -> google.longrunning.Operation
-	134, // [134:186] is the sub-list for method output_type
-	82,  // [82:134] is the sub-list for method input_type
-	82,  // [82:82] is the sub-list for extension type_name
-	82,  // [82:82] is the sub-list for extension extendee
-	0,   // [0:82] is the sub-list for field type_name
+	103, // 29: google.cloud.securesourcemanager.v1.Issue.create_time:type_name -> google.protobuf.Timestamp
+	103, // 30: google.cloud.securesourcemanager.v1.Issue.update_time:type_name -> google.protobuf.Timestamp
+	103, // 31: google.cloud.securesourcemanager.v1.Issue.close_time:type_name -> google.protobuf.Timestamp
+	103, // 32: google.cloud.securesourcemanager.v1.IssueComment.create_time:type_name -> google.protobuf.Timestamp
+	103, // 33: google.cloud.securesourcemanager.v1.IssueComment.update_time:type_name -> google.protobuf.Timestamp
+	103, // 34: google.cloud.securesourcemanager.v1.PullRequestComment.create_time:type_name -> google.protobuf.Timestamp
+	103, // 35: google.cloud.securesourcemanager.v1.PullRequestComment.update_time:type_name -> google.protobuf.Timestamp
+	99,  // 36: google.cloud.securesourcemanager.v1.PullRequestComment.review:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Review
+	100, // 37: google.cloud.securesourcemanager.v1.PullRequestComment.comment:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Comment
+	101, // 38: google.cloud.securesourcemanager.v1.PullRequestComment.code:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Code
+	7,   // 39: google.cloud.securesourcemanager.v1.Ref.type:type_name -> google.cloud.securesourcemanager.v1.Ref.RefType
+	9,   // 40: google.cloud.securesourcemanager.v1.ListInstancesResponse.instances:type_name -> google.cloud.securesourcemanager.v1.Instance
+	9,   // 41: google.cloud.securesourcemanager.v1.CreateInstanceRequest.instance:type_name -> google.cloud.securesourcemanager.v1.Instance
+	103, // 42: google.cloud.securesourcemanager.v1.OperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	103, // 43: google.cloud.securesourcemanager.v1.OperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	10,  // 44: google.cloud.securesourcemanager.v1.ListRepositoriesResponse.repositories:type_name -> google.cloud.securesourcemanager.v1.Repository
+	10,  // 45: google.cloud.securesourcemanager.v1.CreateRepositoryRequest.repository:type_name -> google.cloud.securesourcemanager.v1.Repository
+	104, // 46: google.cloud.securesourcemanager.v1.UpdateRepositoryRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10,  // 47: google.cloud.securesourcemanager.v1.UpdateRepositoryRequest.repository:type_name -> google.cloud.securesourcemanager.v1.Repository
+	11,  // 48: google.cloud.securesourcemanager.v1.ListHooksResponse.hooks:type_name -> google.cloud.securesourcemanager.v1.Hook
+	11,  // 49: google.cloud.securesourcemanager.v1.CreateHookRequest.hook:type_name -> google.cloud.securesourcemanager.v1.Hook
+	104, // 50: google.cloud.securesourcemanager.v1.UpdateHookRequest.update_mask:type_name -> google.protobuf.FieldMask
+	11,  // 51: google.cloud.securesourcemanager.v1.UpdateHookRequest.hook:type_name -> google.cloud.securesourcemanager.v1.Hook
+	12,  // 52: google.cloud.securesourcemanager.v1.CreateBranchRuleRequest.branch_rule:type_name -> google.cloud.securesourcemanager.v1.BranchRule
+	12,  // 53: google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest.branch_rule:type_name -> google.cloud.securesourcemanager.v1.BranchRule
+	104, // 54: google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest.update_mask:type_name -> google.protobuf.FieldMask
+	12,  // 55: google.cloud.securesourcemanager.v1.ListBranchRulesResponse.branch_rules:type_name -> google.cloud.securesourcemanager.v1.BranchRule
+	13,  // 56: google.cloud.securesourcemanager.v1.CreatePullRequestRequest.pull_request:type_name -> google.cloud.securesourcemanager.v1.PullRequest
+	13,  // 57: google.cloud.securesourcemanager.v1.ListPullRequestsResponse.pull_requests:type_name -> google.cloud.securesourcemanager.v1.PullRequest
+	13,  // 58: google.cloud.securesourcemanager.v1.UpdatePullRequestRequest.pull_request:type_name -> google.cloud.securesourcemanager.v1.PullRequest
+	104, // 59: google.cloud.securesourcemanager.v1.UpdatePullRequestRequest.update_mask:type_name -> google.protobuf.FieldMask
+	14,  // 60: google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsResponse.file_diffs:type_name -> google.cloud.securesourcemanager.v1.FileDiff
+	15,  // 61: google.cloud.securesourcemanager.v1.CreateIssueRequest.issue:type_name -> google.cloud.securesourcemanager.v1.Issue
+	15,  // 62: google.cloud.securesourcemanager.v1.ListIssuesResponse.issues:type_name -> google.cloud.securesourcemanager.v1.Issue
+	15,  // 63: google.cloud.securesourcemanager.v1.UpdateIssueRequest.issue:type_name -> google.cloud.securesourcemanager.v1.Issue
+	104, // 64: google.cloud.securesourcemanager.v1.UpdateIssueRequest.update_mask:type_name -> google.protobuf.FieldMask
+	8,   // 65: google.cloud.securesourcemanager.v1.TreeEntry.type:type_name -> google.cloud.securesourcemanager.v1.TreeEntry.ObjectType
+	61,  // 66: google.cloud.securesourcemanager.v1.FetchTreeResponse.tree_entries:type_name -> google.cloud.securesourcemanager.v1.TreeEntry
+	7,   // 67: google.cloud.securesourcemanager.v1.FetchRefsRequest.type:type_name -> google.cloud.securesourcemanager.v1.Ref.RefType
+	18,  // 68: google.cloud.securesourcemanager.v1.FetchRefsResponse.refs:type_name -> google.cloud.securesourcemanager.v1.Ref
+	17,  // 69: google.cloud.securesourcemanager.v1.ListPullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
+	17,  // 70: google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest.pull_request_comment:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
+	70,  // 71: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsRequest.requests:type_name -> google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest
+	17,  // 72: google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
+	17,  // 73: google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest.pull_request_comment:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
+	104, // 74: google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	17,  // 75: google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
+	17,  // 76: google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsResponse.pull_request_comments:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment
+	16,  // 77: google.cloud.securesourcemanager.v1.CreateIssueCommentRequest.issue_comment:type_name -> google.cloud.securesourcemanager.v1.IssueComment
+	16,  // 78: google.cloud.securesourcemanager.v1.ListIssueCommentsResponse.issue_comments:type_name -> google.cloud.securesourcemanager.v1.IssueComment
+	16,  // 79: google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest.issue_comment:type_name -> google.cloud.securesourcemanager.v1.IssueComment
+	104, // 80: google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest.update_mask:type_name -> google.protobuf.FieldMask
+	90,  // 81: google.cloud.securesourcemanager.v1.Instance.PrivateConfig.custom_host_config:type_name -> google.cloud.securesourcemanager.v1.Instance.PrivateConfig.CustomHostConfig
+	94,  // 82: google.cloud.securesourcemanager.v1.Repository.ScanConfig.secret_scan_config:type_name -> google.cloud.securesourcemanager.v1.Repository.ScanConfig.SecretScanConfig
+	6,   // 83: google.cloud.securesourcemanager.v1.PullRequestComment.Review.action_type:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Review.ActionType
+	102, // 84: google.cloud.securesourcemanager.v1.PullRequestComment.Code.position:type_name -> google.cloud.securesourcemanager.v1.PullRequestComment.Position
+	19,  // 85: google.cloud.securesourcemanager.v1.SecureSourceManager.ListInstances:input_type -> google.cloud.securesourcemanager.v1.ListInstancesRequest
+	21,  // 86: google.cloud.securesourcemanager.v1.SecureSourceManager.GetInstance:input_type -> google.cloud.securesourcemanager.v1.GetInstanceRequest
+	22,  // 87: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateInstance:input_type -> google.cloud.securesourcemanager.v1.CreateInstanceRequest
+	23,  // 88: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteInstance:input_type -> google.cloud.securesourcemanager.v1.DeleteInstanceRequest
+	25,  // 89: google.cloud.securesourcemanager.v1.SecureSourceManager.ListRepositories:input_type -> google.cloud.securesourcemanager.v1.ListRepositoriesRequest
+	27,  // 90: google.cloud.securesourcemanager.v1.SecureSourceManager.GetRepository:input_type -> google.cloud.securesourcemanager.v1.GetRepositoryRequest
+	28,  // 91: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateRepository:input_type -> google.cloud.securesourcemanager.v1.CreateRepositoryRequest
+	29,  // 92: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateRepository:input_type -> google.cloud.securesourcemanager.v1.UpdateRepositoryRequest
+	30,  // 93: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteRepository:input_type -> google.cloud.securesourcemanager.v1.DeleteRepositoryRequest
+	31,  // 94: google.cloud.securesourcemanager.v1.SecureSourceManager.ListHooks:input_type -> google.cloud.securesourcemanager.v1.ListHooksRequest
+	33,  // 95: google.cloud.securesourcemanager.v1.SecureSourceManager.GetHook:input_type -> google.cloud.securesourcemanager.v1.GetHookRequest
+	34,  // 96: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateHook:input_type -> google.cloud.securesourcemanager.v1.CreateHookRequest
+	35,  // 97: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateHook:input_type -> google.cloud.securesourcemanager.v1.UpdateHookRequest
+	36,  // 98: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteHook:input_type -> google.cloud.securesourcemanager.v1.DeleteHookRequest
+	105, // 99: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIamPolicyRepo:input_type -> google.iam.v1.GetIamPolicyRequest
+	106, // 100: google.cloud.securesourcemanager.v1.SecureSourceManager.SetIamPolicyRepo:input_type -> google.iam.v1.SetIamPolicyRequest
+	107, // 101: google.cloud.securesourcemanager.v1.SecureSourceManager.TestIamPermissionsRepo:input_type -> google.iam.v1.TestIamPermissionsRequest
+	38,  // 102: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateBranchRule:input_type -> google.cloud.securesourcemanager.v1.CreateBranchRuleRequest
+	39,  // 103: google.cloud.securesourcemanager.v1.SecureSourceManager.ListBranchRules:input_type -> google.cloud.securesourcemanager.v1.ListBranchRulesRequest
+	37,  // 104: google.cloud.securesourcemanager.v1.SecureSourceManager.GetBranchRule:input_type -> google.cloud.securesourcemanager.v1.GetBranchRuleRequest
+	41,  // 105: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateBranchRule:input_type -> google.cloud.securesourcemanager.v1.UpdateBranchRuleRequest
+	40,  // 106: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteBranchRule:input_type -> google.cloud.securesourcemanager.v1.DeleteBranchRuleRequest
+	43,  // 107: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequest:input_type -> google.cloud.securesourcemanager.v1.CreatePullRequestRequest
+	44,  // 108: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequest:input_type -> google.cloud.securesourcemanager.v1.GetPullRequestRequest
+	45,  // 109: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequests:input_type -> google.cloud.securesourcemanager.v1.ListPullRequestsRequest
+	47,  // 110: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequest:input_type -> google.cloud.securesourcemanager.v1.UpdatePullRequestRequest
+	48,  // 111: google.cloud.securesourcemanager.v1.SecureSourceManager.MergePullRequest:input_type -> google.cloud.securesourcemanager.v1.MergePullRequestRequest
+	49,  // 112: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenPullRequest:input_type -> google.cloud.securesourcemanager.v1.OpenPullRequestRequest
+	50,  // 113: google.cloud.securesourcemanager.v1.SecureSourceManager.ClosePullRequest:input_type -> google.cloud.securesourcemanager.v1.ClosePullRequestRequest
+	51,  // 114: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestFileDiffs:input_type -> google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsRequest
+	62,  // 115: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchTree:input_type -> google.cloud.securesourcemanager.v1.FetchTreeRequest
+	64,  // 116: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchBlob:input_type -> google.cloud.securesourcemanager.v1.FetchBlobRequest
+	66,  // 117: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchRefs:input_type -> google.cloud.securesourcemanager.v1.FetchRefsRequest
+	53,  // 118: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssue:input_type -> google.cloud.securesourcemanager.v1.CreateIssueRequest
+	54,  // 119: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssue:input_type -> google.cloud.securesourcemanager.v1.GetIssueRequest
+	55,  // 120: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssues:input_type -> google.cloud.securesourcemanager.v1.ListIssuesRequest
+	57,  // 121: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssue:input_type -> google.cloud.securesourcemanager.v1.UpdateIssueRequest
+	58,  // 122: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssue:input_type -> google.cloud.securesourcemanager.v1.DeleteIssueRequest
+	60,  // 123: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenIssue:input_type -> google.cloud.securesourcemanager.v1.OpenIssueRequest
+	59,  // 124: google.cloud.securesourcemanager.v1.SecureSourceManager.CloseIssue:input_type -> google.cloud.securesourcemanager.v1.CloseIssueRequest
+	75,  // 125: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequestComment:input_type -> google.cloud.securesourcemanager.v1.GetPullRequestCommentRequest
+	68,  // 126: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestComments:input_type -> google.cloud.securesourcemanager.v1.ListPullRequestCommentsRequest
+	70,  // 127: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequestComment:input_type -> google.cloud.securesourcemanager.v1.CreatePullRequestCommentRequest
+	73,  // 128: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequestComment:input_type -> google.cloud.securesourcemanager.v1.UpdatePullRequestCommentRequest
+	74,  // 129: google.cloud.securesourcemanager.v1.SecureSourceManager.DeletePullRequestComment:input_type -> google.cloud.securesourcemanager.v1.DeletePullRequestCommentRequest
+	71,  // 130: google.cloud.securesourcemanager.v1.SecureSourceManager.BatchCreatePullRequestComments:input_type -> google.cloud.securesourcemanager.v1.BatchCreatePullRequestCommentsRequest
+	76,  // 131: google.cloud.securesourcemanager.v1.SecureSourceManager.ResolvePullRequestComments:input_type -> google.cloud.securesourcemanager.v1.ResolvePullRequestCommentsRequest
+	78,  // 132: google.cloud.securesourcemanager.v1.SecureSourceManager.UnresolvePullRequestComments:input_type -> google.cloud.securesourcemanager.v1.UnresolvePullRequestCommentsRequest
+	80,  // 133: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssueComment:input_type -> google.cloud.securesourcemanager.v1.CreateIssueCommentRequest
+	81,  // 134: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssueComment:input_type -> google.cloud.securesourcemanager.v1.GetIssueCommentRequest
+	82,  // 135: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssueComments:input_type -> google.cloud.securesourcemanager.v1.ListIssueCommentsRequest
+	84,  // 136: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssueComment:input_type -> google.cloud.securesourcemanager.v1.UpdateIssueCommentRequest
+	85,  // 137: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssueComment:input_type -> google.cloud.securesourcemanager.v1.DeleteIssueCommentRequest
+	20,  // 138: google.cloud.securesourcemanager.v1.SecureSourceManager.ListInstances:output_type -> google.cloud.securesourcemanager.v1.ListInstancesResponse
+	9,   // 139: google.cloud.securesourcemanager.v1.SecureSourceManager.GetInstance:output_type -> google.cloud.securesourcemanager.v1.Instance
+	108, // 140: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateInstance:output_type -> google.longrunning.Operation
+	108, // 141: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteInstance:output_type -> google.longrunning.Operation
+	26,  // 142: google.cloud.securesourcemanager.v1.SecureSourceManager.ListRepositories:output_type -> google.cloud.securesourcemanager.v1.ListRepositoriesResponse
+	10,  // 143: google.cloud.securesourcemanager.v1.SecureSourceManager.GetRepository:output_type -> google.cloud.securesourcemanager.v1.Repository
+	108, // 144: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateRepository:output_type -> google.longrunning.Operation
+	108, // 145: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateRepository:output_type -> google.longrunning.Operation
+	108, // 146: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteRepository:output_type -> google.longrunning.Operation
+	32,  // 147: google.cloud.securesourcemanager.v1.SecureSourceManager.ListHooks:output_type -> google.cloud.securesourcemanager.v1.ListHooksResponse
+	11,  // 148: google.cloud.securesourcemanager.v1.SecureSourceManager.GetHook:output_type -> google.cloud.securesourcemanager.v1.Hook
+	108, // 149: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateHook:output_type -> google.longrunning.Operation
+	108, // 150: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateHook:output_type -> google.longrunning.Operation
+	108, // 151: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteHook:output_type -> google.longrunning.Operation
+	109, // 152: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIamPolicyRepo:output_type -> google.iam.v1.Policy
+	109, // 153: google.cloud.securesourcemanager.v1.SecureSourceManager.SetIamPolicyRepo:output_type -> google.iam.v1.Policy
+	110, // 154: google.cloud.securesourcemanager.v1.SecureSourceManager.TestIamPermissionsRepo:output_type -> google.iam.v1.TestIamPermissionsResponse
+	108, // 155: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateBranchRule:output_type -> google.longrunning.Operation
+	42,  // 156: google.cloud.securesourcemanager.v1.SecureSourceManager.ListBranchRules:output_type -> google.cloud.securesourcemanager.v1.ListBranchRulesResponse
+	12,  // 157: google.cloud.securesourcemanager.v1.SecureSourceManager.GetBranchRule:output_type -> google.cloud.securesourcemanager.v1.BranchRule
+	108, // 158: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateBranchRule:output_type -> google.longrunning.Operation
+	108, // 159: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteBranchRule:output_type -> google.longrunning.Operation
+	108, // 160: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequest:output_type -> google.longrunning.Operation
+	13,  // 161: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequest:output_type -> google.cloud.securesourcemanager.v1.PullRequest
+	46,  // 162: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequests:output_type -> google.cloud.securesourcemanager.v1.ListPullRequestsResponse
+	108, // 163: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequest:output_type -> google.longrunning.Operation
+	108, // 164: google.cloud.securesourcemanager.v1.SecureSourceManager.MergePullRequest:output_type -> google.longrunning.Operation
+	108, // 165: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenPullRequest:output_type -> google.longrunning.Operation
+	108, // 166: google.cloud.securesourcemanager.v1.SecureSourceManager.ClosePullRequest:output_type -> google.longrunning.Operation
+	52,  // 167: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestFileDiffs:output_type -> google.cloud.securesourcemanager.v1.ListPullRequestFileDiffsResponse
+	63,  // 168: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchTree:output_type -> google.cloud.securesourcemanager.v1.FetchTreeResponse
+	65,  // 169: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchBlob:output_type -> google.cloud.securesourcemanager.v1.FetchBlobResponse
+	67,  // 170: google.cloud.securesourcemanager.v1.SecureSourceManager.FetchRefs:output_type -> google.cloud.securesourcemanager.v1.FetchRefsResponse
+	108, // 171: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssue:output_type -> google.longrunning.Operation
+	15,  // 172: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssue:output_type -> google.cloud.securesourcemanager.v1.Issue
+	56,  // 173: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssues:output_type -> google.cloud.securesourcemanager.v1.ListIssuesResponse
+	108, // 174: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssue:output_type -> google.longrunning.Operation
+	108, // 175: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssue:output_type -> google.longrunning.Operation
+	108, // 176: google.cloud.securesourcemanager.v1.SecureSourceManager.OpenIssue:output_type -> google.longrunning.Operation
+	108, // 177: google.cloud.securesourcemanager.v1.SecureSourceManager.CloseIssue:output_type -> google.longrunning.Operation
+	17,  // 178: google.cloud.securesourcemanager.v1.SecureSourceManager.GetPullRequestComment:output_type -> google.cloud.securesourcemanager.v1.PullRequestComment
+	69,  // 179: google.cloud.securesourcemanager.v1.SecureSourceManager.ListPullRequestComments:output_type -> google.cloud.securesourcemanager.v1.ListPullRequestCommentsResponse
+	108, // 180: google.cloud.securesourcemanager.v1.SecureSourceManager.CreatePullRequestComment:output_type -> google.longrunning.Operation
+	108, // 181: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdatePullRequestComment:output_type -> google.longrunning.Operation
+	108, // 182: google.cloud.securesourcemanager.v1.SecureSourceManager.DeletePullRequestComment:output_type -> google.longrunning.Operation
+	108, // 183: google.cloud.securesourcemanager.v1.SecureSourceManager.BatchCreatePullRequestComments:output_type -> google.longrunning.Operation
+	108, // 184: google.cloud.securesourcemanager.v1.SecureSourceManager.ResolvePullRequestComments:output_type -> google.longrunning.Operation
+	108, // 185: google.cloud.securesourcemanager.v1.SecureSourceManager.UnresolvePullRequestComments:output_type -> google.longrunning.Operation
+	108, // 186: google.cloud.securesourcemanager.v1.SecureSourceManager.CreateIssueComment:output_type -> google.longrunning.Operation
+	16,  // 187: google.cloud.securesourcemanager.v1.SecureSourceManager.GetIssueComment:output_type -> google.cloud.securesourcemanager.v1.IssueComment
+	83,  // 188: google.cloud.securesourcemanager.v1.SecureSourceManager.ListIssueComments:output_type -> google.cloud.securesourcemanager.v1.ListIssueCommentsResponse
+	108, // 189: google.cloud.securesourcemanager.v1.SecureSourceManager.UpdateIssueComment:output_type -> google.longrunning.Operation
+	108, // 190: google.cloud.securesourcemanager.v1.SecureSourceManager.DeleteIssueComment:output_type -> google.longrunning.Operation
+	138, // [138:191] is the sub-list for method output_type
+	85,  // [85:138] is the sub-list for method input_type
+	85,  // [85:85] is the sub-list for extension type_name
+	85,  // [85:85] is the sub-list for extension extendee
+	0,   // [0:85] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_init() }
@@ -7553,8 +7859,8 @@ func file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_init()
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDesc), len(file_google_cloud_securesourcemanager_v1_secure_source_manager_proto_rawDesc)),
-			NumEnums:      8,
-			NumMessages:   91,
+			NumEnums:      9,
+			NumMessages:   94,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

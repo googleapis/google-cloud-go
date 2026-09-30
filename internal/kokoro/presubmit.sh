@@ -63,6 +63,10 @@ runPresubmitTests() {
     # internal tools only expected to work with latest go version
     return
   fi
+  if [[ -z "$(find . -name '*.go' -print -quit 2>/dev/null)" ]]; then
+    echo "No Go files found in $PWD, skipping tests."
+    return
+  fi
 
   go_test_args=("-race")
   if [ -z ${RUN_INTEGRATION_TESTS} ]; then
@@ -88,7 +92,7 @@ runPresubmitTests() {
   fi
 }
 
-SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/$KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH_google_cloud_go...$KOKORO_GIT_COMMIT_google_cloud_go |
+SIGNIFICANT_CHANGES=$(git --no-pager diff --name-only origin/${KOKORO_GITHUB_PULL_REQUEST_TARGET_BRANCH:-main}...${KOKORO_GIT_COMMIT:-HEAD} |
   grep -Ev '(\.md$|^\.github|\.json$|\.yaml$)' | xargs dirname | sort -u || true)
 
 if [ -z "$SIGNIFICANT_CHANGES" ]; then

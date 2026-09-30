@@ -242,7 +242,10 @@ const (
 	DbSystemProperties_COMPUTE_MODEL_UNSPECIFIED DbSystemProperties_ComputeModel = 0
 	// The compute model is virtual.
 	DbSystemProperties_ECPU DbSystemProperties_ComputeModel = 1
+	// Deprecated: This option is not supported. Please use ECPU instead.
 	// The compute model is physical.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/oracledatabase/v1/db_system.proto.
 	DbSystemProperties_OCPU DbSystemProperties_ComputeModel = 2
 )
 
@@ -511,18 +514,23 @@ type DbSystemProperties struct {
 	DbHome *DbHome `protobuf:"bytes,13,opt,name=db_home,json=dbHome,proto3" json:"db_home,omitempty"`
 	// Output only. OCID of the DbSystem.
 	Ocid string `protobuf:"bytes,14,opt,name=ocid,proto3" json:"ocid,omitempty"`
-	// Optional. The memory size in GB.
+	// Optional. The memory size in GB. This value can not be set and is
+	// automatically calculated based on the number of ECPUs allocated to the
+	// DbSystem.
 	MemorySizeGb int32 `protobuf:"varint,15,opt,name=memory_size_gb,json=memorySizeGb,proto3" json:"memory_size_gb,omitempty"`
 	// Optional. The compute model of the DbSystem.
 	ComputeModel DbSystemProperties_ComputeModel `protobuf:"varint,16,opt,name=compute_model,json=computeModel,proto3,enum=google.cloud.oracledatabase.v1.DbSystemProperties_ComputeModel" json:"compute_model,omitempty"`
 	// Optional. The data storage size in GB that is currently available to
-	// DbSystems.
+	// DbSystems. The value is same as initial_data_storage_size_gb. This can be
+	// modified from OCI console.
 	DataStorageSizeGb int32 `protobuf:"varint,17,opt,name=data_storage_size_gb,json=dataStorageSizeGb,proto3" json:"data_storage_size_gb,omitempty"`
-	// Optional. The reco/redo storage size in GB.
+	// Optional. The reco/redo storage size in GB. The value for recovery storage
+	// size is based on the available data storage size.
 	RecoStorageSizeGb int32 `protobuf:"varint,18,opt,name=reco_storage_size_gb,json=recoStorageSizeGb,proto3" json:"reco_storage_size_gb,omitempty"`
 	// Optional. The host domain name of the DbSystem.
 	Domain string `protobuf:"bytes,19,opt,name=domain,proto3" json:"domain,omitempty"`
-	// Optional. The number of nodes in the DbSystem.
+	// Optional. The number of nodes to launch for a virtual machine DbSystem. By
+	// default this will be set to 1.
 	NodeCount int32 `protobuf:"varint,20,opt,name=node_count,json=nodeCount,proto3" json:"node_count,omitempty"`
 	// Optional. The options for the DbSystem.
 	DbSystemOptions *DbSystemOptions `protobuf:"bytes,21,opt,name=db_system_options,json=dbSystemOptions,proto3" json:"db_system_options,omitempty"`
@@ -1259,7 +1267,7 @@ const file_google_cloud_oracledatabase_v1_db_system_proto_rawDesc = "" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01:\x7f\xeaA|\n" +
-	"&oracledatabase.googleapis.com/DbSystem\x12=projects/{project}/locations/{location}/dbSystems/{db_system}*\tdbSystems2\bdbSystem\"\x8b\x0f\n" +
+	"&oracledatabase.googleapis.com/DbSystem\x12=projects/{project}/locations/{location}/dbSystems/{db_system}*\tdbSystems2\bdbSystem\"\x8f\x0f\n" +
 	"\x12DbSystemProperties\x12\x19\n" +
 	"\x05shape\x18\x01 \x01(\tB\x03\xe0A\x02R\x05shape\x12(\n" +
 	"\rcompute_count\x18\x02 \x01(\x05B\x03\xe0A\x02R\fcomputeCount\x12C\n" +
@@ -1308,11 +1316,11 @@ const file_google_cloud_oracledatabase_v1_db_system_proto_rawDesc = "" +
 	"\x17MAINTENANCE_IN_PROGRESS\x10\b\x12\x13\n" +
 	"\x0fNEEDS_ATTENTION\x10\t\x12\r\n" +
 	"\tUPGRADING\x10\n" +
-	"\"A\n" +
+	"\"E\n" +
 	"\fComputeModel\x12\x1d\n" +
 	"\x19COMPUTE_MODEL_UNSPECIFIED\x10\x00\x12\b\n" +
-	"\x04ECPU\x10\x01\x12\b\n" +
-	"\x04OCPU\x10\x02\"\xa5\x01\n" +
+	"\x04ECPU\x10\x01\x12\f\n" +
+	"\x04OCPU\x10\x02\x1a\x02\b\x01\"\xa5\x01\n" +
 	"\x1dDataCollectionOptionsDbSystem\x12F\n" +
 	"\x1dis_diagnostics_events_enabled\x18\x01 \x01(\bB\x03\xe0A\x01R\x1aisDiagnosticsEventsEnabled\x12<\n" +
 	"\x18is_incident_logs_enabled\x18\x02 \x01(\bB\x03\xe0A\x01R\x15isIncidentLogsEnabled\"\xd3\x01\n" +

@@ -75,8 +75,9 @@ type Client struct {
 	// same underlying session pools). session.Client does not cache;
 	// this Client is responsible. Entries evict on TTL-idle (default
 	// 1 h) via a background sweeper, or immediately when the caller
-	// calls Close() on the returned handle. See session_table_cache.go.
-	sessionTables *sessionTableCache
+	// calls Close() on the returned handle. See
+	// internal/session/table_cache.go.
+	sessionTables *session.TableCache
 }
 
 // ClientConfig has configurations for the client.
@@ -157,7 +158,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 	}
 
 	// Create a OpenTelemetry metrics configuration
-	metricsTracerFactory, err := metrics.NewFactory(ctx, project, instance, config.AppProfile, metricsProvider, opts...)
+	metricsTracerFactory, err := metrics.NewFactory(ctx, project, instance, config.AppProfile, "", metricsProvider, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -186,14 +187,12 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		option.WithGRPCDialOption(grpc.WithDefaultCallOptions(grpc.MaxCallSendMsgSize(1<<28), grpc.MaxCallRecvMsgSize(1<<28))),
 	)
 
-	var directAccessOptions = []option.ClientOption{
-		internaloption.EnableDirectPath(true),
-		internaloption.EnableDirectPathXds(),
-		internaloption.AllowHardBoundTokens("ALTS"),
-	}
+	// DirectAccess opt-set is centralized in btopt so the classic
+	// client, the DirectAccess probe (direct_access_check.go), and the
+	// session client (internal/session) cannot drift on which options
+	// are applied to a DirectPath dial.
+	directAccessOptions := btopt.DirectAccessOptions()
 
-	// Allow non-default service account in DirectPath.
-	o = append(o, internaloption.AllowNonDefaultServiceAccount(true))
 	o = append(o, opts...)
 	o = append(o, internaloption.EnableNewAuthLibrary())
 	o = append(o, internaloption.EnableJwtWithScope())
@@ -314,7 +313,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// in (endpoint, scopes, user-agent, interceptors) — passing
 		// bare opts leaves the resolver target empty and the dial
 		// aborts with "passthrough: received empty target in Build()".
-		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, metricsProvider, featureFlagsProto, o...)
+		sc, sessionErr := session.NewClient(ctx, project, instance, config.AppProfile, "", metricsProvider, featureFlagsProto, o...)
 		if sessionErr != nil {
 			// Best-effort cleanup of the classic pool since we won't
 			// return c to the caller. Go through the ManagedChannelPool
@@ -333,7 +332,7 @@ func NewClientWithConfig(ctx context.Context, project, instance string, config C
 		// qualified resource name as the cache key. Only constructed
 		// when the session backend is actually wired — a sweeper
 		// goroutine over an always-empty map would be dead weight.
-		c.sessionTables = newSessionTableCache(sessionTableCacheTTL, sessionTableCacheSweepInt, nil /* time.Now */)
+		c.sessionTables = session.NewTableCache(session.DefaultTableCacheTTL, session.DefaultTableCacheSweepInterval, nil /* time.Now */)
 	}
 
 	return c, nil
@@ -348,8 +347,8 @@ func (c *Client) Close() error {
 	// stops and every cached handle sees Close() before we tear down
 	// the session client that owns their pools. sessionTables is nil
 	// on hand-built Clients that skipped session-backend wiring; the
-	// cache's own close() nil-checks for that.
-	c.sessionTables.close()
+	// cache's own Close() nil-checks for that.
+	c.sessionTables.Close()
 	// Then the session backend — its bookkeeping (session pools,
 	// ConfigurationManager poller) winds down before we drop the
 	// shared gRPC channels. Any error is aggregated with the classic

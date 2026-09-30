@@ -396,9 +396,9 @@ type CloudExadataInfrastructureProperties struct {
 	MonthlyDbServerVersion string `protobuf:"bytes,27,opt,name=monthly_db_server_version,json=monthlyDbServerVersion,proto3" json:"monthly_db_server_version,omitempty"`
 	// Output only. The compute model of the Exadata Infrastructure.
 	ComputeModel ComputeModel `protobuf:"varint,31,opt,name=compute_model,json=computeModel,proto3,enum=google.cloud.oracledatabase.v1.ComputeModel" json:"compute_model,omitempty"`
-	// Output only. The database server type of the Exadata Infrastructure.
+	// Optional. The database server type of the Exadata Infrastructure.
 	DatabaseServerType string `protobuf:"bytes,29,opt,name=database_server_type,json=databaseServerType,proto3" json:"database_server_type,omitempty"`
-	// Output only. The storage server type of the Exadata Infrastructure.
+	// Optional. The storage server type of the Exadata Infrastructure.
 	StorageServerType string `protobuf:"bytes,30,opt,name=storage_server_type,json=storageServerType,proto3" json:"storage_server_type,omitempty"`
 	// Output only. The Exascale configuration for the Exadata Infrastructure.
 	ExascaleConfig *ExascaleConfig `protobuf:"bytes,32,opt,name=exascale_config,json=exascaleConfig,proto3" json:"exascale_config,omitempty"`
@@ -660,8 +660,12 @@ type ExascaleConfig struct {
 	TotalStorageSizeGb int32 `protobuf:"varint,1,opt,name=total_storage_size_gb,json=totalStorageSizeGb,proto3" json:"total_storage_size_gb,omitempty"`
 	// Output only. Available storage size for Exascale in GBs.
 	AvailableStorageSizeGb int32 `protobuf:"varint,2,opt,name=available_storage_size_gb,json=availableStorageSizeGb,proto3" json:"available_storage_size_gb,omitempty"`
-	unknownFields          protoimpl.UnknownFields
-	sizeCache              protoimpl.SizeCache
+	// Output only. Storage size needed for VM storage on Exascale in GBs.
+	TotalVmStorageSizeGb int32 `protobuf:"varint,3,opt,name=total_vm_storage_size_gb,json=totalVmStorageSizeGb,proto3" json:"total_vm_storage_size_gb,omitempty"`
+	// Output only. Available storage size for VM storage on Exascale in GBs.
+	AvailableVmStorageSizeGb int32 `protobuf:"varint,4,opt,name=available_vm_storage_size_gb,json=availableVmStorageSizeGb,proto3" json:"available_vm_storage_size_gb,omitempty"`
+	unknownFields            protoimpl.UnknownFields
+	sizeCache                protoimpl.SizeCache
 }
 
 func (x *ExascaleConfig) Reset() {
@@ -704,6 +708,20 @@ func (x *ExascaleConfig) GetTotalStorageSizeGb() int32 {
 func (x *ExascaleConfig) GetAvailableStorageSizeGb() int32 {
 	if x != nil {
 		return x.AvailableStorageSizeGb
+	}
+	return 0
+}
+
+func (x *ExascaleConfig) GetTotalVmStorageSizeGb() int32 {
+	if x != nil {
+		return x.TotalVmStorageSizeGb
+	}
+	return 0
+}
+
+func (x *ExascaleConfig) GetAvailableVmStorageSizeGb() int32 {
+	if x != nil {
+		return x.AvailableVmStorageSizeGb
 	}
 	return 0
 }
@@ -852,6 +870,8 @@ type ConfigureExascaleCloudExadataInfrastructureRequest struct {
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Required. The total storage to be allocated to Exascale in GBs.
 	TotalStorageSizeGb int32 `protobuf:"varint,2,opt,name=total_storage_size_gb,json=totalStorageSizeGb,proto3" json:"total_storage_size_gb,omitempty"`
+	// Optional. Storage size needed for VM storage on Exascale in GBs.
+	TotalVmStorageSizeGb int32 `protobuf:"varint,4,opt,name=total_vm_storage_size_gb,json=totalVmStorageSizeGb,proto3" json:"total_vm_storage_size_gb,omitempty"`
 	// Optional. An optional ID to identify the request.
 	RequestId     string `protobuf:"bytes,3,opt,name=request_id,json=requestId,proto3" json:"request_id,omitempty"`
 	unknownFields protoimpl.UnknownFields
@@ -898,6 +918,13 @@ func (x *ConfigureExascaleCloudExadataInfrastructureRequest) GetName() string {
 func (x *ConfigureExascaleCloudExadataInfrastructureRequest) GetTotalStorageSizeGb() int32 {
 	if x != nil {
 		return x.TotalStorageSizeGb
+	}
+	return 0
+}
+
+func (x *ConfigureExascaleCloudExadataInfrastructureRequest) GetTotalVmStorageSizeGb() int32 {
+	if x != nil {
+		return x.TotalVmStorageSizeGb
 	}
 	return 0
 }
@@ -959,8 +986,8 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\x1emonthly_storage_server_version\x18\x1a \x01(\tB\x03\xe0A\x03R\x1bmonthlyStorageServerVersion\x12>\n" +
 	"\x19monthly_db_server_version\x18\x1b \x01(\tB\x03\xe0A\x03R\x16monthlyDbServerVersion\x12V\n" +
 	"\rcompute_model\x18\x1f \x01(\x0e2,.google.cloud.oracledatabase.v1.ComputeModelB\x03\xe0A\x03R\fcomputeModel\x125\n" +
-	"\x14database_server_type\x18\x1d \x01(\tB\x03\xe0A\x03R\x12databaseServerType\x123\n" +
-	"\x13storage_server_type\x18\x1e \x01(\tB\x03\xe0A\x03R\x11storageServerType\x12\\\n" +
+	"\x14database_server_type\x18\x1d \x01(\tB\x03\xe0A\x01R\x12databaseServerType\x123\n" +
+	"\x13storage_server_type\x18\x1e \x01(\tB\x03\xe0A\x01R\x11storageServerType\x12\\\n" +
 	"\x0fexascale_config\x18  \x01(\v2..google.cloud.oracledatabase.v1.ExascaleConfigB\x03\xe0A\x03R\x0eexascaleConfig\"\x97\x01\n" +
 	"\x05State\x12\x15\n" +
 	"\x11STATE_UNSPECIFIED\x10\x00\x12\x10\n" +
@@ -972,10 +999,12 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"TERMINATED\x10\x05\x12\n" +
 	"\n" +
 	"\x06FAILED\x10\x06\x12\x1b\n" +
-	"\x17MAINTENANCE_IN_PROGRESS\x10\a\"\x88\x01\n" +
+	"\x17MAINTENANCE_IN_PROGRESS\x10\a\"\x8a\x02\n" +
 	"\x0eExascaleConfig\x126\n" +
 	"\x15total_storage_size_gb\x18\x01 \x01(\x05B\x03\xe0A\x03R\x12totalStorageSizeGb\x12>\n" +
-	"\x19available_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x03R\x16availableStorageSizeGb\"\xb2\x06\n" +
+	"\x19available_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x03R\x16availableStorageSizeGb\x12;\n" +
+	"\x18total_vm_storage_size_gb\x18\x03 \x01(\x05B\x03\xe0A\x03R\x14totalVmStorageSizeGb\x12C\n" +
+	"\x1cavailable_vm_storage_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x03R\x18availableVmStorageSizeGb\"\xb2\x06\n" +
 	"\x11MaintenanceWindow\x12r\n" +
 	"\n" +
 	"preference\x18\x01 \x01(\x0e2M.google.cloud.oracledatabase.v1.MaintenanceWindow.MaintenanceWindowPreferenceB\x03\xe0A\x01R\n" +
@@ -997,11 +1026,12 @@ const file_google_cloud_oracledatabase_v1_exadata_infra_proto_rawDesc = "" +
 	"\fPatchingMode\x12\x1d\n" +
 	"\x19PATCHING_MODE_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aROLLING\x10\x01\x12\x0f\n" +
-	"\vNON_ROLLING\x10\x02\"\xee\x01\n" +
+	"\vNON_ROLLING\x10\x02\"\xab\x02\n" +
 	"2ConfigureExascaleCloudExadataInfrastructureRequest\x12T\n" +
 	"\x04name\x18\x01 \x01(\tB@\xe0A\x02\xfaA:\n" +
 	"8oracledatabase.googleapis.com/CloudExadataInfrastructureR\x04name\x126\n" +
-	"\x15total_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x02R\x12totalStorageSizeGb\x12*\n" +
+	"\x15total_storage_size_gb\x18\x02 \x01(\x05B\x03\xe0A\x02R\x12totalStorageSizeGb\x12;\n" +
+	"\x18total_vm_storage_size_gb\x18\x04 \x01(\x05B\x03\xe0A\x01R\x14totalVmStorageSizeGb\x12*\n" +
 	"\n" +
 	"request_id\x18\x03 \x01(\tB\v\xe0A\x01\xe2\x8c\xcf\xd7\b\x02\b\x01R\trequestIdB\xf9\x01\n" +
 	"\"com.google.cloud.oracledatabase.v1B\x1fCloudExadataInfrastructureProtoP\x01ZJcloud.google.com/go/oracledatabase/apiv1/oracledatabasepb;oracledatabasepb\xaa\x02\x1eGoogle.Cloud.OracleDatabase.V1\xca\x02\x1eGoogle\\Cloud\\OracleDatabase\\V1\xea\x02!Google::Cloud::OracleDatabase::V1b\x06proto3"

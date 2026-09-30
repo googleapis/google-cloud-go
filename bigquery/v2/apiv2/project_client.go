@@ -140,7 +140,10 @@ func (c *ProjectClient) Connection() *grpc.ClientConn {
 }
 
 // GetServiceAccount rPC to get the service account for a project used for interactions with
-// Google Cloud KMS
+// Google Cloud KMS. Requires the bigquery.jobs.create permission on the
+// project resource. This permission is required to authorize the retrieval
+// of the project’s service identity for technical management tasks like
+// encryption configuration.
 func (c *ProjectClient) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
 	return c.internalClient.GetServiceAccount(ctx, req, opts...)
 }
@@ -214,6 +217,33 @@ func NewProjectClient(ctx context.Context, opts ...option.ClientOption) (*Projec
 		)
 
 		client.CallOptions.GetServiceAccount = append(client.CallOptions.GetServiceAccount, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetServiceAccount = append(client.CallOptions.GetServiceAccount, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetServiceAccount = append(client.CallOptions.GetServiceAccount, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -306,6 +336,33 @@ func NewProjectRESTClient(ctx context.Context, opts ...option.ClientOption) (*Pr
 
 		callOpts.GetServiceAccount = append(callOpts.GetServiceAccount, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetServiceAccount = append(callOpts.GetServiceAccount, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "bigquery",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/bigquery/v2/apiv2",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "bigquery.googleapis.com",
+			}),
+		)
+
+		callOpts.GetServiceAccount = append(callOpts.GetServiceAccount, gax.WithClientLogging(logging))
+	}
 
 	return &ProjectClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -352,9 +409,6 @@ func (c *projectGRPCClient) GetServiceAccount(ctx context.Context, req *bigquery
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v", req.GetProjectId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ProjectService/GetServiceAccount")
 	}
@@ -372,7 +426,10 @@ func (c *projectGRPCClient) GetServiceAccount(ctx context.Context, req *bigquery
 }
 
 // GetServiceAccount rPC to get the service account for a project used for interactions with
-// Google Cloud KMS
+// Google Cloud KMS. Requires the bigquery.jobs.create permission on the
+// project resource. This permission is required to authorize the retrieval
+// of the project’s service identity for technical management tasks like
+// encryption configuration.
 func (c *projectRESTClient) GetServiceAccount(ctx context.Context, req *bigquerypb.GetServiceAccountRequest, opts ...gax.CallOption) (*bigquerypb.GetServiceAccountResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -386,9 +443,6 @@ func (c *projectRESTClient) GetServiceAccount(ctx context.Context, req *bigquery
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//bigquery.googleapis.com/projects/%v", req.GetProjectId()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.bigquery.v2.ProjectService/GetServiceAccount")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/bigquery/v2/projects/{project_id=*}/serviceAccount")

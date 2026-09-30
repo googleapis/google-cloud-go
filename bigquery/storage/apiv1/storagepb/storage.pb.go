@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -351,9 +351,18 @@ type ReadRowsRequest struct {
 	// The offset requested must be less than the last row read from Read.
 	// Requesting a larger offset is undefined. If not specified, start reading
 	// from offset zero.
-	Offset        int64 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Offset int64 `protobuf:"varint,2,opt,name=offset,proto3" json:"offset,omitempty"`
+	// Specifies output serialization options. Only job _default streams are
+	// supported.
+	//
+	// This feature is not yet available.
+	//
+	// Types that are valid to be assigned to OutputFormatSerializationOptions:
+	//
+	//	*ReadRowsRequest_ArrowSerializationOptions
+	OutputFormatSerializationOptions isReadRowsRequest_OutputFormatSerializationOptions `protobuf_oneof:"output_format_serialization_options"`
+	unknownFields                    protoimpl.UnknownFields
+	sizeCache                        protoimpl.SizeCache
 }
 
 func (x *ReadRowsRequest) Reset() {
@@ -398,6 +407,36 @@ func (x *ReadRowsRequest) GetOffset() int64 {
 		return x.Offset
 	}
 	return 0
+}
+
+func (x *ReadRowsRequest) GetOutputFormatSerializationOptions() isReadRowsRequest_OutputFormatSerializationOptions {
+	if x != nil {
+		return x.OutputFormatSerializationOptions
+	}
+	return nil
+}
+
+func (x *ReadRowsRequest) GetArrowSerializationOptions() *ArrowSerializationOptions {
+	if x != nil {
+		if x, ok := x.OutputFormatSerializationOptions.(*ReadRowsRequest_ArrowSerializationOptions); ok {
+			return x.ArrowSerializationOptions
+		}
+	}
+	return nil
+}
+
+type isReadRowsRequest_OutputFormatSerializationOptions interface {
+	isReadRowsRequest_OutputFormatSerializationOptions()
+}
+
+type ReadRowsRequest_ArrowSerializationOptions struct {
+	// Optional. Options specific to the Apache Arrow output format.
+	//
+	// This feature is not yet available.
+	ArrowSerializationOptions *ArrowSerializationOptions `protobuf:"bytes,5,opt,name=arrow_serialization_options,json=arrowSerializationOptions,proto3,oneof"`
+}
+
+func (*ReadRowsRequest_ArrowSerializationOptions) isReadRowsRequest_OutputFormatSerializationOptions() {
 }
 
 // Information on if the current connection is being throttled.
@@ -537,8 +576,13 @@ type ReadRowsResponse struct {
 	// does not yield appreciable savings. When uncompressed_byte_size is not
 	// greater than 0, the client should skip decompression.
 	UncompressedByteSize *int64 `protobuf:"varint,9,opt,name=uncompressed_byte_size,json=uncompressedByteSize,proto3,oneof" json:"uncompressed_byte_size,omitempty"`
-	unknownFields        protoimpl.UnknownFields
-	sizeCache            protoimpl.SizeCache
+	// Output only. The total estimated number of rows in the query results.
+	// Only populated when reading data from a BigQuery job.
+	//
+	// This feature is not yet available.
+	TotalEstimatedRowCount *int64 `protobuf:"varint,10,opt,name=total_estimated_row_count,json=totalEstimatedRowCount,proto3,oneof" json:"total_estimated_row_count,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ReadRowsResponse) Reset() {
@@ -645,6 +689,13 @@ func (x *ReadRowsResponse) GetArrowSchema() *ArrowSchema {
 func (x *ReadRowsResponse) GetUncompressedByteSize() int64 {
 	if x != nil && x.UncompressedByteSize != nil {
 		return *x.UncompressedByteSize
+	}
+	return 0
+}
+
+func (x *ReadRowsResponse) GetTotalEstimatedRowCount() int64 {
+	if x != nil && x.TotalEstimatedRowCount != nil {
+		return *x.TotalEstimatedRowCount
 	}
 	return 0
 }
@@ -867,7 +918,7 @@ func (x *CreateWriteStreamRequest) GetWriteStream() *WriteStream {
 // switching table destinations. You can also switch table destinations within
 // the same connection for the default stream.
 //
-// The size of a single AppendRowsRequest must be less than 10 MB in size.
+// The size of a single AppendRowsRequest must be less than 20 MB in size.
 // Requests larger than this return an error, typically `INVALID_ARGUMENT`.
 type AppendRowsRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -951,8 +1002,10 @@ type AppendRowsRequest struct {
 	// `default_missing_value_interpretation` to `DEFAULT_VALUE` and at the same
 	// time, set `missing_value_interpretations` to `NULL_VALUE` on those columns.
 	DefaultMissingValueInterpretation AppendRowsRequest_MissingValueInterpretation `protobuf:"varint,8,opt,name=default_missing_value_interpretation,json=defaultMissingValueInterpretation,proto3,enum=google.cloud.bigquery.storage.v1.AppendRowsRequest_MissingValueInterpretation" json:"default_missing_value_interpretation,omitempty"`
-	unknownFields                     protoimpl.UnknownFields
-	sizeCache                         protoimpl.SizeCache
+	// Optional. Stats and telemetry data gathered on the client side.
+	ClientStats   *ClientStats `protobuf:"bytes,9,opt,name=client_stats,json=clientStats,proto3" json:"client_stats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *AppendRowsRequest) Reset() {
@@ -1043,6 +1096,13 @@ func (x *AppendRowsRequest) GetDefaultMissingValueInterpretation() AppendRowsReq
 		return x.DefaultMissingValueInterpretation
 	}
 	return AppendRowsRequest_MISSING_VALUE_INTERPRETATION_UNSPECIFIED
+}
+
+func (x *AppendRowsRequest) GetClientStats() *ClientStats {
+	if x != nil {
+		return x.ClientStats
+	}
+	return nil
 }
 
 type isAppendRowsRequest_Rows interface {
@@ -1699,6 +1759,62 @@ func (x *RowError) GetMessage() string {
 	return ""
 }
 
+// Stats and telemetry data gathered on the client side about requests
+// being sent to the BigQuery Storage service, for internal use only.
+type ClientStats struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Per-request stats.
+	RequestStats *ClientStats_RequestStats `protobuf:"bytes,1,opt,name=request_stats,json=requestStats,proto3" json:"request_stats,omitempty"`
+	// Optional. Windowed stats.
+	WindowStats   *ClientStats_WindowStats `protobuf:"bytes,2,opt,name=window_stats,json=windowStats,proto3" json:"window_stats,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClientStats) Reset() {
+	*x = ClientStats{}
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClientStats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClientStats) ProtoMessage() {}
+
+func (x *ClientStats) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClientStats.ProtoReflect.Descriptor instead.
+func (*ClientStats) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_storage_v1_storage_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *ClientStats) GetRequestStats() *ClientStats_RequestStats {
+	if x != nil {
+		return x.RequestStats
+	}
+	return nil
+}
+
+func (x *ClientStats) GetWindowStats() *ClientStats_WindowStats {
+	if x != nil {
+		return x.WindowStats
+	}
+	return nil
+}
+
 type StreamStats_Progress struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The fraction of rows assigned to the stream that have been processed by
@@ -1723,7 +1839,7 @@ type StreamStats_Progress struct {
 
 func (x *StreamStats_Progress) Reset() {
 	*x = StreamStats_Progress{}
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[19]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1735,7 +1851,7 @@ func (x *StreamStats_Progress) String() string {
 func (*StreamStats_Progress) ProtoMessage() {}
 
 func (x *StreamStats_Progress) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[19]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1778,7 +1894,7 @@ type AppendRowsRequest_ArrowData struct {
 
 func (x *AppendRowsRequest_ArrowData) Reset() {
 	*x = AppendRowsRequest_ArrowData{}
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[20]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1790,7 +1906,7 @@ func (x *AppendRowsRequest_ArrowData) String() string {
 func (*AppendRowsRequest_ArrowData) ProtoMessage() {}
 
 func (x *AppendRowsRequest_ArrowData) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[20]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1844,7 +1960,7 @@ type AppendRowsRequest_ProtoData struct {
 
 func (x *AppendRowsRequest_ProtoData) Reset() {
 	*x = AppendRowsRequest_ProtoData{}
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[21]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1856,7 +1972,7 @@ func (x *AppendRowsRequest_ProtoData) String() string {
 func (*AppendRowsRequest_ProtoData) ProtoMessage() {}
 
 func (x *AppendRowsRequest_ProtoData) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[21]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1898,7 +2014,7 @@ type AppendRowsResponse_AppendResult struct {
 
 func (x *AppendRowsResponse_AppendResult) Reset() {
 	*x = AppendRowsResponse_AppendResult{}
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[23]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -1910,7 +2026,7 @@ func (x *AppendRowsResponse_AppendResult) String() string {
 func (*AppendRowsResponse_AppendResult) ProtoMessage() {}
 
 func (x *AppendRowsResponse_AppendResult) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[23]
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -1933,6 +2049,180 @@ func (x *AppendRowsResponse_AppendResult) GetOffset() *wrapperspb.Int64Value {
 	return nil
 }
 
+// Stats and telemetry data gathered on the client side about a single
+// request.
+type ClientStats_RequestStats struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. Timestamp indicating when the request was sent over the
+	// network, expressed in epoch milliseconds.
+	SendTimeMillis *int64 `protobuf:"varint,1,opt,name=send_time_millis,json=sendTimeMillis,proto3,oneof" json:"send_time_millis,omitempty"`
+	// Optional. Number of pending requests at the moment this request was sent.
+	// This includes requests waiting to be sent, and those that are inflight.
+	QueuedRequestsCount *int64 `protobuf:"varint,2,opt,name=queued_requests_count,json=queuedRequestsCount,proto3,oneof" json:"queued_requests_count,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ClientStats_RequestStats) Reset() {
+	*x = ClientStats_RequestStats{}
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[25]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClientStats_RequestStats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClientStats_RequestStats) ProtoMessage() {}
+
+func (x *ClientStats_RequestStats) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[25]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClientStats_RequestStats.ProtoReflect.Descriptor instead.
+func (*ClientStats_RequestStats) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_storage_v1_storage_proto_rawDescGZIP(), []int{19, 0}
+}
+
+func (x *ClientStats_RequestStats) GetSendTimeMillis() int64 {
+	if x != nil && x.SendTimeMillis != nil {
+		return *x.SendTimeMillis
+	}
+	return 0
+}
+
+func (x *ClientStats_RequestStats) GetQueuedRequestsCount() int64 {
+	if x != nil && x.QueuedRequestsCount != nil {
+		return *x.QueuedRequestsCount
+	}
+	return 0
+}
+
+// Aggregate connection metrics over a window interval.
+type ClientStats_WindowStats struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Optional. The maximum response latency observed in the window, expressed
+	// in milliseconds.
+	MaxResponseLatencyMillis *int64 `protobuf:"varint,1,opt,name=max_response_latency_millis,json=maxResponseLatencyMillis,proto3,oneof" json:"max_response_latency_millis,omitempty"`
+	// Optional. The average response latency observed in the window, expressed
+	// in milliseconds.
+	AvgResponseLatencyMillis *int64 `protobuf:"varint,2,opt,name=avg_response_latency_millis,json=avgResponseLatencyMillis,proto3,oneof" json:"avg_response_latency_millis,omitempty"`
+	// Optional. The longest time spent waiting without receiving a response in
+	// the window. This could exceed max_response_latency_millis because the
+	// latter is evaluated only when a response is received. Expressed in
+	// milliseconds.
+	LongestWaitNoResponseMillis *int64 `protobuf:"varint,3,opt,name=longest_wait_no_response_millis,json=longestWaitNoResponseMillis,proto3,oneof" json:"longest_wait_no_response_millis,omitempty"`
+	// Optional. How many requests were sent in the window.
+	RequestsSentCount *int64 `protobuf:"varint,4,opt,name=requests_sent_count,json=requestsSentCount,proto3,oneof" json:"requests_sent_count,omitempty"`
+	// Optional. How many responses were received in the window.
+	ResponsesReceivedCount *int64 `protobuf:"varint,5,opt,name=responses_received_count,json=responsesReceivedCount,proto3,oneof" json:"responses_received_count,omitempty"`
+	// Optional. How many bytes were sent in the window.
+	BytesSentCount *int64 `protobuf:"varint,6,opt,name=bytes_sent_count,json=bytesSentCount,proto3,oneof" json:"bytes_sent_count,omitempty"`
+	// Optional. Start time of the window interval for which these stats are
+	// aggregated, expressed in epoch milliseconds.
+	WindowStartTimeEpochMillis *int64 `protobuf:"varint,7,opt,name=window_start_time_epoch_millis,json=windowStartTimeEpochMillis,proto3,oneof" json:"window_start_time_epoch_millis,omitempty"`
+	// Optional. Duration of the window interval for which these stats are
+	// aggregated, expressed in milliseconds.
+	WindowMillis  *int64 `protobuf:"varint,8,opt,name=window_millis,json=windowMillis,proto3,oneof" json:"window_millis,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ClientStats_WindowStats) Reset() {
+	*x = ClientStats_WindowStats{}
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[26]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ClientStats_WindowStats) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ClientStats_WindowStats) ProtoMessage() {}
+
+func (x *ClientStats_WindowStats) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[26]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ClientStats_WindowStats.ProtoReflect.Descriptor instead.
+func (*ClientStats_WindowStats) Descriptor() ([]byte, []int) {
+	return file_google_cloud_bigquery_storage_v1_storage_proto_rawDescGZIP(), []int{19, 1}
+}
+
+func (x *ClientStats_WindowStats) GetMaxResponseLatencyMillis() int64 {
+	if x != nil && x.MaxResponseLatencyMillis != nil {
+		return *x.MaxResponseLatencyMillis
+	}
+	return 0
+}
+
+func (x *ClientStats_WindowStats) GetAvgResponseLatencyMillis() int64 {
+	if x != nil && x.AvgResponseLatencyMillis != nil {
+		return *x.AvgResponseLatencyMillis
+	}
+	return 0
+}
+
+func (x *ClientStats_WindowStats) GetLongestWaitNoResponseMillis() int64 {
+	if x != nil && x.LongestWaitNoResponseMillis != nil {
+		return *x.LongestWaitNoResponseMillis
+	}
+	return 0
+}
+
+func (x *ClientStats_WindowStats) GetRequestsSentCount() int64 {
+	if x != nil && x.RequestsSentCount != nil {
+		return *x.RequestsSentCount
+	}
+	return 0
+}
+
+func (x *ClientStats_WindowStats) GetResponsesReceivedCount() int64 {
+	if x != nil && x.ResponsesReceivedCount != nil {
+		return *x.ResponsesReceivedCount
+	}
+	return 0
+}
+
+func (x *ClientStats_WindowStats) GetBytesSentCount() int64 {
+	if x != nil && x.BytesSentCount != nil {
+		return *x.BytesSentCount
+	}
+	return 0
+}
+
+func (x *ClientStats_WindowStats) GetWindowStartTimeEpochMillis() int64 {
+	if x != nil && x.WindowStartTimeEpochMillis != nil {
+		return *x.WindowStartTimeEpochMillis
+	}
+	return 0
+}
+
+func (x *ClientStats_WindowStats) GetWindowMillis() int64 {
+	if x != nil && x.WindowMillis != nil {
+		return *x.WindowMillis
+	}
+	return 0
+}
+
 var File_google_cloud_bigquery_storage_v1_storage_proto protoreflect.FileDescriptor
 
 const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
@@ -1943,19 +2233,21 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"+cloudresourcemanager.googleapis.com/ProjectR\x06parent\x12U\n" +
 	"\fread_session\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.ReadSessionB\x03\xe0A\x02R\vreadSession\x12(\n" +
 	"\x10max_stream_count\x18\x03 \x01(\x05R\x0emaxStreamCount\x12;\n" +
-	"\x1apreferred_min_stream_count\x18\x04 \x01(\x05R\x17preferredMinStreamCount\"}\n" +
+	"\x1apreferred_min_stream_count\x18\x04 \x01(\x05R\x17preferredMinStreamCount\"\xa9\x02\n" +
 	"\x0fReadRowsRequest\x12R\n" +
 	"\vread_stream\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
 	")bigquerystorage.googleapis.com/ReadStreamR\n" +
 	"readStream\x12\x16\n" +
-	"\x06offset\x18\x02 \x01(\x03R\x06offset\":\n" +
+	"\x06offset\x18\x02 \x01(\x03R\x06offset\x12\x82\x01\n" +
+	"\x1barrow_serialization_options\x18\x05 \x01(\v2;.google.cloud.bigquery.storage.v1.ArrowSerializationOptionsB\x03\xe0A\x01H\x00R\x19arrowSerializationOptionsB%\n" +
+	"#output_format_serialization_options\":\n" +
 	"\rThrottleState\x12)\n" +
 	"\x10throttle_percent\x18\x01 \x01(\x05R\x0fthrottlePercent\"\xc1\x01\n" +
 	"\vStreamStats\x12R\n" +
 	"\bprogress\x18\x02 \x01(\v26.google.cloud.bigquery.storage.v1.StreamStats.ProgressR\bprogress\x1a^\n" +
 	"\bProgress\x12*\n" +
 	"\x11at_response_start\x18\x01 \x01(\x01R\x0fatResponseStart\x12&\n" +
-	"\x0fat_response_end\x18\x02 \x01(\x01R\ratResponseEnd\"\x97\x05\n" +
+	"\x0fat_response_end\x18\x02 \x01(\x01R\ratResponseEnd\"\xfa\x05\n" +
 	"\x10ReadRowsResponse\x12I\n" +
 	"\tavro_rows\x18\x03 \x01(\v2*.google.cloud.bigquery.storage.v1.AvroRowsH\x00R\bavroRows\x12b\n" +
 	"\x12arrow_record_batch\x18\x04 \x01(\v22.google.cloud.bigquery.storage.v1.ArrowRecordBatchH\x00R\x10arrowRecordBatch\x12\x1b\n" +
@@ -1965,10 +2257,13 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\vavro_schema\x18\a \x01(\v2,.google.cloud.bigquery.storage.v1.AvroSchemaB\x03\xe0A\x03H\x01R\n" +
 	"avroSchema\x12W\n" +
 	"\farrow_schema\x18\b \x01(\v2-.google.cloud.bigquery.storage.v1.ArrowSchemaB\x03\xe0A\x03H\x01R\varrowSchema\x12>\n" +
-	"\x16uncompressed_byte_size\x18\t \x01(\x03B\x03\xe0A\x01H\x02R\x14uncompressedByteSize\x88\x01\x01B\x06\n" +
+	"\x16uncompressed_byte_size\x18\t \x01(\x03B\x03\xe0A\x01H\x02R\x14uncompressedByteSize\x88\x01\x01\x12C\n" +
+	"\x19total_estimated_row_count\x18\n" +
+	" \x01(\x03B\x03\xe0A\x03H\x03R\x16totalEstimatedRowCount\x88\x01\x01B\x06\n" +
 	"\x04rowsB\b\n" +
 	"\x06schemaB\x19\n" +
-	"\x17_uncompressed_byte_size\"{\n" +
+	"\x17_uncompressed_byte_sizeB\x1c\n" +
+	"\x1a_total_estimated_row_count\"{\n" +
 	"\x16SplitReadStreamRequest\x12E\n" +
 	"\x04name\x18\x01 \x01(\tB1\xe0A\x02\xfaA+\n" +
 	")bigquerystorage.googleapis.com/ReadStreamR\x04name\x12\x1a\n" +
@@ -1979,7 +2274,7 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\x18CreateWriteStreamRequest\x12=\n" +
 	"\x06parent\x18\x01 \x01(\tB%\xe0A\x02\xfaA\x1f\n" +
 	"\x1dbigquery.googleapis.com/TableR\x06parent\x12U\n" +
-	"\fwrite_stream\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.WriteStreamB\x03\xe0A\x02R\vwriteStream\"\xa1\n" +
+	"\fwrite_stream\x18\x02 \x01(\v2-.google.cloud.bigquery.storage.v1.WriteStreamB\x03\xe0A\x02R\vwriteStream\"\xf8\n" +
 	"\n" +
 	"\x11AppendRowsRequest\x12U\n" +
 	"\fwrite_stream\x18\x01 \x01(\tB2\xe0A\x02\xfaA,\n" +
@@ -1991,7 +2286,8 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"arrow_rows\x18\x05 \x01(\v2=.google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowDataH\x00R\tarrowRows\x12\x19\n" +
 	"\btrace_id\x18\x06 \x01(\tR\atraceId\x12\x98\x01\n" +
 	"\x1dmissing_value_interpretations\x18\a \x03(\v2T.google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntryR\x1bmissingValueInterpretations\x12\xa4\x01\n" +
-	"$default_missing_value_interpretation\x18\b \x01(\x0e2N.google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationB\x03\xe0A\x01R!defaultMissingValueInterpretation\x1a\xa7\x01\n" +
+	"$default_missing_value_interpretation\x18\b \x01(\x0e2N.google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationB\x03\xe0A\x01R!defaultMissingValueInterpretation\x12U\n" +
+	"\fclient_stats\x18\t \x01(\v2-.google.cloud.bigquery.storage.v1.ClientStatsB\x03\xe0A\x01R\vclientStats\x1a\xa7\x01\n" +
 	"\tArrowData\x12R\n" +
 	"\rwriter_schema\x18\x01 \x01(\v2-.google.cloud.bigquery.storage.v1.ArrowSchemaR\fwriterSchema\x12F\n" +
 	"\x04rows\x18\x02 \x01(\v22.google.cloud.bigquery.storage.v1.ArrowRecordBatchR\x04rows\x1a\xa0\x01\n" +
@@ -2068,7 +2364,32 @@ const file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc = "" +
 	"\amessage\x18\x03 \x01(\tR\amessage\"@\n" +
 	"\fRowErrorCode\x12\x1e\n" +
 	"\x1aROW_ERROR_CODE_UNSPECIFIED\x10\x00\x12\x10\n" +
-	"\fFIELDS_ERROR\x10\x012\x92\x06\n" +
+	"\fFIELDS_ERROR\x10\x01\"\x8c\t\n" +
+	"\vClientStats\x12d\n" +
+	"\rrequest_stats\x18\x01 \x01(\v2:.google.cloud.bigquery.storage.v1.ClientStats.RequestStatsB\x03\xe0A\x01R\frequestStats\x12a\n" +
+	"\fwindow_stats\x18\x02 \x01(\v29.google.cloud.bigquery.storage.v1.ClientStats.WindowStatsB\x03\xe0A\x01R\vwindowStats\x1a\xaf\x01\n" +
+	"\fRequestStats\x122\n" +
+	"\x10send_time_millis\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\x0esendTimeMillis\x88\x01\x01\x12<\n" +
+	"\x15queued_requests_count\x18\x02 \x01(\x03B\x03\xe0A\x01H\x01R\x13queuedRequestsCount\x88\x01\x01B\x13\n" +
+	"\x11_send_time_millisB\x18\n" +
+	"\x16_queued_requests_count\x1a\x81\x06\n" +
+	"\vWindowStats\x12G\n" +
+	"\x1bmax_response_latency_millis\x18\x01 \x01(\x03B\x03\xe0A\x01H\x00R\x18maxResponseLatencyMillis\x88\x01\x01\x12G\n" +
+	"\x1bavg_response_latency_millis\x18\x02 \x01(\x03B\x03\xe0A\x01H\x01R\x18avgResponseLatencyMillis\x88\x01\x01\x12N\n" +
+	"\x1flongest_wait_no_response_millis\x18\x03 \x01(\x03B\x03\xe0A\x01H\x02R\x1blongestWaitNoResponseMillis\x88\x01\x01\x128\n" +
+	"\x13requests_sent_count\x18\x04 \x01(\x03B\x03\xe0A\x01H\x03R\x11requestsSentCount\x88\x01\x01\x12B\n" +
+	"\x18responses_received_count\x18\x05 \x01(\x03B\x03\xe0A\x01H\x04R\x16responsesReceivedCount\x88\x01\x01\x122\n" +
+	"\x10bytes_sent_count\x18\x06 \x01(\x03B\x03\xe0A\x01H\x05R\x0ebytesSentCount\x88\x01\x01\x12L\n" +
+	"\x1ewindow_start_time_epoch_millis\x18\a \x01(\x03B\x03\xe0A\x01H\x06R\x1awindowStartTimeEpochMillis\x88\x01\x01\x12-\n" +
+	"\rwindow_millis\x18\b \x01(\x03B\x03\xe0A\x01H\aR\fwindowMillis\x88\x01\x01B\x1e\n" +
+	"\x1c_max_response_latency_millisB\x1e\n" +
+	"\x1c_avg_response_latency_millisB\"\n" +
+	" _longest_wait_no_response_millisB\x16\n" +
+	"\x14_requests_sent_countB\x1b\n" +
+	"\x19_responses_received_countB\x13\n" +
+	"\x11_bytes_sent_countB!\n" +
+	"\x1f_window_start_time_epoch_millisB\x10\n" +
+	"\x0e_window_millis2\x92\x06\n" +
 	"\fBigQueryRead\x12\xe9\x01\n" +
 	"\x11CreateReadSession\x12:.google.cloud.bigquery.storage.v1.CreateReadSessionRequest\x1a-.google.cloud.bigquery.storage.v1.ReadSession\"i\xdaA$parent,read_session,max_stream_count\x82\xd3\xe4\x93\x02<:\x01*\"7/v1/{read_session.table=projects/*/datasets/*/tables/*}\x12\xcf\x01\n" +
 	"\bReadRows\x121.google.cloud.bigquery.storage.v1.ReadRowsRequest\x1a2.google.cloud.bigquery.storage.v1.ReadRowsResponse\"Z\xdaA\x12read_stream,offset\x82\xd3\xe4\x93\x02?\x12=/v1/{read_stream=projects/*/locations/*/sessions/*/streams/*}0\x01\x12\xc6\x01\n" +
@@ -2097,7 +2418,7 @@ func file_google_cloud_bigquery_storage_v1_storage_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_bigquery_storage_v1_storage_proto_enumTypes = make([]protoimpl.EnumInfo, 3)
-var file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes = make([]protoimpl.MessageInfo, 24)
+var file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes = make([]protoimpl.MessageInfo, 27)
 var file_google_cloud_bigquery_storage_v1_storage_proto_goTypes = []any{
 	(AppendRowsRequest_MissingValueInterpretation)(0), // 0: google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretation
 	(StorageError_StorageErrorCode)(0),                // 1: google.cloud.bigquery.storage.v1.StorageError.StorageErrorCode
@@ -2121,82 +2442,90 @@ var file_google_cloud_bigquery_storage_v1_storage_proto_goTypes = []any{
 	(*FlushRowsResponse)(nil),                         // 19: google.cloud.bigquery.storage.v1.FlushRowsResponse
 	(*StorageError)(nil),                              // 20: google.cloud.bigquery.storage.v1.StorageError
 	(*RowError)(nil),                                  // 21: google.cloud.bigquery.storage.v1.RowError
-	(*StreamStats_Progress)(nil),                      // 22: google.cloud.bigquery.storage.v1.StreamStats.Progress
-	(*AppendRowsRequest_ArrowData)(nil),               // 23: google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData
-	(*AppendRowsRequest_ProtoData)(nil),               // 24: google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData
-	nil,                                               // 25: google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntry
-	(*AppendRowsResponse_AppendResult)(nil),           // 26: google.cloud.bigquery.storage.v1.AppendRowsResponse.AppendResult
-	(*ReadSession)(nil),                               // 27: google.cloud.bigquery.storage.v1.ReadSession
-	(*AvroRows)(nil),                                  // 28: google.cloud.bigquery.storage.v1.AvroRows
-	(*ArrowRecordBatch)(nil),                          // 29: google.cloud.bigquery.storage.v1.ArrowRecordBatch
-	(*AvroSchema)(nil),                                // 30: google.cloud.bigquery.storage.v1.AvroSchema
-	(*ArrowSchema)(nil),                               // 31: google.cloud.bigquery.storage.v1.ArrowSchema
-	(*ReadStream)(nil),                                // 32: google.cloud.bigquery.storage.v1.ReadStream
-	(*WriteStream)(nil),                               // 33: google.cloud.bigquery.storage.v1.WriteStream
-	(*wrapperspb.Int64Value)(nil),                     // 34: google.protobuf.Int64Value
-	(*status.Status)(nil),                             // 35: google.rpc.Status
-	(*TableSchema)(nil),                               // 36: google.cloud.bigquery.storage.v1.TableSchema
-	(WriteStreamView)(0),                              // 37: google.cloud.bigquery.storage.v1.WriteStreamView
-	(*timestamppb.Timestamp)(nil),                     // 38: google.protobuf.Timestamp
-	(*ProtoSchema)(nil),                               // 39: google.cloud.bigquery.storage.v1.ProtoSchema
-	(*ProtoRows)(nil),                                 // 40: google.cloud.bigquery.storage.v1.ProtoRows
+	(*ClientStats)(nil),                               // 22: google.cloud.bigquery.storage.v1.ClientStats
+	(*StreamStats_Progress)(nil),                      // 23: google.cloud.bigquery.storage.v1.StreamStats.Progress
+	(*AppendRowsRequest_ArrowData)(nil),               // 24: google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData
+	(*AppendRowsRequest_ProtoData)(nil),               // 25: google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData
+	nil,                                               // 26: google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntry
+	(*AppendRowsResponse_AppendResult)(nil),           // 27: google.cloud.bigquery.storage.v1.AppendRowsResponse.AppendResult
+	(*ClientStats_RequestStats)(nil),                  // 28: google.cloud.bigquery.storage.v1.ClientStats.RequestStats
+	(*ClientStats_WindowStats)(nil),                   // 29: google.cloud.bigquery.storage.v1.ClientStats.WindowStats
+	(*ReadSession)(nil),                               // 30: google.cloud.bigquery.storage.v1.ReadSession
+	(*ArrowSerializationOptions)(nil),                 // 31: google.cloud.bigquery.storage.v1.ArrowSerializationOptions
+	(*AvroRows)(nil),                                  // 32: google.cloud.bigquery.storage.v1.AvroRows
+	(*ArrowRecordBatch)(nil),                          // 33: google.cloud.bigquery.storage.v1.ArrowRecordBatch
+	(*AvroSchema)(nil),                                // 34: google.cloud.bigquery.storage.v1.AvroSchema
+	(*ArrowSchema)(nil),                               // 35: google.cloud.bigquery.storage.v1.ArrowSchema
+	(*ReadStream)(nil),                                // 36: google.cloud.bigquery.storage.v1.ReadStream
+	(*WriteStream)(nil),                               // 37: google.cloud.bigquery.storage.v1.WriteStream
+	(*wrapperspb.Int64Value)(nil),                     // 38: google.protobuf.Int64Value
+	(*status.Status)(nil),                             // 39: google.rpc.Status
+	(*TableSchema)(nil),                               // 40: google.cloud.bigquery.storage.v1.TableSchema
+	(WriteStreamView)(0),                              // 41: google.cloud.bigquery.storage.v1.WriteStreamView
+	(*timestamppb.Timestamp)(nil),                     // 42: google.protobuf.Timestamp
+	(*ProtoSchema)(nil),                               // 43: google.cloud.bigquery.storage.v1.ProtoSchema
+	(*ProtoRows)(nil),                                 // 44: google.cloud.bigquery.storage.v1.ProtoRows
 }
 var file_google_cloud_bigquery_storage_v1_storage_proto_depIdxs = []int32{
-	27, // 0: google.cloud.bigquery.storage.v1.CreateReadSessionRequest.read_session:type_name -> google.cloud.bigquery.storage.v1.ReadSession
-	22, // 1: google.cloud.bigquery.storage.v1.StreamStats.progress:type_name -> google.cloud.bigquery.storage.v1.StreamStats.Progress
-	28, // 2: google.cloud.bigquery.storage.v1.ReadRowsResponse.avro_rows:type_name -> google.cloud.bigquery.storage.v1.AvroRows
-	29, // 3: google.cloud.bigquery.storage.v1.ReadRowsResponse.arrow_record_batch:type_name -> google.cloud.bigquery.storage.v1.ArrowRecordBatch
-	6,  // 4: google.cloud.bigquery.storage.v1.ReadRowsResponse.stats:type_name -> google.cloud.bigquery.storage.v1.StreamStats
-	5,  // 5: google.cloud.bigquery.storage.v1.ReadRowsResponse.throttle_state:type_name -> google.cloud.bigquery.storage.v1.ThrottleState
-	30, // 6: google.cloud.bigquery.storage.v1.ReadRowsResponse.avro_schema:type_name -> google.cloud.bigquery.storage.v1.AvroSchema
-	31, // 7: google.cloud.bigquery.storage.v1.ReadRowsResponse.arrow_schema:type_name -> google.cloud.bigquery.storage.v1.ArrowSchema
-	32, // 8: google.cloud.bigquery.storage.v1.SplitReadStreamResponse.primary_stream:type_name -> google.cloud.bigquery.storage.v1.ReadStream
-	32, // 9: google.cloud.bigquery.storage.v1.SplitReadStreamResponse.remainder_stream:type_name -> google.cloud.bigquery.storage.v1.ReadStream
-	33, // 10: google.cloud.bigquery.storage.v1.CreateWriteStreamRequest.write_stream:type_name -> google.cloud.bigquery.storage.v1.WriteStream
-	34, // 11: google.cloud.bigquery.storage.v1.AppendRowsRequest.offset:type_name -> google.protobuf.Int64Value
-	24, // 12: google.cloud.bigquery.storage.v1.AppendRowsRequest.proto_rows:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData
-	23, // 13: google.cloud.bigquery.storage.v1.AppendRowsRequest.arrow_rows:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData
-	25, // 14: google.cloud.bigquery.storage.v1.AppendRowsRequest.missing_value_interpretations:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntry
-	0,  // 15: google.cloud.bigquery.storage.v1.AppendRowsRequest.default_missing_value_interpretation:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretation
-	26, // 16: google.cloud.bigquery.storage.v1.AppendRowsResponse.append_result:type_name -> google.cloud.bigquery.storage.v1.AppendRowsResponse.AppendResult
-	35, // 17: google.cloud.bigquery.storage.v1.AppendRowsResponse.error:type_name -> google.rpc.Status
-	36, // 18: google.cloud.bigquery.storage.v1.AppendRowsResponse.updated_schema:type_name -> google.cloud.bigquery.storage.v1.TableSchema
-	21, // 19: google.cloud.bigquery.storage.v1.AppendRowsResponse.row_errors:type_name -> google.cloud.bigquery.storage.v1.RowError
-	37, // 20: google.cloud.bigquery.storage.v1.GetWriteStreamRequest.view:type_name -> google.cloud.bigquery.storage.v1.WriteStreamView
-	38, // 21: google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsResponse.commit_time:type_name -> google.protobuf.Timestamp
-	20, // 22: google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsResponse.stream_errors:type_name -> google.cloud.bigquery.storage.v1.StorageError
-	34, // 23: google.cloud.bigquery.storage.v1.FlushRowsRequest.offset:type_name -> google.protobuf.Int64Value
-	1,  // 24: google.cloud.bigquery.storage.v1.StorageError.code:type_name -> google.cloud.bigquery.storage.v1.StorageError.StorageErrorCode
-	2,  // 25: google.cloud.bigquery.storage.v1.RowError.code:type_name -> google.cloud.bigquery.storage.v1.RowError.RowErrorCode
-	31, // 26: google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData.writer_schema:type_name -> google.cloud.bigquery.storage.v1.ArrowSchema
-	29, // 27: google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData.rows:type_name -> google.cloud.bigquery.storage.v1.ArrowRecordBatch
-	39, // 28: google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData.writer_schema:type_name -> google.cloud.bigquery.storage.v1.ProtoSchema
-	40, // 29: google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData.rows:type_name -> google.cloud.bigquery.storage.v1.ProtoRows
-	0,  // 30: google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntry.value:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretation
-	34, // 31: google.cloud.bigquery.storage.v1.AppendRowsResponse.AppendResult.offset:type_name -> google.protobuf.Int64Value
-	3,  // 32: google.cloud.bigquery.storage.v1.BigQueryRead.CreateReadSession:input_type -> google.cloud.bigquery.storage.v1.CreateReadSessionRequest
-	4,  // 33: google.cloud.bigquery.storage.v1.BigQueryRead.ReadRows:input_type -> google.cloud.bigquery.storage.v1.ReadRowsRequest
-	8,  // 34: google.cloud.bigquery.storage.v1.BigQueryRead.SplitReadStream:input_type -> google.cloud.bigquery.storage.v1.SplitReadStreamRequest
-	10, // 35: google.cloud.bigquery.storage.v1.BigQueryWrite.CreateWriteStream:input_type -> google.cloud.bigquery.storage.v1.CreateWriteStreamRequest
-	11, // 36: google.cloud.bigquery.storage.v1.BigQueryWrite.AppendRows:input_type -> google.cloud.bigquery.storage.v1.AppendRowsRequest
-	13, // 37: google.cloud.bigquery.storage.v1.BigQueryWrite.GetWriteStream:input_type -> google.cloud.bigquery.storage.v1.GetWriteStreamRequest
-	16, // 38: google.cloud.bigquery.storage.v1.BigQueryWrite.FinalizeWriteStream:input_type -> google.cloud.bigquery.storage.v1.FinalizeWriteStreamRequest
-	14, // 39: google.cloud.bigquery.storage.v1.BigQueryWrite.BatchCommitWriteStreams:input_type -> google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsRequest
-	18, // 40: google.cloud.bigquery.storage.v1.BigQueryWrite.FlushRows:input_type -> google.cloud.bigquery.storage.v1.FlushRowsRequest
-	27, // 41: google.cloud.bigquery.storage.v1.BigQueryRead.CreateReadSession:output_type -> google.cloud.bigquery.storage.v1.ReadSession
-	7,  // 42: google.cloud.bigquery.storage.v1.BigQueryRead.ReadRows:output_type -> google.cloud.bigquery.storage.v1.ReadRowsResponse
-	9,  // 43: google.cloud.bigquery.storage.v1.BigQueryRead.SplitReadStream:output_type -> google.cloud.bigquery.storage.v1.SplitReadStreamResponse
-	33, // 44: google.cloud.bigquery.storage.v1.BigQueryWrite.CreateWriteStream:output_type -> google.cloud.bigquery.storage.v1.WriteStream
-	12, // 45: google.cloud.bigquery.storage.v1.BigQueryWrite.AppendRows:output_type -> google.cloud.bigquery.storage.v1.AppendRowsResponse
-	33, // 46: google.cloud.bigquery.storage.v1.BigQueryWrite.GetWriteStream:output_type -> google.cloud.bigquery.storage.v1.WriteStream
-	17, // 47: google.cloud.bigquery.storage.v1.BigQueryWrite.FinalizeWriteStream:output_type -> google.cloud.bigquery.storage.v1.FinalizeWriteStreamResponse
-	15, // 48: google.cloud.bigquery.storage.v1.BigQueryWrite.BatchCommitWriteStreams:output_type -> google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsResponse
-	19, // 49: google.cloud.bigquery.storage.v1.BigQueryWrite.FlushRows:output_type -> google.cloud.bigquery.storage.v1.FlushRowsResponse
-	41, // [41:50] is the sub-list for method output_type
-	32, // [32:41] is the sub-list for method input_type
-	32, // [32:32] is the sub-list for extension type_name
-	32, // [32:32] is the sub-list for extension extendee
-	0,  // [0:32] is the sub-list for field type_name
+	30, // 0: google.cloud.bigquery.storage.v1.CreateReadSessionRequest.read_session:type_name -> google.cloud.bigquery.storage.v1.ReadSession
+	31, // 1: google.cloud.bigquery.storage.v1.ReadRowsRequest.arrow_serialization_options:type_name -> google.cloud.bigquery.storage.v1.ArrowSerializationOptions
+	23, // 2: google.cloud.bigquery.storage.v1.StreamStats.progress:type_name -> google.cloud.bigquery.storage.v1.StreamStats.Progress
+	32, // 3: google.cloud.bigquery.storage.v1.ReadRowsResponse.avro_rows:type_name -> google.cloud.bigquery.storage.v1.AvroRows
+	33, // 4: google.cloud.bigquery.storage.v1.ReadRowsResponse.arrow_record_batch:type_name -> google.cloud.bigquery.storage.v1.ArrowRecordBatch
+	6,  // 5: google.cloud.bigquery.storage.v1.ReadRowsResponse.stats:type_name -> google.cloud.bigquery.storage.v1.StreamStats
+	5,  // 6: google.cloud.bigquery.storage.v1.ReadRowsResponse.throttle_state:type_name -> google.cloud.bigquery.storage.v1.ThrottleState
+	34, // 7: google.cloud.bigquery.storage.v1.ReadRowsResponse.avro_schema:type_name -> google.cloud.bigquery.storage.v1.AvroSchema
+	35, // 8: google.cloud.bigquery.storage.v1.ReadRowsResponse.arrow_schema:type_name -> google.cloud.bigquery.storage.v1.ArrowSchema
+	36, // 9: google.cloud.bigquery.storage.v1.SplitReadStreamResponse.primary_stream:type_name -> google.cloud.bigquery.storage.v1.ReadStream
+	36, // 10: google.cloud.bigquery.storage.v1.SplitReadStreamResponse.remainder_stream:type_name -> google.cloud.bigquery.storage.v1.ReadStream
+	37, // 11: google.cloud.bigquery.storage.v1.CreateWriteStreamRequest.write_stream:type_name -> google.cloud.bigquery.storage.v1.WriteStream
+	38, // 12: google.cloud.bigquery.storage.v1.AppendRowsRequest.offset:type_name -> google.protobuf.Int64Value
+	25, // 13: google.cloud.bigquery.storage.v1.AppendRowsRequest.proto_rows:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData
+	24, // 14: google.cloud.bigquery.storage.v1.AppendRowsRequest.arrow_rows:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData
+	26, // 15: google.cloud.bigquery.storage.v1.AppendRowsRequest.missing_value_interpretations:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntry
+	0,  // 16: google.cloud.bigquery.storage.v1.AppendRowsRequest.default_missing_value_interpretation:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretation
+	22, // 17: google.cloud.bigquery.storage.v1.AppendRowsRequest.client_stats:type_name -> google.cloud.bigquery.storage.v1.ClientStats
+	27, // 18: google.cloud.bigquery.storage.v1.AppendRowsResponse.append_result:type_name -> google.cloud.bigquery.storage.v1.AppendRowsResponse.AppendResult
+	39, // 19: google.cloud.bigquery.storage.v1.AppendRowsResponse.error:type_name -> google.rpc.Status
+	40, // 20: google.cloud.bigquery.storage.v1.AppendRowsResponse.updated_schema:type_name -> google.cloud.bigquery.storage.v1.TableSchema
+	21, // 21: google.cloud.bigquery.storage.v1.AppendRowsResponse.row_errors:type_name -> google.cloud.bigquery.storage.v1.RowError
+	41, // 22: google.cloud.bigquery.storage.v1.GetWriteStreamRequest.view:type_name -> google.cloud.bigquery.storage.v1.WriteStreamView
+	42, // 23: google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsResponse.commit_time:type_name -> google.protobuf.Timestamp
+	20, // 24: google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsResponse.stream_errors:type_name -> google.cloud.bigquery.storage.v1.StorageError
+	38, // 25: google.cloud.bigquery.storage.v1.FlushRowsRequest.offset:type_name -> google.protobuf.Int64Value
+	1,  // 26: google.cloud.bigquery.storage.v1.StorageError.code:type_name -> google.cloud.bigquery.storage.v1.StorageError.StorageErrorCode
+	2,  // 27: google.cloud.bigquery.storage.v1.RowError.code:type_name -> google.cloud.bigquery.storage.v1.RowError.RowErrorCode
+	28, // 28: google.cloud.bigquery.storage.v1.ClientStats.request_stats:type_name -> google.cloud.bigquery.storage.v1.ClientStats.RequestStats
+	29, // 29: google.cloud.bigquery.storage.v1.ClientStats.window_stats:type_name -> google.cloud.bigquery.storage.v1.ClientStats.WindowStats
+	35, // 30: google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData.writer_schema:type_name -> google.cloud.bigquery.storage.v1.ArrowSchema
+	33, // 31: google.cloud.bigquery.storage.v1.AppendRowsRequest.ArrowData.rows:type_name -> google.cloud.bigquery.storage.v1.ArrowRecordBatch
+	43, // 32: google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData.writer_schema:type_name -> google.cloud.bigquery.storage.v1.ProtoSchema
+	44, // 33: google.cloud.bigquery.storage.v1.AppendRowsRequest.ProtoData.rows:type_name -> google.cloud.bigquery.storage.v1.ProtoRows
+	0,  // 34: google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretationsEntry.value:type_name -> google.cloud.bigquery.storage.v1.AppendRowsRequest.MissingValueInterpretation
+	38, // 35: google.cloud.bigquery.storage.v1.AppendRowsResponse.AppendResult.offset:type_name -> google.protobuf.Int64Value
+	3,  // 36: google.cloud.bigquery.storage.v1.BigQueryRead.CreateReadSession:input_type -> google.cloud.bigquery.storage.v1.CreateReadSessionRequest
+	4,  // 37: google.cloud.bigquery.storage.v1.BigQueryRead.ReadRows:input_type -> google.cloud.bigquery.storage.v1.ReadRowsRequest
+	8,  // 38: google.cloud.bigquery.storage.v1.BigQueryRead.SplitReadStream:input_type -> google.cloud.bigquery.storage.v1.SplitReadStreamRequest
+	10, // 39: google.cloud.bigquery.storage.v1.BigQueryWrite.CreateWriteStream:input_type -> google.cloud.bigquery.storage.v1.CreateWriteStreamRequest
+	11, // 40: google.cloud.bigquery.storage.v1.BigQueryWrite.AppendRows:input_type -> google.cloud.bigquery.storage.v1.AppendRowsRequest
+	13, // 41: google.cloud.bigquery.storage.v1.BigQueryWrite.GetWriteStream:input_type -> google.cloud.bigquery.storage.v1.GetWriteStreamRequest
+	16, // 42: google.cloud.bigquery.storage.v1.BigQueryWrite.FinalizeWriteStream:input_type -> google.cloud.bigquery.storage.v1.FinalizeWriteStreamRequest
+	14, // 43: google.cloud.bigquery.storage.v1.BigQueryWrite.BatchCommitWriteStreams:input_type -> google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsRequest
+	18, // 44: google.cloud.bigquery.storage.v1.BigQueryWrite.FlushRows:input_type -> google.cloud.bigquery.storage.v1.FlushRowsRequest
+	30, // 45: google.cloud.bigquery.storage.v1.BigQueryRead.CreateReadSession:output_type -> google.cloud.bigquery.storage.v1.ReadSession
+	7,  // 46: google.cloud.bigquery.storage.v1.BigQueryRead.ReadRows:output_type -> google.cloud.bigquery.storage.v1.ReadRowsResponse
+	9,  // 47: google.cloud.bigquery.storage.v1.BigQueryRead.SplitReadStream:output_type -> google.cloud.bigquery.storage.v1.SplitReadStreamResponse
+	37, // 48: google.cloud.bigquery.storage.v1.BigQueryWrite.CreateWriteStream:output_type -> google.cloud.bigquery.storage.v1.WriteStream
+	12, // 49: google.cloud.bigquery.storage.v1.BigQueryWrite.AppendRows:output_type -> google.cloud.bigquery.storage.v1.AppendRowsResponse
+	37, // 50: google.cloud.bigquery.storage.v1.BigQueryWrite.GetWriteStream:output_type -> google.cloud.bigquery.storage.v1.WriteStream
+	17, // 51: google.cloud.bigquery.storage.v1.BigQueryWrite.FinalizeWriteStream:output_type -> google.cloud.bigquery.storage.v1.FinalizeWriteStreamResponse
+	15, // 52: google.cloud.bigquery.storage.v1.BigQueryWrite.BatchCommitWriteStreams:output_type -> google.cloud.bigquery.storage.v1.BatchCommitWriteStreamsResponse
+	19, // 53: google.cloud.bigquery.storage.v1.BigQueryWrite.FlushRows:output_type -> google.cloud.bigquery.storage.v1.FlushRowsResponse
+	45, // [45:54] is the sub-list for method output_type
+	36, // [36:45] is the sub-list for method input_type
+	36, // [36:36] is the sub-list for extension type_name
+	36, // [36:36] is the sub-list for extension extendee
+	0,  // [0:36] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_bigquery_storage_v1_storage_proto_init() }
@@ -2209,6 +2538,9 @@ func file_google_cloud_bigquery_storage_v1_storage_proto_init() {
 	file_google_cloud_bigquery_storage_v1_protobuf_proto_init()
 	file_google_cloud_bigquery_storage_v1_stream_proto_init()
 	file_google_cloud_bigquery_storage_v1_table_proto_init()
+	file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[1].OneofWrappers = []any{
+		(*ReadRowsRequest_ArrowSerializationOptions)(nil),
+	}
 	file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[4].OneofWrappers = []any{
 		(*ReadRowsResponse_AvroRows)(nil),
 		(*ReadRowsResponse_ArrowRecordBatch)(nil),
@@ -2223,13 +2555,15 @@ func file_google_cloud_bigquery_storage_v1_storage_proto_init() {
 		(*AppendRowsResponse_AppendResult_)(nil),
 		(*AppendRowsResponse_Error)(nil),
 	}
+	file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[25].OneofWrappers = []any{}
+	file_google_cloud_bigquery_storage_v1_storage_proto_msgTypes[26].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc), len(file_google_cloud_bigquery_storage_v1_storage_proto_rawDesc)),
 			NumEnums:      3,
-			NumMessages:   24,
+			NumMessages:   27,
 			NumExtensions: 0,
 			NumServices:   2,
 		},

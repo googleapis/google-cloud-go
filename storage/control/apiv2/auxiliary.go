@@ -18,11 +18,13 @@ package control
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	controlpb "cloud.google.com/go/storage/control/apiv2/controlpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -204,6 +206,70 @@ func (op *DeleteFolderRecursiveOperation) Done() bool {
 // Name returns the name of the long-running operation.
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *DeleteFolderRecursiveOperation) Name() string {
+	return op.lro.Name()
+}
+
+// DisableRapidCacheOperation manages a long-running operation from DisableRapidCache.
+type DisableRapidCacheOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *DisableRapidCacheOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp controlpb.RapidCache
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *DisableRapidCacheOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*controlpb.RapidCache, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp controlpb.RapidCache
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *DisableRapidCacheOperation) Metadata() (*controlpb.DisableRapidCacheMetadata, error) {
+	var meta controlpb.DisableRapidCacheMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *DisableRapidCacheOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *DisableRapidCacheOperation) Name() string {
 	return op.lro.Name()
 }
 
@@ -399,6 +465,12 @@ func (op *UpdateRapidCacheOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnywhereCacheIterator) All() iter.Seq2[*controlpb.AnywhereCache, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AnywhereCacheIterator manages a stream of *controlpb.AnywhereCache.
 type AnywhereCacheIterator struct {
 	items    []*controlpb.AnywhereCache
@@ -444,6 +516,12 @@ func (it *AnywhereCacheIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FindingSummaryIterator) All() iter.Seq2[*controlpb.FindingSummary, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FindingSummaryIterator manages a stream of *controlpb.FindingSummary.
@@ -493,6 +571,12 @@ func (it *FindingSummaryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FolderIterator) All() iter.Seq2[*controlpb.Folder, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FolderIterator manages a stream of *controlpb.Folder.
 type FolderIterator struct {
 	items    []*controlpb.Folder
@@ -538,6 +622,12 @@ func (it *FolderIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntelligenceFindingIterator) All() iter.Seq2[*controlpb.IntelligenceFinding, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IntelligenceFindingIterator manages a stream of *controlpb.IntelligenceFinding.
@@ -587,6 +677,12 @@ func (it *IntelligenceFindingIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntelligenceFindingRevisionIterator) All() iter.Seq2[*controlpb.IntelligenceFindingRevision, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // IntelligenceFindingRevisionIterator manages a stream of *controlpb.IntelligenceFindingRevision.
 type IntelligenceFindingRevisionIterator struct {
 	items    []*controlpb.IntelligenceFindingRevision
@@ -634,6 +730,12 @@ func (it *IntelligenceFindingRevisionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ManagedFolderIterator) All() iter.Seq2[*controlpb.ManagedFolder, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ManagedFolderIterator manages a stream of *controlpb.ManagedFolder.
 type ManagedFolderIterator struct {
 	items    []*controlpb.ManagedFolder
@@ -679,6 +781,12 @@ func (it *ManagedFolderIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RapidCacheIterator) All() iter.Seq2[*controlpb.RapidCache, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RapidCacheIterator manages a stream of *controlpb.RapidCache.

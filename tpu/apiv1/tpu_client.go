@@ -407,6 +407,65 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "tpu",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/tpu/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "tpu.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListNodes = append(client.CallOptions.ListNodes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetNode = append(client.CallOptions.GetNode, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateNode = append(client.CallOptions.CreateNode, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteNode = append(client.CallOptions.DeleteNode, gax.WithClientTracing(tracing))
+		client.CallOptions.ReimageNode = append(client.CallOptions.ReimageNode, gax.WithClientTracing(tracing))
+		client.CallOptions.StopNode = append(client.CallOptions.StopNode, gax.WithClientTracing(tracing))
+		client.CallOptions.StartNode = append(client.CallOptions.StartNode, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTensorFlowVersions = append(client.CallOptions.ListTensorFlowVersions, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTensorFlowVersion = append(client.CallOptions.GetTensorFlowVersion, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAcceleratorTypes = append(client.CallOptions.ListAcceleratorTypes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAcceleratorType = append(client.CallOptions.GetAcceleratorType, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "tpu",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/tpu/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "tpu.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListNodes = append(client.CallOptions.ListNodes, gax.WithClientLogging(logging))
+		client.CallOptions.GetNode = append(client.CallOptions.GetNode, gax.WithClientLogging(logging))
+		client.CallOptions.CreateNode = append(client.CallOptions.CreateNode, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteNode = append(client.CallOptions.DeleteNode, gax.WithClientLogging(logging))
+		client.CallOptions.ReimageNode = append(client.CallOptions.ReimageNode, gax.WithClientLogging(logging))
+		client.CallOptions.StopNode = append(client.CallOptions.StopNode, gax.WithClientLogging(logging))
+		client.CallOptions.StartNode = append(client.CallOptions.StartNode, gax.WithClientLogging(logging))
+		client.CallOptions.ListTensorFlowVersions = append(client.CallOptions.ListTensorFlowVersions, gax.WithClientLogging(logging))
+		client.CallOptions.GetTensorFlowVersion = append(client.CallOptions.GetTensorFlowVersion, gax.WithClientLogging(logging))
+		client.CallOptions.ListAcceleratorTypes = append(client.CallOptions.ListAcceleratorTypes, gax.WithClientLogging(logging))
+		client.CallOptions.GetAcceleratorType = append(client.CallOptions.GetAcceleratorType, gax.WithClientLogging(logging))
+		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
+		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -454,9 +513,6 @@ func (c *gRPCClient) ListNodes(ctx context.Context, req *tpupb.ListNodesRequest,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/ListNodes")
 	}
@@ -506,9 +562,6 @@ func (c *gRPCClient) GetNode(ctx context.Context, req *tpupb.GetNodeRequest, opt
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/GetNode")
 	}
@@ -530,9 +583,6 @@ func (c *gRPCClient) CreateNode(ctx context.Context, req *tpupb.CreateNodeReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/CreateNode")
 	}
@@ -560,9 +610,6 @@ func (c *gRPCClient) DeleteNode(ctx context.Context, req *tpupb.DeleteNodeReques
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/DeleteNode")
 	}
@@ -671,9 +718,6 @@ func (c *gRPCClient) ListTensorFlowVersions(ctx context.Context, req *tpupb.List
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/ListTensorFlowVersions")
 	}
@@ -723,9 +767,6 @@ func (c *gRPCClient) GetTensorFlowVersion(ctx context.Context, req *tpupb.GetTen
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/GetTensorFlowVersion")
 	}
@@ -747,9 +788,6 @@ func (c *gRPCClient) ListAcceleratorTypes(ctx context.Context, req *tpupb.ListAc
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/ListAcceleratorTypes")
 	}
@@ -799,9 +837,6 @@ func (c *gRPCClient) GetAcceleratorType(ctx context.Context, req *tpupb.GetAccel
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//tpu.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.tpu.v1.Tpu/GetAcceleratorType")
 	}

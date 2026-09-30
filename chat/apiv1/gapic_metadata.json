@@ -30,6 +30,11 @@
                 "CreateMessage"
               ]
             },
+            "CreateMessagePin": {
+              "methods": [
+                "CreateMessagePin"
+              ]
+            },
             "CreateReaction": {
               "methods": [
                 "CreateReaction"
@@ -58,6 +63,11 @@
             "DeleteMessage": {
               "methods": [
                 "DeleteMessage"
+              ]
+            },
+            "DeleteMessagePin": {
+              "methods": [
+                "DeleteMessagePin"
               ]
             },
             "DeleteReaction": {
@@ -145,6 +155,11 @@
                 "ListMemberships"
               ]
             },
+            "ListMessagePins": {
+              "methods": [
+                "ListMessagePins"
+              ]
+            },
             "ListMessages": {
               "methods": [
                 "ListMessages"
@@ -198,6 +213,11 @@
             "PositionSection": {
               "methods": [
                 "PositionSection"
+              ]
+            },
+            "SearchMessages": {
+              "methods": [
+                "SearchMessages"
               ]
             },
             "SearchSpaces": {
@@ -275,6 +295,11 @@
                 "CreateMessage"
               ]
             },
+            "CreateMessagePin": {
+              "methods": [
+                "CreateMessagePin"
+              ]
+            },
             "CreateReaction": {
               "methods": [
                 "CreateReaction"
@@ -303,6 +328,11 @@
             "DeleteMessage": {
               "methods": [
                 "DeleteMessage"
+              ]
+            },
+            "DeleteMessagePin": {
+              "methods": [
+                "DeleteMessagePin"
               ]
             },
             "DeleteReaction": {
@@ -390,6 +420,11 @@
                 "ListMemberships"
               ]
             },
+            "ListMessagePins": {
+              "methods": [
+                "ListMessagePins"
+              ]
+            },
             "ListMessages": {
               "methods": [
                 "ListMessages"
@@ -443,6 +478,11 @@
             "PositionSection": {
               "methods": [
                 "PositionSection"
+              ]
+            },
+            "SearchMessages": {
+              "methods": [
+                "SearchMessages"
               ]
             },
             "SearchSpaces": {

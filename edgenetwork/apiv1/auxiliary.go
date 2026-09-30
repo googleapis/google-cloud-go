@@ -18,12 +18,14 @@ package edgenetwork
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	edgenetworkpb "cloud.google.com/go/edgenetwork/apiv1/edgenetworkpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -624,6 +626,12 @@ func (op *UpdateSubnetOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectAttachmentIterator) All() iter.Seq2[*edgenetworkpb.InterconnectAttachment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InterconnectAttachmentIterator manages a stream of *edgenetworkpb.InterconnectAttachment.
 type InterconnectAttachmentIterator struct {
 	items    []*edgenetworkpb.InterconnectAttachment
@@ -669,6 +677,12 @@ func (it *InterconnectAttachmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InterconnectIterator) All() iter.Seq2[*edgenetworkpb.Interconnect, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // InterconnectIterator manages a stream of *edgenetworkpb.Interconnect.
@@ -718,6 +732,12 @@ func (it *InterconnectIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -763,6 +783,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NetworkIterator) All() iter.Seq2[*edgenetworkpb.Network, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // NetworkIterator manages a stream of *edgenetworkpb.Network.
@@ -812,6 +838,12 @@ func (it *NetworkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -857,6 +889,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RouterIterator) All() iter.Seq2[*edgenetworkpb.Router, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // RouterIterator manages a stream of *edgenetworkpb.Router.
@@ -906,6 +944,12 @@ func (it *RouterIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SubnetIterator) All() iter.Seq2[*edgenetworkpb.Subnet, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SubnetIterator manages a stream of *edgenetworkpb.Subnet.
 type SubnetIterator struct {
 	items    []*edgenetworkpb.Subnet
@@ -951,6 +995,12 @@ func (it *SubnetIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ZoneIterator) All() iter.Seq2[*edgenetworkpb.Zone, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ZoneIterator manages a stream of *edgenetworkpb.Zone.

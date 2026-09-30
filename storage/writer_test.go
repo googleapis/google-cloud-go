@@ -228,3 +228,11 @@ func TestWriterWriteAfterClose(t *testing.T) {
 		t.Fatalf("expected Writer is closed error, got: %v", err)
 	}
 }
+
+func TestWriterAbortUnimplemented(t *testing.T) {
+	w := &Writer{}
+
+	if err := w.Abort(); !errors.Is(err, errMethodNotSupported) {
+		t.Errorf("Abort: got %v, want %v", err, errMethodNotSupported)
+	}
+}

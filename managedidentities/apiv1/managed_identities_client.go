@@ -422,6 +422,51 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.DetachTrust = append(client.CallOptions.DetachTrust, gax.WithClientMetrics(metrics))
 		client.CallOptions.ValidateTrust = append(client.CallOptions.ValidateTrust, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "managedidentities",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedidentities/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedidentities.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMicrosoftAdDomain = append(client.CallOptions.CreateMicrosoftAdDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.ResetAdminPassword = append(client.CallOptions.ResetAdminPassword, gax.WithClientTracing(tracing))
+		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientTracing(tracing))
+		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateDomain = append(client.CallOptions.UpdateDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteDomain = append(client.CallOptions.DeleteDomain, gax.WithClientTracing(tracing))
+		client.CallOptions.AttachTrust = append(client.CallOptions.AttachTrust, gax.WithClientTracing(tracing))
+		client.CallOptions.ReconfigureTrust = append(client.CallOptions.ReconfigureTrust, gax.WithClientTracing(tracing))
+		client.CallOptions.DetachTrust = append(client.CallOptions.DetachTrust, gax.WithClientTracing(tracing))
+		client.CallOptions.ValidateTrust = append(client.CallOptions.ValidateTrust, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "managedidentities",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/managedidentities/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "managedidentities.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMicrosoftAdDomain = append(client.CallOptions.CreateMicrosoftAdDomain, gax.WithClientLogging(logging))
+		client.CallOptions.ResetAdminPassword = append(client.CallOptions.ResetAdminPassword, gax.WithClientLogging(logging))
+		client.CallOptions.ListDomains = append(client.CallOptions.ListDomains, gax.WithClientLogging(logging))
+		client.CallOptions.GetDomain = append(client.CallOptions.GetDomain, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateDomain = append(client.CallOptions.UpdateDomain, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteDomain = append(client.CallOptions.DeleteDomain, gax.WithClientLogging(logging))
+		client.CallOptions.AttachTrust = append(client.CallOptions.AttachTrust, gax.WithClientLogging(logging))
+		client.CallOptions.ReconfigureTrust = append(client.CallOptions.ReconfigureTrust, gax.WithClientLogging(logging))
+		client.CallOptions.DetachTrust = append(client.CallOptions.DetachTrust, gax.WithClientLogging(logging))
+		client.CallOptions.ValidateTrust = append(client.CallOptions.ValidateTrust, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -469,9 +514,6 @@ func (c *gRPCClient) CreateMicrosoftAdDomain(ctx context.Context, req *managedid
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/CreateMicrosoftAdDomain")
 	}
@@ -499,9 +541,6 @@ func (c *gRPCClient) ResetAdminPassword(ctx context.Context, req *managedidentit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ResetAdminPassword")
 	}
@@ -523,9 +562,6 @@ func (c *gRPCClient) ListDomains(ctx context.Context, req *managedidentitiespb.L
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ListDomains")
 	}
@@ -575,9 +611,6 @@ func (c *gRPCClient) GetDomain(ctx context.Context, req *managedidentitiespb.Get
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/GetDomain")
 	}
@@ -626,9 +659,6 @@ func (c *gRPCClient) DeleteDomain(ctx context.Context, req *managedidentitiespb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/DeleteDomain")
 	}
@@ -656,9 +686,6 @@ func (c *gRPCClient) AttachTrust(ctx context.Context, req *managedidentitiespb.A
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/AttachTrust")
 	}
@@ -686,9 +713,6 @@ func (c *gRPCClient) ReconfigureTrust(ctx context.Context, req *managedidentitie
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ReconfigureTrust")
 	}
@@ -716,9 +740,6 @@ func (c *gRPCClient) DetachTrust(ctx context.Context, req *managedidentitiespb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/DetachTrust")
 	}
@@ -746,9 +767,6 @@ func (c *gRPCClient) ValidateTrust(ctx context.Context, req *managedidentitiespb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//managedidentities.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.managedidentities.v1.ManagedIdentitiesService/ValidateTrust")
 	}

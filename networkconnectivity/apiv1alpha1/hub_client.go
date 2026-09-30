@@ -452,6 +452,51 @@ func NewHubClient(ctx context.Context, opts ...option.ClientOption) (*HubClient,
 		client.CallOptions.UpdateSpoke = append(client.CallOptions.UpdateSpoke, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteSpoke = append(client.CallOptions.DeleteSpoke, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListHubs = append(client.CallOptions.ListHubs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetHub = append(client.CallOptions.GetHub, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateHub = append(client.CallOptions.CreateHub, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateHub = append(client.CallOptions.UpdateHub, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteHub = append(client.CallOptions.DeleteHub, gax.WithClientTracing(tracing))
+		client.CallOptions.ListSpokes = append(client.CallOptions.ListSpokes, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSpoke = append(client.CallOptions.GetSpoke, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSpoke = append(client.CallOptions.CreateSpoke, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSpoke = append(client.CallOptions.UpdateSpoke, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSpoke = append(client.CallOptions.DeleteSpoke, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListHubs = append(client.CallOptions.ListHubs, gax.WithClientLogging(logging))
+		client.CallOptions.GetHub = append(client.CallOptions.GetHub, gax.WithClientLogging(logging))
+		client.CallOptions.CreateHub = append(client.CallOptions.CreateHub, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateHub = append(client.CallOptions.UpdateHub, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteHub = append(client.CallOptions.DeleteHub, gax.WithClientLogging(logging))
+		client.CallOptions.ListSpokes = append(client.CallOptions.ListSpokes, gax.WithClientLogging(logging))
+		client.CallOptions.GetSpoke = append(client.CallOptions.GetSpoke, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSpoke = append(client.CallOptions.CreateSpoke, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSpoke = append(client.CallOptions.UpdateSpoke, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSpoke = append(client.CallOptions.DeleteSpoke, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -571,6 +616,51 @@ func NewHubRESTClient(ctx context.Context, opts ...option.ClientOption) (*HubCli
 		callOpts.UpdateSpoke = append(callOpts.UpdateSpoke, gax.WithClientMetrics(metrics))
 		callOpts.DeleteSpoke = append(callOpts.DeleteSpoke, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListHubs = append(callOpts.ListHubs, gax.WithClientTracing(tracing))
+		callOpts.GetHub = append(callOpts.GetHub, gax.WithClientTracing(tracing))
+		callOpts.CreateHub = append(callOpts.CreateHub, gax.WithClientTracing(tracing))
+		callOpts.UpdateHub = append(callOpts.UpdateHub, gax.WithClientTracing(tracing))
+		callOpts.DeleteHub = append(callOpts.DeleteHub, gax.WithClientTracing(tracing))
+		callOpts.ListSpokes = append(callOpts.ListSpokes, gax.WithClientTracing(tracing))
+		callOpts.GetSpoke = append(callOpts.GetSpoke, gax.WithClientTracing(tracing))
+		callOpts.CreateSpoke = append(callOpts.CreateSpoke, gax.WithClientTracing(tracing))
+		callOpts.UpdateSpoke = append(callOpts.UpdateSpoke, gax.WithClientTracing(tracing))
+		callOpts.DeleteSpoke = append(callOpts.DeleteSpoke, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "networkconnectivity",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/networkconnectivity/apiv1alpha1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "networkconnectivity.googleapis.com",
+			}),
+		)
+
+		callOpts.ListHubs = append(callOpts.ListHubs, gax.WithClientLogging(logging))
+		callOpts.GetHub = append(callOpts.GetHub, gax.WithClientLogging(logging))
+		callOpts.CreateHub = append(callOpts.CreateHub, gax.WithClientLogging(logging))
+		callOpts.UpdateHub = append(callOpts.UpdateHub, gax.WithClientLogging(logging))
+		callOpts.DeleteHub = append(callOpts.DeleteHub, gax.WithClientLogging(logging))
+		callOpts.ListSpokes = append(callOpts.ListSpokes, gax.WithClientLogging(logging))
+		callOpts.GetSpoke = append(callOpts.GetSpoke, gax.WithClientLogging(logging))
+		callOpts.CreateSpoke = append(callOpts.CreateSpoke, gax.WithClientLogging(logging))
+		callOpts.UpdateSpoke = append(callOpts.UpdateSpoke, gax.WithClientLogging(logging))
+		callOpts.DeleteSpoke = append(callOpts.DeleteSpoke, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -627,9 +717,6 @@ func (c *hubGRPCClient) ListHubs(ctx context.Context, req *networkconnectivitypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/ListHubs")
 	}
@@ -679,9 +766,6 @@ func (c *hubGRPCClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetHub")
 	}
@@ -703,9 +787,6 @@ func (c *hubGRPCClient) CreateHub(ctx context.Context, req *networkconnectivityp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateHub")
 	}
@@ -760,9 +841,6 @@ func (c *hubGRPCClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteHub")
 	}
@@ -790,9 +868,6 @@ func (c *hubGRPCClient) ListSpokes(ctx context.Context, req *networkconnectivity
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/ListSpokes")
 	}
@@ -842,9 +917,6 @@ func (c *hubGRPCClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetSpoke")
 	}
@@ -866,9 +938,6 @@ func (c *hubGRPCClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateSpoke")
 	}
@@ -923,9 +992,6 @@ func (c *hubGRPCClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteSpoke")
 	}
@@ -1051,9 +1117,6 @@ func (c *hubRESTClient) GetHub(ctx context.Context, req *networkconnectivitypb.G
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetHub")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/global/hubs/*}")
@@ -1121,9 +1184,6 @@ func (c *hubRESTClient) CreateHub(ctx context.Context, req *networkconnectivityp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateHub")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/global}/hubs")
@@ -1266,9 +1326,6 @@ func (c *hubRESTClient) DeleteHub(ctx context.Context, req *networkconnectivityp
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteHub")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/global/hubs/*}")
@@ -1414,9 +1471,6 @@ func (c *hubRESTClient) GetSpoke(ctx context.Context, req *networkconnectivitypb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/GetSpoke")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/spokes/*}")
@@ -1484,9 +1538,6 @@ func (c *hubRESTClient) CreateSpoke(ctx context.Context, req *networkconnectivit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/CreateSpoke")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{parent=projects/*/locations/*}/spokes")
@@ -1629,9 +1680,6 @@ func (c *hubRESTClient) DeleteSpoke(ctx context.Context, req *networkconnectivit
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//networkconnectivity.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.networkconnectivity.v1alpha1.HubService/DeleteSpoke")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1alpha1/{name=projects/*/locations/*/spokes/*}")

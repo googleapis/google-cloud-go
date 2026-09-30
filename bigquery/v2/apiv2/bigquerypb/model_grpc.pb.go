@@ -46,14 +46,30 @@ const (
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
 type ModelServiceClient interface {
 	// Gets the specified model resource by model ID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.getMetadata` permission on the model.
 	GetModel(ctx context.Context, in *GetModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Lists all models in the specified dataset. Requires the READER dataset
 	// role. After retrieving the list of models, you can get information about a
 	// particular model by calling the models.get method.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.list` permission on the dataset.
 	ListModels(ctx context.Context, in *ListModelsRequest, opts ...grpc.CallOption) (*ListModelsResponse, error)
 	// Patch specific fields in the specified model.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.updateMetadata` permission on the model.
 	PatchModel(ctx context.Context, in *PatchModelRequest, opts ...grpc.CallOption) (*Model, error)
 	// Deletes the model specified by modelId from the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.delete` permission on the model.
 	DeleteModel(ctx context.Context, in *DeleteModelRequest, opts ...grpc.CallOption) (*emptypb.Empty, error)
 }
 
@@ -106,14 +122,30 @@ func (c *modelServiceClient) DeleteModel(ctx context.Context, in *DeleteModelReq
 // for forward compatibility
 type ModelServiceServer interface {
 	// Gets the specified model resource by model ID.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.getMetadata` permission on the model.
 	GetModel(context.Context, *GetModelRequest) (*Model, error)
 	// Lists all models in the specified dataset. Requires the READER dataset
 	// role. After retrieving the list of models, you can get information about a
 	// particular model by calling the models.get method.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.list` permission on the dataset.
 	ListModels(context.Context, *ListModelsRequest) (*ListModelsResponse, error)
 	// Patch specific fields in the specified model.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.updateMetadata` permission on the model.
 	PatchModel(context.Context, *PatchModelRequest) (*Model, error)
 	// Deletes the model specified by modelId from the dataset.
+	//
+	// # IAM Permissions
+	//
+	// Requires the `bigquery.models.delete` permission on the model.
 	DeleteModel(context.Context, *DeleteModelRequest) (*emptypb.Empty, error)
 }
 

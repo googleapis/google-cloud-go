@@ -7940,7 +7940,12 @@ type Dependency_GitSourceDependency struct {
 	// for all history).
 	Depth int64 `protobuf:"varint,4,opt,name=depth,proto3" json:"depth,omitempty"`
 	// Required. Where should the files be placed on the worker.
-	DestPath      string `protobuf:"bytes,5,opt,name=dest_path,json=destPath,proto3" json:"dest_path,omitempty"`
+	DestPath string `protobuf:"bytes,5,opt,name=dest_path,json=destPath,proto3" json:"dest_path,omitempty"`
+	// Optional. True if remote tags should be fetched too (default false).
+	// Note: when depth is 1 (default), git fetch only retrieves tags pointing
+	// to commits within the shallow boundary. Set depth to -1 to fetch all
+	// historical tags.
+	FetchTags     bool `protobuf:"varint,6,opt,name=fetch_tags,json=fetchTags,proto3" json:"fetch_tags,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -8008,6 +8013,13 @@ func (x *Dependency_GitSourceDependency) GetDestPath() string {
 		return x.DestPath
 	}
 	return ""
+}
+
+func (x *Dependency_GitSourceDependency) GetFetchTags() bool {
+	if x != nil {
+		return x.FetchTags
+	}
+	return false
 }
 
 // A repository for a git source.
@@ -9070,12 +9082,12 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\aTIMEOUT\x10\x06\x12\r\n" +
 	"\tCANCELLED\x10\a\x12\v\n" +
 	"\aEXPIRED\x10\t:\x8f\x01\xeaA\x8b\x01\n" +
-	"\x1fcloudbuild.googleapis.com/Build\x12!projects/{project}/builds/{build}\x126projects/{project}/locations/{location}/builds/{build}*\x06builds2\x05build\"\xb8\x04\n" +
+	"\x1fcloudbuild.googleapis.com/Build\x12!projects/{project}/builds/{build}\x126projects/{project}/locations/{location}/builds/{build}*\x06builds2\x05build\"\xdc\x04\n" +
 	"\n" +
 	"Dependency\x12\x16\n" +
 	"\x05empty\x18\x01 \x01(\bH\x00R\x05empty\x12^\n" +
 	"\n" +
-	"git_source\x18\x02 \x01(\v2=.google.devtools.cloudbuild.v1.Dependency.GitSourceDependencyH\x00R\tgitSource\x1a\x8b\x02\n" +
+	"git_source\x18\x02 \x01(\v2=.google.devtools.cloudbuild.v1.Dependency.GitSourceDependencyH\x00R\tgitSource\x1a\xaf\x02\n" +
 	"\x13GitSourceDependency\x12b\n" +
 	"\n" +
 	"repository\x18\x01 \x01(\v2=.google.devtools.cloudbuild.v1.Dependency.GitSourceRepositoryB\x03\xe0A\x02R\n" +
@@ -9083,7 +9095,9 @@ const file_google_devtools_cloudbuild_v1_cloudbuild_proto_rawDesc = "" +
 	"\brevision\x18\x02 \x01(\tB\x03\xe0A\x02R\brevision\x122\n" +
 	"\x12recurse_submodules\x18\x03 \x01(\bB\x03\xe0A\x01R\x11recurseSubmodules\x12\x19\n" +
 	"\x05depth\x18\x04 \x01(\x03B\x03\xe0A\x01R\x05depth\x12 \n" +
-	"\tdest_path\x18\x05 \x01(\tB\x03\xe0A\x02R\bdestPath\x1a\x9c\x01\n" +
+	"\tdest_path\x18\x05 \x01(\tB\x03\xe0A\x02R\bdestPath\x12\"\n" +
+	"\n" +
+	"fetch_tags\x18\x06 \x01(\bB\x03\xe0A\x01R\tfetchTags\x1a\x9c\x01\n" +
 	"\x13GitSourceRepository\x12\x12\n" +
 	"\x03url\x18\x01 \x01(\tH\x00R\x03url\x12e\n" +
 	"\x11developer_connect\x18\x02 \x01(\tB6\xfaA3\n" +

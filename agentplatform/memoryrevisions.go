@@ -26,7 +26,7 @@ import (
 	"google.golang.org/genai"
 )
 
-func getAgentEngineMemoryRevisionRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func getMemoryRevisionRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -37,7 +37,7 @@ func getAgentEngineMemoryRevisionRequestParametersToVertex(fromObject map[string
 	return toObject, nil
 }
 
-func listAgentEngineMemoryRevisionsConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func listMemoryRevisionsConfigToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromPageSize := genai.InternalGetValueByPath(fromObject, []string{"pageSize"})
@@ -58,7 +58,7 @@ func listAgentEngineMemoryRevisionsConfigToVertex(fromObject map[string]any, par
 	return toObject, nil
 }
 
-func listAgentEngineMemoryRevisionsRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
+func listMemoryRevisionsRequestParametersToVertex(fromObject map[string]any, parentObject map[string]any, rootObject map[string]any) (toObject map[string]any, err error) {
 	toObject = make(map[string]any)
 
 	fromName := genai.InternalGetValueByPath(fromObject, []string{"name"})
@@ -68,7 +68,7 @@ func listAgentEngineMemoryRevisionsRequestParametersToVertex(fromObject map[stri
 
 	fromConfig := genai.InternalGetValueByPath(fromObject, []string{"config"})
 	if fromConfig != nil {
-		_, err = listAgentEngineMemoryRevisionsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
+		_, err = listMemoryRevisionsConfigToVertex(fromConfig.(map[string]any), toObject, rootObject)
 		if err != nil {
 			return nil, err
 		}
@@ -81,7 +81,7 @@ type MemoryRevisions struct {
 	apiClient *genai.InternalAPIClient
 }
 
-func (m MemoryRevisions) Get(ctx context.Context, name string, config *types.GetAgentEngineMemoryRevisionConfig) (*types.MemoryRevision, error) {
+func (m MemoryRevisions) Get(ctx context.Context, name string, config *types.GetMemoryRevisionConfig) (*types.MemoryRevision, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -100,7 +100,7 @@ func (m MemoryRevisions) Get(ctx context.Context, name string, config *types.Get
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = getAgentEngineMemoryRevisionRequestParametersToVertex
+		toConverter = getMemoryRevisionRequestParametersToVertex
 
 	} else {
 
@@ -157,7 +157,7 @@ func (m MemoryRevisions) Get(ctx context.Context, name string, config *types.Get
 	return response, nil
 }
 
-func (m MemoryRevisions) list(ctx context.Context, name string, config *types.ListAgentEngineMemoryRevisionsConfig) (*types.ListAgentEngineMemoryRevisionsResponse, error) {
+func (m MemoryRevisions) list(ctx context.Context, name string, config *types.ListMemoryRevisionsConfig) (*types.ListMemoryRevisionsResponse, error) {
 	parameterMap := make(map[string]any)
 
 	kwargs := map[string]any{"name": name, "config": config}
@@ -172,11 +172,11 @@ func (m MemoryRevisions) list(ctx context.Context, name string, config *types.Li
 	if httpOptions.Headers == nil {
 		httpOptions.Headers = http.Header{}
 	}
-	var response = new(types.ListAgentEngineMemoryRevisionsResponse)
+	var response = new(types.ListMemoryRevisionsResponse)
 	var responseMap map[string]any
 	var toConverter func(map[string]any, map[string]any, map[string]any) (map[string]any, error)
 	if m.apiClient.ClientConfig().Backend == genai.BackendVertexAI {
-		toConverter = listAgentEngineMemoryRevisionsRequestParametersToVertex
+		toConverter = listMemoryRevisionsRequestParametersToVertex
 
 	} else {
 
@@ -234,6 +234,6 @@ func (m MemoryRevisions) list(ctx context.Context, name string, config *types.Li
 }
 
 // List lists the memory revisions for the given name and config, and returns the response.
-func (m MemoryRevisions) List(ctx context.Context, name string, config *types.ListAgentEngineMemoryRevisionsConfig) (*types.ListAgentEngineMemoryRevisionsResponse, error) {
+func (m MemoryRevisions) List(ctx context.Context, name string, config *types.ListMemoryRevisionsConfig) (*types.ListMemoryRevisionsResponse, error) {
 	return m.list(ctx, name, config)
 }

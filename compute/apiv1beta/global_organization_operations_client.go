@@ -78,7 +78,7 @@ func defaultGlobalOrganizationOperationsRESTCallOptions() *GlobalOrganizationOpe
 	}
 }
 
-// internalGlobalOrganizationOperationsClient is an interface that defines the methods available from Google Compute Engine API.
+// internalGlobalOrganizationOperationsClient is an interface that defines the methods available from Compute Engine API.
 type internalGlobalOrganizationOperationsClient interface {
 	Close() error
 	setGoogleClientInfo(...string)
@@ -88,7 +88,7 @@ type internalGlobalOrganizationOperationsClient interface {
 	List(context.Context, *computepb.ListGlobalOrganizationOperationsRequest, ...gax.CallOption) *OperationIterator
 }
 
-// GlobalOrganizationOperationsClient is a client for interacting with Google Compute Engine API.
+// GlobalOrganizationOperationsClient is a client for interacting with Compute Engine API.
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The GlobalOrganizationOperations API.
@@ -202,6 +202,37 @@ func NewGlobalOrganizationOperationsRESTClient(ctx context.Context, opts ...opti
 		callOpts.Get = append(callOpts.Get, gax.WithClientMetrics(metrics))
 		callOpts.List = append(callOpts.List, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientTracing(tracing))
+		callOpts.Get = append(callOpts.Get, gax.WithClientTracing(tracing))
+		callOpts.List = append(callOpts.List, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "compute",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/compute/apiv1beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "compute.googleapis.com",
+			}),
+		)
+
+		callOpts.Delete = append(callOpts.Delete, gax.WithClientLogging(logging))
+		callOpts.Get = append(callOpts.Get, gax.WithClientLogging(logging))
+		callOpts.List = append(callOpts.List, gax.WithClientLogging(logging))
+	}
 
 	return &GlobalOrganizationOperationsClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -265,9 +296,6 @@ func (c *globalOrganizationOperationsRESTClient) Delete(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/operations/%v", req.GetOperation()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.GlobalOrganizationOperations/Delete")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/operations/{operation}")
@@ -325,9 +353,6 @@ func (c *globalOrganizationOperationsRESTClient) Get(ctx context.Context, req *c
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//compute.googleapis.com//compute/beta/locations/global/operations/%v", req.GetOperation()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.compute.v1beta.GlobalOrganizationOperations/Get")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/compute/beta/locations/global/operations/{operation}")

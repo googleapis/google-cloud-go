@@ -2,6 +2,35 @@
 
 
 
+## [1.43.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.42.0...maps/v1.43.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.42.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.41.0...maps/v1.42.0) (2026-09-17)
+
+
+### Features
+
+* Update API sources and regenerate ([#20526](https://github.com/googleapis/google-cloud-go/issues/20526)) ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+* Update API sources and regenerate. ([e6f37a3](https://github.com/googleapis/google-cloud-go/commit/e6f37a362b6e37b0bc74e77b8d7f151dc7443fb8))
+
+## [1.41.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.40.0...maps/v1.41.0) (2026-08-26)
+
+
+### Features
+
+* Update API sources and regenerate ([#20427](https://github.com/googleapis/google-cloud-go/issues/20427)) ([eb07af9](https://github.com/googleapis/google-cloud-go/commit/eb07af97288cb3446ef50ff1806c7bc12d5c6350))
+
+## [1.40.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.39.0...maps/v1.40.0) (2026-08-20)
+
+
+### Features
+
+* **google/maps/mapmanagement/v2:** Onboard a new library ([#20402](https://github.com/googleapis/google-cloud-go/issues/20402)) ([f9efbe7](https://github.com/googleapis/google-cloud-go/commit/f9efbe71614d91124cded6c037134aa19ba6547f))
+
 ## [1.39.0](https://github.com/googleapis/google-cloud-go/compare/maps/v1.38.0...maps/v1.39.0) (2026-07-30)
 
 

@@ -336,6 +336,41 @@ func NewCloudShellClient(ctx context.Context, opts ...option.ClientOption) (*Clo
 		client.CallOptions.AddPublicKey = append(client.CallOptions.AddPublicKey, gax.WithClientMetrics(metrics))
 		client.CallOptions.RemovePublicKey = append(client.CallOptions.RemovePublicKey, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudshell",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shell/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudshell.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetEnvironment = append(client.CallOptions.GetEnvironment, gax.WithClientTracing(tracing))
+		client.CallOptions.StartEnvironment = append(client.CallOptions.StartEnvironment, gax.WithClientTracing(tracing))
+		client.CallOptions.AuthorizeEnvironment = append(client.CallOptions.AuthorizeEnvironment, gax.WithClientTracing(tracing))
+		client.CallOptions.AddPublicKey = append(client.CallOptions.AddPublicKey, gax.WithClientTracing(tracing))
+		client.CallOptions.RemovePublicKey = append(client.CallOptions.RemovePublicKey, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudshell",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shell/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudshell.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetEnvironment = append(client.CallOptions.GetEnvironment, gax.WithClientLogging(logging))
+		client.CallOptions.StartEnvironment = append(client.CallOptions.StartEnvironment, gax.WithClientLogging(logging))
+		client.CallOptions.AuthorizeEnvironment = append(client.CallOptions.AuthorizeEnvironment, gax.WithClientLogging(logging))
+		client.CallOptions.AddPublicKey = append(client.CallOptions.AddPublicKey, gax.WithClientLogging(logging))
+		client.CallOptions.RemovePublicKey = append(client.CallOptions.RemovePublicKey, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -453,6 +488,41 @@ func NewCloudShellRESTClient(ctx context.Context, opts ...option.ClientOption) (
 		callOpts.AddPublicKey = append(callOpts.AddPublicKey, gax.WithClientMetrics(metrics))
 		callOpts.RemovePublicKey = append(callOpts.RemovePublicKey, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudshell",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shell/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudshell.googleapis.com",
+			}),
+		)
+
+		callOpts.GetEnvironment = append(callOpts.GetEnvironment, gax.WithClientTracing(tracing))
+		callOpts.StartEnvironment = append(callOpts.StartEnvironment, gax.WithClientTracing(tracing))
+		callOpts.AuthorizeEnvironment = append(callOpts.AuthorizeEnvironment, gax.WithClientTracing(tracing))
+		callOpts.AddPublicKey = append(callOpts.AddPublicKey, gax.WithClientTracing(tracing))
+		callOpts.RemovePublicKey = append(callOpts.RemovePublicKey, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudshell",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/shell/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudshell.googleapis.com",
+			}),
+		)
+
+		callOpts.GetEnvironment = append(callOpts.GetEnvironment, gax.WithClientLogging(logging))
+		callOpts.StartEnvironment = append(callOpts.StartEnvironment, gax.WithClientLogging(logging))
+		callOpts.AuthorizeEnvironment = append(callOpts.AuthorizeEnvironment, gax.WithClientLogging(logging))
+		callOpts.AddPublicKey = append(callOpts.AddPublicKey, gax.WithClientLogging(logging))
+		callOpts.RemovePublicKey = append(callOpts.RemovePublicKey, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -509,9 +579,6 @@ func (c *cloudShellGRPCClient) GetEnvironment(ctx context.Context, req *shellpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudshell.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/GetEnvironment")
 	}
@@ -655,9 +722,6 @@ func (c *cloudShellRESTClient) GetEnvironment(ctx context.Context, req *shellpb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//cloudshell.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.shell.v1.CloudShellService/GetEnvironment")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/environments/*}")

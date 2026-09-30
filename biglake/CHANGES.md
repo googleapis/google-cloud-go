@@ -1,5 +1,19 @@
 ## [1.0.0](https://github.com/googleapis/google-cloud-go/releases/tag/biglake%2Fv1.0.0) (2026-05-08)
 
+## [1.5.0](https://github.com/googleapis/google-cloud-go/compare/biglake/v1.4.0...biglake/v1.5.0) (2026-09-23)
+
+
+### Features
+
+* **all:** Update supported go versions ([#20520](https://github.com/googleapis/google-cloud-go/issues/20520)) ([90413d3](https://github.com/googleapis/google-cloud-go/commit/90413d3e9d381ef4b92e3c496d98b023c5b2d8cc))
+
+## [1.4.0](https://github.com/googleapis/google-cloud-go/compare/biglake/v1.3.0...biglake/v1.4.0) (2026-08-20)
+
+
+### Features
+
+* **google/cloud/biglake/hive/v1:** Onboard a new library ([#20401](https://github.com/googleapis/google-cloud-go/issues/20401)) ([8cd7e2a](https://github.com/googleapis/google-cloud-go/commit/8cd7e2a771daeb62c729fcc33865b9c718cad637))
+
 ## [1.3.0](https://github.com/googleapis/google-cloud-go/compare/biglake/v1.2.0...biglake/v1.3.0) (2026-07-23)
 
 

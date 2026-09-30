@@ -207,9 +207,35 @@ type AddressInfo struct {
 	// address.
 	RegionCode string `protobuf:"bytes,3,opt,name=region_code,json=regionCode,proto3" json:"region_code,omitempty"`
 	// Required. The postal code of the user's address.
-	PostalCode    string `protobuf:"bytes,4,opt,name=postal_code,json=postalCode,proto3" json:"postal_code,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	PostalCode string `protobuf:"bytes,4,opt,name=postal_code,json=postalCode,proto3" json:"postal_code,omitempty"`
+	// Optional. The street and number of the user's address. Used only for
+	// Google Analytics. This field is hashed and possibly encrypted.
+	//
+	// Normalize the value before hashing:
+	//
+	// - Remove symbol characters
+	// - Convert to lowercase
+	// - Remove leading and trailing whitespace
+	AddressLine string `protobuf:"bytes,5,opt,name=address_line,json=addressLine,proto3" json:"address_line,omitempty"`
+	// Optional. The city of the user's address. Used only for Google Analytics.
+	//
+	// The value should be normalized as such:
+	//
+	// - Remove symbol characters
+	// - Convert to lowercase
+	// - Remove leading and trailing whitespace
+	City string `protobuf:"bytes,6,opt,name=city,proto3" json:"city,omitempty"`
+	// Optional. The administrative area (state/province) of the user's address.
+	// Used only for Google Analytics.
+	//
+	// The value should be normalized as such:
+	//
+	// - Remove symbol characters
+	// - Convert to lowercase
+	// - Remove leading and trailing whitespace
+	AdministrativeArea string `protobuf:"bytes,7,opt,name=administrative_area,json=administrativeArea,proto3" json:"administrative_area,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *AddressInfo) Reset() {
@@ -270,6 +296,27 @@ func (x *AddressInfo) GetPostalCode() string {
 	return ""
 }
 
+func (x *AddressInfo) GetAddressLine() string {
+	if x != nil {
+		return x.AddressLine
+	}
+	return ""
+}
+
+func (x *AddressInfo) GetCity() string {
+	if x != nil {
+		return x.City
+	}
+	return ""
+}
+
+func (x *AddressInfo) GetAdministrativeArea() string {
+	if x != nil {
+		return x.AdministrativeArea
+	}
+	return ""
+}
+
 var File_google_ads_datamanager_v1_user_data_proto protoreflect.FileDescriptor
 
 const file_google_ads_datamanager_v1_user_data_proto_rawDesc = "" +
@@ -282,7 +329,7 @@ const file_google_ads_datamanager_v1_user_data_proto_rawDesc = "" +
 	"\fphone_number\x18\x02 \x01(\tH\x00R\vphoneNumber\x12B\n" +
 	"\aaddress\x18\x03 \x01(\v2&.google.ads.datamanager.v1.AddressInfoH\x00R\aaddressB\f\n" +
 	"\n" +
-	"identifier\"\xa3\x01\n" +
+	"identifier\"\x9a\x02\n" +
 	"\vAddressInfo\x12\"\n" +
 	"\n" +
 	"given_name\x18\x01 \x01(\tB\x03\xe0A\x02R\tgivenName\x12$\n" +
@@ -291,7 +338,10 @@ const file_google_ads_datamanager_v1_user_data_proto_rawDesc = "" +
 	"\vregion_code\x18\x03 \x01(\tB\x03\xe0A\x02R\n" +
 	"regionCode\x12$\n" +
 	"\vpostal_code\x18\x04 \x01(\tB\x03\xe0A\x02R\n" +
-	"postalCodeB\xca\x01\n" +
+	"postalCode\x12&\n" +
+	"\faddress_line\x18\x05 \x01(\tB\x03\xe0A\x01R\vaddressLine\x12\x17\n" +
+	"\x04city\x18\x06 \x01(\tB\x03\xe0A\x01R\x04city\x124\n" +
+	"\x13administrative_area\x18\a \x01(\tB\x03\xe0A\x01R\x12administrativeAreaB\xca\x01\n" +
 	"\x1dcom.google.ads.datamanager.v1B\rUserDataProtoP\x01ZAcloud.google.com/go/datamanager/apiv1/datamanagerpb;datamanagerpb\xaa\x02\x19Google.Ads.DataManager.V1\xca\x02\x19Google\\Ads\\DataManager\\V1\xea\x02\x1cGoogle::Ads::DataManager::V1b\x06proto3"
 
 var (

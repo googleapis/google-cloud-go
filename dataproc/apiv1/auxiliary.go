@@ -18,12 +18,14 @@ package dataproc
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	dataprocpb "cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -954,6 +956,12 @@ func (op *UpdateClusterOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AutoscalingPolicyIterator) All() iter.Seq2[*dataprocpb.AutoscalingPolicy, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AutoscalingPolicyIterator manages a stream of *dataprocpb.AutoscalingPolicy.
 type AutoscalingPolicyIterator struct {
 	items    []*dataprocpb.AutoscalingPolicy
@@ -999,6 +1007,12 @@ func (it *AutoscalingPolicyIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BatchIterator) All() iter.Seq2[*dataprocpb.Batch, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BatchIterator manages a stream of *dataprocpb.Batch.
@@ -1048,6 +1062,12 @@ func (it *BatchIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ClusterIterator) All() iter.Seq2[*dataprocpb.Cluster, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ClusterIterator manages a stream of *dataprocpb.Cluster.
 type ClusterIterator struct {
 	items    []*dataprocpb.Cluster
@@ -1093,6 +1113,12 @@ func (it *ClusterIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *JobIterator) All() iter.Seq2[*dataprocpb.Job, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // JobIterator manages a stream of *dataprocpb.Job.
@@ -1142,6 +1168,12 @@ func (it *JobIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1187,6 +1219,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionIterator) All() iter.Seq2[*dataprocpb.Session, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SessionIterator manages a stream of *dataprocpb.Session.
@@ -1236,6 +1274,12 @@ func (it *SessionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionTemplateIterator) All() iter.Seq2[*dataprocpb.SessionTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SessionTemplateIterator manages a stream of *dataprocpb.SessionTemplate.
 type SessionTemplateIterator struct {
 	items    []*dataprocpb.SessionTemplate
@@ -1281,6 +1325,12 @@ func (it *SessionTemplateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *WorkflowTemplateIterator) All() iter.Seq2[*dataprocpb.WorkflowTemplate, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // WorkflowTemplateIterator manages a stream of *dataprocpb.WorkflowTemplate.

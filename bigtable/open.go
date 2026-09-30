@@ -120,13 +120,13 @@ func (c *Client) OpenMaterializedView(materializedView string) TableAPI {
 // ("projects/P/instances/I/tables/T") — same identity Cloud Bigtable
 // uses over the wire, so table + AV + MV keys never collide even
 // though they share one cache. Handles evict after
-// sessionTableCacheTTL of idle (default 1 h) or when the caller
-// Close()s them explicitly. See session_table_cache.go.
+// session.DefaultTableCacheTTL of idle (default 1 h) or when the
+// caller Close()s them explicitly. See internal/session/table_cache.go.
 func (c *Client) getOrCreateSessionTable(table string) session.TableAPI {
 	if c.sessionImpl == nil {
 		return nil
 	}
-	return c.sessionTables.getOrOpen(c.fullTableName(table), func() session.TableAPI {
+	return c.sessionTables.GetOrOpen(c.fullTableName(table), func() session.TableAPI {
 		return c.sessionImpl.OpenTable(table)
 	})
 }
@@ -141,7 +141,7 @@ func (c *Client) getOrCreateSessionAuthorizedView(table, view string) session.Ta
 	if c.sessionImpl == nil {
 		return nil
 	}
-	return c.sessionTables.getOrOpen(c.fullAuthorizedViewName(table, view), func() session.TableAPI {
+	return c.sessionTables.GetOrOpen(c.fullAuthorizedViewName(table, view), func() session.TableAPI {
 		return c.sessionImpl.OpenAuthorizedView(table, view)
 	})
 }
@@ -153,7 +153,7 @@ func (c *Client) getOrCreateSessionMaterializedView(view string) session.TableAP
 	if c.sessionImpl == nil {
 		return nil
 	}
-	return c.sessionTables.getOrOpen(c.fullMaterializedViewName(view), func() session.TableAPI {
+	return c.sessionTables.GetOrOpen(c.fullMaterializedViewName(view), func() session.TableAPI {
 		return c.sessionImpl.OpenMaterializedView(view)
 	})
 }

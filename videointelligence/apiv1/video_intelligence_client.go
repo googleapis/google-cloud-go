@@ -237,6 +237,33 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 
 		client.CallOptions.AnnotateVideo = append(client.CallOptions.AnnotateVideo, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "videointelligence",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/videointelligence/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "videointelligence.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AnnotateVideo = append(client.CallOptions.AnnotateVideo, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "videointelligence",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/videointelligence/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "videointelligence.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.AnnotateVideo = append(client.CallOptions.AnnotateVideo, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -343,6 +370,33 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		)
 
 		callOpts.AnnotateVideo = append(callOpts.AnnotateVideo, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "videointelligence",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/videointelligence/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "videointelligence.googleapis.com",
+			}),
+		)
+
+		callOpts.AnnotateVideo = append(callOpts.AnnotateVideo, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "videointelligence",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/videointelligence/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "videointelligence.googleapis.com",
+			}),
+		)
+
+		callOpts.AnnotateVideo = append(callOpts.AnnotateVideo, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

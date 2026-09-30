@@ -253,7 +253,7 @@ func (c *PolicyBindingsClient) Connection() *grpc.ClientConn {
 
 // CreatePolicyBinding creates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is created, the policy is applied to the target.
+// After the binding is created, the policy is applied to the target.
 func (c *PolicyBindingsClient) CreatePolicyBinding(ctx context.Context, req *iampb.CreatePolicyBindingRequest, opts ...gax.CallOption) (*CreatePolicyBindingOperation, error) {
 	return c.internalClient.CreatePolicyBinding(ctx, req, opts...)
 }
@@ -271,9 +271,7 @@ func (c *PolicyBindingsClient) GetPolicyBinding(ctx context.Context, req *iampb.
 
 // UpdatePolicyBinding updates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on the policy and target in the
-// binding to update, and the IAM permission to remove the existing policy
-// from the binding. Target is immutable and cannot be updated. Once the
-// binding is updated, the new policy is applied to the target.
+// binding to update. Target and policy are immutable and cannot be updated.
 func (c *PolicyBindingsClient) UpdatePolicyBinding(ctx context.Context, req *iampb.UpdatePolicyBindingRequest, opts ...gax.CallOption) (*UpdatePolicyBindingOperation, error) {
 	return c.internalClient.UpdatePolicyBinding(ctx, req, opts...)
 }
@@ -286,7 +284,7 @@ func (c *PolicyBindingsClient) UpdatePolicyBindingOperation(name string) *Update
 
 // DeletePolicyBinding deletes a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is deleted, the policy no longer applies to the target.
+// After the binding is deleted, the policy no longer applies to the target.
 func (c *PolicyBindingsClient) DeletePolicyBinding(ctx context.Context, req *iampb.DeletePolicyBindingRequest, opts ...gax.CallOption) (*DeletePolicyBindingOperation, error) {
 	return c.internalClient.DeletePolicyBinding(ctx, req, opts...)
 }
@@ -397,6 +395,45 @@ func NewPolicyBindingsClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.ListPolicyBindings = append(client.CallOptions.ListPolicyBindings, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchTargetPolicyBindings = append(client.CallOptions.SearchTargetPolicyBindings, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePolicyBinding = append(client.CallOptions.CreatePolicyBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.GetPolicyBinding = append(client.CallOptions.GetPolicyBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdatePolicyBinding = append(client.CallOptions.UpdatePolicyBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePolicyBinding = append(client.CallOptions.DeletePolicyBinding, gax.WithClientTracing(tracing))
+		client.CallOptions.ListPolicyBindings = append(client.CallOptions.ListPolicyBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchTargetPolicyBindings = append(client.CallOptions.SearchTargetPolicyBindings, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreatePolicyBinding = append(client.CallOptions.CreatePolicyBinding, gax.WithClientLogging(logging))
+		client.CallOptions.GetPolicyBinding = append(client.CallOptions.GetPolicyBinding, gax.WithClientLogging(logging))
+		client.CallOptions.UpdatePolicyBinding = append(client.CallOptions.UpdatePolicyBinding, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePolicyBinding = append(client.CallOptions.DeletePolicyBinding, gax.WithClientLogging(logging))
+		client.CallOptions.ListPolicyBindings = append(client.CallOptions.ListPolicyBindings, gax.WithClientLogging(logging))
+		client.CallOptions.SearchTargetPolicyBindings = append(client.CallOptions.SearchTargetPolicyBindings, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
 	}
 
 	client.internalClient = c
@@ -512,6 +549,45 @@ func NewPolicyBindingsRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.SearchTargetPolicyBindings = append(callOpts.SearchTargetPolicyBindings, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePolicyBinding = append(callOpts.CreatePolicyBinding, gax.WithClientTracing(tracing))
+		callOpts.GetPolicyBinding = append(callOpts.GetPolicyBinding, gax.WithClientTracing(tracing))
+		callOpts.UpdatePolicyBinding = append(callOpts.UpdatePolicyBinding, gax.WithClientTracing(tracing))
+		callOpts.DeletePolicyBinding = append(callOpts.DeletePolicyBinding, gax.WithClientTracing(tracing))
+		callOpts.ListPolicyBindings = append(callOpts.ListPolicyBindings, gax.WithClientTracing(tracing))
+		callOpts.SearchTargetPolicyBindings = append(callOpts.SearchTargetPolicyBindings, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "iam",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/iam/apiv3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "iam.googleapis.com",
+			}),
+		)
+
+		callOpts.CreatePolicyBinding = append(callOpts.CreatePolicyBinding, gax.WithClientLogging(logging))
+		callOpts.GetPolicyBinding = append(callOpts.GetPolicyBinding, gax.WithClientLogging(logging))
+		callOpts.UpdatePolicyBinding = append(callOpts.UpdatePolicyBinding, gax.WithClientLogging(logging))
+		callOpts.DeletePolicyBinding = append(callOpts.DeletePolicyBinding, gax.WithClientLogging(logging))
+		callOpts.ListPolicyBindings = append(callOpts.ListPolicyBindings, gax.WithClientLogging(logging))
+		callOpts.SearchTargetPolicyBindings = append(callOpts.SearchTargetPolicyBindings, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -568,9 +644,6 @@ func (c *policyBindingsGRPCClient) CreatePolicyBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/CreatePolicyBinding")
 	}
@@ -598,9 +671,6 @@ func (c *policyBindingsGRPCClient) GetPolicyBinding(ctx context.Context, req *ia
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/GetPolicyBinding")
 	}
@@ -649,9 +719,6 @@ func (c *policyBindingsGRPCClient) DeletePolicyBinding(ctx context.Context, req 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/DeletePolicyBinding")
 	}
@@ -679,9 +746,6 @@ func (c *policyBindingsGRPCClient) ListPolicyBindings(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/ListPolicyBindings")
 	}
@@ -731,9 +795,6 @@ func (c *policyBindingsGRPCClient) SearchTargetPolicyBindings(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/SearchTargetPolicyBindings")
 	}
@@ -801,7 +862,7 @@ func (c *policyBindingsGRPCClient) GetOperation(ctx context.Context, req *longru
 
 // CreatePolicyBinding creates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is created, the policy is applied to the target.
+// After the binding is created, the policy is applied to the target.
 func (c *policyBindingsRESTClient) CreatePolicyBinding(ctx context.Context, req *iampb.CreatePolicyBindingRequest, opts ...gax.CallOption) (*CreatePolicyBindingOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPolicyBinding()
@@ -831,9 +892,6 @@ func (c *policyBindingsRESTClient) CreatePolicyBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/CreatePolicyBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{parent=projects/*/locations/*}/policyBindings")
@@ -895,9 +953,6 @@ func (c *policyBindingsRESTClient) GetPolicyBinding(ctx context.Context, req *ia
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/GetPolicyBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/policyBindings/*}")
@@ -935,9 +990,7 @@ func (c *policyBindingsRESTClient) GetPolicyBinding(ctx context.Context, req *ia
 
 // UpdatePolicyBinding updates a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on the policy and target in the
-// binding to update, and the IAM permission to remove the existing policy
-// from the binding. Target is immutable and cannot be updated. Once the
-// binding is updated, the new policy is applied to the target.
+// binding to update. Target and policy are immutable and cannot be updated.
 func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req *iampb.UpdatePolicyBindingRequest, opts ...gax.CallOption) (*UpdatePolicyBindingOperation, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
 	body := req.GetPolicyBinding()
@@ -1017,7 +1070,7 @@ func (c *policyBindingsRESTClient) UpdatePolicyBinding(ctx context.Context, req 
 
 // DeletePolicyBinding deletes a policy binding and returns a long-running operation.
 // Callers will need the IAM permissions on both the policy and target.
-// Once the binding is deleted, the policy no longer applies to the target.
+// After the binding is deleted, the policy no longer applies to the target.
 func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req *iampb.DeletePolicyBindingRequest, opts ...gax.CallOption) (*DeletePolicyBindingOperation, error) {
 	baseUrl, err := url.Parse(c.endpoint)
 	if err != nil {
@@ -1042,9 +1095,6 @@ func (c *policyBindingsRESTClient) DeletePolicyBinding(ctx context.Context, req 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v3.PolicyBindings/DeletePolicyBinding")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v3/{name=projects/*/locations/*/policyBindings/*}")
@@ -1192,6 +1242,9 @@ func (c *policyBindingsRESTClient) SearchTargetPolicyBindings(ctx context.Contex
 
 		params := url.Values{}
 		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
 		if req.GetPageSize() != 0 {
 			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
 		}

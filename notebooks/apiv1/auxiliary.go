@@ -18,12 +18,14 @@ package notebooks
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	notebookspb "cloud.google.com/go/notebooks/apiv1/notebookspb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1986,6 +1988,12 @@ func (op *UpgradeRuntimeOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnvironmentIterator) All() iter.Seq2[*notebookspb.Environment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EnvironmentIterator manages a stream of *notebookspb.Environment.
 type EnvironmentIterator struct {
 	items    []*notebookspb.Environment
@@ -2031,6 +2039,12 @@ func (it *EnvironmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ExecutionIterator) All() iter.Seq2[*notebookspb.Execution, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ExecutionIterator manages a stream of *notebookspb.Execution.
@@ -2080,6 +2094,12 @@ func (it *ExecutionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*notebookspb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceIterator manages a stream of *notebookspb.Instance.
 type InstanceIterator struct {
 	items    []*notebookspb.Instance
@@ -2125,6 +2145,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -2174,6 +2200,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -2221,6 +2253,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RuntimeIterator) All() iter.Seq2[*notebookspb.Runtime, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RuntimeIterator manages a stream of *notebookspb.Runtime.
 type RuntimeIterator struct {
 	items    []*notebookspb.Runtime
@@ -2266,6 +2304,12 @@ func (it *RuntimeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ScheduleIterator) All() iter.Seq2[*notebookspb.Schedule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ScheduleIterator manages a stream of *notebookspb.Schedule.

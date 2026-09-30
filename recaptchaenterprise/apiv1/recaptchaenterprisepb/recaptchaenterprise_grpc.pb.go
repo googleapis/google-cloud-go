@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -48,6 +48,8 @@ const (
 	RecaptchaEnterpriseService_RemoveIpOverride_FullMethodName                     = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/RemoveIpOverride"
 	RecaptchaEnterpriseService_ListIpOverrides_FullMethodName                      = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListIpOverrides"
 	RecaptchaEnterpriseService_GetMetrics_FullMethodName                           = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetMetrics"
+	RecaptchaEnterpriseService_GetPolicy_FullMethodName                            = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetPolicy"
+	RecaptchaEnterpriseService_UpdatePolicy_FullMethodName                         = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/UpdatePolicy"
 	RecaptchaEnterpriseService_CreateFirewallPolicy_FullMethodName                 = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/CreateFirewallPolicy"
 	RecaptchaEnterpriseService_ListFirewallPolicies_FullMethodName                 = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/ListFirewallPolicies"
 	RecaptchaEnterpriseService_GetFirewallPolicy_FullMethodName                    = "/google.cloud.recaptchaenterprise.v1.RecaptchaEnterpriseService/GetFirewallPolicy"
@@ -105,6 +107,10 @@ type RecaptchaEnterpriseServiceClient interface {
 	// Get some aggregated metrics for a Key. This data can be used to build
 	// dashboards.
 	GetMetrics(ctx context.Context, in *GetMetricsRequest, opts ...grpc.CallOption) (*Metrics, error)
+	// Get the policy for a key.
+	GetPolicy(ctx context.Context, in *GetPolicyRequest, opts ...grpc.CallOption) (*Policy, error)
+	// Updates the policy for a key.
+	UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, opts ...grpc.CallOption) (*Policy, error)
 	// Creates a new FirewallPolicy, specifying conditions at which reCAPTCHA
 	// Enterprise actions can be executed.
 	// A project may have a maximum of 1000 policies.
@@ -252,6 +258,24 @@ func (c *recaptchaEnterpriseServiceClient) GetMetrics(ctx context.Context, in *G
 	return out, nil
 }
 
+func (c *recaptchaEnterpriseServiceClient) GetPolicy(ctx context.Context, in *GetPolicyRequest, opts ...grpc.CallOption) (*Policy, error) {
+	out := new(Policy)
+	err := c.cc.Invoke(ctx, RecaptchaEnterpriseService_GetPolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *recaptchaEnterpriseServiceClient) UpdatePolicy(ctx context.Context, in *UpdatePolicyRequest, opts ...grpc.CallOption) (*Policy, error) {
+	out := new(Policy)
+	err := c.cc.Invoke(ctx, RecaptchaEnterpriseService_UpdatePolicy_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *recaptchaEnterpriseServiceClient) CreateFirewallPolicy(ctx context.Context, in *CreateFirewallPolicyRequest, opts ...grpc.CallOption) (*FirewallPolicy, error) {
 	out := new(FirewallPolicy)
 	err := c.cc.Invoke(ctx, RecaptchaEnterpriseService_CreateFirewallPolicy_FullMethodName, in, out, opts...)
@@ -379,6 +403,10 @@ type RecaptchaEnterpriseServiceServer interface {
 	// Get some aggregated metrics for a Key. This data can be used to build
 	// dashboards.
 	GetMetrics(context.Context, *GetMetricsRequest) (*Metrics, error)
+	// Get the policy for a key.
+	GetPolicy(context.Context, *GetPolicyRequest) (*Policy, error)
+	// Updates the policy for a key.
+	UpdatePolicy(context.Context, *UpdatePolicyRequest) (*Policy, error)
 	// Creates a new FirewallPolicy, specifying conditions at which reCAPTCHA
 	// Enterprise actions can be executed.
 	// A project may have a maximum of 1000 policies.
@@ -443,6 +471,12 @@ func (UnimplementedRecaptchaEnterpriseServiceServer) ListIpOverrides(context.Con
 }
 func (UnimplementedRecaptchaEnterpriseServiceServer) GetMetrics(context.Context, *GetMetricsRequest) (*Metrics, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method GetMetrics not implemented")
+}
+func (UnimplementedRecaptchaEnterpriseServiceServer) GetPolicy(context.Context, *GetPolicyRequest) (*Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method GetPolicy not implemented")
+}
+func (UnimplementedRecaptchaEnterpriseServiceServer) UpdatePolicy(context.Context, *UpdatePolicyRequest) (*Policy, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method UpdatePolicy not implemented")
 }
 func (UnimplementedRecaptchaEnterpriseServiceServer) CreateFirewallPolicy(context.Context, *CreateFirewallPolicyRequest) (*FirewallPolicy, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method CreateFirewallPolicy not implemented")
@@ -717,6 +751,42 @@ func _RecaptchaEnterpriseService_GetMetrics_Handler(srv interface{}, ctx context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _RecaptchaEnterpriseService_GetPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(GetPolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecaptchaEnterpriseServiceServer).GetPolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RecaptchaEnterpriseService_GetPolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecaptchaEnterpriseServiceServer).GetPolicy(ctx, req.(*GetPolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _RecaptchaEnterpriseService_UpdatePolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(UpdatePolicyRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(RecaptchaEnterpriseServiceServer).UpdatePolicy(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: RecaptchaEnterpriseService_UpdatePolicy_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(RecaptchaEnterpriseServiceServer).UpdatePolicy(ctx, req.(*UpdatePolicyRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _RecaptchaEnterpriseService_CreateFirewallPolicy_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(CreateFirewallPolicyRequest)
 	if err := dec(in); err != nil {
@@ -937,6 +1007,14 @@ var RecaptchaEnterpriseService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "GetMetrics",
 			Handler:    _RecaptchaEnterpriseService_GetMetrics_Handler,
+		},
+		{
+			MethodName: "GetPolicy",
+			Handler:    _RecaptchaEnterpriseService_GetPolicy_Handler,
+		},
+		{
+			MethodName: "UpdatePolicy",
+			Handler:    _RecaptchaEnterpriseService_UpdatePolicy_Handler,
 		},
 		{
 			MethodName: "CreateFirewallPolicy",

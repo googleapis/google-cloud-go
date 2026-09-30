@@ -2074,6 +2074,46 @@ func TestParseDDL(t *testing.T) {
 			},
 		},
 		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, items ARRAY<foo.bar.baz.ProtoName>) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "items", Type: Type{Array: true, Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
+			"CREATE TABLE IF NOT EXISTS tname (id INT64, items ARRAY<`foo.bar.baz.ProtoName`>) PRIMARY KEY (id)",
+			&DDL{
+				Filename: "filename",
+				List: []DDLStmt{
+					&CreateTable{
+						Name:        "tname",
+						IfNotExists: true,
+						Columns: []ColumnDef{
+							{Name: "id", Type: Type{Base: Int64}, Position: line(1)},
+							{Name: "items", Type: Type{Array: true, Base: Proto, ProtoRef: "foo.bar.baz.ProtoName"}, Position: line(1)},
+						},
+						PrimaryKey: []KeyPart{
+							{Column: "id"},
+						},
+						Position: line(1),
+					},
+				},
+			},
+		},
+		{
 			"CREATE TABLE IF NOT EXISTS tname (id INT64, name `foo.bar.baz.ProtoName` NOT NULL) PRIMARY KEY (id)",
 			&DDL{
 				Filename: "filename",

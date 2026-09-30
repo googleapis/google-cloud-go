@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -40,6 +40,61 @@ const (
 	// Verify that runtime/protoimpl is sufficiently up-to-date.
 	_ = protoimpl.EnforceVersion(protoimpl.MaxVersion - 20)
 )
+
+// Additional building information such as roof geometry and
+// solar panel arrays that can be returned in BuildingInsights.
+//
+// New values may be added to this enum in the future.
+type AdditionalInsights int32
+
+const (
+	// The default value. The default BuildingInsights will be returned.
+	AdditionalInsights_ADDITIONAL_INSIGHTS_UNSPECIFIED AdditionalInsights = 0
+	// Determines whether the response will include the detected arrays.
+	//
+	// If specified, the `detected_arrays` field will be populated in the
+	// response.
+	AdditionalInsights_DETECTED_ARRAYS AdditionalInsights = 2
+)
+
+// Enum value maps for AdditionalInsights.
+var (
+	AdditionalInsights_name = map[int32]string{
+		0: "ADDITIONAL_INSIGHTS_UNSPECIFIED",
+		2: "DETECTED_ARRAYS",
+	}
+	AdditionalInsights_value = map[string]int32{
+		"ADDITIONAL_INSIGHTS_UNSPECIFIED": 0,
+		"DETECTED_ARRAYS":                 2,
+	}
+)
+
+func (x AdditionalInsights) Enum() *AdditionalInsights {
+	p := new(AdditionalInsights)
+	*p = x
+	return p
+}
+
+func (x AdditionalInsights) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (AdditionalInsights) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_maps_solar_v1_solar_service_proto_enumTypes[0].Descriptor()
+}
+
+func (AdditionalInsights) Type() protoreflect.EnumType {
+	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[0]
+}
+
+func (x AdditionalInsights) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use AdditionalInsights.Descriptor instead.
+func (AdditionalInsights) EnumDescriptor() ([]byte, []int) {
+	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{0}
+}
 
 // What subset of the solar information to return.
 type DataLayerView int32
@@ -90,11 +145,11 @@ func (x DataLayerView) String() string {
 }
 
 func (DataLayerView) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_maps_solar_v1_solar_service_proto_enumTypes[0].Descriptor()
+	return file_google_maps_solar_v1_solar_service_proto_enumTypes[1].Descriptor()
 }
 
 func (DataLayerView) Type() protoreflect.EnumType {
-	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[0]
+	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[1]
 }
 
 func (x DataLayerView) Number() protoreflect.EnumNumber {
@@ -103,7 +158,7 @@ func (x DataLayerView) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DataLayerView.Descriptor instead.
 func (DataLayerView) EnumDescriptor() ([]byte, []int) {
-	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{0}
+	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{1}
 }
 
 // The quality of the imagery used to compute some API result.
@@ -159,11 +214,11 @@ func (x ImageryQuality) String() string {
 }
 
 func (ImageryQuality) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_maps_solar_v1_solar_service_proto_enumTypes[1].Descriptor()
+	return file_google_maps_solar_v1_solar_service_proto_enumTypes[2].Descriptor()
 }
 
 func (ImageryQuality) Type() protoreflect.EnumType {
-	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[1]
+	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[2]
 }
 
 func (x ImageryQuality) Number() protoreflect.EnumNumber {
@@ -172,7 +227,7 @@ func (x ImageryQuality) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ImageryQuality.Descriptor instead.
 func (ImageryQuality) EnumDescriptor() ([]byte, []int) {
-	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{1}
+	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{2}
 }
 
 // The orientation of a solar panel. This must be interpreted relative to the
@@ -215,11 +270,11 @@ func (x SolarPanelOrientation) String() string {
 }
 
 func (SolarPanelOrientation) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_maps_solar_v1_solar_service_proto_enumTypes[2].Descriptor()
+	return file_google_maps_solar_v1_solar_service_proto_enumTypes[3].Descriptor()
 }
 
 func (SolarPanelOrientation) Type() protoreflect.EnumType {
-	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[2]
+	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[3]
 }
 
 func (x SolarPanelOrientation) Number() protoreflect.EnumNumber {
@@ -228,7 +283,7 @@ func (x SolarPanelOrientation) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use SolarPanelOrientation.Descriptor instead.
 func (SolarPanelOrientation) EnumDescriptor() ([]byte, []int) {
-	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{2}
+	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{3}
 }
 
 // Specifies pre-GA experiments that can be enabled in the API.
@@ -275,11 +330,11 @@ func (x Experiment) String() string {
 }
 
 func (Experiment) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_maps_solar_v1_solar_service_proto_enumTypes[3].Descriptor()
+	return file_google_maps_solar_v1_solar_service_proto_enumTypes[4].Descriptor()
 }
 
 func (Experiment) Type() protoreflect.EnumType {
-	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[3]
+	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[4]
 }
 
 func (x Experiment) Number() protoreflect.EnumNumber {
@@ -288,7 +343,64 @@ func (x Experiment) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Experiment.Descriptor instead.
 func (Experiment) EnumDescriptor() ([]byte, []int) {
-	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{3}
+	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{4}
+}
+
+// Indicates the detection status of solar arrays for this building.
+type BuildingInsights_DetectedArrays_DetectionStatus int32
+
+const (
+	// Unspecified status.
+	BuildingInsights_DetectedArrays_DETECTION_STATUS_UNSPECIFIED BuildingInsights_DetectedArrays_DetectionStatus = 0
+	// Detected solar array data is unavailable for this building.
+	BuildingInsights_DetectedArrays_DETECTION_STATUS_DATA_UNAVAILABLE BuildingInsights_DetectedArrays_DetectionStatus = 1
+	// At least one solar array has been detected for this building.
+	BuildingInsights_DetectedArrays_DETECTION_STATUS_ARRAYS_DETECTED BuildingInsights_DetectedArrays_DetectionStatus = 2
+	// No solar arrays detected for this building.
+	BuildingInsights_DetectedArrays_DETECTION_STATUS_NO_ARRAYS_DETECTED BuildingInsights_DetectedArrays_DetectionStatus = 3
+)
+
+// Enum value maps for BuildingInsights_DetectedArrays_DetectionStatus.
+var (
+	BuildingInsights_DetectedArrays_DetectionStatus_name = map[int32]string{
+		0: "DETECTION_STATUS_UNSPECIFIED",
+		1: "DETECTION_STATUS_DATA_UNAVAILABLE",
+		2: "DETECTION_STATUS_ARRAYS_DETECTED",
+		3: "DETECTION_STATUS_NO_ARRAYS_DETECTED",
+	}
+	BuildingInsights_DetectedArrays_DetectionStatus_value = map[string]int32{
+		"DETECTION_STATUS_UNSPECIFIED":        0,
+		"DETECTION_STATUS_DATA_UNAVAILABLE":   1,
+		"DETECTION_STATUS_ARRAYS_DETECTED":    2,
+		"DETECTION_STATUS_NO_ARRAYS_DETECTED": 3,
+	}
+)
+
+func (x BuildingInsights_DetectedArrays_DetectionStatus) Enum() *BuildingInsights_DetectedArrays_DetectionStatus {
+	p := new(BuildingInsights_DetectedArrays_DetectionStatus)
+	*p = x
+	return p
+}
+
+func (x BuildingInsights_DetectedArrays_DetectionStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (BuildingInsights_DetectedArrays_DetectionStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_maps_solar_v1_solar_service_proto_enumTypes[5].Descriptor()
+}
+
+func (BuildingInsights_DetectedArrays_DetectionStatus) Type() protoreflect.EnumType {
+	return &file_google_maps_solar_v1_solar_service_proto_enumTypes[5]
+}
+
+func (x BuildingInsights_DetectedArrays_DetectionStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use BuildingInsights_DetectedArrays_DetectionStatus.Descriptor instead.
+func (BuildingInsights_DetectedArrays_DetectionStatus) EnumDescriptor() ([]byte, []int) {
+	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{2, 0, 0}
 }
 
 // Request message for `Solar.FindClosestBuildingInsights`.
@@ -308,10 +420,20 @@ type FindClosestBuildingInsightsRequest struct {
 	// is interpreted as the exact required quality and only `MEDIUM` quality
 	// imagery is returned if `required_quality` is set to `MEDIUM`.
 	ExactQualityRequired bool `protobuf:"varint,4,opt,name=exact_quality_required,json=exactQualityRequired,proto3" json:"exact_quality_required,omitempty"`
-	// Optional. Specifies the pre-GA features to enable.
-	Experiments   []Experiment `protobuf:"varint,5,rep,packed,name=experiments,proto3,enum=google.maps.solar.v1.Experiment" json:"experiments,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Optional. Specifies the pre-GA experiments to enable. Requests using this
+	// field are classified as a pre-GA offering under the [Google Maps Platform
+	// Service Specific
+	// Terms](https://cloud.google.com/maps-platform/terms/maps-service-terms).
+	// See [launch stage
+	// descriptions](https://cloud.google.com/maps-platform/terms/launch-stages)
+	// for more details.
+	Experiments []Experiment `protobuf:"varint,5,rep,packed,name=experiments,proto3,enum=google.maps.solar.v1.Experiment" json:"experiments,omitempty"`
+	// Optional. A list of
+	// [additional_insights][google.maps.solar.v1.FindClosestBuildingInsightsRequest.additional_insights]
+	// to be included in the response.
+	AdditionalInsights []AdditionalInsights `protobuf:"varint,6,rep,packed,name=additional_insights,json=additionalInsights,proto3,enum=google.maps.solar.v1.AdditionalInsights" json:"additional_insights,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *FindClosestBuildingInsightsRequest) Reset() {
@@ -368,6 +490,13 @@ func (x *FindClosestBuildingInsightsRequest) GetExactQualityRequired() bool {
 func (x *FindClosestBuildingInsightsRequest) GetExperiments() []Experiment {
 	if x != nil {
 		return x.Experiments
+	}
+	return nil
+}
+
+func (x *FindClosestBuildingInsightsRequest) GetAdditionalInsights() []AdditionalInsights {
+	if x != nil {
+		return x.AdditionalInsights
 	}
 	return nil
 }
@@ -455,6 +584,10 @@ type BuildingInsights struct {
 	SolarPotential *SolarPotential `protobuf:"bytes,8,opt,name=solar_potential,json=solarPotential,proto3" json:"solar_potential,omitempty"`
 	// The quality of the imagery used to compute the data for this building.
 	ImageryQuality ImageryQuality `protobuf:"varint,10,opt,name=imagery_quality,json=imageryQuality,proto3,enum=google.maps.solar.v1.ImageryQuality" json:"imagery_quality,omitempty"`
+	// Solar arrays detected on the building. This field is only populated if
+	// DETECTED_ARRAYS is included in the request's
+	// [FindClosestBuildingInsightsRequest.additional_insights][google.maps.solar.v1.FindClosestBuildingInsightsRequest.additional_insights].
+	DetectedArrays *BuildingInsights_DetectedArrays `protobuf:"bytes,12,opt,name=detected_arrays,json=detectedArrays,proto3" json:"detected_arrays,omitempty"`
 	unknownFields  protoimpl.UnknownFields
 	sizeCache      protoimpl.SizeCache
 }
@@ -566,6 +699,13 @@ func (x *BuildingInsights) GetImageryQuality() ImageryQuality {
 	return ImageryQuality_IMAGERY_QUALITY_UNSPECIFIED
 }
 
+func (x *BuildingInsights) GetDetectedArrays() *BuildingInsights_DetectedArrays {
+	if x != nil {
+		return x.DetectedArrays
+	}
+	return nil
+}
+
 // Information about the solar potential of a building. A number of
 // fields in this are defined in terms of "panels". The fields
 // [panel_capacity_watts]
@@ -621,7 +761,7 @@ type SolarPotential struct {
 	BuildingStats *SizeAndSunshineStats `protobuf:"bytes,13,opt,name=building_stats,json=buildingStats,proto3" json:"building_stats,omitempty"`
 	// Size and sunlight quantiles for each roof segment.
 	RoofSegmentStats []*RoofSegmentSizeAndSunshineStats `protobuf:"bytes,6,rep,name=roof_segment_stats,json=roofSegmentStats,proto3" json:"roof_segment_stats,omitempty"`
-	// Each [SolarPanel] [google.maps.solar.v1.SolarPanel]
+	// Each [SolarPanel][google.maps.solar.v1.SolarPanel]
 	// describes a single solar panel. They are listed in the order that
 	// the panel layout algorithm placed this. This is usually, though
 	// not always, in decreasing order of annual energy production.
@@ -1830,7 +1970,13 @@ type GetDataLayersRequest struct {
 	// is interpreted as the exact required quality and only `MEDIUM` quality
 	// imagery is returned if `required_quality` is set to `MEDIUM`.
 	ExactQualityRequired bool `protobuf:"varint,7,opt,name=exact_quality_required,json=exactQualityRequired,proto3" json:"exact_quality_required,omitempty"`
-	// Optional. Specifies the pre-GA experiments to enable.
+	// Optional. Specifies the pre-GA experiments to enable. Requests using this
+	// field are classified as a pre-GA offering under the [Google Maps Platform
+	// Service Specific
+	// Terms](https://cloud.google.com/maps-platform/terms/maps-service-terms).
+	// See [launch stage descriptions](
+	// https://cloud.google.com/maps-platform/terms/launch-stages) for more
+	// details.
 	Experiments   []Experiment `protobuf:"varint,8,rep,packed,name=experiments,proto3,enum=google.maps.solar.v1.Experiment" json:"experiments,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2131,19 +2277,75 @@ func (x *GetGeoTiffRequest) GetId() string {
 	return ""
 }
 
+// Information about solar arrays detected on the building.
+type BuildingInsights_DetectedArrays struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Indicates the detection status of solar arrays for this building.
+	DetectionStatus BuildingInsights_DetectedArrays_DetectionStatus `protobuf:"varint,1,opt,name=detection_status,json=detectionStatus,proto3,enum=google.maps.solar.v1.BuildingInsights_DetectedArrays_DetectionStatus" json:"detection_status,omitempty"`
+	// The date indicating when the latest solar array data was captured.
+	LatestCaptureDate *date.Date `protobuf:"bytes,3,opt,name=latest_capture_date,json=latestCaptureDate,proto3" json:"latest_capture_date,omitempty"`
+	unknownFields     protoimpl.UnknownFields
+	sizeCache         protoimpl.SizeCache
+}
+
+func (x *BuildingInsights_DetectedArrays) Reset() {
+	*x = BuildingInsights_DetectedArrays{}
+	mi := &file_google_maps_solar_v1_solar_service_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *BuildingInsights_DetectedArrays) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*BuildingInsights_DetectedArrays) ProtoMessage() {}
+
+func (x *BuildingInsights_DetectedArrays) ProtoReflect() protoreflect.Message {
+	mi := &file_google_maps_solar_v1_solar_service_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use BuildingInsights_DetectedArrays.ProtoReflect.Descriptor instead.
+func (*BuildingInsights_DetectedArrays) Descriptor() ([]byte, []int) {
+	return file_google_maps_solar_v1_solar_service_proto_rawDescGZIP(), []int{2, 0}
+}
+
+func (x *BuildingInsights_DetectedArrays) GetDetectionStatus() BuildingInsights_DetectedArrays_DetectionStatus {
+	if x != nil {
+		return x.DetectionStatus
+	}
+	return BuildingInsights_DetectedArrays_DETECTION_STATUS_UNSPECIFIED
+}
+
+func (x *BuildingInsights_DetectedArrays) GetLatestCaptureDate() *date.Date {
+	if x != nil {
+		return x.LatestCaptureDate
+	}
+	return nil
+}
+
 var File_google_maps_solar_v1_solar_service_proto protoreflect.FileDescriptor
 
 const file_google_maps_solar_v1_solar_service_proto_rawDesc = "" +
 	"\n" +
-	"(google/maps/solar/v1/solar_service.proto\x12\x14google.maps.solar.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x16google/type/date.proto\x1a\x18google/type/latlng.proto\x1a\x17google/type/money.proto\"\xb4\x02\n" +
+	"(google/maps/solar/v1/solar_service.proto\x12\x14google.maps.solar.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/httpbody.proto\x1a\x16google/type/date.proto\x1a\x18google/type/latlng.proto\x1a\x17google/type/money.proto\"\x94\x03\n" +
 	"\"FindClosestBuildingInsightsRequest\x124\n" +
 	"\blocation\x18\x01 \x01(\v2\x13.google.type.LatLngB\x03\xe0A\x02R\blocation\x12T\n" +
 	"\x10required_quality\x18\x03 \x01(\x0e2$.google.maps.solar.v1.ImageryQualityB\x03\xe0A\x01R\x0frequiredQuality\x129\n" +
 	"\x16exact_quality_required\x18\x04 \x01(\bB\x03\xe0A\x01R\x14exactQualityRequired\x12G\n" +
-	"\vexperiments\x18\x05 \x03(\x0e2 .google.maps.solar.v1.ExperimentB\x03\xe0A\x01R\vexperiments\"U\n" +
+	"\vexperiments\x18\x05 \x03(\x0e2 .google.maps.solar.v1.ExperimentB\x03\xe0A\x01R\vexperiments\x12^\n" +
+	"\x13additional_insights\x18\x06 \x03(\x0e2(.google.maps.solar.v1.AdditionalInsightsB\x03\xe0A\x01R\x12additionalInsights\"U\n" +
 	"\tLatLngBox\x12#\n" +
 	"\x02sw\x18\x01 \x01(\v2\x13.google.type.LatLngR\x02sw\x12#\n" +
-	"\x02ne\x18\x02 \x01(\v2\x13.google.type.LatLngR\x02ne\"\xd2\x04\n" +
+	"\x02ne\x18\x02 \x01(\v2\x13.google.type.LatLngR\x02ne\"\xa6\b\n" +
 	"\x10BuildingInsights\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12+\n" +
 	"\x06center\x18\x02 \x01(\v2\x13.google.type.LatLngR\x06center\x12B\n" +
@@ -2158,7 +2360,16 @@ const file_google_maps_solar_v1_solar_service_proto_rawDesc = "" +
 	"regionCode\x12M\n" +
 	"\x0fsolar_potential\x18\b \x01(\v2$.google.maps.solar.v1.SolarPotentialR\x0esolarPotential\x12M\n" +
 	"\x0fimagery_quality\x18\n" +
-	" \x01(\x0e2$.google.maps.solar.v1.ImageryQualityR\x0eimageryQuality\"\xc2\a\n" +
+	" \x01(\x0e2$.google.maps.solar.v1.ImageryQualityR\x0eimageryQuality\x12^\n" +
+	"\x0fdetected_arrays\x18\f \x01(\v25.google.maps.solar.v1.BuildingInsights.DetectedArraysR\x0edetectedArrays\x1a\xf1\x02\n" +
+	"\x0eDetectedArrays\x12p\n" +
+	"\x10detection_status\x18\x01 \x01(\x0e2E.google.maps.solar.v1.BuildingInsights.DetectedArrays.DetectionStatusR\x0fdetectionStatus\x12A\n" +
+	"\x13latest_capture_date\x18\x03 \x01(\v2\x11.google.type.DateR\x11latestCaptureDate\"\xa9\x01\n" +
+	"\x0fDetectionStatus\x12 \n" +
+	"\x1cDETECTION_STATUS_UNSPECIFIED\x10\x00\x12%\n" +
+	"!DETECTION_STATUS_DATA_UNAVAILABLE\x10\x01\x12$\n" +
+	" DETECTION_STATUS_ARRAYS_DETECTED\x10\x02\x12'\n" +
+	"#DETECTION_STATUS_NO_ARRAYS_DETECTED\x10\x03\"\xc2\a\n" +
 	"\x0eSolarPotential\x123\n" +
 	"\x16max_array_panels_count\x18\x01 \x01(\x05R\x13maxArrayPanelsCount\x120\n" +
 	"\x14panel_capacity_watts\x18\t \x01(\x02R\x12panelCapacityWatts\x12.\n" +
@@ -2278,7 +2489,10 @@ const file_google_maps_solar_v1_solar_service_proto_rawDesc = "" +
 	"\x11hourly_shade_urls\x18\b \x03(\tR\x0fhourlyShadeUrls\x12M\n" +
 	"\x0fimagery_quality\x18\t \x01(\x0e2$.google.maps.solar.v1.ImageryQualityR\x0eimageryQuality\"(\n" +
 	"\x11GetGeoTiffRequest\x12\x13\n" +
-	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id*\xa9\x01\n" +
+	"\x02id\x18\x01 \x01(\tB\x03\xe0A\x02R\x02id*N\n" +
+	"\x12AdditionalInsights\x12#\n" +
+	"\x1fADDITIONAL_INSIGHTS_UNSPECIFIED\x10\x00\x12\x13\n" +
+	"\x0fDETECTED_ARRAYS\x10\x02*\xa9\x01\n" +
 	"\rDataLayerView\x12\x1f\n" +
 	"\x1bDATA_LAYER_VIEW_UNSPECIFIED\x10\x00\x12\r\n" +
 	"\tDSM_LAYER\x10\x01\x12\x12\n" +
@@ -2320,103 +2534,110 @@ func file_google_maps_solar_v1_solar_service_proto_rawDescGZIP() []byte {
 	return file_google_maps_solar_v1_solar_service_proto_rawDescData
 }
 
-var file_google_maps_solar_v1_solar_service_proto_enumTypes = make([]protoimpl.EnumInfo, 4)
-var file_google_maps_solar_v1_solar_service_proto_msgTypes = make([]protoimpl.MessageInfo, 18)
+var file_google_maps_solar_v1_solar_service_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
+var file_google_maps_solar_v1_solar_service_proto_msgTypes = make([]protoimpl.MessageInfo, 19)
 var file_google_maps_solar_v1_solar_service_proto_goTypes = []any{
-	(DataLayerView)(0),                         // 0: google.maps.solar.v1.DataLayerView
-	(ImageryQuality)(0),                        // 1: google.maps.solar.v1.ImageryQuality
-	(SolarPanelOrientation)(0),                 // 2: google.maps.solar.v1.SolarPanelOrientation
-	(Experiment)(0),                            // 3: google.maps.solar.v1.Experiment
-	(*FindClosestBuildingInsightsRequest)(nil), // 4: google.maps.solar.v1.FindClosestBuildingInsightsRequest
-	(*LatLngBox)(nil),                          // 5: google.maps.solar.v1.LatLngBox
-	(*BuildingInsights)(nil),                   // 6: google.maps.solar.v1.BuildingInsights
-	(*SolarPotential)(nil),                     // 7: google.maps.solar.v1.SolarPotential
-	(*RoofSegmentSizeAndSunshineStats)(nil),    // 8: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats
-	(*SizeAndSunshineStats)(nil),               // 9: google.maps.solar.v1.SizeAndSunshineStats
-	(*SolarPanel)(nil),                         // 10: google.maps.solar.v1.SolarPanel
-	(*SolarPanelConfig)(nil),                   // 11: google.maps.solar.v1.SolarPanelConfig
-	(*RoofSegmentSummary)(nil),                 // 12: google.maps.solar.v1.RoofSegmentSummary
-	(*FinancialAnalysis)(nil),                  // 13: google.maps.solar.v1.FinancialAnalysis
-	(*FinancialDetails)(nil),                   // 14: google.maps.solar.v1.FinancialDetails
-	(*SavingsOverTime)(nil),                    // 15: google.maps.solar.v1.SavingsOverTime
-	(*LeasingSavings)(nil),                     // 16: google.maps.solar.v1.LeasingSavings
-	(*CashPurchaseSavings)(nil),                // 17: google.maps.solar.v1.CashPurchaseSavings
-	(*FinancedPurchaseSavings)(nil),            // 18: google.maps.solar.v1.FinancedPurchaseSavings
-	(*GetDataLayersRequest)(nil),               // 19: google.maps.solar.v1.GetDataLayersRequest
-	(*DataLayers)(nil),                         // 20: google.maps.solar.v1.DataLayers
-	(*GetGeoTiffRequest)(nil),                  // 21: google.maps.solar.v1.GetGeoTiffRequest
-	(*latlng.LatLng)(nil),                      // 22: google.type.LatLng
-	(*date.Date)(nil),                          // 23: google.type.Date
-	(*money.Money)(nil),                        // 24: google.type.Money
-	(*httpbody.HttpBody)(nil),                  // 25: google.api.HttpBody
+	(AdditionalInsights)(0),    // 0: google.maps.solar.v1.AdditionalInsights
+	(DataLayerView)(0),         // 1: google.maps.solar.v1.DataLayerView
+	(ImageryQuality)(0),        // 2: google.maps.solar.v1.ImageryQuality
+	(SolarPanelOrientation)(0), // 3: google.maps.solar.v1.SolarPanelOrientation
+	(Experiment)(0),            // 4: google.maps.solar.v1.Experiment
+	(BuildingInsights_DetectedArrays_DetectionStatus)(0), // 5: google.maps.solar.v1.BuildingInsights.DetectedArrays.DetectionStatus
+	(*FindClosestBuildingInsightsRequest)(nil),           // 6: google.maps.solar.v1.FindClosestBuildingInsightsRequest
+	(*LatLngBox)(nil),                       // 7: google.maps.solar.v1.LatLngBox
+	(*BuildingInsights)(nil),                // 8: google.maps.solar.v1.BuildingInsights
+	(*SolarPotential)(nil),                  // 9: google.maps.solar.v1.SolarPotential
+	(*RoofSegmentSizeAndSunshineStats)(nil), // 10: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats
+	(*SizeAndSunshineStats)(nil),            // 11: google.maps.solar.v1.SizeAndSunshineStats
+	(*SolarPanel)(nil),                      // 12: google.maps.solar.v1.SolarPanel
+	(*SolarPanelConfig)(nil),                // 13: google.maps.solar.v1.SolarPanelConfig
+	(*RoofSegmentSummary)(nil),              // 14: google.maps.solar.v1.RoofSegmentSummary
+	(*FinancialAnalysis)(nil),               // 15: google.maps.solar.v1.FinancialAnalysis
+	(*FinancialDetails)(nil),                // 16: google.maps.solar.v1.FinancialDetails
+	(*SavingsOverTime)(nil),                 // 17: google.maps.solar.v1.SavingsOverTime
+	(*LeasingSavings)(nil),                  // 18: google.maps.solar.v1.LeasingSavings
+	(*CashPurchaseSavings)(nil),             // 19: google.maps.solar.v1.CashPurchaseSavings
+	(*FinancedPurchaseSavings)(nil),         // 20: google.maps.solar.v1.FinancedPurchaseSavings
+	(*GetDataLayersRequest)(nil),            // 21: google.maps.solar.v1.GetDataLayersRequest
+	(*DataLayers)(nil),                      // 22: google.maps.solar.v1.DataLayers
+	(*GetGeoTiffRequest)(nil),               // 23: google.maps.solar.v1.GetGeoTiffRequest
+	(*BuildingInsights_DetectedArrays)(nil), // 24: google.maps.solar.v1.BuildingInsights.DetectedArrays
+	(*latlng.LatLng)(nil),                   // 25: google.type.LatLng
+	(*date.Date)(nil),                       // 26: google.type.Date
+	(*money.Money)(nil),                     // 27: google.type.Money
+	(*httpbody.HttpBody)(nil),               // 28: google.api.HttpBody
 }
 var file_google_maps_solar_v1_solar_service_proto_depIdxs = []int32{
-	22, // 0: google.maps.solar.v1.FindClosestBuildingInsightsRequest.location:type_name -> google.type.LatLng
-	1,  // 1: google.maps.solar.v1.FindClosestBuildingInsightsRequest.required_quality:type_name -> google.maps.solar.v1.ImageryQuality
-	3,  // 2: google.maps.solar.v1.FindClosestBuildingInsightsRequest.experiments:type_name -> google.maps.solar.v1.Experiment
-	22, // 3: google.maps.solar.v1.LatLngBox.sw:type_name -> google.type.LatLng
-	22, // 4: google.maps.solar.v1.LatLngBox.ne:type_name -> google.type.LatLng
-	22, // 5: google.maps.solar.v1.BuildingInsights.center:type_name -> google.type.LatLng
-	5,  // 6: google.maps.solar.v1.BuildingInsights.bounding_box:type_name -> google.maps.solar.v1.LatLngBox
-	23, // 7: google.maps.solar.v1.BuildingInsights.imagery_date:type_name -> google.type.Date
-	23, // 8: google.maps.solar.v1.BuildingInsights.imagery_processed_date:type_name -> google.type.Date
-	7,  // 9: google.maps.solar.v1.BuildingInsights.solar_potential:type_name -> google.maps.solar.v1.SolarPotential
-	1,  // 10: google.maps.solar.v1.BuildingInsights.imagery_quality:type_name -> google.maps.solar.v1.ImageryQuality
-	9,  // 11: google.maps.solar.v1.SolarPotential.whole_roof_stats:type_name -> google.maps.solar.v1.SizeAndSunshineStats
-	9,  // 12: google.maps.solar.v1.SolarPotential.building_stats:type_name -> google.maps.solar.v1.SizeAndSunshineStats
-	8,  // 13: google.maps.solar.v1.SolarPotential.roof_segment_stats:type_name -> google.maps.solar.v1.RoofSegmentSizeAndSunshineStats
-	10, // 14: google.maps.solar.v1.SolarPotential.solar_panels:type_name -> google.maps.solar.v1.SolarPanel
-	11, // 15: google.maps.solar.v1.SolarPotential.solar_panel_configs:type_name -> google.maps.solar.v1.SolarPanelConfig
-	13, // 16: google.maps.solar.v1.SolarPotential.financial_analyses:type_name -> google.maps.solar.v1.FinancialAnalysis
-	9,  // 17: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats.stats:type_name -> google.maps.solar.v1.SizeAndSunshineStats
-	22, // 18: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats.center:type_name -> google.type.LatLng
-	5,  // 19: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats.bounding_box:type_name -> google.maps.solar.v1.LatLngBox
-	22, // 20: google.maps.solar.v1.SolarPanel.center:type_name -> google.type.LatLng
-	2,  // 21: google.maps.solar.v1.SolarPanel.orientation:type_name -> google.maps.solar.v1.SolarPanelOrientation
-	12, // 22: google.maps.solar.v1.SolarPanelConfig.roof_segment_summaries:type_name -> google.maps.solar.v1.RoofSegmentSummary
-	24, // 23: google.maps.solar.v1.FinancialAnalysis.monthly_bill:type_name -> google.type.Money
-	14, // 24: google.maps.solar.v1.FinancialAnalysis.financial_details:type_name -> google.maps.solar.v1.FinancialDetails
-	16, // 25: google.maps.solar.v1.FinancialAnalysis.leasing_savings:type_name -> google.maps.solar.v1.LeasingSavings
-	17, // 26: google.maps.solar.v1.FinancialAnalysis.cash_purchase_savings:type_name -> google.maps.solar.v1.CashPurchaseSavings
-	18, // 27: google.maps.solar.v1.FinancialAnalysis.financed_purchase_savings:type_name -> google.maps.solar.v1.FinancedPurchaseSavings
-	24, // 28: google.maps.solar.v1.FinancialDetails.remaining_lifetime_utility_bill:type_name -> google.type.Money
-	24, // 29: google.maps.solar.v1.FinancialDetails.federal_incentive:type_name -> google.type.Money
-	24, // 30: google.maps.solar.v1.FinancialDetails.state_incentive:type_name -> google.type.Money
-	24, // 31: google.maps.solar.v1.FinancialDetails.utility_incentive:type_name -> google.type.Money
-	24, // 32: google.maps.solar.v1.FinancialDetails.lifetime_srec_total:type_name -> google.type.Money
-	24, // 33: google.maps.solar.v1.FinancialDetails.cost_of_electricity_without_solar:type_name -> google.type.Money
-	24, // 34: google.maps.solar.v1.SavingsOverTime.savings_year1:type_name -> google.type.Money
-	24, // 35: google.maps.solar.v1.SavingsOverTime.savings_year20:type_name -> google.type.Money
-	24, // 36: google.maps.solar.v1.SavingsOverTime.present_value_of_savings_year20:type_name -> google.type.Money
-	24, // 37: google.maps.solar.v1.SavingsOverTime.savings_lifetime:type_name -> google.type.Money
-	24, // 38: google.maps.solar.v1.SavingsOverTime.present_value_of_savings_lifetime:type_name -> google.type.Money
-	24, // 39: google.maps.solar.v1.LeasingSavings.annual_leasing_cost:type_name -> google.type.Money
-	15, // 40: google.maps.solar.v1.LeasingSavings.savings:type_name -> google.maps.solar.v1.SavingsOverTime
-	24, // 41: google.maps.solar.v1.CashPurchaseSavings.out_of_pocket_cost:type_name -> google.type.Money
-	24, // 42: google.maps.solar.v1.CashPurchaseSavings.upfront_cost:type_name -> google.type.Money
-	24, // 43: google.maps.solar.v1.CashPurchaseSavings.rebate_value:type_name -> google.type.Money
-	15, // 44: google.maps.solar.v1.CashPurchaseSavings.savings:type_name -> google.maps.solar.v1.SavingsOverTime
-	24, // 45: google.maps.solar.v1.FinancedPurchaseSavings.annual_loan_payment:type_name -> google.type.Money
-	24, // 46: google.maps.solar.v1.FinancedPurchaseSavings.rebate_value:type_name -> google.type.Money
-	15, // 47: google.maps.solar.v1.FinancedPurchaseSavings.savings:type_name -> google.maps.solar.v1.SavingsOverTime
-	22, // 48: google.maps.solar.v1.GetDataLayersRequest.location:type_name -> google.type.LatLng
-	0,  // 49: google.maps.solar.v1.GetDataLayersRequest.view:type_name -> google.maps.solar.v1.DataLayerView
-	1,  // 50: google.maps.solar.v1.GetDataLayersRequest.required_quality:type_name -> google.maps.solar.v1.ImageryQuality
-	3,  // 51: google.maps.solar.v1.GetDataLayersRequest.experiments:type_name -> google.maps.solar.v1.Experiment
-	23, // 52: google.maps.solar.v1.DataLayers.imagery_date:type_name -> google.type.Date
-	23, // 53: google.maps.solar.v1.DataLayers.imagery_processed_date:type_name -> google.type.Date
-	1,  // 54: google.maps.solar.v1.DataLayers.imagery_quality:type_name -> google.maps.solar.v1.ImageryQuality
-	4,  // 55: google.maps.solar.v1.Solar.FindClosestBuildingInsights:input_type -> google.maps.solar.v1.FindClosestBuildingInsightsRequest
-	19, // 56: google.maps.solar.v1.Solar.GetDataLayers:input_type -> google.maps.solar.v1.GetDataLayersRequest
-	21, // 57: google.maps.solar.v1.Solar.GetGeoTiff:input_type -> google.maps.solar.v1.GetGeoTiffRequest
-	6,  // 58: google.maps.solar.v1.Solar.FindClosestBuildingInsights:output_type -> google.maps.solar.v1.BuildingInsights
-	20, // 59: google.maps.solar.v1.Solar.GetDataLayers:output_type -> google.maps.solar.v1.DataLayers
-	25, // 60: google.maps.solar.v1.Solar.GetGeoTiff:output_type -> google.api.HttpBody
-	58, // [58:61] is the sub-list for method output_type
-	55, // [55:58] is the sub-list for method input_type
-	55, // [55:55] is the sub-list for extension type_name
-	55, // [55:55] is the sub-list for extension extendee
-	0,  // [0:55] is the sub-list for field type_name
+	25, // 0: google.maps.solar.v1.FindClosestBuildingInsightsRequest.location:type_name -> google.type.LatLng
+	2,  // 1: google.maps.solar.v1.FindClosestBuildingInsightsRequest.required_quality:type_name -> google.maps.solar.v1.ImageryQuality
+	4,  // 2: google.maps.solar.v1.FindClosestBuildingInsightsRequest.experiments:type_name -> google.maps.solar.v1.Experiment
+	0,  // 3: google.maps.solar.v1.FindClosestBuildingInsightsRequest.additional_insights:type_name -> google.maps.solar.v1.AdditionalInsights
+	25, // 4: google.maps.solar.v1.LatLngBox.sw:type_name -> google.type.LatLng
+	25, // 5: google.maps.solar.v1.LatLngBox.ne:type_name -> google.type.LatLng
+	25, // 6: google.maps.solar.v1.BuildingInsights.center:type_name -> google.type.LatLng
+	7,  // 7: google.maps.solar.v1.BuildingInsights.bounding_box:type_name -> google.maps.solar.v1.LatLngBox
+	26, // 8: google.maps.solar.v1.BuildingInsights.imagery_date:type_name -> google.type.Date
+	26, // 9: google.maps.solar.v1.BuildingInsights.imagery_processed_date:type_name -> google.type.Date
+	9,  // 10: google.maps.solar.v1.BuildingInsights.solar_potential:type_name -> google.maps.solar.v1.SolarPotential
+	2,  // 11: google.maps.solar.v1.BuildingInsights.imagery_quality:type_name -> google.maps.solar.v1.ImageryQuality
+	24, // 12: google.maps.solar.v1.BuildingInsights.detected_arrays:type_name -> google.maps.solar.v1.BuildingInsights.DetectedArrays
+	11, // 13: google.maps.solar.v1.SolarPotential.whole_roof_stats:type_name -> google.maps.solar.v1.SizeAndSunshineStats
+	11, // 14: google.maps.solar.v1.SolarPotential.building_stats:type_name -> google.maps.solar.v1.SizeAndSunshineStats
+	10, // 15: google.maps.solar.v1.SolarPotential.roof_segment_stats:type_name -> google.maps.solar.v1.RoofSegmentSizeAndSunshineStats
+	12, // 16: google.maps.solar.v1.SolarPotential.solar_panels:type_name -> google.maps.solar.v1.SolarPanel
+	13, // 17: google.maps.solar.v1.SolarPotential.solar_panel_configs:type_name -> google.maps.solar.v1.SolarPanelConfig
+	15, // 18: google.maps.solar.v1.SolarPotential.financial_analyses:type_name -> google.maps.solar.v1.FinancialAnalysis
+	11, // 19: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats.stats:type_name -> google.maps.solar.v1.SizeAndSunshineStats
+	25, // 20: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats.center:type_name -> google.type.LatLng
+	7,  // 21: google.maps.solar.v1.RoofSegmentSizeAndSunshineStats.bounding_box:type_name -> google.maps.solar.v1.LatLngBox
+	25, // 22: google.maps.solar.v1.SolarPanel.center:type_name -> google.type.LatLng
+	3,  // 23: google.maps.solar.v1.SolarPanel.orientation:type_name -> google.maps.solar.v1.SolarPanelOrientation
+	14, // 24: google.maps.solar.v1.SolarPanelConfig.roof_segment_summaries:type_name -> google.maps.solar.v1.RoofSegmentSummary
+	27, // 25: google.maps.solar.v1.FinancialAnalysis.monthly_bill:type_name -> google.type.Money
+	16, // 26: google.maps.solar.v1.FinancialAnalysis.financial_details:type_name -> google.maps.solar.v1.FinancialDetails
+	18, // 27: google.maps.solar.v1.FinancialAnalysis.leasing_savings:type_name -> google.maps.solar.v1.LeasingSavings
+	19, // 28: google.maps.solar.v1.FinancialAnalysis.cash_purchase_savings:type_name -> google.maps.solar.v1.CashPurchaseSavings
+	20, // 29: google.maps.solar.v1.FinancialAnalysis.financed_purchase_savings:type_name -> google.maps.solar.v1.FinancedPurchaseSavings
+	27, // 30: google.maps.solar.v1.FinancialDetails.remaining_lifetime_utility_bill:type_name -> google.type.Money
+	27, // 31: google.maps.solar.v1.FinancialDetails.federal_incentive:type_name -> google.type.Money
+	27, // 32: google.maps.solar.v1.FinancialDetails.state_incentive:type_name -> google.type.Money
+	27, // 33: google.maps.solar.v1.FinancialDetails.utility_incentive:type_name -> google.type.Money
+	27, // 34: google.maps.solar.v1.FinancialDetails.lifetime_srec_total:type_name -> google.type.Money
+	27, // 35: google.maps.solar.v1.FinancialDetails.cost_of_electricity_without_solar:type_name -> google.type.Money
+	27, // 36: google.maps.solar.v1.SavingsOverTime.savings_year1:type_name -> google.type.Money
+	27, // 37: google.maps.solar.v1.SavingsOverTime.savings_year20:type_name -> google.type.Money
+	27, // 38: google.maps.solar.v1.SavingsOverTime.present_value_of_savings_year20:type_name -> google.type.Money
+	27, // 39: google.maps.solar.v1.SavingsOverTime.savings_lifetime:type_name -> google.type.Money
+	27, // 40: google.maps.solar.v1.SavingsOverTime.present_value_of_savings_lifetime:type_name -> google.type.Money
+	27, // 41: google.maps.solar.v1.LeasingSavings.annual_leasing_cost:type_name -> google.type.Money
+	17, // 42: google.maps.solar.v1.LeasingSavings.savings:type_name -> google.maps.solar.v1.SavingsOverTime
+	27, // 43: google.maps.solar.v1.CashPurchaseSavings.out_of_pocket_cost:type_name -> google.type.Money
+	27, // 44: google.maps.solar.v1.CashPurchaseSavings.upfront_cost:type_name -> google.type.Money
+	27, // 45: google.maps.solar.v1.CashPurchaseSavings.rebate_value:type_name -> google.type.Money
+	17, // 46: google.maps.solar.v1.CashPurchaseSavings.savings:type_name -> google.maps.solar.v1.SavingsOverTime
+	27, // 47: google.maps.solar.v1.FinancedPurchaseSavings.annual_loan_payment:type_name -> google.type.Money
+	27, // 48: google.maps.solar.v1.FinancedPurchaseSavings.rebate_value:type_name -> google.type.Money
+	17, // 49: google.maps.solar.v1.FinancedPurchaseSavings.savings:type_name -> google.maps.solar.v1.SavingsOverTime
+	25, // 50: google.maps.solar.v1.GetDataLayersRequest.location:type_name -> google.type.LatLng
+	1,  // 51: google.maps.solar.v1.GetDataLayersRequest.view:type_name -> google.maps.solar.v1.DataLayerView
+	2,  // 52: google.maps.solar.v1.GetDataLayersRequest.required_quality:type_name -> google.maps.solar.v1.ImageryQuality
+	4,  // 53: google.maps.solar.v1.GetDataLayersRequest.experiments:type_name -> google.maps.solar.v1.Experiment
+	26, // 54: google.maps.solar.v1.DataLayers.imagery_date:type_name -> google.type.Date
+	26, // 55: google.maps.solar.v1.DataLayers.imagery_processed_date:type_name -> google.type.Date
+	2,  // 56: google.maps.solar.v1.DataLayers.imagery_quality:type_name -> google.maps.solar.v1.ImageryQuality
+	5,  // 57: google.maps.solar.v1.BuildingInsights.DetectedArrays.detection_status:type_name -> google.maps.solar.v1.BuildingInsights.DetectedArrays.DetectionStatus
+	26, // 58: google.maps.solar.v1.BuildingInsights.DetectedArrays.latest_capture_date:type_name -> google.type.Date
+	6,  // 59: google.maps.solar.v1.Solar.FindClosestBuildingInsights:input_type -> google.maps.solar.v1.FindClosestBuildingInsightsRequest
+	21, // 60: google.maps.solar.v1.Solar.GetDataLayers:input_type -> google.maps.solar.v1.GetDataLayersRequest
+	23, // 61: google.maps.solar.v1.Solar.GetGeoTiff:input_type -> google.maps.solar.v1.GetGeoTiffRequest
+	8,  // 62: google.maps.solar.v1.Solar.FindClosestBuildingInsights:output_type -> google.maps.solar.v1.BuildingInsights
+	22, // 63: google.maps.solar.v1.Solar.GetDataLayers:output_type -> google.maps.solar.v1.DataLayers
+	28, // 64: google.maps.solar.v1.Solar.GetGeoTiff:output_type -> google.api.HttpBody
+	62, // [62:65] is the sub-list for method output_type
+	59, // [59:62] is the sub-list for method input_type
+	59, // [59:59] is the sub-list for extension type_name
+	59, // [59:59] is the sub-list for extension extendee
+	0,  // [0:59] is the sub-list for field type_name
 }
 
 func init() { file_google_maps_solar_v1_solar_service_proto_init() }
@@ -2435,8 +2656,8 @@ func file_google_maps_solar_v1_solar_service_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_maps_solar_v1_solar_service_proto_rawDesc), len(file_google_maps_solar_v1_solar_service_proto_rawDesc)),
-			NumEnums:      4,
-			NumMessages:   18,
+			NumEnums:      6,
+			NumMessages:   19,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

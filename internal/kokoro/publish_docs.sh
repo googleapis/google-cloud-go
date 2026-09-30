@@ -48,5 +48,9 @@ for f in $(find obj/api -name docs.metadata); do
     --file=$name \
     --gzip \
     .
-  gcloud storage cp $name gs://docs-staging-v2/$tar_dir
+  bucket="${STAGING_BUCKET_V2:-docs-staging-v2}"
+  if [[ "$module" == "cloud.google.com/go/developerknowledge"* ]]; then
+    bucket="${STAGING_BUCKET_DEVELOPERS:-docs-staging-v2-developers}"
+  fi
+  gcloud storage cp $name gs://$bucket/$tar_dir
 done

@@ -336,8 +336,9 @@ type GenAiStats struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Job level error stats across all GenAi functions
 	ErrorStats *GenAiErrorStats `protobuf:"bytes,4,opt,name=error_stats,json=errorStats,proto3,oneof" json:"error_stats,omitempty"`
-	// Function level stats for GenAi Functions.
-	// See https://docs.cloud.google.com/bigquery/docs/generative-ai-overview
+	// Function level stats for GenAI Functions. For more information, see
+	// [Generative AI
+	// overview](https://docs.cloud.google.com/bigquery/docs/generative-ai-overview).
 	FunctionStats []*GenAiFunctionStats `protobuf:"bytes,5,rep,name=function_stats,json=functionStats,proto3" json:"function_stats,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

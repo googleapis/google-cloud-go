@@ -185,7 +185,6 @@ func CreateBigtableChannelPool(
 		directAccessDialerOptions := make([]option.ClientOption, len(o))
 		copy(directAccessDialerOptions, o)
 		directAccessDialerOptions = append(directAccessDialerOptions, directAccessOptions...)
-		directAccessDialerOptions = append(directAccessDialerOptions, internaloption.AllowHardBoundTokens("ALTS"))
 
 		directAccessDialer := func() (*BigtableConn, error) {
 			grpcConn, err := gtransport.Dial(ctx, directAccessDialerOptions...)

@@ -70,6 +70,7 @@ func newStorageRowIteratorFromTable(ctx context.Context, table *Table, rsProject
 	}
 	it.arrowDecoder = dec
 	it.Schema = md.Schema
+	it.src.t = table
 	return it, nil
 }
 
@@ -95,7 +96,12 @@ func newStorageRowIteratorFromJob(ctx context.Context, j *Job) (*RowIterator, er
 		return newStorageRowIteratorFromJob(ctx, lastJob)
 	}
 	ordered := query.HasOrderedResults(qcfg.Q)
-	return newStorageRowIteratorFromTable(ctx, qcfg.Dst, job.projectID, ordered)
+	it, err := newStorageRowIteratorFromTable(ctx, qcfg.Dst, job.projectID, ordered)
+	if err != nil {
+		return nil, err
+	}
+	it.src.j = job
+	return it, nil
 }
 
 func resolveLastChildSelectJob(ctx context.Context, job *Job) (*Job, error) {
@@ -148,6 +154,7 @@ func newStorageRowIterator(rs *readSession, schema Schema) (*RowIterator, error)
 		arrowIterator: arrowIt,
 		TotalRows:     uint64(totalRows),
 		rows:          [][]Value{},
+		src:           &rowSource{},
 	}
 	it.nextFunc = nextFuncForStorageIterator(it)
 	it.pageInfo = &iterator.PageInfo{

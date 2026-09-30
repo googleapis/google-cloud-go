@@ -519,6 +519,67 @@ func NewSiteSearchEngineClient(ctx context.Context, opts ...option.ClientOption)
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSiteSearchEngine = append(client.CallOptions.GetSiteSearchEngine, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTargetSite = append(client.CallOptions.CreateTargetSite, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchCreateTargetSites = append(client.CallOptions.BatchCreateTargetSites, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTargetSite = append(client.CallOptions.GetTargetSite, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTargetSite = append(client.CallOptions.UpdateTargetSite, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTargetSite = append(client.CallOptions.DeleteTargetSite, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTargetSites = append(client.CallOptions.ListTargetSites, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateSitemap = append(client.CallOptions.CreateSitemap, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSitemap = append(client.CallOptions.DeleteSitemap, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchSitemaps = append(client.CallOptions.FetchSitemaps, gax.WithClientTracing(tracing))
+		client.CallOptions.EnableAdvancedSiteSearch = append(client.CallOptions.EnableAdvancedSiteSearch, gax.WithClientTracing(tracing))
+		client.CallOptions.DisableAdvancedSiteSearch = append(client.CallOptions.DisableAdvancedSiteSearch, gax.WithClientTracing(tracing))
+		client.CallOptions.RecrawlUris = append(client.CallOptions.RecrawlUris, gax.WithClientTracing(tracing))
+		client.CallOptions.BatchVerifyTargetSites = append(client.CallOptions.BatchVerifyTargetSites, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchDomainVerificationStatus = append(client.CallOptions.FetchDomainVerificationStatus, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetSiteSearchEngine = append(client.CallOptions.GetSiteSearchEngine, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTargetSite = append(client.CallOptions.CreateTargetSite, gax.WithClientLogging(logging))
+		client.CallOptions.BatchCreateTargetSites = append(client.CallOptions.BatchCreateTargetSites, gax.WithClientLogging(logging))
+		client.CallOptions.GetTargetSite = append(client.CallOptions.GetTargetSite, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTargetSite = append(client.CallOptions.UpdateTargetSite, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTargetSite = append(client.CallOptions.DeleteTargetSite, gax.WithClientLogging(logging))
+		client.CallOptions.ListTargetSites = append(client.CallOptions.ListTargetSites, gax.WithClientLogging(logging))
+		client.CallOptions.CreateSitemap = append(client.CallOptions.CreateSitemap, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSitemap = append(client.CallOptions.DeleteSitemap, gax.WithClientLogging(logging))
+		client.CallOptions.FetchSitemaps = append(client.CallOptions.FetchSitemaps, gax.WithClientLogging(logging))
+		client.CallOptions.EnableAdvancedSiteSearch = append(client.CallOptions.EnableAdvancedSiteSearch, gax.WithClientLogging(logging))
+		client.CallOptions.DisableAdvancedSiteSearch = append(client.CallOptions.DisableAdvancedSiteSearch, gax.WithClientLogging(logging))
+		client.CallOptions.RecrawlUris = append(client.CallOptions.RecrawlUris, gax.WithClientLogging(logging))
+		client.CallOptions.BatchVerifyTargetSites = append(client.CallOptions.BatchVerifyTargetSites, gax.WithClientLogging(logging))
+		client.CallOptions.FetchDomainVerificationStatus = append(client.CallOptions.FetchDomainVerificationStatus, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -643,6 +704,67 @@ func NewSiteSearchEngineRESTClient(ctx context.Context, opts ...option.ClientOpt
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSiteSearchEngine = append(callOpts.GetSiteSearchEngine, gax.WithClientTracing(tracing))
+		callOpts.CreateTargetSite = append(callOpts.CreateTargetSite, gax.WithClientTracing(tracing))
+		callOpts.BatchCreateTargetSites = append(callOpts.BatchCreateTargetSites, gax.WithClientTracing(tracing))
+		callOpts.GetTargetSite = append(callOpts.GetTargetSite, gax.WithClientTracing(tracing))
+		callOpts.UpdateTargetSite = append(callOpts.UpdateTargetSite, gax.WithClientTracing(tracing))
+		callOpts.DeleteTargetSite = append(callOpts.DeleteTargetSite, gax.WithClientTracing(tracing))
+		callOpts.ListTargetSites = append(callOpts.ListTargetSites, gax.WithClientTracing(tracing))
+		callOpts.CreateSitemap = append(callOpts.CreateSitemap, gax.WithClientTracing(tracing))
+		callOpts.DeleteSitemap = append(callOpts.DeleteSitemap, gax.WithClientTracing(tracing))
+		callOpts.FetchSitemaps = append(callOpts.FetchSitemaps, gax.WithClientTracing(tracing))
+		callOpts.EnableAdvancedSiteSearch = append(callOpts.EnableAdvancedSiteSearch, gax.WithClientTracing(tracing))
+		callOpts.DisableAdvancedSiteSearch = append(callOpts.DisableAdvancedSiteSearch, gax.WithClientTracing(tracing))
+		callOpts.RecrawlUris = append(callOpts.RecrawlUris, gax.WithClientTracing(tracing))
+		callOpts.BatchVerifyTargetSites = append(callOpts.BatchVerifyTargetSites, gax.WithClientTracing(tracing))
+		callOpts.FetchDomainVerificationStatus = append(callOpts.FetchDomainVerificationStatus, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "discoveryengine",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/discoveryengine/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "discoveryengine.googleapis.com",
+			}),
+		)
+
+		callOpts.GetSiteSearchEngine = append(callOpts.GetSiteSearchEngine, gax.WithClientLogging(logging))
+		callOpts.CreateTargetSite = append(callOpts.CreateTargetSite, gax.WithClientLogging(logging))
+		callOpts.BatchCreateTargetSites = append(callOpts.BatchCreateTargetSites, gax.WithClientLogging(logging))
+		callOpts.GetTargetSite = append(callOpts.GetTargetSite, gax.WithClientLogging(logging))
+		callOpts.UpdateTargetSite = append(callOpts.UpdateTargetSite, gax.WithClientLogging(logging))
+		callOpts.DeleteTargetSite = append(callOpts.DeleteTargetSite, gax.WithClientLogging(logging))
+		callOpts.ListTargetSites = append(callOpts.ListTargetSites, gax.WithClientLogging(logging))
+		callOpts.CreateSitemap = append(callOpts.CreateSitemap, gax.WithClientLogging(logging))
+		callOpts.DeleteSitemap = append(callOpts.DeleteSitemap, gax.WithClientLogging(logging))
+		callOpts.FetchSitemaps = append(callOpts.FetchSitemaps, gax.WithClientLogging(logging))
+		callOpts.EnableAdvancedSiteSearch = append(callOpts.EnableAdvancedSiteSearch, gax.WithClientLogging(logging))
+		callOpts.DisableAdvancedSiteSearch = append(callOpts.DisableAdvancedSiteSearch, gax.WithClientLogging(logging))
+		callOpts.RecrawlUris = append(callOpts.RecrawlUris, gax.WithClientLogging(logging))
+		callOpts.BatchVerifyTargetSites = append(callOpts.BatchVerifyTargetSites, gax.WithClientLogging(logging))
+		callOpts.FetchDomainVerificationStatus = append(callOpts.FetchDomainVerificationStatus, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	lroOpts := []option.ClientOption{
 		option.WithHTTPClient(httpClient),
@@ -699,9 +821,6 @@ func (c *siteSearchEngineGRPCClient) GetSiteSearchEngine(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/GetSiteSearchEngine")
 	}
@@ -723,9 +842,6 @@ func (c *siteSearchEngineGRPCClient) CreateTargetSite(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/CreateTargetSite")
 	}
@@ -753,9 +869,6 @@ func (c *siteSearchEngineGRPCClient) BatchCreateTargetSites(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/BatchCreateTargetSites")
 	}
@@ -783,9 +896,6 @@ func (c *siteSearchEngineGRPCClient) GetTargetSite(ctx context.Context, req *dis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/GetTargetSite")
 	}
@@ -834,9 +944,6 @@ func (c *siteSearchEngineGRPCClient) DeleteTargetSite(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/DeleteTargetSite")
 	}
@@ -864,9 +971,6 @@ func (c *siteSearchEngineGRPCClient) ListTargetSites(ctx context.Context, req *d
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/ListTargetSites")
 	}
@@ -916,9 +1020,6 @@ func (c *siteSearchEngineGRPCClient) CreateSitemap(ctx context.Context, req *dis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/CreateSitemap")
 	}
@@ -946,9 +1047,6 @@ func (c *siteSearchEngineGRPCClient) DeleteSitemap(ctx context.Context, req *dis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/DeleteSitemap")
 	}
@@ -976,9 +1074,6 @@ func (c *siteSearchEngineGRPCClient) FetchSitemaps(ctx context.Context, req *dis
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/FetchSitemaps")
 	}
@@ -1000,9 +1095,6 @@ func (c *siteSearchEngineGRPCClient) EnableAdvancedSiteSearch(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetSiteSearchEngine()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/EnableAdvancedSiteSearch")
 	}
@@ -1030,9 +1122,6 @@ func (c *siteSearchEngineGRPCClient) DisableAdvancedSiteSearch(ctx context.Conte
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetSiteSearchEngine()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/DisableAdvancedSiteSearch")
 	}
@@ -1060,9 +1149,6 @@ func (c *siteSearchEngineGRPCClient) RecrawlUris(ctx context.Context, req *disco
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetSiteSearchEngine()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/RecrawlUris")
 	}
@@ -1090,9 +1176,6 @@ func (c *siteSearchEngineGRPCClient) BatchVerifyTargetSites(ctx context.Context,
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/BatchVerifyTargetSites")
 	}
@@ -1120,9 +1203,6 @@ func (c *siteSearchEngineGRPCClient) FetchDomainVerificationStatus(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetSiteSearchEngine()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/FetchDomainVerificationStatus")
 	}
@@ -1274,9 +1354,6 @@ func (c *siteSearchEngineRESTClient) GetSiteSearchEngine(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/GetSiteSearchEngine")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/siteSearchEngine}")
@@ -1338,9 +1415,6 @@ func (c *siteSearchEngineRESTClient) CreateTargetSite(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/CreateTargetSite")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataStores/*/siteSearchEngine}/targetSites")
@@ -1409,9 +1483,6 @@ func (c *siteSearchEngineRESTClient) BatchCreateTargetSites(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/BatchCreateTargetSites")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataStores/*/siteSearchEngine}/targetSites:batchCreate")
@@ -1473,9 +1544,6 @@ func (c *siteSearchEngineRESTClient) GetTargetSite(ctx context.Context, req *dis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/GetTargetSite")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/siteSearchEngine/targetSites/*}")
@@ -1598,9 +1666,6 @@ func (c *siteSearchEngineRESTClient) DeleteTargetSite(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/DeleteTargetSite")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/siteSearchEngine/targetSites/*}")
@@ -1747,9 +1812,6 @@ func (c *siteSearchEngineRESTClient) CreateSitemap(ctx context.Context, req *dis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/CreateSitemap")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataStores/*/siteSearchEngine}/sitemaps")
@@ -1811,9 +1873,6 @@ func (c *siteSearchEngineRESTClient) DeleteSitemap(ctx context.Context, req *dis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/DeleteSitemap")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/dataStores/*/siteSearchEngine/sitemaps/*}")
@@ -1881,9 +1940,6 @@ func (c *siteSearchEngineRESTClient) FetchSitemaps(ctx context.Context, req *dis
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/FetchSitemaps")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/dataStores/*/siteSearchEngine}/sitemaps:fetch")
@@ -1944,9 +2000,6 @@ func (c *siteSearchEngineRESTClient) EnableAdvancedSiteSearch(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetSiteSearchEngine()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/EnableAdvancedSiteSearch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{site_search_engine=projects/*/locations/*/dataStores/*/siteSearchEngine}:enableAdvancedSiteSearch")
@@ -2014,9 +2067,6 @@ func (c *siteSearchEngineRESTClient) DisableAdvancedSiteSearch(ctx context.Conte
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetSiteSearchEngine()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/DisableAdvancedSiteSearch")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{site_search_engine=projects/*/locations/*/dataStores/*/siteSearchEngine}:disableAdvancedSiteSearch")
@@ -2084,9 +2134,6 @@ func (c *siteSearchEngineRESTClient) RecrawlUris(ctx context.Context, req *disco
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetSiteSearchEngine()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/RecrawlUris")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{site_search_engine=projects/*/locations/*/dataStores/*/siteSearchEngine}:recrawlUris")
@@ -2156,9 +2203,6 @@ func (c *siteSearchEngineRESTClient) BatchVerifyTargetSites(ctx context.Context,
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//discoveryengine.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.discoveryengine.v1.SiteSearchEngineService/BatchVerifyTargetSites")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/collections/*/dataStores/*/siteSearchEngine}:batchVerifyTargetSites")

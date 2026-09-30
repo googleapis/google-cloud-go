@@ -34,11 +34,12 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	IngestionService_IngestAudienceMembers_FullMethodName = "/google.ads.datamanager.v1.IngestionService/IngestAudienceMembers"
-	IngestionService_RemoveAudienceMembers_FullMethodName = "/google.ads.datamanager.v1.IngestionService/RemoveAudienceMembers"
-	IngestionService_IngestEvents_FullMethodName          = "/google.ads.datamanager.v1.IngestionService/IngestEvents"
-	IngestionService_IngestAdEvents_FullMethodName        = "/google.ads.datamanager.v1.IngestionService/IngestAdEvents"
-	IngestionService_RetrieveRequestStatus_FullMethodName = "/google.ads.datamanager.v1.IngestionService/RetrieveRequestStatus"
+	IngestionService_IngestAudienceMembers_FullMethodName    = "/google.ads.datamanager.v1.IngestionService/IngestAudienceMembers"
+	IngestionService_RemoveAudienceMembers_FullMethodName    = "/google.ads.datamanager.v1.IngestionService/RemoveAudienceMembers"
+	IngestionService_RemoveAllAudienceMembers_FullMethodName = "/google.ads.datamanager.v1.IngestionService/RemoveAllAudienceMembers"
+	IngestionService_IngestEvents_FullMethodName             = "/google.ads.datamanager.v1.IngestionService/IngestEvents"
+	IngestionService_IngestAdEvents_FullMethodName           = "/google.ads.datamanager.v1.IngestionService/IngestAdEvents"
+	IngestionService_RetrieveRequestStatus_FullMethodName    = "/google.ads.datamanager.v1.IngestionService/RetrieveRequestStatus"
 )
 
 // IngestionServiceClient is the client API for IngestionService service.
@@ -53,6 +54,8 @@ type IngestionServiceClient interface {
 	// [AudienceMember][google.ads.datamanager.v1.AudienceMember] resources from
 	// the provided [Destination][google.ads.datamanager.v1.Destination].
 	RemoveAudienceMembers(ctx context.Context, in *RemoveAudienceMembersRequest, opts ...grpc.CallOption) (*RemoveAudienceMembersResponse, error)
+	// Removes all audience members from the provided destinations.
+	RemoveAllAudienceMembers(ctx context.Context, in *RemoveAllAudienceMembersRequest, opts ...grpc.CallOption) (*RemoveAllAudienceMembersResponse, error)
 	// Uploads a list of
 	// [Event][google.ads.datamanager.v1.Event] resources from
 	// the provided [Destination][google.ads.datamanager.v1.Destination].
@@ -87,6 +90,15 @@ func (c *ingestionServiceClient) IngestAudienceMembers(ctx context.Context, in *
 func (c *ingestionServiceClient) RemoveAudienceMembers(ctx context.Context, in *RemoveAudienceMembersRequest, opts ...grpc.CallOption) (*RemoveAudienceMembersResponse, error) {
 	out := new(RemoveAudienceMembersResponse)
 	err := c.cc.Invoke(ctx, IngestionService_RemoveAudienceMembers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ingestionServiceClient) RemoveAllAudienceMembers(ctx context.Context, in *RemoveAllAudienceMembersRequest, opts ...grpc.CallOption) (*RemoveAllAudienceMembersResponse, error) {
+	out := new(RemoveAllAudienceMembersResponse)
+	err := c.cc.Invoke(ctx, IngestionService_RemoveAllAudienceMembers_FullMethodName, in, out, opts...)
 	if err != nil {
 		return nil, err
 	}
@@ -132,6 +144,8 @@ type IngestionServiceServer interface {
 	// [AudienceMember][google.ads.datamanager.v1.AudienceMember] resources from
 	// the provided [Destination][google.ads.datamanager.v1.Destination].
 	RemoveAudienceMembers(context.Context, *RemoveAudienceMembersRequest) (*RemoveAudienceMembersResponse, error)
+	// Removes all audience members from the provided destinations.
+	RemoveAllAudienceMembers(context.Context, *RemoveAllAudienceMembersRequest) (*RemoveAllAudienceMembersResponse, error)
 	// Uploads a list of
 	// [Event][google.ads.datamanager.v1.Event] resources from
 	// the provided [Destination][google.ads.datamanager.v1.Destination].
@@ -155,6 +169,9 @@ func (UnimplementedIngestionServiceServer) IngestAudienceMembers(context.Context
 }
 func (UnimplementedIngestionServiceServer) RemoveAudienceMembers(context.Context, *RemoveAudienceMembersRequest) (*RemoveAudienceMembersResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method RemoveAudienceMembers not implemented")
+}
+func (UnimplementedIngestionServiceServer) RemoveAllAudienceMembers(context.Context, *RemoveAllAudienceMembersRequest) (*RemoveAllAudienceMembersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveAllAudienceMembers not implemented")
 }
 func (UnimplementedIngestionServiceServer) IngestEvents(context.Context, *IngestEventsRequest) (*IngestEventsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IngestEvents not implemented")
@@ -209,6 +226,24 @@ func _IngestionService_RemoveAudienceMembers_Handler(srv interface{}, ctx contex
 	}
 	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
 		return srv.(IngestionServiceServer).RemoveAudienceMembers(ctx, req.(*RemoveAudienceMembersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IngestionService_RemoveAllAudienceMembers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveAllAudienceMembersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IngestionServiceServer).RemoveAllAudienceMembers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IngestionService_RemoveAllAudienceMembers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IngestionServiceServer).RemoveAllAudienceMembers(ctx, req.(*RemoveAllAudienceMembersRequest))
 	}
 	return interceptor(ctx, in, info, handler)
 }
@@ -281,6 +316,10 @@ var IngestionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "RemoveAudienceMembers",
 			Handler:    _IngestionService_RemoveAudienceMembers_Handler,
+		},
+		{
+			MethodName: "RemoveAllAudienceMembers",
+			Handler:    _IngestionService_RemoveAllAudienceMembers_Handler,
 		},
 		{
 			MethodName: "IngestEvents",

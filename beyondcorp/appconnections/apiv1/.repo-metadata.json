@@ -2,7 +2,7 @@
     "api_shortname": "beyondcorp",
     "client_documentation": "https://cloud.google.com/go/docs/reference/cloud.google.com/go/beyondcorp/latest/appconnections/apiv1",
     "client_library_type": "generated",
-    "description": "BeyondCorp API",
+    "description": "BeyondCorp AppConnections API",
     "distribution_name": "cloud.google.com/go/beyondcorp/appconnections/apiv1",
     "language": "go",
     "library_type": "GAPIC_AUTO",

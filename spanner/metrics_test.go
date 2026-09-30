@@ -183,10 +183,11 @@ func TestNewBuiltinMetricsTracerFactory(t *testing.T) {
 			}
 
 			// Check instruments
-			gotNonNilInstruments := client.metricsTracerFactory.operationLatencies != nil &&
-				client.metricsTracerFactory.operationCount != nil &&
-				client.metricsTracerFactory.attemptLatencies != nil &&
-				client.metricsTracerFactory.attemptCount != nil
+			gotNonNilInstruments := len(client.metricsTracerFactory.sinks) > 0 &&
+				client.metricsTracerFactory.sinks[0].operationLatencies != nil &&
+				client.metricsTracerFactory.sinks[0].operationCount != nil &&
+				client.metricsTracerFactory.sinks[0].attemptLatencies != nil &&
+				client.metricsTracerFactory.sinks[0].attemptCount != nil
 			if test.wantBuiltinEnabled != gotNonNilInstruments {
 				t.Errorf("NonNilInstruments: got: %v, want: %v", gotNonNilInstruments, test.wantBuiltinEnabled)
 			}

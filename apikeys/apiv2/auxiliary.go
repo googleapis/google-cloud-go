@@ -18,11 +18,13 @@ package apikeys
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	apikeyspb "cloud.google.com/go/apikeys/apiv2/apikeyspb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	emptypb "google.golang.org/protobuf/types/known/emptypb"
 )
@@ -281,6 +283,12 @@ func (op *UpdateKeyOperation) Done() bool {
 // The name is assigned by the server and is unique within the service from which the operation is created.
 func (op *UpdateKeyOperation) Name() string {
 	return op.lro.Name()
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *KeyIterator) All() iter.Seq2[*apikeyspb.Key, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // KeyIterator manages a stream of *apikeyspb.Key.
