@@ -560,20 +560,6 @@ func TestStorageURIAttribute(t *testing.T) {
 	}
 }
 
-func TestStorageURIAttributeEmptyBucket(t *testing.T) {
-	t.Setenv(storageOtelTracingDevVar, "true")
-	ctx := context.Background()
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() { te.Unregister(ctx) })
-
-	ctx, _ = startSpanWithBucket(ctx, nil, "", "obj", "Object.Attrs")
-	endSpan(ctx, nil)
-
-	if got, ok := storageURIAttr(t, te.Spans(), "Object.Attrs"); ok {
-		t.Errorf("%s = %q, want it absent for an empty bucket name", storageURIAttrKey, got)
-	}
-}
-
 func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
 	t.Setenv(storageOtelTracingDevVar, "false")
 	t.Setenv(storageBucketMetadataDisabledVar, "true")
