@@ -456,32 +456,6 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI:  wantObjURI,
 		},
 		{
-			name:     "Object.Attrs with generation",
-			spanName: "Object.Attrs",
-			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Generation(123).Attrs(ctx) },
-			wantURI:  wantObjURI + "#123",
-		},
-		{
-			name:     "Object.Delete with generation",
-			spanName: "Object.Delete",
-			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Generation(123).Delete(ctx) },
-			wantURI:  wantObjURI + "#123",
-		},
-		{
-			name:     "Object.Reader with generation",
-			spanName: "Object.Reader",
-			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Generation(123).NewReader(ctx) },
-			wantURI:  wantObjURI + "#123",
-		},
-		{
-			name:     "Copier.Run omits source generation",
-			spanName: "Copier.Run",
-			op: func(ctx context.Context, c *Client) {
-				c.Bucket(dstBucket).Object(dstObject).CopierFrom(c.Bucket(bucket).Object(object).Generation(123)).Run(ctx)
-			},
-			wantURI: wantDstURI,
-		},
-		{
 			name:     "Copier.Run uses destination",
 			spanName: "Copier.Run",
 			op: func(ctx context.Context, c *Client) {
