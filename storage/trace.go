@@ -55,6 +55,9 @@ func traceAttributesFromContext(ctx context.Context) ([]attribute.KeyValue, bool
 const (
 	defaultTracerName = "cloud.google.com/go/storage"
 	gcpClientArtifact = "cloud.google.com/go/storage"
+	// TODO: Decide whether object names in gcp.storage.uri must be redacted
+	// before the dev tracing flag is removed.
+	storageURIAttrKey = "gcp.storage.uri"
 )
 
 // isOTelTracingDevEnabled checks the development flag until experimental feature is launched.
@@ -71,25 +74,19 @@ func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
-// startSpanWithBucket starts an operation span for a bucket- or object-scoped
-// operation. When dev tracing is enabled and bucket is non-empty, the span gets
-// the gcp.storage.uri attribute: "gs://<bucket>/<object>" for object-scoped
-// operations, or "gs://<bucket>/" when object is empty. If client has a bucket
-// metadata cache, the span also gets the gcp.resource.destination.* attributes.
+// startSpanWithBucket starts a span for an operation on bucket, or on object
+// within it if object is non-empty.
 func startSpanWithBucket(ctx context.Context, client *Client, bucket, object, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	return startSpanForResource(ctx, client, bucket, object, defaultGen, name, opts...)
 }
 
-// startSpanWithObject starts an operation span for an operation on o. It is
-// like startSpanWithBucket, except that gcp.storage.uri also includes the
-// object generation ("gs://<bucket>/<object>#<generation>") when one is set on
-// o.
+// startSpanWithObject starts a span for an operation on o.
 func startSpanWithObject(ctx context.Context, o *ObjectHandle, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	return startSpanForResource(ctx, o.c, o.bucket, o.object, o.gen, name, opts...)
 }
 
-// startSpanForResource implements startSpanWithBucket and startSpanWithObject.
-// gen is appended to gcp.storage.uri only if object is non-empty and gen >= 0.
+// startSpanForResource starts a span for an operation on a bucket or object.
+// A negative gen means no generation.
 func startSpanForResource(ctx context.Context, client *Client, bucket, object string, gen int64, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
@@ -205,11 +202,3 @@ func getCommonAttributes() []attribute.KeyValue {
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
-
-// storageURIAttrKey is the attribute key for the fully-qualified GCS URI of
-// the resource an operation targets.
-//
-// TODO: Apply the cross-SDK redaction rule (decision D8) for object names
-// before the dev tracing flag is removed. Until then, full object names are
-// emitted.
-const storageURIAttrKey = "gcp.storage.uri"
