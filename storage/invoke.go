@@ -197,7 +197,7 @@ func (e wrappedCallErr) Unwrap() error {
 }
 
 func (e wrappedCallErr) Is(err error) bool {
-	return e.ctxErr == err || e.wrappedErr == err
+	return errors.Is(e.ctxErr, err) || errors.Is(e.wrappedErr, err)
 }
 
 // Sets invocation ID headers on the context which will be propagated as
