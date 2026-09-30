@@ -1,4 +1,4 @@
-module cloud.google.com/go/internal/examples/observability
+module cloud.google.com/go/internal/testing/observability
 
 go 1.26.0
 
