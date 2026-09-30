@@ -9777,6 +9777,32 @@ func TestIntegration_ClientTracing(t *testing.T) {
 
 			// Second call should have resolved attributes.
 			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
+
+			// gcp.storage.uri on bucket-, object- and list-scoped spans.
+			if got, _ := attrValue(attrsSpan.Attributes, storageURIAttrKey); got != "gs://"+bucketName+"/" {
+				t.Errorf("Bucket.Attrs %s = %q, want %q", storageURIAttrKey, got, "gs://"+bucketName+"/")
+			}
+
+			spanCountBeforeURIOps := len(te.Spans())
+			if _, err := client.Bucket(bucketName).Object("no-such-object").Attrs(ctx); !errors.Is(err, ErrObjectNotExist) {
+				t.Fatalf("Object.Attrs: got %v, want ErrObjectNotExist", err)
+			}
+			if _, err := client.Bucket(bucketName).Objects(ctx, nil).Next(); err != iterator.Done {
+				t.Fatalf("Objects.Next: got %v, want iterator.Done", err)
+			}
+			newSpans := te.Spans()[spanCountBeforeURIOps:]
+			listSpanName := "httpStorageClient.ObjectsListCall"
+			if tc.name == "gRPC" {
+				listSpanName = "grpcStorageClient.ObjectsListCall"
+			}
+			for spanName, want := range map[string]string{
+				"Object.Attrs": "gs://" + bucketName + "/no-such-object",
+				listSpanName:   "gs://" + bucketName + "/",
+			} {
+				if got, _ := attrValue(findSpan(t, newSpans, spanName).Attributes, storageURIAttrKey); got != want {
+					t.Errorf("%s %s = %q, want %q", spanName, storageURIAttrKey, got, want)
+				}
+			}
 		})
 	}
 }

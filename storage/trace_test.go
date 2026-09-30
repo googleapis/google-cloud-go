@@ -248,7 +248,7 @@ func TestStartSpanWithBucket(t *testing.T) {
 			}
 			client := &Client{bucketMetadataCache: cache}
 
-			ctx1, _ := startSpanWithBucket(ctx, client, tc.bucket, "TestSpan")
+			ctx1, _ := startSpanWithBucket(ctx, client, tc.bucket, "", "TestSpan")
 			endSpan(ctx1, nil)
 
 			spans := te.Spans()
@@ -341,7 +341,7 @@ func TestEndSpanEviction(t *testing.T) {
 			// Populate cache.
 			cache.put(bucketName, bucketMetadata{resource: "res", location: "loc"})
 
-			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, tc.spanName)
+			ctx, _ := startSpanWithBucket(context.Background(), client, bucketName, "", tc.spanName)
 			endSpan(ctx, tc.err)
 
 			_, found := cache.get(bucketName)
@@ -376,24 +376,29 @@ func newTraceTestClient(t *testing.T) *Client {
 	return c
 }
 
-// storageURIFromSpan returns the gcp.storage.uri attribute of the span named
-// spanName, and whether that attribute was present.
-func storageURIFromSpan(t *testing.T, spans tracetest.SpanStubs, spanName string) (string, bool) {
+// attrValue returns the string value of the attribute with the given key, and
+// whether it was present.
+func attrValue(attrs []attribute.KeyValue, key string) (string, bool) {
+	for _, a := range attrs {
+		if string(a.Key) == key {
+			return a.Value.AsString(), true
+		}
+	}
+	return "", false
+}
+
+// findSpan returns the span named appendPackageName(spanName), failing the
+// test if there is none.
+func findSpan(t *testing.T, spans tracetest.SpanStubs, spanName string) tracetest.SpanStub {
 	t.Helper()
 	fullName := appendPackageName(spanName)
 	for _, s := range spans {
-		if s.Name != fullName {
-			continue
+		if s.Name == fullName {
+			return s
 		}
-		for _, a := range s.Attributes {
-			if string(a.Key) == storageURIAttrKey {
-				return a.Value.AsString(), true
-			}
-		}
-		return "", false
 	}
 	t.Fatalf("span %q not found", fullName)
-	return "", false
+	return tracetest.SpanStub{}
 }
 
 func TestStorageURIAttribute(t *testing.T) {
@@ -408,19 +413,18 @@ func TestStorageURIAttribute(t *testing.T) {
 	wantBucketURI := "gs://" + bucket + "/"
 
 	tests := []struct {
-		name     string
+		name     string // Test name; defaults to spanName.
 		spanName string
 		op       func(ctx context.Context, c *Client)
 		wantURI  string
 	}{
+		// Object-scoped operations.
 		{
-			name:     "Object.Attrs",
 			spanName: "Object.Attrs",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Attrs(ctx) },
 			wantURI:  wantObjURI,
 		},
 		{
-			name:     "Object.Update",
 			spanName: "Object.Update",
 			op: func(ctx context.Context, c *Client) {
 				c.Bucket(bucket).Object(object).Update(ctx, ObjectAttrsToUpdate{ContentType: "text/plain"})
@@ -428,19 +432,16 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI: wantObjURI,
 		},
 		{
-			name:     "Object.Delete",
 			spanName: "Object.Delete",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).Delete(ctx) },
 			wantURI:  wantObjURI,
 		},
 		{
-			name:     "Object.Reader",
 			spanName: "Object.Reader",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).NewReader(ctx) },
 			wantURI:  wantObjURI,
 		},
 		{
-			name:     "Object.Writer",
 			spanName: "Object.Writer",
 			op: func(ctx context.Context, c *Client) {
 				w := c.Bucket(bucket).Object(object).NewWriter(ctx)
@@ -450,7 +451,6 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI: wantObjURI,
 		},
 		{
-			name:     "Object.MultiRangeDownloader",
 			spanName: "Object.MultiRangeDownloader",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).NewMultiRangeDownloader(ctx) },
 			wantURI:  wantObjURI,
@@ -459,8 +459,7 @@ func TestStorageURIAttribute(t *testing.T) {
 			name:     "Copier.Run uses destination",
 			spanName: "Copier.Run",
 			op: func(ctx context.Context, c *Client) {
-				dst := c.Bucket(dstBucket).Object(dstObject)
-				dst.CopierFrom(c.Bucket(bucket).Object(object)).Run(ctx)
+				c.Bucket(dstBucket).Object(dstObject).CopierFrom(c.Bucket(bucket).Object(object)).Run(ctx)
 			},
 			wantURI: wantDstURI,
 		},
@@ -468,8 +467,7 @@ func TestStorageURIAttribute(t *testing.T) {
 			name:     "Composer.Run uses destination",
 			spanName: "Composer.Run",
 			op: func(ctx context.Context, c *Client) {
-				dst := c.Bucket(dstBucket).Object(dstObject)
-				dst.ComposerFrom(c.Bucket(dstBucket).Object("src1")).Run(ctx)
+				c.Bucket(dstBucket).Object(dstObject).ComposerFrom(c.Bucket(dstBucket).Object("src1")).Run(ctx)
 			},
 			wantURI: wantDstURI,
 		},
@@ -493,6 +491,7 @@ func TestStorageURIAttribute(t *testing.T) {
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Object(object).ACL().Delete(ctx, AllUsers) },
 			wantURI:  wantObjURI,
 		},
+		// Bucket-scoped operations.
 		{
 			name:     "bucket ACL.List",
 			spanName: "ACL.List",
@@ -506,25 +505,21 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "Bucket.Create",
 			spanName: "Bucket.Create",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Create(ctx, "my-project", nil) },
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "Bucket.Delete",
 			spanName: "Bucket.Delete",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Delete(ctx) },
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "Bucket.Attrs",
 			spanName: "Bucket.Attrs",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Attrs(ctx) },
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "Bucket.Update",
 			spanName: "Bucket.Update",
 			op: func(ctx context.Context, c *Client) {
 				c.Bucket(bucket).Update(ctx, BucketAttrsToUpdate{StorageClass: "STANDARD"})
@@ -532,7 +527,6 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI: wantBucketURI,
 		},
 		{
-			name:     "Bucket.AddNotification",
 			spanName: "Bucket.AddNotification",
 			op: func(ctx context.Context, c *Client) {
 				c.Bucket(bucket).AddNotification(ctx, &Notification{TopicProjectID: "p", TopicID: "t"})
@@ -540,25 +534,21 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI: wantBucketURI,
 		},
 		{
-			name:     "Bucket.Notifications",
 			spanName: "Bucket.Notifications",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Notifications(ctx) },
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "Bucket.DeleteNotification",
 			spanName: "Bucket.DeleteNotification",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).DeleteNotification(ctx, "n") },
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "storage.IAM.Get",
 			spanName: "storage.IAM.Get",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).IAM().Policy(ctx) },
 			wantURI:  wantBucketURI,
 		},
 		{
-			name:     "storage.IAM.Set",
 			spanName: "storage.IAM.Set",
 			op: func(ctx context.Context, c *Client) {
 				c.Bucket(bucket).IAM().SetPolicy(ctx, &iam.Policy{InternalProto: &iampb.Policy{}})
@@ -566,7 +556,6 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI: wantBucketURI,
 		},
 		{
-			name:     "storage.IAM.Test",
 			spanName: "storage.IAM.Test",
 			op: func(ctx context.Context, c *Client) {
 				c.Bucket(bucket).IAM().TestPermissions(ctx, []string{"storage.buckets.get"})
@@ -574,7 +563,6 @@ func TestStorageURIAttribute(t *testing.T) {
 			wantURI: wantBucketURI,
 		},
 		{
-			name:     "httpStorageClient.ObjectsListCall",
 			spanName: "httpStorageClient.ObjectsListCall",
 			op:       func(ctx context.Context, c *Client) { c.Bucket(bucket).Objects(ctx, nil).Next() },
 			wantURI:  wantBucketURI,
@@ -582,7 +570,11 @@ func TestStorageURIAttribute(t *testing.T) {
 	}
 
 	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
+		name := tc.name
+		if name == "" {
+			name = tc.spanName
+		}
+		t.Run(name, func(t *testing.T) {
 			t.Setenv(storageOtelTracingDevVar, "true")
 			// Disable the bucket metadata cache so no background fetch runs.
 			t.Setenv(storageBucketMetadataDisabledVar, "true")
@@ -592,7 +584,8 @@ func TestStorageURIAttribute(t *testing.T) {
 
 			tc.op(ctx, newTraceTestClient(t))
 
-			got, ok := storageURIFromSpan(t, te.Spans(), tc.spanName)
+			span := findSpan(t, te.Spans(), tc.spanName)
+			got, ok := attrValue(span.Attributes, storageURIAttrKey)
 			if !ok {
 				t.Fatalf("%s not found on span %q", storageURIAttrKey, tc.spanName)
 			}
@@ -600,6 +593,20 @@ func TestStorageURIAttribute(t *testing.T) {
 				t.Errorf("%s = %q, want %q", storageURIAttrKey, got, tc.wantURI)
 			}
 		})
+	}
+}
+
+func TestStorageURIAttributeEmptyBucket(t *testing.T) {
+	t.Setenv(storageOtelTracingDevVar, "true")
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(ctx) })
+
+	ctx, _ = startSpanWithBucket(ctx, nil, "", "obj", "Object.Attrs")
+	endSpan(ctx, nil)
+
+	if got, ok := attrValue(findSpan(t, te.Spans(), "Object.Attrs").Attributes, storageURIAttrKey); ok {
+		t.Errorf("%s = %q, want it absent for an empty bucket name", storageURIAttrKey, got)
 	}
 }
 
@@ -613,39 +620,21 @@ func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
 	newTraceTestClient(t).Bucket("b").Object("o").Attrs(ctx)
 
 	for _, s := range te.Spans() {
-		for _, a := range s.Attributes {
-			if string(a.Key) == storageURIAttrKey {
-				t.Errorf("span %q has %s=%q, want it absent when dev tracing is disabled", s.Name, storageURIAttrKey, a.Value.AsString())
-			}
+		if got, ok := attrValue(s.Attributes, storageURIAttrKey); ok {
+			t.Errorf("span %q has %s=%q, want it absent when dev tracing is disabled", s.Name, storageURIAttrKey, got)
 		}
 	}
 }
 
-func TestWithStorageURI(t *testing.T) {
-	tests := []struct {
-		name           string
-		devEnabled     string
-		bucket, object string
-		wantURI        string // empty means the attribute must be absent
+func TestStorageURI(t *testing.T) {
+	for _, tc := range []struct {
+		bucket, object, want string
 	}{
-		{name: "object", devEnabled: "true", bucket: "b", object: "dir/o.txt", wantURI: "gs://b/dir/o.txt"},
-		{name: "bucket", devEnabled: "true", bucket: "b", wantURI: "gs://b/"},
-		{name: "empty bucket", devEnabled: "true", object: "o"},
-		{name: "dev tracing disabled", devEnabled: "false", bucket: "b", object: "o"},
-	}
-	for _, tc := range tests {
-		t.Run(tc.name, func(t *testing.T) {
-			t.Setenv(storageOtelTracingDevVar, tc.devEnabled)
-			cfg := trace.NewSpanStartConfig(withStorageURI(tc.bucket, tc.object))
-			var got string
-			for _, a := range cfg.Attributes() {
-				if string(a.Key) == storageURIAttrKey {
-					got = a.Value.AsString()
-				}
-			}
-			if got != tc.wantURI {
-				t.Errorf("withStorageURI(%q, %q) = %q, want %q", tc.bucket, tc.object, got, tc.wantURI)
-			}
-		})
+		{bucket: "b", object: "dir/o.txt", want: "gs://b/dir/o.txt"},
+		{bucket: "b", object: "", want: "gs://b/"},
+	} {
+		if got := storageURI(tc.bucket, tc.object); got != tc.want {
+			t.Errorf("storageURI(%q, %q) = %q, want %q", tc.bucket, tc.object, got, tc.want)
+		}
 	}
 }

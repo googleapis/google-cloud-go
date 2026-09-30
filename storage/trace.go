@@ -70,9 +70,17 @@ func tracer() trace.Tracer {
 	return otel.Tracer(defaultTracerName, trace.WithInstrumentationVersion(internal.Version))
 }
 
-func startSpanWithBucket(ctx context.Context, client *Client, bucket string, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
+// startSpanWithBucket starts an operation span for a bucket- or object-scoped
+// operation. When dev tracing is enabled and bucket is non-empty, the span gets
+// the gcp.storage.uri attribute: "gs://<bucket>/<object>" for object-scoped
+// operations, or "gs://<bucket>/" when object is empty. If client has a bucket
+// metadata cache, the span also gets the gcp.resource.destination.* attributes.
+func startSpanWithBucket(ctx context.Context, client *Client, bucket, object, name string, opts ...trace.SpanStartOption) (context.Context, trace.Span) {
 	if !isOTelTracingDevEnabled() {
 		return startSpan(ctx, name, opts...)
+	}
+	if bucket != "" {
+		opts = append(opts, trace.WithAttributes(attribute.String(storageURIAttrKey, storageURI(bucket, object))))
 	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
@@ -183,13 +191,8 @@ func appendPackageName(spanName string) string {
 // the resource an operation targets.
 const storageURIAttrKey = "gcp.storage.uri"
 
-// withStorageURI returns a span start option that sets the gcp.storage.uri
-// attribute. For object-scoped operations the value is "gs://<bucket>/<object>";
-// for bucket-scoped operations (object == "") it is "gs://<bucket>/".
-// It is a no-op if dev tracing is disabled or bucket is empty.
-func withStorageURI(bucket, object string) trace.SpanStartOption {
-	if !isOTelTracingDevEnabled() || bucket == "" {
-		return trace.WithAttributes()
-	}
-	return trace.WithAttributes(attribute.String(storageURIAttrKey, fmt.Sprintf("gs://%s/%s", bucket, object)))
+// storageURI returns "gs://<bucket>/<object>", or "gs://<bucket>/" if object
+// is empty.
+func storageURI(bucket, object string) string {
+	return "gs://" + bucket + "/" + object
 }

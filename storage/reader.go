@@ -119,7 +119,7 @@ func (o *ObjectHandle) NewReader(ctx context.Context, opts ...ReaderOption) (*Re
 func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64, opts ...ReaderOption) (r *Reader, err error) {
 	// This span covers the life of the reader. It is closed via the context
 	// in Reader.Close.
-	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.Reader", withStorageURI(o.bucket, o.object))
+	ctx, _ = startSpanWithBucket(ctx, o.c, o.bucket, o.object, "Object.Reader")
 	defer func() { endSpan(ctx, err) }()
 
 	if err := o.validate(); err != nil {
@@ -265,7 +265,7 @@ func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...MRDO
 	// This span covers the life of the MRD. It is closed via the context
 	// in MultiRangeDownloader.Close.
 	var spanCtx context.Context
-	spanCtx, _ = startSpanWithBucket(ctx, o.c, o.bucket, "Object.MultiRangeDownloader", withStorageURI(o.bucket, o.object))
+	spanCtx, _ = startSpanWithBucket(ctx, o.c, o.bucket, o.object, "Object.MultiRangeDownloader")
 	defer func() {
 		if err != nil {
 			endSpan(spanCtx, err)
