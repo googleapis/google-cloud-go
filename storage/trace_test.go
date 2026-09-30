@@ -16,7 +16,6 @@ package storage
 
 import (
 	"context"
-	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -33,7 +32,6 @@ import (
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
-	"google.golang.org/api/option"
 )
 
 func TestStorageTraceStartEndSpan(t *testing.T) {
@@ -355,50 +353,23 @@ func TestEndSpanEviction(t *testing.T) {
 	}
 }
 
-// errRoundTripper fails every request so that operation spans are created and
-// ended without any network access.
-type errRoundTripper struct{}
-
-func (errRoundTripper) RoundTrip(*http.Request) (*http.Response, error) {
-	return nil, errors.New("fake transport error")
-}
-
-// newTraceTestClient returns an HTTP client whose requests always fail and
-// which never retries.
-func newTraceTestClient(t *testing.T) *Client {
+// storageURIAttr returns the gcp.storage.uri value on the span named spanName,
+// and whether it was set.
+func storageURIAttr(t *testing.T, spans tracetest.SpanStubs, spanName string) (string, bool) {
 	t.Helper()
-	c, err := NewClient(context.Background(), option.WithHTTPClient(&http.Client{Transport: errRoundTripper{}}))
-	if err != nil {
-		t.Fatalf("NewClient: %v", err)
-	}
-	c.SetRetry(WithPolicy(RetryNever))
-	t.Cleanup(func() { c.Close() })
-	return c
-}
-
-// attrValue returns the string value of the attribute with the given key, and
-// whether it was present.
-func attrValue(attrs []attribute.KeyValue, key string) (string, bool) {
-	for _, a := range attrs {
-		if string(a.Key) == key {
-			return a.Value.AsString(), true
-		}
-	}
-	return "", false
-}
-
-// findSpan returns the span named appendPackageName(spanName), failing the
-// test if there is none.
-func findSpan(t *testing.T, spans tracetest.SpanStubs, spanName string) tracetest.SpanStub {
-	t.Helper()
-	fullName := appendPackageName(spanName)
 	for _, s := range spans {
-		if s.Name == fullName {
-			return s
+		if s.Name != appendPackageName(spanName) {
+			continue
 		}
+		for _, a := range s.Attributes {
+			if a.Key == storageURIAttrKey {
+				return a.Value.AsString(), true
+			}
+		}
+		return "", false
 	}
-	t.Fatalf("span %q not found", fullName)
-	return tracetest.SpanStub{}
+	t.Fatalf("span %q not found", spanName)
+	return "", false
 }
 
 func TestStorageURIAttribute(t *testing.T) {
@@ -576,10 +547,9 @@ func TestStorageURIAttribute(t *testing.T) {
 			te := testutil.NewOpenTelemetryTestExporter()
 			t.Cleanup(func() { te.Unregister(ctx) })
 
-			tc.op(ctx, newTraceTestClient(t))
+			tc.op(ctx, mockClient(t, &mockTransport{}))
 
-			span := findSpan(t, te.Spans(), tc.spanName)
-			got, ok := attrValue(span.Attributes, storageURIAttrKey)
+			got, ok := storageURIAttr(t, te.Spans(), tc.spanName)
 			if !ok {
 				t.Fatalf("%s not found on span %q", storageURIAttrKey, tc.spanName)
 			}
@@ -599,7 +569,7 @@ func TestStorageURIAttributeEmptyBucket(t *testing.T) {
 	ctx, _ = startSpanWithBucket(ctx, nil, "", "obj", "Object.Attrs")
 	endSpan(ctx, nil)
 
-	if got, ok := attrValue(findSpan(t, te.Spans(), "Object.Attrs").Attributes, storageURIAttrKey); ok {
+	if got, ok := storageURIAttr(t, te.Spans(), "Object.Attrs"); ok {
 		t.Errorf("%s = %q, want it absent for an empty bucket name", storageURIAttrKey, got)
 	}
 }
@@ -611,10 +581,9 @@ func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
 	te := testutil.NewOpenTelemetryTestExporter()
 	t.Cleanup(func() { te.Unregister(ctx) })
 
-	newTraceTestClient(t).Bucket("b").Object("o").Attrs(ctx)
+	mockClient(t, &mockTransport{}).Bucket("b").Object("o").Attrs(ctx)
 
-	span := findSpan(t, te.Spans(), "Object.Attrs")
-	if got, ok := attrValue(span.Attributes, storageURIAttrKey); ok {
+	if got, ok := storageURIAttr(t, te.Spans(), "Object.Attrs"); ok {
 		t.Errorf("%s = %q, want it absent when dev tracing is disabled", storageURIAttrKey, got)
 	}
 }

@@ -9783,7 +9783,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 
 			// Bucket, object and list spans should all carry gcp.storage.uri.
 			bucketURI := "gs://" + bucketName + "/"
-			if got, _ := attrValue(attrsSpan.Attributes, storageURIAttrKey); got != bucketURI {
+			if got, _ := storageURIAttr(t, spans[spanCountAfterFirstOp:], "Bucket.Attrs"); got != bucketURI {
 				t.Errorf("Bucket.Attrs %s = %q, want %q", storageURIAttrKey, got, bucketURI)
 			}
 
@@ -9802,7 +9802,7 @@ func TestIntegration_ClientTracing(t *testing.T) {
 				{spanName: "Object.Attrs", want: bucketURI + "no-such-object"},
 				{spanName: tc.listSpanName, want: bucketURI},
 			} {
-				if got, _ := attrValue(findSpan(t, newSpans, c.spanName).Attributes, storageURIAttrKey); got != c.want {
+				if got, _ := storageURIAttr(t, newSpans, c.spanName); got != c.want {
 					t.Errorf("%s %s = %q, want %q", c.spanName, storageURIAttrKey, got, c.want)
 				}
 			}
