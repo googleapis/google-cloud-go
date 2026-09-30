@@ -76,6 +76,8 @@ type internalSnapshotSettingsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The SnapshotSettings API.
+//
+// This client uses SnapshotSettingsService version 2026-09-01.
 type SnapshotSettingsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalSnapshotSettingsClient
@@ -244,6 +246,7 @@ func (c *snapshotSettingsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 

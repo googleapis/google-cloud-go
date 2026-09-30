@@ -117,6 +117,8 @@ type internalRegionSslPoliciesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionSslPolicies API.
+//
+// This client uses RegionSslPolicies version 2026-09-01.
 type RegionSslPoliciesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionSslPoliciesClient
@@ -322,6 +324,7 @@ func (c *regionSslPoliciesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -565,9 +568,6 @@ func (c *regionSslPoliciesRESTClient) List(ctx context.Context, req *computepb.L
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -638,9 +638,6 @@ func (c *regionSslPoliciesRESTClient) ListAvailableFeatures(ctx context.Context,
 	}
 	if req != nil && req.PageToken != nil {
 		params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-	}
-	if req != nil && req.ReturnPartialSuccess != nil {
-		params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 	}
 
 	baseUrl.RawQuery = params.Encode()

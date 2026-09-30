@@ -270,6 +270,8 @@ type internalRoutersClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The Routers API.
+//
+// This client uses Routers version 2026-10-01-preview.
 type RoutersClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRoutersClient
@@ -611,6 +613,7 @@ func (c *routersRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -671,9 +674,6 @@ func (c *routersRESTClient) AggregatedList(ctx context.Context, req *computepb.A
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
@@ -1130,9 +1130,6 @@ func (c *routersRESTClient) GetNatMappingInfo(ctx context.Context, req *computep
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -1393,9 +1390,6 @@ func (c *routersRESTClient) List(ctx context.Context, req *computepb.ListRouters
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -1491,9 +1485,6 @@ func (c *routersRESTClient) ListBgpRoutes(ctx context.Context, req *computepb.Li
 		if req != nil && req.PolicyApplied != nil {
 			params.Add("policyApplied", fmt.Sprintf("%v", req.GetPolicyApplied()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 		if req != nil && req.RouteType != nil {
 			params.Add("routeType", fmt.Sprintf("%v", req.GetRouteType()))
 		}
@@ -1581,9 +1572,6 @@ func (c *routersRESTClient) ListNamedSets(ctx context.Context, req *computepb.Li
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -1667,9 +1655,6 @@ func (c *routersRESTClient) ListRoutePolicies(ctx context.Context, req *computep
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

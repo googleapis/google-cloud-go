@@ -137,6 +137,8 @@ type internalRegionSecurityPoliciesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionSecurityPolicies API.
+//
+// This client uses RegionSecurityPolicies version 2026-09-01.
 type RegionSecurityPoliciesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionSecurityPoliciesClient
@@ -378,6 +380,7 @@ func (c *regionSecurityPoliciesRESTClient) setGoogleClientInfo(keyval ...string)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -748,9 +751,6 @@ func (c *regionSecurityPoliciesRESTClient) List(ctx context.Context, req *comput
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

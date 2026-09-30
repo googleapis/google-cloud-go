@@ -89,11 +89,12 @@ func (User_Type) EnumDescriptor() ([]byte, []int) {
 	return file_google_chat_v1_user_proto_rawDescGZIP(), []int{0, 0}
 }
 
-// A user in Google Chat.
-// When returned as an output from a request, if your Chat app [authenticates as
-// a
+// If your Chat app [authenticates as a
 // user](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
-// the output for a `User` resource only populates the user's `name` and `type`.
+// the output for a `User` resource (such as in the Messages and Memberships
+// APIs) only populates the `name` and `type` fields for both internal and
+// external users, unless they are members of the space or have prior affinity
+// with the calling user.
 type User struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Resource name for a Google Chat [user][google.chat.v1.User].
@@ -120,13 +121,42 @@ type User struct {
 	// (for example `users/123456789`) will be returned from the API.
 	Name string `protobuf:"bytes,1,opt,name=name,proto3" json:"name,omitempty"`
 	// Output only. The user's display name.
+	//
+	// Populated for both app authentication and user authentication.
+	// This field is always populated for requests made with [app
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-app).
+	// When calling the Messages and Memberships APIs with [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
+	// this field is populated for both internal and external users for the
+	// `sender` of a message, users within `annotations` (such as user
+	// mentions), and within `Membership` resources, provided the user is a
+	// member of the space or has prior affinity with the calling user.
 	DisplayName string `protobuf:"bytes,2,opt,name=display_name,json=displayName,proto3" json:"display_name,omitempty"`
+	// Output only. The user's avatar image URL.
+	//
+	// When calling the Messages and Memberships APIs with [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
+	// this field is populated for both internal and external users for the
+	// `sender` of a message, users within `annotations` (such as user
+	// mentions), and within `Membership` resources, provided the user is a
+	// member of the space or has prior affinity with the calling user.
+	AvatarUrl string `protobuf:"bytes,3,opt,name=avatar_url,json=avatarUrl,proto3" json:"avatar_url,omitempty"`
+	// Output only. The user's email address.
+	//
+	// When calling the Messages and Memberships APIs with [user
+	// authentication](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
+	// this field is populated for both internal and external users for the
+	// `sender` of a message, users within `annotations` (such as user
+	// mentions), and within `Membership` resources, provided the user is a
+	// member of the space or has prior affinity with the calling user.
+	Email string `protobuf:"bytes,4,opt,name=email,proto3" json:"email,omitempty"`
 	// Unique identifier of the user's Google Workspace domain.
 	DomainId string `protobuf:"bytes,6,opt,name=domain_id,json=domainId,proto3" json:"domain_id,omitempty"`
 	// User type.
 	Type User_Type `protobuf:"varint,5,opt,name=type,proto3,enum=google.chat.v1.User_Type" json:"type,omitempty"`
 	// Output only. When `true`, the user is deleted or their profile is not
-	// visible.
+	// visible, such as when a user is mentioned in a space without being a member
+	// and without prior affinity with the calling user.
 	IsAnonymous   bool `protobuf:"varint,7,opt,name=is_anonymous,json=isAnonymous,proto3" json:"is_anonymous,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -176,6 +206,20 @@ func (x *User) GetDisplayName() string {
 	return ""
 }
 
+func (x *User) GetAvatarUrl() string {
+	if x != nil {
+		return x.AvatarUrl
+	}
+	return ""
+}
+
+func (x *User) GetEmail() string {
+	if x != nil {
+		return x.Email
+	}
+	return ""
+}
+
 func (x *User) GetDomainId() string {
 	if x != nil {
 		return x.DomainId
@@ -201,10 +245,13 @@ var File_google_chat_v1_user_proto protoreflect.FileDescriptor
 
 const file_google_chat_v1_user_proto_rawDesc = "" +
 	"\n" +
-	"\x19google/chat/v1/user.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xe8\x01\n" +
+	"\x19google/chat/v1/user.proto\x12\x0egoogle.chat.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xa7\x02\n" +
 	"\x04User\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12&\n" +
-	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\x1b\n" +
+	"\fdisplay_name\x18\x02 \x01(\tB\x03\xe0A\x03R\vdisplayName\x12\"\n" +
+	"\n" +
+	"avatar_url\x18\x03 \x01(\tB\x03\xe0A\x03R\tavatarUrl\x12\x19\n" +
+	"\x05email\x18\x04 \x01(\tB\x03\xe0A\x03R\x05email\x12\x1b\n" +
 	"\tdomain_id\x18\x06 \x01(\tR\bdomainId\x12-\n" +
 	"\x04type\x18\x05 \x01(\x0e2\x19.google.chat.v1.User.TypeR\x04type\x12&\n" +
 	"\fis_anonymous\x18\a \x01(\bB\x03\xe0A\x03R\visAnonymous\"0\n" +

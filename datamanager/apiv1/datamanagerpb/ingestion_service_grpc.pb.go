@@ -38,6 +38,8 @@ const (
 	IngestionService_RemoveAudienceMembers_FullMethodName    = "/google.ads.datamanager.v1.IngestionService/RemoveAudienceMembers"
 	IngestionService_RemoveAllAudienceMembers_FullMethodName = "/google.ads.datamanager.v1.IngestionService/RemoveAllAudienceMembers"
 	IngestionService_IngestEvents_FullMethodName             = "/google.ads.datamanager.v1.IngestionService/IngestEvents"
+	IngestionService_IngestUsers_FullMethodName              = "/google.ads.datamanager.v1.IngestionService/IngestUsers"
+	IngestionService_RemoveUsers_FullMethodName              = "/google.ads.datamanager.v1.IngestionService/RemoveUsers"
 	IngestionService_IngestAdEvents_FullMethodName           = "/google.ads.datamanager.v1.IngestionService/IngestAdEvents"
 	IngestionService_RetrieveRequestStatus_FullMethodName    = "/google.ads.datamanager.v1.IngestionService/RetrieveRequestStatus"
 )
@@ -60,6 +62,19 @@ type IngestionServiceClient interface {
 	// [Event][google.ads.datamanager.v1.Event] resources from
 	// the provided [Destination][google.ads.datamanager.v1.Destination].
 	IngestEvents(ctx context.Context, in *IngestEventsRequest, opts ...grpc.CallOption) (*IngestEventsResponse, error)
+	// Uploads a list of users to the provided destinations. Unlike
+	// [IngestAudienceMembers][google.ads.datamanager.v1.IngestionService.IngestAudienceMembers]
+	// (which adds users to specific advertiser audience lists for targeting),
+	// `IngestUsers` ingests account level identity linkage data (for example,
+	// user identifiers linked to mobile IDs) independent of specific audience
+	// segments.
+	//
+	// This feature is only available to accounts on an allowlist.
+	IngestUsers(ctx context.Context, in *IngestUsersRequest, opts ...grpc.CallOption) (*IngestUsersResponse, error)
+	// Removes a list of users from the provided destinations.
+	//
+	// This feature is only available to accounts on an allowlist.
+	RemoveUsers(ctx context.Context, in *RemoveUsersRequest, opts ...grpc.CallOption) (*RemoveUsersResponse, error)
 	// Uploads a list of
 	// [AdEvent][google.ads.datamanager.v1.AdEvent] resources to Google
 	// Analytics.
@@ -114,6 +129,24 @@ func (c *ingestionServiceClient) IngestEvents(ctx context.Context, in *IngestEve
 	return out, nil
 }
 
+func (c *ingestionServiceClient) IngestUsers(ctx context.Context, in *IngestUsersRequest, opts ...grpc.CallOption) (*IngestUsersResponse, error) {
+	out := new(IngestUsersResponse)
+	err := c.cc.Invoke(ctx, IngestionService_IngestUsers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+func (c *ingestionServiceClient) RemoveUsers(ctx context.Context, in *RemoveUsersRequest, opts ...grpc.CallOption) (*RemoveUsersResponse, error) {
+	out := new(RemoveUsersResponse)
+	err := c.cc.Invoke(ctx, IngestionService_RemoveUsers_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *ingestionServiceClient) IngestAdEvents(ctx context.Context, in *IngestAdEventsRequest, opts ...grpc.CallOption) (*IngestAdEventsResponse, error) {
 	out := new(IngestAdEventsResponse)
 	err := c.cc.Invoke(ctx, IngestionService_IngestAdEvents_FullMethodName, in, out, opts...)
@@ -150,6 +183,19 @@ type IngestionServiceServer interface {
 	// [Event][google.ads.datamanager.v1.Event] resources from
 	// the provided [Destination][google.ads.datamanager.v1.Destination].
 	IngestEvents(context.Context, *IngestEventsRequest) (*IngestEventsResponse, error)
+	// Uploads a list of users to the provided destinations. Unlike
+	// [IngestAudienceMembers][google.ads.datamanager.v1.IngestionService.IngestAudienceMembers]
+	// (which adds users to specific advertiser audience lists for targeting),
+	// `IngestUsers` ingests account level identity linkage data (for example,
+	// user identifiers linked to mobile IDs) independent of specific audience
+	// segments.
+	//
+	// This feature is only available to accounts on an allowlist.
+	IngestUsers(context.Context, *IngestUsersRequest) (*IngestUsersResponse, error)
+	// Removes a list of users from the provided destinations.
+	//
+	// This feature is only available to accounts on an allowlist.
+	RemoveUsers(context.Context, *RemoveUsersRequest) (*RemoveUsersResponse, error)
 	// Uploads a list of
 	// [AdEvent][google.ads.datamanager.v1.AdEvent] resources to Google
 	// Analytics.
@@ -175,6 +221,12 @@ func (UnimplementedIngestionServiceServer) RemoveAllAudienceMembers(context.Cont
 }
 func (UnimplementedIngestionServiceServer) IngestEvents(context.Context, *IngestEventsRequest) (*IngestEventsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IngestEvents not implemented")
+}
+func (UnimplementedIngestionServiceServer) IngestUsers(context.Context, *IngestUsersRequest) (*IngestUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method IngestUsers not implemented")
+}
+func (UnimplementedIngestionServiceServer) RemoveUsers(context.Context, *RemoveUsersRequest) (*RemoveUsersResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method RemoveUsers not implemented")
 }
 func (UnimplementedIngestionServiceServer) IngestAdEvents(context.Context, *IngestAdEventsRequest) (*IngestAdEventsResponse, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method IngestAdEvents not implemented")
@@ -266,6 +318,42 @@ func _IngestionService_IngestEvents_Handler(srv interface{}, ctx context.Context
 	return interceptor(ctx, in, info, handler)
 }
 
+func _IngestionService_IngestUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(IngestUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IngestionServiceServer).IngestUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IngestionService_IngestUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IngestionServiceServer).IngestUsers(ctx, req.(*IngestUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
+func _IngestionService_RemoveUsers_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(RemoveUsersRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(IngestionServiceServer).RemoveUsers(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: IngestionService_RemoveUsers_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(IngestionServiceServer).RemoveUsers(ctx, req.(*RemoveUsersRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _IngestionService_IngestAdEvents_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(IngestAdEventsRequest)
 	if err := dec(in); err != nil {
@@ -324,6 +412,14 @@ var IngestionService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "IngestEvents",
 			Handler:    _IngestionService_IngestEvents_Handler,
+		},
+		{
+			MethodName: "IngestUsers",
+			Handler:    _IngestionService_IngestUsers_Handler,
+		},
+		{
+			MethodName: "RemoveUsers",
+			Handler:    _IngestionService_RemoveUsers_Handler,
 		},
 		{
 			MethodName: "IngestAdEvents",

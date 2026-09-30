@@ -104,6 +104,8 @@ type internalNetworkEdgeSecurityServicesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The NetworkEdgeSecurityServices API.
+//
+// This client uses NetworkEdgeSecurityServices version 2026-09-01.
 type NetworkEdgeSecurityServicesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalNetworkEdgeSecurityServicesClient
@@ -301,6 +303,7 @@ func (c *networkEdgeSecurityServicesRESTClient) setGoogleClientInfo(keyval ...st
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -362,9 +365,6 @@ func (c *networkEdgeSecurityServicesRESTClient) AggregatedList(ctx context.Conte
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 		if req != nil && req.ServiceProjectNumber != nil {
 			params.Add("serviceProjectNumber", fmt.Sprintf("%v", req.GetServiceProjectNumber()))
