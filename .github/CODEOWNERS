@@ -1,29 +1,29 @@
 # Default owner for all directories not owned by others
 # The cloud-sdk-go-team team are the effective repo maintainers, but automatic
 # generation/releasing PRs are in the purview of the librarian team.
-*                       @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+*                       @googleapis/cloud-sdk-go-team
 
 /librarian.yaml         @googleapis/cloud-sdk-librarian-team
-/ai/                    @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/aiplatform/            @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/agentplatform/         @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/auth/                  @googleapis/aion-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/              @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/cbt       @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/cmd/emulator  @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/bigtable/bttest        @googleapis/bigtable-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/datastore/             @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/firestore/             @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/pubsub/                @googleapis/pubsub-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/pubsublite/            @googleapis/pubsub-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/spanner/               @googleapis/spanner-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/storage/               @googleapis/gcs-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/httpreplay/            @googleapis/gcs-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/errorreporting/        @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/logging/               @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/profiler/              @googleapis/cloud-profiler-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/vertexai/              @googleapis/vertexai-team @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
-/internal/protoveneer/  @googleapis/cloud-sdk-go-team @googleapis/cloud-sdk-librarian-team
+/ai/                    @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/aiplatform/            @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/agentplatform/         @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/auth/                  @googleapis/aion-team @googleapis/cloud-sdk-go-team
+/bigtable/              @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/bigtable/cmd/cbt       @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/bigtable/cmd/emulator  @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/bigtable/bttest        @googleapis/bigtable-team @googleapis/cloud-sdk-go-team
+/datastore/             @googleapis/cloud-sdk-go-team
+/firestore/             @googleapis/cloud-sdk-go-team
+/pubsub/                @googleapis/pubsub-team @googleapis/cloud-sdk-go-team
+/pubsublite/            @googleapis/pubsub-team @googleapis/cloud-sdk-go-team
+/spanner/               @googleapis/spanner-team @googleapis/cloud-sdk-go-team
+/storage/               @googleapis/gcs-team @googleapis/cloud-sdk-go-team
+/httpreplay/            @googleapis/gcs-team @googleapis/cloud-sdk-go-team
+/errorreporting/        @googleapis/cloud-sdk-go-team
+/logging/               @googleapis/cloud-sdk-go-team
+/profiler/              @googleapis/cloud-profiler-team @googleapis/cloud-sdk-go-team
+/vertexai/              @googleapis/vertexai-team @googleapis/cloud-sdk-go-team
+/internal/protoveneer/  @googleapis/cloud-sdk-go-team
 
 
 # We mark the release please individual manifest unowned as well to allow teams to release the individual modules without secondary approvals.
