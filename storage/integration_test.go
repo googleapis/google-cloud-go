@@ -9666,17 +9666,20 @@ func TestIntegration_ClientTracing(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name      string
-		newClient func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
+		name         string
+		listSpanName string
+		newClient    func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
 	}{
 		{
-			name: "gRPC",
+			name:         "gRPC",
+			listSpanName: "grpcStorageClient.ObjectsListCall",
 			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 				return testConfigGRPC(ctx, t, opts...), nil
 			},
 		},
 		{
-			name: "HTTP",
+			name:         "HTTP",
+			listSpanName: "httpStorageClient.ObjectsListCall",
 			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 				return testConfig(ctx, t, opts...), nil
 			},
@@ -9778,9 +9781,10 @@ func TestIntegration_ClientTracing(t *testing.T) {
 			// Second call should have resolved attributes.
 			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
 
-			// gcp.storage.uri on bucket-, object- and list-scoped spans.
-			if got, _ := attrValue(attrsSpan.Attributes, storageURIAttrKey); got != "gs://"+bucketName+"/" {
-				t.Errorf("Bucket.Attrs %s = %q, want %q", storageURIAttrKey, got, "gs://"+bucketName+"/")
+			// Bucket, object and list spans should all carry gcp.storage.uri.
+			bucketURI := "gs://" + bucketName + "/"
+			if got, _ := attrValue(attrsSpan.Attributes, storageURIAttrKey); got != bucketURI {
+				t.Errorf("Bucket.Attrs %s = %q, want %q", storageURIAttrKey, got, bucketURI)
 			}
 
 			spanCountBeforeURIOps := len(te.Spans())
@@ -9791,16 +9795,15 @@ func TestIntegration_ClientTracing(t *testing.T) {
 				t.Fatalf("Objects.Next: got %v, want iterator.Done", err)
 			}
 			newSpans := te.Spans()[spanCountBeforeURIOps:]
-			listSpanName := "httpStorageClient.ObjectsListCall"
-			if tc.name == "gRPC" {
-				listSpanName = "grpcStorageClient.ObjectsListCall"
-			}
-			for spanName, want := range map[string]string{
-				"Object.Attrs": "gs://" + bucketName + "/no-such-object",
-				listSpanName:   "gs://" + bucketName + "/",
+			for _, c := range []struct {
+				spanName string
+				want     string
+			}{
+				{spanName: "Object.Attrs", want: bucketURI + "no-such-object"},
+				{spanName: tc.listSpanName, want: bucketURI},
 			} {
-				if got, _ := attrValue(findSpan(t, newSpans, spanName).Attributes, storageURIAttrKey); got != want {
-					t.Errorf("%s %s = %q, want %q", spanName, storageURIAttrKey, got, want)
+				if got, _ := attrValue(findSpan(t, newSpans, c.spanName).Attributes, storageURIAttrKey); got != c.want {
+					t.Errorf("%s %s = %q, want %q", c.spanName, storageURIAttrKey, got, c.want)
 				}
 			}
 		})

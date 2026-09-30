@@ -80,7 +80,7 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket, object, na
 		return startSpan(ctx, name, opts...)
 	}
 	if bucket != "" {
-		opts = append(opts, trace.WithAttributes(attribute.String(storageURIAttrKey, storageURI(bucket, object))))
+		opts = append(opts, trace.WithAttributes(attribute.String(storageURIAttrKey, "gs://"+bucket+"/"+object)))
 	}
 	if client != nil && client.bucketMetadataCache != nil && bucket != "" {
 		ctx = context.WithValue(ctx, cacheContextKey, client.bucketMetadataCache)
@@ -189,10 +189,8 @@ func appendPackageName(spanName string) string {
 
 // storageURIAttrKey is the attribute key for the fully-qualified GCS URI of
 // the resource an operation targets.
+//
+// TODO: Apply the cross-SDK redaction rule (decision D8) for object names
+// before the dev tracing flag is removed. Until then, full object names are
+// emitted.
 const storageURIAttrKey = "gcp.storage.uri"
-
-// storageURI returns "gs://<bucket>/<object>", or "gs://<bucket>/" if object
-// is empty.
-func storageURI(bucket, object string) string {
-	return "gs://" + bucket + "/" + object
-}

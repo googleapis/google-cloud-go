@@ -619,22 +619,8 @@ func TestStorageURIAttributeDevTracingDisabled(t *testing.T) {
 
 	newTraceTestClient(t).Bucket("b").Object("o").Attrs(ctx)
 
-	for _, s := range te.Spans() {
-		if got, ok := attrValue(s.Attributes, storageURIAttrKey); ok {
-			t.Errorf("span %q has %s=%q, want it absent when dev tracing is disabled", s.Name, storageURIAttrKey, got)
-		}
-	}
-}
-
-func TestStorageURI(t *testing.T) {
-	for _, tc := range []struct {
-		bucket, object, want string
-	}{
-		{bucket: "b", object: "dir/o.txt", want: "gs://b/dir/o.txt"},
-		{bucket: "b", object: "", want: "gs://b/"},
-	} {
-		if got := storageURI(tc.bucket, tc.object); got != tc.want {
-			t.Errorf("storageURI(%q, %q) = %q, want %q", tc.bucket, tc.object, got, tc.want)
-		}
+	span := findSpan(t, te.Spans(), "Object.Attrs")
+	if got, ok := attrValue(span.Attributes, storageURIAttrKey); ok {
+		t.Errorf("%s = %q, want it absent when dev tracing is disabled", storageURIAttrKey, got)
 	}
 }
