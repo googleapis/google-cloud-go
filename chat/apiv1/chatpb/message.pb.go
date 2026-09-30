@@ -382,9 +382,11 @@ type Message struct {
 	// Output only. The user who created the message.
 	// If your Chat app [authenticates as a
 	// user](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
-	// the output populates the
+	// the output only populates the
 	// [user](https://developers.google.com/workspace/chat/api/reference/rest/v1/User)
-	// `name` and `type`.
+	// `name` and `type` fields for both internal and external users, unless they
+	// are members of the space or have a prior affinity, like a direct message
+	// (DM) conversation, with the calling user.
 	Sender *User `protobuf:"bytes,2,opt,name=sender,proto3" json:"sender,omitempty"`
 	// Optional. Immutable. For spaces created in Chat, the time at which the
 	// message was created. This field is output only, except when used in import

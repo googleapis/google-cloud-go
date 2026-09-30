@@ -70,6 +70,8 @@ type internalImageFamilyViewsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The ImageFamilyViews API.
+//
+// This client uses ImageFamilyViews version 2026-09-01.
 type ImageFamilyViewsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalImageFamilyViewsClient
@@ -218,6 +220,7 @@ func (c *imageFamilyViewsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 

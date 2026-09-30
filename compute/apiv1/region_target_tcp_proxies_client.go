@@ -98,6 +98,8 @@ type internalRegionTargetTcpProxiesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionTargetTcpProxies API.
+//
+// This client uses RegionTargetTcpProxies version 2026-09-01.
 type RegionTargetTcpProxiesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionTargetTcpProxiesClient
@@ -284,6 +286,7 @@ func (c *regionTargetTcpProxiesRESTClient) setGoogleClientInfo(keyval ...string)
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -524,9 +527,6 @@ func (c *regionTargetTcpProxiesRESTClient) List(ctx context.Context, req *comput
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

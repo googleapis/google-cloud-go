@@ -977,6 +977,464 @@
     {
       "clientMethod": {
         "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.CancelOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.CancelOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "CancelOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.CancelOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "CancelOperation"
+      },
+      "description": "CancelOperation is a utility method from google.longrunning.Operations.",
+      "file": "CompanionAgentsClient/CancelOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_CancelOperation_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow CancelOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.CreateCompanionAgent",
+        "method": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgents.CreateCompanionAgent",
+          "service": {
+            "fullName": "google.cloud.dialogflow.v2.CompanionAgents",
+            "shortName": "CompanionAgents"
+          },
+          "shortName": "CreateCompanionAgent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dialogflowpb.CreateCompanionAgentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dialogflowpb.CompanionAgent",
+        "shortName": "CreateCompanionAgent"
+      },
+      "description": "CreateCompanionAgent creates a companion agent.",
+      "file": "CompanionAgentsClient/CreateCompanionAgent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_CreateCompanionAgent_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow CreateCompanionAgent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.DeleteCompanionAgent",
+        "method": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgents.DeleteCompanionAgent",
+          "service": {
+            "fullName": "google.cloud.dialogflow.v2.CompanionAgents",
+            "shortName": "CompanionAgents"
+          },
+          "shortName": "DeleteCompanionAgent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dialogflowpb.DeleteCompanionAgentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "shortName": "DeleteCompanionAgent"
+      },
+      "description": "DeleteCompanionAgent deletes a companion agent.",
+      "file": "CompanionAgentsClient/DeleteCompanionAgent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_DeleteCompanionAgent_sync",
+      "segments": [
+        {
+          "end": 53,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow DeleteCompanionAgent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.GetCompanionAgent",
+        "method": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgents.GetCompanionAgent",
+          "service": {
+            "fullName": "google.cloud.dialogflow.v2.CompanionAgents",
+            "shortName": "CompanionAgents"
+          },
+          "shortName": "GetCompanionAgent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dialogflowpb.GetCompanionAgentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dialogflowpb.CompanionAgent",
+        "shortName": "GetCompanionAgent"
+      },
+      "description": "GetCompanionAgent gets a companion agent.",
+      "file": "CompanionAgentsClient/GetCompanionAgent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_GetCompanionAgent_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow GetCompanionAgent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.GetLocation",
+        "method": {
+          "fullName": "google.cloud.location.Locations.GetLocation",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "GetLocation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.GetLocationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*locationpb.Location",
+        "shortName": "GetLocation"
+      },
+      "description": "GetLocation gets information about a location.",
+      "file": "CompanionAgentsClient/GetLocation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_GetLocation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow GetLocation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.GetOperation",
+        "method": {
+          "fullName": "google.longrunning.Operations.GetOperation",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "GetOperation"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.GetOperationRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*longrunningpb.Operation",
+        "shortName": "GetOperation"
+      },
+      "description": "GetOperation is a utility method from google.longrunning.Operations.",
+      "file": "CompanionAgentsClient/GetOperation/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_GetOperation_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow GetOperation Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.ListCompanionAgents",
+        "method": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgents.ListCompanionAgents",
+          "service": {
+            "fullName": "google.cloud.dialogflow.v2.CompanionAgents",
+            "shortName": "CompanionAgents"
+          },
+          "shortName": "ListCompanionAgents"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dialogflowpb.ListCompanionAgentsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "CompanionAgentIterator",
+        "shortName": "ListCompanionAgents"
+      },
+      "description": "ListCompanionAgents lists companion agents.",
+      "file": "CompanionAgentsClient/ListCompanionAgents/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_ListCompanionAgents_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow ListCompanionAgents Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.ListLocations",
+        "method": {
+          "fullName": "google.cloud.location.Locations.ListLocations",
+          "service": {
+            "fullName": "google.cloud.location.Locations",
+            "shortName": "Locations"
+          },
+          "shortName": "ListLocations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "locationpb.ListLocationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "LocationIterator",
+        "shortName": "ListLocations"
+      },
+      "description": "ListLocations lists information about the supported locations for this service.\n\nThis method lists locations based on the resource scope provided in\nthe [ListLocationsRequest.name][google.cloud.location.ListLocationsRequest.name] field: *\n**Global locations**: If `name` is empty, the method lists the\npublic locations available to all projects. * **Project-specific\nlocations**: If `name` follows the format\n`projects/{project}`, the method lists locations visible to that\nspecific project. This includes public, private, or other\nproject-specific locations enabled for the project.\n\nFor gRPC and client library implementations, the resource name is\npassed as the `name` field. For direct service calls, the resource\nname is\nincorporated into the request path based on the specific service\nimplementation and version.",
+      "file": "CompanionAgentsClient/ListLocations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_ListLocations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow ListLocations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.ListOperations",
+        "method": {
+          "fullName": "google.longrunning.Operations.ListOperations",
+          "service": {
+            "fullName": "google.longrunning.Operations",
+            "shortName": "Operations"
+          },
+          "shortName": "ListOperations"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "longrunningpb.ListOperationsRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "OperationIterator",
+        "shortName": "ListOperations"
+      },
+      "description": "ListOperations is a utility method from google.longrunning.Operations.",
+      "file": "CompanionAgentsClient/ListOperations/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_ListOperations_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow ListOperations Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient",
+          "shortName": "CompanionAgentsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.CompanionAgentsClient.UpdateCompanionAgent",
+        "method": {
+          "fullName": "google.cloud.dialogflow.v2.CompanionAgents.UpdateCompanionAgent",
+          "service": {
+            "fullName": "google.cloud.dialogflow.v2.CompanionAgents",
+            "shortName": "CompanionAgents"
+          },
+          "shortName": "UpdateCompanionAgent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "dialogflowpb.UpdateCompanionAgentRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*dialogflowpb.CompanionAgent",
+        "shortName": "UpdateCompanionAgent"
+      },
+      "description": "UpdateCompanionAgent updates a companion agent.",
+      "file": "CompanionAgentsClient/UpdateCompanionAgent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_CompanionAgents_UpdateCompanionAgent_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow UpdateCompanionAgent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
           "fullName": "google.cloud.dialogflow.v2.ContextsClient",
           "shortName": "ContextsClient"
         },
@@ -8225,6 +8683,48 @@
           "fullName": "google.cloud.dialogflow.v2.ParticipantsClient",
           "shortName": "ParticipantsClient"
         },
+        "fullName": "google.cloud.dialogflow.v2.ParticipantsClient.BidiStreamingAnalyzeContent",
+        "method": {
+          "fullName": "google.cloud.dialogflow.v2.Participants.BidiStreamingAnalyzeContent",
+          "service": {
+            "fullName": "google.cloud.dialogflow.v2.Participants",
+            "shortName": "Participants"
+          },
+          "shortName": "BidiStreamingAnalyzeContent"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "dialogflowpb.Participants_BidiStreamingAnalyzeContentClient",
+        "shortName": "BidiStreamingAnalyzeContent"
+      },
+      "description": "BidiStreamingAnalyzeContent bidirectional endless streaming version of\n[StreamingAnalyzeContent][google.cloud.dialogflow.v2.Participants.StreamingAnalyzeContent].\n\n\nThis method is not supported for the REST transport.",
+      "file": "ParticipantsClient/BidiStreamingAnalyzeContent/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_Participants_BidiStreamingAnalyzeContent_sync",
+      "segments": [
+        {
+          "end": 71,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow BidiStreamingAnalyzeContent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.ParticipantsClient",
+          "shortName": "ParticipantsClient"
+        },
         "fullName": "google.cloud.dialogflow.v2.ParticipantsClient.CancelOperation",
         "method": {
           "fullName": "google.longrunning.Operations.CancelOperation",
@@ -8627,6 +9127,48 @@
         }
       ],
       "title": "dialogflow StreamingAnalyzeContent Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.dialogflow.v2.ParticipantsClient",
+          "shortName": "ParticipantsClient"
+        },
+        "fullName": "google.cloud.dialogflow.v2.ParticipantsClient.StreamingReactiveCompanionSuggestions",
+        "method": {
+          "fullName": "google.cloud.dialogflow.v2.Participants.StreamingReactiveCompanionSuggestions",
+          "service": {
+            "fullName": "google.cloud.dialogflow.v2.Participants",
+            "shortName": "Participants"
+          },
+          "shortName": "StreamingReactiveCompanionSuggestions"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "dialogflowpb.Participants_StreamingReactiveCompanionSuggestionsClient",
+        "shortName": "StreamingReactiveCompanionSuggestions"
+      },
+      "description": "StreamingReactiveCompanionSuggestions external streaming API for direct human-agent-to-bot chats.\n\n\nThis method is not supported for the REST transport.",
+      "file": "ParticipantsClient/StreamingReactiveCompanionSuggestions/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "dialogflow_v2_generated_Participants_StreamingReactiveCompanionSuggestions_sync",
+      "segments": [
+        {
+          "end": 71,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "dialogflow StreamingReactiveCompanionSuggestions Sample"
     },
     {
       "clientMethod": {

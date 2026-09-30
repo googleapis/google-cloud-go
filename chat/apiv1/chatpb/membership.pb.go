@@ -420,9 +420,11 @@ type Membership_Member struct {
 	// Optional. The Google Chat user or app the membership corresponds to.
 	// If your Chat app [authenticates as a
 	// user](https://developers.google.com/workspace/chat/authenticate-authorize-chat-user),
-	// the output populates the
+	// the output only populates the
 	// [user](https://developers.google.com/workspace/chat/api/reference/rest/v1/User)
-	// `name` and `type`.
+	// `name` and `type` fields for both internal and external users, unless
+	// they are members of the space or have a prior affinity, like a direct
+	// message (DM) conversation, with the calling user.
 	Member *User `protobuf:"bytes,3,opt,name=member,proto3,oneof"`
 }
 

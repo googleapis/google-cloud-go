@@ -113,6 +113,8 @@ type internalPublicAdvertisedPrefixesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The PublicAdvertisedPrefixes API.
+//
+// This client uses PublicAdvertisedPrefixes version 2026-10-01-preview.
 type PublicAdvertisedPrefixesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalPublicAdvertisedPrefixesClient
@@ -325,6 +327,7 @@ func (c *publicAdvertisedPrefixesRESTClient) setGoogleClientInfo(keyval ...strin
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 
@@ -625,9 +628,6 @@ func (c *publicAdvertisedPrefixesRESTClient) List(ctx context.Context, req *comp
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

@@ -2541,6 +2541,59 @@ func (ProductAttributes_Co2Emissions_Unit) EnumDescriptor() ([]byte, []int) {
 	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 5, 0}
 }
 
+// The warranty duration unit of the product.
+type ProductAttributes_Warranty_WarrantyDurationUnit int32
+
+const (
+	// Indicates that the warranty duration unit is unspecified.
+	ProductAttributes_Warranty_WARRANTY_DURATION_UNIT_UNSPECIFIED ProductAttributes_Warranty_WarrantyDurationUnit = 0
+	// Indicates that the warranty duration unit is month.
+	ProductAttributes_Warranty_MONTH ProductAttributes_Warranty_WarrantyDurationUnit = 1
+	// Indicates that the warranty duration unit is year.
+	ProductAttributes_Warranty_YEAR ProductAttributes_Warranty_WarrantyDurationUnit = 2
+)
+
+// Enum value maps for ProductAttributes_Warranty_WarrantyDurationUnit.
+var (
+	ProductAttributes_Warranty_WarrantyDurationUnit_name = map[int32]string{
+		0: "WARRANTY_DURATION_UNIT_UNSPECIFIED",
+		1: "MONTH",
+		2: "YEAR",
+	}
+	ProductAttributes_Warranty_WarrantyDurationUnit_value = map[string]int32{
+		"WARRANTY_DURATION_UNIT_UNSPECIFIED": 0,
+		"MONTH":                              1,
+		"YEAR":                               2,
+	}
+)
+
+func (x ProductAttributes_Warranty_WarrantyDurationUnit) Enum() *ProductAttributes_Warranty_WarrantyDurationUnit {
+	p := new(ProductAttributes_Warranty_WarrantyDurationUnit)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_Warranty_WarrantyDurationUnit) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_Warranty_WarrantyDurationUnit) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[29].Descriptor()
+}
+
+func (ProductAttributes_Warranty_WarrantyDurationUnit) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[29]
+}
+
+func (x ProductAttributes_Warranty_WarrantyDurationUnit) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_Warranty_WarrantyDurationUnit.Descriptor instead.
+func (ProductAttributes_Warranty_WarrantyDurationUnit) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 6, 0}
+}
+
 // The type of product fee.
 type ProductAttributes_ProductFee_FeeType int32
 
@@ -2582,11 +2635,11 @@ func (x ProductAttributes_ProductFee_FeeType) String() string {
 }
 
 func (ProductAttributes_ProductFee_FeeType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[29].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[30].Descriptor()
 }
 
 func (ProductAttributes_ProductFee_FeeType) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[29]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[30]
 }
 
 func (x ProductAttributes_ProductFee_FeeType) Number() protoreflect.EnumNumber {
@@ -2635,11 +2688,11 @@ func (x ProductAttributes_UnitArea_Unit) String() string {
 }
 
 func (ProductAttributes_UnitArea_Unit) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[30].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[31].Descriptor()
 }
 
 func (ProductAttributes_UnitArea_Unit) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[30]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[31]
 }
 
 func (x ProductAttributes_UnitArea_Unit) Number() protoreflect.EnumNumber {
@@ -2692,11 +2745,11 @@ func (x ProductAttributes_PetPolicy_PetType) String() string {
 }
 
 func (ProductAttributes_PetPolicy_PetType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[31].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[32].Descriptor()
 }
 
 func (ProductAttributes_PetPolicy_PetType) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[31]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[32]
 }
 
 func (x ProductAttributes_PetPolicy_PetType) Number() protoreflect.EnumNumber {
@@ -2706,6 +2759,398 @@ func (x ProductAttributes_PetPolicy_PetType) Number() protoreflect.EnumNumber {
 // Deprecated: Use ProductAttributes_PetPolicy_PetType.Descriptor instead.
 func (ProductAttributes_PetPolicy_PetType) EnumDescriptor() ([]byte, []int) {
 	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 10, 0}
+}
+
+// The type of lease term.
+type ProductAttributes_LeaseTerm_LeaseTermType int32
+
+const (
+	// Unspecified lease term type.
+	ProductAttributes_LeaseTerm_LEASE_TERM_TYPE_UNSPECIFIED ProductAttributes_LeaseTerm_LeaseTermType = 0
+	// Fixed term.
+	ProductAttributes_LeaseTerm_FIXED_TERM ProductAttributes_LeaseTerm_LeaseTermType = 1
+)
+
+// Enum value maps for ProductAttributes_LeaseTerm_LeaseTermType.
+var (
+	ProductAttributes_LeaseTerm_LeaseTermType_name = map[int32]string{
+		0: "LEASE_TERM_TYPE_UNSPECIFIED",
+		1: "FIXED_TERM",
+	}
+	ProductAttributes_LeaseTerm_LeaseTermType_value = map[string]int32{
+		"LEASE_TERM_TYPE_UNSPECIFIED": 0,
+		"FIXED_TERM":                  1,
+	}
+)
+
+func (x ProductAttributes_LeaseTerm_LeaseTermType) Enum() *ProductAttributes_LeaseTerm_LeaseTermType {
+	p := new(ProductAttributes_LeaseTerm_LeaseTermType)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_LeaseTerm_LeaseTermType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_LeaseTerm_LeaseTermType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[33].Descriptor()
+}
+
+func (ProductAttributes_LeaseTerm_LeaseTermType) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[33]
+}
+
+func (x ProductAttributes_LeaseTerm_LeaseTermType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_LeaseTerm_LeaseTermType.Descriptor instead.
+func (ProductAttributes_LeaseTerm_LeaseTermType) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 11, 0}
+}
+
+// The unit of duration.
+type ProductAttributes_LeaseTerm_DurationUnit int32
+
+const (
+	// Unspecified duration unit.
+	ProductAttributes_LeaseTerm_DURATION_UNIT_UNSPECIFIED ProductAttributes_LeaseTerm_DurationUnit = 0
+	// Month.
+	ProductAttributes_LeaseTerm_MONTHS ProductAttributes_LeaseTerm_DurationUnit = 1
+	// Week.
+	ProductAttributes_LeaseTerm_WEEKS ProductAttributes_LeaseTerm_DurationUnit = 2
+)
+
+// Enum value maps for ProductAttributes_LeaseTerm_DurationUnit.
+var (
+	ProductAttributes_LeaseTerm_DurationUnit_name = map[int32]string{
+		0: "DURATION_UNIT_UNSPECIFIED",
+		1: "MONTHS",
+		2: "WEEKS",
+	}
+	ProductAttributes_LeaseTerm_DurationUnit_value = map[string]int32{
+		"DURATION_UNIT_UNSPECIFIED": 0,
+		"MONTHS":                    1,
+		"WEEKS":                     2,
+	}
+)
+
+func (x ProductAttributes_LeaseTerm_DurationUnit) Enum() *ProductAttributes_LeaseTerm_DurationUnit {
+	p := new(ProductAttributes_LeaseTerm_DurationUnit)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_LeaseTerm_DurationUnit) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_LeaseTerm_DurationUnit) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[34].Descriptor()
+}
+
+func (ProductAttributes_LeaseTerm_DurationUnit) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[34]
+}
+
+func (x ProductAttributes_LeaseTerm_DurationUnit) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_LeaseTerm_DurationUnit.Descriptor instead.
+func (ProductAttributes_LeaseTerm_DurationUnit) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 11, 1}
+}
+
+// Type of return window for the return policy.
+type ProductAttributes_Returns_ReturnWindowType int32
+
+const (
+	// The return window type is unspecified.
+	ProductAttributes_Returns_RETURN_WINDOW_TYPE_UNSPECIFIED ProductAttributes_Returns_ReturnWindowType = 0
+	// Window with a fixed number of days. If this is set, the `window_days`
+	// field must be set.
+	ProductAttributes_Returns_FINITE_RETURN_WINDOW ProductAttributes_Returns_ReturnWindowType = 1
+	// No returns accepted.
+	ProductAttributes_Returns_NO_RETURNS ProductAttributes_Returns_ReturnWindowType = 2
+	// Lifetime returns accepted.
+	ProductAttributes_Returns_LIFETIME ProductAttributes_Returns_ReturnWindowType = 3
+)
+
+// Enum value maps for ProductAttributes_Returns_ReturnWindowType.
+var (
+	ProductAttributes_Returns_ReturnWindowType_name = map[int32]string{
+		0: "RETURN_WINDOW_TYPE_UNSPECIFIED",
+		1: "FINITE_RETURN_WINDOW",
+		2: "NO_RETURNS",
+		3: "LIFETIME",
+	}
+	ProductAttributes_Returns_ReturnWindowType_value = map[string]int32{
+		"RETURN_WINDOW_TYPE_UNSPECIFIED": 0,
+		"FINITE_RETURN_WINDOW":           1,
+		"NO_RETURNS":                     2,
+		"LIFETIME":                       3,
+	}
+)
+
+func (x ProductAttributes_Returns_ReturnWindowType) Enum() *ProductAttributes_Returns_ReturnWindowType {
+	p := new(ProductAttributes_Returns_ReturnWindowType)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_Returns_ReturnWindowType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_Returns_ReturnWindowType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[35].Descriptor()
+}
+
+func (ProductAttributes_Returns_ReturnWindowType) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[35]
+}
+
+func (x ProductAttributes_Returns_ReturnWindowType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_Returns_ReturnWindowType.Descriptor instead.
+func (ProductAttributes_Returns_ReturnWindowType) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 12, 0}
+}
+
+// The physical method by which the item can be returned.
+type ProductAttributes_Returns_ReturnMethod int32
+
+const (
+	// The return method is unspecified.
+	ProductAttributes_Returns_RETURN_METHOD_UNSPECIFIED ProductAttributes_Returns_ReturnMethod = 0
+	// Customer returns the item by mail.
+	ProductAttributes_Returns_BY_MAIL ProductAttributes_Returns_ReturnMethod = 1
+	// Customer returns the item in a store.
+	ProductAttributes_Returns_IN_STORE ProductAttributes_Returns_ReturnMethod = 2
+	// Customer drops off the item at a kiosk.
+	ProductAttributes_Returns_AT_A_KIOSK ProductAttributes_Returns_ReturnMethod = 3
+	// Customer drops off the item at a 3rd party partner location.
+	ProductAttributes_Returns_DROP_OFF_LOCATION ProductAttributes_Returns_ReturnMethod = 4
+)
+
+// Enum value maps for ProductAttributes_Returns_ReturnMethod.
+var (
+	ProductAttributes_Returns_ReturnMethod_name = map[int32]string{
+		0: "RETURN_METHOD_UNSPECIFIED",
+		1: "BY_MAIL",
+		2: "IN_STORE",
+		3: "AT_A_KIOSK",
+		4: "DROP_OFF_LOCATION",
+	}
+	ProductAttributes_Returns_ReturnMethod_value = map[string]int32{
+		"RETURN_METHOD_UNSPECIFIED": 0,
+		"BY_MAIL":                   1,
+		"IN_STORE":                  2,
+		"AT_A_KIOSK":                3,
+		"DROP_OFF_LOCATION":         4,
+	}
+)
+
+func (x ProductAttributes_Returns_ReturnMethod) Enum() *ProductAttributes_Returns_ReturnMethod {
+	p := new(ProductAttributes_Returns_ReturnMethod)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_Returns_ReturnMethod) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_Returns_ReturnMethod) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[36].Descriptor()
+}
+
+func (ProductAttributes_Returns_ReturnMethod) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[36]
+}
+
+func (x ProductAttributes_Returns_ReturnMethod) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_Returns_ReturnMethod.Descriptor instead.
+func (ProductAttributes_Returns_ReturnMethod) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 12, 1}
+}
+
+// The acceptable item condition for a return.
+type ProductAttributes_Returns_ItemCondition int32
+
+const (
+	// The item condition is unspecified.
+	ProductAttributes_Returns_ITEM_CONDITION_UNSPECIFIED ProductAttributes_Returns_ItemCondition = 0
+	// New condition.
+	ProductAttributes_Returns_NEW ProductAttributes_Returns_ItemCondition = 1
+	// Like new condition.
+	ProductAttributes_Returns_LIKE_NEW ProductAttributes_Returns_ItemCondition = 2
+	// Used condition.
+	ProductAttributes_Returns_USED ProductAttributes_Returns_ItemCondition = 3
+	// Only defective items are accepted.
+	ProductAttributes_Returns_DEFECTIVE_ONLY ProductAttributes_Returns_ItemCondition = 4
+)
+
+// Enum value maps for ProductAttributes_Returns_ItemCondition.
+var (
+	ProductAttributes_Returns_ItemCondition_name = map[int32]string{
+		0: "ITEM_CONDITION_UNSPECIFIED",
+		1: "NEW",
+		2: "LIKE_NEW",
+		3: "USED",
+		4: "DEFECTIVE_ONLY",
+	}
+	ProductAttributes_Returns_ItemCondition_value = map[string]int32{
+		"ITEM_CONDITION_UNSPECIFIED": 0,
+		"NEW":                        1,
+		"LIKE_NEW":                   2,
+		"USED":                       3,
+		"DEFECTIVE_ONLY":             4,
+	}
+)
+
+func (x ProductAttributes_Returns_ItemCondition) Enum() *ProductAttributes_Returns_ItemCondition {
+	p := new(ProductAttributes_Returns_ItemCondition)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_Returns_ItemCondition) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_Returns_ItemCondition) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[37].Descriptor()
+}
+
+func (ProductAttributes_Returns_ItemCondition) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[37]
+}
+
+func (x ProductAttributes_Returns_ItemCondition) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_Returns_ItemCondition.Descriptor instead.
+func (ProductAttributes_Returns_ItemCondition) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 12, 2}
+}
+
+// The financial outcome of a return.
+type ProductAttributes_Returns_ReturnOutcome int32
+
+const (
+	// The return outcome is unspecified.
+	ProductAttributes_Returns_RETURN_OUTCOME_UNSPECIFIED ProductAttributes_Returns_ReturnOutcome = 0
+	// Customer receives a refund.
+	ProductAttributes_Returns_REFUND ProductAttributes_Returns_ReturnOutcome = 1
+	// Customer receives an exchange.
+	ProductAttributes_Returns_EXCHANGE ProductAttributes_Returns_ReturnOutcome = 2
+	// Customer receives store credit.
+	ProductAttributes_Returns_STORE_CREDIT ProductAttributes_Returns_ReturnOutcome = 3
+)
+
+// Enum value maps for ProductAttributes_Returns_ReturnOutcome.
+var (
+	ProductAttributes_Returns_ReturnOutcome_name = map[int32]string{
+		0: "RETURN_OUTCOME_UNSPECIFIED",
+		1: "REFUND",
+		2: "EXCHANGE",
+		3: "STORE_CREDIT",
+	}
+	ProductAttributes_Returns_ReturnOutcome_value = map[string]int32{
+		"RETURN_OUTCOME_UNSPECIFIED": 0,
+		"REFUND":                     1,
+		"EXCHANGE":                   2,
+		"STORE_CREDIT":               3,
+	}
+)
+
+func (x ProductAttributes_Returns_ReturnOutcome) Enum() *ProductAttributes_Returns_ReturnOutcome {
+	p := new(ProductAttributes_Returns_ReturnOutcome)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_Returns_ReturnOutcome) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_Returns_ReturnOutcome) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[38].Descriptor()
+}
+
+func (ProductAttributes_Returns_ReturnOutcome) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[38]
+}
+
+func (x ProductAttributes_Returns_ReturnOutcome) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_Returns_ReturnOutcome.Descriptor instead.
+func (ProductAttributes_Returns_ReturnOutcome) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 12, 3}
+}
+
+// The type of the return shipping fee.
+type ProductAttributes_Returns_ReturnShippingFeeType int32
+
+const (
+	// The return shipping fee type is unspecified.
+	ProductAttributes_Returns_RETURN_SHIPPING_FEE_TYPE_UNSPECIFIED ProductAttributes_Returns_ReturnShippingFeeType = 0
+	// The customer is responsible for shipping costs.
+	ProductAttributes_Returns_CUSTOMER_RESPONSIBILITY ProductAttributes_Returns_ReturnShippingFeeType = 1
+	// The shipping cost is deducted from the refund.
+	ProductAttributes_Returns_DEDUCTED_FROM_REFUND ProductAttributes_Returns_ReturnShippingFeeType = 2
+)
+
+// Enum value maps for ProductAttributes_Returns_ReturnShippingFeeType.
+var (
+	ProductAttributes_Returns_ReturnShippingFeeType_name = map[int32]string{
+		0: "RETURN_SHIPPING_FEE_TYPE_UNSPECIFIED",
+		1: "CUSTOMER_RESPONSIBILITY",
+		2: "DEDUCTED_FROM_REFUND",
+	}
+	ProductAttributes_Returns_ReturnShippingFeeType_value = map[string]int32{
+		"RETURN_SHIPPING_FEE_TYPE_UNSPECIFIED": 0,
+		"CUSTOMER_RESPONSIBILITY":              1,
+		"DEDUCTED_FROM_REFUND":                 2,
+	}
+)
+
+func (x ProductAttributes_Returns_ReturnShippingFeeType) Enum() *ProductAttributes_Returns_ReturnShippingFeeType {
+	p := new(ProductAttributes_Returns_ReturnShippingFeeType)
+	*p = x
+	return p
+}
+
+func (x ProductAttributes_Returns_ReturnShippingFeeType) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (ProductAttributes_Returns_ReturnShippingFeeType) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[39].Descriptor()
+}
+
+func (ProductAttributes_Returns_ReturnShippingFeeType) Type() protoreflect.EnumType {
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[39]
+}
+
+func (x ProductAttributes_Returns_ReturnShippingFeeType) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use ProductAttributes_Returns_ReturnShippingFeeType.Descriptor instead.
+func (ProductAttributes_Returns_ReturnShippingFeeType) EnumDescriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 12, 4}
 }
 
 // The various types of the relationships between this product and the
@@ -2767,11 +3212,11 @@ func (x ProductAttributes_RelatedProduct_RelationshipType) String() string {
 }
 
 func (ProductAttributes_RelatedProduct_RelationshipType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[32].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[40].Descriptor()
 }
 
 func (ProductAttributes_RelatedProduct_RelationshipType) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[32]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[40]
 }
 
 func (x ProductAttributes_RelatedProduct_RelationshipType) Number() protoreflect.EnumNumber {
@@ -2780,7 +3225,7 @@ func (x ProductAttributes_RelatedProduct_RelationshipType) Number() protoreflect
 
 // Deprecated: Use ProductAttributes_RelatedProduct_RelationshipType.Descriptor instead.
 func (ProductAttributes_RelatedProduct_RelationshipType) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 13, 0}
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 15, 0}
 }
 
 // The type of the identifier of the related product.
@@ -2820,11 +3265,11 @@ func (x ProductAttributes_RelatedProduct_IdType) String() string {
 }
 
 func (ProductAttributes_RelatedProduct_IdType) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[33].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[41].Descriptor()
 }
 
 func (ProductAttributes_RelatedProduct_IdType) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[33]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[41]
 }
 
 func (x ProductAttributes_RelatedProduct_IdType) Number() protoreflect.EnumNumber {
@@ -2833,7 +3278,7 @@ func (x ProductAttributes_RelatedProduct_IdType) Number() protoreflect.EnumNumbe
 
 // Deprecated: Use ProductAttributes_RelatedProduct_IdType.Descriptor instead.
 func (ProductAttributes_RelatedProduct_IdType) EnumDescriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 13, 1}
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 15, 1}
 }
 
 // How the issue affects the serving of the product.
@@ -2879,11 +3324,11 @@ func (x ProductStatus_ItemLevelIssue_Severity) String() string {
 }
 
 func (ProductStatus_ItemLevelIssue_Severity) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[34].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[42].Descriptor()
 }
 
 func (ProductStatus_ItemLevelIssue_Severity) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[34]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[42]
 }
 
 func (x ProductStatus_ItemLevelIssue_Severity) Number() protoreflect.EnumNumber {
@@ -2937,11 +3382,11 @@ func (x ProductSustainabilityIncentive_Type) String() string {
 }
 
 func (ProductSustainabilityIncentive_Type) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[35].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[43].Descriptor()
 }
 
 func (ProductSustainabilityIncentive_Type) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[35]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[43]
 }
 
 func (x ProductSustainabilityIncentive_Type) Number() protoreflect.EnumNumber {
@@ -2994,11 +3439,11 @@ func (x ProductMinimumOrderValue_Surface) String() string {
 }
 
 func (ProductMinimumOrderValue_Surface) Descriptor() protoreflect.EnumDescriptor {
-	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[36].Descriptor()
+	return file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[44].Descriptor()
 }
 
 func (ProductMinimumOrderValue_Surface) Type() protoreflect.EnumType {
-	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[36]
+	return &file_google_shopping_merchant_products_v1_products_common_proto_enumTypes[44]
 }
 
 func (x ProductMinimumOrderValue_Surface) Number() protoreflect.EnumNumber {
@@ -3313,9 +3758,8 @@ type ProductAttributes struct {
 	VirtualModelLink *string `protobuf:"bytes,130,opt,name=virtual_model_link,json=virtualModelLink,proto3,oneof" json:"virtual_model_link,omitempty"`
 	// Product Certifications, for example for energy efficiency labeling of
 	// products recorded in the [EU EPREL](https://eprel.ec.europa.eu/screen/home)
-	// database. See the [Help
-	// Center](https://support.google.com/merchants/answer/13528839)
-	// article for more information.
+	// database. For more information, see
+	// [Certification](https://support.google.com/merchants/answer/13528839).
 	Certifications []*ProductCertification `protobuf:"bytes,123,rep,name=certifications,proto3" json:"certifications,omitempty"`
 	// Structured title, for algorithmically (AI)-generated titles.
 	StructuredTitle *StructuredTitle `protobuf:"bytes,132,opt,name=structured_title,json=structuredTitle,proto3,oneof" json:"structured_title,omitempty"`
@@ -3340,6 +3784,9 @@ type ProductAttributes struct {
 	// minimum order values. Different minimum order values can be specified per
 	// country, service and surface. Maximum entries: 100.
 	MinimumOrderValues []*ProductMinimumOrderValue `protobuf:"bytes,146,rep,name=minimum_order_values,json=minimumOrderValues,proto3" json:"minimum_order_values,omitempty"`
+	// The [warranty](https://support.google.com/merchants/answer/15957626) of
+	// the product.
+	Warranty *ProductAttributes_Warranty `protobuf:"bytes,168,opt,name=warranty,proto3" json:"warranty,omitempty"`
 	// The [Vehicle Identification Number
 	// (VIN)](https://support.google.com/google-ads/answer/14154510) of the
 	// vehicle.
@@ -3422,9 +3869,10 @@ type ProductAttributes struct {
 	// expenses](https://support.google.com/google-ads/answer/15957154) for more
 	// information.
 	VehicleExpenses *typepb.Price `protobuf:"bytes,167,opt,name=vehicle_expenses,json=vehicleExpenses,proto3" json:"vehicle_expenses,omitempty"`
-	// The [warranty](https://support.google.com/google-ads/answer/15957626) of
-	// the vehicle.
-	Warranty *ProductAttributes_Warranty `protobuf:"bytes,168,opt,name=warranty,proto3" json:"warranty,omitempty"`
+	// Optional. [Return
+	// rules](https://support.google.com/merchants/answer/17081382) for the
+	// product.
+	Returns []*ProductAttributes_Returns `protobuf:"bytes,171,rep,name=returns,proto3" json:"returns,omitempty"`
 	// The display address of the property.
 	DisplayAddress *ProductAttributes_DisplayAddress `protobuf:"bytes,179,opt,name=display_address,json=displayAddress,proto3" json:"display_address,omitempty"`
 	// The latitude of the property. The value must be between -90 (inclusive) and
@@ -3463,6 +3911,8 @@ type ProductAttributes struct {
 	ProductFee []*ProductAttributes_ProductFee `protobuf:"bytes,193,rep,name=product_fee,json=productFee,proto3" json:"product_fee,omitempty"`
 	// The short title of the item.
 	ShortTitle *string `protobuf:"bytes,194,opt,name=short_title,json=shortTitle,proto3,oneof" json:"short_title,omitempty"`
+	// The lease term of the property.
+	LeaseTerm *ProductAttributes_LeaseTerm `protobuf:"bytes,195,opt,name=lease_term,json=leaseTerm,proto3" json:"lease_term,omitempty"`
 	// Optional. Contains user-, merchant-, and manufacturer-authored [questions
 	// and answers](https://support.google.com/merchants/answer/17085211) about
 	// the product. Max 30 question and answer pairs. Max 10000 characters total.
@@ -4229,6 +4679,13 @@ func (x *ProductAttributes) GetMinimumOrderValues() []*ProductMinimumOrderValue 
 	return nil
 }
 
+func (x *ProductAttributes) GetWarranty() *ProductAttributes_Warranty {
+	if x != nil {
+		return x.Warranty
+	}
+	return nil
+}
+
 func (x *ProductAttributes) GetVin() string {
 	if x != nil {
 		return x.Vin
@@ -4369,9 +4826,9 @@ func (x *ProductAttributes) GetVehicleExpenses() *typepb.Price {
 	return nil
 }
 
-func (x *ProductAttributes) GetWarranty() *ProductAttributes_Warranty {
+func (x *ProductAttributes) GetReturns() []*ProductAttributes_Returns {
 	if x != nil {
-		return x.Warranty
+		return x.Returns
 	}
 	return nil
 }
@@ -4486,6 +4943,13 @@ func (x *ProductAttributes) GetShortTitle() string {
 		return *x.ShortTitle
 	}
 	return ""
+}
+
+func (x *ProductAttributes) GetLeaseTerm() *ProductAttributes_LeaseTerm {
+	if x != nil {
+		return x.LeaseTerm
+	}
+	return nil
 }
 
 func (x *ProductAttributes) GetQuestionsAndAnswers() []*ProductAttributes_QuestionAndAnswer {
@@ -4834,9 +5298,12 @@ type ProductInstallment struct {
 	// Optional. Annual percentage rate for `credit_type` finance
 	AnnualPercentageRate *float64 `protobuf:"fixed64,5,opt,name=annual_percentage_rate,json=annualPercentageRate,proto3,oneof" json:"annual_percentage_rate,omitempty"`
 	// Optional. Total amount the buyer has to pay, including interest.
-	TotalAmount   *typepb.Price `protobuf:"bytes,6,opt,name=total_amount,json=totalAmount,proto3,oneof" json:"total_amount,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	TotalAmount *typepb.Price `protobuf:"bytes,6,opt,name=total_amount,json=totalAmount,proto3,oneof" json:"total_amount,omitempty"`
+	// Optional. The mileage allowance for the lease of the vehicle. Only
+	// applicable to vehicle products.
+	MileageAllowance *ProductAttributes_Mileage `protobuf:"bytes,7,opt,name=mileage_allowance,json=mileageAllowance,proto3,oneof" json:"mileage_allowance,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *ProductInstallment) Reset() {
@@ -4911,6 +5378,13 @@ func (x *ProductInstallment) GetTotalAmount() *typepb.Price {
 	return nil
 }
 
+func (x *ProductInstallment) GetMileageAllowance() *ProductAttributes_Mileage {
+	if x != nil {
+		return x.MileageAllowance
+	}
+	return nil
+}
+
 // A message that represents loyalty points.
 type LoyaltyPoints struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -4979,6 +5453,10 @@ func (x *LoyaltyPoints) GetRatio() float64 {
 }
 
 // A message that represents loyalty program.
+//
+// For more information on loyalty programs, see
+// [Overview of loyalty
+// programs](/merchant/api/guides/loyalty/loyalty-programs).
 type LoyaltyProgram struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// The label of the loyalty program. This is an internal label that uniquely
@@ -5466,8 +5944,20 @@ type ProductCertification struct {
 	// The certification value (also known as class, level or grade), for
 	// example "A+", "C", "gold". Maximum length is 2000 characters.
 	CertificationValue *string `protobuf:"bytes,4,opt,name=certification_value,json=certificationValue,proto3,oneof" json:"certification_value,omitempty"`
-	unknownFields      protoimpl.UnknownFields
-	sizeCache          protoimpl.SizeCache
+	// Optional. URL to the certification document (eg.
+	// `https://www.example.com/document`), for example, the product data sheet or
+	// fiche required by UK's DESNZ or EU's EPREL. Maximum length is 2000
+	// characters. For more information, see
+	// [Certification](https://support.google.com/merchants/answer/13528839).
+	CertificationDocumentLink *string `protobuf:"bytes,5,opt,name=certification_document_link,json=certificationDocumentLink,proto3,oneof" json:"certification_document_link,omitempty"`
+	// Optional. URL to the certification label (eg.
+	// `https://www.example.com/label`), for example, the energy efficiency label
+	// required by UK's DESNZ or EU's EPREL. Maximum length is 2000 characters.
+	// For more information, see
+	// [Certification](https://support.google.com/merchants/answer/13528839).
+	CertificationLabelLink *string `protobuf:"bytes,6,opt,name=certification_label_link,json=certificationLabelLink,proto3,oneof" json:"certification_label_link,omitempty"`
+	unknownFields          protoimpl.UnknownFields
+	sizeCache              protoimpl.SizeCache
 }
 
 func (x *ProductCertification) Reset() {
@@ -5524,6 +6014,20 @@ func (x *ProductCertification) GetCertificationCode() string {
 func (x *ProductCertification) GetCertificationValue() string {
 	if x != nil && x.CertificationValue != nil {
 		return *x.CertificationValue
+	}
+	return ""
+}
+
+func (x *ProductCertification) GetCertificationDocumentLink() string {
+	if x != nil && x.CertificationDocumentLink != nil {
+		return *x.CertificationDocumentLink
+	}
+	return ""
+}
+
+func (x *ProductCertification) GetCertificationLabelLink() string {
+	if x != nil && x.CertificationLabelLink != nil {
+		return *x.CertificationLabelLink
 	}
 	return ""
 }
@@ -6870,10 +7374,14 @@ func (x *ProductAttributes_Co2Emissions) GetUnit() ProductAttributes_Co2Emission
 // The warranty of the vehicle.
 type ProductAttributes_Warranty struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// The warranty duration in months.
+	// The warranty duration in units. Default is in months, can be overridden
+	// by the `duration_unit` field.
 	Duration int64 `protobuf:"varint,1,opt,name=duration,proto3" json:"duration,omitempty"`
-	// The warranty mileage.
-	Mileage       *ProductAttributes_Mileage `protobuf:"bytes,2,opt,name=mileage,proto3" json:"mileage,omitempty"`
+	// The warranty mileage (only applies to vehicles).
+	Mileage *ProductAttributes_Mileage `protobuf:"bytes,2,opt,name=mileage,proto3" json:"mileage,omitempty"`
+	// The unit for the warranty duration. Assumed to be `MONTH` if
+	// equal to `WARRANTY_DURATION_UNIT_UNSPECIFIED`.
+	DurationUnit  ProductAttributes_Warranty_WarrantyDurationUnit `protobuf:"varint,3,opt,name=duration_unit,json=durationUnit,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_Warranty_WarrantyDurationUnit" json:"duration_unit,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -6920,6 +7428,13 @@ func (x *ProductAttributes_Warranty) GetMileage() *ProductAttributes_Mileage {
 		return x.Mileage
 	}
 	return nil
+}
+
+func (x *ProductAttributes_Warranty) GetDurationUnit() ProductAttributes_Warranty_WarrantyDurationUnit {
+	if x != nil {
+		return x.DurationUnit
+	}
+	return ProductAttributes_Warranty_WARRANTY_DURATION_UNIT_UNSPECIFIED
 }
 
 // The product fee attribute containing type and amount.
@@ -7169,6 +7684,241 @@ func (x *ProductAttributes_PetPolicy) GetPetTypes() []ProductAttributes_PetPolic
 	return nil
 }
 
+// The lease term of the property.
+type ProductAttributes_LeaseTerm struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The type of lease term.
+	Type ProductAttributes_LeaseTerm_LeaseTermType `protobuf:"varint,1,opt,name=type,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_LeaseTerm_LeaseTermType" json:"type,omitempty"`
+	// The duration value of the lease term.
+	DurationValue *int64 `protobuf:"varint,2,opt,name=duration_value,json=durationValue,proto3,oneof" json:"duration_value,omitempty"`
+	// The duration unit of the lease term.
+	DurationUnit  ProductAttributes_LeaseTerm_DurationUnit `protobuf:"varint,3,opt,name=duration_unit,json=durationUnit,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_LeaseTerm_DurationUnit" json:"duration_unit,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProductAttributes_LeaseTerm) Reset() {
+	*x = ProductAttributes_LeaseTerm{}
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[35]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProductAttributes_LeaseTerm) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProductAttributes_LeaseTerm) ProtoMessage() {}
+
+func (x *ProductAttributes_LeaseTerm) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[35]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProductAttributes_LeaseTerm.ProtoReflect.Descriptor instead.
+func (*ProductAttributes_LeaseTerm) Descriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 11}
+}
+
+func (x *ProductAttributes_LeaseTerm) GetType() ProductAttributes_LeaseTerm_LeaseTermType {
+	if x != nil {
+		return x.Type
+	}
+	return ProductAttributes_LeaseTerm_LEASE_TERM_TYPE_UNSPECIFIED
+}
+
+func (x *ProductAttributes_LeaseTerm) GetDurationValue() int64 {
+	if x != nil && x.DurationValue != nil {
+		return *x.DurationValue
+	}
+	return 0
+}
+
+func (x *ProductAttributes_LeaseTerm) GetDurationUnit() ProductAttributes_LeaseTerm_DurationUnit {
+	if x != nil {
+		return x.DurationUnit
+	}
+	return ProductAttributes_LeaseTerm_DURATION_UNIT_UNSPECIFIED
+}
+
+// The returns of the product.
+type ProductAttributes_Returns struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The restocking fee charged to the customer.
+	//
+	// Types that are valid to be assigned to RestockingFeeOneof:
+	//
+	//	*ProductAttributes_Returns_RestockingFee
+	//	*ProductAttributes_Returns_RestockingPercentageFee
+	RestockingFeeOneof isProductAttributes_Returns_RestockingFeeOneof `protobuf_oneof:"restocking_fee_oneof"`
+	// The [CLDR territory
+	// code](http://www.unicode.org/repos/cldr/tags/latest/common/main/en.xml)
+	// of the countries to which an item can be returned.
+	Countries []string `protobuf:"bytes,1,rep,name=countries,proto3" json:"countries,omitempty"`
+	// The duration of the return window in days.
+	WindowDays *int64 `protobuf:"varint,2,opt,name=window_days,json=windowDays,proto3,oneof" json:"window_days,omitempty"`
+	// Special return window behavior.
+	WindowType *ProductAttributes_Returns_ReturnWindowType `protobuf:"varint,3,opt,name=window_type,json=windowType,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_Returns_ReturnWindowType,oneof" json:"window_type,omitempty"`
+	// The condition the item must be in to be accepted.
+	ItemConditions []ProductAttributes_Returns_ItemCondition `protobuf:"varint,4,rep,packed,name=item_conditions,json=itemConditions,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_Returns_ItemCondition" json:"item_conditions,omitempty"`
+	// The physical methods by which the item can be returned.
+	Methods []ProductAttributes_Returns_ReturnMethod `protobuf:"varint,5,rep,packed,name=methods,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_Returns_ReturnMethod" json:"methods,omitempty"`
+	// The financial outcomes available for a return.
+	Outcomes []ProductAttributes_Returns_ReturnOutcome `protobuf:"varint,6,rep,packed,name=outcomes,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_Returns_ReturnOutcome" json:"outcomes,omitempty"`
+	// The fixed cost out-of-pocket for a customer to return an item.
+	ShippingFee *typepb.Price `protobuf:"bytes,7,opt,name=shipping_fee,json=shippingFee,proto3,oneof" json:"shipping_fee,omitempty"`
+	// The type of return shipping fee.
+	ShippingFeeType *ProductAttributes_Returns_ReturnShippingFeeType `protobuf:"varint,8,opt,name=shipping_fee_type,json=shippingFeeType,proto3,enum=google.shopping.merchant.products.v1.ProductAttributes_Returns_ReturnShippingFeeType,oneof" json:"shipping_fee_type,omitempty"`
+	// The URL of the return policy.
+	PolicyUrl     *string `protobuf:"bytes,11,opt,name=policy_url,json=policyUrl,proto3,oneof" json:"policy_url,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ProductAttributes_Returns) Reset() {
+	*x = ProductAttributes_Returns{}
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[36]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ProductAttributes_Returns) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ProductAttributes_Returns) ProtoMessage() {}
+
+func (x *ProductAttributes_Returns) ProtoReflect() protoreflect.Message {
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[36]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ProductAttributes_Returns.ProtoReflect.Descriptor instead.
+func (*ProductAttributes_Returns) Descriptor() ([]byte, []int) {
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 12}
+}
+
+func (x *ProductAttributes_Returns) GetRestockingFeeOneof() isProductAttributes_Returns_RestockingFeeOneof {
+	if x != nil {
+		return x.RestockingFeeOneof
+	}
+	return nil
+}
+
+func (x *ProductAttributes_Returns) GetRestockingFee() *typepb.Price {
+	if x != nil {
+		if x, ok := x.RestockingFeeOneof.(*ProductAttributes_Returns_RestockingFee); ok {
+			return x.RestockingFee
+		}
+	}
+	return nil
+}
+
+func (x *ProductAttributes_Returns) GetRestockingPercentageFee() float64 {
+	if x != nil {
+		if x, ok := x.RestockingFeeOneof.(*ProductAttributes_Returns_RestockingPercentageFee); ok {
+			return x.RestockingPercentageFee
+		}
+	}
+	return 0
+}
+
+func (x *ProductAttributes_Returns) GetCountries() []string {
+	if x != nil {
+		return x.Countries
+	}
+	return nil
+}
+
+func (x *ProductAttributes_Returns) GetWindowDays() int64 {
+	if x != nil && x.WindowDays != nil {
+		return *x.WindowDays
+	}
+	return 0
+}
+
+func (x *ProductAttributes_Returns) GetWindowType() ProductAttributes_Returns_ReturnWindowType {
+	if x != nil && x.WindowType != nil {
+		return *x.WindowType
+	}
+	return ProductAttributes_Returns_RETURN_WINDOW_TYPE_UNSPECIFIED
+}
+
+func (x *ProductAttributes_Returns) GetItemConditions() []ProductAttributes_Returns_ItemCondition {
+	if x != nil {
+		return x.ItemConditions
+	}
+	return nil
+}
+
+func (x *ProductAttributes_Returns) GetMethods() []ProductAttributes_Returns_ReturnMethod {
+	if x != nil {
+		return x.Methods
+	}
+	return nil
+}
+
+func (x *ProductAttributes_Returns) GetOutcomes() []ProductAttributes_Returns_ReturnOutcome {
+	if x != nil {
+		return x.Outcomes
+	}
+	return nil
+}
+
+func (x *ProductAttributes_Returns) GetShippingFee() *typepb.Price {
+	if x != nil {
+		return x.ShippingFee
+	}
+	return nil
+}
+
+func (x *ProductAttributes_Returns) GetShippingFeeType() ProductAttributes_Returns_ReturnShippingFeeType {
+	if x != nil && x.ShippingFeeType != nil {
+		return *x.ShippingFeeType
+	}
+	return ProductAttributes_Returns_RETURN_SHIPPING_FEE_TYPE_UNSPECIFIED
+}
+
+func (x *ProductAttributes_Returns) GetPolicyUrl() string {
+	if x != nil && x.PolicyUrl != nil {
+		return *x.PolicyUrl
+	}
+	return ""
+}
+
+type isProductAttributes_Returns_RestockingFeeOneof interface {
+	isProductAttributes_Returns_RestockingFeeOneof()
+}
+
+type ProductAttributes_Returns_RestockingFee struct {
+	// A flat restocking fee penalty.
+	RestockingFee *typepb.Price `protobuf:"bytes,9,opt,name=restocking_fee,json=restockingFee,proto3,oneof"`
+}
+
+type ProductAttributes_Returns_RestockingPercentageFee struct {
+	// A percentage restocking fee penalty.
+	RestockingPercentageFee float64 `protobuf:"fixed64,10,opt,name=restocking_percentage_fee,json=restockingPercentageFee,proto3,oneof"`
+}
+
+func (*ProductAttributes_Returns_RestockingFee) isProductAttributes_Returns_RestockingFeeOneof() {}
+
+func (*ProductAttributes_Returns_RestockingPercentageFee) isProductAttributes_Returns_RestockingFeeOneof() {
+}
+
 // The question and answer for the product.
 type ProductAttributes_QuestionAndAnswer struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -7182,7 +7932,7 @@ type ProductAttributes_QuestionAndAnswer struct {
 
 func (x *ProductAttributes_QuestionAndAnswer) Reset() {
 	*x = ProductAttributes_QuestionAndAnswer{}
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[35]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7194,7 +7944,7 @@ func (x *ProductAttributes_QuestionAndAnswer) String() string {
 func (*ProductAttributes_QuestionAndAnswer) ProtoMessage() {}
 
 func (x *ProductAttributes_QuestionAndAnswer) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[35]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7207,7 +7957,7 @@ func (x *ProductAttributes_QuestionAndAnswer) ProtoReflect() protoreflect.Messag
 
 // Deprecated: Use ProductAttributes_QuestionAndAnswer.ProtoReflect.Descriptor instead.
 func (*ProductAttributes_QuestionAndAnswer) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 11}
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 13}
 }
 
 func (x *ProductAttributes_QuestionAndAnswer) GetQuestion() string {
@@ -7239,7 +7989,7 @@ type ProductAttributes_VariantOption struct {
 
 func (x *ProductAttributes_VariantOption) Reset() {
 	*x = ProductAttributes_VariantOption{}
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[36]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7251,7 +8001,7 @@ func (x *ProductAttributes_VariantOption) String() string {
 func (*ProductAttributes_VariantOption) ProtoMessage() {}
 
 func (x *ProductAttributes_VariantOption) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[36]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7264,7 +8014,7 @@ func (x *ProductAttributes_VariantOption) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductAttributes_VariantOption.ProtoReflect.Descriptor instead.
 func (*ProductAttributes_VariantOption) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 12}
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 14}
 }
 
 func (x *ProductAttributes_VariantOption) GetName() string {
@@ -7299,7 +8049,7 @@ type ProductAttributes_RelatedProduct struct {
 
 func (x *ProductAttributes_RelatedProduct) Reset() {
 	*x = ProductAttributes_RelatedProduct{}
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[37]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7311,7 +8061,7 @@ func (x *ProductAttributes_RelatedProduct) String() string {
 func (*ProductAttributes_RelatedProduct) ProtoMessage() {}
 
 func (x *ProductAttributes_RelatedProduct) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[37]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7324,7 +8074,7 @@ func (x *ProductAttributes_RelatedProduct) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ProductAttributes_RelatedProduct.ProtoReflect.Descriptor instead.
 func (*ProductAttributes_RelatedProduct) Descriptor() ([]byte, []int) {
-	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 13}
+	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP(), []int{0, 15}
 }
 
 func (x *ProductAttributes_RelatedProduct) GetRelationshipType() ProductAttributes_RelatedProduct_RelationshipType {
@@ -7371,7 +8121,7 @@ type ProductStatus_DestinationStatus struct {
 
 func (x *ProductStatus_DestinationStatus) Reset() {
 	*x = ProductStatus_DestinationStatus{}
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[38]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7383,7 +8133,7 @@ func (x *ProductStatus_DestinationStatus) String() string {
 func (*ProductStatus_DestinationStatus) ProtoMessage() {}
 
 func (x *ProductStatus_DestinationStatus) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[38]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7455,7 +8205,7 @@ type ProductStatus_ItemLevelIssue struct {
 
 func (x *ProductStatus_ItemLevelIssue) Reset() {
 	*x = ProductStatus_ItemLevelIssue{}
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[39]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -7467,7 +8217,7 @@ func (x *ProductStatus_ItemLevelIssue) String() string {
 func (*ProductStatus_ItemLevelIssue) ProtoMessage() {}
 
 func (x *ProductStatus_ItemLevelIssue) ProtoReflect() protoreflect.Message {
-	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[39]
+	mi := &file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -7550,7 +8300,7 @@ var File_google_shopping_merchant_products_v1_products_common_proto protoreflect
 
 const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = "" +
 	"\n" +
-	":google/shopping/merchant/products/v1/products_common.proto\x12$google.shopping.merchant.products.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"˕\x01\n" +
+	":google/shopping/merchant/products/v1/products_common.proto\x12$google.shopping.merchant.products.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x1fgoogle/protobuf/timestamp.proto\x1a google/shopping/type/types.proto\x1a\x1agoogle/type/interval.proto\"\xa4\xa8\x01\n" +
 	"\x11ProductAttributes\x120\n" +
 	"\x11identifier_exists\x18\x04 \x01(\bH\x00R\x10identifierExists\x88\x01\x01\x12 \n" +
 	"\tis_bundle\x18\x05 \x01(\bH\x01R\bisBundle\x88\x01\x01\x12\x19\n" +
@@ -7662,7 +8412,8 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\x19sustainability_incentives\x18\x8a\x01 \x03(\v2D.google.shopping.merchant.products.v1.ProductSustainabilityIncentiveR\x18sustainabilityIncentives\x12%\n" +
 	"\vvideo_links\x18\xa9\x01 \x03(\tB\x03\xe0A\x01R\n" +
 	"videoLinks\x12q\n" +
-	"\x14minimum_order_values\x18\x92\x01 \x03(\v2>.google.shopping.merchant.products.v1.ProductMinimumOrderValueR\x12minimumOrderValues\x12\x11\n" +
+	"\x14minimum_order_values\x18\x92\x01 \x03(\v2>.google.shopping.merchant.products.v1.ProductMinimumOrderValueR\x12minimumOrderValues\x12]\n" +
+	"\bwarranty\x18\xa8\x01 \x01(\v2@.google.shopping.merchant.products.v1.ProductAttributes.WarrantyR\bwarranty\x12\x11\n" +
 	"\x03vin\x18\x93\x01 \x01(\tR\x03vin\x12\x15\n" +
 	"\x05model\x18\x94\x01 \x01(\tR\x05model\x12\x13\n" +
 	"\x04trim\x18\x95\x01 \x01(\tR\x04trim\x12h\n" +
@@ -7683,8 +8434,8 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\x14vehicle_all_in_price\x18\xa3\x01 \x01(\v2\x1b.google.shopping.type.PriceR\x11vehicleAllInPrice\x12w\n" +
 	"\x12vehicle_price_type\x18\xa4\x01 \x01(\x0e2H.google.shopping.merchant.products.v1.ProductAttributes.VehiclePriceTypeR\x10vehiclePriceType\x12R\n" +
 	"%vehicle_mandatory_inspection_included\x18\xa6\x01 \x01(\bR\"vehicleMandatoryInspectionIncluded\x12G\n" +
-	"\x10vehicle_expenses\x18\xa7\x01 \x01(\v2\x1b.google.shopping.type.PriceR\x0fvehicleExpenses\x12]\n" +
-	"\bwarranty\x18\xa8\x01 \x01(\v2@.google.shopping.merchant.products.v1.ProductAttributes.WarrantyR\bwarranty\x12p\n" +
+	"\x10vehicle_expenses\x18\xa7\x01 \x01(\v2\x1b.google.shopping.type.PriceR\x0fvehicleExpenses\x12_\n" +
+	"\areturns\x18\xab\x01 \x03(\v2?.google.shopping.merchant.products.v1.ProductAttributes.ReturnsB\x03\xe0A\x01R\areturns\x12p\n" +
 	"\x0fdisplay_address\x18\xb3\x01 \x01(\v2F.google.shopping.merchant.products.v1.ProductAttributes.DisplayAddressR\x0edisplayAddress\x12 \n" +
 	"\blatitude\x18\xb4\x01 \x01(\x01H5R\blatitude\x88\x01\x01\x12\"\n" +
 	"\tlongitude\x18\xb5\x01 \x01(\x01H6R\tlongitude\x88\x01\x01\x12#\n" +
@@ -7703,7 +8454,9 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\vproduct_fee\x18\xc1\x01 \x03(\v2B.google.shopping.merchant.products.v1.ProductAttributes.ProductFeeR\n" +
 	"productFee\x12%\n" +
 	"\vshort_title\x18\xc2\x01 \x01(\tH:R\n" +
-	"shortTitle\x88\x01\x01\x12\x83\x01\n" +
+	"shortTitle\x88\x01\x01\x12a\n" +
+	"\n" +
+	"lease_term\x18\xc3\x01 \x01(\v2A.google.shopping.merchant.products.v1.ProductAttributes.LeaseTermR\tleaseTerm\x12\x83\x01\n" +
 	"\x15questions_and_answers\x18\xad\x01 \x03(\v2I.google.shopping.merchant.products.v1.ProductAttributes.QuestionAndAnswerB\x03\xe0A\x01R\x13questionsAndAnswers\x12-\n" +
 	"\x0fpopularity_rank\x18\xae\x01 \x01(\x02B\x03\xe0A\x01R\x0epopularityRank\x12.\n" +
 	"\x10item_group_title\x18\xaf\x01 \x01(\tB\x03\xe0A\x01R\x0eitemGroupTitle\x12+\n" +
@@ -7779,10 +8532,15 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\x10UNIT_UNSPECIFIED\x10\x00\x12\n" +
 	"\n" +
 	"\x06GPERKM\x10\x01B\b\n" +
-	"\x06_value\x1a\x81\x01\n" +
+	"\x06_value\x1a\xd2\x02\n" +
 	"\bWarranty\x12\x1a\n" +
 	"\bduration\x18\x01 \x01(\x03R\bduration\x12Y\n" +
-	"\amileage\x18\x02 \x01(\v2?.google.shopping.merchant.products.v1.ProductAttributes.MileageR\amileage\x1a\x80\x02\n" +
+	"\amileage\x18\x02 \x01(\v2?.google.shopping.merchant.products.v1.ProductAttributes.MileageR\amileage\x12z\n" +
+	"\rduration_unit\x18\x03 \x01(\x0e2U.google.shopping.merchant.products.v1.ProductAttributes.Warranty.WarrantyDurationUnitR\fdurationUnit\"S\n" +
+	"\x14WarrantyDurationUnit\x12&\n" +
+	"\"WARRANTY_DURATION_UNIT_UNSPECIFIED\x10\x00\x12\t\n" +
+	"\x05MONTH\x10\x01\x12\b\n" +
+	"\x04YEAR\x10\x02\x1a\x80\x02\n" +
 	"\n" +
 	"ProductFee\x12^\n" +
 	"\x04type\x18\x01 \x01(\x0e2J.google.shopping.merchant.products.v1.ProductAttributes.ProductFee.FeeTypeR\x04type\x123\n" +
@@ -7817,7 +8575,72 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\n" +
 	"LARGE_DOGS\x10\x02\x12\x0e\n" +
 	"\n" +
-	"SMALL_DOGS\x10\x03\x1aQ\n" +
+	"SMALL_DOGS\x10\x03\x1a\xac\x03\n" +
+	"\tLeaseTerm\x12c\n" +
+	"\x04type\x18\x01 \x01(\x0e2O.google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.LeaseTermTypeR\x04type\x12*\n" +
+	"\x0eduration_value\x18\x02 \x01(\x03H\x00R\rdurationValue\x88\x01\x01\x12s\n" +
+	"\rduration_unit\x18\x03 \x01(\x0e2N.google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.DurationUnitR\fdurationUnit\"@\n" +
+	"\rLeaseTermType\x12\x1f\n" +
+	"\x1bLEASE_TERM_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
+	"\n" +
+	"FIXED_TERM\x10\x01\"D\n" +
+	"\fDurationUnit\x12\x1d\n" +
+	"\x19DURATION_UNIT_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06MONTHS\x10\x01\x12\t\n" +
+	"\x05WEEKS\x10\x02B\x11\n" +
+	"\x0f_duration_value\x1a\x92\f\n" +
+	"\aReturns\x12D\n" +
+	"\x0erestocking_fee\x18\t \x01(\v2\x1b.google.shopping.type.PriceH\x00R\rrestockingFee\x12<\n" +
+	"\x19restocking_percentage_fee\x18\n" +
+	" \x01(\x01H\x00R\x17restockingPercentageFee\x12\x1c\n" +
+	"\tcountries\x18\x01 \x03(\tR\tcountries\x12$\n" +
+	"\vwindow_days\x18\x02 \x01(\x03H\x01R\n" +
+	"windowDays\x88\x01\x01\x12v\n" +
+	"\vwindow_type\x18\x03 \x01(\x0e2P.google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnWindowTypeH\x02R\n" +
+	"windowType\x88\x01\x01\x12v\n" +
+	"\x0fitem_conditions\x18\x04 \x03(\x0e2M.google.shopping.merchant.products.v1.ProductAttributes.Returns.ItemConditionR\x0eitemConditions\x12f\n" +
+	"\amethods\x18\x05 \x03(\x0e2L.google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnMethodR\amethods\x12i\n" +
+	"\boutcomes\x18\x06 \x03(\x0e2M.google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnOutcomeR\boutcomes\x12C\n" +
+	"\fshipping_fee\x18\a \x01(\v2\x1b.google.shopping.type.PriceH\x03R\vshippingFee\x88\x01\x01\x12\x86\x01\n" +
+	"\x11shipping_fee_type\x18\b \x01(\x0e2U.google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnShippingFeeTypeH\x04R\x0fshippingFeeType\x88\x01\x01\x12\"\n" +
+	"\n" +
+	"policy_url\x18\v \x01(\tH\x05R\tpolicyUrl\x88\x01\x01\"n\n" +
+	"\x10ReturnWindowType\x12\"\n" +
+	"\x1eRETURN_WINDOW_TYPE_UNSPECIFIED\x10\x00\x12\x18\n" +
+	"\x14FINITE_RETURN_WINDOW\x10\x01\x12\x0e\n" +
+	"\n" +
+	"NO_RETURNS\x10\x02\x12\f\n" +
+	"\bLIFETIME\x10\x03\"o\n" +
+	"\fReturnMethod\x12\x1d\n" +
+	"\x19RETURN_METHOD_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aBY_MAIL\x10\x01\x12\f\n" +
+	"\bIN_STORE\x10\x02\x12\x0e\n" +
+	"\n" +
+	"AT_A_KIOSK\x10\x03\x12\x15\n" +
+	"\x11DROP_OFF_LOCATION\x10\x04\"d\n" +
+	"\rItemCondition\x12\x1e\n" +
+	"\x1aITEM_CONDITION_UNSPECIFIED\x10\x00\x12\a\n" +
+	"\x03NEW\x10\x01\x12\f\n" +
+	"\bLIKE_NEW\x10\x02\x12\b\n" +
+	"\x04USED\x10\x03\x12\x12\n" +
+	"\x0eDEFECTIVE_ONLY\x10\x04\"[\n" +
+	"\rReturnOutcome\x12\x1e\n" +
+	"\x1aRETURN_OUTCOME_UNSPECIFIED\x10\x00\x12\n" +
+	"\n" +
+	"\x06REFUND\x10\x01\x12\f\n" +
+	"\bEXCHANGE\x10\x02\x12\x10\n" +
+	"\fSTORE_CREDIT\x10\x03\"x\n" +
+	"\x15ReturnShippingFeeType\x12(\n" +
+	"$RETURN_SHIPPING_FEE_TYPE_UNSPECIFIED\x10\x00\x12\x1b\n" +
+	"\x17CUSTOMER_RESPONSIBILITY\x10\x01\x12\x18\n" +
+	"\x14DEDUCTED_FROM_REFUND\x10\x02B\x16\n" +
+	"\x14restocking_fee_oneofB\x0e\n" +
+	"\f_window_daysB\x0e\n" +
+	"\f_window_typeB\x0f\n" +
+	"\r_shipping_feeB\x14\n" +
+	"\x12_shipping_fee_typeB\r\n" +
+	"\v_policy_url\x1aQ\n" +
 	"\x11QuestionAndAnswer\x12\x1f\n" +
 	"\bquestion\x18\x01 \x01(\tB\x03\xe0A\x02R\bquestion\x12\x1b\n" +
 	"\x06answer\x18\x02 \x01(\tB\x03\xe0A\x02R\x06answer\x1aC\n" +
@@ -8132,7 +8955,7 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\x10SubscriptionCost\x12P\n" +
 	"\x06period\x18\x01 \x01(\x0e28.google.shopping.merchant.products.v1.SubscriptionPeriodR\x06period\x12#\n" +
 	"\rperiod_length\x18\x02 \x01(\x03R\fperiodLength\x123\n" +
-	"\x06amount\x18\x03 \x01(\v2\x1b.google.shopping.type.PriceR\x06amount\"\xd3\x03\n" +
+	"\x06amount\x18\x03 \x01(\v2\x1b.google.shopping.type.PriceR\x06amount\"\xe1\x04\n" +
 	"\x12ProductInstallment\x12\x16\n" +
 	"\x06months\x18\x01 \x01(\x03R\x06months\x123\n" +
 	"\x06amount\x18\x02 \x01(\v2\x1b.google.shopping.type.PriceR\x06amount\x12B\n" +
@@ -8140,11 +8963,13 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\vcredit_type\x18\x04 \x01(\x0e20.google.shopping.merchant.products.v1.CreditTypeH\x01R\n" +
 	"creditType\x88\x01\x01\x12>\n" +
 	"\x16annual_percentage_rate\x18\x05 \x01(\x01B\x03\xe0A\x01H\x02R\x14annualPercentageRate\x88\x01\x01\x12H\n" +
-	"\ftotal_amount\x18\x06 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01H\x03R\vtotalAmount\x88\x01\x01B\x0e\n" +
+	"\ftotal_amount\x18\x06 \x01(\v2\x1b.google.shopping.type.PriceB\x03\xe0A\x01H\x03R\vtotalAmount\x88\x01\x01\x12v\n" +
+	"\x11mileage_allowance\x18\a \x01(\v2?.google.shopping.merchant.products.v1.ProductAttributes.MileageB\x03\xe0A\x01H\x04R\x10mileageAllowance\x88\x01\x01B\x0e\n" +
 	"\f_downpaymentB\x0e\n" +
 	"\f_credit_typeB\x19\n" +
 	"\x17_annual_percentage_rateB\x0f\n" +
-	"\r_total_amount\"\\\n" +
+	"\r_total_amountB\x14\n" +
+	"\x12_mileage_allowance\"\\\n" +
 	"\rLoyaltyPoints\x12\x12\n" +
 	"\x04name\x18\x01 \x01(\tR\x04name\x12!\n" +
 	"\fpoints_value\x18\x02 \x01(\x03R\vpointsValue\x12\x14\n" +
@@ -8199,16 +9024,20 @@ const file_google_shopping_merchant_products_v1_products_common_proto_rawDesc = 
 	"\rProductDetail\x12!\n" +
 	"\fsection_name\x18\x01 \x01(\tR\vsectionName\x12%\n" +
 	"\x0eattribute_name\x18\x02 \x01(\tR\rattributeName\x12'\n" +
-	"\x0fattribute_value\x18\x03 \x01(\tR\x0eattributeValue\"\xcb\x03\n" +
+	"\x0fattribute_value\x18\x03 \x01(\tR\x0eattributeValue\"\x96\x05\n" +
 	"\x14ProductCertification\x12z\n" +
 	"\x17certification_authority\x18\x01 \x01(\x0e2<.google.shopping.merchant.products.v1.CertificationAuthorityH\x00R\x16certificationAuthority\x88\x01\x01\x12k\n" +
 	"\x12certification_name\x18\x02 \x01(\x0e27.google.shopping.merchant.products.v1.CertificationNameH\x01R\x11certificationName\x88\x01\x01\x122\n" +
 	"\x12certification_code\x18\x03 \x01(\tH\x02R\x11certificationCode\x88\x01\x01\x124\n" +
-	"\x13certification_value\x18\x04 \x01(\tH\x03R\x12certificationValue\x88\x01\x01B\x1a\n" +
+	"\x13certification_value\x18\x04 \x01(\tH\x03R\x12certificationValue\x88\x01\x01\x12H\n" +
+	"\x1bcertification_document_link\x18\x05 \x01(\tB\x03\xe0A\x01H\x04R\x19certificationDocumentLink\x88\x01\x01\x12B\n" +
+	"\x18certification_label_link\x18\x06 \x01(\tB\x03\xe0A\x01H\x05R\x16certificationLabelLink\x88\x01\x01B\x1a\n" +
 	"\x18_certification_authorityB\x15\n" +
 	"\x13_certification_nameB\x15\n" +
 	"\x13_certification_codeB\x16\n" +
-	"\x14_certification_value\"\xc2\x01\n" +
+	"\x14_certification_valueB\x1e\n" +
+	"\x1c_certification_document_linkB\x1b\n" +
+	"\x19_certification_label_link\"\xc2\x01\n" +
 	"\x0fStructuredTitle\x12l\n" +
 	"\x13digital_source_type\x18\x01 \x01(\x0e27.google.shopping.merchant.products.v1.DigitalSourceTypeH\x00R\x11digitalSourceType\x88\x01\x01\x12\x1d\n" +
 	"\acontent\x18\x02 \x01(\tH\x01R\acontent\x88\x01\x01B\x16\n" +
@@ -8500,8 +9329,8 @@ func file_google_shopping_merchant_products_v1_products_common_proto_rawDescGZIP
 	return file_google_shopping_merchant_products_v1_products_common_proto_rawDescData
 }
 
-var file_google_shopping_merchant_products_v1_products_common_proto_enumTypes = make([]protoimpl.EnumInfo, 37)
-var file_google_shopping_merchant_products_v1_products_common_proto_msgTypes = make([]protoimpl.MessageInfo, 40)
+var file_google_shopping_merchant_products_v1_products_common_proto_enumTypes = make([]protoimpl.EnumInfo, 45)
+var file_google_shopping_merchant_products_v1_products_common_proto_msgTypes = make([]protoimpl.MessageInfo, 42)
 var file_google_shopping_merchant_products_v1_products_common_proto_goTypes = []any{
 	(SubscriptionPeriod)(0),                                // 0: google.shopping.merchant.products.v1.SubscriptionPeriod
 	(AgeGroup)(0),                                          // 1: google.shopping.merchant.products.v1.AgeGroup
@@ -8532,189 +9361,212 @@ var file_google_shopping_merchant_products_v1_products_common_proto_goTypes = []
 	(ProductAttributes_FuelConsumption_Unit)(0),            // 26: google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption.Unit
 	(ProductAttributes_EnergyConsumption_Unit)(0),          // 27: google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption.Unit
 	(ProductAttributes_Co2Emissions_Unit)(0),               // 28: google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions.Unit
-	(ProductAttributes_ProductFee_FeeType)(0),              // 29: google.shopping.merchant.products.v1.ProductAttributes.ProductFee.FeeType
-	(ProductAttributes_UnitArea_Unit)(0),                   // 30: google.shopping.merchant.products.v1.ProductAttributes.UnitArea.Unit
-	(ProductAttributes_PetPolicy_PetType)(0),               // 31: google.shopping.merchant.products.v1.ProductAttributes.PetPolicy.PetType
-	(ProductAttributes_RelatedProduct_RelationshipType)(0), // 32: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.RelationshipType
-	(ProductAttributes_RelatedProduct_IdType)(0),           // 33: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.IdType
-	(ProductStatus_ItemLevelIssue_Severity)(0),             // 34: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.Severity
-	(ProductSustainabilityIncentive_Type)(0),               // 35: google.shopping.merchant.products.v1.ProductSustainabilityIncentive.Type
-	(ProductMinimumOrderValue_Surface)(0),                  // 36: google.shopping.merchant.products.v1.ProductMinimumOrderValue.Surface
-	(*ProductAttributes)(nil),                              // 37: google.shopping.merchant.products.v1.ProductAttributes
-	(*ShippingWeight)(nil),                                 // 38: google.shopping.merchant.products.v1.ShippingWeight
-	(*ShippingDimension)(nil),                              // 39: google.shopping.merchant.products.v1.ShippingDimension
-	(*UnitPricingBaseMeasure)(nil),                         // 40: google.shopping.merchant.products.v1.UnitPricingBaseMeasure
-	(*UnitPricingMeasure)(nil),                             // 41: google.shopping.merchant.products.v1.UnitPricingMeasure
-	(*SubscriptionCost)(nil),                               // 42: google.shopping.merchant.products.v1.SubscriptionCost
-	(*ProductInstallment)(nil),                             // 43: google.shopping.merchant.products.v1.ProductInstallment
-	(*LoyaltyPoints)(nil),                                  // 44: google.shopping.merchant.products.v1.LoyaltyPoints
-	(*LoyaltyProgram)(nil),                                 // 45: google.shopping.merchant.products.v1.LoyaltyProgram
-	(*Shipping)(nil),                                       // 46: google.shopping.merchant.products.v1.Shipping
-	(*FreeShippingThreshold)(nil),                          // 47: google.shopping.merchant.products.v1.FreeShippingThreshold
-	(*ProductDetail)(nil),                                  // 48: google.shopping.merchant.products.v1.ProductDetail
-	(*ProductCertification)(nil),                           // 49: google.shopping.merchant.products.v1.ProductCertification
-	(*StructuredTitle)(nil),                                // 50: google.shopping.merchant.products.v1.StructuredTitle
-	(*StructuredDescription)(nil),                          // 51: google.shopping.merchant.products.v1.StructuredDescription
-	(*ProductDimension)(nil),                               // 52: google.shopping.merchant.products.v1.ProductDimension
-	(*ProductWeight)(nil),                                  // 53: google.shopping.merchant.products.v1.ProductWeight
-	(*ProductStatus)(nil),                                  // 54: google.shopping.merchant.products.v1.ProductStatus
-	(*CloudExportAdditionalProperties)(nil),                // 55: google.shopping.merchant.products.v1.CloudExportAdditionalProperties
-	(*ProductSustainabilityIncentive)(nil),                 // 56: google.shopping.merchant.products.v1.ProductSustainabilityIncentive
-	(*AutomatedDiscounts)(nil),                             // 57: google.shopping.merchant.products.v1.AutomatedDiscounts
-	(*PickupCost)(nil),                                     // 58: google.shopping.merchant.products.v1.PickupCost
-	(*HandlingCutoffTime)(nil),                             // 59: google.shopping.merchant.products.v1.HandlingCutoffTime
-	(*ProductMinimumOrderValue)(nil),                       // 60: google.shopping.merchant.products.v1.ProductMinimumOrderValue
-	(*ProductAttributes_ShippingBusinessDaysConfig)(nil),   // 61: google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfig
-	(*ProductAttributes_CarrierShipping)(nil),              // 62: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping
-	(*ProductAttributes_Mileage)(nil),                      // 63: google.shopping.merchant.products.v1.ProductAttributes.Mileage
-	(*ProductAttributes_FuelConsumption)(nil),              // 64: google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption
-	(*ProductAttributes_EnergyConsumption)(nil),            // 65: google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption
-	(*ProductAttributes_Co2Emissions)(nil),                 // 66: google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions
-	(*ProductAttributes_Warranty)(nil),                     // 67: google.shopping.merchant.products.v1.ProductAttributes.Warranty
-	(*ProductAttributes_ProductFee)(nil),                   // 68: google.shopping.merchant.products.v1.ProductAttributes.ProductFee
-	(*ProductAttributes_DisplayAddress)(nil),               // 69: google.shopping.merchant.products.v1.ProductAttributes.DisplayAddress
-	(*ProductAttributes_UnitArea)(nil),                     // 70: google.shopping.merchant.products.v1.ProductAttributes.UnitArea
-	(*ProductAttributes_PetPolicy)(nil),                    // 71: google.shopping.merchant.products.v1.ProductAttributes.PetPolicy
-	(*ProductAttributes_QuestionAndAnswer)(nil),            // 72: google.shopping.merchant.products.v1.ProductAttributes.QuestionAndAnswer
-	(*ProductAttributes_VariantOption)(nil),                // 73: google.shopping.merchant.products.v1.ProductAttributes.VariantOption
-	(*ProductAttributes_RelatedProduct)(nil),               // 74: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct
-	(*ProductStatus_DestinationStatus)(nil),                // 75: google.shopping.merchant.products.v1.ProductStatus.DestinationStatus
-	(*ProductStatus_ItemLevelIssue)(nil),                   // 76: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue
-	(*timestamppb.Timestamp)(nil),                          // 77: google.protobuf.Timestamp
-	(*typepb.Price)(nil),                                   // 78: google.shopping.type.Price
-	(*interval.Interval)(nil),                              // 79: google.type.Interval
-	(typepb.Destination_DestinationEnum)(0),                // 80: google.shopping.type.Destination.DestinationEnum
-	(typepb.ReportingContext_ReportingContextEnum)(0),      // 81: google.shopping.type.ReportingContext.ReportingContextEnum
+	(ProductAttributes_Warranty_WarrantyDurationUnit)(0),   // 29: google.shopping.merchant.products.v1.ProductAttributes.Warranty.WarrantyDurationUnit
+	(ProductAttributes_ProductFee_FeeType)(0),              // 30: google.shopping.merchant.products.v1.ProductAttributes.ProductFee.FeeType
+	(ProductAttributes_UnitArea_Unit)(0),                   // 31: google.shopping.merchant.products.v1.ProductAttributes.UnitArea.Unit
+	(ProductAttributes_PetPolicy_PetType)(0),               // 32: google.shopping.merchant.products.v1.ProductAttributes.PetPolicy.PetType
+	(ProductAttributes_LeaseTerm_LeaseTermType)(0),         // 33: google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.LeaseTermType
+	(ProductAttributes_LeaseTerm_DurationUnit)(0),          // 34: google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.DurationUnit
+	(ProductAttributes_Returns_ReturnWindowType)(0),        // 35: google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnWindowType
+	(ProductAttributes_Returns_ReturnMethod)(0),            // 36: google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnMethod
+	(ProductAttributes_Returns_ItemCondition)(0),           // 37: google.shopping.merchant.products.v1.ProductAttributes.Returns.ItemCondition
+	(ProductAttributes_Returns_ReturnOutcome)(0),           // 38: google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnOutcome
+	(ProductAttributes_Returns_ReturnShippingFeeType)(0),   // 39: google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnShippingFeeType
+	(ProductAttributes_RelatedProduct_RelationshipType)(0), // 40: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.RelationshipType
+	(ProductAttributes_RelatedProduct_IdType)(0),           // 41: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.IdType
+	(ProductStatus_ItemLevelIssue_Severity)(0),             // 42: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.Severity
+	(ProductSustainabilityIncentive_Type)(0),               // 43: google.shopping.merchant.products.v1.ProductSustainabilityIncentive.Type
+	(ProductMinimumOrderValue_Surface)(0),                  // 44: google.shopping.merchant.products.v1.ProductMinimumOrderValue.Surface
+	(*ProductAttributes)(nil),                              // 45: google.shopping.merchant.products.v1.ProductAttributes
+	(*ShippingWeight)(nil),                                 // 46: google.shopping.merchant.products.v1.ShippingWeight
+	(*ShippingDimension)(nil),                              // 47: google.shopping.merchant.products.v1.ShippingDimension
+	(*UnitPricingBaseMeasure)(nil),                         // 48: google.shopping.merchant.products.v1.UnitPricingBaseMeasure
+	(*UnitPricingMeasure)(nil),                             // 49: google.shopping.merchant.products.v1.UnitPricingMeasure
+	(*SubscriptionCost)(nil),                               // 50: google.shopping.merchant.products.v1.SubscriptionCost
+	(*ProductInstallment)(nil),                             // 51: google.shopping.merchant.products.v1.ProductInstallment
+	(*LoyaltyPoints)(nil),                                  // 52: google.shopping.merchant.products.v1.LoyaltyPoints
+	(*LoyaltyProgram)(nil),                                 // 53: google.shopping.merchant.products.v1.LoyaltyProgram
+	(*Shipping)(nil),                                       // 54: google.shopping.merchant.products.v1.Shipping
+	(*FreeShippingThreshold)(nil),                          // 55: google.shopping.merchant.products.v1.FreeShippingThreshold
+	(*ProductDetail)(nil),                                  // 56: google.shopping.merchant.products.v1.ProductDetail
+	(*ProductCertification)(nil),                           // 57: google.shopping.merchant.products.v1.ProductCertification
+	(*StructuredTitle)(nil),                                // 58: google.shopping.merchant.products.v1.StructuredTitle
+	(*StructuredDescription)(nil),                          // 59: google.shopping.merchant.products.v1.StructuredDescription
+	(*ProductDimension)(nil),                               // 60: google.shopping.merchant.products.v1.ProductDimension
+	(*ProductWeight)(nil),                                  // 61: google.shopping.merchant.products.v1.ProductWeight
+	(*ProductStatus)(nil),                                  // 62: google.shopping.merchant.products.v1.ProductStatus
+	(*CloudExportAdditionalProperties)(nil),                // 63: google.shopping.merchant.products.v1.CloudExportAdditionalProperties
+	(*ProductSustainabilityIncentive)(nil),                 // 64: google.shopping.merchant.products.v1.ProductSustainabilityIncentive
+	(*AutomatedDiscounts)(nil),                             // 65: google.shopping.merchant.products.v1.AutomatedDiscounts
+	(*PickupCost)(nil),                                     // 66: google.shopping.merchant.products.v1.PickupCost
+	(*HandlingCutoffTime)(nil),                             // 67: google.shopping.merchant.products.v1.HandlingCutoffTime
+	(*ProductMinimumOrderValue)(nil),                       // 68: google.shopping.merchant.products.v1.ProductMinimumOrderValue
+	(*ProductAttributes_ShippingBusinessDaysConfig)(nil),   // 69: google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfig
+	(*ProductAttributes_CarrierShipping)(nil),              // 70: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping
+	(*ProductAttributes_Mileage)(nil),                      // 71: google.shopping.merchant.products.v1.ProductAttributes.Mileage
+	(*ProductAttributes_FuelConsumption)(nil),              // 72: google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption
+	(*ProductAttributes_EnergyConsumption)(nil),            // 73: google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption
+	(*ProductAttributes_Co2Emissions)(nil),                 // 74: google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions
+	(*ProductAttributes_Warranty)(nil),                     // 75: google.shopping.merchant.products.v1.ProductAttributes.Warranty
+	(*ProductAttributes_ProductFee)(nil),                   // 76: google.shopping.merchant.products.v1.ProductAttributes.ProductFee
+	(*ProductAttributes_DisplayAddress)(nil),               // 77: google.shopping.merchant.products.v1.ProductAttributes.DisplayAddress
+	(*ProductAttributes_UnitArea)(nil),                     // 78: google.shopping.merchant.products.v1.ProductAttributes.UnitArea
+	(*ProductAttributes_PetPolicy)(nil),                    // 79: google.shopping.merchant.products.v1.ProductAttributes.PetPolicy
+	(*ProductAttributes_LeaseTerm)(nil),                    // 80: google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm
+	(*ProductAttributes_Returns)(nil),                      // 81: google.shopping.merchant.products.v1.ProductAttributes.Returns
+	(*ProductAttributes_QuestionAndAnswer)(nil),            // 82: google.shopping.merchant.products.v1.ProductAttributes.QuestionAndAnswer
+	(*ProductAttributes_VariantOption)(nil),                // 83: google.shopping.merchant.products.v1.ProductAttributes.VariantOption
+	(*ProductAttributes_RelatedProduct)(nil),               // 84: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct
+	(*ProductStatus_DestinationStatus)(nil),                // 85: google.shopping.merchant.products.v1.ProductStatus.DestinationStatus
+	(*ProductStatus_ItemLevelIssue)(nil),                   // 86: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue
+	(*timestamppb.Timestamp)(nil),                          // 87: google.protobuf.Timestamp
+	(*typepb.Price)(nil),                                   // 88: google.shopping.type.Price
+	(*interval.Interval)(nil),                              // 89: google.type.Interval
+	(typepb.Destination_DestinationEnum)(0),                // 90: google.shopping.type.Destination.DestinationEnum
+	(typepb.ReportingContext_ReportingContextEnum)(0),      // 91: google.shopping.type.ReportingContext.ReportingContextEnum
 }
 var file_google_shopping_merchant_products_v1_products_common_proto_depIdxs = []int32{
-	77,  // 0: google.shopping.merchant.products.v1.ProductAttributes.expiration_date:type_name -> google.protobuf.Timestamp
-	77,  // 1: google.shopping.merchant.products.v1.ProductAttributes.disclosure_date:type_name -> google.protobuf.Timestamp
+	87,  // 0: google.shopping.merchant.products.v1.ProductAttributes.expiration_date:type_name -> google.protobuf.Timestamp
+	87,  // 1: google.shopping.merchant.products.v1.ProductAttributes.disclosure_date:type_name -> google.protobuf.Timestamp
 	1,   // 2: google.shopping.merchant.products.v1.ProductAttributes.age_group:type_name -> google.shopping.merchant.products.v1.AgeGroup
 	2,   // 3: google.shopping.merchant.products.v1.ProductAttributes.availability:type_name -> google.shopping.merchant.products.v1.Availability
-	77,  // 4: google.shopping.merchant.products.v1.ProductAttributes.availability_date:type_name -> google.protobuf.Timestamp
+	87,  // 4: google.shopping.merchant.products.v1.ProductAttributes.availability_date:type_name -> google.protobuf.Timestamp
 	3,   // 5: google.shopping.merchant.products.v1.ProductAttributes.condition:type_name -> google.shopping.merchant.products.v1.Condition
 	4,   // 6: google.shopping.merchant.products.v1.ProductAttributes.gender:type_name -> google.shopping.merchant.products.v1.Gender
-	78,  // 7: google.shopping.merchant.products.v1.ProductAttributes.price:type_name -> google.shopping.type.Price
-	78,  // 8: google.shopping.merchant.products.v1.ProductAttributes.maximum_retail_price:type_name -> google.shopping.type.Price
-	43,  // 9: google.shopping.merchant.products.v1.ProductAttributes.installment:type_name -> google.shopping.merchant.products.v1.ProductInstallment
-	42,  // 10: google.shopping.merchant.products.v1.ProductAttributes.subscription_cost:type_name -> google.shopping.merchant.products.v1.SubscriptionCost
-	44,  // 11: google.shopping.merchant.products.v1.ProductAttributes.loyalty_points:type_name -> google.shopping.merchant.products.v1.LoyaltyPoints
-	45,  // 12: google.shopping.merchant.products.v1.ProductAttributes.loyalty_programs:type_name -> google.shopping.merchant.products.v1.LoyaltyProgram
-	78,  // 13: google.shopping.merchant.products.v1.ProductAttributes.sale_price:type_name -> google.shopping.type.Price
-	79,  // 14: google.shopping.merchant.products.v1.ProductAttributes.sale_price_effective_date:type_name -> google.type.Interval
-	52,  // 15: google.shopping.merchant.products.v1.ProductAttributes.product_height:type_name -> google.shopping.merchant.products.v1.ProductDimension
-	52,  // 16: google.shopping.merchant.products.v1.ProductAttributes.product_length:type_name -> google.shopping.merchant.products.v1.ProductDimension
-	52,  // 17: google.shopping.merchant.products.v1.ProductAttributes.product_width:type_name -> google.shopping.merchant.products.v1.ProductDimension
-	53,  // 18: google.shopping.merchant.products.v1.ProductAttributes.product_weight:type_name -> google.shopping.merchant.products.v1.ProductWeight
-	46,  // 19: google.shopping.merchant.products.v1.ProductAttributes.shipping:type_name -> google.shopping.merchant.products.v1.Shipping
-	62,  // 20: google.shopping.merchant.products.v1.ProductAttributes.carrier_shipping:type_name -> google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping
-	47,  // 21: google.shopping.merchant.products.v1.ProductAttributes.free_shipping_threshold:type_name -> google.shopping.merchant.products.v1.FreeShippingThreshold
-	38,  // 22: google.shopping.merchant.products.v1.ProductAttributes.shipping_weight:type_name -> google.shopping.merchant.products.v1.ShippingWeight
-	39,  // 23: google.shopping.merchant.products.v1.ProductAttributes.shipping_length:type_name -> google.shopping.merchant.products.v1.ShippingDimension
-	39,  // 24: google.shopping.merchant.products.v1.ProductAttributes.shipping_width:type_name -> google.shopping.merchant.products.v1.ShippingDimension
-	39,  // 25: google.shopping.merchant.products.v1.ProductAttributes.shipping_height:type_name -> google.shopping.merchant.products.v1.ShippingDimension
-	61,  // 26: google.shopping.merchant.products.v1.ProductAttributes.shipping_handling_business_days:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfig
-	61,  // 27: google.shopping.merchant.products.v1.ProductAttributes.shipping_transit_business_days:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfig
-	59,  // 28: google.shopping.merchant.products.v1.ProductAttributes.handling_cutoff_times:type_name -> google.shopping.merchant.products.v1.HandlingCutoffTime
+	88,  // 7: google.shopping.merchant.products.v1.ProductAttributes.price:type_name -> google.shopping.type.Price
+	88,  // 8: google.shopping.merchant.products.v1.ProductAttributes.maximum_retail_price:type_name -> google.shopping.type.Price
+	51,  // 9: google.shopping.merchant.products.v1.ProductAttributes.installment:type_name -> google.shopping.merchant.products.v1.ProductInstallment
+	50,  // 10: google.shopping.merchant.products.v1.ProductAttributes.subscription_cost:type_name -> google.shopping.merchant.products.v1.SubscriptionCost
+	52,  // 11: google.shopping.merchant.products.v1.ProductAttributes.loyalty_points:type_name -> google.shopping.merchant.products.v1.LoyaltyPoints
+	53,  // 12: google.shopping.merchant.products.v1.ProductAttributes.loyalty_programs:type_name -> google.shopping.merchant.products.v1.LoyaltyProgram
+	88,  // 13: google.shopping.merchant.products.v1.ProductAttributes.sale_price:type_name -> google.shopping.type.Price
+	89,  // 14: google.shopping.merchant.products.v1.ProductAttributes.sale_price_effective_date:type_name -> google.type.Interval
+	60,  // 15: google.shopping.merchant.products.v1.ProductAttributes.product_height:type_name -> google.shopping.merchant.products.v1.ProductDimension
+	60,  // 16: google.shopping.merchant.products.v1.ProductAttributes.product_length:type_name -> google.shopping.merchant.products.v1.ProductDimension
+	60,  // 17: google.shopping.merchant.products.v1.ProductAttributes.product_width:type_name -> google.shopping.merchant.products.v1.ProductDimension
+	61,  // 18: google.shopping.merchant.products.v1.ProductAttributes.product_weight:type_name -> google.shopping.merchant.products.v1.ProductWeight
+	54,  // 19: google.shopping.merchant.products.v1.ProductAttributes.shipping:type_name -> google.shopping.merchant.products.v1.Shipping
+	70,  // 20: google.shopping.merchant.products.v1.ProductAttributes.carrier_shipping:type_name -> google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping
+	55,  // 21: google.shopping.merchant.products.v1.ProductAttributes.free_shipping_threshold:type_name -> google.shopping.merchant.products.v1.FreeShippingThreshold
+	46,  // 22: google.shopping.merchant.products.v1.ProductAttributes.shipping_weight:type_name -> google.shopping.merchant.products.v1.ShippingWeight
+	47,  // 23: google.shopping.merchant.products.v1.ProductAttributes.shipping_length:type_name -> google.shopping.merchant.products.v1.ShippingDimension
+	47,  // 24: google.shopping.merchant.products.v1.ProductAttributes.shipping_width:type_name -> google.shopping.merchant.products.v1.ShippingDimension
+	47,  // 25: google.shopping.merchant.products.v1.ProductAttributes.shipping_height:type_name -> google.shopping.merchant.products.v1.ShippingDimension
+	69,  // 26: google.shopping.merchant.products.v1.ProductAttributes.shipping_handling_business_days:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfig
+	69,  // 27: google.shopping.merchant.products.v1.ProductAttributes.shipping_transit_business_days:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ShippingBusinessDaysConfig
+	67,  // 28: google.shopping.merchant.products.v1.ProductAttributes.handling_cutoff_times:type_name -> google.shopping.merchant.products.v1.HandlingCutoffTime
 	6,   // 29: google.shopping.merchant.products.v1.ProductAttributes.size_system:type_name -> google.shopping.merchant.products.v1.SizeSystem
 	7,   // 30: google.shopping.merchant.products.v1.ProductAttributes.size_types:type_name -> google.shopping.merchant.products.v1.SizeType
 	8,   // 31: google.shopping.merchant.products.v1.ProductAttributes.energy_efficiency_class:type_name -> google.shopping.merchant.products.v1.EnergyEfficiencyClass
 	8,   // 32: google.shopping.merchant.products.v1.ProductAttributes.min_energy_efficiency_class:type_name -> google.shopping.merchant.products.v1.EnergyEfficiencyClass
 	8,   // 33: google.shopping.merchant.products.v1.ProductAttributes.max_energy_efficiency_class:type_name -> google.shopping.merchant.products.v1.EnergyEfficiencyClass
-	41,  // 34: google.shopping.merchant.products.v1.ProductAttributes.unit_pricing_measure:type_name -> google.shopping.merchant.products.v1.UnitPricingMeasure
-	40,  // 35: google.shopping.merchant.products.v1.ProductAttributes.unit_pricing_base_measure:type_name -> google.shopping.merchant.products.v1.UnitPricingBaseMeasure
-	78,  // 36: google.shopping.merchant.products.v1.ProductAttributes.cost_of_goods_sold:type_name -> google.shopping.type.Price
-	48,  // 37: google.shopping.merchant.products.v1.ProductAttributes.product_details:type_name -> google.shopping.merchant.products.v1.ProductDetail
+	49,  // 34: google.shopping.merchant.products.v1.ProductAttributes.unit_pricing_measure:type_name -> google.shopping.merchant.products.v1.UnitPricingMeasure
+	48,  // 35: google.shopping.merchant.products.v1.ProductAttributes.unit_pricing_base_measure:type_name -> google.shopping.merchant.products.v1.UnitPricingBaseMeasure
+	88,  // 36: google.shopping.merchant.products.v1.ProductAttributes.cost_of_goods_sold:type_name -> google.shopping.type.Price
+	56,  // 37: google.shopping.merchant.products.v1.ProductAttributes.product_details:type_name -> google.shopping.merchant.products.v1.ProductDetail
 	9,   // 38: google.shopping.merchant.products.v1.ProductAttributes.pickup_method:type_name -> google.shopping.merchant.products.v1.PickupMethod
 	10,  // 39: google.shopping.merchant.products.v1.ProductAttributes.pickup_sla:type_name -> google.shopping.merchant.products.v1.PickupSla
-	58,  // 40: google.shopping.merchant.products.v1.ProductAttributes.pickup_cost:type_name -> google.shopping.merchant.products.v1.PickupCost
-	80,  // 41: google.shopping.merchant.products.v1.ProductAttributes.included_destinations:type_name -> google.shopping.type.Destination.DestinationEnum
-	80,  // 42: google.shopping.merchant.products.v1.ProductAttributes.excluded_destinations:type_name -> google.shopping.type.Destination.DestinationEnum
+	66,  // 40: google.shopping.merchant.products.v1.ProductAttributes.pickup_cost:type_name -> google.shopping.merchant.products.v1.PickupCost
+	90,  // 41: google.shopping.merchant.products.v1.ProductAttributes.included_destinations:type_name -> google.shopping.type.Destination.DestinationEnum
+	90,  // 42: google.shopping.merchant.products.v1.ProductAttributes.excluded_destinations:type_name -> google.shopping.type.Destination.DestinationEnum
 	11,  // 43: google.shopping.merchant.products.v1.ProductAttributes.pause:type_name -> google.shopping.merchant.products.v1.Pause
-	55,  // 44: google.shopping.merchant.products.v1.ProductAttributes.cloud_export_additional_properties:type_name -> google.shopping.merchant.products.v1.CloudExportAdditionalProperties
-	49,  // 45: google.shopping.merchant.products.v1.ProductAttributes.certifications:type_name -> google.shopping.merchant.products.v1.ProductCertification
-	50,  // 46: google.shopping.merchant.products.v1.ProductAttributes.structured_title:type_name -> google.shopping.merchant.products.v1.StructuredTitle
-	51,  // 47: google.shopping.merchant.products.v1.ProductAttributes.structured_description:type_name -> google.shopping.merchant.products.v1.StructuredDescription
-	78,  // 48: google.shopping.merchant.products.v1.ProductAttributes.auto_pricing_min_price:type_name -> google.shopping.type.Price
-	56,  // 49: google.shopping.merchant.products.v1.ProductAttributes.sustainability_incentives:type_name -> google.shopping.merchant.products.v1.ProductSustainabilityIncentive
-	60,  // 50: google.shopping.merchant.products.v1.ProductAttributes.minimum_order_values:type_name -> google.shopping.merchant.products.v1.ProductMinimumOrderValue
-	17,  // 51: google.shopping.merchant.products.v1.ProductAttributes.body_style:type_name -> google.shopping.merchant.products.v1.ProductAttributes.VehicleBodyStyle
-	63,  // 52: google.shopping.merchant.products.v1.ProductAttributes.mileage:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage
-	63,  // 53: google.shopping.merchant.products.v1.ProductAttributes.electric_range:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage
-	64,  // 54: google.shopping.merchant.products.v1.ProductAttributes.fuel_consumption:type_name -> google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption
-	64,  // 55: google.shopping.merchant.products.v1.ProductAttributes.fuel_consumption_discharged_battery:type_name -> google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption
-	65,  // 56: google.shopping.merchant.products.v1.ProductAttributes.energy_consumption:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption
-	66,  // 57: google.shopping.merchant.products.v1.ProductAttributes.co2_emissions:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions
-	18,  // 58: google.shopping.merchant.products.v1.ProductAttributes.engine:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EngineType
-	19,  // 59: google.shopping.merchant.products.v1.ProductAttributes.emissions_standard:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EmissionsStandard
-	78,  // 60: google.shopping.merchant.products.v1.ProductAttributes.vehicle_msrp:type_name -> google.shopping.type.Price
-	78,  // 61: google.shopping.merchant.products.v1.ProductAttributes.vehicle_all_in_price:type_name -> google.shopping.type.Price
-	20,  // 62: google.shopping.merchant.products.v1.ProductAttributes.vehicle_price_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.VehiclePriceType
-	78,  // 63: google.shopping.merchant.products.v1.ProductAttributes.vehicle_expenses:type_name -> google.shopping.type.Price
-	67,  // 64: google.shopping.merchant.products.v1.ProductAttributes.warranty:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Warranty
-	69,  // 65: google.shopping.merchant.products.v1.ProductAttributes.display_address:type_name -> google.shopping.merchant.products.v1.ProductAttributes.DisplayAddress
-	70,  // 66: google.shopping.merchant.products.v1.ProductAttributes.unit_area:type_name -> google.shopping.merchant.products.v1.ProductAttributes.UnitArea
-	21,  // 67: google.shopping.merchant.products.v1.ProductAttributes.property_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.PropertyType
-	22,  // 68: google.shopping.merchant.products.v1.ProductAttributes.amenity_feature:type_name -> google.shopping.merchant.products.v1.ProductAttributes.AmenityFeature
-	23,  // 69: google.shopping.merchant.products.v1.ProductAttributes.utilities_included:type_name -> google.shopping.merchant.products.v1.ProductAttributes.UtilitiesIncluded
-	71,  // 70: google.shopping.merchant.products.v1.ProductAttributes.pet_policy:type_name -> google.shopping.merchant.products.v1.ProductAttributes.PetPolicy
-	24,  // 71: google.shopping.merchant.products.v1.ProductAttributes.specialty_housing_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.SpecialtyHousingType
-	68,  // 72: google.shopping.merchant.products.v1.ProductAttributes.product_fee:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ProductFee
-	72,  // 73: google.shopping.merchant.products.v1.ProductAttributes.questions_and_answers:type_name -> google.shopping.merchant.products.v1.ProductAttributes.QuestionAndAnswer
-	73,  // 74: google.shopping.merchant.products.v1.ProductAttributes.variant_options:type_name -> google.shopping.merchant.products.v1.ProductAttributes.VariantOption
-	74,  // 75: google.shopping.merchant.products.v1.ProductAttributes.related_products:type_name -> google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct
-	0,   // 76: google.shopping.merchant.products.v1.SubscriptionCost.period:type_name -> google.shopping.merchant.products.v1.SubscriptionPeriod
-	78,  // 77: google.shopping.merchant.products.v1.SubscriptionCost.amount:type_name -> google.shopping.type.Price
-	78,  // 78: google.shopping.merchant.products.v1.ProductInstallment.amount:type_name -> google.shopping.type.Price
-	78,  // 79: google.shopping.merchant.products.v1.ProductInstallment.downpayment:type_name -> google.shopping.type.Price
-	5,   // 80: google.shopping.merchant.products.v1.ProductInstallment.credit_type:type_name -> google.shopping.merchant.products.v1.CreditType
-	78,  // 81: google.shopping.merchant.products.v1.ProductInstallment.total_amount:type_name -> google.shopping.type.Price
-	78,  // 82: google.shopping.merchant.products.v1.LoyaltyProgram.price:type_name -> google.shopping.type.Price
-	78,  // 83: google.shopping.merchant.products.v1.LoyaltyProgram.cashback_for_future_use:type_name -> google.shopping.type.Price
-	79,  // 84: google.shopping.merchant.products.v1.LoyaltyProgram.member_price_effective_date:type_name -> google.type.Interval
-	78,  // 85: google.shopping.merchant.products.v1.Shipping.price:type_name -> google.shopping.type.Price
-	78,  // 86: google.shopping.merchant.products.v1.FreeShippingThreshold.price_threshold:type_name -> google.shopping.type.Price
-	12,  // 87: google.shopping.merchant.products.v1.ProductCertification.certification_authority:type_name -> google.shopping.merchant.products.v1.CertificationAuthority
-	13,  // 88: google.shopping.merchant.products.v1.ProductCertification.certification_name:type_name -> google.shopping.merchant.products.v1.CertificationName
-	14,  // 89: google.shopping.merchant.products.v1.StructuredTitle.digital_source_type:type_name -> google.shopping.merchant.products.v1.DigitalSourceType
-	14,  // 90: google.shopping.merchant.products.v1.StructuredDescription.digital_source_type:type_name -> google.shopping.merchant.products.v1.DigitalSourceType
-	75,  // 91: google.shopping.merchant.products.v1.ProductStatus.destination_statuses:type_name -> google.shopping.merchant.products.v1.ProductStatus.DestinationStatus
-	76,  // 92: google.shopping.merchant.products.v1.ProductStatus.item_level_issues:type_name -> google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue
-	77,  // 93: google.shopping.merchant.products.v1.ProductStatus.creation_date:type_name -> google.protobuf.Timestamp
-	77,  // 94: google.shopping.merchant.products.v1.ProductStatus.last_update_date:type_name -> google.protobuf.Timestamp
-	77,  // 95: google.shopping.merchant.products.v1.ProductStatus.google_expiration_date:type_name -> google.protobuf.Timestamp
-	78,  // 96: google.shopping.merchant.products.v1.ProductSustainabilityIncentive.amount:type_name -> google.shopping.type.Price
-	35,  // 97: google.shopping.merchant.products.v1.ProductSustainabilityIncentive.type:type_name -> google.shopping.merchant.products.v1.ProductSustainabilityIncentive.Type
-	78,  // 98: google.shopping.merchant.products.v1.AutomatedDiscounts.prior_price:type_name -> google.shopping.type.Price
-	78,  // 99: google.shopping.merchant.products.v1.AutomatedDiscounts.prior_price_progressive:type_name -> google.shopping.type.Price
-	78,  // 100: google.shopping.merchant.products.v1.AutomatedDiscounts.gad_price:type_name -> google.shopping.type.Price
-	78,  // 101: google.shopping.merchant.products.v1.PickupCost.flat_rate:type_name -> google.shopping.type.Price
-	78,  // 102: google.shopping.merchant.products.v1.PickupCost.free_threshold:type_name -> google.shopping.type.Price
-	36,  // 103: google.shopping.merchant.products.v1.ProductMinimumOrderValue.surface:type_name -> google.shopping.merchant.products.v1.ProductMinimumOrderValue.Surface
-	78,  // 104: google.shopping.merchant.products.v1.ProductMinimumOrderValue.price:type_name -> google.shopping.type.Price
-	78,  // 105: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.flat_price:type_name -> google.shopping.type.Price
-	16,  // 106: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.carrier_price:type_name -> google.shopping.merchant.products.v1.ProductAttributes.CarrierPriceOption
-	78,  // 107: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.carrier_price_flat_adjustment:type_name -> google.shopping.type.Price
-	15,  // 108: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.carrier_transit_time:type_name -> google.shopping.merchant.products.v1.CarrierTransitTimeOption
-	25,  // 109: google.shopping.merchant.products.v1.ProductAttributes.Mileage.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage.Unit
-	26,  // 110: google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption.Unit
-	27,  // 111: google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption.Unit
-	28,  // 112: google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions.Unit
-	63,  // 113: google.shopping.merchant.products.v1.ProductAttributes.Warranty.mileage:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage
-	29,  // 114: google.shopping.merchant.products.v1.ProductAttributes.ProductFee.type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ProductFee.FeeType
-	78,  // 115: google.shopping.merchant.products.v1.ProductAttributes.ProductFee.amount:type_name -> google.shopping.type.Price
-	30,  // 116: google.shopping.merchant.products.v1.ProductAttributes.UnitArea.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.UnitArea.Unit
-	31,  // 117: google.shopping.merchant.products.v1.ProductAttributes.PetPolicy.pet_types:type_name -> google.shopping.merchant.products.v1.ProductAttributes.PetPolicy.PetType
-	32,  // 118: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.relationship_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.RelationshipType
-	33,  // 119: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.id_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.IdType
-	81,  // 120: google.shopping.merchant.products.v1.ProductStatus.DestinationStatus.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
-	34,  // 121: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.severity:type_name -> google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.Severity
-	81,  // 122: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
-	123, // [123:123] is the sub-list for method output_type
-	123, // [123:123] is the sub-list for method input_type
-	123, // [123:123] is the sub-list for extension type_name
-	123, // [123:123] is the sub-list for extension extendee
-	0,   // [0:123] is the sub-list for field type_name
+	63,  // 44: google.shopping.merchant.products.v1.ProductAttributes.cloud_export_additional_properties:type_name -> google.shopping.merchant.products.v1.CloudExportAdditionalProperties
+	57,  // 45: google.shopping.merchant.products.v1.ProductAttributes.certifications:type_name -> google.shopping.merchant.products.v1.ProductCertification
+	58,  // 46: google.shopping.merchant.products.v1.ProductAttributes.structured_title:type_name -> google.shopping.merchant.products.v1.StructuredTitle
+	59,  // 47: google.shopping.merchant.products.v1.ProductAttributes.structured_description:type_name -> google.shopping.merchant.products.v1.StructuredDescription
+	88,  // 48: google.shopping.merchant.products.v1.ProductAttributes.auto_pricing_min_price:type_name -> google.shopping.type.Price
+	64,  // 49: google.shopping.merchant.products.v1.ProductAttributes.sustainability_incentives:type_name -> google.shopping.merchant.products.v1.ProductSustainabilityIncentive
+	68,  // 50: google.shopping.merchant.products.v1.ProductAttributes.minimum_order_values:type_name -> google.shopping.merchant.products.v1.ProductMinimumOrderValue
+	75,  // 51: google.shopping.merchant.products.v1.ProductAttributes.warranty:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Warranty
+	17,  // 52: google.shopping.merchant.products.v1.ProductAttributes.body_style:type_name -> google.shopping.merchant.products.v1.ProductAttributes.VehicleBodyStyle
+	71,  // 53: google.shopping.merchant.products.v1.ProductAttributes.mileage:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage
+	71,  // 54: google.shopping.merchant.products.v1.ProductAttributes.electric_range:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage
+	72,  // 55: google.shopping.merchant.products.v1.ProductAttributes.fuel_consumption:type_name -> google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption
+	72,  // 56: google.shopping.merchant.products.v1.ProductAttributes.fuel_consumption_discharged_battery:type_name -> google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption
+	73,  // 57: google.shopping.merchant.products.v1.ProductAttributes.energy_consumption:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption
+	74,  // 58: google.shopping.merchant.products.v1.ProductAttributes.co2_emissions:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions
+	18,  // 59: google.shopping.merchant.products.v1.ProductAttributes.engine:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EngineType
+	19,  // 60: google.shopping.merchant.products.v1.ProductAttributes.emissions_standard:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EmissionsStandard
+	88,  // 61: google.shopping.merchant.products.v1.ProductAttributes.vehicle_msrp:type_name -> google.shopping.type.Price
+	88,  // 62: google.shopping.merchant.products.v1.ProductAttributes.vehicle_all_in_price:type_name -> google.shopping.type.Price
+	20,  // 63: google.shopping.merchant.products.v1.ProductAttributes.vehicle_price_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.VehiclePriceType
+	88,  // 64: google.shopping.merchant.products.v1.ProductAttributes.vehicle_expenses:type_name -> google.shopping.type.Price
+	81,  // 65: google.shopping.merchant.products.v1.ProductAttributes.returns:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Returns
+	77,  // 66: google.shopping.merchant.products.v1.ProductAttributes.display_address:type_name -> google.shopping.merchant.products.v1.ProductAttributes.DisplayAddress
+	78,  // 67: google.shopping.merchant.products.v1.ProductAttributes.unit_area:type_name -> google.shopping.merchant.products.v1.ProductAttributes.UnitArea
+	21,  // 68: google.shopping.merchant.products.v1.ProductAttributes.property_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.PropertyType
+	22,  // 69: google.shopping.merchant.products.v1.ProductAttributes.amenity_feature:type_name -> google.shopping.merchant.products.v1.ProductAttributes.AmenityFeature
+	23,  // 70: google.shopping.merchant.products.v1.ProductAttributes.utilities_included:type_name -> google.shopping.merchant.products.v1.ProductAttributes.UtilitiesIncluded
+	79,  // 71: google.shopping.merchant.products.v1.ProductAttributes.pet_policy:type_name -> google.shopping.merchant.products.v1.ProductAttributes.PetPolicy
+	24,  // 72: google.shopping.merchant.products.v1.ProductAttributes.specialty_housing_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.SpecialtyHousingType
+	76,  // 73: google.shopping.merchant.products.v1.ProductAttributes.product_fee:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ProductFee
+	80,  // 74: google.shopping.merchant.products.v1.ProductAttributes.lease_term:type_name -> google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm
+	82,  // 75: google.shopping.merchant.products.v1.ProductAttributes.questions_and_answers:type_name -> google.shopping.merchant.products.v1.ProductAttributes.QuestionAndAnswer
+	83,  // 76: google.shopping.merchant.products.v1.ProductAttributes.variant_options:type_name -> google.shopping.merchant.products.v1.ProductAttributes.VariantOption
+	84,  // 77: google.shopping.merchant.products.v1.ProductAttributes.related_products:type_name -> google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct
+	0,   // 78: google.shopping.merchant.products.v1.SubscriptionCost.period:type_name -> google.shopping.merchant.products.v1.SubscriptionPeriod
+	88,  // 79: google.shopping.merchant.products.v1.SubscriptionCost.amount:type_name -> google.shopping.type.Price
+	88,  // 80: google.shopping.merchant.products.v1.ProductInstallment.amount:type_name -> google.shopping.type.Price
+	88,  // 81: google.shopping.merchant.products.v1.ProductInstallment.downpayment:type_name -> google.shopping.type.Price
+	5,   // 82: google.shopping.merchant.products.v1.ProductInstallment.credit_type:type_name -> google.shopping.merchant.products.v1.CreditType
+	88,  // 83: google.shopping.merchant.products.v1.ProductInstallment.total_amount:type_name -> google.shopping.type.Price
+	71,  // 84: google.shopping.merchant.products.v1.ProductInstallment.mileage_allowance:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage
+	88,  // 85: google.shopping.merchant.products.v1.LoyaltyProgram.price:type_name -> google.shopping.type.Price
+	88,  // 86: google.shopping.merchant.products.v1.LoyaltyProgram.cashback_for_future_use:type_name -> google.shopping.type.Price
+	89,  // 87: google.shopping.merchant.products.v1.LoyaltyProgram.member_price_effective_date:type_name -> google.type.Interval
+	88,  // 88: google.shopping.merchant.products.v1.Shipping.price:type_name -> google.shopping.type.Price
+	88,  // 89: google.shopping.merchant.products.v1.FreeShippingThreshold.price_threshold:type_name -> google.shopping.type.Price
+	12,  // 90: google.shopping.merchant.products.v1.ProductCertification.certification_authority:type_name -> google.shopping.merchant.products.v1.CertificationAuthority
+	13,  // 91: google.shopping.merchant.products.v1.ProductCertification.certification_name:type_name -> google.shopping.merchant.products.v1.CertificationName
+	14,  // 92: google.shopping.merchant.products.v1.StructuredTitle.digital_source_type:type_name -> google.shopping.merchant.products.v1.DigitalSourceType
+	14,  // 93: google.shopping.merchant.products.v1.StructuredDescription.digital_source_type:type_name -> google.shopping.merchant.products.v1.DigitalSourceType
+	85,  // 94: google.shopping.merchant.products.v1.ProductStatus.destination_statuses:type_name -> google.shopping.merchant.products.v1.ProductStatus.DestinationStatus
+	86,  // 95: google.shopping.merchant.products.v1.ProductStatus.item_level_issues:type_name -> google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue
+	87,  // 96: google.shopping.merchant.products.v1.ProductStatus.creation_date:type_name -> google.protobuf.Timestamp
+	87,  // 97: google.shopping.merchant.products.v1.ProductStatus.last_update_date:type_name -> google.protobuf.Timestamp
+	87,  // 98: google.shopping.merchant.products.v1.ProductStatus.google_expiration_date:type_name -> google.protobuf.Timestamp
+	88,  // 99: google.shopping.merchant.products.v1.ProductSustainabilityIncentive.amount:type_name -> google.shopping.type.Price
+	43,  // 100: google.shopping.merchant.products.v1.ProductSustainabilityIncentive.type:type_name -> google.shopping.merchant.products.v1.ProductSustainabilityIncentive.Type
+	88,  // 101: google.shopping.merchant.products.v1.AutomatedDiscounts.prior_price:type_name -> google.shopping.type.Price
+	88,  // 102: google.shopping.merchant.products.v1.AutomatedDiscounts.prior_price_progressive:type_name -> google.shopping.type.Price
+	88,  // 103: google.shopping.merchant.products.v1.AutomatedDiscounts.gad_price:type_name -> google.shopping.type.Price
+	88,  // 104: google.shopping.merchant.products.v1.PickupCost.flat_rate:type_name -> google.shopping.type.Price
+	88,  // 105: google.shopping.merchant.products.v1.PickupCost.free_threshold:type_name -> google.shopping.type.Price
+	44,  // 106: google.shopping.merchant.products.v1.ProductMinimumOrderValue.surface:type_name -> google.shopping.merchant.products.v1.ProductMinimumOrderValue.Surface
+	88,  // 107: google.shopping.merchant.products.v1.ProductMinimumOrderValue.price:type_name -> google.shopping.type.Price
+	88,  // 108: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.flat_price:type_name -> google.shopping.type.Price
+	16,  // 109: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.carrier_price:type_name -> google.shopping.merchant.products.v1.ProductAttributes.CarrierPriceOption
+	88,  // 110: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.carrier_price_flat_adjustment:type_name -> google.shopping.type.Price
+	15,  // 111: google.shopping.merchant.products.v1.ProductAttributes.CarrierShipping.carrier_transit_time:type_name -> google.shopping.merchant.products.v1.CarrierTransitTimeOption
+	25,  // 112: google.shopping.merchant.products.v1.ProductAttributes.Mileage.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage.Unit
+	26,  // 113: google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.FuelConsumption.Unit
+	27,  // 114: google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.EnergyConsumption.Unit
+	28,  // 115: google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Co2Emissions.Unit
+	71,  // 116: google.shopping.merchant.products.v1.ProductAttributes.Warranty.mileage:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Mileage
+	29,  // 117: google.shopping.merchant.products.v1.ProductAttributes.Warranty.duration_unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Warranty.WarrantyDurationUnit
+	30,  // 118: google.shopping.merchant.products.v1.ProductAttributes.ProductFee.type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.ProductFee.FeeType
+	88,  // 119: google.shopping.merchant.products.v1.ProductAttributes.ProductFee.amount:type_name -> google.shopping.type.Price
+	31,  // 120: google.shopping.merchant.products.v1.ProductAttributes.UnitArea.unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.UnitArea.Unit
+	32,  // 121: google.shopping.merchant.products.v1.ProductAttributes.PetPolicy.pet_types:type_name -> google.shopping.merchant.products.v1.ProductAttributes.PetPolicy.PetType
+	33,  // 122: google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.LeaseTermType
+	34,  // 123: google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.duration_unit:type_name -> google.shopping.merchant.products.v1.ProductAttributes.LeaseTerm.DurationUnit
+	88,  // 124: google.shopping.merchant.products.v1.ProductAttributes.Returns.restocking_fee:type_name -> google.shopping.type.Price
+	35,  // 125: google.shopping.merchant.products.v1.ProductAttributes.Returns.window_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnWindowType
+	37,  // 126: google.shopping.merchant.products.v1.ProductAttributes.Returns.item_conditions:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Returns.ItemCondition
+	36,  // 127: google.shopping.merchant.products.v1.ProductAttributes.Returns.methods:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnMethod
+	38,  // 128: google.shopping.merchant.products.v1.ProductAttributes.Returns.outcomes:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnOutcome
+	88,  // 129: google.shopping.merchant.products.v1.ProductAttributes.Returns.shipping_fee:type_name -> google.shopping.type.Price
+	39,  // 130: google.shopping.merchant.products.v1.ProductAttributes.Returns.shipping_fee_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.Returns.ReturnShippingFeeType
+	40,  // 131: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.relationship_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.RelationshipType
+	41,  // 132: google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.id_type:type_name -> google.shopping.merchant.products.v1.ProductAttributes.RelatedProduct.IdType
+	91,  // 133: google.shopping.merchant.products.v1.ProductStatus.DestinationStatus.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
+	42,  // 134: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.severity:type_name -> google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.Severity
+	91,  // 135: google.shopping.merchant.products.v1.ProductStatus.ItemLevelIssue.reporting_context:type_name -> google.shopping.type.ReportingContext.ReportingContextEnum
+	136, // [136:136] is the sub-list for method output_type
+	136, // [136:136] is the sub-list for method input_type
+	136, // [136:136] is the sub-list for extension type_name
+	136, // [136:136] is the sub-list for extension extendee
+	0,   // [0:136] is the sub-list for field type_name
 }
 
 func init() { file_google_shopping_merchant_products_v1_products_common_proto_init() }
@@ -8745,13 +9597,18 @@ func file_google_shopping_merchant_products_v1_products_common_proto_init() {
 	file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[28].OneofWrappers = []any{}
 	file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[29].OneofWrappers = []any{}
 	file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[33].OneofWrappers = []any{}
+	file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[35].OneofWrappers = []any{}
+	file_google_shopping_merchant_products_v1_products_common_proto_msgTypes[36].OneofWrappers = []any{
+		(*ProductAttributes_Returns_RestockingFee)(nil),
+		(*ProductAttributes_Returns_RestockingPercentageFee)(nil),
+	}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_shopping_merchant_products_v1_products_common_proto_rawDesc), len(file_google_shopping_merchant_products_v1_products_common_proto_rawDesc)),
-			NumEnums:      37,
-			NumMessages:   40,
+			NumEnums:      45,
+			NumMessages:   42,
 			NumExtensions: 0,
 			NumServices:   0,
 		},
