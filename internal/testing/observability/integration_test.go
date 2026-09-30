@@ -53,7 +53,7 @@ type cloudTraceResponse struct {
 	} `json:"spans"`
 }
 
-func TestE2E_Signals(t *testing.T) {
+func TestIntegration_Signals(t *testing.T) {
 	if testing.Short() {
 		t.Skip("skipping integration test in short mode")
 	}
@@ -87,7 +87,7 @@ func TestE2E_Signals(t *testing.T) {
 	}
 	defer client.Close()
 
-	appCtx, appSpan := tp.Tracer("e2e").Start(ctx, "e2e-showcase-test", trace.WithSpanKind(trace.SpanKindInternal))
+	appCtx, appSpan := tp.Tracer("integration").Start(ctx, "integration-showcase-test", trace.WithSpanKind(trace.SpanKindInternal))
 	traceID := appSpan.SpanContext().TraceID().String()
 
 	retries := 0
