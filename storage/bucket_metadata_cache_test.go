@@ -170,7 +170,7 @@ func TestCacheFetchBackgroundErrorPlaceholder(t *testing.T) {
 		t.Fatalf("expected placeholder to be stored on failure")
 	}
 
-	expectedResource := storageResourceNamePrefix + "projects/_/buckets/failedBucket"
+	expectedResource := "projects/_/buckets/failedBucket"
 	expectedLocation := "global"
 
 	if entry.resource != expectedResource || entry.location != expectedLocation {
@@ -191,7 +191,7 @@ func TestCacheFetchBackgroundTransientErrorEviction(t *testing.T) {
 
 	// Populate cache with placeholder first (simulate startSpanWithBucket).
 	cache.put("failedBucket", bucketMetadata{
-		resource:    storageResourceNamePrefix + "projects/_/buckets/failedBucket",
+		resource:    "projects/_/buckets/failedBucket",
 		location:    "global",
 		placeholder: true,
 	})
@@ -260,7 +260,7 @@ func TestOpportunisticCacheFill(t *testing.T) {
 		t.Fatalf("expected cache to be populated synchronously by Attrs")
 	}
 
-	wantResource := storageResourceNamePrefix + "projects/987654321/buckets/" + bucketName
+	wantResource := "projects/987654321/buckets/" + bucketName
 	if entry.resource != wantResource {
 		t.Errorf("got resource %q, want %q", entry.resource, wantResource)
 	}
@@ -269,9 +269,10 @@ func TestOpportunisticCacheFill(t *testing.T) {
 	}
 }
 
-// TestGetMetadataFromAttrsResourceNameFormat verifies that the resource name
-// emitted in the gcp.resource.destination.id span attribute is a well-formed
-// full resource name.
+// TestGetMetadataFromAttrsResourceNameFormat verifies that getMetadataFromAttrs
+// returns the bare "projects/{p}/buckets/{b}" resource name, and that the value
+// emitted in the gcp.resource.destination.id span attribute (after
+// destinationResourceName) is a well-formed full resource name.
 //
 // Cloud Trace's App Hub extractor validates this attribute with
 // IsWellFormedApiResourceName, which requires the "//{service}/{path}" form. A
@@ -294,7 +295,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "region",
 			project:      "525947918171",
 			bucket:       "my-bucket",
-			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
+			wantResource: "projects/525947918171/buckets/my-bucket",
 			wantLocation: "us-east1",
 		},
 		{
@@ -303,7 +304,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "zone",
 			project:      "525947918171",
 			bucket:       "my-bucket",
-			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
+			wantResource: "projects/525947918171/buckets/my-bucket",
 			wantLocation: "us-central1-a",
 		},
 		{
@@ -312,7 +313,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "multi-region",
 			project:      "525947918171",
 			bucket:       "my-bucket",
-			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
+			wantResource: "projects/525947918171/buckets/my-bucket",
 			wantLocation: "global",
 		},
 		{
@@ -321,7 +322,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "region",
 			project:      "projects/525947918171",
 			bucket:       "my-bucket",
-			wantResource: storageResourceNamePrefix + "projects/525947918171/buckets/my-bucket",
+			wantResource: "projects/525947918171/buckets/my-bucket",
 			wantLocation: "us-east1",
 		},
 		{
@@ -330,7 +331,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "",
 			project:      "0",
 			bucket:       "my-bucket",
-			wantResource: storageResourceNamePrefix + "projects/_/buckets/my-bucket",
+			wantResource: "projects/_/buckets/my-bucket",
 			wantLocation: "global",
 		},
 		{
@@ -339,7 +340,7 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			locationType: "",
 			project:      "",
 			bucket:       "my-bucket",
-			wantResource: storageResourceNamePrefix + "projects/_/buckets/my-bucket",
+			wantResource: "projects/_/buckets/my-bucket",
 			wantLocation: "global",
 		},
 	} {
@@ -351,10 +352,10 @@ func TestGetMetadataFromAttrsResourceNameFormat(t *testing.T) {
 			if gotLocation != tc.wantLocation {
 				t.Errorf("location: got %q, want %q", gotLocation, tc.wantLocation)
 			}
-			// Guard the exact shape the App Hub extractor requires, independent
-			// of the expectations above.
-			if !wellFormedResourceName.MatchString(gotResource) {
-				t.Errorf("resource %q does not match %v; App Hub linkage will silently fail", gotResource, wellFormedResourceName)
+			// Guard the exact shape the App Hub extractor requires for the
+			// emitted span attribute, independent of the expectations above.
+			if emitted := destinationResourceName(gotResource); !wellFormedResourceName.MatchString(emitted) {
+				t.Errorf("destination id %q does not match %v; App Hub linkage will silently fail", emitted, wellFormedResourceName)
 			}
 		})
 	}
