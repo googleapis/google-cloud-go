@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"strings"
 	"testing"
 	"time"
 
@@ -31,6 +32,7 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/sdk/trace/tracetest"
 	"google.golang.org/api/iterator"
+	"google.golang.org/api/option"
 	spb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -392,7 +394,13 @@ func TestBatchWriteResponseIterator_StopEndsSpan(t *testing.T) {
 	for _, tc := range []struct {
 		name     string
 		attempts []fakeBatchWriteAttempt
+		// stopOnly stops the iterator without calling Next.
+		stopOnly bool
 	}{
+		{
+			name:     "stopped before first Next",
+			stopOnly: true,
+		},
 		{
 			name:     "stream completed",
 			attempts: []fakeBatchWriteAttempt{{results: []fakeBatchWriteResult{{indexes: []int32{0}}}}},
@@ -411,12 +419,228 @@ func TestBatchWriteResponseIterator_StopEndsSpan(t *testing.T) {
 
 			fake := &fakeBatchWriteRPC{attempts: tc.attempts}
 			iter := newBatchWriteResponseIterator(ctx, testBatchWriteMutationGroups(1), fake.rpc, gax.Backoff{Initial: time.Nanosecond, Max: time.Nanosecond, Multiplier: 1})
-			if err := iter.Do(func(*sppb.BatchWriteResponse) error { return nil }); err != nil && status.Code(err) != codes.InvalidArgument {
+			if tc.stopOnly {
+				iter.Stop()
+			} else if err := iter.Do(func(*sppb.BatchWriteResponse) error { return nil }); err != nil && status.Code(err) != codes.InvalidArgument {
 				t.Fatalf("Do() error = %v", err)
 			}
 
 			if got, want := len(recorder.Ended()), 1; got != want {
 				t.Fatalf("ended spans = %d, want %d", got, want)
+			}
+		})
+	}
+}
+
+// failingRecvBatchWriteStream fails RecvMsg with err after it has received
+// one message.
+type failingRecvBatchWriteStream struct {
+	grpc.ClientStream
+	received int
+	err      error
+}
+
+func (s *failingRecvBatchWriteStream) RecvMsg(m any) error {
+	if s.received == 1 {
+		return s.err
+	}
+	if err := s.ClientStream.RecvMsg(m); err != nil {
+		return err
+	}
+	s.received++
+	return nil
+}
+
+// TestBatchWriteResponseIteratorRecordsBuiltInMetrics verifies the built-in
+// metrics that BatchWriteResponseIterator records. As for streaming queries,
+// the BatchWrite request is one operation that ends when Next returns
+// iterator.Done or an error, or when the iterator is stopped, and every stream
+// that is opened for it is an attempt.
+func TestBatchWriteResponseIteratorRecordsBuiltInMetrics(t *testing.T) {
+	const method = "Spanner.BatchWrite"
+	readAll := func(iter *BatchWriteResponseIterator) (responses int, err error) {
+		for {
+			if _, err = iter.Next(); err != nil {
+				return responses, err
+			}
+			responses++
+		}
+	}
+	readWithDo := func(iter *BatchWriteResponseIterator) (responses int, err error) {
+		err = iter.Do(func(*sppb.BatchWriteResponse) error {
+			responses++
+			return nil
+		})
+		return responses, err
+	}
+	errDoCallback := errors.New("callback failed")
+	doCallbackError := func(iter *BatchWriteResponseIterator) (responses int, err error) {
+		err = iter.Do(func(*sppb.BatchWriteResponse) error {
+			responses++
+			return errDoCallback
+		})
+		return responses, err
+	}
+	stopBeforeNext := func(iter *BatchWriteResponseIterator) (int, error) {
+		iter.Stop()
+		return 0, nil
+	}
+	stopAfterFirstResponse := func(iter *BatchWriteResponseIterator) (int, error) {
+		defer iter.Stop()
+		_, err := iter.Next()
+		return 1, err
+	}
+	op := func(code string, attempts int64) map[string]int64 {
+		return map[string]int64{
+			`attempt_count method="` + method + `" status=` + code:       attempts,
+			`operation_count method="` + method + `" status=` + code:     1,
+			`operation_latencies method="` + method + `" status=` + code: 1,
+		}
+	}
+	attempts := func(want map[string]int64, codes ...string) map[string]int64 {
+		for _, code := range codes {
+			want[`attempt_latencies method="`+method+`" status=`+code]++
+			want[`gfe_connectivity_error_count method="`+method+`" status=`+code]++
+		}
+		return want
+	}
+	unavailable := status.Error(codes.Unavailable, "unavailable")
+
+	for _, test := range []struct {
+		name                string
+		canceled            bool
+		failFirstStreamOpen bool
+		failFirstStreamRecv bool
+		executionTime       *SimulatedExecutionTime
+		iterate             func(*BatchWriteResponseIterator) (int, error)
+		wantResponses       int
+		wantCode            codes.Code
+		want                map[string]int64
+	}{
+		{
+			name:          "all mutation groups applied",
+			iterate:       readAll,
+			wantResponses: 2,
+			want:          attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:          "all mutation groups applied with Do",
+			iterate:       readWithDo,
+			wantResponses: 2,
+			want:          attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:          "error returned by Do callback",
+			iterate:       doCallbackError,
+			wantResponses: 1,
+			wantCode:      codes.Unknown,
+			want:          attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:    "stopped before first Next",
+			iterate: stopBeforeNext,
+			want:    map[string]int64{},
+		},
+		{
+			name:          "stopped before end of stream",
+			iterate:       stopAfterFirstResponse,
+			wantResponses: 1,
+			want:          attempts(op("OK", 1), "OK"),
+		},
+		{
+			name:                "retryable error opening first stream",
+			failFirstStreamOpen: true,
+			iterate:             readAll,
+			wantResponses:       2,
+			want:                attempts(op("OK", 2), "Unavailable", "OK"),
+		},
+		{
+			name:          "retryable error before first response",
+			executionTime: &SimulatedExecutionTime{Errors: []error{unavailable}},
+			iterate:       readAll,
+			wantResponses: 2,
+			want:          attempts(op("OK", 2), "Unavailable", "OK"),
+		},
+		{
+			name:                "stream resumed after retryable error",
+			failFirstStreamRecv: true,
+			iterate:             readAll,
+			wantResponses:       2,
+			want:                attempts(op("OK", 2), "Unavailable", "OK"),
+		},
+		{
+			name:     "context canceled before first stream",
+			canceled: true,
+			iterate:  readAll,
+			wantCode: codes.Canceled,
+			want:     attempts(op("Canceled", 1), "Canceled"),
+		},
+		{
+			name:          "non-retryable error before first response",
+			executionTime: &SimulatedExecutionTime{Errors: []error{status.Error(codes.InvalidArgument, "invalid")}},
+			iterate:       readAll,
+			wantCode:      codes.InvalidArgument,
+			want:          attempts(op("InvalidArgument", 1), "InvalidArgument"),
+		},
+	} {
+		t.Run(test.name, func(t *testing.T) {
+			reader, provider := newTestMeterProvider()
+			var opts []option.ClientOption
+			if test.failFirstStreamOpen || test.failFirstStreamRecv {
+				var opened bool
+				opts = append(opts, option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(
+					func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+						if !strings.HasSuffix(method, "/BatchWrite") || opened {
+							return streamer(ctx, desc, cc, method, opts...)
+						}
+						opened = true
+						if test.failFirstStreamOpen {
+							return nil, unavailable
+						}
+						stream, err := streamer(ctx, desc, cc, method, opts...)
+						if err != nil {
+							return nil, err
+						}
+						return &failingRecvBatchWriteStream{ClientStream: stream, err: unavailable}, nil
+					})))
+			}
+			server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{DisableNativeMetrics: true, ClientMetricsProvider: provider}, opts)
+			defer teardown()
+			if test.executionTime != nil {
+				server.TestSpanner.PutExecutionTime(MethodBatchWrite, *test.executionTime)
+			}
+
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			iter := client.BatchWrite(ctx, []*MutationGroup{
+				{[]*Mutation{{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []any{"foo1", 1}}}},
+				{[]*Mutation{{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []any{"foo2", 2}}}},
+			})
+			defer iter.Stop()
+			if test.canceled {
+				cancel()
+			}
+			gotResponses, err := test.iterate(iter)
+			var gotCode codes.Code
+			if err != nil && err != iterator.Done {
+				gotCode = ErrCode(err)
+			}
+			if g, w := gotCode, test.wantCode; g != w {
+				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			if g, w := gotResponses, test.wantResponses; g != w {
+				t.Fatalf("response count mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			got := builtInMetricsForMethod(t, collectTestMetrics(t, reader), method)
+			if diff := cmp.Diff(test.want, got); diff != "" {
+				t.Errorf("recorded metrics mismatch (-want +got):\n%s", diff)
+			}
+
+			// The operation ends only once.
+			iter.Next()
+			iter.Stop()
+			if diff := cmp.Diff(got, builtInMetricsForMethod(t, collectTestMetrics(t, reader), method)); diff != "" {
+				t.Errorf("Next() and Stop() after the end recorded metrics (-before +after):\n%s", diff)
 			}
 		})
 	}
