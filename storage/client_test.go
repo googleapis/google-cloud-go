@@ -816,6 +816,94 @@ func TestOpenReaderEmulated(t *testing.T) {
 	})
 }
 
+// TestNewRangeReaderRemainEmulated verifies that range readers report the
+// correct number of remaining bytes and do not log spurious over-read warnings
+// for reads at non-zero offsets (b/568323002).
+func TestNewRangeReaderRemainEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {
+			t.Fatalf("client.CreateBucket: %v", err)
+		}
+		content := randomBytes3MiB
+		objName := fmt.Sprintf("remain-object-%d", time.Now().Nanosecond())
+		w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
+		if _, err := w.Write(content); err != nil {
+			t.Fatalf("failed to populate test data: %v", err)
+		}
+		if err := w.Close(); err != nil {
+			t.Fatalf("closing object: %v", err)
+		}
+		size := int64(len(content))
+
+		// Cover both the ReadObject and BidiReadObject paths for gRPC.
+		type readMode struct {
+			desc  string
+			setup func(t *testing.T)
+		}
+		modes := []readMode{{desc: "default", setup: func(*testing.T) {}}}
+		if _, ok := client.(*grpcStorageClient); ok {
+			modes = append(modes, readMode{desc: "bidiReads", setup: func(t *testing.T) { setBidiReads(t, client) }})
+		}
+
+		for _, mode := range modes {
+			t.Run(mode.desc, func(t *testing.T) {
+				mode.setup(t)
+				for _, tc := range []struct {
+					desc           string
+					offset, length int64
+					wantStart      int64
+					wantLen        int64
+				}{
+					{desc: "entire object", offset: 0, length: -1, wantStart: 0, wantLen: size},
+					{desc: "prefix", offset: 0, length: MiB, wantStart: 0, wantLen: MiB},
+					{desc: "middle, offset larger than length", offset: 2 * MiB, length: 256 * 1024, wantStart: 2 * MiB, wantLen: 256 * 1024},
+					{desc: "middle, length larger than offset", offset: 1024, length: MiB, wantStart: 1024, wantLen: MiB},
+					{desc: "length past end of object", offset: 2 * MiB, length: 2 * MiB, wantStart: 2 * MiB, wantLen: size - 2*MiB},
+					{desc: "rest of object", offset: MiB, length: -1, wantStart: MiB, wantLen: size - MiB},
+					{desc: "negative offset", offset: -MiB, length: -1, wantStart: size - MiB, wantLen: MiB},
+				} {
+					t.Run(tc.desc, func(t *testing.T) {
+						var logOutput bytes.Buffer
+						oldOutput := log.Writer()
+						log.SetOutput(&logOutput)
+						t.Cleanup(func() { log.SetOutput(oldOutput) })
+
+						r, err := client.NewRangeReader(ctx, &newRangeReaderParams{
+							bucket: bucket,
+							object: objName,
+							gen:    defaultGen,
+							offset: tc.offset,
+							length: tc.length,
+						})
+						if err != nil {
+							t.Fatalf("NewRangeReader: %v", err)
+						}
+						if got := r.Remain(); got != tc.wantLen {
+							t.Errorf("Remain() before read = %d, want %d", got, tc.wantLen)
+						}
+						got, err := io.ReadAll(r)
+						if err != nil {
+							t.Fatalf("io.ReadAll: %v", err)
+						}
+						if want := content[tc.wantStart : tc.wantStart+tc.wantLen]; !bytes.Equal(got, want) {
+							t.Errorf("content mismatch: got %d bytes, want %d bytes", len(got), len(want))
+						}
+						if got := r.Remain(); got != 0 {
+							t.Errorf("Remain() after read = %d, want 0", got)
+						}
+						if err := r.Close(); err != nil {
+							t.Errorf("Close: %v", err)
+						}
+						if strings.Contains(logOutput.String(), "more bytes than requested") {
+							t.Errorf("unexpected over-read log: %q", logOutput.String())
+						}
+					})
+				}
+			})
+		}
+	})
+}
+
 func TestOpenReaderMetadataEmulated(t *testing.T) {
 	transportClientTest(skipHTTP("metadata on read not supported in testbench rest server"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		// Populate test data.
