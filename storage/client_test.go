@@ -818,7 +818,7 @@ func TestOpenReaderEmulated(t *testing.T) {
 
 // TestNewRangeReaderRemainEmulated verifies that range readers report the
 // correct number of remaining bytes and do not log spurious over-read warnings
-// for reads at non-zero offsets (b/568323002).
+// for reads at non-zero offsets.
 func TestNewRangeReaderRemainEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{Name: bucket}, nil); err != nil {

@@ -7224,7 +7224,7 @@ func TestIntegration_Reader(t *testing.T) {
 			{"first half of object", 0, objlen / 2, objlen / 2},
 			{"second half of object", objlen / 2, objlen, objlen / 2},
 			// Ranges at a non-zero offset whose length ends before the object
-			// does (b/568323002).
+			// does.
 			{"middle of object - offset smaller than length", objlen / 4, objlen / 2, objlen / 2},
 			{"middle of object - offset larger than length", objlen / 2, objlen / 4, objlen / 4},
 			{"length past end of object", objlen / 2, 3 * objlen / 4, objlen - objlen/2},

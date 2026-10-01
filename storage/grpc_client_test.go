@@ -976,8 +976,8 @@ func TestRangeReaderRemain(t *testing.T) {
 	}
 }
 
-// TestRangeReaderRemainLargeObject covers the scenario from b/568323002:
-// fixed-size range reads deep into a multi-GiB object.
+// TestRangeReaderRemainLargeObject covers fixed-size range reads deep into a
+// multi-GiB object.
 func TestRangeReaderRemainLargeObject(t *testing.T) {
 	const (
 		size   = 4 * 1024 * MiB
