@@ -51,6 +51,10 @@ const (
 // calls.
 const dcpRefsClosed = math.MinInt64 / 2
 
+// dcpDrainIdleFloor is the minimum time a draining entry must be idle before it
+// closes, whatever DCPDrainIdleGrace is. Tests lower it before creating pools.
+var dcpDrainIdleFloor = 15 * time.Second
+
 // DynamicChannelSelectionStrategy controls how DCP chooses an active channel.
 type DynamicChannelSelectionStrategy int
 
@@ -95,10 +99,14 @@ type DynamicChannelPoolConfig struct {
 	DCPDownscaleConsecutiveLowLoadChecks int           // DCPDownscaleConsecutiveLowLoadChecks debounces scale-down.
 	DCPMaxScaleUpPercent                 int           // DCPMaxScaleUpPercent caps channels added per scale-up event.
 	DCPMaxRemoveChannels                 int           // DCPMaxRemoveChannels caps channels marked draining per scale-down.
-	DCPDrainIdleGrace                    time.Duration // DCPDrainIdleGrace keeps an idle drained entry briefly before close.
-	DCPPrimeTimeout                      time.Duration // DCPPrimeTimeout bounds the SELECT 1 priming attempt for scaled-up channels.
-	DCPPrimeMaxAttempts                  int           // DCPPrimeMaxAttempts bounds scaled-up channel priming retries.
-	DCPSelectionStrategy                 DynamicChannelSelectionStrategy
+	// DCPDrainIdleGrace keeps an idle drained entry briefly before close. The
+	// effective idle time is never below 15 seconds: Spanner aborts a read-write
+	// transaction that is idle for about 10 seconds, so the floor keeps a live
+	// transaction's channel open between its statements.
+	DCPDrainIdleGrace    time.Duration
+	DCPPrimeTimeout      time.Duration // DCPPrimeTimeout bounds the SELECT 1 priming attempt for scaled-up channels.
+	DCPPrimeMaxAttempts  int           // DCPPrimeMaxAttempts bounds scaled-up channel priming retries.
+	DCPSelectionStrategy DynamicChannelSelectionStrategy
 }
 
 // DefaultDynamicChannelPoolConfig returns the default DCP settings.
@@ -234,7 +242,8 @@ type dynamicChannelPool struct {
 	primeSession     atomic.Value // string
 	metrics          *dcpMetrics
 
-	drainingCount atomic.Int64
+	drainingCount  atomic.Int64
+	drainIdleFloor time.Duration // dcpDrainIdleFloor when the pool was created
 }
 
 // dcpEntry represents one logical DCP slot.
@@ -272,6 +281,7 @@ func newDynamicChannelPool(ctx context.Context, sc *sessionClient, cfg DynamicCh
 		dial:                dial,
 		scaleUpSignal:       make(chan struct{}, 1),
 		done:                make(chan struct{}),
+		drainIdleFloor:      dcpDrainIdleFloor,
 	}
 	entries := make([]*dcpEntry, 0, cfg.DCPInitialChannels)
 	for i := 0; i < cfg.DCPInitialChannels; i++ {
@@ -839,14 +849,14 @@ func (p *dynamicChannelPool) removeEntries(count int) {
 }
 
 // waitForDrainAndClose waits until a draining entry has no RPC load and has
-// been idle for DCPDrainIdleGrace.
+// been idle for DCPDrainIdleGrace, but at least drainIdleFloor.
 func (p *dynamicChannelPool) waitForDrainAndClose(e *dcpEntry) {
 	t := time.NewTicker(250 * time.Millisecond)
 	defer t.Stop()
 	for {
 		select {
 		case <-t.C:
-			if e.closeIfIdle(p.cfg.DCPDrainIdleGrace) {
+			if e.closeIfIdle(max(p.cfg.DCPDrainIdleGrace, p.drainIdleFloor)) {
 				p.drainingCount.Add(-1)
 				return
 			}

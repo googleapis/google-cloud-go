@@ -74,6 +74,7 @@ func setupDCPMockedTestServer(t *testing.T, dcp DynamicChannelPoolConfig) (*Mock
 
 func setupDCPMockedTestServerWithMeterProvider(t *testing.T, dcp DynamicChannelPoolConfig, mp metric.MeterProvider) (*MockedSpannerInMemTestServer, *Client, func()) {
 	t.Helper()
+	disableDCPDrainIdleFloor(t)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics:       true,
 		DynamicChannelPoolConfig:   dcp,
@@ -85,6 +86,15 @@ func setupDCPMockedTestServerWithMeterProvider(t *testing.T, dcp DynamicChannelP
 		t.Fatal("dynamic channel pool not enabled")
 	}
 	return server, client, teardown
+}
+
+// disableDCPDrainIdleFloor lets pools created by the test close drained
+// entries after just DCPDrainIdleGrace, so short test graces keep working.
+func disableDCPDrainIdleFloor(t *testing.T) {
+	t.Helper()
+	floor := dcpDrainIdleFloor
+	dcpDrainIdleFloor = 0
+	t.Cleanup(func() { dcpDrainIdleFloor = floor })
 }
 
 func newDCPManualReader() (*sdkmetric.ManualReader, *sdkmetric.MeterProvider) {
@@ -873,6 +883,33 @@ func TestDCPDrainWorkerWaitsForReference(t *testing.T) {
 	case <-done:
 	case <-time.After(5 * time.Second):
 		t.Fatal("drain worker did not close after the reference was released")
+	}
+	if got := dcpCloses(bound); got != 1 {
+		t.Fatalf("conn closes = %d, want 1", got)
+	}
+}
+
+// A draining entry stays open past a short grace until it has been idle for the
+// floor, so a read-write transaction keeps its channel between statements.
+func TestDCPDrainIdleFloorKeepsDrainingEntryOpen(t *testing.T) {
+	p, entries := newDCPRefTestPool(t, 2)
+	p.cfg.DCPDrainIdleGrace = time.Second
+	p.drainIdleFloor = 15 * time.Second
+	bound := entries[0]
+	removeDCPEntryForTest(p, bound)
+	bound.lastActivity.Store(time.Now().Add(-2 * time.Second).UnixNano())
+	done := make(chan struct{})
+	go func() { p.waitForDrainAndClose(bound); close(done) }()
+	select {
+	case <-done:
+		t.Fatal("drain closed an entry idle longer than the grace but shorter than the floor")
+	case <-time.After(700 * time.Millisecond): // more than two worker ticks
+	}
+	bound.lastActivity.Store(time.Now().Add(-16 * time.Second).UnixNano())
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("drain did not close an entry idle longer than the floor")
 	}
 	if got := dcpCloses(bound); got != 1 {
 		t.Fatalf("conn closes = %d, want 1", got)
