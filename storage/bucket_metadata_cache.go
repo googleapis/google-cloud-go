@@ -30,15 +30,6 @@ import (
 const (
 	defaultBucketMetadataCacheLimit = 10000
 	fetchBackgroundTimeout          = 10 * time.Second
-
-	// storageResourceNamePrefix is prepended to the bucket resource name only
-	// when it is emitted in the gcp.resource.destination.id span attribute (see
-	// destinationResourceName). Cloud Trace's App Hub extractor only accepts
-	// full resource names of the form "//{service}/{path}"; a bare
-	// "projects/.../buckets/..." path is rejected as malformed and the span is
-	// silently dropped from App Hub enrichment. The bucket metadata cache and
-	// fetchBucketMetadata keep the bare "projects/{p}/buckets/{b}" form.
-	storageResourceNamePrefix = "//storage.googleapis.com/"
 )
 
 type bucketMetadataFetcher interface {

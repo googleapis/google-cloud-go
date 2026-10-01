@@ -101,6 +101,15 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 	return startSpan(ctx, name, opts...)
 }
 
+// storageResourceNamePrefix is prepended to the bucket resource name only when
+// it is emitted in the gcp.resource.destination.id span attribute. Cloud
+// Trace's App Hub extractor only accepts full resource names of the form
+// "//{service}/{path}"; a bare "projects/.../buckets/..." path is rejected as
+// malformed and the span is silently dropped from App Hub enrichment. The
+// bucket metadata cache and fetchBucketMetadata keep the bare
+// "projects/{p}/buckets/{b}" form.
+const storageResourceNamePrefix = "//storage.googleapis.com/"
+
 // destinationResourceName converts a bare bucket resource name
 // ("projects/{p}/buckets/{b}") into the full resource name
 // ("//storage.googleapis.com/projects/{p}/buckets/{b}") required by Cloud
