@@ -770,6 +770,147 @@ func TestDCPResolvingClientRebindsDrainingEntry(t *testing.T) {
 	}
 }
 
+// dcpChannelRecorder records the DCP channel id, taken from the request-id
+// header, of every unary RPC sent for the given methods.
+type dcpChannelRecorder struct {
+	methods map[string]bool
+
+	mu    sync.Mutex
+	calls []dcpRecordedCall
+}
+
+type dcpRecordedCall struct {
+	method    string
+	channelID uint64
+}
+
+func (r *dcpChannelRecorder) unaryInterceptor(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	if r.methods[method] {
+		reqID, err := checkForMissingSpannerRequestIDHeader(opts)
+		if err != nil {
+			return err
+		}
+		r.mu.Lock()
+		r.calls = append(r.calls, dcpRecordedCall{method: method, channelID: uint64(reqID.ChannelID)})
+		r.mu.Unlock()
+	}
+	return invoker(ctx, method, req, reply, cc, opts...)
+}
+
+func (r *dcpChannelRecorder) recorded() []dcpRecordedCall {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return append([]dcpRecordedCall(nil), r.calls...)
+}
+
+// drainDCPEntryForTest moves a specific entry to draining the way
+// removeEntries does on scale-down, without starting the drain-and-close loop.
+func drainDCPEntryForTest(p *dynamicChannelPool, target *dcpEntry) {
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
+	target.state.Store(dcpStateDraining)
+	target.clearErrorPenalty()
+	var keep []*dcpEntry
+	for _, e := range p.getEntries() {
+		if e != target {
+			keep = append(keep, e)
+		}
+	}
+	p.entries.Store(&keep)
+	p.drainingCount.Add(1)
+}
+
+func TestDCPReadWriteTransactionChannelAffinityAcrossDrain(t *testing.T) {
+	const (
+		executeSQL = "/google.spanner.v1.Spanner/ExecuteSql"
+		commit     = "/google.spanner.v1.Spanner/Commit"
+	)
+	tests := []struct {
+		name string
+		// closeBound closes the bound channel after draining it, as
+		// waitForDrainAndClose eventually does.
+		closeBound bool
+		// wantSameChannel reports whether the second and third operations must
+		// use the channel of the first operation.
+		wantSameChannel bool
+	}{
+		{name: "draining channel keeps serving transaction", closeBound: false, wantSameChannel: true},
+		{name: "closed channel moves transaction to active channel", closeBound: true, wantSameChannel: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQL: true, commit: true}}
+			cfg := testDCPConfig(2, 1, 2)
+			// Disable background scale-down so only the test changes entry state.
+			cfg.DCPScaleDownCheckInterval = time.Hour
+			server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{
+				DisableNativeMetrics:     true,
+				DynamicChannelPoolConfig: cfg,
+			}, []option.ClientOption{
+				option.WithGRPCDialOption(grpc.WithUnaryInterceptor(recorder.unaryInterceptor)),
+			})
+			defer teardown()
+			addSelect1Result(server)
+			p := client.sc.dynamicPool
+			if p == nil {
+				t.Fatal("dynamic channel pool not enabled")
+			}
+			if got, want := p.Num(), 2; got != want {
+				t.Fatalf("DCP channel count mismatch:\n Got: %d\nWant: %d", got, want)
+			}
+
+			var bound *dcpEntry
+			_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+				if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+					return err
+				}
+				if bound == nil {
+					calls := recorder.recorded()
+					if len(calls) != 1 {
+						return fmt.Errorf("recorded calls after first operation = %+v, want exactly one", calls)
+					}
+					for _, e := range p.getEntries() {
+						if e.id == calls[0].channelID {
+							bound = e
+						}
+					}
+					if bound == nil {
+						return fmt.Errorf("first operation channel %d is not an active DCP entry", calls[0].channelID)
+					}
+					drainDCPEntryForTest(p, bound)
+					if tt.closeBound {
+						bound.close()
+					}
+				}
+				_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+				return err
+			})
+			if err != nil {
+				t.Fatalf("ReadWriteTransaction failed: %v", err)
+			}
+
+			calls := recorder.recorded()
+			if got, want := len(calls), 3; got != want {
+				t.Fatalf("recorded call count mismatch:\n Got: %d (%+v)\nWant: %d", got, calls, want)
+			}
+			for i, want := range []string{executeSQL, executeSQL, commit} {
+				if calls[i].method != want {
+					t.Fatalf("operation %d method mismatch:\n Got: %s\nWant: %s", i+1, calls[i].method, want)
+				}
+			}
+			first := calls[0].channelID
+			for i, c := range calls[1:] {
+				if tt.wantSameChannel && c.channelID != first {
+					t.Errorf("operation %d (%s) channel mismatch after draining:\n Got: channel %d\nWant: draining bound channel %d\nAll operations: %+v", i+2, c.method, c.channelID, first, calls)
+				}
+				if !tt.wantSameChannel && c.channelID == first {
+					t.Errorf("operation %d (%s) channel mismatch after close:\n Got: closed bound channel %d\nWant: a different active channel\nAll operations: %+v", i+2, c.method, c.channelID, calls)
+				}
+			}
+		})
+	}
+}
+
 func TestDCPResolvingRequestIDReturnsErrorWhenNoEntry(t *testing.T) {
 	p := &dynamicChannelPool{cfg: testDCPConfig(1, 1, 1)}
 	entries := []*dcpEntry{}
