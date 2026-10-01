@@ -71,41 +71,6 @@ type operationHandle interface {
 	Proto() *computepb.Operation
 }
 
-// Implements the operationHandle interface for RegionOperations.
-type regionOperationsHandle struct {
-	c       *RegionOperationsClient
-	proto   *computepb.Operation
-	project string
-	region  string
-}
-
-// Poll retrieves the latest data for the long-running operation.
-func (h *regionOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption) error {
-	resp, err := h.c.Get(ctx, &computepb.GetRegionOperationRequest{
-		Operation: h.proto.GetName(),
-		Project:   h.project,
-		Region:    h.region,
-	}, opts...)
-	if err != nil {
-		return err
-	}
-	h.proto = resp
-	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
-		aErr := &googleapi.Error{
-			Code:    int(resp.GetHttpErrorStatusCode()),
-			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
-		}
-		err, _ := apierror.FromError(aErr)
-		return err
-	}
-	return nil
-}
-
-// Proto returns the raw type this wraps.
-func (h *regionOperationsHandle) Proto() *computepb.Operation {
-	return h.proto
-}
-
 // Implements the operationHandle interface for ZoneOperations.
 type zoneOperationsHandle struct {
 	c       *ZoneOperationsClient
@@ -138,6 +103,41 @@ func (h *zoneOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption)
 
 // Proto returns the raw type this wraps.
 func (h *zoneOperationsHandle) Proto() *computepb.Operation {
+	return h.proto
+}
+
+// Implements the operationHandle interface for RegionOperations.
+type regionOperationsHandle struct {
+	c       *RegionOperationsClient
+	proto   *computepb.Operation
+	project string
+	region  string
+}
+
+// Poll retrieves the latest data for the long-running operation.
+func (h *regionOperationsHandle) Poll(ctx context.Context, opts ...gax.CallOption) error {
+	resp, err := h.c.Get(ctx, &computepb.GetRegionOperationRequest{
+		Operation: h.proto.GetName(),
+		Project:   h.project,
+		Region:    h.region,
+	}, opts...)
+	if err != nil {
+		return err
+	}
+	h.proto = resp
+	if resp.HttpErrorStatusCode != nil && (resp.GetHttpErrorStatusCode() < 200 || resp.GetHttpErrorStatusCode() > 299) {
+		aErr := &googleapi.Error{
+			Code:    int(resp.GetHttpErrorStatusCode()),
+			Message: fmt.Sprintf("%s: %v", resp.GetHttpErrorMessage(), resp.GetError()),
+		}
+		err, _ := apierror.FromError(aErr)
+		return err
+	}
+	return nil
+}
+
+// Proto returns the raw type this wraps.
+func (h *regionOperationsHandle) Proto() *computepb.Operation {
 	return h.proto
 }
 
