@@ -111,7 +111,7 @@ libraries:
     apis:
       - path: google/analytics/admin/v1alpha
   - name: apigateway
-    version: 1.15.0
+    version: 1.16.0
     apis:
       - path: google/cloud/apigateway/v1
   - name: apigeeconnect
@@ -438,7 +438,7 @@ libraries:
     apis:
       - path: google/cloud/channel/v1
   - name: chat
-    version: 1.8.0
+    version: 1.9.0
     apis:
       - path: google/chat/v1
   - name: chronicle
@@ -507,16 +507,16 @@ libraries:
             - F_open_telemetry_attributes
           import_path: cloudtasks/apiv2beta2
   - name: commerce
-    version: 1.9.0
+    version: 1.10.0
     apis:
       - path: google/cloud/commerce/consumer/procurement/v1
   - name: commerceproducer
-    version: 0.5.0
+    version: 0.6.0
     apis:
       - path: google/cloud/commerceproducer/v1beta
     copyright_year: "2026"
   - name: compute
-    version: 1.70.0
+    version: 1.71.0
     preview:
       version: 1.66.0-preview.1
       apis:
@@ -596,7 +596,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: dataform
-    version: 1.5.0
+    version: 1.6.0
     apis:
       - path: google/cloud/dataform/v1
       - path: google/cloud/dataform/v1beta1
@@ -609,7 +609,7 @@ libraries:
     apis:
       - path: google/cloud/datalabeling/v1beta1
   - name: datamanager
-    version: 1.6.0
+    version: 1.7.0
     apis:
       - path: google/ads/datamanager/v1
         go:
@@ -672,7 +672,7 @@ libraries:
     apis:
       - path: google/cloud/devicestreaming/v1
   - name: dialogflow
-    version: 1.86.0
+    version: 1.87.0
     apis:
       - path: google/cloud/dialogflow/v2
       - path: google/cloud/dialogflow/cx/v3
@@ -1199,7 +1199,7 @@ libraries:
             - F_mtls_hard_bound_tokens
             - F_open_telemetry_attributes
   - name: retail
-    version: 1.35.0
+    version: 1.36.0
     apis:
       - path: google/cloud/retail/v2
       - path: google/cloud/retail/v2beta
@@ -1297,7 +1297,7 @@ libraries:
     apis:
       - path: google/cloud/shell/v1
   - name: shopping
-    version: 1.16.0
+    version: 1.17.0
     apis:
       - path: google/shopping/css/v1
       - path: google/shopping/merchant/promotions/v1
