@@ -185,7 +185,14 @@ func verifyCloudTrace(ctx context.Context, t *testing.T, httpClient *http.Client
 	traceURL := fmt.Sprintf("https://cloudtrace.googleapis.com/v1/projects/%s/traces/%s", projectID, traceID)
 	var foundT3, foundT4 bool
 
-	for deadline := time.Now().Add(45 * time.Second); time.Now().Before(deadline); time.Sleep(3 * time.Second) {
+	for deadline, first := time.Now().Add(45*time.Second), true; time.Now().Before(deadline); first = false {
+		if !first {
+			select {
+			case <-ctx.Done():
+				t.Fatalf("context cancelled: %v", ctx.Err())
+			case <-time.After(3 * time.Second):
+			}
+		}
 		req, err := http.NewRequestWithContext(ctx, http.MethodGet, traceURL, nil)
 		if err != nil {
 			t.Fatal(err)
@@ -199,9 +206,15 @@ func verifyCloudTrace(ctx context.Context, t *testing.T, httpClient *http.Client
 		if err != nil {
 			continue
 		}
+		if resp.StatusCode != http.StatusOK {
+			if resp.StatusCode != http.StatusNotFound {
+				t.Logf("Cloud Trace API returned unexpected status %d: %s", resp.StatusCode, string(body))
+			}
+			continue
+		}
 
 		var traceData cloudTraceResponse
-		if resp.StatusCode != http.StatusOK || json.Unmarshal(body, &traceData) != nil {
+		if json.Unmarshal(body, &traceData) != nil {
 			continue
 		}
 		foundT3, foundT4 = false, false
