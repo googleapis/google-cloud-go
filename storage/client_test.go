@@ -825,7 +825,7 @@ func TestNewRangeReaderRemainEmulated(t *testing.T) {
 			t.Fatalf("client.CreateBucket: %v", err)
 		}
 		content := randomBytes3MiB
-		objName := fmt.Sprintf("remain-object-%d", time.Now().Nanosecond())
+		objName := fmt.Sprintf("remain-object-%d", time.Now().UnixNano())
 		w := veneerClient.Bucket(bucket).Object(objName).NewWriter(ctx)
 		if _, err := w.Write(content); err != nil {
 			t.Fatalf("failed to populate test data: %v", err)
