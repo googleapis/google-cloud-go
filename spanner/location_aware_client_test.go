@@ -19,6 +19,7 @@ package spanner
 import (
 	"bytes"
 	"context"
+	"fmt"
 	"io"
 	"sync"
 	"sync/atomic"
@@ -28,11 +29,15 @@ import (
 	vkit "cloud.google.com/go/spanner/apiv1"
 	sppb "cloud.google.com/go/spanner/apiv1/spannerpb"
 	"github.com/googleapis/gax-go/v2"
+	"google.golang.org/genproto/googleapis/rpc/errdetails"
+	statuspb "google.golang.org/genproto/googleapis/rpc/status"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
+	"google.golang.org/protobuf/types/known/anypb"
+	"google.golang.org/protobuf/types/known/durationpb"
 	structpb "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -376,6 +381,119 @@ func TestLocationAwareSpannerClient_UsesCacheDefaultChannelForAffinityFallback(t
 	}
 	if lac.defaultEndpointAddress != "spanner.googleapis.com:443" {
 		t.Fatalf("defaultEndpointAddress = %q, want %q", lac.defaultEndpointAddress, "spanner.googleapis.com:443")
+	}
+}
+
+func TestEndpointCooldownRetryDelayUsesLargestValidRichStatusDetail(t *testing.T) {
+	malformed := &anypb.Any{TypeUrl: "type.googleapis.com/google.rpc.RetryInfo", Value: []byte{0xff}}
+	short, err := anypb.New(&errdetails.RetryInfo{RetryDelay: durationpb.New(100 * time.Millisecond)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	long, err := anypb.New(&errdetails.RetryInfo{RetryDelay: durationpb.New(200 * time.Millisecond)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	negative, err := anypb.New(&errdetails.RetryInfo{RetryDelay: durationpb.New(-time.Second)})
+	if err != nil {
+		t.Fatal(err)
+	}
+	err = status.FromProto(&statuspb.Status{
+		Code:    int32(codes.ResourceExhausted),
+		Message: "busy",
+		Details: []*anypb.Any{malformed, short, negative, long},
+	}).Err()
+	delay := endpointCooldownRetryDelay(err)
+	if delay == nil || *delay != 200*time.Millisecond {
+		t.Fatalf("retry delay = %v, want 200ms", delay)
+	}
+}
+
+func TestEndpointCooldownRetryDelayUnwrapsSpannerErrorToPreserveRichDetails(t *testing.T) {
+	retryInfo := &errdetails.RetryInfo{RetryDelay: durationpb.New(250 * time.Millisecond)}
+	richStatus, err := status.New(codes.ResourceExhausted, "busy").WithDetails(retryInfo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	spannerErr := &Error{Code: codes.ResourceExhausted, Desc: "busy", err: richStatus.Err()}
+	wrapped := fmt.Errorf("outer: %w", spannerErr)
+	if got := len(status.Convert(wrapped).Proto().GetDetails()); got != 0 {
+		t.Fatalf("direct status conversion retained %d details; simplify endpointCooldownRetryDelay", got)
+	}
+
+	delay := endpointCooldownRetryDelay(wrapped)
+	if delay == nil || *delay != 250*time.Millisecond {
+		t.Fatalf("retry delay = %v, want 250ms", delay)
+	}
+}
+
+func TestLocationAwareSpannerClientCooldownCallSiteClassifiesFailureAndRepairsSuccess(t *testing.T) {
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	tracker := newEndpointOverloadCooldownTrackerWithOptions(
+		10*time.Second, time.Minute, 10*time.Minute, clock.Now,
+		func(int64) int64 { return 0 },
+	)
+	lac := &locationAwareSpannerClient{
+		defaultEndpointAddress: "default:443",
+		endpointCooldowns:      tracker,
+	}
+	ep := &mockEndpoint{address: "replica:443", healthy: true}
+	retryInfo := &errdetails.RetryInfo{RetryDelay: durationpb.New(100 * time.Millisecond)}
+	grpcStatus, err := status.New(codes.ResourceExhausted, "busy").WithDetails(retryInfo)
+	if err != nil {
+		t.Fatal(err)
+	}
+	lac.maybeMarkEndpointCoolingDown(ep, grpcStatus.Err())
+	state := tracker.entries[ep.Address()]
+	if state.overloadFailures != 1 {
+		t.Fatalf("overload state = %+v", state)
+	}
+	if got := state.overloadUntil.Sub(clock.Now()); got != 100*time.Millisecond {
+		t.Fatalf("overload state = %+v", state)
+	}
+	lac.maybeMarkEndpointCoolingDown(ep, status.Error(codes.Unavailable, "down"))
+	if got := tracker.entries[ep.Address()].unavailableFailures; got != 1 {
+		t.Fatalf("unavailableFailures = %d, want 1", got)
+	}
+	for i := 0; i < defaultEndpointCooldownSuccessesToRepair; i++ {
+		lac.recordEndpointSuccess(ep)
+	}
+	state = tracker.entries[ep.Address()]
+	if state.overloadFailures != 0 || state.unavailableFailures != 0 {
+		t.Fatalf("success did not repair lanes: %+v", state)
+	}
+}
+
+func TestLocationAwareSpannerClientSuccessfulRoutedCallAdvancesCooldownRepair(t *testing.T) {
+	defaultClient := &mockSpannerClient{executeSQLResp: &sppb.ResultSet{}}
+	endpointClient := &mockSpannerClient{executeSQLResp: &sppb.ResultSet{}}
+	epCache := newMockEndpointCache()
+	epCache.defaultEndpoint = &passthroughChannelEndpoint{address: "default:443"}
+	epCache.addEndpoint("replica:443", endpointClient)
+	router := newLocationRouter(epCache)
+	update := createRangeCacheUpdateForHint(&sppb.RoutingHint{Key: []byte("b")})
+	update.Group[0].Tablets[0].ServerAddress = "replica:443"
+	router.observeResultSet(&sppb.ResultSet{CacheUpdate: update})
+	waitForAsyncRoutingUpdate(t, func() bool {
+		return router.prepareExecuteSQLRequest(context.Background(), executeSQLWithKeyAndSelector("b", nil)) != nil
+	})
+
+	clock := newLifecycleTestClock(time.Unix(100, 0))
+	tracker := newEndpointOverloadCooldownTrackerWithOptions(
+		10*time.Second, time.Minute, 10*time.Minute, clock.Now,
+		func(int64) int64 { return 0 },
+	)
+	hint := 100 * time.Millisecond
+	tracker.recordFailureWithStatus("replica:443", codes.ResourceExhausted, &hint)
+	clock.Advance(hint)
+	lac := newLocationAwareSpannerClient(defaultClient, router, epCache)
+	lac.endpointCooldowns = tracker
+	if _, err := lac.ExecuteSql(context.Background(), executeSQLWithKeyAndSelector("b", nil)); err != nil {
+		t.Fatal(err)
+	}
+	state := tracker.entries["replica:443"]
+	if state.successesTowardRepair != 1 {
+		t.Fatalf("successesTowardRepair = %d, want 1", state.successesTowardRepair)
 	}
 }
 
@@ -735,6 +853,7 @@ func TestLocationAwareSpannerClient_AffinityClientRequestsLifecycleRecreationFor
 		time.Now,
 	)
 	defer router.lifecycleManager.shutdown()
+	router.lifecycleManager.updateActiveAddresses(map[string]struct{}{"replica-2:443": {}})
 
 	unhealthyEndpoint := &mockEndpoint{address: "replica-2:443", healthy: false}
 	router.setTransactionAffinity("tx-unhealthy", unhealthyEndpoint)
