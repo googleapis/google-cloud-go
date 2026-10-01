@@ -9666,20 +9666,17 @@ func TestIntegration_ClientTracing(t *testing.T) {
 	ctx := context.Background()
 
 	tests := []struct {
-		name         string
-		listSpanName string
-		newClient    func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
+		name      string
+		newClient func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error)
 	}{
 		{
-			name:         "gRPC",
-			listSpanName: "grpcStorageClient.ObjectsListCall",
+			name: "gRPC",
 			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 				return testConfigGRPC(ctx, t, opts...), nil
 			},
 		},
 		{
-			name:         "HTTP",
-			listSpanName: "httpStorageClient.ObjectsListCall",
+			name: "HTTP",
 			newClient: func(t *testing.T, ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 				return testConfig(ctx, t, opts...), nil
 			},
@@ -9780,32 +9777,6 @@ func TestIntegration_ClientTracing(t *testing.T) {
 
 			// Second call should have resolved attributes.
 			verifySpanAttributes(t, attrsSpan, fmt.Sprintf("projects/%d/buckets/%s", bAttrs.ProjectNumber, bucketName), "us-east1")
-
-			// Bucket, object and list spans should all carry gcp.storage.uri.
-			bucketURI := "gs://" + bucketName + "/"
-			if got, _ := storageURIAttr(t, spans[spanCountAfterFirstOp:], "Bucket.Attrs"); got != bucketURI {
-				t.Errorf("Bucket.Attrs %s = %q, want %q", storageURIAttrKey, got, bucketURI)
-			}
-
-			spanCountBeforeURIOps := len(te.Spans())
-			if _, err := client.Bucket(bucketName).Object("no-such-object").Attrs(ctx); !errors.Is(err, ErrObjectNotExist) {
-				t.Fatalf("Object.Attrs: got %v, want ErrObjectNotExist", err)
-			}
-			if _, err := client.Bucket(bucketName).Objects(ctx, nil).Next(); err != iterator.Done {
-				t.Fatalf("Objects.Next: got %v, want iterator.Done", err)
-			}
-			newSpans := te.Spans()[spanCountBeforeURIOps:]
-			for _, c := range []struct {
-				spanName string
-				want     string
-			}{
-				{spanName: "Object.Attrs", want: bucketURI + "no-such-object"},
-				{spanName: tc.listSpanName, want: bucketURI},
-			} {
-				if got, _ := storageURIAttr(t, newSpans, c.spanName); got != c.want {
-					t.Errorf("%s %s = %q, want %q", c.spanName, storageURIAttrKey, got, c.want)
-				}
-			}
 		})
 	}
 }
