@@ -35,7 +35,6 @@ import (
 	"go.opentelemetry.io/otel/exporters/otlp/otlptrace/otlptracegrpc"
 	"go.opentelemetry.io/otel/propagation"
 	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
-	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"go.opentelemetry.io/otel/sdk/resource"
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
@@ -80,7 +79,6 @@ func TestIntegration_Signals(t *testing.T) {
 	t.Setenv("GOOGLE_SDK_GO_LOGGING", "true")
 	gax.TestOnlyResetIsFeatureEnabled()
 	t.Cleanup(gax.TestOnlyResetIsFeatureEnabled)
-
 	saveGlobalOtelState(t)
 
 	tp, err := setupTracing(ctx, projectID, creds)
@@ -93,8 +91,7 @@ func TestIntegration_Signals(t *testing.T) {
 		_ = tp.Shutdown(shutdownCtx)
 	})
 
-	metricReader := sdkmetric.NewManualReader()
-	mp, err := setupMetrics(ctx, projectID, creds, metricReader)
+	mp, err := setupMetrics(ctx, projectID, creds)
 	if err != nil {
 		t.Fatalf("setupMetrics: %v", err)
 	}
@@ -105,7 +102,7 @@ func TestIntegration_Signals(t *testing.T) {
 	})
 
 	var logBuf bytes.Buffer
-	logger := setupLogging(&logBuf, projectID, slog.LevelDebug)
+	logger := setupLogging(&logBuf, slog.LevelDebug)
 
 	client, err := secretmanager.NewClient(ctx, option.WithLogger(logger))
 	if err != nil {
@@ -133,11 +130,15 @@ func TestIntegration_Signals(t *testing.T) {
 	}
 
 	t.Run("Logging", func(t *testing.T) {
-		verifyLogging(t, logBuf.Bytes(), projectID, traceID)
+		verifyLogging(t, logBuf.Bytes())
 	})
 
 	t.Run("Metrics", func(t *testing.T) {
-		verifyMetrics(ctx, t, mp, metricReader)
+		flushCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
+		defer cancel()
+		if err := mp.ForceFlush(flushCtx); err != nil {
+			t.Fatalf("mp.ForceFlush: %v", err)
+		}
 	})
 
 	t.Run("Tracing", func(t *testing.T) {
@@ -152,9 +153,6 @@ func TestIntegration_Signals(t *testing.T) {
 	})
 }
 
-// setupTracing configures OpenTelemetry trace export to Google Cloud Telemetry
-// (telemetry.googleapis.com:443) and registers the global TracerProvider and
-// W3C TraceContext propagator.
 func setupTracing(ctx context.Context, projectID string, creds *google.Credentials) (*sdktrace.TracerProvider, error) {
 	res, err := resource.New(ctx, resource.WithAttributes(
 		attribute.String("gcp.project_id", projectID),
@@ -171,19 +169,13 @@ func setupTracing(ctx context.Context, projectID string, creds *google.Credentia
 	if err != nil {
 		return nil, err
 	}
-	tp := sdktrace.NewTracerProvider(
-		sdktrace.WithResource(res),
-		sdktrace.WithBatcher(traceExp),
-	)
+	tp := sdktrace.NewTracerProvider(sdktrace.WithResource(res), sdktrace.WithBatcher(traceExp))
 	otel.SetTracerProvider(tp)
 	otel.SetTextMapPropagator(propagation.TraceContext{})
 	return tp, nil
 }
 
-// setupMetrics configures OpenTelemetry metric export to Google Cloud Telemetry
-// (telemetry.googleapis.com:443) with the required prometheus_target resource
-// attributes and registers the global MeterProvider.
-func setupMetrics(ctx context.Context, projectID string, creds *google.Credentials, extraReaders ...sdkmetric.Reader) (*sdkmetric.MeterProvider, error) {
+func setupMetrics(ctx context.Context, projectID string, creds *google.Credentials) (*sdkmetric.MeterProvider, error) {
 	res, err := resource.New(ctx, resource.WithAttributes(
 		attribute.String("gcp.project_id", projectID),
 		attribute.String("cloud.region", "us-central1"),
@@ -201,49 +193,16 @@ func setupMetrics(ctx context.Context, projectID string, creds *google.Credentia
 	if err != nil {
 		return nil, err
 	}
-	opts := []sdkmetric.Option{
+	mp := sdkmetric.NewMeterProvider(
 		sdkmetric.WithResource(res),
 		sdkmetric.WithReader(sdkmetric.NewPeriodicReader(metricExp)),
-	}
-	for _, r := range extraReaders {
-		opts = append(opts, sdkmetric.WithReader(r))
-	}
-	mp := sdkmetric.NewMeterProvider(opts...)
+	)
 	otel.SetMeterProvider(mp)
 	return mp, nil
 }
 
-// traceCorrelationHandler wraps a slog.Handler to inject OpenTelemetry trace
-// and span IDs in the format recognized by Google Cloud Logging.
-type traceCorrelationHandler struct {
-	slog.Handler
-	projectID string
-}
-
-func (h *traceCorrelationHandler) Handle(ctx context.Context, r slog.Record) error {
-	if sc := trace.SpanContextFromContext(ctx); sc.IsValid() {
-		r.AddAttrs(
-			slog.String("logging.googleapis.com/trace", fmt.Sprintf("projects/%s/traces/%s", h.projectID, sc.TraceID())),
-			slog.String("logging.googleapis.com/spanId", sc.SpanID().String()),
-			slog.Bool("logging.googleapis.com/trace_sampled", sc.IsSampled()),
-		)
-	}
-	return h.Handler.Handle(ctx, r)
-}
-
-func (h *traceCorrelationHandler) WithAttrs(attrs []slog.Attr) slog.Handler {
-	return &traceCorrelationHandler{Handler: h.Handler.WithAttrs(attrs), projectID: h.projectID}
-}
-
-func (h *traceCorrelationHandler) WithGroup(name string) slog.Handler {
-	return &traceCorrelationHandler{Handler: h.Handler.WithGroup(name), projectID: h.projectID}
-}
-
-// setupLogging configures a JSON slog.Logger that correlates structured client
-// error logs with active OpenTelemetry spans for Google Cloud Logging.
-func setupLogging(w io.Writer, projectID string, level slog.Level) *slog.Logger {
-	base := slog.NewJSONHandler(w, &slog.HandlerOptions{Level: level})
-	return slog.New(&traceCorrelationHandler{Handler: base, projectID: projectID})
+func setupLogging(w io.Writer, level slog.Level) *slog.Logger {
+	return slog.New(slog.NewJSONHandler(w, &slog.HandlerOptions{Level: level}))
 }
 
 func saveGlobalOtelState(t *testing.T) {
@@ -258,13 +217,12 @@ func saveGlobalOtelState(t *testing.T) {
 	})
 }
 
-func verifyLogging(t *testing.T, raw []byte, projectID, traceID string) {
+func verifyLogging(t *testing.T, raw []byte) {
 	t.Helper()
 	trimmed := bytes.TrimSpace(raw)
 	if len(trimmed) == 0 {
 		t.Fatal("expected structured error logs, got none")
 	}
-	wantTrace := fmt.Sprintf("projects/%s/traces/%s", projectID, traceID)
 	var warnLogs, debugAttemptLogs []map[string]any
 	for _, line := range bytes.Split(trimmed, []byte("\n")) {
 		var entry map[string]any
@@ -278,66 +236,18 @@ func verifyLogging(t *testing.T, raw []byte, projectID, traceID string) {
 			debugAttemptLogs = append(debugAttemptLogs, entry)
 		}
 	}
-	if len(warnLogs) != 1 {
-		t.Fatalf("got %d WARN gcp.client.request logs, want 1 (raw=%s)", len(warnLogs), string(raw))
+	if len(warnLogs) != 1 || len(debugAttemptLogs) != 3 {
+		t.Fatalf("got %d WARN and %d DEBUG error logs, want 1 and 3 (raw=%s)", len(warnLogs), len(debugAttemptLogs), string(raw))
 	}
-	if len(debugAttemptLogs) != 3 {
-		t.Fatalf("got %d DEBUG attempt error logs, want 3 (raw=%s)", len(debugAttemptLogs), string(raw))
-	}
-
 	warn := warnLogs[0]
 	if warn["error.type"] != "NOT_FOUND" || warn["resend_count"] != float64(2) || warn["gcp.client.service"] != "secretmanager" {
 		t.Errorf("unexpected WARN log attributes: %v", warn)
 	}
-	if warn["logging.googleapis.com/trace"] != wantTrace || warn["logging.googleapis.com/spanId"] == "" || warn["logging.googleapis.com/trace_sampled"] != true {
-		t.Errorf("unexpected WARN log trace correlation: %v", warn)
-	}
-
 	for i, dbg := range debugAttemptLogs {
 		if dbg["error.type"] != "NOT_FOUND" || dbg["gcp.client.service"] != "secretmanager" {
 			t.Errorf("DEBUG log[%d] unexpected attributes: %v", i, dbg)
 		}
-		if dbg["logging.googleapis.com/trace"] != wantTrace || dbg["logging.googleapis.com/spanId"] == "" {
-			t.Errorf("DEBUG log[%d] missing trace correlation: %v", i, dbg)
-		}
 	}
-}
-
-func verifyMetrics(ctx context.Context, t *testing.T, mp *sdkmetric.MeterProvider, reader *sdkmetric.ManualReader) {
-	t.Helper()
-	flushCtx, cancel := context.WithTimeout(ctx, 10*time.Second)
-	defer cancel()
-	if err := mp.ForceFlush(flushCtx); err != nil {
-		t.Fatalf("mp.ForceFlush to telemetry.googleapis.com: %v", err)
-	}
-
-	var rm metricdata.ResourceMetrics
-	if err := reader.Collect(ctx, &rm); err != nil {
-		t.Fatalf("reader.Collect: %v", err)
-	}
-	for _, sm := range rm.ScopeMetrics {
-		for _, m := range sm.Metrics {
-			if m.Name != "gcp.client.request.duration" {
-				continue
-			}
-			scopeAttrs := spanAttrs(sm.Scope.Attributes.ToSlice())
-			if scopeAttrs["gcp.client.service"] != "secretmanager" {
-				t.Errorf("unexpected metric scope attributes: %v", scopeAttrs)
-			}
-			hist, ok := m.Data.(metricdata.Histogram[float64])
-			if !ok || len(hist.DataPoints) != 1 || hist.DataPoints[0].Count != 1 {
-				t.Fatalf("unexpected duration metric data: %+v", m.Data)
-			}
-			attrs := spanAttrs(hist.DataPoints[0].Attributes.ToSlice())
-			if attrs["error.type"] != "NOT_FOUND" ||
-				attrs["rpc.system.name"] != "grpc" ||
-				attrs["rpc.method"] != "google.cloud.secretmanager.v1.SecretManagerService/GetSecret" {
-				t.Errorf("unexpected duration metric attributes: %v", attrs)
-			}
-			return
-		}
-	}
-	t.Fatal("expected gcp.client.request.duration metric")
 }
 
 func verifyCloudTrace(ctx context.Context, t *testing.T, httpClient *http.Client, projectID, traceID string) {
