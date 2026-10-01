@@ -233,7 +233,7 @@ func verifyLogging(t *testing.T, raw []byte) {
 		t.Fatalf("got %d WARN and %d DEBUG error logs, want 1 and 3 (raw=%s)", len(warnLogs), len(debugAttemptLogs), string(raw))
 	}
 	warn := warnLogs[0]
-	if warn["error.type"] != "NOT_FOUND" || warn["resend_count"] != float64(2) || warn["gcp.client.service"] != "secretmanager" {
+	if warn["error.type"] != "NOT_FOUND" || warn["resend_count"] != float64(2) || warn["gcp.client.service"] != "secretmanager" || warn["rpc.system.name"] != "grpc" {
 		t.Errorf("unexpected WARN log attributes: %v", warn)
 	}
 	for i, dbg := range debugAttemptLogs {
@@ -293,20 +293,25 @@ func verifyCloudTrace(ctx context.Context, t *testing.T, httpClient *http.Client
 			if s.Name == "integration-showcase-test" {
 				appSpanID = s.SpanID
 			}
-			if s.Name == "SecretManager.GetSecret" && s.Labels["error.type"] == "NOT_FOUND" && s.Labels["gcp.client.service"] == "secretmanager" {
+			if s.Name == "SecretManager.GetSecret" && s.Labels["error.type"] == "NOT_FOUND" && s.Labels["gcp.client.service"] == "secretmanager" && s.Labels["rpc.system.name"] == "grpc" {
 				t3SpanID = s.SpanID
 				t3ParentID = s.ParentSpanID
 			}
 		}
 		foundT3 = appSpanID != "" && t3SpanID != "" && t3ParentID == appSpanID
-		foundT4 = false
+		var t4Count int
+		var hasResend bool
 		for _, s := range traceData.Spans {
-			if s.Name == "google.cloud.secretmanager.v1.SecretManagerService/GetSecret" &&
-				s.ParentSpanID == t3SpanID &&
-				s.Labels["gcp.grpc.resend_count"] != "" {
-				foundT4 = true
+			if t3SpanID != "" &&
+				s.Name == "google.cloud.secretmanager.v1.SecretManagerService/GetSecret" &&
+				s.ParentSpanID == t3SpanID {
+				t4Count++
+				if s.Labels["gcp.grpc.resend_count"] != "" {
+					hasResend = true
+				}
 			}
 		}
+		foundT4 = t4Count == 3 && hasResend
 		if foundT3 && foundT4 {
 			return
 		}
