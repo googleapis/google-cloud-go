@@ -84,7 +84,7 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 		meta, hit := cache.get(bucket)
 		if !hit {
 			placeholder := bucketMetadata{
-				resource:    fmt.Sprintf("%sprojects/_/buckets/%s", storageResourceNamePrefix, bucket),
+				resource:    fmt.Sprintf("projects/_/buckets/%s", bucket),
 				location:    "global",
 				placeholder: true,
 			}
@@ -93,12 +93,20 @@ func startSpanWithBucket(ctx context.Context, client *Client, bucket string, nam
 			meta = placeholder
 		}
 		attrs := []attribute.KeyValue{
-			attribute.String("gcp.resource.destination.id", meta.resource),
+			attribute.String("gcp.resource.destination.id", destinationResourceName(meta.resource)),
 			attribute.String("gcp.resource.destination.location", meta.location),
 		}
 		ctx = contextWithTraceAttributes(ctx, attrs)
 	}
 	return startSpan(ctx, name, opts...)
+}
+
+// destinationResourceName converts a bare bucket resource name
+// ("projects/{p}/buckets/{b}") into the full resource name
+// ("//storage.googleapis.com/projects/{p}/buckets/{b}") required by Cloud
+// Trace's App Hub extractor for the gcp.resource.destination.id attribute.
+func destinationResourceName(resource string) string {
+	return storageResourceNamePrefix + resource
 }
 
 // startSpan creates a span and a context.Context containing the newly-created span.
