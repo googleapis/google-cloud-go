@@ -2,9 +2,13 @@ module cloud.google.com/go/internal/testing/observability
 
 go 1.26.0
 
-replace cloud.google.com/go/secretmanager => ../../../secretmanager
+replace (
+	cloud.google.com/go => ../../..
+	cloud.google.com/go/secretmanager => ../../../secretmanager
+)
 
 require (
+	cloud.google.com/go v0.123.0
 	cloud.google.com/go/secretmanager v1.22.0
 	github.com/googleapis/gax-go/v2 v2.26.2
 	go.opentelemetry.io/otel v1.46.0
@@ -28,6 +32,7 @@ require (
 	github.com/felixge/httpsnoop v1.1.0 // indirect
 	github.com/go-logr/logr v1.4.4 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/google/go-cmp v0.7.0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.17 // indirect

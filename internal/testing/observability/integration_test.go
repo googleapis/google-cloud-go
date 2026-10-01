@@ -22,10 +22,10 @@ import (
 	"io"
 	"log/slog"
 	"net/http"
-	"os"
 	"testing"
 	"time"
 
+	"cloud.google.com/go/internal/testutil"
 	secretmanager "cloud.google.com/go/secretmanager/apiv1"
 	secretmanagerpb "cloud.google.com/go/secretmanager/apiv1/secretmanagerpb"
 	gax "github.com/googleapis/gax-go/v2"
@@ -39,7 +39,6 @@ import (
 	sdktrace "go.opentelemetry.io/otel/sdk/trace"
 	"go.opentelemetry.io/otel/trace"
 	"golang.org/x/oauth2"
-	"golang.org/x/oauth2/google"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -58,20 +57,16 @@ type cloudTraceResponse struct {
 
 func TestIntegration_Signals(t *testing.T) {
 	if testing.Short() {
-		t.Skip("skipping integration test in short mode")
+		t.Skip("Integration tests skipped in short mode")
 	}
-	projectID := os.Getenv("GOOGLE_CLOUD_PROJECT")
+	projectID := testutil.ProjID()
 	if projectID == "" {
-		projectID = os.Getenv("GCLOUD_TESTS_GOLANG_PROJECT_ID")
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
-	if projectID == "" {
-		t.Skip("GOOGLE_CLOUD_PROJECT and GCLOUD_TESTS_GOLANG_PROJECT_ID not set")
-	}
-
 	ctx := context.Background()
-	creds, err := google.FindDefaultCredentials(ctx, "https://www.googleapis.com/auth/cloud-platform")
-	if err != nil {
-		t.Skipf("ADC unavailable: %v", err)
+	ts := testutil.TokenSource(ctx, secretmanager.DefaultAuthScopes()...)
+	if ts == nil {
+		t.Skip("Integration tests skipped. See CONTRIBUTING.md for details")
 	}
 
 	t.Setenv("GOOGLE_SDK_GO_TRACING", "true")
@@ -81,7 +76,7 @@ func TestIntegration_Signals(t *testing.T) {
 	t.Cleanup(gax.TestOnlyResetIsFeatureEnabled)
 	saveGlobalOtelState(t)
 
-	tp, err := setupTracing(ctx, projectID, creds)
+	tp, err := setupTracing(ctx, projectID, ts)
 	if err != nil {
 		t.Fatalf("setupTracing: %v", err)
 	}
@@ -91,7 +86,7 @@ func TestIntegration_Signals(t *testing.T) {
 		_ = tp.Shutdown(shutdownCtx)
 	})
 
-	mp, err := setupMetrics(ctx, projectID, creds)
+	mp, err := setupMetrics(ctx, projectID, ts)
 	if err != nil {
 		t.Fatalf("setupMetrics: %v", err)
 	}
@@ -104,7 +99,7 @@ func TestIntegration_Signals(t *testing.T) {
 	var logBuf bytes.Buffer
 	logger := setupLogging(&logBuf, slog.LevelDebug)
 
-	client, err := secretmanager.NewClient(ctx, option.WithLogger(logger))
+	client, err := secretmanager.NewClient(ctx, option.WithTokenSource(ts), option.WithLogger(logger))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -147,13 +142,13 @@ func TestIntegration_Signals(t *testing.T) {
 		if err := tp.ForceFlush(flushCtx); err != nil {
 			t.Fatalf("tp.ForceFlush: %v", err)
 		}
-		httpClient := oauth2.NewClient(ctx, creds.TokenSource)
+		httpClient := oauth2.NewClient(ctx, ts)
 		httpClient.Timeout = 10 * time.Second
 		verifyCloudTrace(ctx, t, httpClient, projectID, traceID)
 	})
 }
 
-func setupTracing(ctx context.Context, projectID string, creds *google.Credentials) (*sdktrace.TracerProvider, error) {
+func setupTracing(ctx context.Context, projectID string, ts oauth2.TokenSource) (*sdktrace.TracerProvider, error) {
 	res, err := resource.New(ctx, resource.WithAttributes(
 		attribute.String("gcp.project_id", projectID),
 		attribute.String("service.name", "observability-integration-test"),
@@ -161,10 +156,9 @@ func setupTracing(ctx context.Context, projectID string, creds *google.Credentia
 	if err != nil {
 		return nil, err
 	}
-	perRPCCreds := oauth.TokenSource{TokenSource: creds.TokenSource}
 	traceExp, err := otlptracegrpc.New(ctx,
 		otlptracegrpc.WithEndpoint("telemetry.googleapis.com:443"),
-		otlptracegrpc.WithDialOption(grpc.WithPerRPCCredentials(perRPCCreds)),
+		otlptracegrpc.WithDialOption(grpc.WithPerRPCCredentials(oauth.TokenSource{TokenSource: ts})),
 	)
 	if err != nil {
 		return nil, err
@@ -175,7 +169,7 @@ func setupTracing(ctx context.Context, projectID string, creds *google.Credentia
 	return tp, nil
 }
 
-func setupMetrics(ctx context.Context, projectID string, creds *google.Credentials) (*sdkmetric.MeterProvider, error) {
+func setupMetrics(ctx context.Context, projectID string, ts oauth2.TokenSource) (*sdkmetric.MeterProvider, error) {
 	res, err := resource.New(ctx, resource.WithAttributes(
 		attribute.String("gcp.project_id", projectID),
 		attribute.String("cloud.region", "us-central1"),
@@ -185,10 +179,9 @@ func setupMetrics(ctx context.Context, projectID string, creds *google.Credentia
 	if err != nil {
 		return nil, err
 	}
-	perRPCCreds := oauth.TokenSource{TokenSource: creds.TokenSource}
 	metricExp, err := otlpmetricgrpc.New(ctx,
 		otlpmetricgrpc.WithEndpoint("telemetry.googleapis.com:443"),
-		otlpmetricgrpc.WithDialOption(grpc.WithPerRPCCredentials(perRPCCreds)),
+		otlpmetricgrpc.WithDialOption(grpc.WithPerRPCCredentials(oauth.TokenSource{TokenSource: ts})),
 	)
 	if err != nil {
 		return nil, err
