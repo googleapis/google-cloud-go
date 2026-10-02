@@ -24,7 +24,7 @@
   "asset": "1.29.0",
   "assuredworkloads": "1.20.0",
   "auditmanager": "1.5.0",
-  "auth": "0.24.0",
+  "auth": "0.24.1",
   "auth/oauth2adapt": "0.3.0",
   "automl": "1.22.0",
   "backstory": "0.2.0",
