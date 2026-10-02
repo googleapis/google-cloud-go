@@ -39,6 +39,10 @@ const (
 	// defaultWriteChunkRetryDeadline is the default deadline for the upload
 	// of a single chunk. It can be overwritten by Writer.ChunkRetryDeadline.
 	defaultWriteChunkRetryDeadline = 32 * time.Second
+	// defaultWriteRetryInitialBackoff is the initial retry backoff for writes
+	// when none is configured. It matches the HTTP writer, whose resumable
+	// uploads default to this value.
+	defaultWriteRetryInitialBackoff = 100 * time.Millisecond
 	// maxPerMessageWriteSize is the maximum amount of content that can be sent
 	// per WriteObjectRequest message. A buffer reaching this amount will
 	// precipitate a flush of the buffer. It is only used by the gRPC Writer
@@ -1932,6 +1936,9 @@ func (w *gRPCWriter) writerRetryConfig() *retryConfig {
 	// consistency with HTTP client behavior. Writers should use
 	// ChunkRetryDeadline for per-chunk timeouts and context for overall timeouts.
 	newr.maxRetryDuration = 0
+	if newr.backoff == nil {
+		newr.backoff = &gax.Backoff{Initial: defaultWriteRetryInitialBackoff}
+	}
 
 	if oldr.policy == RetryNever {
 		if w.append {
