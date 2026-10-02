@@ -2755,7 +2755,7 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
 // To restore a table to a different instance, see RestoreTableFrom.
 //
-// Deprecated: Use ac.TableAdminClientV2() to access the underlying client and call the equivalent RPC directly.
+// Deprecated: Use ac.TableAdminClientV2().RestoreTable instead.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
 	return ac.RestoreTableFrom(ctx, ac.instance, table, cluster, backup)
 }
