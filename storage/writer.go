@@ -140,13 +140,12 @@ type Writer struct {
 
 	// ChunkTransferTimeout sets a per-chunk request timeout for resumable uploads.
 	//
-	// For resumable uploads, the Writer will terminate the request and attempt
-	// a retry if the request to upload a particular chunk stalls for longer than
-	// this duration. Retries may continue until the ChunkRetryDeadline is reached.
+	// For resumable uploads, if the transfer of a single chunk stalls for longer
+	// than this duration without server acknowledgement, the Writer terminates
+	// the in-flight attempt and retries if the retry policy permits. Retries may
+	// continue until the ChunkRetryDeadline is reached.
 	//
-	// ChunkTransferTimeout is not applicable to uploads made using a gRPC client.
-	//
-	// The default value is no timeout.
+	// The default value is no timeout (0).
 	ChunkTransferTimeout time.Duration
 
 	// ForceEmptyContentType is an optional parameter that is used to disable
