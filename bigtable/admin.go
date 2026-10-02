@@ -2520,11 +2520,18 @@ func max(x, y int) int {
 func clusterZonesOverlapFailedLocations(clusters []ClusterConfig, failedLocations []string) bool {
 	failedZones := make(map[string]bool, len(failedLocations))
 	for _, loc := range failedLocations {
-		parts := strings.Split(loc, "/")
-		failedZones[parts[len(parts)-1]] = true
+		// Require the canonical "…/locations/<zone>" suffix with a non-empty zone.
+		const sep = "/locations/"
+		idx := strings.LastIndex(loc, sep)
+		if idx < 0 {
+			continue
+		}
+		if zone := loc[idx+len(sep):]; zone != "" {
+			failedZones[zone] = true
+		}
 	}
 	for _, c := range clusters {
-		if failedZones[c.Zone] {
+		if c.Zone != "" && failedZones[c.Zone] {
 			return true
 		}
 	}
