@@ -1060,3 +1060,53 @@ func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 		})
 	}
 }
+
+func TestGRPCWriter_RetryConfigDefaultBackoff(t *testing.T) {
+	tests := []struct {
+		name  string
+		retry *retryConfig
+		want  gax.Backoff
+	}{
+		{
+			name:  "NoRetryConfig",
+			retry: nil,
+			want:  gax.Backoff{Initial: defaultWriteRetryInitialBackoff},
+		},
+		{
+			name:  "RetryConfigWithoutBackoff",
+			retry: &retryConfig{policy: RetryAlways},
+			want:  gax.Backoff{Initial: defaultWriteRetryInitialBackoff},
+		},
+		{
+			name: "UserBackoffPreserved",
+			retry: &retryConfig{
+				backoff: &gax.Backoff{Initial: 2 * time.Second, Max: 10 * time.Second, Multiplier: 3},
+			},
+			want: gax.Backoff{Initial: 2 * time.Second, Max: 10 * time.Second, Multiplier: 3},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := &gRPCWriter{
+				streamSender: &instantFailSender{},
+				settings:     &settings{retry: tt.retry},
+			}
+			got := w.writerRetryConfig().backoff
+			if got == nil {
+				t.Fatal("writerRetryConfig().backoff = nil, want non-nil")
+			}
+			if got.Initial != tt.want.Initial || got.Max != tt.want.Max || got.Multiplier != tt.want.Multiplier {
+				t.Errorf("writerRetryConfig().backoff = {Initial: %v, Max: %v, Multiplier: %v}, want {Initial: %v, Max: %v, Multiplier: %v}",
+					got.Initial, got.Max, got.Multiplier, tt.want.Initial, tt.want.Max, tt.want.Multiplier)
+			}
+			if tt.retry != nil && tt.retry.backoff == got {
+				t.Errorf("writerRetryConfig() aliased the caller's backoff")
+			}
+		})
+	}
+
+	if defaultRetry.backoff != nil {
+		t.Errorf("writerRetryConfig() mutated defaultRetry.backoff to %+v", defaultRetry.backoff)
+	}
+}
