@@ -899,11 +899,11 @@ func TestGRPCWriter_CanResumeSession(t *testing.T) {
 
 	resumable := &gRPCResumableBidiWriteBufferSender{}
 	if resumable.canResumeSession() {
-		t.Errorf("resumable sender without upid should report canResumeSession() == false")
+		t.Errorf("resumable sender without upload ID should report canResumeSession() == false")
 	}
 	resumable.upid = "upload-123"
 	if !resumable.canResumeSession() {
-		t.Errorf("resumable sender with upid should report canResumeSession() == true")
+		t.Errorf("resumable sender with upload ID should report canResumeSession() == true")
 	}
 
 	appendSender := &gRPCAppendBidiWriteBufferSender{
@@ -981,6 +981,24 @@ func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
 			append:       true,
 			canResume:    false,
 			firstErr:     redirectErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryAlways_NoPreconditions_BeforeSession_RetriesTransient",
+			policy:       RetryAlways,
+			idempotent:   false,
+			canResume:    false,
+			firstErr:     transientErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryAlways_NoPreconditions_AfterSession_RetriesTransient",
+			policy:       RetryAlways,
+			idempotent:   false,
+			canResume:    true,
+			firstErr:     transientErr,
 			wantAttempts: 2,
 			wantErr:      false,
 		},
