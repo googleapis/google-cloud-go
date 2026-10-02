@@ -2514,6 +2514,23 @@ func max(x, y int) int {
 	return y
 }
 
+// clusterZonesOverlapFailedLocations reports whether any cluster in the config
+// has its zone listed in failedLocations. failedLocations values are of the
+// form "projects/<project>/locations/<zone>".
+func clusterZonesOverlapFailedLocations(clusters []ClusterConfig, failedLocations []string) bool {
+	failedZones := make(map[string]bool, len(failedLocations))
+	for _, loc := range failedLocations {
+		parts := strings.Split(loc, "/")
+		failedZones[parts[len(parts)-1]] = true
+	}
+	for _, c := range clusters {
+		if failedZones[c.Zone] {
+			return true
+		}
+	}
+	return false
+}
+
 // UpdateInstanceAndSyncClusters updates an instance and its clusters, and will synchronize the
 // clusters in the instance with the provided clusters, creating and deleting them as necessary.
 // The provided InstanceWithClustersConfig is used as follows:
@@ -2541,7 +2558,13 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 	// First fetch the existing clusters so we know what to remove, add or update.
 	existingClusters, err := iac.Clusters(ctx, conf.InstanceID)
 	if err != nil {
-		return nil, err
+		// Only treat a partial failure as fatal if a failed location contains
+		// one of the zones we intend to configure. If the unavailable zones are
+		// unrelated to conf.Clusters, we have enough information to proceed.
+		var partialErr ErrPartiallyUnavailable
+		if !errors.As(err, &partialErr) || clusterZonesOverlapFailedLocations(conf.Clusters, partialErr.Locations) {
+			return nil, err
+		}
 	}
 
 	updatedInstance, err := iac.updateInstance(ctx, conf)
