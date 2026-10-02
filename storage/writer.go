@@ -138,12 +138,12 @@ type Writer struct {
 	// cancellation.
 	ChunkRetryDeadline time.Duration
 
-	// ChunkTransferTimeout sets a per-chunk request timeout for uploads.
+	// ChunkTransferTimeout sets a per-chunk request timeout for resumable uploads.
 	//
-	// If the transfer of a single chunk stalls for longer than this duration
-	// without server acknowledgement, the Writer terminates the in-flight
-	// attempt and retries if the retry policy permits. Retries may continue
-	// until the ChunkRetryDeadline is reached.
+	// For resumable uploads, if the transfer of a single chunk stalls for longer
+	// than this duration without server acknowledgement, the Writer terminates
+	// the in-flight attempt and retries if the retry policy permits. Retries may
+	// continue until the ChunkRetryDeadline is reached.
 	//
 	// The default value is no timeout (0).
 	ChunkTransferTimeout time.Duration
