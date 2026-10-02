@@ -2019,3 +2019,82 @@ func TestInstanceAdminClientV2(t *testing.T) {
 		}
 	}
 }
+
+func TestClusterZonesOverlapFailedLocations(t *testing.T) {
+	tests := []struct {
+		name            string
+		clusters        []ClusterConfig
+		failedLocations []string
+		want            bool
+	}{
+		{
+			name: "both empty",
+			want: false,
+		},
+		{
+			name:            "no overlap",
+			clusters:        []ClusterConfig{{ClusterID: "c1", Zone: "us-central1-a"}},
+			failedLocations: []string{"projects/p/locations/us-east1-b"},
+			want:            false,
+		},
+		{
+			name:            "single overlap",
+			clusters:        []ClusterConfig{{ClusterID: "c1", Zone: "us-central1-a"}},
+			failedLocations: []string{"projects/p/locations/us-central1-a"},
+			want:            true,
+		},
+		{
+			name: "multi-cluster, one overlaps",
+			clusters: []ClusterConfig{
+				{ClusterID: "c1", Zone: "us-central1-a"},
+				{ClusterID: "c2", Zone: "us-east1-b"},
+			},
+			failedLocations: []string{"projects/p/locations/us-east1-b"},
+			want:            true,
+		},
+		{
+			name:     "multi-failed, one overlaps",
+			clusters: []ClusterConfig{{ClusterID: "c1", Zone: "us-central1-a"}},
+			failedLocations: []string{
+				"projects/p/locations/us-west1-a",
+				"projects/p/locations/us-central1-a",
+			},
+			want: true,
+		},
+		{
+			name:     "empty failed locations",
+			clusters: []ClusterConfig{{ClusterID: "c1", Zone: "us-central1-a"}},
+			want:     false,
+		},
+		{
+			name:            "empty clusters",
+			failedLocations: []string{"projects/p/locations/us-central1-a"},
+			want:            false,
+		},
+		{
+			name:            "malformed location — empty string",
+			clusters:        []ClusterConfig{{ClusterID: "c1", Zone: ""}},
+			failedLocations: []string{""},
+			want:            false,
+		},
+		{
+			name:            "malformed location — no slash",
+			clusters:        []ClusterConfig{{ClusterID: "c1", Zone: "foo"}},
+			failedLocations: []string{"foo"},
+			want:            false,
+		},
+		{
+			name:            "trailing slash — zone segment missing",
+			clusters:        []ClusterConfig{{ClusterID: "c1", Zone: ""}},
+			failedLocations: []string{"projects/p/locations/"},
+			want:            false,
+		},
+	}
+	for _, tc := range tests {
+		t.Run(tc.name, func(t *testing.T) {
+			if got := clusterZonesOverlapFailedLocations(tc.clusters, tc.failedLocations); got != tc.want {
+				t.Errorf("got %v, want %v", got, tc.want)
+			}
+		})
+	}
+}
