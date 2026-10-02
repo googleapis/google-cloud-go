@@ -2766,7 +2766,7 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 // tableName (ex. "my-restored-table") will be the name of the newly created table.
 // backupName (ex. "my-backup") is the name of the backup to restore.
 //
-// Deprecated: Use ac.TableAdminClientV2() to access the underlying client and call the equivalent RPC directly.
+// Deprecated: Use ac.TableAdminClientV2().RestoreTable instead.
 func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	parent := ac.instancePrefix()
