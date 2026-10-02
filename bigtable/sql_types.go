@@ -537,6 +537,47 @@ func (s StructSQLType) valueProto(value any) (*btpb.Value, error) {
 	return nil, errors.New("bigtable: unimplemented")
 }
 
+// AggregateSQLType represents an aggregate value in SQL query results.
+// Reads always return values of StateType.
+type AggregateSQLType struct {
+	InputType SQLType
+	StateType SQLType
+}
+
+func (s AggregateSQLType) isValidArrayElemType() bool { return false }
+
+func (s AggregateSQLType) isValidPrepareParamType() bool { return false }
+
+func (s AggregateSQLType) typeProto() (*btpb.Type, error) {
+	if s.StateType == nil {
+		return nil, errors.New("bigtable: AggregateSQLType must specify a non-nil StateType")
+	}
+	stateTp, err := s.StateType.typeProto()
+	if err != nil {
+		return nil, fmt.Errorf("invalid state type for aggregate: %w", err)
+	}
+	var inputTp *btpb.Type
+	if s.InputType != nil {
+		inputTp, err = s.InputType.typeProto()
+		if err != nil {
+			return nil, fmt.Errorf("invalid input type for aggregate: %w", err)
+		}
+	}
+	return &btpb.Type{
+		Kind: &btpb.Type_AggregateType{
+			AggregateType: &btpb.Type_Aggregate{
+				InputType: inputTp,
+				StateType: stateTp,
+			},
+		},
+	}, nil
+}
+
+// Only used while binding parameters to prepared query and this is not a valid param type
+func (s AggregateSQLType) valueProto(value any) (*btpb.Value, error) {
+	return nil, errors.New("bigtable: unimplemented")
+}
+
 // anySQLTypeToPbVal converts a Go value to a protobuf Value based on the provided SQLType.
 func anySQLTypeToPbVal(value any, sqlType SQLType) (*btpb.Value, error) {
 	if sqlType == nil {
@@ -566,6 +607,8 @@ func (e *errTypeMismatch) Error() string {
 		expectedTypeName = fmt.Sprintf("MapSQLType (key: %T, value: %T)", t.KeyType, t.ValueType)
 	case StructSQLType:
 		expectedTypeName = fmt.Sprintf("StructSQLType (with %d fields)", len(t.Fields))
+	case AggregateSQLType:
+		expectedTypeName = fmt.Sprintf("AggregateSQLType (input: %T, state: %T)", t.InputType, t.StateType)
 	}
 
 	return fmt.Sprintf("parameter type mismatch: expected Go type compatible with %s, but got %T", expectedTypeName, e.value)
