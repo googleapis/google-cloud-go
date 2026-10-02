@@ -79,12 +79,12 @@ func NewSecureConnectProvider(configFilePath string) (Provider, error) {
 	source := &secureConnectSource{
 		metadata: metadata,
 	}
-	cert, err := source.getClientCertificate(nil)
+	_, err = source.getClientCertificate(nil)
+	if errors.Is(err, errSourceUnavailable) {
+		return nil, errSourceUnavailable
+	}
 	if err != nil {
 		return nil, err
-	}
-	if cert == nil || len(cert.Certificate) == 0 {
-		return nil, errSourceUnavailable
 	}
 	return source.getClientCertificate, nil
 }
@@ -109,11 +109,10 @@ func (s *secureConnectSource) getClientCertificate(info *tls.CertificateRequestI
 	command := s.metadata.Cmd
 	data, err := exec.Command(command[0], command[1:]...).Output()
 	if err != nil {
-		// Intentionally return an empty Certificate (instead of nil, nil)
-		// so crypto/tls does not panic with a nil pointer dereference if the
-		// helper fails at runtime, while allowing the probe in
-		// NewSecureConnectProvider to recognize the source as unavailable.
-		return &tls.Certificate{}, nil
+		// Return errSourceUnavailable so the probe in NewSecureConnectProvider
+		// can recognize the source as unavailable, and so crypto/tls aborts
+		// the handshake with a clear error if it fails at runtime.
+		return nil, fmt.Errorf("%w: %v", errSourceUnavailable, err)
 	}
 	cert, err := tls.X509KeyPair(data, data)
 	if err != nil {

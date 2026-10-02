@@ -113,18 +113,15 @@ func TestSecureConnectSource_GetClientCertificateInvalidPEM(t *testing.T) {
 func TestSecureConnectSource_GetClientCertificateCommandFailure(t *testing.T) {
 	source := secureConnectSource{metadata: secureConnectMetadata{Cmd: []string{"nonexistent-command-that-fails"}}}
 	cert, err := source.getClientCertificate(nil)
-	if err != nil {
-		t.Fatalf("got %v, want nil err", err)
+	if !errors.Is(err, errSourceUnavailable) {
+		t.Fatalf("got %v, want %v", err, errSourceUnavailable)
 	}
-	if cert == nil {
-		t.Fatal("got nil, want non-nil empty cert")
-	}
-	if len(cert.Certificate) != 0 {
-		t.Errorf("got %d certs, want 0", len(cert.Certificate))
+	if cert != nil {
+		t.Errorf("got %v, want nil cert", cert)
 	}
 }
 
-func TestSecureConnectSource_TLSHandshakeNoPanic(t *testing.T) {
+func TestSecureConnectSource_TLSHandshakeCommandFailure(t *testing.T) {
 	source := secureConnectSource{metadata: secureConnectMetadata{Cmd: []string{"nonexistent-command-that-fails"}}}
 
 	server := httptest.NewUnstartedServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
@@ -141,13 +138,9 @@ func TestSecureConnectSource_TLSHandshakeNoPanic(t *testing.T) {
 	transport.TLSClientConfig.GetClientCertificate = source.getClientCertificate
 	client.Transport = transport
 
-	resp, err := client.Get(server.URL)
-	if err != nil {
-		t.Fatalf("unexpected error during TLS handshake: %v", err)
-	}
-	defer resp.Body.Close()
-	if resp.StatusCode != http.StatusOK {
-		t.Fatalf("got status %d, want %d", resp.StatusCode, http.StatusOK)
+	_, err := client.Get(server.URL)
+	if err == nil {
+		t.Fatal("expected TLS handshake to fail when helper fails, but it succeeded")
 	}
 }
 
