@@ -562,3 +562,29 @@ func TestRecordReaderTraceAttributes(t *testing.T) {
 		})
 	}
 }
+
+func TestRecordTraceAttributes_DevTracingDisabled(t *testing.T) {
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() { te.Unregister(ctx) })
+
+	// Test writer
+	wCtx, _ := startSpan(ctx, "Object.Writer")
+	recordWriterTraceAttributes(wCtx, &Writer{ChunkSize: 256 * 1024})
+	endSpan(wCtx, nil)
+
+	// Test reader
+	rCtx, _ := startSpan(ctx, "Object.Reader")
+	recordReaderTraceAttributes(rCtx, "range", 100, 500)
+	endSpan(rCtx, nil)
+
+	for _, s := range te.Spans() {
+		for _, a := range s.Attributes {
+			switch string(a.Key) {
+			case "gcp.storage.write.mode", "gcp.storage.read.mode", "gcp.storage.payload.size_bytes":
+				t.Errorf("span %s has unexpected attribute %s when dev tracing is disabled", s.Name, a.Key)
+			}
+		}
+	}
+}
