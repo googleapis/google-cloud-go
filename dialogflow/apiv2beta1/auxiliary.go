@@ -18,12 +18,14 @@ package dialogflow
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	dialogflowpb "cloud.google.com/go/dialogflow/apiv2beta1/dialogflowpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 	structpb "google.golang.org/protobuf/types/known/structpb"
@@ -1210,6 +1212,12 @@ func (op *UpdateDocumentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AgentIterator) All() iter.Seq2[*dialogflowpb.Agent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AgentIterator manages a stream of *dialogflowpb.Agent.
 type AgentIterator struct {
 	items    []*dialogflowpb.Agent
@@ -1255,6 +1263,12 @@ func (it *AgentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AnswerRecordIterator) All() iter.Seq2[*dialogflowpb.AnswerRecord, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AnswerRecordIterator manages a stream of *dialogflowpb.AnswerRecord.
@@ -1304,6 +1318,12 @@ func (it *AnswerRecordIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ContextIterator) All() iter.Seq2[*dialogflowpb.Context, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ContextIterator manages a stream of *dialogflowpb.Context.
 type ContextIterator struct {
 	items    []*dialogflowpb.Context
@@ -1349,6 +1369,12 @@ func (it *ContextIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*dialogflowpb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ConversationIterator manages a stream of *dialogflowpb.Conversation.
@@ -1398,6 +1424,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationProfileIterator) All() iter.Seq2[*dialogflowpb.ConversationProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConversationProfileIterator manages a stream of *dialogflowpb.ConversationProfile.
 type ConversationProfileIterator struct {
 	items    []*dialogflowpb.ConversationProfile
@@ -1443,6 +1475,12 @@ func (it *ConversationProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentIterator) All() iter.Seq2[*dialogflowpb.Document, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DocumentIterator manages a stream of *dialogflowpb.Document.
@@ -1492,6 +1530,12 @@ func (it *DocumentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EntityTypeIterator) All() iter.Seq2[*dialogflowpb.EntityType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EntityTypeIterator manages a stream of *dialogflowpb.EntityType.
 type EntityTypeIterator struct {
 	items    []*dialogflowpb.EntityType
@@ -1537,6 +1581,12 @@ func (it *EntityTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnvironmentHistory_EntryIterator) All() iter.Seq2[*dialogflowpb.EnvironmentHistory_Entry, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // EnvironmentHistory_EntryIterator manages a stream of *dialogflowpb.EnvironmentHistory_Entry.
@@ -1586,6 +1636,12 @@ func (it *EnvironmentHistory_EntryIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EnvironmentIterator) All() iter.Seq2[*dialogflowpb.Environment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // EnvironmentIterator manages a stream of *dialogflowpb.Environment.
 type EnvironmentIterator struct {
 	items    []*dialogflowpb.Environment
@@ -1631,6 +1687,12 @@ func (it *EnvironmentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GeneratorEvaluationIterator) All() iter.Seq2[*dialogflowpb.GeneratorEvaluation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GeneratorEvaluationIterator manages a stream of *dialogflowpb.GeneratorEvaluation.
@@ -1680,6 +1742,12 @@ func (it *GeneratorEvaluationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GeneratorIterator) All() iter.Seq2[*dialogflowpb.Generator, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // GeneratorIterator manages a stream of *dialogflowpb.Generator.
 type GeneratorIterator struct {
 	items    []*dialogflowpb.Generator
@@ -1725,6 +1793,12 @@ func (it *GeneratorIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IntentIterator) All() iter.Seq2[*dialogflowpb.Intent, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // IntentIterator manages a stream of *dialogflowpb.Intent.
@@ -1774,6 +1848,12 @@ func (it *IntentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *KnowledgeBaseIterator) All() iter.Seq2[*dialogflowpb.KnowledgeBase, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // KnowledgeBaseIterator manages a stream of *dialogflowpb.KnowledgeBase.
 type KnowledgeBaseIterator struct {
 	items    []*dialogflowpb.KnowledgeBase
@@ -1819,6 +1899,12 @@ func (it *KnowledgeBaseIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1868,6 +1954,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *MessageIterator) All() iter.Seq2[*dialogflowpb.Message, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // MessageIterator manages a stream of *dialogflowpb.Message.
 type MessageIterator struct {
 	items    []*dialogflowpb.Message
@@ -1913,6 +2005,12 @@ func (it *MessageIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // OperationIterator manages a stream of *longrunningpb.Operation.
@@ -1962,6 +2060,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ParticipantIterator) All() iter.Seq2[*dialogflowpb.Participant, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ParticipantIterator manages a stream of *dialogflowpb.Participant.
 type ParticipantIterator struct {
 	items    []*dialogflowpb.Participant
@@ -2007,6 +2111,12 @@ func (it *ParticipantIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PhoneNumberIterator) All() iter.Seq2[*dialogflowpb.PhoneNumber, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PhoneNumberIterator manages a stream of *dialogflowpb.PhoneNumber.
@@ -2056,6 +2166,12 @@ func (it *PhoneNumberIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SessionEntityTypeIterator) All() iter.Seq2[*dialogflowpb.SessionEntityType, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SessionEntityTypeIterator manages a stream of *dialogflowpb.SessionEntityType.
 type SessionEntityTypeIterator struct {
 	items    []*dialogflowpb.SessionEntityType
@@ -2101,6 +2217,12 @@ func (it *SessionEntityTypeIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SipTrunkIterator) All() iter.Seq2[*dialogflowpb.SipTrunk, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SipTrunkIterator manages a stream of *dialogflowpb.SipTrunk.
@@ -2150,6 +2272,12 @@ func (it *SipTrunkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SuggestionIterator) All() iter.Seq2[*dialogflowpb.Suggestion, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // SuggestionIterator manages a stream of *dialogflowpb.Suggestion.
 type SuggestionIterator struct {
 	items    []*dialogflowpb.Suggestion
@@ -2197,6 +2325,12 @@ func (it *SuggestionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ToolIterator) All() iter.Seq2[*dialogflowpb.Tool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ToolIterator manages a stream of *dialogflowpb.Tool.
 type ToolIterator struct {
 	items    []*dialogflowpb.Tool
@@ -2242,6 +2376,12 @@ func (it *ToolIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*dialogflowpb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *dialogflowpb.Version.

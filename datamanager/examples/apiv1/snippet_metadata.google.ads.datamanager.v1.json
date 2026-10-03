@@ -8,7 +8,7 @@
     ],
     "language": "GO",
     "name": "cloud.google.com/go/datamanager/apiv1",
-    "version": "1.4.0"
+    "version": "1.7.0"
   },
   "snippets": [
     {
@@ -155,6 +155,52 @@
           "fullName": "google.ads.datamanager.v1.IngestionClient",
           "shortName": "IngestionClient"
         },
+        "fullName": "google.ads.datamanager.v1.IngestionClient.IngestUsers",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.IngestUsers",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "IngestUsers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.IngestUsersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.IngestUsersResponse",
+        "shortName": "IngestUsers"
+      },
+      "description": "IngestUsers uploads a list of users to the provided destinations. Unlike\n[IngestAudienceMembers][google.ads.datamanager.v1.IngestionService.IngestAudienceMembers]\n(which adds users to specific advertiser audience lists for targeting),\n`IngestUsers` ingests account level identity linkage data (for example,\nuser identifiers linked to mobile IDs) independent of specific audience\nsegments.\n\nThis feature is only available to accounts on an allowlist.",
+      "file": "IngestionClient/IngestUsers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_IngestUsers_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datamanager IngestUsers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
         "fullName": "google.ads.datamanager.v1.IngestionClient.RemoveAllAudienceMembers",
         "method": {
           "fullName": "google.ads.datamanager.v1.IngestionService.RemoveAllAudienceMembers",
@@ -240,6 +286,52 @@
         }
       ],
       "title": "datamanager RemoveAudienceMembers Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.ads.datamanager.v1.IngestionClient",
+          "shortName": "IngestionClient"
+        },
+        "fullName": "google.ads.datamanager.v1.IngestionClient.RemoveUsers",
+        "method": {
+          "fullName": "google.ads.datamanager.v1.IngestionService.RemoveUsers",
+          "service": {
+            "fullName": "google.ads.datamanager.v1.IngestionService",
+            "shortName": "IngestionService"
+          },
+          "shortName": "RemoveUsers"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "datamanagerpb.RemoveUsersRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*datamanagerpb.RemoveUsersResponse",
+        "shortName": "RemoveUsers"
+      },
+      "description": "RemoveUsers removes a list of users from the provided destinations.\n\nThis feature is only available to accounts on an allowlist.",
+      "file": "IngestionClient/RemoveUsers/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "datamanager_v1_generated_IngestionService_RemoveUsers_sync",
+      "segments": [
+        {
+          "end": 55,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "datamanager RemoveUsers Sample"
     },
     {
       "clientMethod": {

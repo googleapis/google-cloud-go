@@ -18,12 +18,14 @@ package backupdr
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	backupdrpb "cloud.google.com/go/backupdr/apiv1/backupdrpb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -1072,6 +1074,12 @@ func (op *UpdateDataSourceOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupIterator) All() iter.Seq2[*backupdrpb.Backup, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupIterator manages a stream of *backupdrpb.Backup.
 type BackupIterator struct {
 	items    []*backupdrpb.Backup
@@ -1117,6 +1125,12 @@ func (it *BackupIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPlanAssociationIterator) All() iter.Seq2[*backupdrpb.BackupPlanAssociation, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupPlanAssociationIterator manages a stream of *backupdrpb.BackupPlanAssociation.
@@ -1166,6 +1180,12 @@ func (it *BackupPlanAssociationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPlanIterator) All() iter.Seq2[*backupdrpb.BackupPlan, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupPlanIterator manages a stream of *backupdrpb.BackupPlan.
 type BackupPlanIterator struct {
 	items    []*backupdrpb.BackupPlan
@@ -1211,6 +1231,12 @@ func (it *BackupPlanIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupPlanRevisionIterator) All() iter.Seq2[*backupdrpb.BackupPlanRevision, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // BackupPlanRevisionIterator manages a stream of *backupdrpb.BackupPlanRevision.
@@ -1260,6 +1286,12 @@ func (it *BackupPlanRevisionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *BackupVaultIterator) All() iter.Seq2[*backupdrpb.BackupVault, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // BackupVaultIterator manages a stream of *backupdrpb.BackupVault.
 type BackupVaultIterator struct {
 	items    []*backupdrpb.BackupVault
@@ -1305,6 +1337,12 @@ func (it *BackupVaultIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataSourceIterator) All() iter.Seq2[*backupdrpb.DataSource, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataSourceIterator manages a stream of *backupdrpb.DataSource.
@@ -1354,6 +1392,12 @@ func (it *DataSourceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataSourceReferenceIterator) All() iter.Seq2[*backupdrpb.DataSourceReference, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DataSourceReferenceIterator manages a stream of *backupdrpb.DataSourceReference.
 type DataSourceReferenceIterator struct {
 	items    []*backupdrpb.DataSourceReference
@@ -1399,6 +1443,12 @@ func (it *DataSourceReferenceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -1448,6 +1498,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ManagementServerIterator) All() iter.Seq2[*backupdrpb.ManagementServer, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ManagementServerIterator manages a stream of *backupdrpb.ManagementServer.
 type ManagementServerIterator struct {
 	items    []*backupdrpb.ManagementServer
@@ -1495,6 +1551,12 @@ func (it *ManagementServerIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -1540,6 +1602,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ResourceBackupConfigIterator) All() iter.Seq2[*backupdrpb.ResourceBackupConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ResourceBackupConfigIterator manages a stream of *backupdrpb.ResourceBackupConfig.

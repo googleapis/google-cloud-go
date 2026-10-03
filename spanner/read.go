@@ -114,9 +114,10 @@ func streamWithTransactionCallbacks(
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
+	streamd := newResumableStreamDecoder(ctx, cancel, logger, rpc, reqIDProvider, retryResourceExhausted, allowRetryResourceExhaustedWithoutDelay)
+	streamd.meterTracerFactory = meterTracerFactory
 	return &RowIterator{
-		meterTracerFactory:   meterTracerFactory,
-		streamd:              newResumableStreamDecoder(ctx, cancel, logger, rpc, reqIDProvider, retryResourceExhausted, allowRetryResourceExhaustedWithoutDelay),
+		streamd:              streamd,
 		rowd:                 &partialResultSetDecoder{},
 		setTransactionID:     setTransactionID,
 		updatePrecommitToken: updatePrecommitToken,
@@ -154,8 +155,6 @@ type RowIterator struct {
 	// RowIterator.Next() returned an error that is not equal to iterator.Done.
 	Metadata *sppb.ResultSetMetadata
 
-	ctx                  context.Context
-	meterTracerFactory   *builtinMetricsTracerFactory
 	streamd              *resumableStreamDecoder
 	rowd                 *partialResultSetDecoder
 	setTransactionID     func(transactionID)
@@ -176,31 +175,24 @@ var _ rowIterator = (*RowIterator)(nil)
 // there are no more results. Once Next returns Done, all subsequent calls
 // will return Done.
 func (r *RowIterator) Next() (*Row, error) {
-	mt := r.meterTracerFactory.createBuiltinMetricsTracer(r.ctx)
+	row, err := r.next()
+	if err != nil && r.streamd != nil && r.streamd.mt != nil {
+		// The built-in metrics operation of the result stream ends when Next
+		// first returns an error or iterator.Done.
+		code := codes.OK
+		if err != iterator.Done {
+			code, _ = convertToGrpcStatusErr(err)
+		}
+		r.streamd.finishOperation(code)
+	}
+	return row, err
+}
+
+func (r *RowIterator) next() (*Row, error) {
 	if r.err != nil {
 		return nil, r.err
 	}
-	// Start new attempt
-	mt.currOp.incrementAttemptCount()
-	mt.currOp.currAttempt = &attemptTracer{
-		startTime: time.Now(),
-	}
-	defer func() {
-		// when mt method is not empty, it means the RPC was sent to backend and native metrics attributes were captured in interceptor
-		if mt.method != "" {
-			statusCode, _ := convertToGrpcStatusErr(r.err)
-			// record the attempt completion
-			mt.currOp.currAttempt.setStatus(statusCode.String())
-			recordAttemptCompletion(&mt)
-			mt.currOp.setStatus(statusCode.String())
-			// Record operation completion.
-			// Operational_latencies metric captures the full picture of all attempts including retries.
-			recordOperationCompletion(&mt)
-			mt.currOp.currAttempt = nil
-		}
-	}()
-
-	for len(r.rows) == 0 && r.streamd.next(&mt) {
+	for len(r.rows) == 0 && r.streamd.next() {
 		prs := r.streamd.get()
 		if r.setTransactionID != nil {
 			// this is when Read/Query is executed using ReadWriteTransaction
@@ -303,6 +295,13 @@ func (r *RowIterator) Do(f func(r *Row) error) error {
 // Stop terminates the iteration. It should be called after you finish using the
 // iterator.
 func (r *RowIterator) Stop() {
+	if r.streamd != nil && r.err == nil {
+		// Stop before Next returned an error or iterator.Done ends the built-in
+		// metrics operation without an error, as the caller chose to stop
+		// reading. Iterators that are neither stopped nor read to the end never
+		// record their operation.
+		r.streamd.finishOperation(codes.OK)
+	}
 	if r.streamd != nil {
 		if r.err != nil && r.err != iterator.Done {
 			defer trace.EndSpan(r.streamd.ctx, r.err)
@@ -482,6 +481,64 @@ type resumableStreamDecoder struct {
 	// retryAttempt is is incremented whenever a retry happens, and it is
 	// reset whenever a new reqIDInjector is created afresh.
 	retryAttempt uint32
+
+	// meterTracerFactory creates mt when the first stream is opened. It is
+	// cleared then, so that each result stream has at most one operation.
+	meterTracerFactory *builtinMetricsTracerFactory
+	// mt records the built-in metrics operation of the result stream. Every
+	// stream opened or resumed for it is an attempt of that operation. It is
+	// nil when built-in metrics are disabled and after the operation ended.
+	mt *builtinMetricsTracer
+}
+
+// startAttempt starts a built-in metrics attempt for a new stream. The first
+// attempt also starts the operation.
+func (d *resumableStreamDecoder) startAttempt() {
+	if d.meterTracerFactory != nil {
+		d.mt = d.meterTracerFactory.newBuiltinMetricsTracer(d.ctx)
+		d.meterTracerFactory = nil
+	}
+	if d.mt == nil {
+		return
+	}
+	d.mt.currOp.incrementAttemptCount()
+	d.mt.currOp.currAttempt = &attemptTracer{
+		startTime: time.Now(),
+	}
+}
+
+// endAttempt records the end of the current attempt with the given status. An
+// attempt that already has a status has been recorded before.
+func (d *resumableStreamDecoder) endAttempt(code codes.Code) {
+	if d.mt == nil || d.mt.currOp.currAttempt == nil || d.mt.currOp.currAttempt.status != "" {
+		return
+	}
+	d.mt.currOp.currAttempt.setStatus(code.String())
+	if !d.mt.currOp.currAttempt.rpcStarted {
+		// The attempt failed before its RPC was started, so it is not
+		// recorded or counted.
+		d.mt.currOp.attemptCount--
+		return
+	}
+	recordAttemptCompletion(d.mt)
+}
+
+// finishOperation records the end of the operation with the given status,
+// ending the current attempt with the same status if it is still in progress.
+// Later calls do nothing.
+func (d *resumableStreamDecoder) finishOperation(code codes.Code) {
+	mt := d.mt
+	if mt == nil {
+		return
+	}
+	d.endAttempt(code)
+	d.mt = nil
+	// The method is empty if no RPC was ever sent.
+	if mt.method == "" {
+		return
+	}
+	mt.currOp.setStatus(code.String())
+	recordOperationCompletion(mt)
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
@@ -597,7 +654,7 @@ var (
 	maxBytesBetweenResumeTokens = int32(128 * 1024 * 1024)
 )
 
-func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
+func (d *resumableStreamDecoder) next() bool {
 	retryCodes := []codes.Code{codes.Unavailable, codes.Internal}
 	if d.retryResourceExhausted {
 		retryCodes = append(retryCodes, codes.ResourceExhausted)
@@ -616,11 +673,15 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 		switch d.state {
 		case unConnected:
 			d.retryAttempt++
+			d.startAttempt()
 			// If no gRPC stream is available, try to initiate one.
-			d.stream, d.err = d.rpc(context.WithValue(d.ctx, metricsTracerKey, mt), d.resumeToken, riw.withNextRetryAttempt(d.retryAttempt))
+			d.stream, d.err = d.rpc(contextWithBuiltinMetricsTracer(d.ctx, d.mt), d.resumeToken, riw.withNextRetryAttempt(d.retryAttempt))
 			if d.err == nil {
 				d.changeState(queueingRetryable)
 				continue
+			}
+			if d.mt != nil {
+				d.endAttempt(status.Code(d.err))
 			}
 
 			delay, shouldRetry := retryer.Retry(d.err)
@@ -630,13 +691,6 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			}
 			trace.TracePrintf(d.ctx, nil, "Backing off stream read for %s", delay)
 			if err := gax.Sleep(d.ctx, delay); err == nil {
-				// record the attempt completion
-				mt.currOp.currAttempt.setStatus(status.Code(d.err).String())
-				recordAttemptCompletion(mt)
-				mt.currOp.incrementAttemptCount()
-				mt.currOp.currAttempt = &attemptTracer{
-					startTime: time.Now(),
-				}
 				// Be explicit about state transition, although the
 				// state doesn't actually change. State transition
 				// will be triggered only by RPC activity, regardless of
@@ -657,7 +711,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 				// Only the case that receiving queue is empty could cause
 				// peekLast to return error and in such case, we should try to
 				// receive from stream.
-				d.tryRecv(mt, retryer)
+				d.tryRecv(retryer)
 				continue
 			}
 			if d.isNewResumeToken(last.ResumeToken) {
@@ -686,7 +740,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 			}
 			// Needs to receive more from gRPC stream till a new resume token
 			// is observed.
-			d.tryRecv(mt, retryer)
+			d.tryRecv(retryer)
 			continue
 		case aborted:
 			// Discard all pending items because none of them should be yield
@@ -713,7 +767,7 @@ func (d *resumableStreamDecoder) next(mt *builtinMetricsTracer) bool {
 }
 
 // tryRecv attempts to receive a PartialResultSet from gRPC stream.
-func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.Retryer) {
+func (d *resumableStreamDecoder) tryRecv(retryer gax.Retryer) {
 	var res *sppb.PartialResultSet
 	res, d.err = d.stream.Recv()
 	if d.err == nil {
@@ -732,6 +786,7 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 					cancel()
 				}()
 			}
+			d.endAttempt(codes.OK)
 			d.changeState(finished)
 			return
 		}
@@ -748,12 +803,14 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 		if d.cancel != nil {
 			d.cancel()
 		}
+		d.endAttempt(codes.OK)
 		d.changeState(finished)
 		return
 	}
 
-	mt.currOp.currAttempt.setStatus(status.Code(d.err).String())
-	recordAttemptCompletion(mt)
+	if d.mt != nil {
+		d.endAttempt(status.Code(d.err))
+	}
 	delay, shouldRetry := retryer.Retry(d.err)
 	if !shouldRetry || d.state != queueingRetryable {
 		d.changeState(aborted)
@@ -763,10 +820,6 @@ func (d *resumableStreamDecoder) tryRecv(mt *builtinMetricsTracer, retryer gax.R
 		d.err = err
 		d.changeState(aborted)
 		return
-	}
-	mt.currOp.incrementAttemptCount()
-	mt.currOp.currAttempt = &attemptTracer{
-		startTime: time.Now(),
 	}
 	// Clear error and retry the stream.
 	d.err = nil

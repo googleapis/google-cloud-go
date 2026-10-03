@@ -236,6 +236,39 @@ func NewUserListDirectLicenseClient(ctx context.Context, opts ...option.ClientOp
 		client.CallOptions.UpdateUserListDirectLicense = append(client.CallOptions.UpdateUserListDirectLicense, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListUserListDirectLicenses = append(client.CallOptions.ListUserListDirectLicenses, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateUserListDirectLicense = append(client.CallOptions.CreateUserListDirectLicense, gax.WithClientTracing(tracing))
+		client.CallOptions.GetUserListDirectLicense = append(client.CallOptions.GetUserListDirectLicense, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateUserListDirectLicense = append(client.CallOptions.UpdateUserListDirectLicense, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUserListDirectLicenses = append(client.CallOptions.ListUserListDirectLicenses, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateUserListDirectLicense = append(client.CallOptions.CreateUserListDirectLicense, gax.WithClientLogging(logging))
+		client.CallOptions.GetUserListDirectLicense = append(client.CallOptions.GetUserListDirectLicense, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateUserListDirectLicense = append(client.CallOptions.UpdateUserListDirectLicense, gax.WithClientLogging(logging))
+		client.CallOptions.ListUserListDirectLicenses = append(client.CallOptions.ListUserListDirectLicenses, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -334,6 +367,39 @@ func NewUserListDirectLicenseRESTClient(ctx context.Context, opts ...option.Clie
 		callOpts.UpdateUserListDirectLicense = append(callOpts.UpdateUserListDirectLicense, gax.WithClientMetrics(metrics))
 		callOpts.ListUserListDirectLicenses = append(callOpts.ListUserListDirectLicenses, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateUserListDirectLicense = append(callOpts.CreateUserListDirectLicense, gax.WithClientTracing(tracing))
+		callOpts.GetUserListDirectLicense = append(callOpts.GetUserListDirectLicense, gax.WithClientTracing(tracing))
+		callOpts.UpdateUserListDirectLicense = append(callOpts.UpdateUserListDirectLicense, gax.WithClientTracing(tracing))
+		callOpts.ListUserListDirectLicenses = append(callOpts.ListUserListDirectLicenses, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "datamanager",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/datamanager/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "datamanager.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateUserListDirectLicense = append(callOpts.CreateUserListDirectLicense, gax.WithClientLogging(logging))
+		callOpts.GetUserListDirectLicense = append(callOpts.GetUserListDirectLicense, gax.WithClientLogging(logging))
+		callOpts.UpdateUserListDirectLicense = append(callOpts.UpdateUserListDirectLicense, gax.WithClientLogging(logging))
+		callOpts.ListUserListDirectLicenses = append(callOpts.ListUserListDirectLicenses, gax.WithClientLogging(logging))
+	}
 
 	return &UserListDirectLicenseClient{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -380,9 +446,6 @@ func (c *userListDirectLicenseGRPCClient) CreateUserListDirectLicense(ctx contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListDirectLicenseService/CreateUserListDirectLicense")
 	}
@@ -404,9 +467,6 @@ func (c *userListDirectLicenseGRPCClient) GetUserListDirectLicense(ctx context.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListDirectLicenseService/GetUserListDirectLicense")
 	}
@@ -449,9 +509,6 @@ func (c *userListDirectLicenseGRPCClient) ListUserListDirectLicenses(ctx context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListDirectLicenseService/ListUserListDirectLicenses")
 	}
@@ -524,9 +581,6 @@ func (c *userListDirectLicenseRESTClient) CreateUserListDirectLicense(ctx contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListDirectLicenseService/CreateUserListDirectLicense")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=accountTypes/*/accounts/*}/userListDirectLicenses")
@@ -583,9 +637,6 @@ func (c *userListDirectLicenseRESTClient) GetUserListDirectLicense(ctx context.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//datamanager.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.ads.datamanager.v1.UserListDirectLicenseService/GetUserListDirectLicense")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=accountTypes/*/accounts/*/userListDirectLicenses/*}")

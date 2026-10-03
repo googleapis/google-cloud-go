@@ -18,11 +18,13 @@ package datastream
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	datastreampb "cloud.google.com/go/datastream/apiv1alpha1/datastreampb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -686,6 +688,12 @@ func (op *UpdateStreamOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectionProfileIterator) All() iter.Seq2[*datastreampb.ConnectionProfile, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConnectionProfileIterator manages a stream of *datastreampb.ConnectionProfile.
 type ConnectionProfileIterator struct {
 	items    []*datastreampb.ConnectionProfile
@@ -731,6 +739,12 @@ func (it *ConnectionProfileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PrivateConnectionIterator) All() iter.Seq2[*datastreampb.PrivateConnection, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // PrivateConnectionIterator manages a stream of *datastreampb.PrivateConnection.
@@ -780,6 +794,12 @@ func (it *PrivateConnectionIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *RouteIterator) All() iter.Seq2[*datastreampb.Route, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // RouteIterator manages a stream of *datastreampb.Route.
 type RouteIterator struct {
 	items    []*datastreampb.Route
@@ -827,6 +847,12 @@ func (it *RouteIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StreamIterator) All() iter.Seq2[*datastreampb.Stream, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // StreamIterator manages a stream of *datastreampb.Stream.
 type StreamIterator struct {
 	items    []*datastreampb.Stream
@@ -872,6 +898,12 @@ func (it *StreamIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.

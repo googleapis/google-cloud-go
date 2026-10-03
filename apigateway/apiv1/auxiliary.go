@@ -18,11 +18,13 @@ package apigateway
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	apigatewaypb "cloud.google.com/go/apigateway/apiv1/apigatewaypb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -569,6 +571,12 @@ func (op *UpdateGatewayOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApiConfigIterator) All() iter.Seq2[*apigatewaypb.ApiConfig, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ApiConfigIterator manages a stream of *apigatewaypb.ApiConfig.
 type ApiConfigIterator struct {
 	items    []*apigatewaypb.ApiConfig
@@ -616,6 +624,12 @@ func (it *ApiConfigIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ApiIterator) All() iter.Seq2[*apigatewaypb.Api, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ApiIterator manages a stream of *apigatewaypb.Api.
 type ApiIterator struct {
 	items    []*apigatewaypb.Api
@@ -661,6 +675,12 @@ func (it *ApiIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *GatewayIterator) All() iter.Seq2[*apigatewaypb.Gateway, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // GatewayIterator manages a stream of *apigatewaypb.Gateway.

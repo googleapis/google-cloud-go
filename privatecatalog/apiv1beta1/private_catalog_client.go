@@ -252,6 +252,37 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.SearchProducts = append(client.CallOptions.SearchProducts, gax.WithClientMetrics(metrics))
 		client.CallOptions.SearchVersions = append(client.CallOptions.SearchVersions, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudprivatecatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privatecatalog/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprivatecatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchCatalogs = append(client.CallOptions.SearchCatalogs, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchProducts = append(client.CallOptions.SearchProducts, gax.WithClientTracing(tracing))
+		client.CallOptions.SearchVersions = append(client.CallOptions.SearchVersions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudprivatecatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privatecatalog/apiv1beta1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "cloudprivatecatalog.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.SearchCatalogs = append(client.CallOptions.SearchCatalogs, gax.WithClientLogging(logging))
+		client.CallOptions.SearchProducts = append(client.CallOptions.SearchProducts, gax.WithClientLogging(logging))
+		client.CallOptions.SearchVersions = append(client.CallOptions.SearchVersions, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -364,6 +395,37 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.SearchCatalogs = append(callOpts.SearchCatalogs, gax.WithClientMetrics(metrics))
 		callOpts.SearchProducts = append(callOpts.SearchProducts, gax.WithClientMetrics(metrics))
 		callOpts.SearchVersions = append(callOpts.SearchVersions, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "cloudprivatecatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privatecatalog/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprivatecatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchCatalogs = append(callOpts.SearchCatalogs, gax.WithClientTracing(tracing))
+		callOpts.SearchProducts = append(callOpts.SearchProducts, gax.WithClientTracing(tracing))
+		callOpts.SearchVersions = append(callOpts.SearchVersions, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "cloudprivatecatalog",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/privatecatalog/apiv1beta1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "cloudprivatecatalog.googleapis.com",
+			}),
+		)
+
+		callOpts.SearchCatalogs = append(callOpts.SearchCatalogs, gax.WithClientLogging(logging))
+		callOpts.SearchProducts = append(callOpts.SearchProducts, gax.WithClientLogging(logging))
+		callOpts.SearchVersions = append(callOpts.SearchVersions, gax.WithClientLogging(logging))
 	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil

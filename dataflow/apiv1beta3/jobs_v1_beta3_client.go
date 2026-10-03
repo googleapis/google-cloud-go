@@ -317,6 +317,45 @@ func NewJobsV1Beta3Client(ctx context.Context, opts ...option.ClientOption) (*Jo
 		client.CallOptions.CheckActiveJobs = append(client.CallOptions.CheckActiveJobs, gax.WithClientMetrics(metrics))
 		client.CallOptions.SnapshotJob = append(client.CallOptions.SnapshotJob, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientTracing(tracing))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.AggregatedListJobs = append(client.CallOptions.AggregatedListJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckActiveJobs = append(client.CallOptions.CheckActiveJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.SnapshotJob = append(client.CallOptions.SnapshotJob, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateJob = append(client.CallOptions.CreateJob, gax.WithClientLogging(logging))
+		client.CallOptions.GetJob = append(client.CallOptions.GetJob, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateJob = append(client.CallOptions.UpdateJob, gax.WithClientLogging(logging))
+		client.CallOptions.ListJobs = append(client.CallOptions.ListJobs, gax.WithClientLogging(logging))
+		client.CallOptions.AggregatedListJobs = append(client.CallOptions.AggregatedListJobs, gax.WithClientLogging(logging))
+		client.CallOptions.CheckActiveJobs = append(client.CallOptions.CheckActiveJobs, gax.WithClientLogging(logging))
+		client.CallOptions.SnapshotJob = append(client.CallOptions.SnapshotJob, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -414,6 +453,45 @@ func NewJobsV1Beta3RESTClient(ctx context.Context, opts ...option.ClientOption) 
 		callOpts.AggregatedListJobs = append(callOpts.AggregatedListJobs, gax.WithClientMetrics(metrics))
 		callOpts.CheckActiveJobs = append(callOpts.CheckActiveJobs, gax.WithClientMetrics(metrics))
 		callOpts.SnapshotJob = append(callOpts.SnapshotJob, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientTracing(tracing))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientTracing(tracing))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientTracing(tracing))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientTracing(tracing))
+		callOpts.AggregatedListJobs = append(callOpts.AggregatedListJobs, gax.WithClientTracing(tracing))
+		callOpts.CheckActiveJobs = append(callOpts.CheckActiveJobs, gax.WithClientTracing(tracing))
+		callOpts.SnapshotJob = append(callOpts.SnapshotJob, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "dataflow",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/dataflow/apiv1beta3",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "dataflow.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateJob = append(callOpts.CreateJob, gax.WithClientLogging(logging))
+		callOpts.GetJob = append(callOpts.GetJob, gax.WithClientLogging(logging))
+		callOpts.UpdateJob = append(callOpts.UpdateJob, gax.WithClientLogging(logging))
+		callOpts.ListJobs = append(callOpts.ListJobs, gax.WithClientLogging(logging))
+		callOpts.AggregatedListJobs = append(callOpts.AggregatedListJobs, gax.WithClientLogging(logging))
+		callOpts.CheckActiveJobs = append(callOpts.CheckActiveJobs, gax.WithClientLogging(logging))
+		callOpts.SnapshotJob = append(callOpts.SnapshotJob, gax.WithClientLogging(logging))
 	}
 
 	return &JobsV1Beta3Client{internalClient: c, CallOptions: callOpts}, nil

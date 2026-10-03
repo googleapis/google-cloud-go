@@ -18,12 +18,14 @@ package generativelanguage
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	generativelanguagepb "cloud.google.com/go/ai/generativelanguage/apiv1alpha/generativelanguagepb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -91,6 +93,12 @@ func (op *CreateTunedModelOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CachedContentIterator) All() iter.Seq2[*generativelanguagepb.CachedContent, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CachedContentIterator manages a stream of *generativelanguagepb.CachedContent.
 type CachedContentIterator struct {
 	items    []*generativelanguagepb.CachedContent
@@ -136,6 +144,12 @@ func (it *CachedContentIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ChunkIterator) All() iter.Seq2[*generativelanguagepb.Chunk, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ChunkIterator manages a stream of *generativelanguagepb.Chunk.
@@ -185,6 +199,12 @@ func (it *ChunkIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CorpusIterator) All() iter.Seq2[*generativelanguagepb.Corpus, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CorpusIterator manages a stream of *generativelanguagepb.Corpus.
 type CorpusIterator struct {
 	items    []*generativelanguagepb.Corpus
@@ -230,6 +250,12 @@ func (it *CorpusIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DocumentIterator) All() iter.Seq2[*generativelanguagepb.Document, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DocumentIterator manages a stream of *generativelanguagepb.Document.
@@ -279,6 +305,12 @@ func (it *DocumentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FileIterator) All() iter.Seq2[*generativelanguagepb.File, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // FileIterator manages a stream of *generativelanguagepb.File.
 type FileIterator struct {
 	items    []*generativelanguagepb.File
@@ -324,6 +356,12 @@ func (it *FileIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ModelIterator) All() iter.Seq2[*generativelanguagepb.Model, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ModelIterator manages a stream of *generativelanguagepb.Model.
@@ -373,6 +411,12 @@ func (it *ModelIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -420,6 +464,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *PermissionIterator) All() iter.Seq2[*generativelanguagepb.Permission, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // PermissionIterator manages a stream of *generativelanguagepb.Permission.
 type PermissionIterator struct {
 	items    []*generativelanguagepb.Permission
@@ -465,6 +515,12 @@ func (it *PermissionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TunedModelIterator) All() iter.Seq2[*generativelanguagepb.TunedModel, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TunedModelIterator manages a stream of *generativelanguagepb.TunedModel.

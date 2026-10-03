@@ -362,6 +362,61 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.UpdateMapContextConfig = append(client.CallOptions.UpdateMapContextConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteMapContextConfig = append(client.CallOptions.DeleteMapContextConfig, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "mapmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/mapmanagement/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "mapmanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMapConfig = append(client.CallOptions.CreateMapConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMapConfig = append(client.CallOptions.GetMapConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMapConfigs = append(client.CallOptions.ListMapConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMapConfig = append(client.CallOptions.UpdateMapConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMapConfig = append(client.CallOptions.DeleteMapConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateStyleConfig = append(client.CallOptions.CreateStyleConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetStyleConfig = append(client.CallOptions.GetStyleConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListStyleConfigs = append(client.CallOptions.ListStyleConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateStyleConfig = append(client.CallOptions.UpdateStyleConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteStyleConfig = append(client.CallOptions.DeleteStyleConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateMapContextConfig = append(client.CallOptions.CreateMapContextConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.GetMapContextConfig = append(client.CallOptions.GetMapContextConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.ListMapContextConfigs = append(client.CallOptions.ListMapContextConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateMapContextConfig = append(client.CallOptions.UpdateMapContextConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteMapContextConfig = append(client.CallOptions.DeleteMapContextConfig, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "mapmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/mapmanagement/apiv2beta",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "mapmanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateMapConfig = append(client.CallOptions.CreateMapConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetMapConfig = append(client.CallOptions.GetMapConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListMapConfigs = append(client.CallOptions.ListMapConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMapConfig = append(client.CallOptions.UpdateMapConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMapConfig = append(client.CallOptions.DeleteMapConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateStyleConfig = append(client.CallOptions.CreateStyleConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetStyleConfig = append(client.CallOptions.GetStyleConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListStyleConfigs = append(client.CallOptions.ListStyleConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateStyleConfig = append(client.CallOptions.UpdateStyleConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteStyleConfig = append(client.CallOptions.DeleteStyleConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateMapContextConfig = append(client.CallOptions.CreateMapContextConfig, gax.WithClientLogging(logging))
+		client.CallOptions.GetMapContextConfig = append(client.CallOptions.GetMapContextConfig, gax.WithClientLogging(logging))
+		client.CallOptions.ListMapContextConfigs = append(client.CallOptions.ListMapContextConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateMapContextConfig = append(client.CallOptions.UpdateMapContextConfig, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteMapContextConfig = append(client.CallOptions.DeleteMapContextConfig, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -483,6 +538,61 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UpdateMapContextConfig = append(callOpts.UpdateMapContextConfig, gax.WithClientMetrics(metrics))
 		callOpts.DeleteMapContextConfig = append(callOpts.DeleteMapContextConfig, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "mapmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/mapmanagement/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "mapmanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateMapConfig = append(callOpts.CreateMapConfig, gax.WithClientTracing(tracing))
+		callOpts.GetMapConfig = append(callOpts.GetMapConfig, gax.WithClientTracing(tracing))
+		callOpts.ListMapConfigs = append(callOpts.ListMapConfigs, gax.WithClientTracing(tracing))
+		callOpts.UpdateMapConfig = append(callOpts.UpdateMapConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteMapConfig = append(callOpts.DeleteMapConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateStyleConfig = append(callOpts.CreateStyleConfig, gax.WithClientTracing(tracing))
+		callOpts.GetStyleConfig = append(callOpts.GetStyleConfig, gax.WithClientTracing(tracing))
+		callOpts.ListStyleConfigs = append(callOpts.ListStyleConfigs, gax.WithClientTracing(tracing))
+		callOpts.UpdateStyleConfig = append(callOpts.UpdateStyleConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteStyleConfig = append(callOpts.DeleteStyleConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateMapContextConfig = append(callOpts.CreateMapContextConfig, gax.WithClientTracing(tracing))
+		callOpts.GetMapContextConfig = append(callOpts.GetMapContextConfig, gax.WithClientTracing(tracing))
+		callOpts.ListMapContextConfigs = append(callOpts.ListMapContextConfigs, gax.WithClientTracing(tracing))
+		callOpts.UpdateMapContextConfig = append(callOpts.UpdateMapContextConfig, gax.WithClientTracing(tracing))
+		callOpts.DeleteMapContextConfig = append(callOpts.DeleteMapContextConfig, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "mapmanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/maps/mapmanagement/apiv2beta",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "mapmanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateMapConfig = append(callOpts.CreateMapConfig, gax.WithClientLogging(logging))
+		callOpts.GetMapConfig = append(callOpts.GetMapConfig, gax.WithClientLogging(logging))
+		callOpts.ListMapConfigs = append(callOpts.ListMapConfigs, gax.WithClientLogging(logging))
+		callOpts.UpdateMapConfig = append(callOpts.UpdateMapConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteMapConfig = append(callOpts.DeleteMapConfig, gax.WithClientLogging(logging))
+		callOpts.CreateStyleConfig = append(callOpts.CreateStyleConfig, gax.WithClientLogging(logging))
+		callOpts.GetStyleConfig = append(callOpts.GetStyleConfig, gax.WithClientLogging(logging))
+		callOpts.ListStyleConfigs = append(callOpts.ListStyleConfigs, gax.WithClientLogging(logging))
+		callOpts.UpdateStyleConfig = append(callOpts.UpdateStyleConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteStyleConfig = append(callOpts.DeleteStyleConfig, gax.WithClientLogging(logging))
+		callOpts.CreateMapContextConfig = append(callOpts.CreateMapContextConfig, gax.WithClientLogging(logging))
+		callOpts.GetMapContextConfig = append(callOpts.GetMapContextConfig, gax.WithClientLogging(logging))
+		callOpts.ListMapContextConfigs = append(callOpts.ListMapContextConfigs, gax.WithClientLogging(logging))
+		callOpts.UpdateMapContextConfig = append(callOpts.UpdateMapContextConfig, gax.WithClientLogging(logging))
+		callOpts.DeleteMapContextConfig = append(callOpts.DeleteMapContextConfig, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -529,9 +639,6 @@ func (c *gRPCClient) CreateMapConfig(ctx context.Context, req *mapmanagementpb.C
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/CreateMapConfig")
 	}
@@ -553,9 +660,6 @@ func (c *gRPCClient) GetMapConfig(ctx context.Context, req *mapmanagementpb.GetM
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/GetMapConfig")
 	}
@@ -577,9 +681,6 @@ func (c *gRPCClient) ListMapConfigs(ctx context.Context, req *mapmanagementpb.Li
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/ListMapConfigs")
 	}
@@ -650,9 +751,6 @@ func (c *gRPCClient) DeleteMapConfig(ctx context.Context, req *mapmanagementpb.D
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/DeleteMapConfig")
 	}
@@ -670,9 +768,6 @@ func (c *gRPCClient) CreateStyleConfig(ctx context.Context, req *mapmanagementpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/CreateStyleConfig")
 	}
@@ -694,9 +789,6 @@ func (c *gRPCClient) GetStyleConfig(ctx context.Context, req *mapmanagementpb.Ge
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/GetStyleConfig")
 	}
@@ -718,9 +810,6 @@ func (c *gRPCClient) ListStyleConfigs(ctx context.Context, req *mapmanagementpb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/ListStyleConfigs")
 	}
@@ -791,9 +880,6 @@ func (c *gRPCClient) DeleteStyleConfig(ctx context.Context, req *mapmanagementpb
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/DeleteStyleConfig")
 	}
@@ -811,9 +897,6 @@ func (c *gRPCClient) CreateMapContextConfig(ctx context.Context, req *mapmanagem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/CreateMapContextConfig")
 	}
@@ -835,9 +918,6 @@ func (c *gRPCClient) GetMapContextConfig(ctx context.Context, req *mapmanagement
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/GetMapContextConfig")
 	}
@@ -859,9 +939,6 @@ func (c *gRPCClient) ListMapContextConfigs(ctx context.Context, req *mapmanageme
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/ListMapContextConfigs")
 	}
@@ -932,9 +1009,6 @@ func (c *gRPCClient) DeleteMapContextConfig(ctx context.Context, req *mapmanagem
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/DeleteMapContextConfig")
 	}
@@ -973,9 +1047,6 @@ func (c *restClient) CreateMapConfig(ctx context.Context, req *mapmanagementpb.C
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/CreateMapConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{parent=projects/*}/mapConfigs")
@@ -1030,9 +1101,6 @@ func (c *restClient) GetMapConfig(ctx context.Context, req *mapmanagementpb.GetM
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/GetMapConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/mapConfigs/*}")
@@ -1236,9 +1304,6 @@ func (c *restClient) DeleteMapConfig(ctx context.Context, req *mapmanagementpb.D
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/DeleteMapConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/mapConfigs/*}")
@@ -1285,9 +1350,6 @@ func (c *restClient) CreateStyleConfig(ctx context.Context, req *mapmanagementpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/CreateStyleConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{parent=projects/*}/styleConfigs")
@@ -1342,9 +1404,6 @@ func (c *restClient) GetStyleConfig(ctx context.Context, req *mapmanagementpb.Ge
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/GetStyleConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/styleConfigs/*}")
@@ -1551,9 +1610,6 @@ func (c *restClient) DeleteStyleConfig(ctx context.Context, req *mapmanagementpb
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/DeleteStyleConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/styleConfigs/*}")
@@ -1600,9 +1656,6 @@ func (c *restClient) CreateMapContextConfig(ctx context.Context, req *mapmanagem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/CreateMapContextConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{parent=projects/*/mapConfigs/*}/mapContextConfigs")
@@ -1657,9 +1710,6 @@ func (c *restClient) GetMapContextConfig(ctx context.Context, req *mapmanagement
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/GetMapContextConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/mapConfigs/*/mapContextConfigs/*}")
@@ -1860,9 +1910,6 @@ func (c *restClient) DeleteMapContextConfig(ctx context.Context, req *mapmanagem
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//mapmanagement.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.maps.mapmanagement.v2beta.MapManagement/DeleteMapContextConfig")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v2beta/{name=projects/*/mapConfigs/*/mapContextConfigs/*}")

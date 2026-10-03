@@ -39,17 +39,18 @@ func TestCloneDetectOptions_FieldTest(t *testing.T) {
 
 func TestCloneDetectOptions(t *testing.T) {
 	oldDo := &credentials.DetectOptions{
-		TokenBindingType:  credentials.MTLSHardBinding,
-		Audience:          "aud",
-		Subject:           "sub",
-		EarlyTokenRefresh: 42,
-		TokenURL:          "TokenURL",
-		STSAudience:       "STSAudience",
-		CredentialsFile:   "CredentialsFile",
-		UseSelfSignedJWT:  true,
-		CredentialsJSON:   []byte{1, 2, 3, 4, 5},
-		Scopes:            []string{"a", "b"},
-		Client:            &http.Client{},
+		TokenBindingType:    credentials.MTLSHardBinding,
+		Audience:            "aud",
+		Subject:             "sub",
+		EarlyTokenRefresh:   42,
+		DisableAsyncRefresh: true,
+		TokenURL:            "TokenURL",
+		STSAudience:         "STSAudience",
+		CredentialsFile:     "CredentialsFile",
+		UseSelfSignedJWT:    true,
+		CredentialsJSON:     []byte{1, 2, 3, 4, 5},
+		Scopes:              []string{"a", "b"},
+		Client:              &http.Client{},
 		AuthHandlerOptions: &auth.AuthorizationHandlerOptions{
 			Handler: func(authCodeURL string) (code string, state string, err error) {
 				return "", "", nil
@@ -75,6 +76,9 @@ func TestCloneDetectOptions(t *testing.T) {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 	if got, want := newDo.EarlyTokenRefresh, oldDo.EarlyTokenRefresh; got != want {
+		t.Fatalf("got %v, want %v", got, want)
+	}
+	if got, want := newDo.DisableAsyncRefresh, oldDo.DisableAsyncRefresh; got != want {
 		t.Fatalf("got %v, want %v", got, want)
 	}
 	if got, want := newDo.TokenURL, oldDo.TokenURL; got != want {

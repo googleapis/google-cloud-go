@@ -17,10 +17,19 @@
 package dataexchange
 
 import (
+	"iter"
+
 	dataexchangepb "cloud.google.com/go/bigquery/dataexchange/apiv1beta1/dataexchangepb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataExchangeIterator) All() iter.Seq2[*dataexchangepb.DataExchange, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DataExchangeIterator manages a stream of *dataexchangepb.DataExchange.
 type DataExchangeIterator struct {
@@ -69,6 +78,12 @@ func (it *DataExchangeIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ListingIterator) All() iter.Seq2[*dataexchangepb.Listing, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ListingIterator manages a stream of *dataexchangepb.Listing.
 type ListingIterator struct {
 	items    []*dataexchangepb.Listing
@@ -114,6 +129,12 @@ func (it *ListingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.

@@ -759,6 +759,65 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "storagetransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storagetransfer/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "storagetransfer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetGoogleServiceAccount = append(client.CallOptions.GetGoogleServiceAccount, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateTransferJob = append(client.CallOptions.CreateTransferJob, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateTransferJob = append(client.CallOptions.UpdateTransferJob, gax.WithClientTracing(tracing))
+		client.CallOptions.GetTransferJob = append(client.CallOptions.GetTransferJob, gax.WithClientTracing(tracing))
+		client.CallOptions.ListTransferJobs = append(client.CallOptions.ListTransferJobs, gax.WithClientTracing(tracing))
+		client.CallOptions.PauseTransferOperation = append(client.CallOptions.PauseTransferOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ResumeTransferOperation = append(client.CallOptions.ResumeTransferOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.RunTransferJob = append(client.CallOptions.RunTransferJob, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteTransferJob = append(client.CallOptions.DeleteTransferJob, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateAgentPool = append(client.CallOptions.CreateAgentPool, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateAgentPool = append(client.CallOptions.UpdateAgentPool, gax.WithClientTracing(tracing))
+		client.CallOptions.GetAgentPool = append(client.CallOptions.GetAgentPool, gax.WithClientTracing(tracing))
+		client.CallOptions.ListAgentPools = append(client.CallOptions.ListAgentPools, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteAgentPool = append(client.CallOptions.DeleteAgentPool, gax.WithClientTracing(tracing))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "storagetransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storagetransfer/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "storagetransfer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.GetGoogleServiceAccount = append(client.CallOptions.GetGoogleServiceAccount, gax.WithClientLogging(logging))
+		client.CallOptions.CreateTransferJob = append(client.CallOptions.CreateTransferJob, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateTransferJob = append(client.CallOptions.UpdateTransferJob, gax.WithClientLogging(logging))
+		client.CallOptions.GetTransferJob = append(client.CallOptions.GetTransferJob, gax.WithClientLogging(logging))
+		client.CallOptions.ListTransferJobs = append(client.CallOptions.ListTransferJobs, gax.WithClientLogging(logging))
+		client.CallOptions.PauseTransferOperation = append(client.CallOptions.PauseTransferOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ResumeTransferOperation = append(client.CallOptions.ResumeTransferOperation, gax.WithClientLogging(logging))
+		client.CallOptions.RunTransferJob = append(client.CallOptions.RunTransferJob, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteTransferJob = append(client.CallOptions.DeleteTransferJob, gax.WithClientLogging(logging))
+		client.CallOptions.CreateAgentPool = append(client.CallOptions.CreateAgentPool, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateAgentPool = append(client.CallOptions.UpdateAgentPool, gax.WithClientLogging(logging))
+		client.CallOptions.GetAgentPool = append(client.CallOptions.GetAgentPool, gax.WithClientLogging(logging))
+		client.CallOptions.ListAgentPools = append(client.CallOptions.ListAgentPools, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteAgentPool = append(client.CallOptions.DeleteAgentPool, gax.WithClientLogging(logging))
+		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -883,6 +942,65 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "storagetransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storagetransfer/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "storagetransfer.googleapis.com",
+			}),
+		)
+
+		callOpts.GetGoogleServiceAccount = append(callOpts.GetGoogleServiceAccount, gax.WithClientTracing(tracing))
+		callOpts.CreateTransferJob = append(callOpts.CreateTransferJob, gax.WithClientTracing(tracing))
+		callOpts.UpdateTransferJob = append(callOpts.UpdateTransferJob, gax.WithClientTracing(tracing))
+		callOpts.GetTransferJob = append(callOpts.GetTransferJob, gax.WithClientTracing(tracing))
+		callOpts.ListTransferJobs = append(callOpts.ListTransferJobs, gax.WithClientTracing(tracing))
+		callOpts.PauseTransferOperation = append(callOpts.PauseTransferOperation, gax.WithClientTracing(tracing))
+		callOpts.ResumeTransferOperation = append(callOpts.ResumeTransferOperation, gax.WithClientTracing(tracing))
+		callOpts.RunTransferJob = append(callOpts.RunTransferJob, gax.WithClientTracing(tracing))
+		callOpts.DeleteTransferJob = append(callOpts.DeleteTransferJob, gax.WithClientTracing(tracing))
+		callOpts.CreateAgentPool = append(callOpts.CreateAgentPool, gax.WithClientTracing(tracing))
+		callOpts.UpdateAgentPool = append(callOpts.UpdateAgentPool, gax.WithClientTracing(tracing))
+		callOpts.GetAgentPool = append(callOpts.GetAgentPool, gax.WithClientTracing(tracing))
+		callOpts.ListAgentPools = append(callOpts.ListAgentPools, gax.WithClientTracing(tracing))
+		callOpts.DeleteAgentPool = append(callOpts.DeleteAgentPool, gax.WithClientTracing(tracing))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "storagetransfer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/storagetransfer/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "storagetransfer.googleapis.com",
+			}),
+		)
+
+		callOpts.GetGoogleServiceAccount = append(callOpts.GetGoogleServiceAccount, gax.WithClientLogging(logging))
+		callOpts.CreateTransferJob = append(callOpts.CreateTransferJob, gax.WithClientLogging(logging))
+		callOpts.UpdateTransferJob = append(callOpts.UpdateTransferJob, gax.WithClientLogging(logging))
+		callOpts.GetTransferJob = append(callOpts.GetTransferJob, gax.WithClientLogging(logging))
+		callOpts.ListTransferJobs = append(callOpts.ListTransferJobs, gax.WithClientLogging(logging))
+		callOpts.PauseTransferOperation = append(callOpts.PauseTransferOperation, gax.WithClientLogging(logging))
+		callOpts.ResumeTransferOperation = append(callOpts.ResumeTransferOperation, gax.WithClientLogging(logging))
+		callOpts.RunTransferJob = append(callOpts.RunTransferJob, gax.WithClientLogging(logging))
+		callOpts.DeleteTransferJob = append(callOpts.DeleteTransferJob, gax.WithClientLogging(logging))
+		callOpts.CreateAgentPool = append(callOpts.CreateAgentPool, gax.WithClientLogging(logging))
+		callOpts.UpdateAgentPool = append(callOpts.UpdateAgentPool, gax.WithClientLogging(logging))
+		callOpts.GetAgentPool = append(callOpts.GetAgentPool, gax.WithClientLogging(logging))
+		callOpts.ListAgentPools = append(callOpts.ListAgentPools, gax.WithClientLogging(logging))
+		callOpts.DeleteAgentPool = append(callOpts.DeleteAgentPool, gax.WithClientLogging(logging))
+		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{

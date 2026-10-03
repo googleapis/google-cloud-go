@@ -559,6 +559,85 @@ func NewEnvironmentsClient(ctx context.Context, opts ...option.ClientOption) (*E
 		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "composer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orchestration/airflow/service/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "composer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateEnvironment = append(client.CallOptions.CreateEnvironment, gax.WithClientTracing(tracing))
+		client.CallOptions.GetEnvironment = append(client.CallOptions.GetEnvironment, gax.WithClientTracing(tracing))
+		client.CallOptions.ListEnvironments = append(client.CallOptions.ListEnvironments, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateEnvironment = append(client.CallOptions.UpdateEnvironment, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteEnvironment = append(client.CallOptions.DeleteEnvironment, gax.WithClientTracing(tracing))
+		client.CallOptions.ExecuteAirflowCommand = append(client.CallOptions.ExecuteAirflowCommand, gax.WithClientTracing(tracing))
+		client.CallOptions.StopAirflowCommand = append(client.CallOptions.StopAirflowCommand, gax.WithClientTracing(tracing))
+		client.CallOptions.PollAirflowCommand = append(client.CallOptions.PollAirflowCommand, gax.WithClientTracing(tracing))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientTracing(tracing))
+		client.CallOptions.CheckUpgrade = append(client.CallOptions.CheckUpgrade, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateUserWorkloadsSecret = append(client.CallOptions.CreateUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		client.CallOptions.GetUserWorkloadsSecret = append(client.CallOptions.GetUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUserWorkloadsSecrets = append(client.CallOptions.ListUserWorkloadsSecrets, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateUserWorkloadsSecret = append(client.CallOptions.UpdateUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteUserWorkloadsSecret = append(client.CallOptions.DeleteUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateUserWorkloadsConfigMap = append(client.CallOptions.CreateUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		client.CallOptions.GetUserWorkloadsConfigMap = append(client.CallOptions.GetUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		client.CallOptions.ListUserWorkloadsConfigMaps = append(client.CallOptions.ListUserWorkloadsConfigMaps, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateUserWorkloadsConfigMap = append(client.CallOptions.UpdateUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteUserWorkloadsConfigMap = append(client.CallOptions.DeleteUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		client.CallOptions.SaveSnapshot = append(client.CallOptions.SaveSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.LoadSnapshot = append(client.CallOptions.LoadSnapshot, gax.WithClientTracing(tracing))
+		client.CallOptions.DatabaseFailover = append(client.CallOptions.DatabaseFailover, gax.WithClientTracing(tracing))
+		client.CallOptions.FetchDatabaseProperties = append(client.CallOptions.FetchDatabaseProperties, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "composer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orchestration/airflow/service/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "composer.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateEnvironment = append(client.CallOptions.CreateEnvironment, gax.WithClientLogging(logging))
+		client.CallOptions.GetEnvironment = append(client.CallOptions.GetEnvironment, gax.WithClientLogging(logging))
+		client.CallOptions.ListEnvironments = append(client.CallOptions.ListEnvironments, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateEnvironment = append(client.CallOptions.UpdateEnvironment, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteEnvironment = append(client.CallOptions.DeleteEnvironment, gax.WithClientLogging(logging))
+		client.CallOptions.ExecuteAirflowCommand = append(client.CallOptions.ExecuteAirflowCommand, gax.WithClientLogging(logging))
+		client.CallOptions.StopAirflowCommand = append(client.CallOptions.StopAirflowCommand, gax.WithClientLogging(logging))
+		client.CallOptions.PollAirflowCommand = append(client.CallOptions.PollAirflowCommand, gax.WithClientLogging(logging))
+		client.CallOptions.ListWorkloads = append(client.CallOptions.ListWorkloads, gax.WithClientLogging(logging))
+		client.CallOptions.CheckUpgrade = append(client.CallOptions.CheckUpgrade, gax.WithClientLogging(logging))
+		client.CallOptions.CreateUserWorkloadsSecret = append(client.CallOptions.CreateUserWorkloadsSecret, gax.WithClientLogging(logging))
+		client.CallOptions.GetUserWorkloadsSecret = append(client.CallOptions.GetUserWorkloadsSecret, gax.WithClientLogging(logging))
+		client.CallOptions.ListUserWorkloadsSecrets = append(client.CallOptions.ListUserWorkloadsSecrets, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateUserWorkloadsSecret = append(client.CallOptions.UpdateUserWorkloadsSecret, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteUserWorkloadsSecret = append(client.CallOptions.DeleteUserWorkloadsSecret, gax.WithClientLogging(logging))
+		client.CallOptions.CreateUserWorkloadsConfigMap = append(client.CallOptions.CreateUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		client.CallOptions.GetUserWorkloadsConfigMap = append(client.CallOptions.GetUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		client.CallOptions.ListUserWorkloadsConfigMaps = append(client.CallOptions.ListUserWorkloadsConfigMaps, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateUserWorkloadsConfigMap = append(client.CallOptions.UpdateUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteUserWorkloadsConfigMap = append(client.CallOptions.DeleteUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		client.CallOptions.SaveSnapshot = append(client.CallOptions.SaveSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.LoadSnapshot = append(client.CallOptions.LoadSnapshot, gax.WithClientLogging(logging))
+		client.CallOptions.DatabaseFailover = append(client.CallOptions.DatabaseFailover, gax.WithClientLogging(logging))
+		client.CallOptions.FetchDatabaseProperties = append(client.CallOptions.FetchDatabaseProperties, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteOperation = append(client.CallOptions.DeleteOperation, gax.WithClientLogging(logging))
+		client.CallOptions.GetOperation = append(client.CallOptions.GetOperation, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -691,6 +770,85 @@ func NewEnvironmentsRESTClient(ctx context.Context, opts ...option.ClientOption)
 		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientMetrics(metrics))
 		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "composer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orchestration/airflow/service/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "composer.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateEnvironment = append(callOpts.CreateEnvironment, gax.WithClientTracing(tracing))
+		callOpts.GetEnvironment = append(callOpts.GetEnvironment, gax.WithClientTracing(tracing))
+		callOpts.ListEnvironments = append(callOpts.ListEnvironments, gax.WithClientTracing(tracing))
+		callOpts.UpdateEnvironment = append(callOpts.UpdateEnvironment, gax.WithClientTracing(tracing))
+		callOpts.DeleteEnvironment = append(callOpts.DeleteEnvironment, gax.WithClientTracing(tracing))
+		callOpts.ExecuteAirflowCommand = append(callOpts.ExecuteAirflowCommand, gax.WithClientTracing(tracing))
+		callOpts.StopAirflowCommand = append(callOpts.StopAirflowCommand, gax.WithClientTracing(tracing))
+		callOpts.PollAirflowCommand = append(callOpts.PollAirflowCommand, gax.WithClientTracing(tracing))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientTracing(tracing))
+		callOpts.CheckUpgrade = append(callOpts.CheckUpgrade, gax.WithClientTracing(tracing))
+		callOpts.CreateUserWorkloadsSecret = append(callOpts.CreateUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		callOpts.GetUserWorkloadsSecret = append(callOpts.GetUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		callOpts.ListUserWorkloadsSecrets = append(callOpts.ListUserWorkloadsSecrets, gax.WithClientTracing(tracing))
+		callOpts.UpdateUserWorkloadsSecret = append(callOpts.UpdateUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		callOpts.DeleteUserWorkloadsSecret = append(callOpts.DeleteUserWorkloadsSecret, gax.WithClientTracing(tracing))
+		callOpts.CreateUserWorkloadsConfigMap = append(callOpts.CreateUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		callOpts.GetUserWorkloadsConfigMap = append(callOpts.GetUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		callOpts.ListUserWorkloadsConfigMaps = append(callOpts.ListUserWorkloadsConfigMaps, gax.WithClientTracing(tracing))
+		callOpts.UpdateUserWorkloadsConfigMap = append(callOpts.UpdateUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		callOpts.DeleteUserWorkloadsConfigMap = append(callOpts.DeleteUserWorkloadsConfigMap, gax.WithClientTracing(tracing))
+		callOpts.SaveSnapshot = append(callOpts.SaveSnapshot, gax.WithClientTracing(tracing))
+		callOpts.LoadSnapshot = append(callOpts.LoadSnapshot, gax.WithClientTracing(tracing))
+		callOpts.DatabaseFailover = append(callOpts.DatabaseFailover, gax.WithClientTracing(tracing))
+		callOpts.FetchDatabaseProperties = append(callOpts.FetchDatabaseProperties, gax.WithClientTracing(tracing))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientTracing(tracing))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "composer",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/orchestration/airflow/service/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "composer.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateEnvironment = append(callOpts.CreateEnvironment, gax.WithClientLogging(logging))
+		callOpts.GetEnvironment = append(callOpts.GetEnvironment, gax.WithClientLogging(logging))
+		callOpts.ListEnvironments = append(callOpts.ListEnvironments, gax.WithClientLogging(logging))
+		callOpts.UpdateEnvironment = append(callOpts.UpdateEnvironment, gax.WithClientLogging(logging))
+		callOpts.DeleteEnvironment = append(callOpts.DeleteEnvironment, gax.WithClientLogging(logging))
+		callOpts.ExecuteAirflowCommand = append(callOpts.ExecuteAirflowCommand, gax.WithClientLogging(logging))
+		callOpts.StopAirflowCommand = append(callOpts.StopAirflowCommand, gax.WithClientLogging(logging))
+		callOpts.PollAirflowCommand = append(callOpts.PollAirflowCommand, gax.WithClientLogging(logging))
+		callOpts.ListWorkloads = append(callOpts.ListWorkloads, gax.WithClientLogging(logging))
+		callOpts.CheckUpgrade = append(callOpts.CheckUpgrade, gax.WithClientLogging(logging))
+		callOpts.CreateUserWorkloadsSecret = append(callOpts.CreateUserWorkloadsSecret, gax.WithClientLogging(logging))
+		callOpts.GetUserWorkloadsSecret = append(callOpts.GetUserWorkloadsSecret, gax.WithClientLogging(logging))
+		callOpts.ListUserWorkloadsSecrets = append(callOpts.ListUserWorkloadsSecrets, gax.WithClientLogging(logging))
+		callOpts.UpdateUserWorkloadsSecret = append(callOpts.UpdateUserWorkloadsSecret, gax.WithClientLogging(logging))
+		callOpts.DeleteUserWorkloadsSecret = append(callOpts.DeleteUserWorkloadsSecret, gax.WithClientLogging(logging))
+		callOpts.CreateUserWorkloadsConfigMap = append(callOpts.CreateUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		callOpts.GetUserWorkloadsConfigMap = append(callOpts.GetUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		callOpts.ListUserWorkloadsConfigMaps = append(callOpts.ListUserWorkloadsConfigMaps, gax.WithClientLogging(logging))
+		callOpts.UpdateUserWorkloadsConfigMap = append(callOpts.UpdateUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		callOpts.DeleteUserWorkloadsConfigMap = append(callOpts.DeleteUserWorkloadsConfigMap, gax.WithClientLogging(logging))
+		callOpts.SaveSnapshot = append(callOpts.SaveSnapshot, gax.WithClientLogging(logging))
+		callOpts.LoadSnapshot = append(callOpts.LoadSnapshot, gax.WithClientLogging(logging))
+		callOpts.DatabaseFailover = append(callOpts.DatabaseFailover, gax.WithClientLogging(logging))
+		callOpts.FetchDatabaseProperties = append(callOpts.FetchDatabaseProperties, gax.WithClientLogging(logging))
+		callOpts.DeleteOperation = append(callOpts.DeleteOperation, gax.WithClientLogging(logging))
+		callOpts.GetOperation = append(callOpts.GetOperation, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -962,9 +1120,6 @@ func (c *environmentsGRPCClient) ListWorkloads(ctx context.Context, req *service
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ListWorkloads")
 	}
@@ -1041,9 +1196,6 @@ func (c *environmentsGRPCClient) CreateUserWorkloadsSecret(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsSecret")
 	}
@@ -1065,9 +1217,6 @@ func (c *environmentsGRPCClient) GetUserWorkloadsSecret(ctx context.Context, req
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsSecret")
 	}
@@ -1089,9 +1238,6 @@ func (c *environmentsGRPCClient) ListUserWorkloadsSecrets(ctx context.Context, r
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ListUserWorkloadsSecrets")
 	}
@@ -1162,9 +1308,6 @@ func (c *environmentsGRPCClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsSecret")
 	}
@@ -1182,9 +1325,6 @@ func (c *environmentsGRPCClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsConfigMap")
 	}
@@ -1206,9 +1346,6 @@ func (c *environmentsGRPCClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsConfigMap")
 	}
@@ -1230,9 +1367,6 @@ func (c *environmentsGRPCClient) ListUserWorkloadsConfigMaps(ctx context.Context
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/ListUserWorkloadsConfigMaps")
 	}
@@ -1303,9 +1437,6 @@ func (c *environmentsGRPCClient) DeleteUserWorkloadsConfigMap(ctx context.Contex
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsConfigMap")
 	}
@@ -1404,9 +1535,6 @@ func (c *environmentsGRPCClient) FetchDatabaseProperties(ctx context.Context, re
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetEnvironment()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/FetchDatabaseProperties")
 	}
@@ -2209,9 +2337,6 @@ func (c *environmentsRESTClient) CreateUserWorkloadsSecret(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsSecret")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/environments/*}/userWorkloadsSecrets")
@@ -2270,9 +2395,6 @@ func (c *environmentsRESTClient) GetUserWorkloadsSecret(ctx context.Context, req
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsSecret")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsSecrets/*}")
@@ -2475,9 +2597,6 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsSecret(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsSecret")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsSecrets/*}")
@@ -2527,9 +2646,6 @@ func (c *environmentsRESTClient) CreateUserWorkloadsConfigMap(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/CreateUserWorkloadsConfigMap")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=projects/*/locations/*/environments/*}/userWorkloadsConfigMaps")
@@ -2587,9 +2703,6 @@ func (c *environmentsRESTClient) GetUserWorkloadsConfigMap(ctx context.Context, 
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/GetUserWorkloadsConfigMap")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsConfigMaps/*}")
@@ -2792,9 +2905,6 @@ func (c *environmentsRESTClient) DeleteUserWorkloadsConfigMap(ctx context.Contex
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/DeleteUserWorkloadsConfigMap")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/environments/*/userWorkloadsConfigMaps/*}")
@@ -3041,9 +3151,6 @@ func (c *environmentsRESTClient) FetchDatabaseProperties(ctx context.Context, re
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//composer.googleapis.com/%v", req.GetEnvironment()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.orchestration.airflow.service.v1.Environments/FetchDatabaseProperties")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{environment=projects/*/locations/*/environments/*}:fetchDatabaseProperties")

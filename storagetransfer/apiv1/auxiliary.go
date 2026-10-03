@@ -18,12 +18,14 @@ package storagetransfer
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	storagetransferpb "cloud.google.com/go/storagetransfer/apiv1/storagetransferpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -80,6 +82,12 @@ func (op *RunTransferJobOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AgentPoolIterator) All() iter.Seq2[*storagetransferpb.AgentPool, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AgentPoolIterator manages a stream of *storagetransferpb.AgentPool.
 type AgentPoolIterator struct {
 	items    []*storagetransferpb.AgentPool
@@ -127,6 +135,12 @@ func (it *AgentPoolIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -172,6 +186,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *TransferJobIterator) All() iter.Seq2[*storagetransferpb.TransferJob, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // TransferJobIterator manages a stream of *storagetransferpb.TransferJob.

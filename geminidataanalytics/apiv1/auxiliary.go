@@ -18,12 +18,14 @@ package geminidataanalytics
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	geminidataanalyticspb "cloud.google.com/go/geminidataanalytics/apiv1/geminidataanalyticspb"
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -145,6 +147,70 @@ func (op *DeleteDataAgentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// SetAgentOpsObservabilityOperation manages a long-running operation from SetAgentOpsObservability.
+type SetAgentOpsObservabilityOperation struct {
+	lro      *longrunning.Operation
+	pollPath string
+}
+
+// Wait blocks until the long-running operation is completed, returning the response and any errors encountered.
+//
+// See documentation of Poll for error-handling information.
+func (op *SetAgentOpsObservabilityOperation) Wait(ctx context.Context, opts ...gax.CallOption) (*geminidataanalyticspb.SetAgentOpsObservabilityResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp geminidataanalyticspb.SetAgentOpsObservabilityResponse
+	if err := op.lro.WaitWithInterval(ctx, &resp, time.Minute, opts...); err != nil {
+		return nil, err
+	}
+	return &resp, nil
+}
+
+// Poll fetches the latest state of the long-running operation.
+//
+// Poll also fetches the latest metadata, which can be retrieved by Metadata.
+//
+// If Poll fails, the error is returned and op is unmodified. If Poll succeeds and
+// the operation has completed with failure, the error is returned and op.Done will return true.
+// If Poll succeeds and the operation has completed successfully,
+// op.Done will return true, and the response of the operation is returned.
+// If Poll succeeds and the operation has not completed, the returned response and error are both nil.
+func (op *SetAgentOpsObservabilityOperation) Poll(ctx context.Context, opts ...gax.CallOption) (*geminidataanalyticspb.SetAgentOpsObservabilityResponse, error) {
+	opts = append([]gax.CallOption{gax.WithPath(op.pollPath)}, opts...)
+	var resp geminidataanalyticspb.SetAgentOpsObservabilityResponse
+	if err := op.lro.Poll(ctx, &resp, opts...); err != nil {
+		return nil, err
+	}
+	if !op.Done() {
+		return nil, nil
+	}
+	return &resp, nil
+}
+
+// Metadata returns metadata associated with the long-running operation.
+// Metadata itself does not contact the server, but Poll does.
+// To get the latest metadata, call this method after a successful call to Poll.
+// If the metadata is not available, the returned metadata and error are both nil.
+func (op *SetAgentOpsObservabilityOperation) Metadata() (*geminidataanalyticspb.SetAgentOpsObservabilityMetadata, error) {
+	var meta geminidataanalyticspb.SetAgentOpsObservabilityMetadata
+	if err := op.lro.Metadata(&meta); err == longrunning.ErrNoMetadata {
+		return nil, nil
+	} else if err != nil {
+		return nil, err
+	}
+	return &meta, nil
+}
+
+// Done reports whether the long-running operation has completed.
+func (op *SetAgentOpsObservabilityOperation) Done() bool {
+	return op.lro.Done()
+}
+
+// Name returns the name of the long-running operation.
+// The name is assigned by the server and is unique within the service from which the operation is created.
+func (op *SetAgentOpsObservabilityOperation) Name() string {
+	return op.lro.Name()
+}
+
 // UpdateDataAgentOperation manages a long-running operation from UpdateDataAgent.
 type UpdateDataAgentOperation struct {
 	lro      *longrunning.Operation
@@ -209,6 +275,12 @@ func (op *UpdateDataAgentOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConversationIterator) All() iter.Seq2[*geminidataanalyticspb.Conversation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ConversationIterator manages a stream of *geminidataanalyticspb.Conversation.
 type ConversationIterator struct {
 	items    []*geminidataanalyticspb.Conversation
@@ -254,6 +326,12 @@ func (it *ConversationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataAgentIterator) All() iter.Seq2[*geminidataanalyticspb.DataAgent, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataAgentIterator manages a stream of *geminidataanalyticspb.DataAgent.
@@ -303,6 +381,12 @@ func (it *DataAgentIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // LocationIterator manages a stream of *locationpb.Location.
 type LocationIterator struct {
 	items    []*locationpb.Location
@@ -350,6 +434,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -395,6 +485,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StorageMessageIterator) All() iter.Seq2[*geminidataanalyticspb.StorageMessage, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StorageMessageIterator manages a stream of *geminidataanalyticspb.StorageMessage.

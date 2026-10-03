@@ -18,12 +18,14 @@ package vectorsearch
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	"cloud.google.com/go/longrunning"
 	longrunningpb "cloud.google.com/go/longrunning/autogen/longrunningpb"
 	vectorsearchpb "cloud.google.com/go/vectorsearch/apiv1/vectorsearchpb"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
@@ -518,6 +520,12 @@ func (op *UpdateIndexOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *CollectionIterator) All() iter.Seq2[*vectorsearchpb.Collection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // CollectionIterator manages a stream of *vectorsearchpb.Collection.
 type CollectionIterator struct {
 	items    []*vectorsearchpb.Collection
@@ -563,6 +571,12 @@ func (it *CollectionIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DataObjectIterator) All() iter.Seq2[*vectorsearchpb.DataObject, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // DataObjectIterator manages a stream of *vectorsearchpb.DataObject.
@@ -612,6 +626,12 @@ func (it *DataObjectIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *IndexIterator) All() iter.Seq2[*vectorsearchpb.Index, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // IndexIterator manages a stream of *vectorsearchpb.Index.
 type IndexIterator struct {
 	items    []*vectorsearchpb.Index
@@ -657,6 +677,12 @@ func (it *IndexIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -706,6 +732,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *OperationIterator) All() iter.Seq2[*longrunningpb.Operation, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // OperationIterator manages a stream of *longrunningpb.Operation.
 type OperationIterator struct {
 	items    []*longrunningpb.Operation
@@ -751,6 +783,12 @@ func (it *OperationIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *SearchResultIterator) All() iter.Seq2[*vectorsearchpb.SearchResult, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // SearchResultIterator manages a stream of *vectorsearchpb.SearchResult.

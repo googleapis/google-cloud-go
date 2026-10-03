@@ -54,6 +54,7 @@ func getVersionClient() string {
 func DefaultAuthScopes() []string {
 	return []string{
 		"https://www.googleapis.com/auth/cloud-platform",
+		"https://www.googleapis.com/auth/securesourcemanager.read-write",
 	}
 }
 

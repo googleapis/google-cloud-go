@@ -17,9 +17,18 @@
 package gsuiteaddons
 
 import (
+	"iter"
+
 	gsuiteaddonspb "cloud.google.com/go/gsuiteaddons/apiv1/gsuiteaddonspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DeploymentIterator) All() iter.Seq2[*gsuiteaddonspb.Deployment, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DeploymentIterator manages a stream of *gsuiteaddonspb.Deployment.
 type DeploymentIterator struct {

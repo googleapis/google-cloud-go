@@ -1136,6 +1136,17 @@ func (g *cachedGroup) fillRoutingHintAttempt(endpointCache channelEndpointCache,
 	skippedTabletUIDs := skippedTabletUIDsFromHint(hint)
 	var state routeSelectionState
 
+	// A healthy local leader always wins when the request prefers the leader,
+	// even if latency scores are available for the operation, so that
+	// read-write transactions are not routed to followers.
+	if preferLeader {
+		leader := g.leaderLocked()
+		if !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkipForRouting(endpointCache, lifecycleManager, hint, cooldowns, skippedTabletUIDs, pendingCreations, &state) {
+			g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, leader, directedReadOptions, hint, cooldowns, skippedTabletUIDs)
+			return leader, state
+		}
+	}
+
 	if !preferLeader || routingOperationUID(hint) > 0 {
 		selected := g.selectScoreAwareTabletLocked(endpointCache, lifecycleManager, deterministicRandom, preferLeader, hasDirectedReadOptions, directedReadOptions, hint, cooldowns, skippedTabletUIDs, pendingCreations, &state)
 		if selected != nil {
@@ -1144,11 +1155,6 @@ func (g *cachedGroup) fillRoutingHintAttempt(endpointCache channelEndpointCache,
 		return selected, state
 	}
 
-	leader := g.leaderLocked()
-	if !hasDirectedReadOptions && leader != nil && leader.distance <= maxLocalReplicaDistance && !leader.shouldSkipForRouting(endpointCache, lifecycleManager, hint, cooldowns, skippedTabletUIDs, pendingCreations, &state) {
-		g.recordKnownTransientFailuresLocked(endpointCache, lifecycleManager, leader, directedReadOptions, hint, cooldowns, skippedTabletUIDs)
-		return leader, state
-	}
 	for _, tablet := range g.tablets {
 		if !tablet.matches(directedReadOptions) {
 			continue

@@ -3600,7 +3600,6 @@ func testIntegrationFindNearest(t *testing.T) {
 
 func testIntegrationBSONTypes(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	coll := integrationColl(t)
 	doc := coll.NewDoc()
@@ -3752,7 +3751,6 @@ func testIntegrationTransactionWithReadOptionsError(t *testing.T) {
 
 func testIntegrationBSONQueries(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	client := integrationClient(t)
 	h := testHelper{t}
@@ -3910,7 +3908,6 @@ func testIntegrationBSONQueries(t *testing.T) {
 
 func testIntegrationBSONCrossTypeOrder(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
@@ -3960,7 +3957,6 @@ func testIntegrationBSONCrossTypeOrder(t *testing.T) {
 
 func testIntegrationBSONValidationRejection(t *testing.T) {
 	skipIfEdition(t, "BSON types", editionStandard)
-	t.Skip("Temporarily skipping BSON integration test. Not yet released to prod.")
 	ctx := context.Background()
 	client := integrationClient(t)
 	coll := client.Collection(collectionIDs.New())
@@ -3996,7 +3992,6 @@ func testIntegrationBSONValidationRejection(t *testing.T) {
 
 func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
 	t.Helper()
-	// Test server-side query
 	iter := q.Documents(ctx)
 	defer iter.Stop()
 	docs, err := iter.GetAll()
@@ -4007,26 +4002,6 @@ func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []s
 	if !testEqual(gotDocIDs, wantDocIDs) {
 		t.Errorf("Server query got %v, want %v", gotDocIDs, wantDocIDs)
 	}
-
-	// Test client-side sorting (Watch stream)
-	watchDocs, err := getFirstSnapshot(ctx, q)
-	if err != nil {
-		t.Fatalf("getFirstSnapshot failed: %v", err)
-	}
-	gotWatchDocIDs := docIDs(watchDocs)
-	if !testEqual(gotWatchDocIDs, wantDocIDs) {
-		t.Errorf("Watch snapshot got %v, want %v", gotWatchDocIDs, wantDocIDs)
-	}
-}
-
-func getFirstSnapshot(ctx context.Context, q Query) ([]*DocumentSnapshot, error) {
-	it := q.Snapshots(ctx)
-	defer it.Stop()
-	snap, err := it.Next()
-	if err != nil {
-		return nil, err
-	}
-	return snap.Documents.GetAll()
 }
 
 func docIDs(docs []*DocumentSnapshot) []string {

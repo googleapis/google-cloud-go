@@ -123,6 +123,8 @@ const (
 	ProductAccount_GOOGLE_AD_MANAGER_AUDIENCE_LINK ProductAccount_AccountType = 6
 	// Floodlight configuration.
 	ProductAccount_FLOODLIGHT_CONFIG ProductAccount_AccountType = 7
+	// Google Ad Manager.
+	ProductAccount_GOOGLE_AD_MANAGER ProductAccount_AccountType = 8
 )
 
 // Enum value maps for ProductAccount_AccountType.
@@ -136,6 +138,7 @@ var (
 		5: "GOOGLE_ANALYTICS_PROPERTY",
 		6: "GOOGLE_AD_MANAGER_AUDIENCE_LINK",
 		7: "FLOODLIGHT_CONFIG",
+		8: "GOOGLE_AD_MANAGER",
 	}
 	ProductAccount_AccountType_value = map[string]int32{
 		"ACCOUNT_TYPE_UNSPECIFIED":        0,
@@ -146,6 +149,7 @@ var (
 		"GOOGLE_ANALYTICS_PROPERTY":       5,
 		"GOOGLE_AD_MANAGER_AUDIENCE_LINK": 6,
 		"FLOODLIGHT_CONFIG":               7,
+		"GOOGLE_AD_MANAGER":               8,
 	}
 )
 
@@ -202,9 +206,12 @@ type Destination struct {
 	LinkedAccount *ProductAccount `protobuf:"bytes,3,opt,name=linked_account,json=linkedAccount,proto3" json:"linked_account,omitempty"`
 	// Required. The account to send the data to or remove the data from.
 	OperatingAccount *ProductAccount `protobuf:"bytes,4,opt,name=operating_account,json=operatingAccount,proto3" json:"operating_account,omitempty"`
-	// Required. The object within the product account to ingest into. For
+	// Optional. The object within the product account to ingest into. For
 	// example, a Google Ads audience ID, a Display & Video 360 audience ID or a
 	// Google Ads conversion action ID.
+	//
+	// This field is optional for Google Ad Manager event ingestion and User
+	// ingestion. Required for all other use cases.
 	ProductDestinationId string `protobuf:"bytes,5,opt,name=product_destination_id,json=productDestinationId,proto3" json:"product_destination_id,omitempty"`
 	unknownFields        protoimpl.UnknownFields
 	sizeCache            protoimpl.SizeCache
@@ -356,12 +363,12 @@ const file_google_ads_datamanager_v1_destination_proto_rawDesc = "" +
 	"\rlogin_account\x18\x02 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x01R\floginAccount\x12U\n" +
 	"\x0elinked_account\x18\x03 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x01R\rlinkedAccount\x12[\n" +
 	"\x11operating_account\x18\x04 \x01(\v2).google.ads.datamanager.v1.ProductAccountB\x03\xe0A\x02R\x10operatingAccount\x129\n" +
-	"\x16product_destination_id\x18\x05 \x01(\tB\x03\xe0A\x02R\x14productDestinationId\"\xb9\x03\n" +
+	"\x16product_destination_id\x18\x05 \x01(\tB\x03\xe0A\x01R\x14productDestinationId\"\xd0\x03\n" +
 	"\x0eProductAccount\x12@\n" +
 	"\aproduct\x18\x01 \x01(\x0e2\".google.ads.datamanager.v1.ProductB\x02\x18\x01R\aproduct\x12\"\n" +
 	"\n" +
 	"account_id\x18\x02 \x01(\tB\x03\xe0A\x02R\taccountId\x12]\n" +
-	"\faccount_type\x18\x03 \x01(\x0e25.google.ads.datamanager.v1.ProductAccount.AccountTypeB\x03\xe0A\x02R\vaccountType\"\xe1\x01\n" +
+	"\faccount_type\x18\x03 \x01(\x0e25.google.ads.datamanager.v1.ProductAccount.AccountTypeB\x03\xe0A\x02R\vaccountType\"\xf8\x01\n" +
 	"\vAccountType\x12\x1c\n" +
 	"\x18ACCOUNT_TYPE_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +
@@ -371,7 +378,8 @@ const file_google_ads_datamanager_v1_destination_proto_rawDesc = "" +
 	"\fDATA_PARTNER\x10\x04\x12\x1d\n" +
 	"\x19GOOGLE_ANALYTICS_PROPERTY\x10\x05\x12#\n" +
 	"\x1fGOOGLE_AD_MANAGER_AUDIENCE_LINK\x10\x06\x12\x15\n" +
-	"\x11FLOODLIGHT_CONFIG\x10\a*\x81\x01\n" +
+	"\x11FLOODLIGHT_CONFIG\x10\a\x12\x15\n" +
+	"\x11GOOGLE_AD_MANAGER\x10\b*\x81\x01\n" +
 	"\aProduct\x12\x17\n" +
 	"\x13PRODUCT_UNSPECIFIED\x10\x00\x12\x0e\n" +
 	"\n" +

@@ -17,9 +17,18 @@
 package settings
 
 import (
+	"iter"
+
 	settingspb "cloud.google.com/go/securitycenter/settings/apiv1beta1/settingspb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DetectorIterator) All() iter.Seq2[*settingspb.Detector, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // DetectorIterator manages a stream of *settingspb.Detector.
 type DetectorIterator struct {
@@ -66,6 +75,12 @@ func (it *DetectorIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *StringIterator) All() iter.Seq2[string, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // StringIterator manages a stream of string.

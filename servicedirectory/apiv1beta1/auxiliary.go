@@ -17,10 +17,19 @@
 package servicedirectory
 
 import (
+	"iter"
+
 	servicedirectorypb "cloud.google.com/go/servicedirectory/apiv1beta1/servicedirectorypb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 	locationpb "google.golang.org/genproto/googleapis/cloud/location"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *EndpointIterator) All() iter.Seq2[*servicedirectorypb.Endpoint, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // EndpointIterator manages a stream of *servicedirectorypb.Endpoint.
 type EndpointIterator struct {
@@ -67,6 +76,12 @@ func (it *EndpointIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *LocationIterator) All() iter.Seq2[*locationpb.Location, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // LocationIterator manages a stream of *locationpb.Location.
@@ -116,6 +131,12 @@ func (it *LocationIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *NamespaceIterator) All() iter.Seq2[*servicedirectorypb.Namespace, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // NamespaceIterator manages a stream of *servicedirectorypb.Namespace.
 type NamespaceIterator struct {
 	items    []*servicedirectorypb.Namespace
@@ -161,6 +182,12 @@ func (it *NamespaceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*servicedirectorypb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // ServiceIterator manages a stream of *servicedirectorypb.Service.

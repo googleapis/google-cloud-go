@@ -17,9 +17,18 @@
 package connection
 
 import (
+	"iter"
+
 	connectionpb "cloud.google.com/go/bigquery/connection/apiv1/connectionpb"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ConnectionIterator) All() iter.Seq2[*connectionpb.Connection, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
 
 // ConnectionIterator manages a stream of *connectionpb.Connection.
 type ConnectionIterator struct {

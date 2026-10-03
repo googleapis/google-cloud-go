@@ -250,6 +250,8 @@ type EncryptionInfoByCluster map[string][]*EncryptionInfo
 
 // EncryptionInfo gets the current encryption info for the table across all of the clusters.
 // The returned map will be keyed by cluster id and contain a status for all of the keys in use.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetTable with ENCRYPTION_VIEW instead.
 func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (EncryptionInfoByCluster, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
@@ -272,6 +274,8 @@ func (ac *AdminClient) EncryptionInfo(ctx context.Context, table string) (Encryp
 }
 
 // Tables returns a list of the tables in the instance.
+//
+// Deprecated: Use ac.TableAdminClientV2().ListTables instead.
 func (ac *AdminClient) Tables(ctx context.Context) ([]string, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -339,6 +343,16 @@ type TableAutomatedBackupPolicy struct {
 	// `projects/{project}/locations/{zone}`.
 	// This field can only set for tables in Enterprise Plus instances.
 	Locations []string
+	// Optional. The amount of time that the automated backups remain hot.
+	// If specified, the backups created by this policy are `HOT` backups.
+	// If not specified, the backups are `STANDARD` backups.
+	// The value must be at least 24 hours and at most 10 days, and can't
+	// exceed the policy's `RetentionPeriod`.
+	// Only SSD instances support `HOT` automated backups.
+	KeepHotDuration optional.Duration
+	// Optional. If `true`, automated backups are explicitly disabled on this
+	// table. This allows users to opt out of default enablement.
+	Disabled bool
 }
 
 func (*TableAutomatedBackupPolicy) isTableAutomatedBackupConfig() {}
@@ -376,19 +390,32 @@ func toAutomatedBackupConfigProto(automatedBackupConfig TableAutomatedBackupConf
 }
 
 func (abp *TableAutomatedBackupPolicy) toProto() (*btapb.Table_AutomatedBackupPolicy_, error) {
+	if abp.Disabled {
+		if abp.RetentionPeriod != nil || abp.Frequency != nil || len(abp.Locations) > 0 || abp.KeepHotDuration != nil {
+			return nil, errors.New("cannot specify other automated backup policy fields when Disabled is true")
+		}
+		return &btapb.Table_AutomatedBackupPolicy_{
+			AutomatedBackupPolicy: &btapb.Table_AutomatedBackupPolicy{
+				Disabled: true,
+			},
+		}, nil
+	}
 	pbAutomatedBackupPolicy := &btapb.Table_AutomatedBackupPolicy{
 		RetentionPeriod: durationpb.New(0),
 		Frequency:       durationpb.New(0),
 		Locations:       abp.Locations,
 	}
-	if abp.RetentionPeriod == nil && abp.Frequency == nil {
-		return nil, errors.New("at least one of RetentionPeriod and Frequency must be set")
+	if abp.RetentionPeriod == nil && abp.Frequency == nil && abp.KeepHotDuration == nil {
+		return nil, errors.New("at least one of RetentionPeriod, Frequency, or KeepHotDuration must be set")
 	}
 	if abp.RetentionPeriod != nil {
 		pbAutomatedBackupPolicy.RetentionPeriod = durationpb.New(optional.ToDuration(abp.RetentionPeriod))
 	}
 	if abp.Frequency != nil {
 		pbAutomatedBackupPolicy.Frequency = durationpb.New(optional.ToDuration(abp.Frequency))
+	}
+	if abp.KeepHotDuration != nil {
+		pbAutomatedBackupPolicy.KeepHotDuration = durationpb.New(optional.ToDuration(abp.KeepHotDuration))
 	}
 	return &btapb.Table_AutomatedBackupPolicy_{
 		AutomatedBackupPolicy: pbAutomatedBackupPolicy,
@@ -449,6 +476,8 @@ type TableConf struct {
 
 // CreateTable creates a new table in the instance.
 // This method may return before the table's creation is complete.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateTable instead.
 func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, ChangeStreamRetention: nil, DeletionProtection: None})
 }
@@ -458,11 +487,15 @@ func (ac *AdminClient) CreateTable(ctx context.Context, table string) error {
 // Given two split keys, "s1" and "s2", three tablets will be created,
 // spanning the key ranges: [, s1), [s1, s2), [s2, ).
 // This method may return before the table's creation is complete.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateTable with InitialSplits in the request instead.
 func (ac *AdminClient) CreatePresplitTable(ctx context.Context, table string, splitKeys []string) error {
 	return ac.CreateTableFromConf(ctx, &TableConf{TableID: table, SplitKeys: splitKeys, ChangeStreamRetention: nil, DeletionProtection: None})
 }
 
 // CreateTableFromConf creates a new table in the instance from the given configuration.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateTable instead.
 func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf) error {
 	if conf.TableID == "" {
 		return errors.New("TableID is required")
@@ -544,6 +577,8 @@ func (ac *AdminClient) CreateTableFromConf(ctx context.Context, conf *TableConf)
 }
 
 // CreateColumnFamily creates a new column family in a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().ModifyColumnFamilies instead.
 func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family string) error {
 	// TODO(dsymonds): Permit specifying gcexpr and any other family settings.
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -560,6 +595,8 @@ func (ac *AdminClient) CreateColumnFamily(ctx context.Context, table, family str
 }
 
 // CreateColumnFamilyWithConfig creates a new column family in a table with an optional GC policy and value type.
+//
+// Deprecated: Use ac.TableAdminClientV2().ModifyColumnFamilies instead.
 func (ac *AdminClient) CreateColumnFamilyWithConfig(ctx context.Context, table, family string, config Family) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -590,6 +627,8 @@ const (
 	retentionPeriodFieldMaskPath   = "retention_period"
 	frequencyFieldMaskPath         = "frequency"
 	locationsFieldMaskPath         = "locations"
+	keepHotDurationFieldMaskPath   = "keep_hot_duration"
+	disabledFieldMaskPath          = "disabled"
 	rowKeySchemaMaskPath           = "row_key_schema"
 	tieredStorageConfigFieldMask   = "tiered_storage_config"
 )
@@ -629,6 +668,8 @@ func (ac *AdminClient) updateTableAndWait(ctx context.Context, updateTableReques
 }
 
 // UpdateTableDisableChangeStream updates a table to disable change stream for table ID.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableDisableChangeStream(ctx context.Context, tableID string) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -639,6 +680,8 @@ func (ac *AdminClient) UpdateTableDisableChangeStream(ctx context.Context, table
 }
 
 // UpdateTableWithChangeStream updates a table to with the given table ID and change stream config.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID string, changeStreamRetention ChangeStreamRetention) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -651,6 +694,8 @@ func (ac *AdminClient) UpdateTableWithChangeStream(ctx context.Context, tableID 
 }
 
 // UpdateTableWithDeletionProtection updates a table with the given table ID and deletion protection parameter.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, tableID string, deletionProtection DeletionProtection) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -662,6 +707,8 @@ func (ac *AdminClient) UpdateTableWithDeletionProtection(ctx context.Context, ta
 }
 
 // UpdateTableDisableAutomatedBackupPolicy updates a table to disable automated backups for table ID.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableDisableAutomatedBackupPolicy(ctx context.Context, tableID string) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -672,6 +719,8 @@ func (ac *AdminClient) UpdateTableDisableAutomatedBackupPolicy(ctx context.Conte
 }
 
 // UpdateTableWithAutomatedBackupPolicy updates a table to with the given table ID and automated backup policy config.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context, tableID string, automatedBackupPolicy TableAutomatedBackupPolicy) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -681,10 +730,14 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 	if err != nil {
 		return err
 	}
-	// If the AutomatedBackupPolicy is not at least partially specified, or if both fields are 0, then this is an
-	// incorrect configuration for updating the table, and should be rejected. Both fields could be zero if (1)
-	// they are set to zero, or (2) neither field was set and the policy was constructed using toProto().
-	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds == 0 && abc.AutomatedBackupPolicy.Frequency.Seconds == 0 {
+	if automatedBackupPolicy.Disabled {
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+disabledFieldMaskPath)
+		req.Table.AutomatedBackupConfig = abc
+		return ac.updateTableAndWait(ctx, req)
+	}
+	// If the AutomatedBackupPolicy is not at least partially specified, or if all duration fields are 0, then this is an
+	// incorrect configuration for updating the table, and should be rejected.
+	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds == 0 && abc.AutomatedBackupPolicy.Frequency.Seconds == 0 && abc.AutomatedBackupPolicy.GetKeepHotDuration().GetSeconds() == 0 {
 		return errors.New("Invalid automated backup policy. If you're intending to disable automated backups, please use the UpdateTableDisableAutomatedBackupPolicy method instead")
 	}
 	if abc.AutomatedBackupPolicy.RetentionPeriod.Seconds != 0 {
@@ -699,11 +752,17 @@ func (ac *AdminClient) UpdateTableWithAutomatedBackupPolicy(ctx context.Context,
 		// Update Locations
 		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+locationsFieldMaskPath)
 	}
+	if automatedBackupPolicy.KeepHotDuration != nil {
+		// Update KeepHotDuration
+		req.UpdateMask.Paths = append(req.UpdateMask.Paths, automatedBackupPolicyFieldMask+"."+keepHotDurationFieldMaskPath)
+	}
 	req.Table.AutomatedBackupConfig = abc
 	return ac.updateTableAndWait(ctx, req)
 }
 
 // UpdateTableWithRowKeySchema updates a table with RowKeySchema.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableWithRowKeySchema(ctx context.Context, tableID string, rowKeySchema StructType) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -715,6 +774,8 @@ func (ac *AdminClient) UpdateTableWithRowKeySchema(ctx context.Context, tableID 
 }
 
 // UpdateTableRemoveRowKeySchema removes a RowKeySchema from a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableID string) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -726,6 +787,8 @@ func (ac *AdminClient) UpdateTableRemoveRowKeySchema(ctx context.Context, tableI
 }
 
 // UpdateTableWithTieredStorageConfig updates a table with TieredStorageConfig.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableWithTieredStorageConfig(ctx context.Context, tableID string, tieredStorageConfig *TieredStorageConfig) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -741,6 +804,8 @@ func (ac *AdminClient) UpdateTableWithTieredStorageConfig(ctx context.Context, t
 }
 
 // UpdateTableRemoveTieredStorageConfig removes a TieredStorageConfig from a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateTable instead.
 func (ac *AdminClient) UpdateTableRemoveTieredStorageConfig(ctx context.Context, tableID string) error {
 	req, err := ac.newUpdateTableRequestProto(tableID)
 	if err != nil {
@@ -751,6 +816,8 @@ func (ac *AdminClient) UpdateTableRemoveTieredStorageConfig(ctx context.Context,
 }
 
 // DeleteTable deletes a table and all of its data.
+//
+// Deprecated: Use ac.TableAdminClientV2().DeleteTable instead.
 func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -762,6 +829,8 @@ func (ac *AdminClient) DeleteTable(ctx context.Context, table string) error {
 }
 
 // DeleteColumnFamily deletes a column family in a table and all of its data.
+//
+// Deprecated: Use ac.TableAdminClientV2().ModifyColumnFamilies instead.
 func (ac *AdminClient) DeleteColumnFamily(ctx context.Context, table, family string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -784,11 +853,32 @@ type TableInfo struct {
 	// DeletionProtection indicates whether the table is protected against data loss
 	// DeletionProtection could be None depending on the table view
 	// for example when using NAME_ONLY, the response does not contain DeletionProtection and the value should be None
-	DeletionProtection    DeletionProtection
-	ChangeStreamRetention ChangeStreamRetention
-	AutomatedBackupConfig TableAutomatedBackupConfig
-	RowKeySchema          *StructType
-	TieredStorageConfig   *TieredStorageConfig
+	DeletionProtection             DeletionProtection
+	ChangeStreamRetention          ChangeStreamRetention
+	AutomatedBackupConfig          TableAutomatedBackupConfig
+	EffectiveAutomatedBackupPolicy *TableAutomatedBackupPolicy
+	RowKeySchema                   *StructType
+	TieredStorageConfig            *TieredStorageConfig
+}
+
+func protoToTableAutomatedBackupPolicy(pb *btapb.Table_AutomatedBackupPolicy) *TableAutomatedBackupPolicy {
+	if pb == nil {
+		return nil
+	}
+	abp := &TableAutomatedBackupPolicy{
+		Locations: pb.GetLocations(),
+		Disabled:  pb.GetDisabled(),
+	}
+	if pb.GetRetentionPeriod() != nil {
+		abp.RetentionPeriod = pb.GetRetentionPeriod().AsDuration()
+	}
+	if pb.GetFrequency() != nil {
+		abp.Frequency = pb.GetFrequency().AsDuration()
+	}
+	if pb.GetKeepHotDuration() != nil {
+		abp.KeepHotDuration = pb.GetKeepHotDuration().AsDuration()
+	}
+	return abp
 }
 
 // FamilyInfo represents information about a column family.
@@ -821,6 +911,8 @@ func (ac *AdminClient) getTable(ctx context.Context, table string, view btapb.Ta
 }
 
 // TableInfo retrieves information about a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetTable instead.
 func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 
@@ -852,14 +944,13 @@ func (ac *AdminClient) TableInfo(ctx context.Context, table string) (*TableInfo,
 	if res.AutomatedBackupConfig != nil {
 		switch res.AutomatedBackupConfig.(type) {
 		case *btapb.Table_AutomatedBackupPolicy_:
-			ti.AutomatedBackupConfig = &TableAutomatedBackupPolicy{
-				RetentionPeriod: res.GetAutomatedBackupPolicy().GetRetentionPeriod().AsDuration(),
-				Frequency:       res.GetAutomatedBackupPolicy().GetFrequency().AsDuration(),
-				Locations:       res.GetAutomatedBackupPolicy().GetLocations(),
-			}
+			ti.AutomatedBackupConfig = protoToTableAutomatedBackupPolicy(res.GetAutomatedBackupPolicy())
 		default:
 			return nil, fmt.Errorf("error: Unknown type of automated backup configuration")
 		}
+	}
+	if res.GetEffectiveAutomatedBackupPolicy() != nil {
+		ti.EffectiveAutomatedBackupPolicy = protoToTableAutomatedBackupPolicy(res.GetEffectiveAutomatedBackupPolicy())
 	}
 	if res.RowKeySchema != nil {
 		structType := structProtoToType(res.RowKeySchema).(StructType)
@@ -906,11 +997,15 @@ func IgnoreWarnings() GCPolicyOption {
 // SetGCPolicy specifies which cells in a column family should be garbage collected.
 // GC executes opportunistically in the background; table reads may return data
 // matching the GC policy.
+//
+// Deprecated: Use ac.TableAdminClientV2().ModifyColumnFamilies instead.
 func (ac *AdminClient) SetGCPolicy(ctx context.Context, table, family string, policy GCPolicy) error {
 	return ac.UpdateFamily(ctx, table, family, Family{GCPolicy: policy})
 }
 
 // SetGCPolicyWithOptions is similar to SetGCPolicy but allows passing options
+//
+// Deprecated: Use ac.TableAdminClientV2().ModifyColumnFamilies instead.
 func (ac *AdminClient) SetGCPolicyWithOptions(ctx context.Context, table, family string, policy GCPolicy, opts ...GCPolicyOption) error {
 	familyOpts := []UpdateFamilyOption{}
 	for _, opt := range opts {
@@ -922,6 +1017,8 @@ func (ac *AdminClient) SetGCPolicyWithOptions(ctx context.Context, table, family
 }
 
 // UpdateFamily updates column families' garbage collection policies and value type.
+//
+// Deprecated: Use ac.TableAdminClientV2().ModifyColumnFamilies instead.
 func (ac *AdminClient) UpdateFamily(ctx context.Context, table, familyName string, family Family, opts ...UpdateFamilyOption) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -964,6 +1061,8 @@ func (ac *AdminClient) UpdateFamily(ctx context.Context, table, familyName strin
 }
 
 // DropRowRange permanently deletes a row range from the specified table.
+//
+// Deprecated: Use ac.TableAdminClientV2().DropRowRange instead.
 func (ac *AdminClient) DropRowRange(ctx context.Context, table, rowKeyPrefix string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -976,6 +1075,8 @@ func (ac *AdminClient) DropRowRange(ctx context.Context, table, rowKeyPrefix str
 }
 
 // DropAllRows permanently deletes all rows from the specified table.
+//
+// Deprecated: Use ac.TableAdminClientV2().DropRowRange with DeleteAllDataFromTable set instead.
 func (ac *AdminClient) DropAllRows(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -994,6 +1095,8 @@ func (ac *AdminClient) DropAllRows(ctx context.Context, table string) error {
 // is not currently available to most Cloud Bigtable customers. This feature
 // might be changed in backward-incompatible ways and is not recommended for
 // production use. It is not subject to any SLA or deprecation policy.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateTableFromSnapshot instead.
 func (ac *AdminClient) CreateTableFromSnapshot(ctx context.Context, table, cluster, snapshot string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -1023,6 +1126,8 @@ const DefaultSnapshotDuration time.Duration = 0
 // is not currently available to most Cloud Bigtable customers. This feature
 // might be changed in backward-incompatible ways and is not recommended for
 // production use. It is not subject to any SLA or deprecation policy.
+//
+// Deprecated: Use ac.TableAdminClientV2().SnapshotTable instead.
 func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapshot string, ttl time.Duration) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -1055,6 +1160,8 @@ func (ac *AdminClient) SnapshotTable(ctx context.Context, table, cluster, snapsh
 // currently available to most Cloud Bigtable customers. This feature might be
 // changed in backward-incompatible ways and is not recommended for production use.
 // It is not subject to any SLA or deprecation policy.
+//
+// Deprecated: Use ac.TableAdminClientV2().ListSnapshots instead.
 func (ac *AdminClient) Snapshots(ctx context.Context, cluster string) *SnapshotIterator {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -1168,6 +1275,8 @@ type SnapshotInfo struct {
 // is not currently available to most Cloud Bigtable customers. This feature
 // might be changed in backward-incompatible ways and is not recommended for
 // production use. It is not subject to any SLA or deprecation policy.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetSnapshot instead.
 func (ac *AdminClient) SnapshotInfo(ctx context.Context, cluster, snapshot string) (*SnapshotInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -1197,6 +1306,8 @@ func (ac *AdminClient) SnapshotInfo(ctx context.Context, cluster, snapshot strin
 // is not currently available to most Cloud Bigtable customers. This feature
 // might be changed in backward-incompatible ways and is not recommended for
 // production use. It is not subject to any SLA or deprecation policy.
+//
+// Deprecated: Use ac.TableAdminClientV2().DeleteSnapshot instead.
 func (ac *AdminClient) DeleteSnapshot(ctx context.Context, cluster, snapshot string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -1243,6 +1354,8 @@ func (ac *AdminClient) isConsistent(ctx context.Context, tableName, token string
 }
 
 // WaitForReplication waits until all the writes committed before the call started have been propagated to all the clusters in the instance via replication.
+//
+// Deprecated: Use ac.TableAdminClientV2().GenerateConsistencyToken and ac.TableAdminClientV2().CheckConsistency instead.
 func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	// Get the token.
@@ -1274,17 +1387,23 @@ func (ac *AdminClient) WaitForReplication(ctx context.Context, table string) err
 }
 
 // TableIAM creates an IAM Handle specific to a given Instance and Table within the configured project.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetIamPolicy, SetIamPolicy, or TestIamPermissions instead.
 func (ac *AdminClient) TableIAM(tableID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient,
 		"projects/"+ac.project+"/instances/"+ac.instance+"/tables/"+tableID)
 }
 
 // BackupIAM creates an IAM Handle specific to a given Cluster and Backup.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetIamPolicy, SetIamPolicy, or TestIamPermissions instead.
 func (ac *AdminClient) BackupIAM(cluster, backup string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.backupPath(cluster, ac.instance, backup))
 }
 
 // AuthorizedViewIAM creates an IAM Handle specific to a given Table and AuthorizedView.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetIamPolicy, SetIamPolicy, or TestIamPermissions instead.
 func (ac *AdminClient) AuthorizedViewIAM(table, authorizedView string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(ac.tClient, ac.authorizedViewPath(table, authorizedView))
 }
@@ -1472,6 +1591,8 @@ var instanceNameRegexp = regexp.MustCompile(`^projects/([^/]+)/instances/([a-z][
 
 // CreateInstance creates a new instance in the project.
 // This method will return when the instance has been created or when an error occurs.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().CreateInstance instead.
 func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *InstanceConf) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	newConfig := &InstanceWithClustersConfig{
@@ -1498,6 +1619,8 @@ func (iac *InstanceAdminClient) CreateInstance(ctx context.Context, conf *Instan
 
 // CreateInstanceWithClusters creates a new instance with configured clusters in the project.
 // This method will return when the instance has been created or when an error occurs.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().CreateInstance instead.
 func (iac *InstanceAdminClient) CreateInstanceWithClusters(ctx context.Context, conf *InstanceWithClustersConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	clusters := make(map[string]*btapb.Cluster)
@@ -1587,6 +1710,8 @@ func (iac *InstanceAdminClient) updateInstance(ctx context.Context, conf *Instan
 // This method may return an error after partially succeeding, for example if the instance is updated
 // but a cluster update fails. If an error is returned, InstanceInfo and Clusters may be called to
 // determine the current state.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().PartialUpdateInstance instead.
 func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, conf *InstanceWithClustersConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
@@ -1623,6 +1748,8 @@ func (iac *InstanceAdminClient) UpdateInstanceWithClusters(ctx context.Context, 
 }
 
 // DeleteInstance deletes an instance from the project.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().DeleteInstance instead.
 func (iac *InstanceAdminClient) DeleteInstance(ctx context.Context, instanceID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.DeleteInstanceRequest{Name: "projects/" + iac.project + "/instances/" + instanceID}
@@ -1634,6 +1761,8 @@ func (iac *InstanceAdminClient) DeleteInstance(ctx context.Context, instanceID s
 // (cluster) is unavailable due to some transient conditions, Instances
 // returns partial results and ErrPartiallyUnavailable error with
 // unavailable locations list.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().ListInstances instead.
 func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListInstancesRequest{
@@ -1673,6 +1802,8 @@ func (iac *InstanceAdminClient) Instances(ctx context.Context) ([]*InstanceInfo,
 }
 
 // InstanceInfo returns information about an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().GetInstance instead.
 func (iac *InstanceAdminClient) InstanceInfo(ctx context.Context, instanceID string) (*InstanceInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.GetInstanceRequest{
@@ -1875,6 +2006,8 @@ type ClusterInfo struct {
 
 // CreateCluster creates a new cluster in an instance.
 // This method will return when the cluster has been created or when an error occurs.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().CreateCluster instead.
 func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *ClusterConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
@@ -1893,6 +2026,8 @@ func (iac *InstanceAdminClient) CreateCluster(ctx context.Context, conf *Cluster
 }
 
 // DeleteCluster deletes a cluster from an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().DeleteCluster instead.
 func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, clusterID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.DeleteClusterRequest{Name: "projects/" + iac.project + "/instances/" + instanceID + "/clusters/" + clusterID}
@@ -1902,6 +2037,8 @@ func (iac *InstanceAdminClient) DeleteCluster(ctx context.Context, instanceID, c
 
 // SetAutoscaling enables autoscaling on a cluster. To remove autoscaling, use
 // UpdateCluster. See AutoscalingConfig documentation for details.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().PartialUpdateCluster instead.
 func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, clusterID string, conf AutoscalingConfig) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
@@ -1927,6 +2064,8 @@ func (iac *InstanceAdminClient) SetAutoscaling(ctx context.Context, instanceID, 
 // UpdateCluster updates attributes of a cluster. If Autoscaling is configured
 // for the cluster, it will be removed and replaced by the static number of
 // serve nodes specified.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().PartialUpdateCluster instead.
 func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, clusterID string, serveNodes int32) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	cluster := &btapb.Cluster{
@@ -1952,6 +2091,8 @@ func (iac *InstanceAdminClient) UpdateCluster(ctx context.Context, instanceID, c
 // (cluster) is unavailable due to some transient conditions, Clusters
 // returns partial results and ErrPartiallyUnavailable error with
 // unavailable locations list.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().ListClusters instead.
 func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string) ([]*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.ListClustersRequest{Parent: "projects/" + iac.project + "/instances/" + instanceID}
@@ -1997,7 +2138,9 @@ func (iac *InstanceAdminClient) Clusters(ctx context.Context, instanceID string)
 	return cis, nil
 }
 
-// GetCluster fetches a cluster in an instance
+// GetCluster fetches a cluster in an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().GetCluster instead.
 func (iac *InstanceAdminClient) GetCluster(ctx context.Context, instanceID, clusterID string) (*ClusterInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.GetClusterRequest{
@@ -2057,6 +2200,8 @@ func fromClusterConfigProto(c *btapb.Cluster_ClusterConfig) *AutoscalingConfig {
 }
 
 // InstanceIAM returns the instance's IAM handle.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().GetIamPolicy, SetIamPolicy, or TestIamPermissions instead.
 func (iac *InstanceAdminClient) InstanceIAM(instanceID string) *iam.Handle {
 	return iam.InternalNewHandleGRPCClient(iac.iClient, "projects/"+iac.project+"/instances/"+instanceID)
 }
@@ -2366,6 +2511,8 @@ func (it *ProfileIterator) Next() (*btapb.AppProfile, error) {
 }
 
 // CreateAppProfile creates an app profile within an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().CreateAppProfile instead.
 func (iac *InstanceAdminClient) CreateAppProfile(ctx context.Context, profile ProfileConf) (*btapb.AppProfile, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	parent := "projects/" + iac.project + "/instances/" + profile.InstanceID
@@ -2393,6 +2540,8 @@ func (iac *InstanceAdminClient) CreateAppProfile(ctx context.Context, profile Pr
 }
 
 // GetAppProfile gets information about an app profile.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().GetAppProfile instead.
 func (iac *InstanceAdminClient) GetAppProfile(ctx context.Context, instanceID, name string) (*btapb.AppProfile, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	profileRequest := &btapb.GetAppProfileRequest{
@@ -2411,6 +2560,8 @@ func (iac *InstanceAdminClient) GetAppProfile(ctx context.Context, instanceID, n
 }
 
 // ListAppProfiles lists information about app profiles in an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().ListAppProfiles instead.
 func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID string) *ProfileIterator {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	listRequest := &btapb.ListAppProfilesRequest{
@@ -2443,6 +2594,8 @@ func (iac *InstanceAdminClient) ListAppProfiles(ctx context.Context, instanceID 
 
 // UpdateAppProfile updates an app profile within an instance.
 // updateAttrs should be set. If unset, all fields will be replaced.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().UpdateAppProfile instead.
 func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID, profileID string, updateAttrs ProfileAttrsToUpdate) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 
@@ -2482,6 +2635,8 @@ func (iac *InstanceAdminClient) UpdateAppProfile(ctx context.Context, instanceID
 }
 
 // DeleteAppProfile deletes an app profile from an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().DeleteAppProfile instead.
 func (iac *InstanceAdminClient) DeleteAppProfile(ctx context.Context, instanceID, name string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	deleteProfileRequest := &btapb.DeleteAppProfileRequest{
@@ -2652,6 +2807,8 @@ func UpdateInstanceAndSyncClusters(ctx context.Context, iac *InstanceAdminClient
 
 // RestoreTable creates a table from a backup. The table will be created in the same cluster as the backup.
 // To restore a table to a different instance, see RestoreTableFrom.
+//
+// Deprecated: Use ac.TableAdminClientV2().RestoreTable instead.
 func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup string) error {
 	return ac.RestoreTableFrom(ctx, ac.instance, table, cluster, backup)
 }
@@ -2661,6 +2818,8 @@ func (ac *AdminClient) RestoreTable(ctx context.Context, table, cluster, backup 
 // sourceInstance (ex. "my-instance") and sourceCluster (ex. "my-cluster") are the instance and cluster in which the new table will be restored from.
 // tableName (ex. "my-restored-table") will be the name of the newly created table.
 // backupName (ex. "my-backup") is the name of the backup to restore.
+//
+// Deprecated: Use ac.TableAdminClientV2().RestoreTable instead.
 func (ac *AdminClient) RestoreTableFrom(ctx context.Context, sourceInstance, table, sourceCluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	parent := ac.instancePrefix()
@@ -2720,11 +2879,15 @@ func WithHotBackup() BackupOption {
 
 // CreateBackup creates a new backup in the specified cluster from the
 // specified source table with the user-provided expire time.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateBackup instead.
 func (ac *AdminClient) CreateBackup(ctx context.Context, table, cluster, backup string, expireTime time.Time) error {
 	return ac.CreateBackupWithOptions(ctx, table, cluster, backup, WithExpiry(expireTime))
 }
 
 // CreateBackupWithOptions is similar to CreateBackup but lets the user specify additional options.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateBackup instead.
 func (ac *AdminClient) CreateBackupWithOptions(ctx context.Context, table, cluster, backup string, opts ...BackupOption) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -2765,6 +2928,8 @@ func (ac *AdminClient) CreateBackupWithOptions(ctx context.Context, table, clust
 }
 
 // CopyBackup copies the specified source backup with the user-provided expire time.
+//
+// Deprecated: Use ac.TableAdminClientV2().CopyBackup instead.
 func (ac *AdminClient) CopyBackup(ctx context.Context, sourceCluster, sourceBackup,
 	destProject, destInstance, destCluster, destBackup string, expireTime time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
@@ -2787,6 +2952,8 @@ func (ac *AdminClient) CopyBackup(ctx context.Context, sourceCluster, sourceBack
 
 // Backups returns a BackupIterator for iterating over the backups in a cluster.
 // To list backups across all of the clusters in the instance specify "-" as the cluster.
+//
+// Deprecated: Use ac.TableAdminClientV2().ListBackups instead.
 func (ac *AdminClient) Backups(ctx context.Context, cluster string) *BackupIterator {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	prefix := ac.instancePrefix()
@@ -2946,6 +3113,8 @@ type BackupInfo struct {
 }
 
 // BackupInfo gets backup metadata.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetBackup instead.
 func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (*BackupInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
@@ -2968,6 +3137,8 @@ func (ac *AdminClient) BackupInfo(ctx context.Context, cluster, backup string) (
 }
 
 // DeleteBackup deletes a backup in a cluster.
+//
+// Deprecated: Use ac.TableAdminClientV2().DeleteBackup instead.
 func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
@@ -2980,6 +3151,8 @@ func (ac *AdminClient) DeleteBackup(ctx context.Context, cluster, backup string)
 }
 
 // UpdateBackup updates the backup metadata in a cluster. The API only supports updating expire time.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateBackup instead.
 func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string, expireTime time.Time) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	backupPath := ac.backupPath(cluster, ac.instance, backup)
@@ -3001,11 +3174,15 @@ func (ac *AdminClient) UpdateBackup(ctx context.Context, cluster, backup string,
 }
 
 // UpdateBackupHotToStandardTime updates the HotToStandardTime of a hot backup.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateBackup instead.
 func (ac *AdminClient) UpdateBackupHotToStandardTime(ctx context.Context, cluster, backup string, hotToStandardTime time.Time) error {
 	return ac.updateBackupHotToStandardTime(ctx, cluster, backup, &hotToStandardTime)
 }
 
 // UpdateBackupRemoveHotToStandardTime removes the HotToStandardTime of a hot backup.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateBackup instead.
 func (ac *AdminClient) UpdateBackupRemoveHotToStandardTime(ctx context.Context, cluster, backup string) error {
 	return ac.updateBackupHotToStandardTime(ctx, cluster, backup, nil)
 }
@@ -3133,6 +3310,8 @@ func (s *SubsetViewConf) AddFamilySubsetQualifierPrefix(familyName string, quali
 // Authorized Views
 
 // CreateAuthorizedView creates a new authorized view in a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateAuthorizedView instead.
 func (ac *AdminClient) CreateAuthorizedView(ctx context.Context, conf *AuthorizedViewConf) error {
 	if conf.TableID == "" || conf.AuthorizedViewID == "" {
 		return errors.New("both AuthorizedViewID and TableID are required")
@@ -3187,6 +3366,8 @@ func (s *SubsetViewInfo) fillInfo(internal *btapb.AuthorizedView_SubsetView) {
 }
 
 // AuthorizedViewInfo retrieves information about an authorized view.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetAuthorizedView instead.
 func (ac *AdminClient) AuthorizedViewInfo(ctx context.Context, tableID, authorizedViewID string) (*AuthorizedViewInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.GetAuthorizedViewRequest{
@@ -3219,6 +3400,8 @@ func (ac *AdminClient) AuthorizedViewInfo(ctx context.Context, tableID, authoriz
 }
 
 // AuthorizedViews returns a list of the authorized views in the table.
+//
+// Deprecated: Use ac.TableAdminClientV2().ListAuthorizedViews instead.
 func (ac *AdminClient) AuthorizedViews(ctx context.Context, tableID string) ([]string, error) {
 	names := []string{}
 	prefix := fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), tableID)
@@ -3250,6 +3433,8 @@ type UpdateAuthorizedViewConf struct {
 }
 
 // UpdateAuthorizedView updates an authorized view in a table according to the given configuration.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateAuthorizedView instead.
 func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuthorizedViewConf) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	if conf.AuthorizedViewConf.TableID == "" || conf.AuthorizedViewConf.AuthorizedViewID == "" {
@@ -3285,6 +3470,8 @@ func (ac *AdminClient) UpdateAuthorizedView(ctx context.Context, conf UpdateAuth
 }
 
 // DeleteAuthorizedView deletes an authorized view in a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().DeleteAuthorizedView instead.
 func (ac *AdminClient) DeleteAuthorizedView(ctx context.Context, tableID, authorizedViewID string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.DeleteAuthorizedViewRequest{
@@ -3297,6 +3484,8 @@ func (ac *AdminClient) DeleteAuthorizedView(ctx context.Context, tableID, author
 // Logical Views
 
 // CreateLogicalView creates a new logical view in an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().CreateLogicalView instead.
 func (iac *InstanceAdminClient) CreateLogicalView(ctx context.Context, instanceID string, conf *LogicalViewInfo) error {
 	if conf.LogicalViewID == "" {
 		return errors.New("LogicalViewID is required")
@@ -3340,6 +3529,8 @@ type LogicalViewInfo struct {
 }
 
 // LogicalViewInfo retrieves information about a logical view.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().GetLogicalView instead.
 func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID, logicalViewID string) (*LogicalViewInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	prefix := instancePrefix(iac.project, instanceID)
@@ -3367,6 +3558,8 @@ func (iac *InstanceAdminClient) LogicalViewInfo(ctx context.Context, instanceID,
 }
 
 // LogicalViews returns a list of the logical views in the instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().ListLogicalViews instead.
 func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID string) ([]LogicalViewInfo, error) {
 	views := []LogicalViewInfo{}
 	prefix := instancePrefix(iac.project, instanceID)
@@ -3396,6 +3589,8 @@ func (iac *InstanceAdminClient) LogicalViews(ctx context.Context, instanceID str
 }
 
 // UpdateLogicalView updates a logical view in an instance according to the given configuration.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().UpdateLogicalView instead.
 func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceID string, conf LogicalViewInfo) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	if conf.LogicalViewID == "" {
@@ -3439,6 +3634,8 @@ func (iac *InstanceAdminClient) UpdateLogicalView(ctx context.Context, instanceI
 }
 
 // DeleteLogicalView deletes a logical view in an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().DeleteLogicalView instead.
 func (iac *InstanceAdminClient) DeleteLogicalView(ctx context.Context, instanceID, logicalViewID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.DeleteLogicalViewRequest{
@@ -3451,6 +3648,8 @@ func (iac *InstanceAdminClient) DeleteLogicalView(ctx context.Context, instanceI
 // Materialized Views
 
 // CreateMaterializedView creates a new materialized view in an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().CreateMaterializedView instead.
 func (iac *InstanceAdminClient) CreateMaterializedView(ctx context.Context, instanceID string, conf *MaterializedViewInfo) error {
 	if conf.MaterializedViewID == "" {
 		return errors.New("MaterializedViewID is required")
@@ -3492,6 +3691,8 @@ type MaterializedViewInfo struct {
 }
 
 // MaterializedViewInfo retrieves information about a materialized view.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().GetMaterializedView instead.
 func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instanceID, materializedViewID string) (*MaterializedViewInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	prefix := instancePrefix(iac.project, instanceID)
@@ -3519,6 +3720,8 @@ func (iac *InstanceAdminClient) MaterializedViewInfo(ctx context.Context, instan
 }
 
 // MaterializedViews returns a list of the materialized views in the instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().ListMaterializedViews instead.
 func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceID string) ([]MaterializedViewInfo, error) {
 	views := []MaterializedViewInfo{}
 	prefix := instancePrefix(iac.project, instanceID)
@@ -3548,6 +3751,8 @@ func (iac *InstanceAdminClient) MaterializedViews(ctx context.Context, instanceI
 }
 
 // UpdateMaterializedView updates a materialized view in an instance according to the given configuration.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().UpdateMaterializedView instead.
 func (iac *InstanceAdminClient) UpdateMaterializedView(ctx context.Context, instanceID string, conf MaterializedViewInfo) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	if conf.MaterializedViewID == "" {
@@ -3591,6 +3796,8 @@ func (iac *InstanceAdminClient) UpdateMaterializedView(ctx context.Context, inst
 }
 
 // DeleteMaterializedView deletes a materialized view in an instance.
+//
+// Deprecated: Use iac.InstanceAdminClientV2().DeleteMaterializedView instead.
 func (iac *InstanceAdminClient) DeleteMaterializedView(ctx context.Context, instanceID, materializedViewID string) error {
 	ctx = mergeOutgoingMetadata(ctx, iac.md)
 	req := &btapb.DeleteMaterializedViewRequest{
@@ -3622,6 +3829,8 @@ type ProtoSchemaInfo struct {
 }
 
 // CreateSchemaBundle creates a new schema bundle in a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().CreateSchemaBundle instead.
 func (ac *AdminClient) CreateSchemaBundle(ctx context.Context, conf *SchemaBundleConf) error {
 	if conf.TableID == "" || conf.SchemaBundleID == "" {
 		return errors.New("both SchemaBundleID and TableID are required in SchemaBundleConf")
@@ -3660,6 +3869,8 @@ type SchemaBundleInfo struct {
 }
 
 // GetSchemaBundle retrieves information about a schema bundle.
+//
+// Deprecated: Use ac.TableAdminClientV2().GetSchemaBundle instead.
 func (ac *AdminClient) GetSchemaBundle(ctx context.Context, tableID, schemaBundleID string) (*SchemaBundleInfo, error) {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.GetSchemaBundleRequest{
@@ -3689,6 +3900,8 @@ func (ac *AdminClient) GetSchemaBundle(ctx context.Context, tableID, schemaBundl
 }
 
 // SchemaBundles returns a list of the schema bundles in the table.
+//
+// Deprecated: Use ac.TableAdminClientV2().ListSchemaBundles instead.
 func (ac *AdminClient) SchemaBundles(ctx context.Context, tableID string) ([]string, error) {
 	names := []string{}
 	prefix := fmt.Sprintf("%s/tables/%s", ac.instancePrefix(), tableID)
@@ -3719,6 +3932,8 @@ type UpdateSchemaBundleConf struct {
 }
 
 // UpdateSchemaBundle updates a schema bundle in a table according to the given configuration.
+//
+// Deprecated: Use ac.TableAdminClientV2().UpdateSchemaBundle instead.
 func (ac *AdminClient) UpdateSchemaBundle(ctx context.Context, conf UpdateSchemaBundleConf) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	if conf.SchemaBundleConf.TableID == "" || conf.SchemaBundleConf.SchemaBundleID == "" {
@@ -3758,6 +3973,8 @@ func (ac *AdminClient) UpdateSchemaBundle(ctx context.Context, conf UpdateSchema
 }
 
 // DeleteSchemaBundle deletes a schema bundle in a table.
+//
+// Deprecated: Use ac.TableAdminClientV2().DeleteSchemaBundle instead.
 func (ac *AdminClient) DeleteSchemaBundle(ctx context.Context, tableID, schemaBundleID string) error {
 	ctx = mergeOutgoingMetadata(ctx, ac.md)
 	req := &btapb.DeleteSchemaBundleRequest{

@@ -399,6 +399,45 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ImportSshPublicKey = append(client.CallOptions.ImportSshPublicKey, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateSshPublicKey = append(client.CallOptions.UpdateSshPublicKey, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "oslogin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/oslogin/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "oslogin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSshPublicKey = append(client.CallOptions.CreateSshPublicKey, gax.WithClientTracing(tracing))
+		client.CallOptions.DeletePosixAccount = append(client.CallOptions.DeletePosixAccount, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteSshPublicKey = append(client.CallOptions.DeleteSshPublicKey, gax.WithClientTracing(tracing))
+		client.CallOptions.GetLoginProfile = append(client.CallOptions.GetLoginProfile, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSshPublicKey = append(client.CallOptions.GetSshPublicKey, gax.WithClientTracing(tracing))
+		client.CallOptions.ImportSshPublicKey = append(client.CallOptions.ImportSshPublicKey, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateSshPublicKey = append(client.CallOptions.UpdateSshPublicKey, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "oslogin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/oslogin/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "oslogin.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.CreateSshPublicKey = append(client.CallOptions.CreateSshPublicKey, gax.WithClientLogging(logging))
+		client.CallOptions.DeletePosixAccount = append(client.CallOptions.DeletePosixAccount, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteSshPublicKey = append(client.CallOptions.DeleteSshPublicKey, gax.WithClientLogging(logging))
+		client.CallOptions.GetLoginProfile = append(client.CallOptions.GetLoginProfile, gax.WithClientLogging(logging))
+		client.CallOptions.GetSshPublicKey = append(client.CallOptions.GetSshPublicKey, gax.WithClientLogging(logging))
+		client.CallOptions.ImportSshPublicKey = append(client.CallOptions.ImportSshPublicKey, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateSshPublicKey = append(client.CallOptions.UpdateSshPublicKey, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -499,6 +538,45 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ImportSshPublicKey = append(callOpts.ImportSshPublicKey, gax.WithClientMetrics(metrics))
 		callOpts.UpdateSshPublicKey = append(callOpts.UpdateSshPublicKey, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "oslogin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/oslogin/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "oslogin.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSshPublicKey = append(callOpts.CreateSshPublicKey, gax.WithClientTracing(tracing))
+		callOpts.DeletePosixAccount = append(callOpts.DeletePosixAccount, gax.WithClientTracing(tracing))
+		callOpts.DeleteSshPublicKey = append(callOpts.DeleteSshPublicKey, gax.WithClientTracing(tracing))
+		callOpts.GetLoginProfile = append(callOpts.GetLoginProfile, gax.WithClientTracing(tracing))
+		callOpts.GetSshPublicKey = append(callOpts.GetSshPublicKey, gax.WithClientTracing(tracing))
+		callOpts.ImportSshPublicKey = append(callOpts.ImportSshPublicKey, gax.WithClientTracing(tracing))
+		callOpts.UpdateSshPublicKey = append(callOpts.UpdateSshPublicKey, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "oslogin",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/oslogin/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "oslogin.googleapis.com",
+			}),
+		)
+
+		callOpts.CreateSshPublicKey = append(callOpts.CreateSshPublicKey, gax.WithClientLogging(logging))
+		callOpts.DeletePosixAccount = append(callOpts.DeletePosixAccount, gax.WithClientLogging(logging))
+		callOpts.DeleteSshPublicKey = append(callOpts.DeleteSshPublicKey, gax.WithClientLogging(logging))
+		callOpts.GetLoginProfile = append(callOpts.GetLoginProfile, gax.WithClientLogging(logging))
+		callOpts.GetSshPublicKey = append(callOpts.GetSshPublicKey, gax.WithClientLogging(logging))
+		callOpts.ImportSshPublicKey = append(callOpts.ImportSshPublicKey, gax.WithClientLogging(logging))
+		callOpts.UpdateSshPublicKey = append(callOpts.UpdateSshPublicKey, gax.WithClientLogging(logging))
+	}
 
 	return &Client{internalClient: c, CallOptions: callOpts}, nil
 }
@@ -545,9 +623,6 @@ func (c *gRPCClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.Crea
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/CreateSshPublicKey")
 	}
@@ -569,9 +644,6 @@ func (c *gRPCClient) DeletePosixAccount(ctx context.Context, req *osloginpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/DeletePosixAccount")
 	}
@@ -589,9 +661,6 @@ func (c *gRPCClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.Dele
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/DeleteSshPublicKey")
 	}
@@ -609,9 +678,6 @@ func (c *gRPCClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/GetLoginProfile")
 	}
@@ -633,9 +699,6 @@ func (c *gRPCClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/GetSshPublicKey")
 	}
@@ -657,9 +720,6 @@ func (c *gRPCClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/ImportSshPublicKey")
 	}
@@ -681,9 +741,6 @@ func (c *gRPCClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/UpdateSshPublicKey")
 	}
@@ -726,9 +783,6 @@ func (c *restClient) CreateSshPublicKey(ctx context.Context, req *osloginpb.Crea
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/CreateSshPublicKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=users/*}/sshPublicKeys")
@@ -783,9 +837,6 @@ func (c *restClient) DeletePosixAccount(ctx context.Context, req *osloginpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/DeletePosixAccount")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/projects/*}")
@@ -825,9 +876,6 @@ func (c *restClient) DeleteSshPublicKey(ctx context.Context, req *osloginpb.Dele
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/DeleteSshPublicKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/sshPublicKeys/*}")
@@ -874,9 +922,6 @@ func (c *restClient) GetLoginProfile(ctx context.Context, req *osloginpb.GetLogi
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/GetLoginProfile")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*}/loginProfile")
@@ -931,9 +976,6 @@ func (c *restClient) GetSshPublicKey(ctx context.Context, req *osloginpb.GetSshP
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/GetSshPublicKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/sshPublicKeys/*}")
@@ -1005,9 +1047,6 @@ func (c *restClient) ImportSshPublicKey(ctx context.Context, req *osloginpb.Impo
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetParent()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/ImportSshPublicKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{parent=users/*}:importSshPublicKey")
@@ -1077,9 +1116,6 @@ func (c *restClient) UpdateSshPublicKey(ctx context.Context, req *osloginpb.Upda
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//oslogin.googleapis.com/%v", req.GetName()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.oslogin.v1.OsLoginService/UpdateSshPublicKey")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=users/*/sshPublicKeys/*}")

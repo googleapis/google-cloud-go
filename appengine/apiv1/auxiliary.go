@@ -18,11 +18,13 @@ package appengine
 
 import (
 	"context"
+	"iter"
 	"time"
 
 	appenginepb "cloud.google.com/go/appengine/apiv1/appenginepb"
 	"cloud.google.com/go/longrunning"
 	gax "github.com/googleapis/gax-go/v2"
+	gaxiter "github.com/googleapis/gax-go/v2/iterator"
 	"google.golang.org/api/iterator"
 )
 
@@ -814,6 +816,12 @@ func (op *UpdateVersionOperation) Name() string {
 	return op.lro.Name()
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthorizedCertificateIterator) All() iter.Seq2[*appenginepb.AuthorizedCertificate, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // AuthorizedCertificateIterator manages a stream of *appenginepb.AuthorizedCertificate.
 type AuthorizedCertificateIterator struct {
 	items    []*appenginepb.AuthorizedCertificate
@@ -859,6 +867,12 @@ func (it *AuthorizedCertificateIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *AuthorizedDomainIterator) All() iter.Seq2[*appenginepb.AuthorizedDomain, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // AuthorizedDomainIterator manages a stream of *appenginepb.AuthorizedDomain.
@@ -908,6 +922,12 @@ func (it *AuthorizedDomainIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *DomainMappingIterator) All() iter.Seq2[*appenginepb.DomainMapping, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // DomainMappingIterator manages a stream of *appenginepb.DomainMapping.
 type DomainMappingIterator struct {
 	items    []*appenginepb.DomainMapping
@@ -953,6 +973,12 @@ func (it *DomainMappingIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *FirewallRuleIterator) All() iter.Seq2[*appenginepb.FirewallRule, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // FirewallRuleIterator manages a stream of *appenginepb.FirewallRule.
@@ -1002,6 +1028,12 @@ func (it *FirewallRuleIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *InstanceIterator) All() iter.Seq2[*appenginepb.Instance, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // InstanceIterator manages a stream of *appenginepb.Instance.
 type InstanceIterator struct {
 	items    []*appenginepb.Instance
@@ -1049,6 +1081,12 @@ func (it *InstanceIterator) takeBuf() interface{} {
 	return b
 }
 
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *ServiceIterator) All() iter.Seq2[*appenginepb.Service, error] {
+	return gaxiter.RangeAdapter(it.Next)
+}
+
 // ServiceIterator manages a stream of *appenginepb.Service.
 type ServiceIterator struct {
 	items    []*appenginepb.Service
@@ -1094,6 +1132,12 @@ func (it *ServiceIterator) takeBuf() interface{} {
 	b := it.items
 	it.items = nil
 	return b
+}
+
+// All returns an iterator. If an error is returned by the iterator, the
+// iterator will stop after that iteration.
+func (it *VersionIterator) All() iter.Seq2[*appenginepb.Version, error] {
+	return gaxiter.RangeAdapter(it.Next)
 }
 
 // VersionIterator manages a stream of *appenginepb.Version.

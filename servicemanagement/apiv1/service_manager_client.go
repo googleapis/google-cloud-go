@@ -546,6 +546,65 @@ func NewServiceManagerClient(ctx context.Context, opts ...option.ClientOption) (
 		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientMetrics(metrics))
 	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicemanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicemanagement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicemanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientTracing(tracing))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientTracing(tracing))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientTracing(tracing))
+		client.CallOptions.UndeleteService = append(client.CallOptions.UndeleteService, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServiceConfigs = append(client.CallOptions.ListServiceConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.GetServiceConfig = append(client.CallOptions.GetServiceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateServiceConfig = append(client.CallOptions.CreateServiceConfig, gax.WithClientTracing(tracing))
+		client.CallOptions.SubmitConfigSource = append(client.CallOptions.SubmitConfigSource, gax.WithClientTracing(tracing))
+		client.CallOptions.ListServiceRollouts = append(client.CallOptions.ListServiceRollouts, gax.WithClientTracing(tracing))
+		client.CallOptions.GetServiceRollout = append(client.CallOptions.GetServiceRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.CreateServiceRollout = append(client.CallOptions.CreateServiceRollout, gax.WithClientTracing(tracing))
+		client.CallOptions.GenerateConfigReport = append(client.CallOptions.GenerateConfigReport, gax.WithClientTracing(tracing))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientTracing(tracing))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientTracing(tracing))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicemanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicemanagement/apiv1",
+				gax.RPCSystem:      "grpc",
+				gax.URLDomain:      "servicemanagement.googleapis.com",
+			}),
+		)
+
+		client.CallOptions.ListServices = append(client.CallOptions.ListServices, gax.WithClientLogging(logging))
+		client.CallOptions.GetService = append(client.CallOptions.GetService, gax.WithClientLogging(logging))
+		client.CallOptions.CreateService = append(client.CallOptions.CreateService, gax.WithClientLogging(logging))
+		client.CallOptions.DeleteService = append(client.CallOptions.DeleteService, gax.WithClientLogging(logging))
+		client.CallOptions.UndeleteService = append(client.CallOptions.UndeleteService, gax.WithClientLogging(logging))
+		client.CallOptions.ListServiceConfigs = append(client.CallOptions.ListServiceConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.GetServiceConfig = append(client.CallOptions.GetServiceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.CreateServiceConfig = append(client.CallOptions.CreateServiceConfig, gax.WithClientLogging(logging))
+		client.CallOptions.SubmitConfigSource = append(client.CallOptions.SubmitConfigSource, gax.WithClientLogging(logging))
+		client.CallOptions.ListServiceRollouts = append(client.CallOptions.ListServiceRollouts, gax.WithClientLogging(logging))
+		client.CallOptions.GetServiceRollout = append(client.CallOptions.GetServiceRollout, gax.WithClientLogging(logging))
+		client.CallOptions.CreateServiceRollout = append(client.CallOptions.CreateServiceRollout, gax.WithClientLogging(logging))
+		client.CallOptions.GenerateConfigReport = append(client.CallOptions.GenerateConfigReport, gax.WithClientLogging(logging))
+		client.CallOptions.GetIamPolicy = append(client.CallOptions.GetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.SetIamPolicy = append(client.CallOptions.SetIamPolicy, gax.WithClientLogging(logging))
+		client.CallOptions.TestIamPermissions = append(client.CallOptions.TestIamPermissions, gax.WithClientLogging(logging))
+		client.CallOptions.ListOperations = append(client.CallOptions.ListOperations, gax.WithClientLogging(logging))
+	}
 
 	client.internalClient = c
 
@@ -669,6 +728,65 @@ func NewServiceManagerRESTClient(ctx context.Context, opts ...option.ClientOptio
 		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientMetrics(metrics))
 		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientMetrics(metrics))
 		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientMetrics(metrics))
+	}
+	if gax.IsFeatureEnabled("TRACING") {
+		tracing := gax.NewClientTracing(
+			gax.WithTracingAttributes(map[string]string{
+				gax.ClientService:  "servicemanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicemanagement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicemanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientTracing(tracing))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientTracing(tracing))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientTracing(tracing))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientTracing(tracing))
+		callOpts.UndeleteService = append(callOpts.UndeleteService, gax.WithClientTracing(tracing))
+		callOpts.ListServiceConfigs = append(callOpts.ListServiceConfigs, gax.WithClientTracing(tracing))
+		callOpts.GetServiceConfig = append(callOpts.GetServiceConfig, gax.WithClientTracing(tracing))
+		callOpts.CreateServiceConfig = append(callOpts.CreateServiceConfig, gax.WithClientTracing(tracing))
+		callOpts.SubmitConfigSource = append(callOpts.SubmitConfigSource, gax.WithClientTracing(tracing))
+		callOpts.ListServiceRollouts = append(callOpts.ListServiceRollouts, gax.WithClientTracing(tracing))
+		callOpts.GetServiceRollout = append(callOpts.GetServiceRollout, gax.WithClientTracing(tracing))
+		callOpts.CreateServiceRollout = append(callOpts.CreateServiceRollout, gax.WithClientTracing(tracing))
+		callOpts.GenerateConfigReport = append(callOpts.GenerateConfigReport, gax.WithClientTracing(tracing))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientTracing(tracing))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientTracing(tracing))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientTracing(tracing))
+	}
+	if gax.IsFeatureEnabled("LOGGING") {
+		logging := gax.NewClientLogging(
+			gax.WithLoggerProvider(c.logger),
+			gax.WithLoggingAttributes(map[string]string{
+				gax.ClientService:  "servicemanagement",
+				gax.ClientVersion:  getVersionClient(),
+				gax.ClientArtifact: "cloud.google.com/go/servicemanagement/apiv1",
+				gax.RPCSystem:      "http",
+				gax.URLDomain:      "servicemanagement.googleapis.com",
+			}),
+		)
+
+		callOpts.ListServices = append(callOpts.ListServices, gax.WithClientLogging(logging))
+		callOpts.GetService = append(callOpts.GetService, gax.WithClientLogging(logging))
+		callOpts.CreateService = append(callOpts.CreateService, gax.WithClientLogging(logging))
+		callOpts.DeleteService = append(callOpts.DeleteService, gax.WithClientLogging(logging))
+		callOpts.UndeleteService = append(callOpts.UndeleteService, gax.WithClientLogging(logging))
+		callOpts.ListServiceConfigs = append(callOpts.ListServiceConfigs, gax.WithClientLogging(logging))
+		callOpts.GetServiceConfig = append(callOpts.GetServiceConfig, gax.WithClientLogging(logging))
+		callOpts.CreateServiceConfig = append(callOpts.CreateServiceConfig, gax.WithClientLogging(logging))
+		callOpts.SubmitConfigSource = append(callOpts.SubmitConfigSource, gax.WithClientLogging(logging))
+		callOpts.ListServiceRollouts = append(callOpts.ListServiceRollouts, gax.WithClientLogging(logging))
+		callOpts.GetServiceRollout = append(callOpts.GetServiceRollout, gax.WithClientLogging(logging))
+		callOpts.CreateServiceRollout = append(callOpts.CreateServiceRollout, gax.WithClientLogging(logging))
+		callOpts.GenerateConfigReport = append(callOpts.GenerateConfigReport, gax.WithClientLogging(logging))
+		callOpts.GetIamPolicy = append(callOpts.GetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.SetIamPolicy = append(callOpts.SetIamPolicy, gax.WithClientLogging(logging))
+		callOpts.TestIamPermissions = append(callOpts.TestIamPermissions, gax.WithClientLogging(logging))
+		callOpts.ListOperations = append(callOpts.ListOperations, gax.WithClientLogging(logging))
 	}
 
 	lroOpts := []option.ClientOption{
@@ -1104,9 +1222,6 @@ func (c *serviceManagerGRPCClient) GetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 	}
@@ -1128,9 +1243,6 @@ func (c *serviceManagerGRPCClient) SetIamPolicy(ctx context.Context, req *iampb.
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 	}
@@ -1152,9 +1264,6 @@ func (c *serviceManagerGRPCClient) TestIamPermissions(ctx context.Context, req *
 
 	hds = append(c.xGoogHeaders, hds...)
 	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 	}
@@ -2162,9 +2271,6 @@ func (c *serviceManagerRESTClient) GetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/GetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=services/*}:getIamPolicy")
@@ -2229,9 +2335,6 @@ func (c *serviceManagerRESTClient) SetIamPolicy(ctx context.Context, req *iampb.
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/SetIamPolicy")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=services/*}:setIamPolicy")
@@ -2298,9 +2401,6 @@ func (c *serviceManagerRESTClient) TestIamPermissions(ctx context.Context, req *
 	hds = append(c.xGoogHeaders, hds...)
 	hds = append(hds, "Content-Type", "application/json")
 	headers := gax.BuildHeaders(ctx, hds...)
-	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
-		ctx = callctx.WithTelemetryContext(ctx, "resource_name", fmt.Sprintf("//iam-meta-api.googleapis.com/%v", req.GetResource()))
-	}
 	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
 		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.iam.v1.IAMPolicy/TestIamPermissions")
 		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{resource=services/*}:testIamPermissions")
