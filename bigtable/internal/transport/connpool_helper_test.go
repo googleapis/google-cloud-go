@@ -16,6 +16,7 @@ package internal
 
 import (
 	"context"
+	"fmt"
 	"io"
 	"net"
 	"sync"
@@ -28,6 +29,7 @@ import (
 	"google.golang.org/grpc/credentials/insecure"
 	testpb "google.golang.org/grpc/interop/grpc_testing"
 	"google.golang.org/grpc/metadata"
+	"google.golang.org/grpc/test/bufconn"
 )
 
 // fakeService is a mock gRPC server that implements both BenchmarkService and BigtableServer.
@@ -215,12 +217,24 @@ func (s *fakeService) setPingCount(count int) {
 	s.pingCount = count
 }
 
+// bufconnListeners lets setupTestServer keep its string return type;
+// dialBigtableserver dials the in-memory listener behind the synthetic
+// "bufnet://N" key instead of a real loopback socket.
+var (
+	bufconnListenersMu sync.Mutex
+	bufconnListeners   = map[string]*bufconn.Listener{}
+	bufconnNextID      uint64 // guarded by bufconnListenersMu
+)
+
 func setupTestServer(t testing.TB, service *fakeService) string {
 	t.Helper()
-	lis, err := net.Listen("tcp", "localhost:0")
-	if err != nil {
-		t.Fatalf("Failed to listen: %v", err)
-	}
+	lis := bufconn.Listen(1 << 20) // 1MB buffer per connection
+	bufconnListenersMu.Lock()
+	bufconnNextID++
+	addr := fmt.Sprintf("bufnet://%d", bufconnNextID)
+	bufconnListeners[addr] = lis
+	bufconnListenersMu.Unlock()
+
 	srv := grpc.NewServer()
 	testpb.RegisterBenchmarkServiceServer(srv, service)
 	btpb.RegisterBigtableServer(srv, service)
@@ -231,12 +245,26 @@ func setupTestServer(t testing.TB, service *fakeService) string {
 	t.Cleanup(func() {
 		srv.Stop()
 		lis.Close()
+		bufconnListenersMu.Lock()
+		delete(bufconnListeners, addr)
+		bufconnListenersMu.Unlock()
 	})
-	return lis.Addr().String()
+	return addr
 }
 
 func dialBigtableserver(addr string) (*BigtableConn, error) {
-	conn, err := grpc.Dial(addr, grpc.WithTransportCredentials(insecure.NewCredentials()))
+	bufconnListenersMu.Lock()
+	lis := bufconnListeners[addr]
+	bufconnListenersMu.Unlock()
+	if lis == nil {
+		return nil, fmt.Errorf("bufconn listener %q not registered", addr)
+	}
+	conn, err := grpc.NewClient("passthrough:bufnet",
+		grpc.WithContextDialer(func(ctx context.Context, _ string) (net.Conn, error) {
+			return lis.DialContext(ctx)
+		}),
+		grpc.WithTransportCredentials(insecure.NewCredentials()),
+	)
 	if err != nil {
 		return nil, err
 	}
