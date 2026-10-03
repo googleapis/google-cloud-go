@@ -38,6 +38,7 @@ import (
 	btopt "cloud.google.com/go/bigtable/internal/option"
 	"cloud.google.com/go/bigtable/internal/session"
 	btransport "cloud.google.com/go/bigtable/internal/transport"
+	"golang.org/x/sync/singleflight"
 	"google.golang.org/api/option"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
@@ -142,6 +143,18 @@ type Channel struct {
 	sc            session.Client
 	scopePrefix   string
 	sessionTables *session.TableCache
+	// openGroup collapses the cold-start burst: N concurrent first-touch RPCs
+	// for the same resource funnel through ONE sessionTables.GetOrOpen call.
+	// Without this, all N callers reach GetOrOpen's miss path and N-1 hit its
+	// loser branch that Close()s the never-dispatched sessionTable — which
+	// under a shared-key session pool tears down the pool the winner already
+	// memoized and serves ErrPoolClosed on every subsequent RPC through that
+	// handle. This is the pattern the per-RPC accelerator caller shape can
+	// trigger that a top-level client.OpenTable caller shape cannot, since
+	// client.OpenTable warms the cache once at construction. See
+	// bigtable/internal/session/pr20366_repro_test.go for the underlying
+	// session-layer race.
+	openGroup singleflight.Group
 }
 
 // NewChannel constructs an Channel scoped to
@@ -195,41 +208,52 @@ func NewChannel(
 // share one warm handle; the cache's sweeper evicts idle handles (releasing
 // their pools) on TTL.
 func (c *Channel) openHandle(res adapters.Resource) (session.TableAPI, error) {
-	var open func() session.TableAPI
-	switch res.Kind {
-	case adapters.ResourceTable:
-		tableID, err := c.parseTableName(res.Name)
-		if err != nil {
-			return nil, err
+	// N concurrent first-touch RPCs for the same resource funnel through ONE
+	// sessionTables.GetOrOpen call. See the openGroup field comment for the
+	// failure mode this guards against. Post-burst, singleflight releases the
+	// key and subsequent RPCs re-enter — sessionTables.GetOrOpen serves them
+	// as fast-path cache hits.
+	v, err, _ := c.openGroup.Do(res.Name, func() (any, error) {
+		var open func() session.TableAPI
+		switch res.Kind {
+		case adapters.ResourceTable:
+			tableID, err := c.parseTableName(res.Name)
+			if err != nil {
+				return nil, err
+			}
+			open = func() session.TableAPI { return c.sc.OpenTable(tableID) }
+		case adapters.ResourceAuthorizedView:
+			tableID, viewID, err := c.parseAuthorizedViewName(res.Name)
+			if err != nil {
+				return nil, err
+			}
+			open = func() session.TableAPI { return c.sc.OpenAuthorizedView(tableID, viewID) }
+		case adapters.ResourceMaterializedView:
+			viewID, err := c.parseMaterializedViewName(res.Name)
+			if err != nil {
+				return nil, err
+			}
+			open = func() session.TableAPI { return c.sc.OpenMaterializedView(viewID) }
+		default:
+			// Kind is set by the adapter from the populated V2 name field, so an
+			// unrecognized kind is an internal invariant violation, not bad input.
+			return nil, status.Errorf(codes.Internal, "accelerator: unknown resource kind %v", res.Kind)
 		}
-		open = func() session.TableAPI { return c.sc.OpenTable(tableID) }
-	case adapters.ResourceAuthorizedView:
-		tableID, viewID, err := c.parseAuthorizedViewName(res.Name)
-		if err != nil {
-			return nil, err
-		}
-		open = func() session.TableAPI { return c.sc.OpenAuthorizedView(tableID, viewID) }
-	case adapters.ResourceMaterializedView:
-		viewID, err := c.parseMaterializedViewName(res.Name)
-		if err != nil {
-			return nil, err
-		}
-		open = func() session.TableAPI { return c.sc.OpenMaterializedView(viewID) }
-	default:
-		// Kind is set by the adapter from the populated V2 name field, so an
-		// unrecognized kind is an internal invariant violation, not bad input.
-		return nil, status.Errorf(codes.Internal, "accelerator: unknown resource kind %v", res.Kind)
-	}
 
-	// Key on the full V2 name (the identity Cloud Bigtable uses on the wire),
-	// so table / authorized-view / materialized-view keys never collide. A nil
-	// handle means the cache has been Closed (Channel.Close), so the channel is
-	// no longer usable.
-	tbl := c.sessionTables.GetOrOpen(res.Name, open)
-	if tbl == nil {
-		return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+		// Key on the full V2 name (the identity Cloud Bigtable uses on the wire),
+		// so table / authorized-view / materialized-view keys never collide. A nil
+		// handle means the cache has been Closed (Channel.Close), so the channel is
+		// no longer usable.
+		tbl := c.sessionTables.GetOrOpen(res.Name, open)
+		if tbl == nil {
+			return nil, status.Error(codes.Unavailable, "accelerator: channel is closed")
+		}
+		return tbl, nil
+	})
+	if err != nil {
+		return nil, err
 	}
-	return tbl, nil
+	return v.(session.TableAPI), nil
 }
 
 // Invoke implements grpc.ClientConnInterface for unary V2 RPCs.
