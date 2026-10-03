@@ -1064,6 +1064,11 @@ type mockAdminClock struct {
 	createClusterReq        *btapb.CreateClusterRequest
 	partialUpdateClusterReq *btapb.PartialUpdateClusterRequest
 	getClusterResp          *btapb.Cluster
+	updateMemoryLayerReq    *btapb.UpdateMemoryLayerRequest
+	getMemoryLayerReq       *btapb.GetMemoryLayerRequest
+	getMemoryLayerResp      *btapb.MemoryLayer
+	listMemoryLayersReq     *btapb.ListMemoryLayersRequest
+	listMemoryLayersResp    *btapb.ListMemoryLayersResponse
 	createAppProfileReq     *btapb.CreateAppProfileRequest
 	updateAppProfileReq     *btapb.UpdateAppProfileRequest
 }
@@ -1120,6 +1125,35 @@ func (c *mockAdminClock) ListClusters(
 	ctx context.Context, in *btapb.ListClustersRequest, opts ...grpc.CallOption,
 ) (*btapb.ListClustersResponse, error) {
 	return &btapb.ListClustersResponse{Clusters: []*btapb.Cluster{c.getClusterResp}}, nil
+}
+
+func (c *mockAdminClock) UpdateMemoryLayer(
+	ctx context.Context, in *btapb.UpdateMemoryLayerRequest, opts ...grpc.CallOption,
+) (*longrunning.Operation, error) {
+	c.updateMemoryLayerReq = in
+	return &longrunning.Operation{
+		Done: true,
+		Result: &longrunning.Operation_Response{
+			Response: &anypb.Any{TypeUrl: "google.bigtable.admin.v2.MemoryLayer"},
+		},
+	}, nil
+}
+
+func (c *mockAdminClock) GetMemoryLayer(
+	ctx context.Context, in *btapb.GetMemoryLayerRequest, opts ...grpc.CallOption,
+) (*btapb.MemoryLayer, error) {
+	c.getMemoryLayerReq = in
+	return c.getMemoryLayerResp, nil
+}
+
+func (c *mockAdminClock) ListMemoryLayers(
+	ctx context.Context, in *btapb.ListMemoryLayersRequest, opts ...grpc.CallOption,
+) (*btapb.ListMemoryLayersResponse, error) {
+	c.listMemoryLayersReq = in
+	if c.listMemoryLayersResp != nil {
+		return c.listMemoryLayersResp, nil
+	}
+	return &btapb.ListMemoryLayersResponse{MemoryLayers: []*btapb.MemoryLayer{c.getMemoryLayerResp}}, nil
 }
 
 func (c *mockAdminClock) CreateAppProfile(
@@ -1741,6 +1775,179 @@ func TestInstanceAdmin_UpdateInstanceAndSyncClusters_WithAutoscaling(t *testing.
 	}
 }
 
+func TestInstanceAdmin_UpdateMemoryLayer(t *testing.T) {
+	mock := &mockAdminClock{}
+	c := setupClient(t, mock)
+	ctx := context.Background()
+
+	// Enable memory layer
+	err := c.UpdateMemoryLayer(ctx, "myinst", MemoryLayerConfig{
+		ClusterID:    "mycluster",
+		MemoryConfig: &MemoryConfig{},
+		Etag:         "etag-1",
+	})
+	if err != nil {
+		t.Fatalf("UpdateMemoryLayer (enable) failed: %v", err)
+	}
+	wantEnableReq := &btapb.UpdateMemoryLayerRequest{
+		MemoryLayer: &btapb.MemoryLayer{
+			Name:         "projects/my-cool-project/instances/myinst/clusters/mycluster/memoryLayer",
+			MemoryConfig: &btapb.MemoryLayer_MemoryConfig{},
+			Etag:         "etag-1",
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"memory_config"}},
+	}
+	if diff := testutil.Diff(mock.updateMemoryLayerReq, wantEnableReq); diff != "" {
+		t.Errorf("UpdateMemoryLayerRequest (enable) mismatch (-got +want):\n%s", diff)
+	}
+
+	// Disable memory layer
+	err = c.UpdateMemoryLayer(ctx, "myinst", MemoryLayerConfig{
+		ClusterID: "mycluster",
+	})
+	if err != nil {
+		t.Fatalf("UpdateMemoryLayer (disable) failed: %v", err)
+	}
+	wantDisableReq := &btapb.UpdateMemoryLayerRequest{
+		MemoryLayer: &btapb.MemoryLayer{
+			Name: "projects/my-cool-project/instances/myinst/clusters/mycluster/memoryLayer",
+		},
+		UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"memory_config"}},
+	}
+	if diff := testutil.Diff(mock.updateMemoryLayerReq, wantDisableReq); diff != "" {
+		t.Errorf("UpdateMemoryLayerRequest (disable) mismatch (-got +want):\n%s", diff)
+	}
+
+	// Missing ClusterID should fail
+	if err := c.UpdateMemoryLayer(ctx, "myinst", MemoryLayerConfig{}); err == nil {
+		t.Errorf("Expected UpdateMemoryLayer to fail when ClusterID is empty")
+	}
+}
+
+func TestInstanceAdmin_GetMemoryLayer(t *testing.T) {
+	tcs := []struct {
+		desc        string
+		memoryLayer *btapb.MemoryLayer
+		wantInfo    *MemoryLayerInfo
+	}{
+		{
+			desc: "when memory layer is enabled",
+			memoryLayer: &btapb.MemoryLayer{
+				Name: "projects/my-cool-project/instances/myinst/clusters/mycluster/memoryLayer",
+				MemoryConfig: &btapb.MemoryLayer_MemoryConfig{
+					StorageSizeGib: 64,
+				},
+				State: btapb.MemoryLayer_READY,
+				Etag:  "etag-1",
+			},
+			wantInfo: &MemoryLayerInfo{
+				ClusterID: "mycluster",
+				MemoryConfig: &MemoryConfig{
+					StorageSizeGiB: 64,
+				},
+				State: "READY",
+				Etag:  "etag-1",
+			},
+		},
+		{
+			desc: "when memory layer is disabled",
+			memoryLayer: &btapb.MemoryLayer{
+				Name:  "projects/my-cool-project/instances/myinst/clusters/mycluster/memoryLayer",
+				State: btapb.MemoryLayer_DISABLED,
+			},
+			wantInfo: &MemoryLayerInfo{
+				ClusterID: "mycluster",
+				State:     "DISABLED",
+			},
+		},
+	}
+
+	for _, tc := range tcs {
+		t.Run(tc.desc, func(t *testing.T) {
+			mock := &mockAdminClock{getMemoryLayerResp: tc.memoryLayer}
+			c := setupClient(t, mock)
+
+			info, err := c.GetMemoryLayer(context.Background(), "myinst", "mycluster")
+			if err != nil {
+				t.Fatalf("GetMemoryLayer failed: %v", err)
+			}
+
+			wantName := "projects/my-cool-project/instances/myinst/clusters/mycluster/memoryLayer"
+			if mock.getMemoryLayerReq.GetName() != wantName {
+				t.Errorf("GetMemoryLayerRequest.Name = %q, want %q", mock.getMemoryLayerReq.GetName(), wantName)
+			}
+
+			if !cmp.Equal(info, tc.wantInfo) {
+				t.Errorf("GetMemoryLayer got = %+v, want = %+v", info, tc.wantInfo)
+			}
+		})
+	}
+}
+
+func TestInstanceAdmin_MemoryLayers(t *testing.T) {
+	mock := &mockAdminClock{
+		listMemoryLayersResp: &btapb.ListMemoryLayersResponse{
+			MemoryLayers: []*btapb.MemoryLayer{
+				{
+					Name: "projects/my-cool-project/instances/myinst/clusters/cluster1/memoryLayer",
+					MemoryConfig: &btapb.MemoryLayer_MemoryConfig{
+						StorageSizeGib: 128,
+					},
+					State: btapb.MemoryLayer_READY,
+					Etag:  "etag-1",
+				},
+				{
+					Name:  "projects/my-cool-project/instances/myinst/clusters/cluster2/memoryLayer",
+					State: btapb.MemoryLayer_DISABLED,
+				},
+			},
+		},
+	}
+	c := setupClient(t, mock)
+
+	infos, err := c.MemoryLayers(context.Background(), "myinst")
+	if err != nil {
+		t.Fatalf("MemoryLayers failed: %v", err)
+	}
+
+	wantParent := "projects/my-cool-project/instances/myinst/clusters/-"
+	if mock.listMemoryLayersReq.GetParent() != wantParent {
+		t.Errorf("ListMemoryLayersRequest.Parent = %q, want %q", mock.listMemoryLayersReq.GetParent(), wantParent)
+	}
+
+	wantInfos := []*MemoryLayerInfo{
+		{
+			ClusterID: "cluster1",
+			MemoryConfig: &MemoryConfig{
+				StorageSizeGiB: 128,
+			},
+			State: "READY",
+			Etag:  "etag-1",
+		},
+		{
+			ClusterID: "cluster2",
+			State:     "DISABLED",
+		},
+	}
+	if !cmp.Equal(infos, wantInfos) {
+		t.Errorf("MemoryLayers got = %+v, want = %+v", infos, wantInfos)
+	}
+
+	// Verify partial results with FailedLocations return ErrPartiallyUnavailable
+	mock.listMemoryLayersResp.FailedLocations = []string{"projects/my-cool-project/locations/us-east1-b"}
+	partialInfos, err := c.MemoryLayers(context.Background(), "myinst")
+	var partialErr ErrPartiallyUnavailable
+	if !errors.As(err, &partialErr) {
+		t.Fatalf("Expected ErrPartiallyUnavailable, got %v", err)
+	}
+	if !cmp.Equal(partialErr.Locations, []string{"projects/my-cool-project/locations/us-east1-b"}) {
+		t.Errorf("Unexpected FailedLocations: %v", partialErr.Locations)
+	}
+	if !cmp.Equal(partialInfos, wantInfos) {
+		t.Errorf("MemoryLayers partial infos got = %+v, want = %+v", partialInfos, wantInfos)
+	}
+}
+
 func TestInstanceAdmin_CreateAppProfile(t *testing.T) {
 	mock := &mockAdminClock{}
 	c := setupClient(t, mock)
@@ -1778,6 +1985,37 @@ func TestInstanceAdmin_CreateAppProfile(t *testing.T) {
 				Isolation: &btapb.AppProfile_StandardIsolation_{
 					StandardIsolation: &btapb.AppProfile_StandardIsolation{
 						Priority: btapb.AppProfile_PRIORITY_HIGH,
+					},
+				},
+			},
+		},
+		{
+			desc: "SingleClusterRouting config with StandardIsolation MemoryConfig",
+			conf: ProfileConf{
+				ProfileID:   "prof_mem",
+				InstanceID:  "inst1",
+				Description: "desc_mem",
+				RoutingConfig: &SingleClusterRoutingConfig{
+					ClusterID:                "cluster1",
+					AllowTransactionalWrites: false,
+				},
+				Isolation: &StandardIsolation{
+					Priority:     AppProfilePriorityMedium,
+					MemoryConfig: &StandardIsolationMemoryConfig{},
+				},
+			},
+			wantProfile: &btapb.AppProfile{
+				Description: "desc_mem",
+				RoutingPolicy: &btapb.AppProfile_SingleClusterRouting_{
+					SingleClusterRouting: &btapb.AppProfile_SingleClusterRouting{
+						ClusterId:                "cluster1",
+						AllowTransactionalWrites: false,
+					},
+				},
+				Isolation: &btapb.AppProfile_StandardIsolation_{
+					StandardIsolation: &btapb.AppProfile_StandardIsolation{
+						Priority:     btapb.AppProfile_PRIORITY_MEDIUM,
+						MemoryConfig: &btapb.AppProfile_StandardIsolation_MemoryConfig{},
 					},
 				},
 			},
@@ -1881,6 +2119,29 @@ func TestInstanceAdmin_UpdateAppProfile(t *testing.T) {
 					},
 				},
 				UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"single_cluster_routing"}},
+			},
+		},
+		{
+			desc:       "Update isolation to StandardIsolation with MemoryConfig",
+			profileID:  "prof_mem",
+			instanceID: "inst1",
+			updateAttrs: ProfileAttrsToUpdate{
+				Isolation: &StandardIsolation{
+					Priority:     AppProfilePriorityHigh,
+					MemoryConfig: &StandardIsolationMemoryConfig{},
+				},
+			},
+			wantReq: &btapb.UpdateAppProfileRequest{
+				AppProfile: &btapb.AppProfile{
+					Name: "projects/my-cool-project/instances/inst1/appProfiles/prof_mem",
+					Isolation: &btapb.AppProfile_StandardIsolation_{
+						StandardIsolation: &btapb.AppProfile_StandardIsolation{
+							Priority:     btapb.AppProfile_PRIORITY_HIGH,
+							MemoryConfig: &btapb.AppProfile_StandardIsolation_MemoryConfig{},
+						},
+					},
+				},
+				UpdateMask: &fieldmaskpb.FieldMask{Paths: []string{"standard_isolation"}},
 			},
 		},
 		{
