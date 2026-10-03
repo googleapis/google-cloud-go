@@ -195,3 +195,60 @@ func getCommonAttributes() []attribute.KeyValue {
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
+
+// recordWriterTraceAttributes attaches descriptive upload mode and configuration attributes
+// to the Object.Writer span in ctx so observers can inspect the write type in Trace Explorer.
+func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
+	if !isOTelTracingDevEnabled() || w == nil {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+
+	writeMode := "resumable"
+	if w.EnableParallelUpload {
+		writeMode = "parallel"
+	} else if w.Append {
+		writeMode = "appendable"
+	} else if w.ChunkSize <= 0 {
+		writeMode = "oneshot"
+	}
+
+	attrs := make([]attribute.KeyValue, 0, 4)
+	attrs = append(attrs,
+		attribute.String("gcp.storage.write.mode", writeMode),
+		attribute.Int("gcp.storage.payload.size_bytes", w.ChunkSize),
+	)
+	if w.EnableParallelUpload {
+		attrs = append(attrs,
+			attribute.Int("gcp.storage.write.parallel.part_size", w.ParallelUploadConfig.PartSize),
+			attribute.Int("gcp.storage.write.parallel.concurrency", w.ParallelUploadConfig.MaxConcurrency),
+		)
+	}
+	span.SetAttributes(attrs...)
+}
+
+// recordReaderTraceAttributes attaches descriptive read mode and range attributes
+// to the Object.Reader or Object.MultiRangeDownloader span in ctx.
+func recordReaderTraceAttributes(ctx context.Context, readMode string, offset, length int64) {
+	if !isOTelTracingDevEnabled() {
+		return
+	}
+	span := trace.SpanFromContext(ctx)
+	if !span.IsRecording() {
+		return
+	}
+
+	attrs := []attribute.KeyValue{
+		attribute.String("gcp.storage.read.mode", readMode),
+	}
+	if readMode == "range" {
+		attrs = append(attrs,
+			attribute.Int64("gcp.storage.payload.offset", offset),
+			attribute.Int64("gcp.storage.payload.size_bytes", length),
+		)
+	}
+	span.SetAttributes(attrs...)
+}
