@@ -115,31 +115,17 @@ func (h *CloudStreamHandler) startHandlingRequest(ctx context.Context, req *exec
 		return outcomeSender.FinishWithError(err)
 	}
 
-	// Create a channel to receive the error from the goroutine.
-	errCh := make(chan error, 1)
-	successCh := make(chan bool, 1)
-
-	go func() {
-		err := actionHandler.ExecuteAction(ctx)
-		if err != nil {
-			log.Printf("Failed to execute action with error %v: %v", inputAction, err)
-			errCh <- err
-		} else {
-			successCh <- true
-		}
-	}()
-
-	// Wait for the goroutine to finish or return an error if one occurs.
-	select {
-	case err := <-errCh:
-		// An error occurred in the goroutine.
+	err := actionHandler.ExecuteAction(ctx)
+	if err != nil {
+		log.Printf("Failed to execute action with error %v: %v", inputAction, err)
 		log.Printf("Client ends the stream with error. Failed to execute action %v with error: %v", inputAction, err)
 		return err
-	case <-successCh:
-		// Success signal received.
-		log.Println("Action executed successfully")
-		return nil
 	}
+
+	// Success signal received.
+	log.Println("Action executed successfully")
+
+	return nil
 }
 
 // newActionHandler instantiates an actionHandler for executing the given action.
