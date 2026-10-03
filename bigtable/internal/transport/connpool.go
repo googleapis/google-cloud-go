@@ -988,7 +988,7 @@ func (p *BigtableChannelPool) addConnections(increaseDelta, maxConns int) bool {
 	copy(combinedConns[numCurrent:], newEntries)
 	p.conns.Store(&combinedConns)
 
-	btopt.Debugf(p.logger, "bigtable_connpool: Added %d connections, new size: %d\n", numCurrent+len(newEntries), len(combinedConns))
+	btopt.Debugf(p.logger, "bigtable_connpool: Added %d connections, new size: %d\n", len(newEntries), len(combinedConns))
 	return true
 }
 
