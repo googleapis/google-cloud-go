@@ -366,9 +366,8 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 				ObjectAttrs:          ObjectAttrs{Name: "test-file.txt"},
 			},
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.write.mode":   "resumable",
-				"gcp.storage.payload.size": int64(256 * 1024),
-				"gcp.storage.object.name":  "test-file.txt",
+				"gcp.storage.write.mode":         "resumable",
+				"gcp.storage.payload.size_bytes": int64(256 * 1024),
 			},
 		},
 		{
@@ -380,9 +379,8 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 				ObjectAttrs:          ObjectAttrs{Name: "test-oneshot.txt"},
 			},
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.write.mode":   "oneshot",
-				"gcp.storage.payload.size": int64(0),
-				"gcp.storage.object.name":  "test-oneshot.txt",
+				"gcp.storage.write.mode":         "oneshot",
+				"gcp.storage.payload.size_bytes": int64(0),
 			},
 		},
 		{
@@ -394,9 +392,8 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 				ObjectAttrs:          ObjectAttrs{Name: "test-oneshot-neg.txt"},
 			},
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.write.mode":   "oneshot",
-				"gcp.storage.payload.size": int64(-1),
-				"gcp.storage.object.name":  "test-oneshot-neg.txt",
+				"gcp.storage.write.mode":         "oneshot",
+				"gcp.storage.payload.size_bytes": int64(-1),
 			},
 		},
 		{
@@ -408,9 +405,8 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 				ObjectAttrs:          ObjectAttrs{Name: "test-append.txt"},
 			},
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.write.mode":   "appendable",
-				"gcp.storage.payload.size": int64(256 * 1024),
-				"gcp.storage.object.name":  "test-append.txt",
+				"gcp.storage.write.mode":         "appendable",
+				"gcp.storage.payload.size_bytes": int64(256 * 1024),
 			},
 		},
 		{
@@ -426,11 +422,10 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 				ObjectAttrs: ObjectAttrs{Name: "test-parallel.txt"},
 			},
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.write.mode":            "parallel",
-				"gcp.storage.payload.size":          int64(256 * 1024),
-				"gcp.storage.object.name":           "test-parallel.txt",
-				"gcp.storage.parallel.part_size":   int64(16 * 1024 * 1024),
-				"gcp.storage.parallel.concurrency": int64(4),
+				"gcp.storage.write.mode":                 "parallel",
+				"gcp.storage.payload.size_bytes":         int64(256 * 1024),
+				"gcp.storage.write.parallel.part_size":   int64(16 * 1024 * 1024),
+				"gcp.storage.write.parallel.concurrency": int64(4),
 			},
 		},
 	}
@@ -486,46 +481,39 @@ func TestRecordWriterTraceAttributes(t *testing.T) {
 
 func TestRecordReaderTraceAttributes(t *testing.T) {
 	testCases := []struct {
-		name       string
-		readMode   string
-		offset     int64
-		length     int64
-		objectName string
-		wantAttrs  map[string]interface{}
+		name      string
+		readMode  string
+		offset    int64
+		length    int64
+		wantAttrs map[string]interface{}
 	}{
 		{
-			name:       "range",
-			readMode:   "range",
-			offset:     100,
-			length:     500,
-			objectName: "read-obj.txt",
+			name:     "range",
+			readMode: "range",
+			offset:   100,
+			length:   500,
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.read.mode":      "range",
-				"gcp.storage.payload.offset": int64(100),
-				"gcp.storage.payload.size":   int64(500),
-				"gcp.storage.object.name":    "read-obj.txt",
+				"gcp.storage.read.mode":          "range",
+				"gcp.storage.payload.offset":     int64(100),
+				"gcp.storage.payload.size_bytes": int64(500),
 			},
 		},
 		{
-			name:       "full",
-			readMode:   "full",
-			offset:     0,
-			length:     -1,
-			objectName: "read-full.txt",
+			name:     "full",
+			readMode: "full",
+			offset:   0,
+			length:   -1,
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.read.mode":   "full",
-				"gcp.storage.object.name": "read-full.txt",
+				"gcp.storage.read.mode": "full",
 			},
 		},
 		{
-			name:       "multi_range",
-			readMode:   "multi_range",
-			offset:     0,
-			length:     0,
-			objectName: "read-mrd.txt",
+			name:     "multi_range",
+			readMode: "multi_range",
+			offset:   0,
+			length:   0,
 			wantAttrs: map[string]interface{}{
-				"gcp.storage.read.mode":   "multi_range",
-				"gcp.storage.object.name": "read-mrd.txt",
+				"gcp.storage.read.mode": "multi_range",
 			},
 		},
 	}
@@ -541,7 +529,7 @@ func TestRecordReaderTraceAttributes(t *testing.T) {
 
 			spanName := "Object.Reader"
 			ctx, _ = startSpan(ctx, spanName)
-			recordReaderTraceAttributes(ctx, tc.readMode, tc.offset, tc.length, tc.objectName)
+			recordReaderTraceAttributes(ctx, tc.readMode, tc.offset, tc.length)
 			endSpan(ctx, nil)
 
 			spans := te.Spans()

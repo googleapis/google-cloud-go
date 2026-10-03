@@ -125,7 +125,7 @@ func (o *ObjectHandle) NewRangeReader(ctx context.Context, offset, length int64,
 	if offset == 0 && length < 0 {
 		readMode = "full"
 	}
-	recordReaderTraceAttributes(ctx, readMode, offset, length, o.object)
+	recordReaderTraceAttributes(ctx, readMode, offset, length)
 
 	if err := o.validate(); err != nil {
 		return nil, err
@@ -281,7 +281,7 @@ func (o *ObjectHandle) NewMultiRangeDownloader(ctx context.Context, opts ...MRDO
 			endSpan(spanCtx, err)
 		}
 	}()
-	recordReaderTraceAttributes(spanCtx, "multi_range", 0, 0, o.object)
+	recordReaderTraceAttributes(spanCtx, "multi_range", 0, 0)
 
 	if err := o.validate(); err != nil {
 		return nil, err

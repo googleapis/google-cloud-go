@@ -192,11 +192,6 @@ func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
 		return
 	}
 
-	objName := w.ObjectAttrs.Name
-	if objName == "" && w.o != nil {
-		objName = w.o.object
-	}
-
 	writeMode := "resumable"
 	if w.EnableParallelUpload {
 		writeMode = "parallel"
@@ -206,16 +201,15 @@ func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
 		writeMode = "oneshot"
 	}
 
-	attrs := make([]attribute.KeyValue, 0, 5)
+	attrs := make([]attribute.KeyValue, 0, 4)
 	attrs = append(attrs,
 		attribute.String("gcp.storage.write.mode", writeMode),
-		attribute.Int("gcp.storage.payload.size", w.ChunkSize),
-		attribute.String("gcp.storage.object.name", objName),
+		attribute.Int("gcp.storage.payload.size_bytes", w.ChunkSize),
 	)
 	if w.EnableParallelUpload {
 		attrs = append(attrs,
-			attribute.Int("gcp.storage.parallel.part_size", w.ParallelUploadConfig.PartSize),
-			attribute.Int("gcp.storage.parallel.concurrency", w.ParallelUploadConfig.MaxConcurrency),
+			attribute.Int("gcp.storage.write.parallel.part_size", w.ParallelUploadConfig.PartSize),
+			attribute.Int("gcp.storage.write.parallel.concurrency", w.ParallelUploadConfig.MaxConcurrency),
 		)
 	}
 	span.SetAttributes(attrs...)
@@ -223,7 +217,7 @@ func recordWriterTraceAttributes(ctx context.Context, w *Writer) {
 
 // recordReaderTraceAttributes attaches descriptive read mode and range attributes
 // to the Object.Reader or Object.MultiRangeDownloader span in ctx.
-func recordReaderTraceAttributes(ctx context.Context, readMode string, offset, length int64, objectName string) {
+func recordReaderTraceAttributes(ctx context.Context, readMode string, offset, length int64) {
 	if !isOTelTracingDevEnabled() {
 		return
 	}
@@ -234,12 +228,11 @@ func recordReaderTraceAttributes(ctx context.Context, readMode string, offset, l
 
 	attrs := []attribute.KeyValue{
 		attribute.String("gcp.storage.read.mode", readMode),
-		attribute.String("gcp.storage.object.name", objectName),
 	}
 	if readMode == "range" {
 		attrs = append(attrs,
 			attribute.Int64("gcp.storage.payload.offset", offset),
-			attribute.Int64("gcp.storage.payload.size", length),
+			attribute.Int64("gcp.storage.payload.size_bytes", length),
 		)
 	}
 	span.SetAttributes(attrs...)
