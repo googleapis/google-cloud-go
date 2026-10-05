@@ -231,7 +231,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.checkAndResetProgress)))
+		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.consumeProgress)))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
@@ -297,7 +297,10 @@ type gRPCWriter struct {
 	donec              chan struct{}
 }
 
-func (w *gRPCWriter) checkAndResetProgress() bool {
+// consumeProgress reports whether the writer made strict forward progress
+// since the last call, and clears the flag. run() uses it to reset the
+// attempt count and backoff for the next chunk.
+func (w *gRPCWriter) consumeProgress() bool {
 	if w.progressMade {
 		w.progressMade = false
 		return true
@@ -380,6 +383,11 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		return
 	}
 
+	// prevConfirmed is the highest offset GCS had confirmed before this
+	// completion. bufFlushedIdx is -1 until the first completion, so clamp it
+	// to 0. Only a completion past prevConfirmed counts as progress: a
+	// reconnect that reports the same persisted size must not reset the retry
+	// budget.
 	prevConfirmed := w.bufBaseOffset + int64(max(0, w.bufFlushedIdx))
 
 	w.bufFlushedIdx = int(c.flushOffset - w.bufBaseOffset)

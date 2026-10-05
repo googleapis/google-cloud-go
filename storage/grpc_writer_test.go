@@ -1176,8 +1176,8 @@ func TestGRPCWriter_ChunkRetryDeadline_NoResetOnUnchangedOffsetAfterPartialShift
 	if w.bufBaseOffset != 50 || w.bufFlushedIdx != 0 {
 		t.Fatalf("expected bufBaseOffset=50 and bufFlushedIdx=0 after shift, got base=%d flushed=%d", w.bufBaseOffset, w.bufFlushedIdx)
 	}
-	if !w.checkAndResetProgress() {
-		t.Fatalf("expected checkAndResetProgress() == true after strict forward progress to offset 50")
+	if !w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == true after strict forward progress to offset 50")
 	}
 
 	// Consume more than half of the retry deadline.
@@ -1194,8 +1194,8 @@ func TestGRPCWriter_ChunkRetryDeadline_NoResetOnUnchangedOffsetAfterPartialShift
 	if w.attempts != 1 {
 		t.Fatalf("expected w.attempts to be 1 (not reset to 0), got %d", w.attempts)
 	}
-	if w.checkAndResetProgress() {
-		t.Fatalf("expected checkAndResetProgress() == false when offset remained unchanged at 50")
+	if w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == false when offset remained unchanged at 50")
 	}
 
 	// Sleep past the original deadline (120ms + 100ms > 200ms).
@@ -1245,8 +1245,8 @@ func TestGRPCWriter_ChunkRetryDeadline_NoResetOnZeroOffsetReconnect(t *testing.T
 	if w.attempts != 1 {
 		t.Fatalf("expected w.attempts == 1 after 0-offset completion, got %d", w.attempts)
 	}
-	if w.checkAndResetProgress() {
-		t.Fatalf("expected checkAndResetProgress() == false after 0-offset completion")
+	if w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == false after 0-offset completion")
 	}
 
 	time.Sleep(120 * time.Millisecond)
@@ -1261,8 +1261,8 @@ func TestGRPCWriter_ChunkRetryDeadline_NoResetOnZeroOffsetReconnect(t *testing.T
 	if w.attempts != 2 {
 		t.Fatalf("expected w.attempts == 2, got %d", w.attempts)
 	}
-	if w.checkAndResetProgress() {
-		t.Fatalf("expected checkAndResetProgress() == false on attempt 2 with 0-offset completion")
+	if w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == false on attempt 2 with 0-offset completion")
 	}
 
 	time.Sleep(100 * time.Millisecond)
@@ -1316,7 +1316,7 @@ func TestGRPCWriter_PerChunkMaxAttemptsResetOnStrictProgress(t *testing.T) {
 		}
 		w.lastErr = w.writeLoop(ctx)
 		return w.lastErr
-	}, retry, true, withProgressReset(w.checkAndResetProgress))
+	}, retry, true, withProgressReset(w.consumeProgress))
 
 	if err == nil || !strings.Contains(err.Error(), "retry failed after 2 attempts") {
 		t.Fatalf("expected retry failed after 2 attempts error, got: %v", err)
@@ -1326,5 +1326,13 @@ func TestGRPCWriter_PerChunkMaxAttemptsResetOnStrictProgress(t *testing.T) {
 	// Call 3: offset stays 50 (no progress, attempts=2 >= maxAttempts=2), terminates.
 	if callCount != 3 {
 		t.Fatalf("expected 3 writeLoop invocations with per-chunk maxAttempts=2, got %d", callCount)
+	}
+	// Call 2 confirmed the first 50 bytes and the next attempt shifted them out
+	// of w.buf. Call 3's completion at the same offset is not new progress.
+	if w.bufBaseOffset != 50 {
+		t.Errorf("bufBaseOffset = %d, want 50", w.bufBaseOffset)
+	}
+	if w.bufFlushedIdx != 0 {
+		t.Errorf("bufFlushedIdx = %d, want 0", w.bufFlushedIdx)
 	}
 }
