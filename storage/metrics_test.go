@@ -1049,3 +1049,54 @@ type mockTokenProvider struct{}
 func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return &auth.Token{}, nil
 }
+
+func TestRecordStallDuration_BidiWriteObject(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	cm.recordStallDuration(ctx, 2*time.Second, "BidiWriteObject", "grpc", "storage.googleapis.com")
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+
+	found := false
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == "gcp.storage.client.stall.duration" {
+				found = true
+				hist := m.Data.(metricdata.Histogram[float64])
+				dp := hist.DataPoints[0]
+				if dp.Sum != 2.0 {
+					t.Errorf("expected sum 2.0, got %v", dp.Sum)
+				}
+				if getHistAttr(dp, "rpc.method") != "BidiWriteObject" {
+					t.Errorf("expected rpc.method BidiWriteObject, got %v", getHistAttr(dp, "rpc.method"))
+				}
+				if getHistAttr(dp, "rpc.system.name") != "grpc" {
+					t.Errorf("expected rpc.system.name grpc, got %v", getHistAttr(dp, "rpc.system.name"))
+				}
+				if getHistAttr(dp, "server.address") != "storage.googleapis.com" {
+					t.Errorf("expected server.address storage.googleapis.com, got %v", getHistAttr(dp, "server.address"))
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("metric not found")
+	}
+}
