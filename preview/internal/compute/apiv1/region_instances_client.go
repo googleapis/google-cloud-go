@@ -62,6 +62,8 @@ type internalRegionInstancesClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstances API.
+//
+// This client uses RegionInstances version 2026-10-01-preview.
 type RegionInstancesClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionInstancesClient
@@ -223,6 +225,7 @@ func (c *regionInstancesRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-10-01-preview",
 	}
 }
 

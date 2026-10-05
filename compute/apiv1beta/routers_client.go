@@ -756,6 +756,9 @@ func (c *routersRESTClient) Delete(ctx context.Context, req *computepb.DeleteRou
 	baseUrl.Path += fmt.Sprintf("/compute/beta/projects/%v/regions/%v/routers/%v", req.GetProject(), req.GetRegion(), req.GetRouter())
 
 	params := url.Values{}
+	if req != nil && req.Etag != nil {
+		params.Add("etag", fmt.Sprintf("%v", req.GetEtag()))
+	}
 	if req != nil && req.RequestId != nil {
 		params.Add("requestId", fmt.Sprintf("%v", req.GetRequestId()))
 	}

@@ -1237,6 +1237,11 @@
               "methods": [
                 "Get"
               ]
+            },
+            "List": {
+              "methods": [
+                "List"
+              ]
             }
           }
         }

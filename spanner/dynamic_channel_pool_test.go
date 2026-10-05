@@ -28,6 +28,7 @@ import (
 	"cloud.google.com/go/spanner/apiv1/spannerpb"
 	"cloud.google.com/go/spanner/internal"
 	. "cloud.google.com/go/spanner/internal/testutil"
+	"github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/apierror"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
@@ -42,6 +43,7 @@ import (
 	gtransport "google.golang.org/api/transport/grpc"
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/connectivity"
 	"google.golang.org/grpc/status"
 )
 
@@ -72,6 +74,7 @@ func setupDCPMockedTestServer(t *testing.T, dcp DynamicChannelPoolConfig) (*Mock
 
 func setupDCPMockedTestServerWithMeterProvider(t *testing.T, dcp DynamicChannelPoolConfig, mp metric.MeterProvider) (*MockedSpannerInMemTestServer, *Client, func()) {
 	t.Helper()
+	disableDCPDrainIdleFloor(t)
 	server, client, teardown := setupMockedTestServerWithConfig(t, ClientConfig{
 		DisableNativeMetrics:       true,
 		DynamicChannelPoolConfig:   dcp,
@@ -83,6 +86,15 @@ func setupDCPMockedTestServerWithMeterProvider(t *testing.T, dcp DynamicChannelP
 		t.Fatal("dynamic channel pool not enabled")
 	}
 	return server, client, teardown
+}
+
+// disableDCPDrainIdleFloor lets pools created by the test close drained
+// entries after just DCPDrainIdleGrace, so short test graces keep working.
+func disableDCPDrainIdleFloor(t *testing.T) {
+	t.Helper()
+	floor := dcpDrainIdleFloor
+	dcpDrainIdleFloor = 0
+	t.Cleanup(func() { dcpDrainIdleFloor = floor })
 }
 
 func newDCPManualReader() (*sdkmetric.ManualReader, *sdkmetric.MeterProvider) {
@@ -746,27 +758,533 @@ func TestDynamicChannelPoolFullScanFallbackFindsOnlyActiveEntry(t *testing.T) {
 	}
 }
 
-func TestDCPResolvingClientRebindsDrainingEntry(t *testing.T) {
+func TestDCPResolvingClientKeepsDrainingEntryUntilClosed(t *testing.T) {
 	p := &dynamicChannelPool{cfg: testDCPConfig(2, 1, 2)}
 	entry1 := &dcpEntry{id: 1, client: &mockSpannerClient{}, parent: p}
 	entry2 := &dcpEntry{id: 2, client: &mockSpannerClient{}, parent: p}
-	entry1.state.Store(dcpStateActive)
-	entry2.state.Store(dcpStateActive)
 	entries := []*dcpEntry{entry1, entry2}
 	p.entries.Store(&entries)
 
-	resolver := newDCPResolvingSpannerClient(p, entry1.id)
-	entry1.state.Store(dcpStateDraining)
+	resolver := newDCPResolvingSpannerClient(p, entry1)
+	drainDCPEntryForTest(t, p, entry1)
 
 	client, err := resolver.resolve(context.Background())
 	if err != nil {
-		t.Fatalf("resolve failed: %v", err)
+		t.Fatalf("resolve while draining failed: %v", err)
+	}
+	if client != entry1.client {
+		t.Fatalf("resolved client while draining mismatch:\n Got: %p\nWant: draining entry1 client %p", client, entry1.client)
+	}
+
+	entry1.close()
+	client, err = resolver.resolve(context.Background())
+	if err != nil {
+		t.Fatalf("resolve after close failed: %v", err)
 	}
 	if client != entry2.client {
-		t.Fatalf("resolved client mismatch:\n Got: %p\nWant: entry2 client %p", client, entry2.client)
+		t.Fatalf("resolved client after close mismatch:\n Got: %p\nWant: entry2 client %p", client, entry2.client)
 	}
-	if got, want := resolver.entryID.Load(), entry2.id; got != want {
-		t.Fatalf("resolver entry id mismatch:\n Got: %d\nWant: %d", got, want)
+	if got, want := resolver.entry.Load(), entry2; got != want {
+		t.Fatalf("resolver entry mismatch:\n Got: entry %d\nWant: entry %d", got.id, want.id)
+	}
+}
+
+type countingDCPConnPool struct {
+	fakeDCPConnPool
+	mu     sync.Mutex
+	closes int
+}
+
+func (f *countingDCPConnPool) Close() error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	f.closes++
+	return nil
+}
+
+func (f *countingDCPConnPool) closeCount() int {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.closes
+}
+
+func newDCPRefTestPool(t *testing.T, n int) (*dynamicChannelPool, []*dcpEntry) {
+	t.Helper()
+	ctx, cancel := context.WithCancel(context.Background())
+	t.Cleanup(cancel)
+	p := &dynamicChannelPool{cfg: testDCPConfig(n, 1, n), ctx: ctx}
+	p.cfg.DCPSelectionStrategy = DCPRoundRobin
+	entries := make([]*dcpEntry, n)
+	for i := range entries {
+		entries[i] = &dcpEntry{id: uint64(i + 1), pool: &countingDCPConnPool{}, client: &mockSpannerClient{}, parent: p}
+	}
+	active := append([]*dcpEntry(nil), entries...)
+	p.entries.Store(&active)
+	return p, entries
+}
+
+func dcpCloses(e *dcpEntry) int { return e.pool.(*countingDCPConnPool).closeCount() }
+
+// A reference taken by the resolver blocks drain close for as long as it is
+// held, however long that is, and independent of the idle grace.
+func TestDCPReferenceBlocksDrainClose(t *testing.T) {
+	p, entries := newDCPRefTestPool(t, 2)
+	bound := entries[0]
+	resolver := newDCPResolvingSpannerClient(p, bound)
+	drainDCPEntryForTest(t, p, bound)
+	bound.lastActivity.Store(time.Now().Add(-time.Hour).UnixNano())
+
+	e, err := resolver.acquire(context.Background())
+	if err != nil || e != bound {
+		t.Fatalf("acquire = entry %v, %v; want draining bound entry", e, err)
+	}
+	if bound.closeIfIdle(0) {
+		t.Fatal("drain closed an entry an RPC holds a reference to")
+	}
+	if got := dcpCloses(bound); got != 0 {
+		t.Fatalf("conn closes while referenced = %d, want 0", got)
+	}
+	if got := bound.state.Load(); got != dcpStateDraining {
+		t.Fatalf("state while referenced = %d, want draining", got)
+	}
+	e.release()
+	if !bound.closeIfIdle(0) {
+		t.Fatal("drain did not close an idle unreferenced entry")
+	}
+	if got := dcpCloses(bound); got != 1 {
+		t.Fatalf("conn closes = %d, want 1", got)
+	}
+	// Closed is final: a later acquire re-picks instead of reviving it.
+	e, err = resolver.acquire(context.Background())
+	if err != nil || e != entries[1] {
+		t.Fatalf("acquire after close = entry %v, %v; want active entry 2", e, err)
+	}
+	e.release()
+}
+
+// The real drain worker must go through the reference gate.
+func TestDCPDrainWorkerWaitsForReference(t *testing.T) {
+	p, entries := newDCPRefTestPool(t, 2)
+	bound := entries[0]
+	removeDCPEntryForTest(p, bound)
+	bound.lastActivity.Store(time.Now().Add(-time.Hour).UnixNano())
+	if !bound.acquire() {
+		t.Fatal("acquire on draining entry failed")
+	}
+	done := make(chan struct{})
+	go func() { p.waitForDrainAndClose(bound); close(done) }()
+	select {
+	case <-done:
+		t.Fatal("drain worker closed an entry an RPC holds a reference to")
+	case <-time.After(700 * time.Millisecond): // more than two worker ticks
+	}
+	bound.release()
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("drain worker did not close after the reference was released")
+	}
+	if got := dcpCloses(bound); got != 1 {
+		t.Fatalf("conn closes = %d, want 1", got)
+	}
+}
+
+// A draining entry stays open past a short grace until it has been idle for the
+// floor, so a read-write transaction keeps its channel between statements.
+func TestDCPDrainIdleFloorKeepsDrainingEntryOpen(t *testing.T) {
+	p, entries := newDCPRefTestPool(t, 2)
+	p.cfg.DCPDrainIdleGrace = time.Second
+	p.drainIdleFloor = 15 * time.Second
+	bound := entries[0]
+	removeDCPEntryForTest(p, bound)
+	bound.lastActivity.Store(time.Now().Add(-2 * time.Second).UnixNano())
+	done := make(chan struct{})
+	go func() { p.waitForDrainAndClose(bound); close(done) }()
+	select {
+	case <-done:
+		t.Fatal("drain closed an entry idle longer than the grace but shorter than the floor")
+	case <-time.After(700 * time.Millisecond): // more than two worker ticks
+	}
+	bound.lastActivity.Store(time.Now().Add(-16 * time.Second).UnixNano())
+	select {
+	case <-done:
+	case <-time.After(5 * time.Second):
+		t.Fatal("drain did not close an entry idle longer than the floor")
+	}
+	if got := dcpCloses(bound); got != 1 {
+		t.Fatalf("conn closes = %d, want 1", got)
+	}
+}
+
+// Shutdown closes immediately even when referenced, exactly once, and drain
+// cannot undo or repeat it.
+func TestDCPShutdownCloseWinsOverReferences(t *testing.T) {
+	p, entries := newDCPRefTestPool(t, 2)
+	bound := entries[0]
+	drainDCPEntryForTest(t, p, bound)
+	if !bound.acquire() {
+		t.Fatal("acquire on draining entry failed")
+	}
+	var wg sync.WaitGroup
+	for i := 0; i < 8; i++ {
+		wg.Add(2)
+		go func() { defer wg.Done(); bound.close() }()
+		go func() { defer wg.Done(); bound.closeIfIdle(0) }()
+	}
+	wg.Wait()
+	if got := dcpCloses(bound); got != 1 {
+		t.Fatalf("conn closes = %d, want exactly 1", got)
+	}
+	bound.release()
+	if bound.acquire() {
+		t.Fatal("acquire succeeded on a closed entry")
+	}
+	if !bound.closeIfIdle(0) {
+		t.Fatal("closeIfIdle does not report a shut down entry as closed")
+	}
+	if got, want := dcpCloses(bound), 1; got != want {
+		t.Fatalf("conn closes after late calls = %d, want %d", got, want)
+	}
+	if got := bound.state.Load(); got != dcpStateClosed {
+		t.Fatalf("state = %d, want closed", got)
+	}
+}
+
+// A stream keeps its entry open after the call that started it returned.
+func TestDCPStreamHoldsReferenceUntilFinished(t *testing.T) {
+	p, entries := newDCPRefTestPool(t, 2)
+	bound := entries[0]
+	drainDCPEntryForTest(t, p, bound)
+	client := &dcpSpannerClient{entry: bound}
+	ref := client.startStream(context.Background())
+	// The drain worker passed its idle check just before the stream started.
+	if bound.closeIfUnreferenced() {
+		t.Fatal("drain closed an entry with an open stream")
+	}
+	ref.done(nil)
+	ref.done(nil)
+	if got := bound.refs.Load(); got != 0 {
+		t.Fatalf("references after stream finish = %d, want 0", got)
+	}
+	if !bound.closeIfUnreferenced() {
+		t.Fatal("drain did not close after the stream finished")
+	}
+}
+
+// Concurrent RPCs of one transaction agree on the replacement entry.
+func TestDCPConcurrentRebindAgreesOnOneEntry(t *testing.T) {
+	for i := 0; i < 200; i++ {
+		p, entries := newDCPRefTestPool(t, 5)
+		bound := entries[0]
+		resolver := newDCPResolvingSpannerClient(p, bound)
+		drainDCPEntryForTest(t, p, bound)
+		bound.close()
+		const n = 16
+		got := make([]*dcpEntry, n)
+		start := make(chan struct{})
+		var wg sync.WaitGroup
+		for g := 0; g < n; g++ {
+			wg.Add(1)
+			go func() {
+				defer wg.Done()
+				<-start
+				e, err := resolver.acquire(context.Background())
+				if err != nil {
+					t.Error(err)
+					return
+				}
+				got[g] = e
+			}()
+		}
+		close(start)
+		wg.Wait()
+		for g := 1; g < n; g++ {
+			if got[g] != got[0] {
+				t.Fatalf("iteration %d: concurrent RPCs used entries %d and %d", i, got[0].id, got[g].id)
+			}
+		}
+		if got[0] == bound || got[0] != resolver.entry.Load() {
+			t.Fatalf("iteration %d: rebound entry mismatch", i)
+		}
+	}
+}
+
+// dcpGapClient pauses an RPC after the resolver acquired its entry and before
+// the entry client counts it as load.
+type dcpGapClient struct {
+	spannerClient
+	entered, resume chan struct{}
+	once            sync.Once
+}
+
+func (c *dcpGapClient) pause() {
+	c.once.Do(func() { close(c.entered) })
+	<-c.resume
+}
+
+func (c *dcpGapClient) Commit(ctx context.Context, req *spannerpb.CommitRequest, opts ...gax.CallOption) (*spannerpb.CommitResponse, error) {
+	c.pause()
+	return c.spannerClient.Commit(ctx, req, opts...)
+}
+
+func (c *dcpGapClient) ExecuteStreamingSql(ctx context.Context, req *spannerpb.ExecuteSqlRequest, opts ...gax.CallOption) (spannerpb.Spanner_ExecuteStreamingSqlClient, error) {
+	c.pause()
+	return c.spannerClient.ExecuteStreamingSql(ctx, req, opts...)
+}
+
+// An RPC of a read-write transaction that is delayed between resolving its
+// draining channel and counting as load must still run on that channel: the
+// real drain worker has to leave the channel open until the RPC is done.
+func TestDCPReadWriteTransactionSurvivesResolveToLoadGap(t *testing.T) {
+	for _, streaming := range []bool{false, true} {
+		name := "unary commit"
+		if streaming {
+			name = "streaming query"
+		}
+		t.Run(name, func(t *testing.T) {
+			cfg := testDCPConfig(2, 1, 2)
+			cfg.DCPScaleDownCheckInterval = time.Hour
+			_, client, teardown := setupDCPMockedTestServer(t, cfg)
+			defer teardown()
+			p := client.sc.dynamicPool
+			gap := &dcpGapClient{entered: make(chan struct{}), resume: make(chan struct{})}
+			var resumeOnce sync.Once
+			resume := func() { resumeOnce.Do(func() { close(gap.resume) }) }
+			defer resume()
+			ctx, cancel := context.WithTimeout(context.Background(), 30*time.Second)
+			defer cancel()
+
+			boundCh := make(chan *dcpEntry, 1)
+			result := make(chan error, 1)
+			go func() {
+				_, err := client.ReadWriteTransaction(ctx, func(ctx context.Context, tx *ReadWriteTransaction) error {
+					if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+						return err
+					}
+					bound := tx.txReadOnly.sh.getClient().(*dcpResolvingSpannerClient).entry.Load()
+					removeDCPEntryForTest(p, bound)
+					gap.spannerClient = bound.client
+					bound.client = gap
+					boundCh <- bound
+					if streaming {
+						// Call the session handle client directly: the gap client is
+						// not a request-id header provider, which tx.Query needs.
+						sh := tx.txReadOnly.sh
+						stream, err := sh.getClient().ExecuteStreamingSql(contextWithOutgoingMetadata(ctx, sh.getMetadata(), false), &spannerpb.ExecuteSqlRequest{
+							Session:     sh.getID(),
+							Transaction: tx.getTransactionSelector(),
+							Sql:         "SELECT 1",
+						})
+						if err != nil {
+							return err
+						}
+						for {
+							if _, err := stream.Recv(); err == io.EOF {
+								return nil
+							} else if err != nil {
+								return err
+							}
+						}
+					}
+					return nil
+				})
+				result <- err
+			}()
+			var bound *dcpEntry
+			select {
+			case bound = <-boundCh:
+			case err := <-result:
+				t.Fatalf("transaction ended before the gap: %v", err)
+			}
+			select {
+			case <-gap.entered:
+			case err := <-result:
+				t.Fatalf("transaction ended before the gap: %v", err)
+			}
+			if got := bound.rpcLoad(); got != 0 {
+				t.Fatalf("load in the gap = %d, want 0", got)
+			}
+			// Far longer than the 10ms grace: several real drain worker ticks.
+			drained := make(chan struct{})
+			go func() { p.waitForDrainAndClose(bound); close(drained) }()
+			select {
+			case <-drained:
+				t.Fatalf("drain closed the channel inside the resolve/load gap: connection=%s", bound.pool.Conn().GetState())
+			case <-time.After(700 * time.Millisecond):
+			}
+			if got := bound.pool.Conn().GetState(); got == connectivity.Shutdown {
+				t.Fatal("connection shut down inside the resolve/load gap")
+			}
+			resume()
+			if err := <-result; err != nil {
+				t.Fatalf("ReadWriteTransaction failed after resolve/load gap: %v", err)
+			}
+			// No leak: the worker closes the channel once the transaction is done.
+			select {
+			case <-drained:
+			case <-time.After(10 * time.Second):
+				t.Fatal("drain never closed the channel after the transaction finished")
+			}
+			if got := bound.pool.Conn().GetState(); got != connectivity.Shutdown {
+				t.Fatalf("connection after drain = %s, want SHUTDOWN", got)
+			}
+			if got := p.drainingCount.Load(); got != 0 {
+				t.Fatalf("drainingCount = %d, want 0", got)
+			}
+		})
+	}
+}
+
+// dcpChannelRecorder records the DCP channel id, taken from the request-id
+// header, of every unary RPC sent for the given methods.
+type dcpChannelRecorder struct {
+	methods map[string]bool
+
+	mu    sync.Mutex
+	calls []dcpRecordedCall
+}
+
+type dcpRecordedCall struct {
+	method    string
+	channelID uint64
+}
+
+func (r *dcpChannelRecorder) unaryInterceptor(ctx context.Context, method string, req, reply any, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+	if r.methods[method] {
+		reqID, err := checkForMissingSpannerRequestIDHeader(opts)
+		if err != nil {
+			return err
+		}
+		r.mu.Lock()
+		r.calls = append(r.calls, dcpRecordedCall{method: method, channelID: uint64(reqID.ChannelID)})
+		r.mu.Unlock()
+	}
+	return invoker(ctx, method, req, reply, cc, opts...)
+}
+
+func (r *dcpChannelRecorder) recorded() []dcpRecordedCall {
+	r.mu.Lock()
+	defer r.mu.Unlock()
+	return append([]dcpRecordedCall(nil), r.calls...)
+}
+
+// drainDCPEntryForTest moves a specific entry to draining the way
+// removeEntries does on scale-down, without starting the drain-and-close loop.
+// The pool no longer owns the entry, so it is closed at test cleanup.
+func drainDCPEntryForTest(t *testing.T, p *dynamicChannelPool, target *dcpEntry) {
+	t.Helper()
+	removeDCPEntryForTest(p, target)
+	t.Cleanup(func() {
+		target.close()
+		p.drainingCount.Add(-1)
+	})
+}
+
+// removeDCPEntryForTest does what removeEntries does to an entry before it
+// starts waitForDrainAndClose, which then owns closing it.
+func removeDCPEntryForTest(p *dynamicChannelPool, target *dcpEntry) {
+	p.dialMu.Lock()
+	defer p.dialMu.Unlock()
+	target.state.Store(dcpStateDraining)
+	target.clearErrorPenalty()
+	var keep []*dcpEntry
+	for _, e := range p.getEntries() {
+		if e != target {
+			keep = append(keep, e)
+		}
+	}
+	p.entries.Store(&keep)
+	p.drainingCount.Add(1)
+}
+
+func TestDCPReadWriteTransactionChannelAffinityAcrossDrain(t *testing.T) {
+	const (
+		executeSQL = "/google.spanner.v1.Spanner/ExecuteSql"
+		commit     = "/google.spanner.v1.Spanner/Commit"
+	)
+	tests := []struct {
+		name string
+		// closeBound closes the bound channel after draining it, as
+		// waitForDrainAndClose eventually does.
+		closeBound bool
+		// wantSameChannel reports whether the second and third operations must
+		// use the channel of the first operation.
+		wantSameChannel bool
+	}{
+		{name: "draining channel keeps serving transaction", closeBound: false, wantSameChannel: true},
+		{name: "closed channel moves transaction to active channel", closeBound: true, wantSameChannel: false},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			recorder := &dcpChannelRecorder{methods: map[string]bool{executeSQL: true, commit: true}}
+			cfg := testDCPConfig(2, 1, 2)
+			// Disable background scale-down so only the test changes entry state.
+			cfg.DCPScaleDownCheckInterval = time.Hour
+			server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{
+				DisableNativeMetrics:     true,
+				DynamicChannelPoolConfig: cfg,
+			}, []option.ClientOption{
+				option.WithGRPCDialOption(grpc.WithUnaryInterceptor(recorder.unaryInterceptor)),
+			})
+			defer teardown()
+			addSelect1Result(server)
+			p := client.sc.dynamicPool
+			if p == nil {
+				t.Fatal("dynamic channel pool not enabled")
+			}
+			if got, want := p.Num(), 2; got != want {
+				t.Fatalf("DCP channel count mismatch:\n Got: %d\nWant: %d", got, want)
+			}
+
+			var bound *dcpEntry
+			_, err := client.ReadWriteTransaction(context.Background(), func(ctx context.Context, tx *ReadWriteTransaction) error {
+				if _, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo)); err != nil {
+					return err
+				}
+				if bound == nil {
+					calls := recorder.recorded()
+					if len(calls) != 1 {
+						return fmt.Errorf("recorded calls after first operation = %+v, want exactly one", calls)
+					}
+					for _, e := range p.getEntries() {
+						if e.id == calls[0].channelID {
+							bound = e
+						}
+					}
+					if bound == nil {
+						return fmt.Errorf("first operation channel %d is not an active DCP entry", calls[0].channelID)
+					}
+					drainDCPEntryForTest(t, p, bound)
+					if tt.closeBound {
+						bound.close()
+					}
+				}
+				_, err := tx.Update(ctx, NewStatement(UpdateBarSetFoo))
+				return err
+			})
+			if err != nil {
+				t.Fatalf("ReadWriteTransaction failed: %v", err)
+			}
+
+			calls := recorder.recorded()
+			if got, want := len(calls), 3; got != want {
+				t.Fatalf("recorded call count mismatch:\n Got: %d (%+v)\nWant: %d", got, calls, want)
+			}
+			for i, want := range []string{executeSQL, executeSQL, commit} {
+				if calls[i].method != want {
+					t.Fatalf("operation %d method mismatch:\n Got: %s\nWant: %s", i+1, calls[i].method, want)
+				}
+			}
+			first := calls[0].channelID
+			for i, c := range calls[1:] {
+				if tt.wantSameChannel && c.channelID != first {
+					t.Errorf("operation %d (%s) channel mismatch after draining:\n Got: channel %d\nWant: draining bound channel %d\nAll operations: %+v", i+2, c.method, c.channelID, first, calls)
+				}
+				if !tt.wantSameChannel && c.channelID == first {
+					t.Errorf("operation %d (%s) channel mismatch after close:\n Got: closed bound channel %d\nWant: a different active channel\nAll operations: %+v", i+2, c.method, c.channelID, calls)
+				}
+			}
+		})
 	}
 }
 
@@ -774,7 +1292,7 @@ func TestDCPResolvingRequestIDReturnsErrorWhenNoEntry(t *testing.T) {
 	p := &dynamicChannelPool{cfg: testDCPConfig(1, 1, 1)}
 	entries := []*dcpEntry{}
 	p.entries.Store(&entries)
-	resolver := newDCPResolvingSpannerClient(p, 1)
+	resolver := newDCPResolvingSpannerClient(p, nil)
 
 	if _, err := resolver.requestIDHeaderInjector(context.Background()); err == nil {
 		t.Fatal("requestIDHeaderInjector succeeded, want error")

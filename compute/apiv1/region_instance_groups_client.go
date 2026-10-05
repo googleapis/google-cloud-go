@@ -103,6 +103,8 @@ type internalRegionInstanceGroupsClient interface {
 // Methods, except Close, may be called concurrently. However, fields must not be modified concurrently with method calls.
 //
 // The RegionInstanceGroups API.
+//
+// This client uses RegionInstanceGroups version 2026-09-01.
 type RegionInstanceGroupsClient struct {
 	// The internal transport-dependent client.
 	internalClient internalRegionInstanceGroupsClient
@@ -299,6 +301,7 @@ func (c *regionInstanceGroupsRESTClient) setGoogleClientInfo(keyval ...string) {
 	kv = append(kv, "gapic", getVersionClient(), "gax", gax.Version, "rest", "UNKNOWN", "pb", protoVersion)
 	c.xGoogHeaders = []string{
 		"x-goog-api-client", gax.XGoogHeader(kv...),
+		"x-goog-api-version", "2026-09-01",
 	}
 }
 
@@ -404,9 +407,6 @@ func (c *regionInstanceGroupsRESTClient) List(ctx context.Context, req *computep
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
 		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
-		}
 
 		baseUrl.RawQuery = params.Encode()
 
@@ -498,9 +498,6 @@ func (c *regionInstanceGroupsRESTClient) ListInstances(ctx context.Context, req 
 		}
 		if req != nil && req.PageToken != nil {
 			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
-		}
-		if req != nil && req.ReturnPartialSuccess != nil {
-			params.Add("returnPartialSuccess", fmt.Sprintf("%v", req.GetReturnPartialSuccess()))
 		}
 
 		baseUrl.RawQuery = params.Encode()

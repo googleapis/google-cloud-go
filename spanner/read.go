@@ -482,63 +482,9 @@ type resumableStreamDecoder struct {
 	// reset whenever a new reqIDInjector is created afresh.
 	retryAttempt uint32
 
-	// meterTracerFactory creates mt when the first stream is opened. It is
-	// cleared then, so that each result stream has at most one operation.
-	meterTracerFactory *builtinMetricsTracerFactory
-	// mt records the built-in metrics operation of the result stream. Every
-	// stream opened or resumed for it is an attempt of that operation. It is
-	// nil when built-in metrics are disabled and after the operation ended.
-	mt *builtinMetricsTracer
-}
-
-// startAttempt starts a built-in metrics attempt for a new stream. The first
-// attempt also starts the operation.
-func (d *resumableStreamDecoder) startAttempt() {
-	if d.meterTracerFactory != nil {
-		d.mt = d.meterTracerFactory.newBuiltinMetricsTracer(d.ctx)
-		d.meterTracerFactory = nil
-	}
-	if d.mt == nil {
-		return
-	}
-	d.mt.currOp.incrementAttemptCount()
-	d.mt.currOp.currAttempt = &attemptTracer{
-		startTime: time.Now(),
-	}
-}
-
-// endAttempt records the end of the current attempt with the given status. An
-// attempt that already has a status has been recorded before.
-func (d *resumableStreamDecoder) endAttempt(code codes.Code) {
-	if d.mt == nil || d.mt.currOp.currAttempt == nil || d.mt.currOp.currAttempt.status != "" {
-		return
-	}
-	d.mt.currOp.currAttempt.setStatus(code.String())
-	if !d.mt.currOp.currAttempt.rpcStarted {
-		// The attempt failed before its RPC was started, so it is not
-		// recorded or counted.
-		d.mt.currOp.attemptCount--
-		return
-	}
-	recordAttemptCompletion(d.mt)
-}
-
-// finishOperation records the end of the operation with the given status,
-// ending the current attempt with the same status if it is still in progress.
-// Later calls do nothing.
-func (d *resumableStreamDecoder) finishOperation(code codes.Code) {
-	mt := d.mt
-	if mt == nil {
-		return
-	}
-	d.endAttempt(code)
-	d.mt = nil
-	// The method is empty if no RPC was ever sent.
-	if mt.method == "" {
-		return
-	}
-	mt.currOp.setStatus(code.String())
-	recordOperationCompletion(mt)
+	// streamOperationMetrics records the built-in metrics operation of the
+	// result stream.
+	streamOperationMetrics
 }
 
 // newResumableStreamDecoder creates a new resumeableStreamDecoder instance.
@@ -673,7 +619,7 @@ func (d *resumableStreamDecoder) next() bool {
 		switch d.state {
 		case unConnected:
 			d.retryAttempt++
-			d.startAttempt()
+			d.startAttempt(d.ctx)
 			// If no gRPC stream is available, try to initiate one.
 			d.stream, d.err = d.rpc(contextWithBuiltinMetricsTracer(d.ctx, d.mt), d.resumeToken, riw.withNextRetryAttempt(d.retryAttempt))
 			if d.err == nil {

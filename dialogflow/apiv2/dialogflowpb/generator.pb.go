@@ -1390,7 +1390,10 @@ type Generator struct {
 	ToolsetTools []*ToolsetTool `protobuf:"bytes,27,rep,name=toolset_tools,json=toolsetTools,proto3" json:"toolset_tools,omitempty"`
 	// Optional. List of CES tool specs that the generator can choose from.
 	CesToolSpecs []*CesToolSpec `protobuf:"bytes,28,rep,name=ces_tool_specs,json=cesToolSpecs,proto3" json:"ces_tool_specs,omitempty"`
-	// Optional. List of CES app specs that the generator can choose from.
+	// Optional. Deprecated: Use `ces_tool_specs` instead.
+	// List of CES app specs that the generator can choose from.
+	//
+	// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2/generator.proto.
 	CesAppSpecs   []*CesAppSpec `protobuf:"bytes,29,rep,name=ces_app_specs,json=cesAppSpecs,proto3" json:"ces_app_specs,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1546,6 +1549,7 @@ func (x *Generator) GetCesToolSpecs() []*CesToolSpec {
 	return nil
 }
 
+// Deprecated: Marked as deprecated in google/cloud/dialogflow/v2/generator.proto.
 func (x *Generator) GetCesAppSpecs() []*CesAppSpec {
 	if x != nil {
 		return x.CesAppSpecs
@@ -2525,7 +2529,7 @@ const file_google_cloud_dialogflow_v2_generator_proto_rawDesc = "" +
 	"\aversion\x18\x03 \x01(\tB\x03\xe0A\x01R\aversion\x125\n" +
 	"\x14output_language_code\x18\x06 \x01(\tB\x03\xe0A\x01R\x12outputLanguageCode\"*\n" +
 	"\x0fFreeFormContext\x12\x17\n" +
-	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01R\x04text\"\xb9\n" +
+	"\x04text\x18\x01 \x01(\tB\x03\xe0A\x01R\x04text\"\xbb\n" +
 	"\n" +
 	"\tGenerator\x12\x1a\n" +
 	"\x04name\x18\x01 \x01(\tB\x06\xe0A\b\xe0A\x03R\x04name\x12%\n" +
@@ -2544,8 +2548,8 @@ const file_google_cloud_dialogflow_v2_generator_proto_rawDesc = "" +
 	"\x1edialogflow.googleapis.com/ToolR\x05tools\x12w\n" +
 	"\x1asuggestion_deduping_config\x18\x17 \x01(\v24.google.cloud.dialogflow.v2.SuggestionDedupingConfigB\x03\xe0A\x01R\x18suggestionDedupingConfig\x12Q\n" +
 	"\rtoolset_tools\x18\x1b \x03(\v2'.google.cloud.dialogflow.v2.ToolsetToolB\x03\xe0A\x01R\ftoolsetTools\x12R\n" +
-	"\x0eces_tool_specs\x18\x1c \x03(\v2'.google.cloud.dialogflow.v2.CesToolSpecB\x03\xe0A\x01R\fcesToolSpecs\x12O\n" +
-	"\rces_app_specs\x18\x1d \x03(\v2&.google.cloud.dialogflow.v2.CesAppSpecB\x03\xe0A\x01R\vcesAppSpecs:\x7f\xeaA|\n" +
+	"\x0eces_tool_specs\x18\x1c \x03(\v2'.google.cloud.dialogflow.v2.CesToolSpecB\x03\xe0A\x01R\fcesToolSpecs\x12Q\n" +
+	"\rces_app_specs\x18\x1d \x03(\v2&.google.cloud.dialogflow.v2.CesAppSpecB\x05\xe0A\x01\x18\x01R\vcesAppSpecs:\x7f\xeaA|\n" +
 	"#dialogflow.googleapis.com/Generator\x12>projects/{project}/locations/{location}/generators/{generator}*\n" +
 	"generators2\tgeneratorB\t\n" +
 	"\acontextB\x12\n" +

@@ -1942,6 +1942,7 @@ type TableRequest struct {
 	//
 	//	*TableRequest_ReadRow
 	//	*TableRequest_MutateRow
+	//	*TableRequest_CheckAndMutateRow
 	Payload       isTableRequest_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2002,6 +2003,15 @@ func (x *TableRequest) GetMutateRow() *SessionMutateRowRequest {
 	return nil
 }
 
+func (x *TableRequest) GetCheckAndMutateRow() *SessionCheckAndMutateRowRequest {
+	if x != nil {
+		if x, ok := x.Payload.(*TableRequest_CheckAndMutateRow); ok {
+			return x.CheckAndMutateRow
+		}
+	}
+	return nil
+}
+
 type isTableRequest_Payload interface {
 	isTableRequest_Payload()
 }
@@ -2014,9 +2024,15 @@ type TableRequest_MutateRow struct {
 	MutateRow *SessionMutateRowRequest `protobuf:"bytes,2,opt,name=mutate_row,json=mutateRow,proto3,oneof"`
 }
 
+type TableRequest_CheckAndMutateRow struct {
+	CheckAndMutateRow *SessionCheckAndMutateRowRequest `protobuf:"bytes,4,opt,name=check_and_mutate_row,json=checkAndMutateRow,proto3,oneof"`
+}
+
 func (*TableRequest_ReadRow) isTableRequest_Payload() {}
 
 func (*TableRequest_MutateRow) isTableRequest_Payload() {}
+
+func (*TableRequest_CheckAndMutateRow) isTableRequest_Payload() {}
 
 // Internal usage only.
 type TableResponse struct {
@@ -2025,6 +2041,7 @@ type TableResponse struct {
 	//
 	//	*TableResponse_ReadRow
 	//	*TableResponse_MutateRow
+	//	*TableResponse_CheckAndMutateRow
 	Payload       isTableResponse_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2085,6 +2102,15 @@ func (x *TableResponse) GetMutateRow() *SessionMutateRowResponse {
 	return nil
 }
 
+func (x *TableResponse) GetCheckAndMutateRow() *SessionCheckAndMutateRowResponse {
+	if x != nil {
+		if x, ok := x.Payload.(*TableResponse_CheckAndMutateRow); ok {
+			return x.CheckAndMutateRow
+		}
+	}
+	return nil
+}
+
 type isTableResponse_Payload interface {
 	isTableResponse_Payload()
 }
@@ -2097,9 +2123,15 @@ type TableResponse_MutateRow struct {
 	MutateRow *SessionMutateRowResponse `protobuf:"bytes,2,opt,name=mutate_row,json=mutateRow,proto3,oneof"`
 }
 
+type TableResponse_CheckAndMutateRow struct {
+	CheckAndMutateRow *SessionCheckAndMutateRowResponse `protobuf:"bytes,4,opt,name=check_and_mutate_row,json=checkAndMutateRow,proto3,oneof"`
+}
+
 func (*TableResponse_ReadRow) isTableResponse_Payload() {}
 
 func (*TableResponse_MutateRow) isTableResponse_Payload() {}
+
+func (*TableResponse_CheckAndMutateRow) isTableResponse_Payload() {}
 
 // A request wrapper for operations on an authorized view. Internal usage only.
 type AuthorizedViewRequest struct {
@@ -2110,6 +2142,7 @@ type AuthorizedViewRequest struct {
 	//
 	//	*AuthorizedViewRequest_ReadRow
 	//	*AuthorizedViewRequest_MutateRow
+	//	*AuthorizedViewRequest_CheckAndMutateRow
 	Payload       isAuthorizedViewRequest_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2170,6 +2203,15 @@ func (x *AuthorizedViewRequest) GetMutateRow() *SessionMutateRowRequest {
 	return nil
 }
 
+func (x *AuthorizedViewRequest) GetCheckAndMutateRow() *SessionCheckAndMutateRowRequest {
+	if x != nil {
+		if x, ok := x.Payload.(*AuthorizedViewRequest_CheckAndMutateRow); ok {
+			return x.CheckAndMutateRow
+		}
+	}
+	return nil
+}
+
 type isAuthorizedViewRequest_Payload interface {
 	isAuthorizedViewRequest_Payload()
 }
@@ -2182,9 +2224,15 @@ type AuthorizedViewRequest_MutateRow struct {
 	MutateRow *SessionMutateRowRequest `protobuf:"bytes,2,opt,name=mutate_row,json=mutateRow,proto3,oneof"`
 }
 
+type AuthorizedViewRequest_CheckAndMutateRow struct {
+	CheckAndMutateRow *SessionCheckAndMutateRowRequest `protobuf:"bytes,4,opt,name=check_and_mutate_row,json=checkAndMutateRow,proto3,oneof"`
+}
+
 func (*AuthorizedViewRequest_ReadRow) isAuthorizedViewRequest_Payload() {}
 
 func (*AuthorizedViewRequest_MutateRow) isAuthorizedViewRequest_Payload() {}
+
+func (*AuthorizedViewRequest_CheckAndMutateRow) isAuthorizedViewRequest_Payload() {}
 
 // A response wrapper for operations on an authorized view. Internal usage only.
 type AuthorizedViewResponse struct {
@@ -2195,6 +2243,7 @@ type AuthorizedViewResponse struct {
 	//
 	//	*AuthorizedViewResponse_ReadRow
 	//	*AuthorizedViewResponse_MutateRow
+	//	*AuthorizedViewResponse_CheckAndMutateRow
 	Payload       isAuthorizedViewResponse_Payload `protobuf_oneof:"payload"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -2255,6 +2304,15 @@ func (x *AuthorizedViewResponse) GetMutateRow() *SessionMutateRowResponse {
 	return nil
 }
 
+func (x *AuthorizedViewResponse) GetCheckAndMutateRow() *SessionCheckAndMutateRowResponse {
+	if x != nil {
+		if x, ok := x.Payload.(*AuthorizedViewResponse_CheckAndMutateRow); ok {
+			return x.CheckAndMutateRow
+		}
+	}
+	return nil
+}
+
 type isAuthorizedViewResponse_Payload interface {
 	isAuthorizedViewResponse_Payload()
 }
@@ -2267,9 +2325,15 @@ type AuthorizedViewResponse_MutateRow struct {
 	MutateRow *SessionMutateRowResponse `protobuf:"bytes,2,opt,name=mutate_row,json=mutateRow,proto3,oneof"`
 }
 
+type AuthorizedViewResponse_CheckAndMutateRow struct {
+	CheckAndMutateRow *SessionCheckAndMutateRowResponse `protobuf:"bytes,4,opt,name=check_and_mutate_row,json=checkAndMutateRow,proto3,oneof"`
+}
+
 func (*AuthorizedViewResponse_ReadRow) isAuthorizedViewResponse_Payload() {}
 
 func (*AuthorizedViewResponse_MutateRow) isAuthorizedViewResponse_Payload() {}
+
+func (*AuthorizedViewResponse_CheckAndMutateRow) isAuthorizedViewResponse_Payload() {}
 
 // A request wrapper for operations on a materialized view. Internal usage only.
 type MaterializedViewRequest struct {
@@ -2607,6 +2671,120 @@ func (*SessionMutateRowResponse) Descriptor() ([]byte, []int) {
 }
 
 // Internal usage only.
+type SessionCheckAndMutateRowRequest struct {
+	state           protoimpl.MessageState `protogen:"open.v1"`
+	Key             []byte                 `protobuf:"bytes,1,opt,name=key,proto3" json:"key,omitempty"`
+	PredicateFilter *RowFilter             `protobuf:"bytes,2,opt,name=predicate_filter,json=predicateFilter,proto3" json:"predicate_filter,omitempty"`
+	TrueMutations   []*Mutation            `protobuf:"bytes,3,rep,name=true_mutations,json=trueMutations,proto3" json:"true_mutations,omitempty"`
+	FalseMutations  []*Mutation            `protobuf:"bytes,4,rep,name=false_mutations,json=falseMutations,proto3" json:"false_mutations,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *SessionCheckAndMutateRowRequest) Reset() {
+	*x = SessionCheckAndMutateRowRequest{}
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[32]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SessionCheckAndMutateRowRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionCheckAndMutateRowRequest) ProtoMessage() {}
+
+func (x *SessionCheckAndMutateRowRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[32]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionCheckAndMutateRowRequest.ProtoReflect.Descriptor instead.
+func (*SessionCheckAndMutateRowRequest) Descriptor() ([]byte, []int) {
+	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{32}
+}
+
+func (x *SessionCheckAndMutateRowRequest) GetKey() []byte {
+	if x != nil {
+		return x.Key
+	}
+	return nil
+}
+
+func (x *SessionCheckAndMutateRowRequest) GetPredicateFilter() *RowFilter {
+	if x != nil {
+		return x.PredicateFilter
+	}
+	return nil
+}
+
+func (x *SessionCheckAndMutateRowRequest) GetTrueMutations() []*Mutation {
+	if x != nil {
+		return x.TrueMutations
+	}
+	return nil
+}
+
+func (x *SessionCheckAndMutateRowRequest) GetFalseMutations() []*Mutation {
+	if x != nil {
+		return x.FalseMutations
+	}
+	return nil
+}
+
+// Internal usage only.
+type SessionCheckAndMutateRowResponse struct {
+	state            protoimpl.MessageState `protogen:"open.v1"`
+	PredicateMatched bool                   `protobuf:"varint,1,opt,name=predicate_matched,json=predicateMatched,proto3" json:"predicate_matched,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
+}
+
+func (x *SessionCheckAndMutateRowResponse) Reset() {
+	*x = SessionCheckAndMutateRowResponse{}
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[33]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *SessionCheckAndMutateRowResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*SessionCheckAndMutateRowResponse) ProtoMessage() {}
+
+func (x *SessionCheckAndMutateRowResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[33]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use SessionCheckAndMutateRowResponse.ProtoReflect.Descriptor instead.
+func (*SessionCheckAndMutateRowResponse) Descriptor() ([]byte, []int) {
+	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{33}
+}
+
+func (x *SessionCheckAndMutateRowResponse) GetPredicateMatched() bool {
+	if x != nil {
+		return x.PredicateMatched
+	}
+	return false
+}
+
+// Internal usage only.
 type SessionParametersResponse struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Maximum time between messages that the AFE will send to the client. The
@@ -2622,7 +2800,7 @@ type SessionParametersResponse struct {
 
 func (x *SessionParametersResponse) Reset() {
 	*x = SessionParametersResponse{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[32]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2634,7 +2812,7 @@ func (x *SessionParametersResponse) String() string {
 func (*SessionParametersResponse) ProtoMessage() {}
 
 func (x *SessionParametersResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[32]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2647,7 +2825,7 @@ func (x *SessionParametersResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionParametersResponse.ProtoReflect.Descriptor instead.
 func (*SessionParametersResponse) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{32}
+	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *SessionParametersResponse) GetKeepAlive() *durationpb.Duration {
@@ -2666,7 +2844,7 @@ type HeartbeatResponse struct {
 
 func (x *HeartbeatResponse) Reset() {
 	*x = HeartbeatResponse{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[33]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2678,7 +2856,7 @@ func (x *HeartbeatResponse) String() string {
 func (*HeartbeatResponse) ProtoMessage() {}
 
 func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[33]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2691,7 +2869,7 @@ func (x *HeartbeatResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use HeartbeatResponse.ProtoReflect.Descriptor instead.
 func (*HeartbeatResponse) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{33}
+	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{35}
 }
 
 // Internal usage only.
@@ -2711,7 +2889,7 @@ type GoAwayResponse struct {
 
 func (x *GoAwayResponse) Reset() {
 	*x = GoAwayResponse{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[34]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[36]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2723,7 +2901,7 @@ func (x *GoAwayResponse) String() string {
 func (*GoAwayResponse) ProtoMessage() {}
 
 func (x *GoAwayResponse) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[34]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[36]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2736,7 +2914,7 @@ func (x *GoAwayResponse) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GoAwayResponse.ProtoReflect.Descriptor instead.
 func (*GoAwayResponse) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{34}
+	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{36}
 }
 
 func (x *GoAwayResponse) GetReason() string {
@@ -2775,7 +2953,7 @@ type SessionRefreshConfig struct {
 
 func (x *SessionRefreshConfig) Reset() {
 	*x = SessionRefreshConfig{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[35]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[37]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2787,7 +2965,7 @@ func (x *SessionRefreshConfig) String() string {
 func (*SessionRefreshConfig) ProtoMessage() {}
 
 func (x *SessionRefreshConfig) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[35]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[37]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2800,7 +2978,7 @@ func (x *SessionRefreshConfig) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionRefreshConfig.ProtoReflect.Descriptor instead.
 func (*SessionRefreshConfig) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{35}
+	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{37}
 }
 
 func (x *SessionRefreshConfig) GetOptimizedOpenRequest() *OpenSessionRequest {
@@ -2830,7 +3008,7 @@ type LoadBalancingOptions_LeastInFlight struct {
 
 func (x *LoadBalancingOptions_LeastInFlight) Reset() {
 	*x = LoadBalancingOptions_LeastInFlight{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[36]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[38]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2842,7 +3020,7 @@ func (x *LoadBalancingOptions_LeastInFlight) String() string {
 func (*LoadBalancingOptions_LeastInFlight) ProtoMessage() {}
 
 func (x *LoadBalancingOptions_LeastInFlight) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[36]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[38]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2882,7 +3060,7 @@ type LoadBalancingOptions_PeakEwma struct {
 
 func (x *LoadBalancingOptions_PeakEwma) Reset() {
 	*x = LoadBalancingOptions_PeakEwma{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[37]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[39]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2894,7 +3072,7 @@ func (x *LoadBalancingOptions_PeakEwma) String() string {
 func (*LoadBalancingOptions_PeakEwma) ProtoMessage() {}
 
 func (x *LoadBalancingOptions_PeakEwma) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[37]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[39]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2926,7 +3104,7 @@ type LoadBalancingOptions_Random struct {
 
 func (x *LoadBalancingOptions_Random) Reset() {
 	*x = LoadBalancingOptions_Random{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[38]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[40]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2938,7 +3116,7 @@ func (x *LoadBalancingOptions_Random) String() string {
 func (*LoadBalancingOptions_Random) ProtoMessage() {}
 
 func (x *LoadBalancingOptions_Random) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[38]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[40]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2985,7 +3163,7 @@ type SessionClientConfiguration_ChannelPoolConfiguration struct {
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration) Reset() {
 	*x = SessionClientConfiguration_ChannelPoolConfiguration{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[39]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[41]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2997,7 +3175,7 @@ func (x *SessionClientConfiguration_ChannelPoolConfiguration) String() string {
 func (*SessionClientConfiguration_ChannelPoolConfiguration) ProtoMessage() {}
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[39]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[41]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3133,7 +3311,7 @@ type SessionClientConfiguration_SessionPoolConfiguration struct {
 
 func (x *SessionClientConfiguration_SessionPoolConfiguration) Reset() {
 	*x = SessionClientConfiguration_SessionPoolConfiguration{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[40]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[42]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3145,7 +3323,7 @@ func (x *SessionClientConfiguration_SessionPoolConfiguration) String() string {
 func (*SessionClientConfiguration_SessionPoolConfiguration) ProtoMessage() {}
 
 func (x *SessionClientConfiguration_SessionPoolConfiguration) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[40]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[42]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3235,7 +3413,7 @@ type SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallbac
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback) Reset() {
 	*x = SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[41]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[43]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3247,7 +3425,7 @@ func (x *SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFal
 func (*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback) ProtoMessage() {}
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[41]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[43]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3286,7 +3464,7 @@ type SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly struct
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly) Reset() {
 	*x = SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[42]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[44]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3298,7 +3476,7 @@ func (x *SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly) S
 func (*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly) ProtoMessage() {}
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[42]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[44]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3323,7 +3501,7 @@ type SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly struct {
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly) Reset() {
 	*x = SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[43]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[45]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3335,7 +3513,7 @@ func (x *SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly) Stri
 func (*SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly) ProtoMessage() {}
 
 func (x *SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[43]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[45]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3373,7 +3551,7 @@ type ClientConfiguration_PollingConfiguration struct {
 
 func (x *ClientConfiguration_PollingConfiguration) Reset() {
 	*x = ClientConfiguration_PollingConfiguration{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[44]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[46]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3385,7 +3563,7 @@ func (x *ClientConfiguration_PollingConfiguration) String() string {
 func (*ClientConfiguration_PollingConfiguration) ProtoMessage() {}
 
 func (x *ClientConfiguration_PollingConfiguration) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[44]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[46]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3441,7 +3619,7 @@ type VirtualRpcRequest_Metadata struct {
 
 func (x *VirtualRpcRequest_Metadata) Reset() {
 	*x = VirtualRpcRequest_Metadata{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[45]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[47]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3453,7 +3631,7 @@ func (x *VirtualRpcRequest_Metadata) String() string {
 func (*VirtualRpcRequest_Metadata) ProtoMessage() {}
 
 func (x *VirtualRpcRequest_Metadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[45]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[47]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3504,7 +3682,7 @@ type SessionRefreshConfig_Metadata struct {
 
 func (x *SessionRefreshConfig_Metadata) Reset() {
 	*x = SessionRefreshConfig_Metadata{}
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[46]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[48]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3516,7 +3694,7 @@ func (x *SessionRefreshConfig_Metadata) String() string {
 func (*SessionRefreshConfig_Metadata) ProtoMessage() {}
 
 func (x *SessionRefreshConfig_Metadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_bigtable_v2_session_proto_msgTypes[46]
+	mi := &file_google_bigtable_v2_session_proto_msgTypes[48]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3529,7 +3707,7 @@ func (x *SessionRefreshConfig_Metadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SessionRefreshConfig_Metadata.ProtoReflect.Descriptor instead.
 func (*SessionRefreshConfig_Metadata) Descriptor() ([]byte, []int) {
-	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{35, 0}
+	return file_google_bigtable_v2_session_proto_rawDescGZIP(), []int{37, 0}
 }
 
 func (x *SessionRefreshConfig_Metadata) GetKey() string {
@@ -3765,26 +3943,30 @@ const file_google_bigtable_v2_session_proto_rawDesc = "" +
 	"\fcluster_info\x18\x02 \x01(\v2&.google.bigtable.v2.ClusterInformationR\vclusterInfo\x12*\n" +
 	"\x06status\x18\x03 \x01(\v2\x12.google.rpc.StatusR\x06status\x124\n" +
 	"\n" +
-	"retry_info\x18\x04 \x01(\v2\x15.google.rpc.RetryInfoR\tretryInfo\"\xb8\x01\n" +
+	"retry_info\x18\x04 \x01(\v2\x15.google.rpc.RetryInfoR\tretryInfo\"\xa0\x02\n" +
 	"\fTableRequest\x12F\n" +
 	"\bread_row\x18\x01 \x01(\v2).google.bigtable.v2.SessionReadRowRequestH\x00R\areadRow\x12L\n" +
 	"\n" +
-	"mutate_row\x18\x02 \x01(\v2+.google.bigtable.v2.SessionMutateRowRequestH\x00R\tmutateRow:\a\xaa\xed\xed\x91\x04\x01\x01B\t\n" +
-	"\apayload\"\xbb\x01\n" +
+	"mutate_row\x18\x02 \x01(\v2+.google.bigtable.v2.SessionMutateRowRequestH\x00R\tmutateRow\x12f\n" +
+	"\x14check_and_mutate_row\x18\x04 \x01(\v23.google.bigtable.v2.SessionCheckAndMutateRowRequestH\x00R\x11checkAndMutateRow:\a\xaa\xed\xed\x91\x04\x01\x01B\t\n" +
+	"\apayload\"\xa4\x02\n" +
 	"\rTableResponse\x12G\n" +
 	"\bread_row\x18\x01 \x01(\v2*.google.bigtable.v2.SessionReadRowResponseH\x00R\areadRow\x12M\n" +
 	"\n" +
-	"mutate_row\x18\x02 \x01(\v2,.google.bigtable.v2.SessionMutateRowResponseH\x00R\tmutateRow:\a\xaa\xed\xed\x91\x04\x01\x01B\t\n" +
-	"\apayload\"\xc1\x01\n" +
+	"mutate_row\x18\x02 \x01(\v2,.google.bigtable.v2.SessionMutateRowResponseH\x00R\tmutateRow\x12g\n" +
+	"\x14check_and_mutate_row\x18\x04 \x01(\v24.google.bigtable.v2.SessionCheckAndMutateRowResponseH\x00R\x11checkAndMutateRow:\a\xaa\xed\xed\x91\x04\x01\x01B\t\n" +
+	"\apayload\"\xa9\x02\n" +
 	"\x15AuthorizedViewRequest\x12F\n" +
 	"\bread_row\x18\x01 \x01(\v2).google.bigtable.v2.SessionReadRowRequestH\x00R\areadRow\x12L\n" +
 	"\n" +
-	"mutate_row\x18\x02 \x01(\v2+.google.bigtable.v2.SessionMutateRowRequestH\x00R\tmutateRow:\a\xaa\xed\xed\x91\x04\x01\x02B\t\n" +
-	"\apayload\"\xc4\x01\n" +
+	"mutate_row\x18\x02 \x01(\v2+.google.bigtable.v2.SessionMutateRowRequestH\x00R\tmutateRow\x12f\n" +
+	"\x14check_and_mutate_row\x18\x04 \x01(\v23.google.bigtable.v2.SessionCheckAndMutateRowRequestH\x00R\x11checkAndMutateRow:\a\xaa\xed\xed\x91\x04\x01\x02B\t\n" +
+	"\apayload\"\xad\x02\n" +
 	"\x16AuthorizedViewResponse\x12G\n" +
 	"\bread_row\x18\x01 \x01(\v2*.google.bigtable.v2.SessionReadRowResponseH\x00R\areadRow\x12M\n" +
 	"\n" +
-	"mutate_row\x18\x02 \x01(\v2,.google.bigtable.v2.SessionMutateRowResponseH\x00R\tmutateRow:\a\xaa\xed\xed\x91\x04\x01\x02B\t\n" +
+	"mutate_row\x18\x02 \x01(\v2,.google.bigtable.v2.SessionMutateRowResponseH\x00R\tmutateRow\x12g\n" +
+	"\x14check_and_mutate_row\x18\x04 \x01(\v24.google.bigtable.v2.SessionCheckAndMutateRowResponseH\x00R\x11checkAndMutateRow:\a\xaa\xed\xed\x91\x04\x01\x02B\t\n" +
 	"\apayload\"u\n" +
 	"\x17MaterializedViewRequest\x12F\n" +
 	"\bread_row\x18\x01 \x01(\v2).google.bigtable.v2.SessionReadRowRequestH\x00R\areadRow:\a\xaa\xed\xed\x91\x04\x01\x03B\t\n" +
@@ -3801,7 +3983,14 @@ const file_google_bigtable_v2_session_proto_rawDesc = "" +
 	"\x17SessionMutateRowRequest\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\fR\x03key\x12:\n" +
 	"\tmutations\x18\x02 \x03(\v2\x1c.google.bigtable.v2.MutationR\tmutations\"\x1a\n" +
-	"\x18SessionMutateRowResponse\"U\n" +
+	"\x18SessionMutateRowResponse\"\x89\x02\n" +
+	"\x1fSessionCheckAndMutateRowRequest\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\fR\x03key\x12H\n" +
+	"\x10predicate_filter\x18\x02 \x01(\v2\x1d.google.bigtable.v2.RowFilterR\x0fpredicateFilter\x12C\n" +
+	"\x0etrue_mutations\x18\x03 \x03(\v2\x1c.google.bigtable.v2.MutationR\rtrueMutations\x12E\n" +
+	"\x0ffalse_mutations\x18\x04 \x03(\v2\x1c.google.bigtable.v2.MutationR\x0efalseMutations\"O\n" +
+	" SessionCheckAndMutateRowResponse\x12+\n" +
+	"\x11predicate_matched\x18\x01 \x01(\bR\x10predicateMatched\"U\n" +
 	"\x19SessionParametersResponse\x128\n" +
 	"\n" +
 	"keep_alive\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\tkeepAlive\"\x13\n" +
@@ -3840,7 +4029,7 @@ func file_google_bigtable_v2_session_proto_rawDescGZIP() []byte {
 }
 
 var file_google_bigtable_v2_session_proto_enumTypes = make([]protoimpl.EnumInfo, 6)
-var file_google_bigtable_v2_session_proto_msgTypes = make([]protoimpl.MessageInfo, 47)
+var file_google_bigtable_v2_session_proto_msgTypes = make([]protoimpl.MessageInfo, 49)
 var file_google_bigtable_v2_session_proto_goTypes = []any{
 	(SessionType)(0),                                            // 0: google.bigtable.v2.SessionType
 	(TelemetryConfiguration_Level)(0),                           // 1: google.bigtable.v2.TelemetryConfiguration.Level
@@ -3880,44 +4069,46 @@ var file_google_bigtable_v2_session_proto_goTypes = []any{
 	(*SessionReadRowResponse)(nil),                              // 35: google.bigtable.v2.SessionReadRowResponse
 	(*SessionMutateRowRequest)(nil),                             // 36: google.bigtable.v2.SessionMutateRowRequest
 	(*SessionMutateRowResponse)(nil),                            // 37: google.bigtable.v2.SessionMutateRowResponse
-	(*SessionParametersResponse)(nil),                           // 38: google.bigtable.v2.SessionParametersResponse
-	(*HeartbeatResponse)(nil),                                   // 39: google.bigtable.v2.HeartbeatResponse
-	(*GoAwayResponse)(nil),                                      // 40: google.bigtable.v2.GoAwayResponse
-	(*SessionRefreshConfig)(nil),                                // 41: google.bigtable.v2.SessionRefreshConfig
-	(*LoadBalancingOptions_LeastInFlight)(nil),                  // 42: google.bigtable.v2.LoadBalancingOptions.LeastInFlight
-	(*LoadBalancingOptions_PeakEwma)(nil),                       // 43: google.bigtable.v2.LoadBalancingOptions.PeakEwma
-	(*LoadBalancingOptions_Random)(nil),                         // 44: google.bigtable.v2.LoadBalancingOptions.Random
-	(*SessionClientConfiguration_ChannelPoolConfiguration)(nil), // 45: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration
-	(*SessionClientConfiguration_SessionPoolConfiguration)(nil), // 46: google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration
-	(*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback)(nil), // 47: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessWithFallback
-	(*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly)(nil),         // 48: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessOnly
-	(*SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly)(nil),            // 49: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.CloudPathOnly
-	(*ClientConfiguration_PollingConfiguration)(nil),                                     // 50: google.bigtable.v2.ClientConfiguration.PollingConfiguration
-	(*VirtualRpcRequest_Metadata)(nil),                                                   // 51: google.bigtable.v2.VirtualRpcRequest.Metadata
-	(*SessionRefreshConfig_Metadata)(nil),                                                // 52: google.bigtable.v2.SessionRefreshConfig.Metadata
-	(*durationpb.Duration)(nil),                                                          // 53: google.protobuf.Duration
-	(*FeatureFlags)(nil),                                                                 // 54: google.bigtable.v2.FeatureFlags
-	(*status.Status)(nil),                                                                // 55: google.rpc.Status
-	(*errdetails.RetryInfo)(nil),                                                         // 56: google.rpc.RetryInfo
-	(*RowFilter)(nil),                                                                    // 57: google.bigtable.v2.RowFilter
-	(*Row)(nil),                                                                          // 58: google.bigtable.v2.Row
-	(*RequestStats)(nil),                                                                 // 59: google.bigtable.v2.RequestStats
-	(*Mutation)(nil),                                                                     // 60: google.bigtable.v2.Mutation
-	(*timestamppb.Timestamp)(nil),                                                        // 61: google.protobuf.Timestamp
-	(*descriptorpb.MessageOptions)(nil),                                                  // 62: google.protobuf.MessageOptions
-	(*descriptorpb.MethodOptions)(nil),                                                   // 63: google.protobuf.MethodOptions
+	(*SessionCheckAndMutateRowRequest)(nil),                     // 38: google.bigtable.v2.SessionCheckAndMutateRowRequest
+	(*SessionCheckAndMutateRowResponse)(nil),                    // 39: google.bigtable.v2.SessionCheckAndMutateRowResponse
+	(*SessionParametersResponse)(nil),                           // 40: google.bigtable.v2.SessionParametersResponse
+	(*HeartbeatResponse)(nil),                                   // 41: google.bigtable.v2.HeartbeatResponse
+	(*GoAwayResponse)(nil),                                      // 42: google.bigtable.v2.GoAwayResponse
+	(*SessionRefreshConfig)(nil),                                // 43: google.bigtable.v2.SessionRefreshConfig
+	(*LoadBalancingOptions_LeastInFlight)(nil),                  // 44: google.bigtable.v2.LoadBalancingOptions.LeastInFlight
+	(*LoadBalancingOptions_PeakEwma)(nil),                       // 45: google.bigtable.v2.LoadBalancingOptions.PeakEwma
+	(*LoadBalancingOptions_Random)(nil),                         // 46: google.bigtable.v2.LoadBalancingOptions.Random
+	(*SessionClientConfiguration_ChannelPoolConfiguration)(nil), // 47: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration
+	(*SessionClientConfiguration_SessionPoolConfiguration)(nil), // 48: google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration
+	(*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback)(nil), // 49: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessWithFallback
+	(*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly)(nil),         // 50: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessOnly
+	(*SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly)(nil),            // 51: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.CloudPathOnly
+	(*ClientConfiguration_PollingConfiguration)(nil),                                     // 52: google.bigtable.v2.ClientConfiguration.PollingConfiguration
+	(*VirtualRpcRequest_Metadata)(nil),                                                   // 53: google.bigtable.v2.VirtualRpcRequest.Metadata
+	(*SessionRefreshConfig_Metadata)(nil),                                                // 54: google.bigtable.v2.SessionRefreshConfig.Metadata
+	(*durationpb.Duration)(nil),                                                          // 55: google.protobuf.Duration
+	(*FeatureFlags)(nil),                                                                 // 56: google.bigtable.v2.FeatureFlags
+	(*status.Status)(nil),                                                                // 57: google.rpc.Status
+	(*errdetails.RetryInfo)(nil),                                                         // 58: google.rpc.RetryInfo
+	(*RowFilter)(nil),                                                                    // 59: google.bigtable.v2.RowFilter
+	(*Row)(nil),                                                                          // 60: google.bigtable.v2.Row
+	(*RequestStats)(nil),                                                                 // 61: google.bigtable.v2.RequestStats
+	(*Mutation)(nil),                                                                     // 62: google.bigtable.v2.Mutation
+	(*timestamppb.Timestamp)(nil),                                                        // 63: google.protobuf.Timestamp
+	(*descriptorpb.MessageOptions)(nil),                                                  // 64: google.protobuf.MessageOptions
+	(*descriptorpb.MethodOptions)(nil),                                                   // 65: google.protobuf.MethodOptions
 }
 var file_google_bigtable_v2_session_proto_depIdxs = []int32{
-	42, // 0: google.bigtable.v2.LoadBalancingOptions.least_in_flight:type_name -> google.bigtable.v2.LoadBalancingOptions.LeastInFlight
-	43, // 1: google.bigtable.v2.LoadBalancingOptions.peak_ewma:type_name -> google.bigtable.v2.LoadBalancingOptions.PeakEwma
-	44, // 2: google.bigtable.v2.LoadBalancingOptions.random:type_name -> google.bigtable.v2.LoadBalancingOptions.Random
+	44, // 0: google.bigtable.v2.LoadBalancingOptions.least_in_flight:type_name -> google.bigtable.v2.LoadBalancingOptions.LeastInFlight
+	45, // 1: google.bigtable.v2.LoadBalancingOptions.peak_ewma:type_name -> google.bigtable.v2.LoadBalancingOptions.PeakEwma
+	46, // 2: google.bigtable.v2.LoadBalancingOptions.random:type_name -> google.bigtable.v2.LoadBalancingOptions.Random
 	7,  // 3: google.bigtable.v2.SessionClientConfiguration.load_balancing_options:type_name -> google.bigtable.v2.LoadBalancingOptions
-	45, // 4: google.bigtable.v2.SessionClientConfiguration.channel_configuration:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration
-	46, // 5: google.bigtable.v2.SessionClientConfiguration.session_pool_configuration:type_name -> google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration
+	47, // 4: google.bigtable.v2.SessionClientConfiguration.channel_configuration:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration
+	48, // 5: google.bigtable.v2.SessionClientConfiguration.session_pool_configuration:type_name -> google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration
 	1,  // 6: google.bigtable.v2.TelemetryConfiguration.debug_tag_level:type_name -> google.bigtable.v2.TelemetryConfiguration.Level
 	8,  // 7: google.bigtable.v2.ClientConfiguration.session_configuration:type_name -> google.bigtable.v2.SessionClientConfiguration
-	53, // 8: google.bigtable.v2.ClientConfiguration.polling_interval:type_name -> google.protobuf.Duration
-	50, // 9: google.bigtable.v2.ClientConfiguration.polling_configuration:type_name -> google.bigtable.v2.ClientConfiguration.PollingConfiguration
+	55, // 8: google.bigtable.v2.ClientConfiguration.polling_interval:type_name -> google.protobuf.Duration
+	52, // 9: google.bigtable.v2.ClientConfiguration.polling_configuration:type_name -> google.bigtable.v2.ClientConfiguration.PollingConfiguration
 	9,  // 10: google.bigtable.v2.ClientConfiguration.telemetry_configuration:type_name -> google.bigtable.v2.TelemetryConfiguration
 	13, // 11: google.bigtable.v2.SessionRequest.open_session:type_name -> google.bigtable.v2.OpenSessionRequest
 	16, // 12: google.bigtable.v2.SessionRequest.close_session:type_name -> google.bigtable.v2.CloseSessionRequest
@@ -3925,61 +4116,68 @@ var file_google_bigtable_v2_session_proto_depIdxs = []int32{
 	15, // 14: google.bigtable.v2.SessionResponse.open_session:type_name -> google.bigtable.v2.OpenSessionResponse
 	26, // 15: google.bigtable.v2.SessionResponse.virtual_rpc:type_name -> google.bigtable.v2.VirtualRpcResponse
 	27, // 16: google.bigtable.v2.SessionResponse.error:type_name -> google.bigtable.v2.ErrorResponse
-	38, // 17: google.bigtable.v2.SessionResponse.session_parameters:type_name -> google.bigtable.v2.SessionParametersResponse
-	39, // 18: google.bigtable.v2.SessionResponse.heartbeat:type_name -> google.bigtable.v2.HeartbeatResponse
-	40, // 19: google.bigtable.v2.SessionResponse.go_away:type_name -> google.bigtable.v2.GoAwayResponse
-	41, // 20: google.bigtable.v2.SessionResponse.session_refresh_config:type_name -> google.bigtable.v2.SessionRefreshConfig
-	54, // 21: google.bigtable.v2.OpenSessionRequest.flags:type_name -> google.bigtable.v2.FeatureFlags
+	40, // 17: google.bigtable.v2.SessionResponse.session_parameters:type_name -> google.bigtable.v2.SessionParametersResponse
+	41, // 18: google.bigtable.v2.SessionResponse.heartbeat:type_name -> google.bigtable.v2.HeartbeatResponse
+	42, // 19: google.bigtable.v2.SessionResponse.go_away:type_name -> google.bigtable.v2.GoAwayResponse
+	43, // 20: google.bigtable.v2.SessionResponse.session_refresh_config:type_name -> google.bigtable.v2.SessionRefreshConfig
+	56, // 21: google.bigtable.v2.OpenSessionRequest.flags:type_name -> google.bigtable.v2.FeatureFlags
 	14, // 22: google.bigtable.v2.OpenSessionResponse.backend:type_name -> google.bigtable.v2.BackendIdentifier
 	2,  // 23: google.bigtable.v2.CloseSessionRequest.reason:type_name -> google.bigtable.v2.CloseSessionRequest.CloseSessionReason
 	3,  // 24: google.bigtable.v2.OpenTableRequest.permission:type_name -> google.bigtable.v2.OpenTableRequest.Permission
 	4,  // 25: google.bigtable.v2.OpenAuthorizedViewRequest.permission:type_name -> google.bigtable.v2.OpenAuthorizedViewRequest.Permission
 	5,  // 26: google.bigtable.v2.OpenMaterializedViewRequest.permission:type_name -> google.bigtable.v2.OpenMaterializedViewRequest.Permission
-	53, // 27: google.bigtable.v2.VirtualRpcRequest.deadline:type_name -> google.protobuf.Duration
-	51, // 28: google.bigtable.v2.VirtualRpcRequest.metadata:type_name -> google.bigtable.v2.VirtualRpcRequest.Metadata
-	53, // 29: google.bigtable.v2.SessionRequestStats.backend_latency:type_name -> google.protobuf.Duration
+	55, // 27: google.bigtable.v2.VirtualRpcRequest.deadline:type_name -> google.protobuf.Duration
+	53, // 28: google.bigtable.v2.VirtualRpcRequest.metadata:type_name -> google.bigtable.v2.VirtualRpcRequest.Metadata
+	55, // 29: google.bigtable.v2.SessionRequestStats.backend_latency:type_name -> google.protobuf.Duration
 	24, // 30: google.bigtable.v2.VirtualRpcResponse.cluster_info:type_name -> google.bigtable.v2.ClusterInformation
 	25, // 31: google.bigtable.v2.VirtualRpcResponse.stats:type_name -> google.bigtable.v2.SessionRequestStats
 	24, // 32: google.bigtable.v2.ErrorResponse.cluster_info:type_name -> google.bigtable.v2.ClusterInformation
-	55, // 33: google.bigtable.v2.ErrorResponse.status:type_name -> google.rpc.Status
-	56, // 34: google.bigtable.v2.ErrorResponse.retry_info:type_name -> google.rpc.RetryInfo
+	57, // 33: google.bigtable.v2.ErrorResponse.status:type_name -> google.rpc.Status
+	58, // 34: google.bigtable.v2.ErrorResponse.retry_info:type_name -> google.rpc.RetryInfo
 	34, // 35: google.bigtable.v2.TableRequest.read_row:type_name -> google.bigtable.v2.SessionReadRowRequest
 	36, // 36: google.bigtable.v2.TableRequest.mutate_row:type_name -> google.bigtable.v2.SessionMutateRowRequest
-	35, // 37: google.bigtable.v2.TableResponse.read_row:type_name -> google.bigtable.v2.SessionReadRowResponse
-	37, // 38: google.bigtable.v2.TableResponse.mutate_row:type_name -> google.bigtable.v2.SessionMutateRowResponse
-	34, // 39: google.bigtable.v2.AuthorizedViewRequest.read_row:type_name -> google.bigtable.v2.SessionReadRowRequest
-	36, // 40: google.bigtable.v2.AuthorizedViewRequest.mutate_row:type_name -> google.bigtable.v2.SessionMutateRowRequest
-	35, // 41: google.bigtable.v2.AuthorizedViewResponse.read_row:type_name -> google.bigtable.v2.SessionReadRowResponse
-	37, // 42: google.bigtable.v2.AuthorizedViewResponse.mutate_row:type_name -> google.bigtable.v2.SessionMutateRowResponse
-	34, // 43: google.bigtable.v2.MaterializedViewRequest.read_row:type_name -> google.bigtable.v2.SessionReadRowRequest
-	35, // 44: google.bigtable.v2.MaterializedViewResponse.read_row:type_name -> google.bigtable.v2.SessionReadRowResponse
-	57, // 45: google.bigtable.v2.SessionReadRowRequest.filter:type_name -> google.bigtable.v2.RowFilter
-	58, // 46: google.bigtable.v2.SessionReadRowResponse.row:type_name -> google.bigtable.v2.Row
-	59, // 47: google.bigtable.v2.SessionReadRowResponse.stats:type_name -> google.bigtable.v2.RequestStats
-	60, // 48: google.bigtable.v2.SessionMutateRowRequest.mutations:type_name -> google.bigtable.v2.Mutation
-	53, // 49: google.bigtable.v2.SessionParametersResponse.keep_alive:type_name -> google.protobuf.Duration
-	13, // 50: google.bigtable.v2.SessionRefreshConfig.optimized_open_request:type_name -> google.bigtable.v2.OpenSessionRequest
-	52, // 51: google.bigtable.v2.SessionRefreshConfig.metadata:type_name -> google.bigtable.v2.SessionRefreshConfig.Metadata
-	47, // 52: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.direct_access_with_fallback:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessWithFallback
-	48, // 53: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.direct_access_only:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessOnly
-	49, // 54: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.cloud_path_only:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.CloudPathOnly
-	53, // 55: google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration.new_session_creation_penalty:type_name -> google.protobuf.Duration
-	7,  // 56: google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration.load_balancing_options:type_name -> google.bigtable.v2.LoadBalancingOptions
-	53, // 57: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessWithFallback.check_interval:type_name -> google.protobuf.Duration
-	53, // 58: google.bigtable.v2.ClientConfiguration.PollingConfiguration.polling_interval:type_name -> google.protobuf.Duration
-	53, // 59: google.bigtable.v2.ClientConfiguration.PollingConfiguration.validity_duration:type_name -> google.protobuf.Duration
-	61, // 60: google.bigtable.v2.VirtualRpcRequest.Metadata.attempt_start:type_name -> google.protobuf.Timestamp
-	62, // 61: google.bigtable.v2.open_session_type:extendee -> google.protobuf.MessageOptions
-	62, // 62: google.bigtable.v2.vrpc_session_type:extendee -> google.protobuf.MessageOptions
-	63, // 63: google.bigtable.v2.rpc_session_type:extendee -> google.protobuf.MethodOptions
-	0,  // 64: google.bigtable.v2.open_session_type:type_name -> google.bigtable.v2.SessionType
-	0,  // 65: google.bigtable.v2.vrpc_session_type:type_name -> google.bigtable.v2.SessionType
-	0,  // 66: google.bigtable.v2.rpc_session_type:type_name -> google.bigtable.v2.SessionType
-	67, // [67:67] is the sub-list for method output_type
-	67, // [67:67] is the sub-list for method input_type
-	64, // [64:67] is the sub-list for extension type_name
-	61, // [61:64] is the sub-list for extension extendee
-	0,  // [0:61] is the sub-list for field type_name
+	38, // 37: google.bigtable.v2.TableRequest.check_and_mutate_row:type_name -> google.bigtable.v2.SessionCheckAndMutateRowRequest
+	35, // 38: google.bigtable.v2.TableResponse.read_row:type_name -> google.bigtable.v2.SessionReadRowResponse
+	37, // 39: google.bigtable.v2.TableResponse.mutate_row:type_name -> google.bigtable.v2.SessionMutateRowResponse
+	39, // 40: google.bigtable.v2.TableResponse.check_and_mutate_row:type_name -> google.bigtable.v2.SessionCheckAndMutateRowResponse
+	34, // 41: google.bigtable.v2.AuthorizedViewRequest.read_row:type_name -> google.bigtable.v2.SessionReadRowRequest
+	36, // 42: google.bigtable.v2.AuthorizedViewRequest.mutate_row:type_name -> google.bigtable.v2.SessionMutateRowRequest
+	38, // 43: google.bigtable.v2.AuthorizedViewRequest.check_and_mutate_row:type_name -> google.bigtable.v2.SessionCheckAndMutateRowRequest
+	35, // 44: google.bigtable.v2.AuthorizedViewResponse.read_row:type_name -> google.bigtable.v2.SessionReadRowResponse
+	37, // 45: google.bigtable.v2.AuthorizedViewResponse.mutate_row:type_name -> google.bigtable.v2.SessionMutateRowResponse
+	39, // 46: google.bigtable.v2.AuthorizedViewResponse.check_and_mutate_row:type_name -> google.bigtable.v2.SessionCheckAndMutateRowResponse
+	34, // 47: google.bigtable.v2.MaterializedViewRequest.read_row:type_name -> google.bigtable.v2.SessionReadRowRequest
+	35, // 48: google.bigtable.v2.MaterializedViewResponse.read_row:type_name -> google.bigtable.v2.SessionReadRowResponse
+	59, // 49: google.bigtable.v2.SessionReadRowRequest.filter:type_name -> google.bigtable.v2.RowFilter
+	60, // 50: google.bigtable.v2.SessionReadRowResponse.row:type_name -> google.bigtable.v2.Row
+	61, // 51: google.bigtable.v2.SessionReadRowResponse.stats:type_name -> google.bigtable.v2.RequestStats
+	62, // 52: google.bigtable.v2.SessionMutateRowRequest.mutations:type_name -> google.bigtable.v2.Mutation
+	59, // 53: google.bigtable.v2.SessionCheckAndMutateRowRequest.predicate_filter:type_name -> google.bigtable.v2.RowFilter
+	62, // 54: google.bigtable.v2.SessionCheckAndMutateRowRequest.true_mutations:type_name -> google.bigtable.v2.Mutation
+	62, // 55: google.bigtable.v2.SessionCheckAndMutateRowRequest.false_mutations:type_name -> google.bigtable.v2.Mutation
+	55, // 56: google.bigtable.v2.SessionParametersResponse.keep_alive:type_name -> google.protobuf.Duration
+	13, // 57: google.bigtable.v2.SessionRefreshConfig.optimized_open_request:type_name -> google.bigtable.v2.OpenSessionRequest
+	54, // 58: google.bigtable.v2.SessionRefreshConfig.metadata:type_name -> google.bigtable.v2.SessionRefreshConfig.Metadata
+	49, // 59: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.direct_access_with_fallback:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessWithFallback
+	50, // 60: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.direct_access_only:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessOnly
+	51, // 61: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.cloud_path_only:type_name -> google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.CloudPathOnly
+	55, // 62: google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration.new_session_creation_penalty:type_name -> google.protobuf.Duration
+	7,  // 63: google.bigtable.v2.SessionClientConfiguration.SessionPoolConfiguration.load_balancing_options:type_name -> google.bigtable.v2.LoadBalancingOptions
+	55, // 64: google.bigtable.v2.SessionClientConfiguration.ChannelPoolConfiguration.DirectAccessWithFallback.check_interval:type_name -> google.protobuf.Duration
+	55, // 65: google.bigtable.v2.ClientConfiguration.PollingConfiguration.polling_interval:type_name -> google.protobuf.Duration
+	55, // 66: google.bigtable.v2.ClientConfiguration.PollingConfiguration.validity_duration:type_name -> google.protobuf.Duration
+	63, // 67: google.bigtable.v2.VirtualRpcRequest.Metadata.attempt_start:type_name -> google.protobuf.Timestamp
+	64, // 68: google.bigtable.v2.open_session_type:extendee -> google.protobuf.MessageOptions
+	64, // 69: google.bigtable.v2.vrpc_session_type:extendee -> google.protobuf.MessageOptions
+	65, // 70: google.bigtable.v2.rpc_session_type:extendee -> google.protobuf.MethodOptions
+	0,  // 71: google.bigtable.v2.open_session_type:type_name -> google.bigtable.v2.SessionType
+	0,  // 72: google.bigtable.v2.vrpc_session_type:type_name -> google.bigtable.v2.SessionType
+	0,  // 73: google.bigtable.v2.rpc_session_type:type_name -> google.bigtable.v2.SessionType
+	74, // [74:74] is the sub-list for method output_type
+	74, // [74:74] is the sub-list for method input_type
+	71, // [71:74] is the sub-list for extension type_name
+	68, // [68:71] is the sub-list for extension extendee
+	0,  // [0:68] is the sub-list for field type_name
 }
 
 func init() { file_google_bigtable_v2_session_proto_init() }
@@ -4017,18 +4215,22 @@ func file_google_bigtable_v2_session_proto_init() {
 	file_google_bigtable_v2_session_proto_msgTypes[22].OneofWrappers = []any{
 		(*TableRequest_ReadRow)(nil),
 		(*TableRequest_MutateRow)(nil),
+		(*TableRequest_CheckAndMutateRow)(nil),
 	}
 	file_google_bigtable_v2_session_proto_msgTypes[23].OneofWrappers = []any{
 		(*TableResponse_ReadRow)(nil),
 		(*TableResponse_MutateRow)(nil),
+		(*TableResponse_CheckAndMutateRow)(nil),
 	}
 	file_google_bigtable_v2_session_proto_msgTypes[24].OneofWrappers = []any{
 		(*AuthorizedViewRequest_ReadRow)(nil),
 		(*AuthorizedViewRequest_MutateRow)(nil),
+		(*AuthorizedViewRequest_CheckAndMutateRow)(nil),
 	}
 	file_google_bigtable_v2_session_proto_msgTypes[25].OneofWrappers = []any{
 		(*AuthorizedViewResponse_ReadRow)(nil),
 		(*AuthorizedViewResponse_MutateRow)(nil),
+		(*AuthorizedViewResponse_CheckAndMutateRow)(nil),
 	}
 	file_google_bigtable_v2_session_proto_msgTypes[26].OneofWrappers = []any{
 		(*MaterializedViewRequest_ReadRow)(nil),
@@ -4036,7 +4238,7 @@ func file_google_bigtable_v2_session_proto_init() {
 	file_google_bigtable_v2_session_proto_msgTypes[27].OneofWrappers = []any{
 		(*MaterializedViewResponse_ReadRow)(nil),
 	}
-	file_google_bigtable_v2_session_proto_msgTypes[39].OneofWrappers = []any{
+	file_google_bigtable_v2_session_proto_msgTypes[41].OneofWrappers = []any{
 		(*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessWithFallback_)(nil),
 		(*SessionClientConfiguration_ChannelPoolConfiguration_DirectAccessOnly_)(nil),
 		(*SessionClientConfiguration_ChannelPoolConfiguration_CloudPathOnly_)(nil),
@@ -4047,7 +4249,7 @@ func file_google_bigtable_v2_session_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_bigtable_v2_session_proto_rawDesc), len(file_google_bigtable_v2_session_proto_rawDesc)),
 			NumEnums:      6,
-			NumMessages:   47,
+			NumMessages:   49,
 			NumExtensions: 3,
 			NumServices:   0,
 		},

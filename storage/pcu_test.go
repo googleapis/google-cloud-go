@@ -15,9 +15,12 @@
 package storage
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
+	"log"
+	"os"
 	"runtime"
 	"strings"
 	"sync"
@@ -89,7 +92,7 @@ func TestParallelUploadConfig_defaults(t *testing.T) {
 		{
 			name: "PartSize below minimum is adjusted",
 			in: &ParallelUploadConfig{
-				PartSize: 1024 * 1024, // 1 MiB, below the 5 MiB minimum.
+				PartSize: 1024 * 1024, // 1 MiB, below the 8 MiB minimum.
 			},
 			want: &ParallelUploadConfig{
 				PartSize:       minPartSize,
@@ -448,7 +451,7 @@ func TestPCUWorker_WriteContextCancellation(t *testing.T) {
 		state.bufferCh <- make([]byte, 10)
 	}
 
-	// Trigger a flush by writing exact PartSize.
+	// Trigger a flush by writing exact part size.
 	n, err := state.write([]byte("0123456789"))
 	if err != nil {
 		t.Fatalf("state.write failed: %v", err)
@@ -805,6 +808,10 @@ func TestPCUState_ComposeParts(t *testing.T) {
 				mu.Lock()
 				defer mu.Unlock()
 
+				if !c.DeleteSourceObjects {
+					t.Errorf("expected DeleteSourceObjects to be true, got false")
+				}
+
 				// If the destination isn't the final object, it's an intermediate.
 				if c.dst.object != "final-dest" {
 					intermediateCount++
@@ -930,7 +937,10 @@ func TestPCUState_DoCleanup(t *testing.T) {
 		partsToCreate     int
 		interimsToCreate  int
 		failDeletesFor    map[string]bool
+		notExistFor       map[string]bool
 		expectDeleteCalls int
+		// expectLogged is the set of objects expected to be reported as failed deletes.
+		expectLogged []string
 	}{
 		{
 			name:              "CleanupAlways should clean up all",
@@ -948,6 +958,23 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				"interim-0": true,
 			},
 			expectDeleteCalls: 4,
+			expectLogged:      []string{"part-1", "interim-0"},
+		},
+		{
+			// Parts consumed by a successful compose with DeleteSourceObjects are
+			// already gone; cleanup should not report them.
+			name:             "Already deleted objects are not logged",
+			partsToCreate:    3,
+			interimsToCreate: 1,
+			notExistFor: map[string]bool{
+				"part-0": true,
+				"part-1": true,
+			},
+			failDeletesFor: map[string]bool{
+				"part-2": true,
+			},
+			expectDeleteCalls: 4,
+			expectLogged:      []string{"part-2"},
 		},
 	}
 
@@ -973,6 +1000,9 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				mu.Unlock()
 
 				// Simulate failure based on the object's dummy name.
+				if tc.notExistFor[h.object] {
+					return fmt.Errorf("mock: %w", ErrObjectNotExist)
+				}
 				if shouldFail, ok := tc.failDeletesFor[h.object]; ok && shouldFail {
 					return errors.New("mock delete error")
 				}
@@ -989,6 +1019,11 @@ func TestPCUState_DoCleanup(t *testing.T) {
 				state.intermediateMap[name] = &ObjectHandle{object: name}
 			}
 
+			// Capture cleanup logs.
+			var logBuf bytes.Buffer
+			log.SetOutput(&logBuf)
+			defer log.SetOutput(os.Stderr)
+
 			// Execute.
 			state.doCleanup()
 
@@ -996,48 +1031,91 @@ func TestPCUState_DoCleanup(t *testing.T) {
 			if deleteCalls != tc.expectDeleteCalls {
 				t.Errorf("Expected %d delete calls, but got %d", tc.expectDeleteCalls, deleteCalls)
 			}
+			logs := logBuf.String()
+			if got := strings.Count(logs, "failed to delete temporary part"); got != len(tc.expectLogged) {
+				t.Errorf("got %d logged delete failures, want %d; logs:\n%s", got, len(tc.expectLogged), logs)
+			}
+			for _, name := range tc.expectLogged {
+				if !strings.Contains(logs, fmt.Sprintf("%q", name)) {
+					t.Errorf("expected delete failure for %q to be logged; logs:\n%s", name, logs)
+				}
+			}
 		})
 	}
 }
 
 func TestPCUState_Close(t *testing.T) {
 	tests := []struct {
-		name          string
-		numParts      int
-		mockErr       error
-		expectCompose bool
-		expectError   bool
+		name string
+		// workerErr is set as firstErr before close, simulating a failed part upload.
+		workerErr error
+		// composeErr is returned by composeParts.
+		composeErr error
+		// finalComposeSucceeded simulates the final compose succeeding before
+		// composeParts returns (e.g. a CRC32C mismatch detected afterwards).
+		finalComposeSucceeded bool
+		expectCompose         bool
+		expectError           bool
+		expectCleanup         bool
 	}{
 		{
-			name:          "Successful Upload",
-			numParts:      2,
-			mockErr:       nil,
-			expectCompose: true,
-			expectError:   false,
+			name:                  "Successful Upload",
+			finalComposeSucceeded: true,
+			expectCompose:         true,
 		},
 		{
 			name:          "Worker Error - Aborts Compose",
-			numParts:      2,
-			mockErr:       fmt.Errorf("upload failed"),
-			expectCompose: false,
+			workerErr:     fmt.Errorf("upload failed"),
 			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			name:          "Compose Error",
+			composeErr:    fmt.Errorf("compose failed"),
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			// setError ignores context.Canceled, so firstErr stays nil; cleanup
+			// must still run or the uploaded parts leak.
+			name:          "Context Canceled During Compose",
+			composeErr:    context.Canceled,
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			name:          "Wrapped Context Canceled During Compose",
+			composeErr:    fmt.Errorf("Post \"https://storage.googleapis.com\": %w", context.Canceled),
+			expectCompose: true,
+			expectError:   true,
+			expectCleanup: true,
+		},
+		{
+			// Sources were already deleted by the final compose.
+			name:                  "Error After Final Compose Succeeded",
+			composeErr:            fmt.Errorf("crc32c mismatch"),
+			finalComposeSucceeded: true,
+			expectCompose:         true,
+			expectError:           true,
 		},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			var mu sync.Mutex
 			composeCalled := false
-			cleanupCalled := false
+			cleanupCh := make(chan struct{}, 1)
 			ctx := context.Background()
 			objName := "test-object"
 
 			state := &pcuState{
 				ctx:      ctx,
+				cancel:   func() {},
 				started:  true,
 				uploadCh: make(chan uploadTask, 10),
 				resultCh: make(chan uploadResult, 10),
-				partMap:  make(map[int]*ObjectHandle),
+				partMap:  map[int]*ObjectHandle{1: {object: "tmp1"}, 2: {object: "tmp2"}},
 				w: &Writer{
 					ctx: ctx,
 					ObjectAttrs: ObjectAttrs{
@@ -1051,30 +1129,23 @@ func TestPCUState_Close(t *testing.T) {
 				},
 				composePartsFn: func(s *pcuState) error {
 					composeCalled = true
-					return nil
+					if tc.finalComposeSucceeded {
+						s.mu.Lock()
+						s.finalComposeSucceeded = true
+						s.mu.Unlock()
+					}
+					return tc.composeErr
 				},
 				doCleanupFn: func(s *pcuState) {
-					mu.Lock()
-					cleanupCalled = true
-					mu.Unlock()
+					cleanupCh <- struct{}{}
 				},
 			}
-
-			// Pre-populate handles if testing success/failure.
-			if tc.numParts > 0 {
-				for i := 1; i <= tc.numParts; i++ {
-					state.partMap[i] = &ObjectHandle{object: "tmp"}
-				}
+			if tc.workerErr != nil {
+				state.firstErr = tc.workerErr
 			}
 
-			if tc.mockErr != nil {
-				state.firstErr = tc.mockErr
-			}
-
-			// Execute.
 			err := state.close()
 
-			// Assertions.
 			if (err != nil) != tc.expectError {
 				t.Errorf("expectError %v, got err: %v", tc.expectError, err)
 			}
@@ -1082,13 +1153,20 @@ func TestPCUState_Close(t *testing.T) {
 				t.Errorf("expectCompose %v, but composeCalled was %v", tc.expectCompose, composeCalled)
 			}
 
-			// Wait for background cleanup to execute
-			time.Sleep(10 * time.Millisecond)
-			mu.Lock()
-			if !cleanupCalled {
-				t.Errorf("cleanup logic was not executed")
+			// Cleanup runs in the background.
+			if tc.expectCleanup {
+				select {
+				case <-cleanupCh:
+				case <-time.After(time.Second):
+					t.Errorf("cleanup was not executed; temporary parts would leak")
+				}
+			} else {
+				select {
+				case <-cleanupCh:
+					t.Errorf("cleanup executed unexpectedly")
+				case <-time.After(50 * time.Millisecond):
+				}
 			}
-			mu.Unlock()
 		})
 	}
 }
