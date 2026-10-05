@@ -1,5 +1,12 @@
 # Changes
 
+## [1.36.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.35.0...retail/v1.36.0) (2026-10-01)
+
+
+### Features
+
+* Update API sources and regenerate ([#20607](https://github.com/googleapis/google-cloud-go/issues/20607)) ([395fc59](https://github.com/googleapis/google-cloud-go/commit/395fc59e067ed2576a1c8c961edf3f749633520c))
+
 ## [1.35.0](https://github.com/googleapis/google-cloud-go/compare/retail/v1.34.0...retail/v1.35.0) (2026-09-23)
 
 

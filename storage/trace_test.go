@@ -228,7 +228,7 @@ func TestStartSpanWithBucket(t *testing.T) {
 			setupCache: func(c *bucketMetadataCache) {
 				c.put("bucket-hit", bucketMetadata{resource: "projects/p1/buckets/bucket-hit", location: "us-west1"})
 			},
-			wantResource: "projects/p1/buckets/bucket-hit",
+			wantResource: storageResourceNamePrefix + "projects/p1/buckets/bucket-hit",
 			wantLocation: "us-west1",
 			verifyCache:  false,
 		},
