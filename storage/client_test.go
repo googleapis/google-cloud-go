@@ -3153,6 +3153,33 @@ func TestRetryNeverEmulated(t *testing.T) {
 	})
 }
 
+// Test that RetryNever prevents chunk retries for resumable uploads in both
+// transports.
+func TestWriterRetryNeverEmulated(t *testing.T) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+		if _, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil); err != nil {
+			t.Fatalf("creating bucket: %v", err)
+		}
+		instructions := map[string][]string{"storage.objects.insert": {"return-503-after-256K"}}
+		testID := createRetryTest(t, client, instructions)
+		ctx = callctx.SetHeaders(ctx, "x-retry-test-id", testID)
+
+		vc := &Client{tc: client}
+		w := vc.Bucket(bucket).Object("retry-never").Retryer(WithPolicy(RetryNever)).NewWriter(ctx)
+		w.ChunkSize = 256 * 1024
+		_, err := w.Write(generateRandomBytes(MiB))
+		if cerr := w.Close(); err == nil {
+			err = cerr
+		}
+
+		var ae *apierror.APIError
+		got503 := errors.As(err, &ae) && ae.HTTPCode() == http.StatusServiceUnavailable
+		if !got503 && status.Code(err) != codes.Unavailable {
+			t.Fatalf("writing object: got %v; want 503", err)
+		}
+	})
+}
+
 // Test that errors are wrapped correctly if retry happens until a timeout.
 func TestRetryTimeoutEmulated(t *testing.T) {
 	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
