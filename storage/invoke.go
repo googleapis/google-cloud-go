@@ -89,7 +89,17 @@ func withObject(object string) runOption {
 }
 
 // withProgressReset specifies a callback checked after each failed call. If it
-// returns true, the attempt counter and backoff are reset for the next retry.
+// returns true, the attempt counter and backoff are reset so that maxAttempts
+// and backoff apply per unit of progress (per chunk for the gRPC Writer).
+//
+// Only the attempt counter and backoff are reset. The invocation ID and
+// idempotency token are minted once per run() and span the whole operation,
+// because every gRPC reconnect resumes the same BidiWriteObject session.
+// This differs from the HTTP transport, which mints a new invocation ID per
+// chunk; the gccl-attempt-count header therefore restarts at 1 after progress.
+//
+// TODO: run() owns the attempt counter and backoff while the gRPC Writer owns
+// the per-chunk deadline (chunkRetryBudget); the writer should own all three.
 func withProgressReset(fn func() bool) runOption {
 	return func(o *runOptions) { o.shouldReset = fn }
 }

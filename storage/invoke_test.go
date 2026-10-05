@@ -893,11 +893,11 @@ func TestInvokeWithProgressReset(t *testing.T) {
 	})
 
 	t.Run("resets backoff on progress", func(t *testing.T) {
-		// gax.Backoff.Pause returns a random duration in (0, cur] and then
-		// multiplies cur by Multiplier, capped at Max. After call 1, cur is
-		// 1h. If progress on call 2 resets the backoff, the next pause is
-		// at most 1ms again; otherwise it is uniform up to 1h and the context
-		// deadline expires during the sleep.
+		// After call 1 the backoff's current pause is 1h. If progress on call
+		// 2 resets it, the pause before call 3 is at most 1ms; otherwise it
+		// is uniform in (0, 1h]. Assert on the measured pause; the context
+		// deadline only keeps a regression from hanging the suite.
+		const maxPause = time.Second
 		retry := &retryConfig{
 			policy:  RetryAlways,
 			backoff: &gax.Backoff{Initial: time.Millisecond, Multiplier: 1e7, Max: time.Hour},
@@ -907,6 +907,8 @@ func TestInvokeWithProgressReset(t *testing.T) {
 
 		callCount := 0
 		progressMade := false
+		var call2Returned time.Time
+		var pauseBeforeCall3 time.Duration
 		err := run(ctx, func(context.Context) error {
 			callCount++
 			switch callCount {
@@ -914,8 +916,10 @@ func TestInvokeWithProgressReset(t *testing.T) {
 				return status.Error(codes.Unavailable, "chunk 1 transient failure")
 			case 2:
 				progressMade = true
+				call2Returned = time.Now()
 				return status.Error(codes.Unavailable, "chunk 1 succeeded, chunk 2 transient failure")
 			default:
+				pauseBeforeCall3 = time.Since(call2Returned)
 				return nil
 			}
 		}, retry, true, withProgressReset(func() bool {
@@ -931,6 +935,9 @@ func TestInvokeWithProgressReset(t *testing.T) {
 		}
 		if callCount != 3 {
 			t.Fatalf("expected 3 calls, got %d", callCount)
+		}
+		if pauseBeforeCall3 > maxPause {
+			t.Fatalf("pause between call 2 and call 3 was %v, want <= %v (backoff not reset on progress)", pauseBeforeCall3, maxPause)
 		}
 	})
 
