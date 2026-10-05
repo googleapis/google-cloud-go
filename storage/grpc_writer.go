@@ -50,6 +50,34 @@ const (
 	maxPerMessageWriteSize int = int(storagepb.ServiceConstants_MAX_WRITE_CHUNK_BYTES)
 )
 
+// errStallTimeout is returned when a gRPC write stream or handshake call
+// exceeds Writer.ChunkTransferTimeout without server acknowledgement.
+var errStallTimeout = errors.New("storage: chunk transfer timeout")
+
+type stallTimeoutError struct {
+	timeout time.Duration
+	stage   string
+}
+
+func (e *stallTimeoutError) Error() string {
+	if e.stage != "" {
+		return fmt.Sprintf("%s (%s exceeded %s)", errStallTimeout.Error(), e.stage, e.timeout)
+	}
+	return fmt.Sprintf("%s (exceeded %s)", errStallTimeout.Error(), e.timeout)
+}
+
+func (e *stallTimeoutError) Unwrap() error {
+	return errStallTimeout
+}
+
+func (e *stallTimeoutError) Temporary() bool {
+	return true
+}
+
+func (e *stallTimeoutError) Timeout() bool {
+	return true
+}
+
 func (w *gRPCWriter) Write(p []byte) (n int, err error) {
 	done := make(chan struct{})
 	cmd := &gRPCWriterCommandWrite{p: p, done: done}
@@ -203,11 +231,12 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		bufFlushedIdx:    -1, // Handle flushes to length 0
 		bufBaseOffset:    0,
 
-		chunkRetryDeadline: chunkRetryDeadline,
-		abandonRetriesTime: time.Time{},
-		attempts:           0,
-		lastErr:            nil,
-		streamSender:       nil,
+		chunkRetryDeadline:   chunkRetryDeadline,
+		chunkTransferTimeout: params.chunkTransferTimeout,
+		abandonRetriesTime:   time.Time{},
+		attempts:             0,
+		lastErr:              nil,
+		streamSender:         nil,
 
 		writesChan:     make(chan gRPCWriterCommand, 1),
 		currentCommand: nil,
@@ -282,12 +311,13 @@ type gRPCWriter struct {
 	bufFlushedIdx    int
 	bufBaseOffset    int64
 
-	chunkRetryDeadline time.Duration
-	abandonRetriesTime time.Time
-	attempts           int
-	progressMade       bool
-	lastErr            error
-	streamSender       gRPCBidiWriteBufferSender
+	chunkRetryDeadline   time.Duration
+	chunkTransferTimeout time.Duration
+	abandonRetriesTime   time.Time
+	attempts             int
+	progressMade         bool
+	lastErr              error
+	streamSender         gRPCBidiWriteBufferSender
 
 	// Communication from the user goroutine to the stream management goroutines
 	writesChan         chan gRPCWriterCommand

@@ -1111,6 +1111,90 @@ func TestGRPCWriter_RetryConfigDefaultBackoff(t *testing.T) {
 	}
 }
 
+func TestGRPCWriter_ChunkTransferTimeoutPlumbing(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	cancel()
+
+	c := &grpcStorageClient{settings: &settings{}}
+	wantTimeout := 150 * time.Millisecond
+	iw, err := c.OpenWriter(&openWriterParams{
+		ctx:                  ctx,
+		bucket:               "b",
+		attrs:                &ObjectAttrs{Name: "o"},
+		chunkTransferTimeout: wantTimeout,
+		donec:                make(chan struct{}),
+		setError:             func(error) {},
+		progress:             func(int64) {},
+		setObj:               func(*ObjectAttrs) {},
+		setSize:              func(int64) {},
+	})
+	if err != nil {
+		t.Fatalf("OpenWriter failed: %v", err)
+	}
+	gw, ok := iw.(*gRPCWriter)
+	if !ok {
+		t.Fatalf("expected *gRPCWriter, got %T", iw)
+	}
+	if gw.chunkTransferTimeout != wantTimeout {
+		t.Errorf("gw.chunkTransferTimeout = %v, want %v", gw.chunkTransferTimeout, wantTimeout)
+	}
+	_ = gw.CloseWithError(context.Canceled)
+}
+
+func TestStallTimeoutError(t *testing.T) {
+	tests := []struct {
+		name    string
+		err     *stallTimeoutError
+		wantMsg string
+	}{
+		{
+			name: "with stage",
+			err: &stallTimeoutError{
+				timeout: 250 * time.Millisecond,
+				stage:   "BidiWriteObject",
+			},
+			wantMsg: "storage: chunk transfer timeout (BidiWriteObject exceeded 250ms)",
+		},
+		{
+			name: "without stage",
+			err: &stallTimeoutError{
+				timeout: 250 * time.Millisecond,
+			},
+			wantMsg: "storage: chunk transfer timeout (exceeded 250ms)",
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			if got := tt.err.Error(); got != tt.wantMsg {
+				t.Errorf("err.Error() = %q, want %q", got, tt.wantMsg)
+			}
+			if !errors.Is(tt.err, errStallTimeout) {
+				t.Errorf("expected errors.Is(err, errStallTimeout) to be true")
+			}
+			if errors.Is(tt.err, context.Canceled) {
+				t.Errorf("stallTimeoutError must not match context.Canceled")
+			}
+			if !tt.err.Temporary() {
+				t.Errorf("expected Temporary() to be true")
+			}
+			if !tt.err.Timeout() {
+				t.Errorf("expected Timeout() to be true")
+			}
+			if !ShouldRetry(tt.err) {
+				t.Errorf("expected ShouldRetry(stallTimeoutError) to be true")
+			}
+			if got := checkCanceled(tt.err); !errors.Is(got, errStallTimeout) {
+				t.Errorf("checkCanceled(stallTimeoutError) = %v, want errStallTimeout", got)
+			}
+		})
+	}
+
+	if !ShouldRetry(errStallTimeout) {
+		t.Errorf("expected ShouldRetry(errStallTimeout) to be true")
+	}
+}
+
 type reconnectStatusSender struct {
 	mu            sync.Mutex
 	persistedSize int64

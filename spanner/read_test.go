@@ -2112,13 +2112,21 @@ func TestRowIteratorNextBufferedRowsDoesNotAllocate(t *testing.T) {
 // number of recordings.
 func streamingQueryMetrics(t *testing.T, rm metricdata.ResourceMetrics) map[string]int64 {
 	t.Helper()
+	return builtInMetricsForMethod(t, rm, "Spanner.ExecuteStreamingSql")
+}
+
+// builtInMetricsForMethod returns the built-in metrics recorded for method,
+// and any recorded without a method, keyed by metric name, method and status.
+// Counters are summed and histograms report their number of recordings.
+func builtInMetricsForMethod(t *testing.T, rm metricdata.ResourceMetrics, wantMethod string) map[string]int64 {
+	t.Helper()
 	got := make(map[string]int64)
 	for _, sm := range rm.ScopeMetrics {
 		for _, m := range sm.Metrics {
 			name := strings.TrimPrefix(m.Name, clientMetricsPrefix)
 			add := func(attrs attribute.Set, value int64) {
 				method, ok := attrs.Value(metricLabelKeyMethod)
-				if !ok || (method.AsString() != "Spanner.ExecuteStreamingSql" && method.AsString() != "") {
+				if !ok || (method.AsString() != wantMethod && method.AsString() != "") {
 					return
 				}
 				rpcStatus, _ := attrs.Value(metricLabelKeyStatus)
@@ -2430,7 +2438,7 @@ func TestRowIteratorNextErrorWithoutTracerDoesNotAllocate(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			iter := &RowIterator{
 				err:     spannerErrorf(codes.InvalidArgument, "invalid"),
-				streamd: &resumableStreamDecoder{mt: test.mt},
+				streamd: &resumableStreamDecoder{streamOperationMetrics: streamOperationMetrics{mt: test.mt}},
 			}
 			// The first call ends the operation, if there is one.
 			iter.Next()
