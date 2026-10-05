@@ -1603,11 +1603,6 @@ func (bwo BatchWriteOptions) merge(opts BatchWriteOptions) BatchWriteOptions {
 	return merged
 }
 
-// batchWriteMaxAttempts is the maximum number of BatchWrite stream attempts,
-// including the initial attempt, before a retryable error is returned to the
-// caller.
-const batchWriteMaxAttempts = 10
-
 // BatchWriteResponseIterator is an iterator over BatchWriteResponse structures returned from BatchWrite RPC.
 //
 // If the stream fails with a retryable error, or ends before every mutation
@@ -1616,7 +1611,10 @@ const batchWriteMaxAttempts = 10
 // each returned BatchWriteResponse always refer to the positions of the
 // mutation groups in the original request. Mutation groups that have been
 // acknowledged are never sent again, so a retry does not return the index of
-// a mutation group that an earlier response already returned.
+// a mutation group that an earlier response already returned. As for streaming
+// reads and queries, retries continue until the request succeeds, fails with
+// an error that cannot be retried, or the context is canceled or its deadline
+// passes.
 type BatchWriteResponseIterator struct {
 	ctx     context.Context
 	stream  sppb.Spanner_BatchWriteClient
@@ -1638,9 +1636,7 @@ type BatchWriteResponseIterator struct {
 	// streamIndexes maps the indexes of the mutation groups sent on the
 	// current stream to their indexes in pending.
 	streamIndexes []int
-	// attempts is the number of BatchWrite RPCs that have been started.
-	attempts int
-	retryer  gax.Retryer
+	retryer       gax.Retryer
 }
 
 func newBatchWriteResponseIterator(ctx context.Context, mgs []*sppb.BatchWriteRequest_MutationGroup, rpc func(context.Context, []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error), backoff gax.Backoff) *BatchWriteResponseIterator {
@@ -1682,7 +1678,6 @@ func (r *BatchWriteResponseIterator) next() (*sppb.BatchWriteResponse, error) {
 		if r.stream == nil {
 			r.startAttempt(r.ctx)
 			stream, err := r.rpc(contextWithBuiltinMetricsTracer(r.ctx, r.mt), r.unacknowledgedMutationGroups())
-			r.attempts++
 			if err != nil {
 				if r.mt != nil {
 					r.endAttempt(status.Code(err))
@@ -1759,8 +1754,8 @@ func (r *BatchWriteResponseIterator) acknowledge(response *sppb.BatchWriteRespon
 	return nil
 }
 
-// retryOrFail waits for the retry delay if err can be retried and the attempt
-// limit has not been reached. Otherwise, it sets err as the terminal error of
+// retryOrFail waits for the retry delay if err can be retried. Otherwise, or if
+// the context ends while waiting, it sets the error as the terminal error of
 // the iterator. All mutation groups that have been acknowledged are excluded
 // from the retried request.
 func (r *BatchWriteResponseIterator) retryOrFail(err error) {
@@ -1770,7 +1765,7 @@ func (r *BatchWriteResponseIterator) retryOrFail(err error) {
 		return
 	}
 	delay, shouldRetry := r.retryer.Retry(err)
-	if !shouldRetry || r.attempts >= batchWriteMaxAttempts {
+	if !shouldRetry {
 		r.err = err
 		return
 	}

@@ -21,6 +21,7 @@ import (
 	"errors"
 	"fmt"
 	"io"
+	"slices"
 	"strings"
 	"testing"
 	"time"
@@ -242,18 +243,34 @@ func TestBatchWriteResponseIterator_RetryAndResume(t *testing.T) {
 			wantCode:     codes.ResourceExhausted,
 		},
 		{
-			name:         "unavailable is returned once attempts are exhausted",
-			groups:       1,
-			attempts:     repeatBatchWriteAttempt(fakeBatchWriteAttempt{openErr: unavailable}, batchWriteMaxAttempts),
-			wantRequests: repeatBatchWriteRequest([]string{"g0"}, batchWriteMaxAttempts),
-			wantCode:     codes.Unavailable,
+			name:   "unavailable is retried without an attempt limit",
+			groups: 1,
+			attempts: append(
+				repeatBatchWriteAttempt(fakeBatchWriteAttempt{openErr: unavailable}, 25),
+				fakeBatchWriteAttempt{results: []fakeBatchWriteResult{{indexes: []int32{0}}}},
+			),
+			wantRequests: repeatBatchWriteRequest([]string{"g0"}, 26),
+			wantIndexes:  [][]int32{{0}},
 		},
 		{
-			name:         "premature end of stream is returned once attempts are exhausted",
-			groups:       1,
-			attempts:     repeatBatchWriteAttempt(fakeBatchWriteAttempt{}, batchWriteMaxAttempts),
-			wantRequests: repeatBatchWriteRequest([]string{"g0"}, batchWriteMaxAttempts),
-			wantCode:     codes.Unavailable,
+			name:   "premature end of stream is retried without an attempt limit",
+			groups: 1,
+			attempts: append(
+				repeatBatchWriteAttempt(fakeBatchWriteAttempt{}, 25),
+				fakeBatchWriteAttempt{results: []fakeBatchWriteResult{{indexes: []int32{0}}}},
+			),
+			wantRequests: repeatBatchWriteRequest([]string{"g0"}, 26),
+			wantIndexes:  [][]int32{{0}},
+		},
+		{
+			name:   "mid-stream unavailable is retried without an attempt limit",
+			groups: 1,
+			attempts: append(
+				repeatBatchWriteAttempt(fakeBatchWriteAttempt{results: []fakeBatchWriteResult{{err: unavailable}}}, 25),
+				fakeBatchWriteAttempt{results: []fakeBatchWriteResult{{indexes: []int32{0}}}},
+			),
+			wantRequests: repeatBatchWriteRequest([]string{"g0"}, 26),
+			wantIndexes:  [][]int32{{0}},
 		},
 		{
 			name:   "index out of bounds is not retried",
@@ -332,21 +349,81 @@ func repeatBatchWriteRequest(request []string, n int) [][]string {
 	return requests
 }
 
-func TestBatchWriteResponseIterator_CanceledContextStopsRetry(t *testing.T) {
+// unavailableBatchWriteRPC fails every BatchWrite RPC with UNAVAILABLE and
+// calls onAttempt with the number of RPCs that have been started.
+type unavailableBatchWriteRPC struct {
+	attempts  int
+	onAttempt func(attempts int)
+}
+
+func (f *unavailableBatchWriteRPC) rpc(context.Context, []*sppb.BatchWriteRequest_MutationGroup) (sppb.Spanner_BatchWriteClient, error) {
+	f.attempts++
+	if f.onAttempt != nil {
+		f.onAttempt(f.attempts)
+	}
+	return nil, status.Error(codes.Unavailable, "unavailable")
+}
+
+func TestBatchWriteResponseIterator_ContextEndsRetry(t *testing.T) {
 	t.Parallel()
 
-	ctx, cancel := context.WithCancel(context.Background())
-	cancel()
-	fake := &fakeBatchWriteRPC{attempts: []fakeBatchWriteAttempt{{openErr: status.Error(codes.Unavailable, "unavailable")}}}
-	iter := newBatchWriteResponseIterator(ctx, testBatchWriteMutationGroups(1), fake.rpc, gax.Backoff{Initial: time.Hour, Max: time.Hour, Multiplier: 1})
-	defer iter.Stop()
+	t.Run("canceled before first attempt", func(t *testing.T) {
+		t.Parallel()
 
-	if _, err := iter.Next(); !errors.Is(err, context.Canceled) {
-		t.Fatalf("Next() error = %v, want %v", err, context.Canceled)
-	}
-	if got, want := len(fake.requests), 1; got != want {
-		t.Fatalf("BatchWrite attempts = %d, want %d", got, want)
-	}
+		ctx, cancel := context.WithCancel(context.Background())
+		cancel()
+		fake := &unavailableBatchWriteRPC{}
+		iter := newBatchWriteResponseIterator(ctx, testBatchWriteMutationGroups(1), fake.rpc, gax.Backoff{Initial: time.Hour, Max: time.Hour, Multiplier: 1})
+		defer iter.Stop()
+
+		if _, err := iter.Next(); !errors.Is(err, context.Canceled) {
+			t.Fatalf("Next() error = %v, want %v", err, context.Canceled)
+		}
+		if got, want := fake.attempts, 1; got != want {
+			t.Fatalf("BatchWrite attempts = %d, want %d", got, want)
+		}
+	})
+
+	t.Run("canceled while retrying", func(t *testing.T) {
+		t.Parallel()
+
+		const cancelAfter = 25
+		ctx, cancel := context.WithCancel(context.Background())
+		defer cancel()
+		fake := &unavailableBatchWriteRPC{onAttempt: func(attempts int) {
+			if attempts == cancelAfter {
+				cancel()
+			}
+		}}
+		iter := newBatchWriteResponseIterator(ctx, testBatchWriteMutationGroups(1), fake.rpc, gax.Backoff{Initial: time.Nanosecond, Max: time.Nanosecond, Multiplier: 1})
+		defer iter.Stop()
+
+		if _, err := iter.Next(); !errors.Is(err, context.Canceled) {
+			t.Fatalf("Next() error = %v, want %v", err, context.Canceled)
+		}
+		// gax.Sleep may still let one more short retry delay elapse after the
+		// context has been canceled.
+		if fake.attempts < cancelAfter {
+			t.Fatalf("BatchWrite attempts = %d, want at least %d", fake.attempts, cancelAfter)
+		}
+	})
+
+	t.Run("deadline exceeded while retrying", func(t *testing.T) {
+		t.Parallel()
+
+		ctx, cancel := context.WithTimeout(context.Background(), 50*time.Millisecond)
+		defer cancel()
+		fake := &unavailableBatchWriteRPC{}
+		iter := newBatchWriteResponseIterator(ctx, testBatchWriteMutationGroups(1), fake.rpc, gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond, Multiplier: 1})
+		defer iter.Stop()
+
+		if _, err := iter.Next(); !errors.Is(err, context.DeadlineExceeded) {
+			t.Fatalf("Next() error = %v, want %v", err, context.DeadlineExceeded)
+		}
+		if fake.attempts < 2 {
+			t.Fatalf("BatchWrite attempts = %d, want at least 2", fake.attempts)
+		}
+	})
 }
 
 func TestClient_BatchWrite_RetriesUnavailable(t *testing.T) {
@@ -497,6 +574,16 @@ func TestBatchWriteResponseIteratorRecordsBuiltInMetrics(t *testing.T) {
 			`operation_latencies method="` + method + `" status=` + code: 1,
 		}
 	}
+	// retryOp is the operation of a request whose context ended while it
+	// was waiting to retry. attempt_count is recorded with the status of the
+	// last attempt.
+	retryOp := func(code string, attempts int64) map[string]int64 {
+		return map[string]int64{
+			`attempt_count method="` + method + `" status=Unavailable`:   attempts,
+			`operation_count method="` + method + `" status=` + code:     1,
+			`operation_latencies method="` + method + `" status=` + code: 1,
+		}
+	}
 	attempts := func(want map[string]int64, codes ...string) map[string]int64 {
 		for _, code := range codes {
 			want[`attempt_latencies method="`+method+`" status=`+code]++
@@ -511,11 +598,17 @@ func TestBatchWriteResponseIteratorRecordsBuiltInMetrics(t *testing.T) {
 		canceled            bool
 		failFirstStreamOpen bool
 		failFirstStreamRecv bool
-		executionTime       *SimulatedExecutionTime
-		iterate             func(*BatchWriteResponseIterator) (int, error)
-		wantResponses       int
-		wantCode            codes.Code
-		want                map[string]int64
+		// failStreamOpens fails every BatchWrite stream open with UNAVAILABLE
+		// and ends the context of the request at the given open: by canceling
+		// it, or with deadlineExceeded by waiting for its deadline.
+		failStreamOpens  int
+		deadlineExceeded bool
+		executionTime    *SimulatedExecutionTime
+		iterate          func(*BatchWriteResponseIterator) (int, error)
+		wantResponses    int
+		wantCode         codes.Code
+		wantErr          error
+		want             map[string]int64
 	}{
 		{
 			name:          "all mutation groups applied",
@@ -576,6 +669,23 @@ func TestBatchWriteResponseIteratorRecordsBuiltInMetrics(t *testing.T) {
 			want:     attempts(op("Canceled", 1), "Canceled"),
 		},
 		{
+			name:            "context canceled while retrying",
+			failStreamOpens: 12,
+			iterate:         readAll,
+			wantCode:        codes.Canceled,
+			wantErr:         context.Canceled,
+			want:            attempts(retryOp("Canceled", 12), slices.Repeat([]string{"Unavailable"}, 12)...),
+		},
+		{
+			name:             "deadline exceeded while retrying",
+			failStreamOpens:  1,
+			deadlineExceeded: true,
+			iterate:          readAll,
+			wantCode:         codes.DeadlineExceeded,
+			wantErr:          context.DeadlineExceeded,
+			want:             attempts(retryOp("DeadlineExceeded", 1), "Unavailable"),
+		},
+		{
 			name:          "non-retryable error before first response",
 			executionTime: &SimulatedExecutionTime{Errors: []error{status.Error(codes.InvalidArgument, "invalid")}},
 			iterate:       readAll,
@@ -585,6 +695,11 @@ func TestBatchWriteResponseIteratorRecordsBuiltInMetrics(t *testing.T) {
 	} {
 		t.Run(test.name, func(t *testing.T) {
 			reader, provider := newTestMeterProvider()
+			ctx, cancel := context.WithCancel(context.Background())
+			if test.deadlineExceeded {
+				ctx, cancel = context.WithTimeout(context.Background(), 10*time.Millisecond)
+			}
+			defer cancel()
 			var opts []option.ClientOption
 			if test.failFirstStreamOpen || test.failFirstStreamRecv {
 				var opened bool
@@ -604,14 +719,30 @@ func TestBatchWriteResponseIteratorRecordsBuiltInMetrics(t *testing.T) {
 						return &failingRecvBatchWriteStream{ClientStream: stream, err: unavailable}, nil
 					})))
 			}
+			if test.failStreamOpens > 0 {
+				var opens int
+				opts = append(opts, option.WithGRPCDialOption(grpc.WithChainStreamInterceptor(
+					func(ctx context.Context, desc *grpc.StreamDesc, cc *grpc.ClientConn, method string, streamer grpc.Streamer, opts ...grpc.CallOption) (grpc.ClientStream, error) {
+						if !strings.HasSuffix(method, "/BatchWrite") {
+							return streamer(ctx, desc, cc, method, opts...)
+						}
+						opens++
+						if opens == test.failStreamOpens {
+							if test.deadlineExceeded {
+								<-ctx.Done()
+							} else {
+								cancel()
+							}
+						}
+						return nil, unavailable
+					})))
+			}
 			server, client, teardown := setupMockedTestServerWithConfigAndClientOptions(t, ClientConfig{DisableNativeMetrics: true, ClientMetricsProvider: provider}, opts)
 			defer teardown()
 			if test.executionTime != nil {
 				server.TestSpanner.PutExecutionTime(MethodBatchWrite, *test.executionTime)
 			}
 
-			ctx, cancel := context.WithCancel(context.Background())
-			defer cancel()
 			iter := client.BatchWrite(ctx, []*MutationGroup{
 				{[]*Mutation{{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []any{"foo1", 1}}}},
 				{[]*Mutation{{op: opInsertOrUpdate, table: "t_test", columns: []string{"key", "val"}, values: []any{"foo2", 2}}}},
@@ -623,10 +754,13 @@ func TestBatchWriteResponseIteratorRecordsBuiltInMetrics(t *testing.T) {
 			gotResponses, err := test.iterate(iter)
 			var gotCode codes.Code
 			if err != nil && err != iterator.Done {
-				gotCode = ErrCode(err)
+				gotCode, _ = convertToGrpcStatusErr(err)
 			}
 			if g, w := gotCode, test.wantCode; g != w {
 				t.Fatalf("error code mismatch\n Got: %v\nWant: %v", g, w)
+			}
+			if test.wantErr != nil && !errors.Is(err, test.wantErr) {
+				t.Fatalf("error mismatch\n Got: %v\nWant: %v", err, test.wantErr)
 			}
 			if g, w := gotResponses, test.wantResponses; g != w {
 				t.Fatalf("response count mismatch\n Got: %v\nWant: %v", g, w)
