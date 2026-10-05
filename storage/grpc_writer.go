@@ -39,6 +39,10 @@ const (
 	// defaultWriteChunkRetryDeadline is the default deadline for the upload
 	// of a single chunk. It can be overwritten by Writer.ChunkRetryDeadline.
 	defaultWriteChunkRetryDeadline = 32 * time.Second
+	// defaultWriteRetryInitialBackoff is the initial retry backoff for writes
+	// when none is configured. It matches the HTTP writer, whose resumable
+	// uploads default to this value.
+	defaultWriteRetryInitialBackoff = 100 * time.Millisecond
 	// maxPerMessageWriteSize is the maximum amount of content that can be sent
 	// per WriteObjectRequest message. A buffer reaching this amount will
 	// precipitate a flush of the buffer. It is only used by the gRPC Writer
@@ -135,9 +139,6 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 	if s.retry == nil {
 		s.retry = defaultRetry.clone()
 	}
-	if params.append {
-		s.retry = withBidiWriteObjectRedirectionErrorRetries(s)
-	}
 
 	chunkRetryDeadline := defaultWriteChunkRetryDeadline
 	if params.chunkRetryDeadline != 0 {
@@ -226,15 +227,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 			w.spec.Resource.ContentType = w.detectContentType()
 		}
 		w.streamSender = w.pickBufferSender()
-
-		// Writer does not use maxRetryDuration from retryConfig to maintain
-		// consistency with HTTP client behavior. Writers should use
-		// ChunkRetryDeadline for per-chunk timeouts and context for overall timeouts.
-		writerRetry := w.settings.retry
-		if writerRetry != nil {
-			writerRetry = writerRetry.clone()
-			writerRetry.maxRetryDuration = 0
-		}
+		writerRetry := w.writerRetryConfig()
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
@@ -1045,6 +1038,12 @@ type gRPCBidiWriteBufferSender interface {
 	// to call after the completion channel provided to connect() is closed. The
 	// write loop will not make concurrent calls to connect() and err().
 	err() error
+
+	// canResumeSession reports whether an upload session (resumable upload ID
+	// or appendable write handle / takeover generation) has been established,
+	// making subsequent reconnects idempotent even without initial object
+	// preconditions.
+	canResumeSession() bool
 }
 
 type gRPCOneshotBidiWriteBufferSender struct {
@@ -1081,7 +1080,8 @@ func (w *gRPCWriter) newGRPCOneshotBidiWriteBufferSender() *gRPCOneshotBidiWrite
 	}
 }
 
-func (s *gRPCOneshotBidiWriteBufferSender) err() error { return s.streamErr }
+func (s *gRPCOneshotBidiWriteBufferSender) err() error             { return s.streamErr }
+func (s *gRPCOneshotBidiWriteBufferSender) canResumeSession() bool { return false }
 
 func (s *gRPCOneshotBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
 	s.streamErr = nil
@@ -1219,7 +1219,8 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 	}
 }
 
-func (s *gRPCResumableBidiWriteBufferSender) err() error { return s.streamErr }
+func (s *gRPCResumableBidiWriteBufferSender) err() error             { return s.streamErr }
+func (s *gRPCResumableBidiWriteBufferSender) canResumeSession() bool { return s.upid != "" }
 
 func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
 	s.streamErr = nil
@@ -1352,6 +1353,9 @@ type gRPCAppendBidiWriteBufferSender struct {
 }
 
 func (s *gRPCAppendBidiWriteBufferSender) err() error { return s.streamErr }
+func (s *gRPCAppendBidiWriteBufferSender) canResumeSession() bool {
+	return s.firstMessage.GetAppendObjectSpec().GetWriteHandle() != nil || s.takeoverWriter
+}
 
 // Use for a newly created appendable object.
 func (w *gRPCWriter) newGRPCAppendableObjectBufferSender() *gRPCAppendBidiWriteBufferSender {
@@ -1690,36 +1694,47 @@ func (p gRPCWriteRequestParams) apply(ctx context.Context) context.Context {
 	return gax.InsertMetadataIntoOutgoingContext(ctx, "x-goog-request-params", strings.Join(hds, "&"))
 }
 
-func withBidiWriteObjectRedirectionErrorRetries(s *settings) (newr *retryConfig) {
-	oldr := s.retry
-	newr = oldr.clone()
-	if newr == nil {
-		newr = &retryConfig{}
+func (w *gRPCWriter) writerRetryConfig() *retryConfig {
+	oldr := w.settings.retry
+	if oldr == nil {
+		oldr = defaultRetry
 	}
-	if (oldr.policy == RetryIdempotent && !s.idempotent) || oldr.policy == RetryNever {
-		// We still retry redirection errors even when settings indicate not to
-		// retry.
-		//
-		// The protocol requires us to respect redirection errors, so RetryNever has
-		// to ignore them.
-		//
-		// Idempotency is always protected by redirection errors: they either
-		// contain a handle which can be used as idempotency information, or they do
-		// not contain a handle and are "affirmative failures" which indicate that
-		// no server-side action occurred.
-		newr.policy = RetryAlways
-		newr.shouldRetry = func(err error, retryCtx *RetryContext) bool {
-			return errors.Is(err, bidiWriteObjectRedirectionError{})
+	newr := oldr.clone()
+	// Writer does not use maxRetryDuration from retryConfig to maintain
+	// consistency with HTTP client behavior. Writers should use
+	// ChunkRetryDeadline for per-chunk timeouts and context for overall timeouts.
+	newr.maxRetryDuration = 0
+	if newr.backoff == nil {
+		newr.backoff = &gax.Backoff{Initial: defaultWriteRetryInitialBackoff}
+	}
+
+	if oldr.policy == RetryNever {
+		if w.append {
+			// The protocol requires us to respect redirection errors even when
+			// RetryNever is configured.
+			newr.policy = RetryAlways
+			newr.shouldRetry = func(err error, retryCtx *RetryContext) bool {
+				return errors.Is(err, bidiWriteObjectRedirectionError{})
+			}
 		}
 		return newr
 	}
-	// If retry settings allow retries normally, fall back to that behavior.
+
+	// Set policy to RetryAlways so run() enters the retry loop even when
+	// w.settings.idempotent is initially false under RetryIdempotent. Once a
+	// resumable upload ID (upid) or appendable WriteHandle is established,
+	// resuming that session is idempotent and should be retried under
+	// RetryIdempotent.
+	newr.policy = RetryAlways
 	newr.shouldRetry = func(err error, retryCtx *RetryContext) bool {
-		if errors.Is(err, bidiWriteObjectRedirectionError{}) {
+		if w.append && errors.Is(err, bidiWriteObjectRedirectionError{}) {
 			return true
 		}
-		v := oldr.runShouldRetry(err, nil)
-		return v
+		if oldr.policy == RetryIdempotent && !w.settings.idempotent &&
+			!w.streamSender.canResumeSession() {
+			return false
+		}
+		return oldr.runShouldRetry(err, retryCtx)
 	}
 	return newr
 }
