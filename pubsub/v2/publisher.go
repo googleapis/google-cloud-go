@@ -125,35 +125,56 @@ type attemptResult struct {
 	id  int
 }
 
+// hedgedRequest is a scheduled hedged attempt waiting in the hedging queue.
+//
+// It intentionally holds no reference to the batch payload. Every batch that
+// is eligible for hedging enqueues one of these, and it stays in the queue
+// until sendAfter even if the publish resolved long before. The payload lives
+// on the cancellationSharer instead, which drops it as soon as the publish
+// resolves.
 type hedgedRequest struct {
 	attemptID int
-	startTime time.Time
 	sendAfter time.Time
-	resCh     chan attemptResult
 	cs        *cancellationSharer
-	ctx       context.Context
-	pbMsgs    []*pb.PubsubMessage
-	gaxOpts   []gax.CallOption
-	bmsgs     []*bundledMessage
 }
 
 func (req *hedgedRequest) isDone() bool {
 	return req.cs.isDone()
 }
 
+// hedgeBatch is the per-batch state shared by all hedged attempts of a single
+// publish.
+type hedgeBatch struct {
+	ctx       context.Context
+	startTime time.Time
+	resCh     chan attemptResult
+	pbMsgs    []*pb.PubsubMessage
+	gaxOpts   []gax.CallOption
+	bmsgs     []*bundledMessage
+}
+
 // cancellationSharer coordinates cancellation between all publish attempts.
 // When one attempt completes, it cancels all other attempts to minimize
 // duplicate messages on the server.
+//
+// It also owns the batch payload used by hedged attempts. The payload is
+// released when the publish resolves (win or cancelAll), and inflight tracks
+// hedged attempts that are still using it so the publisher can wait for them
+// to exit before handing results (and ownership of message data) back to the
+// user.
 type cancellationSharer struct {
-	mu      sync.Mutex
-	cancels map[int]context.CancelFunc
-	done    bool
-	nextID  int
+	mu       sync.Mutex
+	cancels  map[int]context.CancelFunc
+	done     bool
+	nextID   int
+	batch    *hedgeBatch
+	inflight sync.WaitGroup
 }
 
-func newCancellationSharer() *cancellationSharer {
+func newCancellationSharer(batch *hedgeBatch) *cancellationSharer {
 	return &cancellationSharer{
 		cancels: make(map[int]context.CancelFunc),
+		batch:   batch,
 	}
 }
 
@@ -177,6 +198,32 @@ func (cs *cancellationSharer) add(cancel context.CancelFunc) int {
 	return id
 }
 
+// acquireHedge registers a new hedged attempt. It returns the attempt ID, a
+// cancellable context derived from the batch context, and the batch payload.
+// ok is false if the publish has already resolved, in which case the caller
+// must not send the attempt. On success the caller must call releaseHedge once
+// it no longer uses the payload.
+func (cs *cancellationSharer) acquireHedge() (id int, ctx context.Context, b *hedgeBatch, ok bool) {
+	cs.mu.Lock()
+	defer cs.mu.Unlock()
+	if cs.done || cs.batch == nil {
+		return 0, nil, nil, false
+	}
+	ctx, cancel := context.WithCancel(cs.batch.ctx)
+	id = cs.nextID
+	cs.nextID++
+	cs.cancels[id] = cancel
+	// Add is done under mu while !done, so it always happens before the Wait in
+	// wait(), which is only called after cancelAll has set done.
+	cs.inflight.Add(1)
+	return id, ctx, cs.batch, true
+}
+
+// releaseHedge marks a hedged attempt acquired via acquireHedge as finished.
+func (cs *cancellationSharer) releaseHedge() {
+	cs.inflight.Done()
+}
+
 // win marks the coordinator as resolved by winnerID and cancels all other attempts.
 func (cs *cancellationSharer) win(winnerID int) {
 	cs.mu.Lock()
@@ -185,6 +232,7 @@ func (cs *cancellationSharer) win(winnerID int) {
 		return
 	}
 	cs.done = true
+	cs.batch = nil
 	for id, cancel := range cs.cancels {
 		if id != winnerID {
 			cancel()
@@ -192,14 +240,23 @@ func (cs *cancellationSharer) win(winnerID int) {
 	}
 }
 
-// cancelAll cancels all registered attempt contexts.
+// cancelAll cancels all registered attempt contexts and releases the batch
+// payload. It is safe to call more than once.
 func (cs *cancellationSharer) cancelAll() {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
 	cs.done = true
+	cs.batch = nil
 	for _, cancel := range cs.cancels {
 		cancel()
 	}
+	cs.cancels = nil
+}
+
+// wait blocks until every hedged attempt acquired via acquireHedge has called
+// releaseHedge. It must be called after cancelAll.
+func (cs *cancellationSharer) wait() {
+	cs.inflight.Wait()
 }
 
 // PublishSettings control the bundling of published messages.
@@ -618,6 +675,7 @@ func (t *Publisher) processHedgingQueue() {
 			break
 		}
 		ready = append(ready, head)
+		t.hedgingQueue[0] = nil // don't retain the popped request in the backing array
 		t.hedgingQueue = t.hedgingQueue[1:]
 	}
 
@@ -652,33 +710,26 @@ func (t *Publisher) processHedgingQueue() {
 }
 
 func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
-	if req.isDone() || req.ctx.Err() != nil {
+	id, hedgedCtx, b, ok := req.cs.acquireHedge()
+	if !ok {
+		return
+	}
+	defer req.cs.releaseHedge()
+	if b.ctx.Err() != nil {
 		return
 	}
 
 	t.enqueueHedgedRequest(&hedgedRequest{
 		attemptID: req.attemptID + 1,
-		startTime: req.startTime,
 		sendAfter: time.Now().Add(t.hedgingDelay),
-		resCh:     req.resCh,
 		cs:        req.cs,
-		ctx:       req.ctx,
-		pbMsgs:    req.pbMsgs,
-		gaxOpts:   req.gaxOpts,
-		bmsgs:     req.bmsgs,
 	})
 
-	hedgedCtx, hedgedCancel := context.WithCancel(req.ctx)
-	id := req.cs.add(hedgedCancel)
-	if id == -1 {
-		return
-	}
-
 	var timeout time.Duration
-	if deadline, ok := req.ctx.Deadline(); ok {
+	if deadline, ok := b.ctx.Deadline(); ok {
 		timeout = time.Until(deadline)
 	} else {
-		timeout = t.PublishSettings.Timeout - time.Since(req.startTime)
+		timeout = t.PublishSettings.Timeout - time.Since(b.startTime)
 	}
 	if timeout <= 0 {
 		return
@@ -689,38 +740,38 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 
 	// Hedged attempts should not be retried. Any errors from hedged attempts
 	// are discarded so they do not prematurely fail the overall publish request.
-	opts := append([]gax.CallOption(nil), req.gaxOpts...)
+	opts := append([]gax.CallOption(nil), b.gaxOpts...)
 	opts = append(opts,
 		gax.WithRetry(func() gax.Retryer { return gax.OnCodes([]codes.Code{}, gax.Backoff{}) }),
 		gax.WithTimeout(timeout),
 	)
 
 	if t.enableTracing {
-		for _, m := range req.bmsgs {
-			m.createSpan.AddEvent(eventHedgedPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(req.bmsgs))))
+		for _, m := range b.bmsgs {
+			m.createSpan.AddEvent(eventHedgedPublishStart, trace.WithAttributes(semconv.MessagingBatchMessageCount(len(b.bmsgs))))
 		}
 	}
 
 	hedgedCtx = metadata.AppendToOutgoingContext(
 		hedgedCtx,
 		pubsubClientTelemetryHeader,
-		encodePubsubClientTelemetry(req.attemptID, req.startTime),
+		encodePubsubClientTelemetry(req.attemptID, b.startTime),
 	)
 
 	r, e := t.c.TopicAdminClient.Publish(hedgedCtx, &pb.PublishRequest{
 		Topic:    t.name,
-		Messages: req.pbMsgs,
+		Messages: b.pbMsgs,
 	}, opts...)
 
 	if t.enableTracing {
-		for _, m := range req.bmsgs {
+		for _, m := range b.bmsgs {
 			m.createSpan.AddEvent(eventHedgedPublishEnd)
 		}
 	}
 
 	if e == nil {
 		select {
-		case req.resCh <- attemptResult{res: r, err: nil, id: id}:
+		case b.resCh <- attemptResult{res: r, err: nil, id: id}:
 			req.cs.win(id)
 		default:
 		}
@@ -870,23 +921,21 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 			(t.PublishSettings.Timeout == 0 || t.PublishSettings.Timeout > t.hedgingDelay)
 
 		if canHedge {
-			cs := newCancellationSharer()
-			defer cs.cancelAll()
-
 			resCh := make(chan attemptResult, 1)
-
-			initialHedge := &hedgedRequest{
-				attemptID: 1,
-				startTime: start,
-				sendAfter: start.Add(t.hedgingDelay),
-				resCh:     resCh,
-				cs:        cs,
+			cs := newCancellationSharer(&hedgeBatch{
 				ctx:       ctx,
+				startTime: start,
+				resCh:     resCh,
 				pbMsgs:    pbMsgs,
 				gaxOpts:   gaxOpts,
 				bmsgs:     bms,
-			}
-			t.enqueueHedgedRequest(initialHedge)
+			})
+
+			t.enqueueHedgedRequest(&hedgedRequest{
+				attemptID: 1,
+				sendAfter: start.Add(t.hedgingDelay),
+				cs:        cs,
+			})
 
 			mainCtx, mainCancel := context.WithCancel(ctx)
 			mainID := cs.add(mainCancel)
@@ -923,6 +972,15 @@ func (t *Publisher) publishMessageBundle(ctx context.Context, bms []*bundledMess
 				res = r
 				err = e
 			}
+
+			// Resolve the publish before releasing flow control and setting
+			// results: cancel outstanding hedged attempts, drop the shared
+			// payload so queued hedgedRequests don't keep it alive, and wait for
+			// in-flight hedges to exit. After this, no hedge goroutine can still
+			// be reading message Data/Attributes, which the user may reuse as
+			// soon as PublishResult.Get returns.
+			cs.cancelAll()
+			cs.wait()
 		} else {
 			// regular publish without hedging
 			publishCtx := metadata.AppendToOutgoingContext(

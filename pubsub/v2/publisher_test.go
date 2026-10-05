@@ -466,7 +466,7 @@ func TestCancellationSharer(t *testing.T) {
 	mainCtx, mainCancel := context.WithCancel(ctx)
 	hedgedCtx, hedgedCancel := context.WithCancel(ctx)
 
-	cs := newCancellationSharer()
+	cs := newCancellationSharer(nil)
 	mainID := cs.add(mainCancel)
 	_ = cs.add(hedgedCancel)
 
@@ -493,6 +493,187 @@ func TestCancellationSharer(t *testing.T) {
 	if lateCtx.Err() == nil {
 		t.Errorf("expected lateCtx to be cancelled immediately upon add after done")
 	}
+}
+
+func TestCancellationSharer_ReleasesBatchAndWaitsForHedges(t *testing.T) {
+	batch := &hedgeBatch{ctx: context.Background(), pbMsgs: []*pb.PubsubMessage{{Data: []byte("x")}}}
+	cs := newCancellationSharer(batch)
+
+	id, hctx, b, ok := cs.acquireHedge()
+	if !ok {
+		t.Fatal("acquireHedge: got ok=false before the publish resolved")
+	}
+	if b != batch {
+		t.Fatalf("acquireHedge: got batch %p, want %p", b, batch)
+	}
+
+	cs.cancelAll()
+	if hctx.Err() == nil {
+		t.Errorf("hedge %d context not cancelled by cancelAll", id)
+	}
+	cs.mu.Lock()
+	gotBatch := cs.batch
+	cs.mu.Unlock()
+	if gotBatch != nil {
+		t.Error("cancelAll did not release the shared batch payload")
+	}
+	if _, _, _, ok := cs.acquireHedge(); ok {
+		t.Error("acquireHedge after cancelAll: got ok=true, want false")
+	}
+
+	// wait must block until the acquired hedge releases.
+	waited := make(chan struct{})
+	go func() {
+		cs.wait()
+		close(waited)
+	}()
+	select {
+	case <-waited:
+		t.Fatal("wait returned while a hedge was still in flight")
+	case <-time.After(50 * time.Millisecond):
+	}
+	cs.releaseHedge()
+	select {
+	case <-waited:
+	case <-time.After(time.Second):
+		t.Fatal("wait did not return after releaseHedge")
+	}
+}
+
+func TestCancellationSharer_WinReleasesBatch(t *testing.T) {
+	cs := newCancellationSharer(&hedgeBatch{ctx: context.Background()})
+	id, _, _, ok := cs.acquireHedge()
+	if !ok {
+		t.Fatal("acquireHedge: got ok=false")
+	}
+	cs.win(id)
+	cs.mu.Lock()
+	gotBatch := cs.batch
+	cs.mu.Unlock()
+	if gotBatch != nil {
+		t.Error("win did not release the shared batch payload")
+	}
+	cs.releaseHedge()
+	cs.cancelAll()
+	cs.wait()
+}
+
+// newFakeWithInterceptor is like newFake but installs a unary client interceptor.
+func newFakeWithInterceptor(t *testing.T, ic grpc.UnaryClientInterceptor) (*Client, *pstest.Server) {
+	t.Helper()
+	srv := pstest.NewServer()
+	client, err := NewClient(context.Background(), projName,
+		option.WithEndpoint(srv.Addr),
+		option.WithoutAuthentication(),
+		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
+		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(ic)),
+		option.WithTelemetryDisabled(),
+	)
+	if err != nil {
+		srv.Close()
+		t.Fatal(err)
+	}
+	return client, srv
+}
+
+// Queued hedgedRequests stay in the hedging queue until their sendAfter time,
+// even when the publish resolves immediately. They must not keep the batch
+// payload alive after flow control has released it.
+func TestPublishHedging_QueueDoesNotRetainPayload(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging-retain", testutil.ProjID())
+	p := mustCreateTopic(t, c, topic)
+	defer p.Stop()
+	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: maxHedgingDelay}
+
+	if _, err := publishSingleMessage(ctx, p, "payload").Get(ctx); err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+
+	p.hedgingMu.Lock()
+	queue := append([]*hedgedRequest(nil), p.hedgingQueue...)
+	p.hedgingMu.Unlock()
+	if len(queue) != 1 {
+		t.Fatalf("got %d queued hedged requests, want 1 (the not-yet-due initial hedge)", len(queue))
+	}
+	cs := queue[0].cs
+	cs.mu.Lock()
+	defer cs.mu.Unlock()
+	if !cs.done {
+		t.Error("queued request's cancellationSharer is not done after the publish resolved")
+	}
+	if cs.batch != nil {
+		t.Error("queued hedged request still retains the batch payload after the publish resolved")
+	}
+}
+
+// Users may reuse a message's Data and Attributes once PublishResult.Get
+// returns. Hedged attempts that lost the race can still be inside the RPC when
+// the winner resolves; the publish must wait for them to exit before setting
+// results.
+func TestPublishHedging_ResultWaitsForLosingHedges(t *testing.T) {
+	ctx := context.Background()
+	var (
+		publishCalls   int64
+		inflightHedges int64
+		hedgesStarted  int64
+	)
+	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		if !strings.HasSuffix(method, "/Publish") {
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}
+		if atomic.AddInt64(&publishCalls, 1) == 1 {
+			// Original attempt: slow enough for hedges to fire, then succeed.
+			time.Sleep(300 * time.Millisecond)
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}
+		// Hedged attempt: block until cancelled by the winner, then keep
+		// reading the request for a bit to model an RPC that is still
+		// serializing when cancellation arrives.
+		atomic.AddInt64(&hedgesStarted, 1)
+		atomic.AddInt64(&inflightHedges, 1)
+		defer atomic.AddInt64(&inflightHedges, -1)
+		<-ctx.Done()
+		deadline := time.Now().Add(50 * time.Millisecond)
+		for time.Now().Before(deadline) {
+			for _, m := range req.(*pb.PublishRequest).Messages {
+				_ = len(m.Data)
+				for k, v := range m.Attributes {
+					_, _ = k, v
+				}
+			}
+		}
+		return ctx.Err()
+	}
+	c, srv := newFakeWithInterceptor(t, ic)
+	defer c.Close()
+	defer srv.Close()
+
+	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging-wait", testutil.ProjID())
+	p := mustCreateTopic(t, c, topic)
+	defer p.Stop()
+	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: 100 * time.Millisecond}
+	p.hedgingTokenBucket = 5 * tokenScaleFactor
+
+	msg := &Message{Data: []byte("payload"), Attributes: map[string]string{"k": "v"}}
+	if _, err := p.Publish(ctx, msg).Get(ctx); err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+	if n := atomic.LoadInt64(&inflightHedges); n != 0 {
+		t.Errorf("PublishResult resolved while %d hedged attempt(s) were still in flight", n)
+	}
+	if atomic.LoadInt64(&hedgesStarted) == 0 {
+		t.Fatal("no hedged attempts were sent; test did not exercise the race")
+	}
+
+	// Reusing the message after Get must not race with hedged attempts
+	// (detected under -race; concurrent map access would also be fatal).
+	msg.Attributes["k"] = "reused"
+	msg.Data[0] = 'X'
 }
 
 func TestPublishHedging(t *testing.T) {
