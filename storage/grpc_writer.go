@@ -320,11 +320,10 @@ type gRPCWriter struct {
 	streamSender         gRPCBidiWriteBufferSender
 
 	// Communication from the user goroutine to the stream management goroutines
-	writesChan         chan gRPCWriterCommand
-	currentCommand     gRPCWriterCommand
-	forcedStreamResult error
-	streamResult       error
-	donec              chan struct{}
+	writesChan     chan gRPCWriterCommand
+	currentCommand gRPCWriterCommand
+	streamResult   error
+	donec          chan struct{}
 }
 
 // consumeProgress reports whether the writer made strict forward progress
@@ -477,7 +476,6 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 			w.buf = w.buf[:origLen+len(v.p)]
 			copy(w.buf[origLen:], v.p)
 			close(v.done)
-			break
 		case *gRPCWriterCommandClose:
 			// If we get here, data (if any) fits in w.buf, so we can force oneshot.
 			w.forceOneShot = true
@@ -726,14 +724,11 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	wblen := len(w.buf)
 	allKnownBytes := wblen + len(c.p)
 	fullBufs := allKnownBytes / cap(w.buf)
-	partialBuf := allKnownBytes % cap(w.buf)
-	if partialBuf == 0 {
+	if allKnownBytes%cap(w.buf) == 0 {
 		// If we would exactly fill some number of cap(w.buf) units, we don't need
 		// to block on the flush for the last one. We know that c.p is not empty, so
-		// allKnownBytes is not 0 and therefore if partialBuf is 0, fullBufs is not
-		// 0.
+		// allKnownBytes is not 0 and therefore fullBufs is not 0.
 		fullBufs--
-		partialBuf = cap(w.buf)
 	}
 
 	if fullBufs == 0 {
@@ -773,9 +768,8 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	firstFullBufFromCmd := cap(w.buf) - len(w.buf)
 
 	sending := w.buf[w.bufUnsentIdx:]
-	sentOffset, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
-		w.handleCompletion)
-	if !ok {
+	if _, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
+		w.handleCompletion); !ok {
 		return w.streamSender.err()
 	}
 
@@ -798,7 +792,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		cmdBaseOffset = bufTail
 	}
 	offset := cmdBaseOffset
-	sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, firstFullBufFromCmd,
+	sentOffset, ok := w.sendBufferToTarget(cs, cmdBuf, offset, firstFullBufFromCmd,
 		trimCommandBuf)
 	if !ok {
 		return w.streamSender.err()
@@ -1391,7 +1385,6 @@ type gRPCAppendBidiWriteBufferSender struct {
 
 	firstMessage    *storagepb.BidiWriteObjectRequest
 	finalizeOnClose bool
-	objResource     *storagepb.Object
 
 	// Checksum related settings.
 	sendCRC32C          bool
