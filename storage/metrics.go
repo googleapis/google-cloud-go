@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"crypto/tls"
+	"encoding/binary"
 	"errors"
 	"fmt"
 	"io"
@@ -69,11 +70,11 @@ type clientMetrics struct {
 	ttfb                      metric.Float64Histogram
 	errors                    metric.Int64Counter
 	activeRequests            metric.Int64UpDownCounter
-	gfeHeaderMissing          metric.Int64Counter
+	serverUnreached           metric.Int64Counter
 	dnsLookupDuration         metric.Float64Histogram
 	tcpConnectDuration        metric.Float64Histogram
 	tlsHandshakeDuration      metric.Float64Histogram
-	gfeDuration               metric.Float64Histogram
+	serverDuration            metric.Float64Histogram
 	credentialRefreshDuration metric.Float64Histogram
 	networkBytesSent          metric.Int64Counter
 	networkBytesReceived      metric.Int64Counter
@@ -243,7 +244,7 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
-					sdkmetric.Instrument{Name: "gcp.storage.client.gfe.duration", Kind: sdkmetric.InstrumentKindHistogram},
+					sdkmetric.Instrument{Name: "gcp.storage.client.server.duration", Kind: sdkmetric.InstrumentKindHistogram},
 					sdkmetric.Stream{Aggregation: sdkmetric.AggregationExplicitBucketHistogram{Boundaries: latencyHistogramBoundaries()}},
 				),
 				sdkmetric.NewView(
@@ -339,11 +340,11 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 	}
 
 	var activeRequests metric.Int64UpDownCounter
-	var gfeHeaderMissing metric.Int64Counter
+	var serverUnreached metric.Int64Counter
 	var dnsLookupDuration metric.Float64Histogram
 	var tcpConnectDuration metric.Float64Histogram
 	var tlsHandshakeDuration metric.Float64Histogram
-	var gfeDuration metric.Float64Histogram
+	var serverDuration metric.Float64Histogram
 	var credentialRefreshDuration metric.Float64Histogram
 
 	var networkBytesSent metric.Int64Counter
@@ -395,9 +396,9 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 			return nil, nil, err
 		}
 
-		gfeHeaderMissing, err = meter.Int64Counter(
-			"gcp.storage.client.gfe.header_missing",
-			metric.WithDescription("Number of GCS requests where the X-Goog-Gfe-Service-Time header was missing"),
+		serverUnreached, err = meter.Int64Counter(
+			"gcp.storage.client.server.unreached",
+			metric.WithDescription("Number of GCS requests that did not receive a response from a GCS server"),
 			metric.WithUnit("1"),
 		)
 		if err != nil {
@@ -431,9 +432,9 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 			return nil, nil, err
 		}
 
-		gfeDuration, err = meter.Float64Histogram(
-			"gcp.storage.client.gfe.duration",
-			metric.WithDescription("GFE proxy processing time"),
+		serverDuration, err = meter.Float64Histogram(
+			"gcp.storage.client.server.duration",
+			metric.WithDescription("Server processing time reported by GCS"),
 			metric.WithUnit("s"),
 		)
 		if err != nil {
@@ -453,11 +454,11 @@ func initMetrics(ctx context.Context, projectID string, config *storageConfig) (
 		ttfb:                      ttfb,
 		errors:                    errors,
 		activeRequests:            activeRequests,
-		gfeHeaderMissing:          gfeHeaderMissing,
+		serverUnreached:           serverUnreached,
 		dnsLookupDuration:         dnsLookupDuration,
 		tcpConnectDuration:        tcpConnectDuration,
 		tlsHandshakeDuration:      tlsHandshakeDuration,
-		gfeDuration:               gfeDuration,
+		serverDuration:            serverDuration,
 		credentialRefreshDuration: credentialRefreshDuration,
 		networkBytesSent:          networkBytesSent,
 		networkBytesReceived:      networkBytesReceived,
@@ -873,22 +874,26 @@ func (rt *metricsRoundTripper) RoundTrip(req *http.Request) (*http.Response, err
 			rt.metrics.errors.Add(req.Context(), 1, metric.WithAttributes(injectAPIMethod(req.Context(), errorAttrs)...))
 		}
 
-		if rt.metrics.gfeHeaderMissing != nil {
+		if rt.metrics.serverUnreached != nil || rt.metrics.serverDuration != nil {
 			headerVal := ""
+			uploadID := ""
 			if resp != nil {
 				headerVal = resp.Header.Get("X-Goog-Gfe-Service-Time")
+				uploadID = resp.Header.Get("X-GUploader-UploadID")
 			}
-			if resp == nil || headerVal == "" {
-				missingAttrs := metric.WithAttributes(
-					attribute.String("rpc.method", logicalMethod),
-					attribute.String("rpc.system.name", "http"),
-					attribute.String("server.address", stripPort(req.URL.Host)),
-					attribute.String("error.type", errorType),
-				)
-				rt.metrics.gfeHeaderMissing.Add(req.Context(), 1, missingAttrs)
-			} else if rt.metrics.gfeDuration != nil {
+			if resp == nil || (uploadID == "" && headerVal == "") {
+				if rt.metrics.serverUnreached != nil {
+					missingAttrs := metric.WithAttributes(
+						attribute.String("rpc.method", logicalMethod),
+						attribute.String("rpc.system.name", "http"),
+						attribute.String("server.address", stripPort(req.URL.Host)),
+						attribute.String("error.type", errorType),
+					)
+					rt.metrics.serverUnreached.Add(req.Context(), 1, missingAttrs)
+				}
+			} else if headerVal != "" && rt.metrics.serverDuration != nil {
 				if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-					rt.metrics.gfeDuration.Record(req.Context(), ms/1000.0, rpcAttrs)
+					rt.metrics.serverDuration.Record(req.Context(), ms/1000.0, rpcAttrs)
 				}
 			}
 		}
@@ -993,8 +998,23 @@ func getLogicalMethod(method string) string {
 	return method
 }
 
-func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, rpcAttrs metric.MeasurementOption) {
-	if cm.gfeHeaderMissing == nil {
+// grpcServerElapsed decodes the server elapsed time from the
+// grpc-server-stats-bin trailer: version byte 0, field ID 0, then the
+// elapsed time in nanoseconds as a little-endian uint64.
+func grpcServerElapsed(md metadata.MD) (time.Duration, bool) {
+	vals := md.Get("grpc-server-stats-bin")
+	if len(vals) == 0 {
+		return 0, false
+	}
+	b := []byte(vals[0])
+	if len(b) != 10 || b[0] != 0 || b[1] != 0 {
+		return 0, false
+	}
+	return time.Duration(binary.LittleEndian.Uint64(b[2:])), true
+}
+
+func (cm *clientMetrics) recordServerMetrics(ctx context.Context, headerMD, trailerMD metadata.MD, err error, logicalMethod, target string, rpcAttrs metric.MeasurementOption) {
+	if cm.serverUnreached == nil && cm.serverDuration == nil {
 		return
 	}
 
@@ -1002,23 +1022,37 @@ func (cm *clientMetrics) recordGFEMetrics(ctx context.Context, headerMD, trailer
 	if len(headerVals) == 0 {
 		headerVals = trailerMD.Get("x-goog-gfe-service-time")
 	}
-	headerVal := ""
-	if len(headerVals) > 0 {
-		headerVal = headerVals[0]
-	}
-	if headerVal == "" {
-		errType := computeErrorType(err, false, int64(status.Code(err)))
-		missingAttrs := metric.WithAttributes(
-			attribute.String("rpc.method", logicalMethod),
-			attribute.String("rpc.system.name", "grpc"),
-			attribute.String("server.address", stripPort(target)),
-			attribute.String("error.type", errType),
-		)
-		cm.gfeHeaderMissing.Add(ctx, 1, missingAttrs)
-	} else if cm.gfeDuration != nil {
-		if ms, parseErr := strconv.ParseFloat(headerVal, 64); parseErr == nil {
-			cm.gfeDuration.Record(ctx, ms/1000.0, rpcAttrs)
+	seconds, ok := -1.0, false
+	if len(headerVals) > 0 && headerVals[0] != "" {
+		if ms, parseErr := strconv.ParseFloat(headerVals[0], 64); parseErr == nil {
+			seconds, ok = ms/1000.0, true
 		}
+	}
+	if !ok {
+		if d, found := grpcServerElapsed(trailerMD); found {
+			seconds, ok = d.Seconds(), true
+		}
+	}
+	if !ok {
+		if cm.serverUnreached != nil {
+			errType := computeErrorType(err, false, int64(status.Code(err)))
+			missingAttrs := metric.WithAttributes(
+				attribute.String("rpc.method", logicalMethod),
+				attribute.String("rpc.system.name", "grpc"),
+				attribute.String("server.address", stripPort(target)),
+				attribute.String("error.type", errType),
+			)
+			cm.serverUnreached.Add(ctx, 1, missingAttrs)
+		}
+	} else if cm.serverDuration != nil {
+		if rpcAttrs == nil {
+			rpcAttrs = metric.WithAttributes(
+				attribute.String("rpc.method", logicalMethod),
+				attribute.String("rpc.system.name", "grpc"),
+				attribute.String("server.address", stripPort(target)),
+			)
+		}
+		cm.serverDuration.Record(ctx, seconds, rpcAttrs)
 	}
 }
 
@@ -1033,7 +1067,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		}
 
 		var rpcAttrs metric.MeasurementOption
-		if cm.activeRequests != nil || cm.gfeHeaderMissing != nil {
+		if cm.activeRequests != nil || cm.serverUnreached != nil || cm.serverDuration != nil {
 			rpcAttrs = metric.WithAttributes(
 				attribute.String("rpc.method", logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
@@ -1052,7 +1086,7 @@ func metricsInterceptors(cm *clientMetrics) (grpc.UnaryClientInterceptor, grpc.S
 		startTime := time.Now()
 		err := invoker(ctx, method, req, reply, cc, opts...)
 
-		cm.recordGFEMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, rpcAttrs)
+		cm.recordServerMetrics(ctx, headerMD, trailerMD, err, logicalMethod, target, rpcAttrs)
 
 		duration := time.Since(startTime).Seconds()
 		cm.recordRPC(ctx, method, target, duration, err)
@@ -1147,7 +1181,7 @@ func (w *wrappedClientStream) record(err error) {
 		logicalMethod := getLogicalMethod(w.method)
 
 		var rpcAttrs metric.MeasurementOption
-		if w.metrics.activeRequests != nil || w.metrics.gfeHeaderMissing != nil {
+		if w.metrics.activeRequests != nil || w.metrics.serverUnreached != nil || w.metrics.serverDuration != nil {
 			rpcAttrs = metric.WithAttributes(
 				attribute.String("rpc.method", logicalMethod),
 				attribute.String("rpc.system.name", "grpc"),
@@ -1161,7 +1195,7 @@ func (w *wrappedClientStream) record(err error) {
 
 		headerMD, _ := w.ClientStream.Header()
 		trailerMD := w.ClientStream.Trailer()
-		w.metrics.recordGFEMetrics(w.ctx, headerMD, trailerMD, err, logicalMethod, w.target, rpcAttrs)
+		w.metrics.recordServerMetrics(w.ctx, headerMD, trailerMD, err, logicalMethod, w.target, rpcAttrs)
 	}
 }
 
