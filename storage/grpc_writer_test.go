@@ -17,6 +17,7 @@ package storage
 import (
 	"context"
 	"errors"
+	"fmt"
 	"io"
 	"strings"
 	"sync"
@@ -25,6 +26,8 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	"google.golang.org/grpc/codes"
+	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
 )
 
@@ -318,7 +321,8 @@ func (m *mockSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ..
 	}()
 }
 
-func (m *mockSender) err() error { return m.errResult }
+func (m *mockSender) err() error             { return m.errResult }
+func (m *mockSender) canResumeSession() bool { return false }
 
 // filterDataRequests returns only requests containing data, ignoring protocol overhead.
 func filterDataRequests(reqs []gRPCBidiWriteRequest) []gRPCBidiWriteRequest {
@@ -448,6 +452,7 @@ func TestGRPCWriter_Deadlock(t *testing.T) {
 
 type instantFailSender struct {
 	errResult error
+	canResume bool
 }
 
 func (i *instantFailSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
@@ -458,6 +463,10 @@ func (i *instantFailSender) connect(ctx context.Context, cs gRPCBufSenderChans, 
 
 func (i *instantFailSender) err() error {
 	return i.errResult
+}
+
+func (i *instantFailSender) canResumeSession() bool {
+	return i.canResume
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_TimeoutEnforcedAcrossRetries(t *testing.T) {
@@ -879,6 +888,226 @@ func TestGRPCWriter_ChunkRetryDeadline_PartialQuantumCloseStaleTimer(t *testing.
 	err = w.writeLoop(ctx)
 	if err == nil || !strings.Contains(err.Error(), "transient network error") {
 		t.Fatalf("expected retry on Close tail to fail with transient network error, got: %v", err)
+	}
+}
+
+func TestGRPCWriter_CanResumeSession(t *testing.T) {
+	oneshot := &gRPCOneshotBidiWriteBufferSender{}
+	if oneshot.canResumeSession() {
+		t.Errorf("oneshot sender should never report canResumeSession() == true")
+	}
+
+	resumable := &gRPCResumableBidiWriteBufferSender{}
+	if resumable.canResumeSession() {
+		t.Errorf("resumable sender without upload ID should report canResumeSession() == false")
+	}
+	resumable.upid = "upload-123"
+	if !resumable.canResumeSession() {
+		t.Errorf("resumable sender with upload ID should report canResumeSession() == true")
+	}
+
+	appendSender := &gRPCAppendBidiWriteBufferSender{
+		firstMessage: &storagepb.BidiWriteObjectRequest{
+			FirstMessage: &storagepb.BidiWriteObjectRequest_WriteObjectSpec{
+				WriteObjectSpec: &storagepb.WriteObjectSpec{},
+			},
+		},
+	}
+	if appendSender.canResumeSession() {
+		t.Errorf("append sender before receiving WriteHandle should report canResumeSession() == false")
+	}
+	appendSender.maybeUpdateFirstMessage(&storagepb.BidiWriteObjectResponse{
+		WriteHandle: &storagepb.BidiWriteHandle{Handle: []byte("handle-1")},
+	})
+	if !appendSender.canResumeSession() {
+		t.Errorf("append sender with WriteHandle should report canResumeSession() == true")
+	}
+
+	takeover := &gRPCAppendTakeoverBidiWriteBufferSender{
+		gRPCAppendBidiWriteBufferSender: gRPCAppendBidiWriteBufferSender{
+			takeoverWriter: true,
+		},
+	}
+	if !takeover.canResumeSession() {
+		t.Errorf("append takeover sender should report canResumeSession() == true")
+	}
+}
+
+func TestGRPCWriter_SessionRecoveryRetries(t *testing.T) {
+	transientErr := status.Error(codes.Unavailable, "transient unavailable")
+	redirectErr := fmt.Errorf("%w%w", bidiWriteObjectRedirectionError{}, status.Error(codes.Aborted, "redirect"))
+
+	tests := []struct {
+		name         string
+		policy       RetryPolicy
+		idempotent   bool
+		append       bool
+		canResume    bool
+		firstErr     error
+		wantAttempts int
+		wantErr      bool
+	}{
+		{
+			name:         "RetryIdempotent_NoPreconditions_BeforeSession_DoesNotRetryTransient",
+			policy:       RetryIdempotent,
+			idempotent:   false,
+			canResume:    false,
+			firstErr:     transientErr,
+			wantAttempts: 1,
+			wantErr:      true,
+		},
+		{
+			name:         "RetryIdempotent_NoPreconditions_AfterSession_RetriesTransient",
+			policy:       RetryIdempotent,
+			idempotent:   false,
+			canResume:    true,
+			firstErr:     transientErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryIdempotent_WithPreconditions_BeforeSession_RetriesTransient",
+			policy:       RetryIdempotent,
+			idempotent:   true,
+			canResume:    false,
+			firstErr:     transientErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryIdempotent_Append_BeforeSession_RetriesRedirect",
+			policy:       RetryIdempotent,
+			idempotent:   false,
+			append:       true,
+			canResume:    false,
+			firstErr:     redirectErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryAlways_NoPreconditions_BeforeSession_RetriesTransient",
+			policy:       RetryAlways,
+			idempotent:   false,
+			canResume:    false,
+			firstErr:     transientErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryAlways_NoPreconditions_AfterSession_RetriesTransient",
+			policy:       RetryAlways,
+			idempotent:   false,
+			canResume:    true,
+			firstErr:     transientErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+		{
+			name:         "RetryNever_AfterSession_DoesNotRetryTransient",
+			policy:       RetryNever,
+			idempotent:   false,
+			canResume:    true,
+			firstErr:     transientErr,
+			wantAttempts: 1,
+			wantErr:      true,
+		},
+		{
+			name:         "RetryNever_Append_RetriesRedirect",
+			policy:       RetryNever,
+			idempotent:   false,
+			append:       true,
+			canResume:    false,
+			firstErr:     redirectErr,
+			wantAttempts: 2,
+			wantErr:      false,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			sender := &instantFailSender{canResume: tt.canResume}
+			w := &gRPCWriter{
+				append:       tt.append,
+				streamSender: sender,
+				settings: &settings{
+					idempotent: tt.idempotent,
+					retry: &retryConfig{
+						policy: tt.policy,
+						backoff: &gax.Backoff{
+							Initial:    time.Millisecond,
+							Max:        5 * time.Millisecond,
+							Multiplier: 1.1,
+						},
+					},
+				},
+			}
+
+			calls := 0
+			err := run(context.Background(), func(ctx context.Context) error {
+				calls++
+				if calls == 1 {
+					return tt.firstErr
+				}
+				return nil
+			}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+
+			if (err != nil) != tt.wantErr {
+				t.Fatalf("run() error = %v, wantErr %v", err, tt.wantErr)
+			}
+			if calls != tt.wantAttempts {
+				t.Fatalf("got %d attempts, want %d", calls, tt.wantAttempts)
+			}
+		})
+	}
+}
+
+func TestGRPCWriter_RetryConfigDefaultBackoff(t *testing.T) {
+	tests := []struct {
+		name  string
+		retry *retryConfig
+		want  gax.Backoff
+	}{
+		{
+			name:  "NoRetryConfig",
+			retry: nil,
+			want:  gax.Backoff{Initial: defaultWriteRetryInitialBackoff},
+		},
+		{
+			name:  "RetryConfigWithoutBackoff",
+			retry: &retryConfig{policy: RetryAlways},
+			want:  gax.Backoff{Initial: defaultWriteRetryInitialBackoff},
+		},
+		{
+			name: "UserBackoffPreserved",
+			retry: &retryConfig{
+				backoff: &gax.Backoff{Initial: 2 * time.Second, Max: 10 * time.Second, Multiplier: 3},
+			},
+			want: gax.Backoff{Initial: 2 * time.Second, Max: 10 * time.Second, Multiplier: 3},
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := &gRPCWriter{
+				streamSender: &instantFailSender{},
+				settings:     &settings{retry: tt.retry},
+			}
+			got := w.writerRetryConfig().backoff
+			if got == nil {
+				t.Fatal("writerRetryConfig().backoff = nil, want non-nil")
+			}
+			if got.Initial != tt.want.Initial || got.Max != tt.want.Max || got.Multiplier != tt.want.Multiplier {
+				t.Errorf("writerRetryConfig().backoff = {Initial: %v, Max: %v, Multiplier: %v}, want {Initial: %v, Max: %v, Multiplier: %v}",
+					got.Initial, got.Max, got.Multiplier, tt.want.Initial, tt.want.Max, tt.want.Multiplier)
+			}
+			if tt.retry != nil && tt.retry.backoff == got {
+				t.Errorf("writerRetryConfig() aliased the caller's backoff")
+			}
+		})
+	}
+
+	if defaultRetry.backoff != nil {
+		t.Errorf("writerRetryConfig() mutated defaultRetry.backoff to %+v", defaultRetry.backoff)
 	}
 }
 
