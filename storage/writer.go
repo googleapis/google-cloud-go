@@ -134,6 +134,10 @@ type Writer struct {
 	// The default value is 32s. Users may want to pick a longer deadline if they
 	// expect to have a slow or unreliable internet connection.
 	//
+	// When the deadline is reached, the returned error wraps the error from the
+	// last failed attempt, so errors.Is, errors.As and status.Code can be used
+	// to inspect the underlying cause.
+	//
 	// To set a deadline on the entire upload, use context timeout or
 	// cancellation.
 	ChunkRetryDeadline time.Duration
