@@ -17,6 +17,7 @@ package storage
 import (
 	"bytes"
 	"context"
+	"encoding/binary"
 	"errors"
 	"io"
 	"net/http"
@@ -337,14 +338,14 @@ func TestHTTPMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
 					if hist.DataPoints[0].Sum != 0.15 {
-						t.Errorf("expected gfe.duration 0.15s, got %v", hist.DataPoints[0].Sum)
+						t.Errorf("expected server.duration 0.15s, got %v", hist.DataPoints[0].Sum)
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -495,20 +496,20 @@ func TestGRPCMetricsRecording(t *testing.T) {
 				}
 			}
 
-			if m.Name == "gcp.storage.client.gfe.duration" {
+			if m.Name == "gcp.storage.client.server.duration" {
 				hist, ok := m.Data.(metricdata.Histogram[float64])
 				if ok && len(hist.DataPoints) > 0 {
-					foundGfeDuration := false
+					foundServerDuration := false
 					for _, dp := range hist.DataPoints {
 						if dp.Sum == 0.12 {
-							foundGfeDuration = true
+							foundServerDuration = true
 						}
 					}
-					if !foundGfeDuration {
-						t.Errorf("expected gfe.duration 0.12s from stream")
+					if !foundServerDuration {
+						t.Errorf("expected server.duration 0.12s from stream")
 					}
 				} else {
-					t.Errorf("expected gfe.duration datapoints")
+					t.Errorf("expected server.duration datapoints")
 				}
 			}
 		}
@@ -1048,4 +1049,84 @@ type mockTokenProvider struct{}
 
 func (m *mockTokenProvider) Token(ctx context.Context) (*auth.Token, error) {
 	return &auth.Token{}, nil
+}
+
+func TestServerDurationAndUnreached(t *testing.T) {
+	ctx := context.Background()
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cm, _, err := initMetrics(ctx, "project-id", &storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	})
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	// 1. gRPC server-stats trailer decodes to 45 ms and does not increment server.unreached.
+	b := make([]byte, 10)
+	binary.LittleEndian.PutUint64(b[2:], uint64(45*time.Millisecond))
+	md := metadata.Pairs("grpc-server-stats-bin", string(b))
+	if d, ok := grpcServerElapsed(md); !ok || d != 45*time.Millisecond {
+		t.Fatalf("grpcServerElapsed = %v, %v; want 45ms, true", d, ok)
+	}
+	for _, bad := range []metadata.MD{nil, metadata.Pairs("grpc-server-stats-bin", "\x01\x00abcdefgh"), metadata.Pairs("grpc-server-stats-bin", "short")} {
+		if _, ok := grpcServerElapsed(bad); ok {
+			t.Errorf("grpcServerElapsed(%v) ok = true, want false", bad)
+		}
+	}
+	cm.recordServerMetrics(ctx, nil, md, nil, "ReadObject", "storage.googleapis.com:443", nil)
+
+	// 2. HTTP response with X-GUploader-UploadID (no X-Goog-Gfe-Service-Time) reaches GCS -> server.unreached NOT incremented.
+	// 3. HTTP response without X-GUploader-UploadID (e.g. proxy 502) -> server.unreached incremented once.
+	var call int
+	srv := httptest.NewServer(http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		call++
+		if call == 1 {
+			w.Header().Set("X-GUploader-UploadID", "upload-123")
+			w.WriteHeader(http.StatusOK)
+			return
+		}
+		w.WriteHeader(http.StatusBadGateway)
+	}))
+	defer srv.Close()
+
+	hc := &http.Client{Transport: &metricsRoundTripper{base: http.DefaultTransport, metrics: cm}}
+	for i := 0; i < 2; i++ {
+		resp, err := hc.Get(srv.URL + "/storage/v1/b/b1/o/o1")
+		if err != nil {
+			t.Fatalf("hc.Get: %v", err)
+		}
+		resp.Body.Close()
+	}
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+	var gotDur float64
+	var gotUnreached int64
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			switch m.Name {
+			case "gcp.storage.client.server.duration":
+				for _, dp := range m.Data.(metricdata.Histogram[float64]).DataPoints {
+					gotDur += dp.Sum
+				}
+			case "gcp.storage.client.server.unreached":
+				for _, dp := range m.Data.(metricdata.Sum[int64]).DataPoints {
+					gotUnreached += dp.Value
+				}
+			}
+		}
+	}
+	if gotDur != 0.045 {
+		t.Errorf("gcp.storage.client.server.duration sum = %v, want 0.045", gotDur)
+	}
+	if gotUnreached != 1 {
+		t.Errorf("gcp.storage.client.server.unreached = %d, want 1", gotUnreached)
+	}
 }
