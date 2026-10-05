@@ -1130,4 +1130,3 @@ func TestServerDurationAndUnreached(t *testing.T) {
 		t.Errorf("gcp.storage.client.server.unreached = %d, want 1", gotUnreached)
 	}
 }
-
