@@ -796,3 +796,177 @@ func TestIsError(t *testing.T) {
 		})
 	}
 }
+
+func TestInvokeWithProgressReset(t *testing.T) {
+	t.Parallel()
+	ctx := context.Background()
+
+	t.Run("resets maxAttempts and attempt header on progress", func(t *testing.T) {
+		// maxAttempts is 2 per chunk.
+		// Call 1: chunk 1 fails (attempt 1 of chunk 1, no progress).
+		// Call 2: chunk 1 succeeds (progress = true) and chunk 2 fails (attempt 1 of chunk 2).
+		// Call 3: chunk 2 succeeds.
+		// Without progress reset, Call 2 would hit maxAttempts=2 and fail.
+		retry := &retryConfig{
+			policy:      RetryAlways,
+			maxAttempts: intPointer(2),
+			backoff:     &gax.Backoff{Initial: time.Millisecond},
+		}
+
+		callCount := 0
+		progressMade := false
+		var gotHeaders []string
+
+		err := run(ctx, func(ctx context.Context) error {
+			callCount++
+			var header string
+			if v := callctx.HeadersFromContext(ctx)["x-goog-api-client"]; len(v) > 0 {
+				header = v[0]
+			}
+			gotHeaders = append(gotHeaders, header)
+			switch callCount {
+			case 1:
+				return status.Error(codes.Unavailable, "chunk 1 transient failure")
+			case 2:
+				progressMade = true
+				return status.Error(codes.Unavailable, "chunk 1 succeeded, chunk 2 transient failure")
+			default:
+				return nil
+			}
+		}, retry, true, withProgressReset(func() bool {
+			if progressMade {
+				progressMade = false
+				return true
+			}
+			return false
+		}))
+
+		if err != nil {
+			t.Fatalf("expected nil error when progress resets attempts, got: %v", err)
+		}
+		if callCount != 3 {
+			t.Fatalf("expected 3 calls, got %d", callCount)
+		}
+		// Call 1: attempt 1; Call 2: attempt 2; Call 3 (after reset on Call 2): attempt 2 of chunk 2.
+		wantCounts := []string{"gccl-attempt-count/1", "gccl-attempt-count/2", "gccl-attempt-count/2"}
+		if len(gotHeaders) != len(wantCounts) {
+			t.Fatalf("got %d x-goog-api-client headers, want %d", len(gotHeaders), len(wantCounts))
+		}
+		for i, want := range wantCounts {
+			if !strings.Contains(gotHeaders[i], want) {
+				t.Errorf("call %d header = %q, want substring %q", i+1, gotHeaders[i], want)
+			}
+		}
+	})
+
+	t.Run("enforces maxAttempts when no progress is made", func(t *testing.T) {
+		retry := &retryConfig{
+			policy:      RetryAlways,
+			maxAttempts: intPointer(2),
+			backoff:     &gax.Backoff{Initial: time.Millisecond},
+		}
+
+		callCount := 0
+		progressMade := false
+
+		err := run(ctx, func(ctx context.Context) error {
+			callCount++
+			if callCount == 2 {
+				// Progress on call 2 resets attempts to 1, then call 3 fails without progress (attempts=2 -> hits maxAttempts=2).
+				progressMade = true
+			}
+			return status.Error(codes.Unavailable, "transient failure")
+		}, retry, true, withProgressReset(func() bool {
+			if progressMade {
+				progressMade = false
+				return true
+			}
+			return false
+		}))
+
+		if err == nil || !strings.Contains(err.Error(), "retry failed after 2 attempts") {
+			t.Fatalf("expected retry failed after 2 attempts error, got: %v", err)
+		}
+		if callCount != 3 {
+			t.Fatalf("expected 3 total calls (2 for chunk 1, 1 retry for chunk 2 before hitting maxAttempts=2), got %d", callCount)
+		}
+	})
+
+	t.Run("resets backoff on progress", func(t *testing.T) {
+		// gax.Backoff.Pause returns a random duration in (0, cur] and then
+		// multiplies cur by Multiplier, capped at Max. After call 1, cur is
+		// 1h. If progress on call 2 resets the backoff, the next pause is
+		// at most 1ms again; otherwise it is uniform up to 1h and the context
+		// deadline expires during the sleep.
+		retry := &retryConfig{
+			policy:  RetryAlways,
+			backoff: &gax.Backoff{Initial: time.Millisecond, Multiplier: 1e7, Max: time.Hour},
+		}
+		ctx, cancel := context.WithTimeout(ctx, 5*time.Second)
+		defer cancel()
+
+		callCount := 0
+		progressMade := false
+		err := run(ctx, func(context.Context) error {
+			callCount++
+			switch callCount {
+			case 1:
+				return status.Error(codes.Unavailable, "chunk 1 transient failure")
+			case 2:
+				progressMade = true
+				return status.Error(codes.Unavailable, "chunk 1 succeeded, chunk 2 transient failure")
+			default:
+				return nil
+			}
+		}, retry, true, withProgressReset(func() bool {
+			if progressMade {
+				progressMade = false
+				return true
+			}
+			return false
+		}))
+
+		if err != nil {
+			t.Fatalf("expected nil error when progress resets backoff, got: %v", err)
+		}
+		if callCount != 3 {
+			t.Fatalf("expected 3 calls, got %d", callCount)
+		}
+	})
+
+	t.Run("returns when context is cancelled during backoff", func(t *testing.T) {
+		retry := &retryConfig{
+			policy:  RetryAlways,
+			backoff: &gax.Backoff{Initial: time.Hour, Max: time.Hour},
+		}
+		ctx, cancel := context.WithCancel(ctx)
+		defer cancel()
+
+		callErr := status.Error(codes.Unavailable, "transient failure")
+		callCount := 0
+		start := time.Now()
+		err := run(ctx, func(context.Context) error {
+			callCount++
+			// Cancel once run() is sleeping in the backoff.
+			time.AfterFunc(10*time.Millisecond, cancel)
+			return callErr
+		}, retry, true, withProgressReset(func() bool { return false }))
+
+		if elapsed := time.Since(start); elapsed > 5*time.Second {
+			t.Errorf("run() returned after %v; want prompt return on cancellation", elapsed)
+		}
+		if callCount != 1 {
+			t.Errorf("expected 1 call, got %d", callCount)
+		}
+		var wrapped wrappedCallErr
+		if !errors.As(err, &wrapped) {
+			t.Fatalf("expected wrappedCallErr, got %T: %v", err, err)
+		}
+		if !errors.Is(err, context.Canceled) {
+			t.Errorf("errors.Is(err, context.Canceled) = false; err: %v", err)
+		}
+		if !errors.Is(err, callErr) {
+			t.Errorf("errors.Is(err, callErr) = false; err: %v", err)
+		}
+	})
+}

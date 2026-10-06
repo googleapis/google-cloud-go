@@ -1194,3 +1194,229 @@ func TestStallTimeoutError(t *testing.T) {
 		t.Errorf("expected ShouldRetry(errStallTimeout) to be true")
 	}
 }
+
+type reconnectStatusSender struct {
+	mu            sync.Mutex
+	persistedSize int64
+	errResult     error
+}
+
+func (s *reconnectStatusSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	s.mu.Lock()
+	persisted := s.persistedSize
+	s.mu.Unlock()
+	cs.completions <- gRPCBidiWriteCompletion{flushOffset: persisted}
+	go func() {
+		select {
+		case <-cs.requests:
+		case <-ctx.Done():
+		}
+		close(cs.completions)
+	}()
+}
+
+func (s *reconnectStatusSender) err() error {
+	return s.errResult
+}
+
+func (s *reconnectStatusSender) canResumeSession() bool { return false }
+
+func TestGRPCWriter_ChunkRetryDeadline_NoResetOnUnchangedOffsetAfterPartialShift(t *testing.T) {
+	ctx := context.Background()
+	deadline := 200 * time.Millisecond
+	sender := &reconnectStatusSender{
+		persistedSize: 50,
+		errResult:     errors.New("transient network error"),
+	}
+
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufBaseOffset:      0,
+		bufUnsentIdx:       100,
+		bufFlushedIdx:      -1,
+		buf:                make([]byte, 100),
+		sendableUnits:      2,
+		writeQuantum:       50,
+		chunkSize:          100,
+		writesChan:         make(chan gRPCWriterCommand, 1),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+		setObj:             func(*ObjectAttrs) {},
+	}
+
+	// Attempt 1: QueryWriteStatus reports 50 bytes persisted (strict progress from 0 -> 50).
+	// writeLoop drains the completion, resets abandonRetriesTime to ~now+200ms,
+	// shifts w.buf by 50 bytes (setting w.bufBaseOffset = 50, w.bufFlushedIdx = 0),
+	// and then returns transient network error.
+	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error on attempt 1, got: %v", err)
+	}
+	firstDeadline := w.abandonRetriesTime
+	if firstDeadline.IsZero() {
+		t.Fatalf("expected abandonRetriesTime to be set after partial progress")
+	}
+	if w.bufBaseOffset != 50 || w.bufFlushedIdx != 0 {
+		t.Fatalf("expected bufBaseOffset=50 and bufFlushedIdx=0 after shift, got base=%d flushed=%d", w.bufBaseOffset, w.bufFlushedIdx)
+	}
+	if !w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == true after strict forward progress to offset 50")
+	}
+
+	// Consume more than half of the retry deadline.
+	time.Sleep(120 * time.Millisecond)
+
+	// Attempt 2: Reconnect reports the SAME persistedSize = 50.
+	// Must NOT reset abandonRetriesTime or attempts.
+	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error on attempt 2, got: %v", err)
+	}
+	if !w.abandonRetriesTime.Equal(firstDeadline) {
+		t.Fatalf("expected abandonRetriesTime to remain %v on unchanged offset, got %v", firstDeadline, w.abandonRetriesTime)
+	}
+	if w.attempts != 1 {
+		t.Fatalf("expected w.attempts to be 1 (not reset to 0), got %d", w.attempts)
+	}
+	if w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == false when offset remained unchanged at 50")
+	}
+
+	// Sleep past the original deadline (120ms + 100ms > 200ms).
+	time.Sleep(100 * time.Millisecond)
+
+	// Attempt 3: Must fail with retry deadline exceeded because no progress was made since offset 50.
+	err := w.writeLoop(ctx)
+	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("expected retry deadline error on attempt 3, got: %v", err)
+	}
+}
+
+func TestGRPCWriter_ChunkRetryDeadline_NoResetOnZeroOffsetReconnect(t *testing.T) {
+	ctx := context.Background()
+	deadline := 200 * time.Millisecond
+	sender := &reconnectStatusSender{
+		persistedSize: 0,
+		errResult:     errors.New("transient network error"),
+	}
+
+	w := &gRPCWriter{
+		chunkRetryDeadline: deadline,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufBaseOffset:      0,
+		bufUnsentIdx:       100,
+		bufFlushedIdx:      -1,
+		buf:                make([]byte, 100),
+		sendableUnits:      1,
+		writeQuantum:       100,
+		chunkSize:          100,
+		writesChan:         make(chan gRPCWriterCommand, 1),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+		setObj:             func(*ObjectAttrs) {},
+	}
+
+	// Attempt 1 starts the deadline clock and receives flushOffset == 0.
+	// Because 0 is not strict progress past 0, neither abandonRetriesTime nor attempts should be reset.
+	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error on attempt 1, got: %v", err)
+	}
+	firstDeadline := w.abandonRetriesTime
+	if firstDeadline.IsZero() {
+		t.Fatalf("expected abandonRetriesTime to be set")
+	}
+	if w.attempts != 1 {
+		t.Fatalf("expected w.attempts == 1 after 0-offset completion, got %d", w.attempts)
+	}
+	if w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == false after 0-offset completion")
+	}
+
+	time.Sleep(120 * time.Millisecond)
+
+	// Attempt 2 also receives flushOffset == 0.
+	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
+		t.Fatalf("expected transient network error on attempt 2, got: %v", err)
+	}
+	if !w.abandonRetriesTime.Equal(firstDeadline) {
+		t.Fatalf("expected abandonRetriesTime to remain %v, got %v", firstDeadline, w.abandonRetriesTime)
+	}
+	if w.attempts != 2 {
+		t.Fatalf("expected w.attempts == 2, got %d", w.attempts)
+	}
+	if w.consumeProgress() {
+		t.Fatalf("expected consumeProgress() == false on attempt 2 with 0-offset completion")
+	}
+
+	time.Sleep(100 * time.Millisecond)
+
+	// Attempt 3 must hit the retry deadline.
+	err := w.writeLoop(ctx)
+	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
+		t.Fatalf("expected retry deadline error on attempt 3, got: %v", err)
+	}
+}
+
+func TestGRPCWriter_PerChunkMaxAttemptsResetOnStrictProgress(t *testing.T) {
+	ctx := context.Background()
+	sender := &reconnectStatusSender{
+		persistedSize: 0,
+		errResult:     io.ErrUnexpectedEOF,
+	}
+
+	w := &gRPCWriter{
+		chunkRetryDeadline: 5 * time.Second,
+		streamSender:       sender,
+		settings:           &settings{},
+		bufBaseOffset:      0,
+		bufUnsentIdx:       100,
+		bufFlushedIdx:      -1,
+		buf:                make([]byte, 100),
+		sendableUnits:      2,
+		writeQuantum:       50,
+		chunkSize:          100,
+		writesChan:         make(chan gRPCWriterCommand, 1),
+		setSize:            func(int64) {},
+		progress:           func(int64) {},
+		setObj:             func(*ObjectAttrs) {},
+	}
+
+	retry := &retryConfig{
+		policy:      RetryAlways,
+		maxAttempts: intPointer(2),
+		backoff:     &gax.Backoff{Initial: time.Millisecond},
+	}
+
+	callCount := 0
+	err := run(ctx, func(ctx context.Context) error {
+		callCount++
+		if callCount == 2 {
+			// Simulate server having persisted the first 50-byte quantum on attempt 2,
+			// while the second 50-byte quantum still fails on attempt 2 and attempt 3.
+			sender.mu.Lock()
+			sender.persistedSize = 50
+			sender.mu.Unlock()
+		}
+		w.lastErr = w.writeLoop(ctx)
+		return w.lastErr
+	}, retry, true, withProgressReset(w.consumeProgress))
+
+	if err == nil || !strings.Contains(err.Error(), "retry failed after 2 attempts") {
+		t.Fatalf("expected retry failed after 2 attempts error, got: %v", err)
+	}
+	// Call 1: offset 0 fails (attempt 1 of first quantum).
+	// Call 2: offset advances 0 -> 50 (resets attempts to 1), then fails at offset 50 (attempt 1 of second quantum).
+	// Call 3: offset stays 50 (no progress, attempts=2 >= maxAttempts=2), terminates.
+	if callCount != 3 {
+		t.Fatalf("expected 3 writeLoop invocations with per-chunk maxAttempts=2, got %d", callCount)
+	}
+	// Call 2 confirmed the first 50 bytes and the next attempt shifted them out
+	// of w.buf. Call 3's completion at the same offset is not new progress.
+	if w.bufBaseOffset != 50 {
+		t.Errorf("bufBaseOffset = %d, want 50", w.bufBaseOffset)
+	}
+	if w.bufFlushedIdx != 0 {
+		t.Errorf("bufFlushedIdx = %d, want 0", w.bufFlushedIdx)
+	}
+}
