@@ -57,6 +57,7 @@ import (
 	"bytes"
 	"context"
 	"math"
+	"math/bits"
 	"strings"
 	"sync"
 	"unsafe"
@@ -135,7 +136,7 @@ func (s *vtStream) Unmarshal(data mem.BufferSlice, v any) error {
 	}
 	// The strings of the values reference buf, so keep it until the
 	// PartialResultSet is released.
-	buf := data.MaterializeToBuffer(mem.DefaultBufferPool())
+	buf := data.MaterializeToBuffer(receiveBuffers)
 	if err := s.receiving.decode(buf.ReadOnlyData()); err != nil {
 		buf.Free()
 		return err
@@ -147,6 +148,44 @@ func (s *vtStream) Unmarshal(data mem.BufferSlice, v any) error {
 // Name returns an empty string, so that the default content subtype is kept on
 // the wire.
 func (*vtStream) Name() string { return "" }
+
+// receiveBuffers holds the buffers that the codec copies the PartialResultSets
+// that gRPC received in several buffers to.
+var receiveBuffers = &receiveBufferPool{}
+
+// receiveBufferPool is a mem.BufferPool of buffers with a capacity of a power of
+// two. Unlike the gRPC default pool, it does not clear a reused buffer, which
+// the codec overwrites. The gRPC default pool would also return a buffer of up
+// to 1 MiB for every PartialResultSet of more than 32 KiB, and clear all of it.
+type receiveBufferPool struct {
+	pools [receiveBufferClasses]sync.Pool
+}
+
+// receiveBufferClasses is the number of buffer sizes that are pooled, from
+// 1 << 0 to 1 << (receiveBufferClasses-1) bytes.
+const receiveBufferClasses = 25
+
+func (p *receiveBufferPool) Get(length int) *[]byte {
+	class := bits.Len(uint(length - 1))
+	if length <= 0 || class >= receiveBufferClasses {
+		b := make([]byte, length)
+		return &b
+	}
+	if b, ok := p.pools[class].Get().(*[]byte); ok {
+		*b = (*b)[:length]
+		return b
+	}
+	b := make([]byte, length, 1<<class)
+	return &b
+}
+
+func (p *receiveBufferPool) Put(b *[]byte) {
+	c := cap(*b)
+	class := bits.Len(uint(c - 1))
+	if c > 0 && class < receiveBufferClasses && c == 1<<class {
+		p.pools[class].Put(b)
+	}
+}
 
 // vtPartialResultSet is a received PartialResultSet. Its values reference buf.
 // It is reused once the stream decoder, the iterator and the rows release it.

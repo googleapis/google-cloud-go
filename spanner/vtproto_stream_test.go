@@ -869,3 +869,23 @@ func TestVTDetachRow(t *testing.T) {
 func cmpDiff(got, want any) string {
 	return cmp.Diff(got, want, protocmp.Transform(), cmp.AllowUnexported(Row{}))
 }
+
+func TestVTReceiveBufferPool(t *testing.T) {
+	p := &receiveBufferPool{}
+	for _, length := range []int{0, 1, 2, 3, 1000, 1024, 1025, 40 << 10, 1 << 24, 1<<24 + 1} {
+		b := p.Get(length)
+		if len(*b) != length {
+			t.Errorf("Get(%d) returned %d bytes", length, len(*b))
+		}
+		if c := cap(*b); length > 0 && length <= 1<<24 && (c < length || c&(c-1) != 0 || c >= 2*length && c > 1) {
+			t.Errorf("Get(%d) returned a capacity of %d, want the next power of two", length, c)
+		}
+		p.Put(b)
+	}
+	b := p.Get(3000)
+	(*b)[0] = 1
+	p.Put(b)
+	if got := p.Get(4000); cap(*got) != 4096 {
+		t.Errorf("Get(4000) returned a capacity of %d, want 4096", cap(*got))
+	}
+}
