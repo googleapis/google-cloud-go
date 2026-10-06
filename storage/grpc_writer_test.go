@@ -26,6 +26,8 @@ import (
 
 	"cloud.google.com/go/storage/internal/apiv2/storagepb"
 	gax "github.com/googleapis/gax-go/v2"
+	sdkmetric "go.opentelemetry.io/otel/sdk/metric"
+	"go.opentelemetry.io/otel/sdk/metric/metricdata"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
 	"google.golang.org/protobuf/proto"
@@ -1606,6 +1608,43 @@ func TestGRPCWriter_ChunkRetryDeadlineError_IsTerminal(t *testing.T) {
 			})
 		}
 	})
+
+	// writerRetryConfig retries a bare stall even when the user's ErrorFunc
+	// rejects it. A stall wrapped in a deadline error matches
+	// errors.Is(err, errStallTimeout) too, and must still be terminal.
+	t.Run("deadline error wrapping a stall is not force-retried", func(t *testing.T) {
+		rejectAll := func(error, *RetryContext) bool { return false }
+		stallErr := &stallTimeoutError{timeout: time.Millisecond, stage: "BidiWriteObject"}
+		for _, tc := range []struct {
+			name   string
+			policy RetryPolicy
+			append bool
+		}{
+			{"RetryAlways", RetryAlways, false},
+			{"RetryIdempotent", RetryIdempotent, false},
+			{"RetryAlways append", RetryAlways, true},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				w := &gRPCWriter{
+					append:       tc.append,
+					streamSender: &instantFailSender{canResume: true},
+					settings: &settings{
+						idempotent: true,
+						retry:      &retryConfig{policy: tc.policy, shouldRetry: rejectAll},
+					},
+				}
+				cfg := w.writerRetryConfig()
+				err := &chunkRetryDeadlineError{deadline: deadline, attempts: 3, err: stallErr}
+				if cfg.shouldRetry(err, &RetryContext{}) {
+					t.Errorf("shouldRetry(%v) = true, want false", err)
+				}
+				// Sanity check: the bare stall is still force-retried.
+				if !cfg.shouldRetry(stallErr, &RetryContext{}) {
+					t.Errorf("shouldRetry(%v) = false, want true", stallErr)
+				}
+			})
+		}
+	})
 }
 
 func TestChunkRetryBudget(t *testing.T) {
@@ -1769,5 +1808,799 @@ func TestGRPCWriter_ZeroByteFlushWaitsForFirstAck(t *testing.T) {
 	}
 	if w.awaitingFirstAck {
 		t.Fatal("awaitingFirstAck still set after the ack")
+	}
+}
+
+// time.Timer.Stop cannot cancel a callback that has already started, so a
+// callback blocked on the watchdog's mutex can run after the timer was
+// re-armed. It must not trip a stall for the new arming. The race is not
+// reproducible with real timers, so the test calls fire with a stale
+// generation directly.
+func TestWriteStallWatchdog_StaleCallbackIgnored(t *testing.T) {
+	stalls := 0
+	w := newWriteStallWatchdog(time.Hour, "", func(string) { stalls++ })
+	defer w.stop()
+	currentGen := func() uint64 {
+		w.mu.Lock()
+		defer w.mu.Unlock()
+		return w.gen
+	}
+
+	w.resume()
+	stale := currentGen()
+	w.reset()
+	w.fire(stale)
+	if w.isStalled() {
+		t.Fatal("callback armed before reset() tripped a stall")
+	}
+
+	stale = currentGen()
+	w.pause()
+	w.resume()
+	w.fire(stale)
+	if w.isStalled() {
+		t.Fatal("callback armed before pause() and resume() tripped a stall")
+	}
+
+	w.fire(currentGen())
+	if !w.isStalled() || stalls != 1 {
+		t.Fatalf("current callback: isStalled() = %v, stalls = %d; want true, 1", w.isStalled(), stalls)
+	}
+}
+
+type hangingConnectSender struct {
+	errResult error
+}
+
+func (s *hangingConnectSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	<-ctx.Done()
+	s.errResult = ctx.Err()
+	close(cs.completions)
+}
+
+func (s *hangingConnectSender) err() error {
+	return s.errResult
+}
+
+func (s *hangingConnectSender) canResumeSession() bool { return false }
+
+// hangingStartSender hangs in connect like a resumable sender whose
+// StartResumableWrite call never returns.
+type hangingStartSender struct {
+	hangingConnectSender
+}
+
+func (s *hangingStartSender) connectStage() string { return "StartResumableWrite" }
+
+func TestGRPCResumableBidiWriteBufferSender_ConnectStage(t *testing.T) {
+	start := &gRPCResumableBidiWriteBufferSender{startWriteRequest: &storagepb.StartResumableWriteRequest{}}
+	if got := start.connectStage(); got != "StartResumableWrite" {
+		t.Errorf("new session: connectStage() = %q, want StartResumableWrite", got)
+	}
+	resume := &gRPCResumableBidiWriteBufferSender{upid: "upload-id"}
+	if got := resume.connectStage(); got != "QueryWriteStatus" {
+		t.Errorf("resumed session: connectStage() = %q, want QueryWriteStatus", got)
+	}
+}
+
+type hangingDataSender struct {
+	errResult error
+}
+
+func (s *hangingDataSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	go func() {
+		defer close(cs.completions)
+		for {
+			select {
+			case <-ctx.Done():
+				s.errResult = ctx.Err()
+				return
+			case r, ok := <-cs.requests:
+				if !ok {
+					return
+				}
+				if r.requestAck {
+					select {
+					case cs.requestAcks <- struct{}{}:
+					case <-ctx.Done():
+						s.errResult = ctx.Err()
+						return
+					}
+				}
+				// Intentionally do not send completions to simulate a stall on data.
+			}
+		}
+	}()
+}
+
+func (s *hangingDataSender) err() error {
+	return s.errResult
+}
+
+func (s *hangingDataSender) canResumeSession() bool { return false }
+
+func TestGRPCWriter_ChunkTransferTimeout_Stage1_Stall(t *testing.T) {
+	ctx := context.Background()
+	timeout := 50 * time.Millisecond
+	sender := &hangingConnectSender{}
+
+	w := &gRPCWriter{
+		chunkTransferTimeout: timeout,
+		streamSender:         sender,
+		settings:             &settings{},
+		writesChan:           make(chan gRPCWriterCommand, 1),
+	}
+
+	start := time.Now()
+	err := w.writeLoop(ctx)
+	elapsed := time.Since(start)
+
+	if err == nil {
+		t.Fatal("expected stall error, got nil")
+	}
+	if !errors.Is(err, errStallTimeout) {
+		t.Fatalf("expected errStallTimeout, got: %v", err)
+	}
+	if !strings.Contains(err.Error(), "BidiWriteObject exceeded 50ms") {
+		t.Fatalf("unexpected error message: %v", err)
+	}
+	if elapsed < timeout {
+		t.Fatalf("expected writeLoop to wait at least %v, but returned in %v", timeout, elapsed)
+	}
+}
+
+func TestGRPCWriter_ChunkTransferTimeout_DataStall(t *testing.T) {
+	ctx := context.Background()
+	timeout := 50 * time.Millisecond
+	sender := &hangingDataSender{}
+
+	w := &gRPCWriter{
+		chunkTransferTimeout: timeout,
+		streamSender:         sender,
+		settings:             &settings{},
+		chunkSize:            100,
+		writeQuantum:         100,
+		buf:                  make([]byte, 100),
+		bufBaseOffset:        0,
+		bufUnsentIdx:         0,
+		awaitingFirstAck:     true,
+		sendableUnits:        1,
+		writesChan:           make(chan gRPCWriterCommand, 1),
+	}
+
+	start := time.Now()
+	err := w.writeLoop(ctx)
+	elapsed := time.Since(start)
+
+	if err == nil {
+		t.Fatal("expected stall error, got nil")
+	}
+	if !errors.Is(err, errStallTimeout) {
+		t.Fatalf("expected errStallTimeout, got: %v", err)
+	}
+	if elapsed < timeout {
+		t.Fatalf("expected writeLoop to wait at least %v, but returned in %v", timeout, elapsed)
+	}
+}
+
+func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
+	ctx := context.Background()
+	timeout := 40 * time.Millisecond
+	sender := &hangingStartSender{}
+
+	mr := sdkmetric.NewManualReader()
+	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
+	defer provider.Shutdown(ctx)
+
+	cfg := storageConfig{
+		enableOtelMetrics:      true,
+		enableOtelDebugMetrics: true,
+		meterProvider:          provider,
+	}
+
+	cm, _, err := initMetrics(ctx, "project-id", &cfg)
+	if err != nil {
+		t.Fatalf("initMetrics: %v", err)
+	}
+
+	state := &metricsState{metrics: cm}
+	target := "storage.googleapis.com"
+	state.target.Store(&target)
+	ctxWithMetrics := contextWithMetricsState(ctx, state)
+
+	w := &gRPCWriter{
+		preRunCtx:            ctxWithMetrics,
+		c:                    &grpcStorageClient{metrics: cm},
+		chunkTransferTimeout: timeout,
+		streamSender:         sender,
+		settings:             &settings{},
+		writesChan:           make(chan gRPCWriterCommand, 1),
+	}
+
+	err = w.writeLoop(ctx)
+	var stallErr *stallTimeoutError
+	if !errors.As(err, &stallErr) {
+		t.Fatalf("expected stallTimeoutError, got: %v", err)
+	}
+	if stallErr.stage != "StartResumableWrite" {
+		t.Errorf("stallTimeoutError.stage = %q, want StartResumableWrite", stallErr.stage)
+	}
+
+	var rm metricdata.ResourceMetrics
+	if err := mr.Collect(ctx, &rm); err != nil {
+		t.Fatalf("Collect: %v", err)
+	}
+
+	found := false
+	for _, sm := range rm.ScopeMetrics {
+		for _, m := range sm.Metrics {
+			if m.Name == "gcp.storage.client.stall.duration" {
+				found = true
+				hist := m.Data.(metricdata.Histogram[float64])
+				if len(hist.DataPoints) == 0 {
+					t.Fatalf("expected data points, got 0")
+				}
+				dp := hist.DataPoints[0]
+				if dp.Sum != timeout.Seconds() {
+					t.Errorf("expected sum %v, got %v", timeout.Seconds(), dp.Sum)
+				}
+				if getHistAttr(dp, "rpc.method") != "StartResumableWrite" {
+					t.Errorf("expected rpc.method StartResumableWrite, got %v", getHistAttr(dp, "rpc.method"))
+				}
+				if getHistAttr(dp, "rpc.system.name") != "grpc" {
+					t.Errorf("expected rpc.system.name grpc, got %v", getHistAttr(dp, "rpc.system.name"))
+				}
+				if getHistAttr(dp, "server.address") != "storage.googleapis.com" {
+					t.Errorf("expected server.address storage.googleapis.com, got %v", getHistAttr(dp, "server.address"))
+				}
+			}
+		}
+	}
+	if !found {
+		t.Errorf("metric gcp.storage.client.stall.duration not found")
+	}
+}
+
+// slowAckSender acknowledges flushes in order, each ackDelay after the
+// previous one, like a slow but live server.
+type slowAckSender struct {
+	ackDelay  time.Duration
+	errResult error
+}
+
+func (s *slowAckSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	flushed := make(chan int64, 64)
+	go func() {
+		defer close(flushed)
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case r, ok := <-cs.requests:
+				if !ok {
+					return
+				}
+				if r.requestAck {
+					cs.requestAcks <- struct{}{}
+				}
+				if r.flush {
+					flushed <- r.offset + int64(len(r.buf))
+				}
+			}
+		}
+	}()
+	go func() {
+		defer close(cs.completions)
+		for off := range flushed {
+			select {
+			case <-time.After(s.ackDelay):
+			case <-ctx.Done():
+				s.errResult = ctx.Err()
+				return
+			}
+			select {
+			case cs.completions <- gRPCBidiWriteCompletion{flushOffset: off}:
+			case <-ctx.Done():
+				s.errResult = ctx.Err()
+				return
+			}
+		}
+	}()
+}
+
+func (s *slowAckSender) err() error             { return s.errResult }
+func (s *slowAckSender) canResumeSession() bool { return false }
+
+// A Write spanning several chunks keeps the watchdog armed until its last
+// flush is acknowledged. The acks together take longer than the timeout, so
+// the upload succeeds only if each ack restarts the timer.
+func TestGRPCWriter_ChunkTransferTimeout_ProgressAdvancesTimer(t *testing.T) {
+	ctx := context.Background()
+	timeout := 100 * time.Millisecond
+	const chunkSize, chunks = 50, 5
+	sender := &slowAckSender{ackDelay: 40 * time.Millisecond}
+	allAcked := make(chan struct{})
+
+	w := &gRPCWriter{
+		chunkTransferTimeout: timeout,
+		streamSender:         sender,
+		settings:             &settings{},
+		chunkSize:            chunkSize,
+		writeQuantum:         chunkSize,
+		awaitingFirstAck:     true,
+		sendableUnits:        2,
+		writesChan:           make(chan gRPCWriterCommand, 1),
+		setSize:              func(int64) {},
+		progress: func(n int64) {
+			if n == chunkSize*chunks {
+				close(allAcked)
+			}
+		},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	start := time.Now()
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, chunkSize*chunks), done: make(chan struct{})}
+	select {
+	case <-allAcked:
+	case err := <-errCh:
+		t.Fatalf("writeLoop returned %v before every chunk was acknowledged", err)
+	}
+	if elapsed := time.Since(start); elapsed <= timeout {
+		t.Fatalf("acks took %v; they must span more than the %v timeout", elapsed, timeout)
+	}
+
+	w.writesChan <- &gRPCWriterCommandClose{}
+	if err := <-errCh; err != nil {
+		t.Fatalf("expected nil error on progress, got: %v", err)
+	}
+}
+
+func TestGRPCWriter_ChunkTransferTimeout_PausedOnIdle(t *testing.T) {
+	ctx := context.Background()
+	timeout := 50 * time.Millisecond
+	sender := &mockSender{respondToAllData: true}
+	acked := make(chan struct{})
+
+	w := &gRPCWriter{
+		chunkTransferTimeout: timeout,
+		streamSender:         sender,
+		settings:             &settings{},
+		chunkSize:            100,
+		writeQuantum:         50,
+		buf:                  nil,
+		bufBaseOffset:        0,
+		bufUnsentIdx:         0,
+		awaitingFirstAck:     true,
+		sendableUnits:        2,
+		writesChan:           make(chan gRPCWriterCommand, 1),
+		setSize:              func(int64) {},
+		progress: func(n int64) {
+			if n == 50 {
+				close(acked)
+			}
+		},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	// 1. Write 50 bytes and wait for it to be acked.
+	done := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done}
+	<-done
+	<-acked
+
+	// Writer is now idle waiting for caller's next Write().
+	// Sleep 80ms (> 50ms timeout). Watchdog must be paused so no stall occurs.
+	time.Sleep(80 * time.Millisecond)
+
+	// 2. Write another 50 bytes. Watchdog resumes and acks.
+	done2 := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done2}
+	<-done2
+
+	w.writesChan <- &gRPCWriterCommandClose{err: nil}
+	err := <-errCh
+	if err != nil {
+		t.Fatalf("expected success, got error: %v", err)
+	}
+}
+
+// flushOnlyAckSender acknowledges persisted bytes only in response to flush
+// requests, as GCS does.
+type flushOnlyAckSender struct {
+	mu        sync.Mutex
+	errResult error
+}
+
+func (s *flushOnlyAckSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	s.mu.Lock()
+	s.errResult = nil
+	s.mu.Unlock()
+	go func() {
+		defer close(cs.completions)
+		setErr := func() {
+			s.mu.Lock()
+			s.errResult = ctx.Err()
+			s.mu.Unlock()
+		}
+		for {
+			select {
+			case <-ctx.Done():
+				setErr()
+				return
+			case r, ok := <-cs.requests:
+				if !ok {
+					return
+				}
+				if r.requestAck {
+					select {
+					case cs.requestAcks <- struct{}{}:
+					case <-ctx.Done():
+						setErr()
+						return
+					}
+					continue
+				}
+				if !r.flush {
+					continue
+				}
+				select {
+				case cs.completions <- gRPCBidiWriteCompletion{flushOffset: r.offset + int64(len(r.buf))}:
+				case <-ctx.Done():
+					setErr()
+					return
+				}
+			}
+		}
+	}()
+}
+
+func (s *flushOnlyAckSender) err() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.errResult
+}
+
+func (s *flushOnlyAckSender) canResumeSession() bool { return false }
+
+// unresponsiveSender accepts requests but never acknowledges data, and keeps
+// the stream open until its context is cancelled.
+type unresponsiveSender struct {
+	mu        sync.Mutex
+	errResult error
+}
+
+func (s *unresponsiveSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	go func() {
+		defer close(cs.completions)
+		setErr := func() {
+			s.mu.Lock()
+			s.errResult = ctx.Err()
+			s.mu.Unlock()
+		}
+		requests := cs.requests
+		for {
+			select {
+			case <-ctx.Done():
+				setErr()
+				return
+			case r, ok := <-requests:
+				if !ok {
+					// Half-closed by the client; keep the stream open.
+					requests = nil
+					continue
+				}
+				if r.requestAck {
+					select {
+					case cs.requestAcks <- struct{}{}:
+					case <-ctx.Done():
+						setErr()
+						return
+					}
+				}
+			}
+		}
+	}()
+}
+
+func (s *unresponsiveSender) err() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.errResult
+}
+
+func (s *unresponsiveSender) canResumeSession() bool { return false }
+
+// A non-flush quantum is never acknowledged by GCS. If the application is slow
+// to fill the rest of the chunk, nothing is outstanding on the server and the
+// watchdog must not fire.
+func TestGRPCWriter_ChunkTransferTimeout_SlowProducerMidChunk(t *testing.T) {
+	for _, appendable := range []bool{false, true} {
+		t.Run(fmt.Sprintf("append=%v", appendable), func(t *testing.T) {
+			timeout := 50 * time.Millisecond
+			w := &gRPCWriter{
+				chunkTransferTimeout: timeout,
+				streamSender:         &flushOnlyAckSender{},
+				settings:             &settings{},
+				append:               appendable,
+				chunkSize:            100,
+				writeQuantum:         50,
+				sendableUnits:        2,
+				awaitingFirstAck:     true,
+				writesChan:           make(chan gRPCWriterCommand, 1),
+				setSize:              func(int64) {},
+				progress:             func(int64) {},
+				setObj:               func(*ObjectAttrs) {},
+			}
+			errCh := make(chan error, 1)
+			go func() { errCh <- w.writeLoop(context.Background()) }()
+
+			// Sends one non-flush quantum.
+			done := make(chan struct{})
+			w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done}
+			<-done
+			time.Sleep(4 * timeout)
+
+			// Completes the chunk, which sends a flush.
+			done2 := make(chan struct{})
+			w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done2}
+			select {
+			case <-done2:
+			case err := <-errCh:
+				t.Fatalf("writeLoop exited while waiting on the application: %v", err)
+			case <-time.After(5 * time.Second):
+				t.Fatal("write did not complete")
+			}
+
+			w.writesChan <- &gRPCWriterCommandClose{}
+			if err := <-errCh; err != nil {
+				t.Fatalf("writeLoop: %v", err)
+			}
+		})
+	}
+}
+
+func TestGRPCWriter_ChunkTransferTimeout_FinalRequest(t *testing.T) {
+	timeout := 30 * time.Millisecond
+	tests := []struct {
+		name             string
+		forceOneShot     bool
+		append           bool
+		bufLen           int
+		awaitingFirstAck bool
+		wantStall        bool
+	}{
+		{
+			name:             "Oneshot_NotArmed",
+			forceOneShot:     true,
+			bufLen:           10,
+			awaitingFirstAck: true,
+			wantStall:        false,
+		},
+		{
+			name:             "Resumable_Armed",
+			bufLen:           10,
+			awaitingFirstAck: true,
+			wantStall:        true,
+		},
+		{
+			name:             "Resumable_NoNewBytes_Armed",
+			bufLen:           0,
+			awaitingFirstAck: false,
+			wantStall:        true,
+		},
+		{
+			// gatherFirstBuffer sets forceOneShot for appendable objects closed
+			// before the buffer fills, but they still use the appendable sender.
+			name:             "AppendableClosedBeforeChunkFills_Armed",
+			forceOneShot:     true,
+			append:           true,
+			bufLen:           10,
+			awaitingFirstAck: true,
+			wantStall:        true,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			ctx, cancel := context.WithTimeout(context.Background(), 10*timeout)
+			defer cancel()
+			w := &gRPCWriter{
+				chunkTransferTimeout: timeout,
+				streamSender:         &unresponsiveSender{},
+				settings:             &settings{},
+				forceOneShot:         tt.forceOneShot,
+				append:               tt.append,
+				chunkSize:            100,
+				writeQuantum:         50,
+				sendableUnits:        2,
+				buf:                  make([]byte, tt.bufLen, 100),
+				awaitingFirstAck:     tt.awaitingFirstAck,
+				writesChan:           make(chan gRPCWriterCommand, 1),
+				currentCommand:       &gRPCWriterCommandClose{},
+				setSize:              func(int64) {},
+				progress:             func(int64) {},
+				setObj:               func(*ObjectAttrs) {},
+			}
+
+			err := w.writeLoop(ctx)
+			if got := errors.Is(err, errStallTimeout); got != tt.wantStall {
+				t.Fatalf("writeLoop() = %v, want stall: %v", err, tt.wantStall)
+			}
+			if !tt.wantStall && !errors.Is(err, context.DeadlineExceeded) {
+				t.Fatalf("writeLoop() = %v, want context.DeadlineExceeded", err)
+			}
+		})
+	}
+}
+
+// delayedCloseSender acks every request like mockSender but delays closing the
+// completions channel, modelling a slow stream teardown after the final ack.
+type delayedCloseSender struct {
+	mockSender
+	closeDelay time.Duration
+	// cancelled reports whether the attempt context was cancelled before the
+	// completions channel was closed.
+	cancelled bool
+}
+
+func (s *delayedCloseSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	inner := make(chan gRPCBidiWriteCompletion, cap(cs.completions))
+	s.mockSender.connect(ctx, gRPCBufSenderChans{cs.requests, cs.requestAcks, inner}, opts...)
+	go func() {
+		for c := range inner {
+			cs.completions <- c
+		}
+		time.Sleep(s.closeDelay) // teardown slower than the watchdog
+		s.cancelled = ctx.Err() != nil
+		close(cs.completions)
+	}()
+}
+
+func TestGRPCWriter_ChunkTransferTimeout_SlowTeardownIsNotAStall(t *testing.T) {
+	ctx := context.Background()
+	timeout := 50 * time.Millisecond
+	sender := &delayedCloseSender{
+		mockSender: mockSender{respondToAllData: true},
+		closeDelay: 4 * timeout,
+	}
+
+	// Appendable and not finalized on close, so the final ack carries no
+	// resource.
+	w := &gRPCWriter{
+		append:               true,
+		finalizeOnClose:      false,
+		chunkTransferTimeout: timeout,
+		streamSender:         sender,
+		settings:             &settings{},
+		chunkSize:            100,
+		writeQuantum:         50,
+		awaitingFirstAck:     true,
+		sendableUnits:        2,
+		writesChan:           make(chan gRPCWriterCommand, 1),
+		setSize:              func(int64) {},
+		progress:             func(int64) {},
+		setObj:               func(*ObjectAttrs) {},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	done := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done}
+	<-done
+	w.writesChan <- &gRPCWriterCommandClose{}
+	if err := <-errCh; err != nil {
+		t.Fatalf("clean close with all bytes acked returned %v; want nil", err)
+	}
+	if sender.cancelled {
+		t.Error("watchdog cancelled the attempt during stream teardown")
+	}
+}
+
+func TestGRPCWriter_ChunkTransferTimeout_RetryPolicy(t *testing.T) {
+	stallErr := &stallTimeoutError{timeout: time.Millisecond, stage: "BidiWriteObject"}
+	transientErr := status.Error(codes.Unavailable, "transient unavailable")
+	rejectAll := func(error, *RetryContext) bool { return false }
+
+	tests := []struct {
+		name         string
+		policy       RetryPolicy
+		shouldRetry  func(error, *RetryContext) bool
+		idempotent   bool
+		canResume    bool
+		firstErr     error
+		wantAttempts int
+	}{
+		{
+			name:         "CustomErrorFuncRejectsStall_Retried",
+			policy:       RetryAlways,
+			shouldRetry:  rejectAll,
+			canResume:    true,
+			firstErr:     stallErr,
+			wantAttempts: 2,
+		},
+		{
+			name:         "CustomErrorFuncRejectsOtherError_NotRetried",
+			policy:       RetryAlways,
+			shouldRetry:  rejectAll,
+			canResume:    true,
+			firstErr:     transientErr,
+			wantAttempts: 1,
+		},
+		{
+			name:         "RetryIdempotent_WithPreconditions_CustomErrorFunc_Retried",
+			policy:       RetryIdempotent,
+			shouldRetry:  rejectAll,
+			idempotent:   true,
+			firstErr:     stallErr,
+			wantAttempts: 2,
+		},
+		{
+			name:         "RetryIdempotent_NoPreconditions_BeforeSession_NotRetried",
+			policy:       RetryIdempotent,
+			firstErr:     stallErr,
+			wantAttempts: 1,
+		},
+		{
+			name:         "RetryIdempotent_NoPreconditions_AfterSession_Retried",
+			policy:       RetryIdempotent,
+			canResume:    true,
+			firstErr:     stallErr,
+			wantAttempts: 2,
+		},
+		{
+			name:         "RetryNever_NotRetried",
+			policy:       RetryNever,
+			canResume:    true,
+			firstErr:     stallErr,
+			wantAttempts: 1,
+		},
+	}
+
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			w := &gRPCWriter{
+				streamSender: &instantFailSender{canResume: tt.canResume},
+				settings: &settings{
+					idempotent: tt.idempotent,
+					retry: &retryConfig{
+						policy:      tt.policy,
+						shouldRetry: tt.shouldRetry,
+						backoff: &gax.Backoff{
+							Initial:    time.Millisecond,
+							Max:        5 * time.Millisecond,
+							Multiplier: 1.1,
+						},
+					},
+				},
+			}
+
+			calls := 0
+			err := run(context.Background(), func(ctx context.Context) error {
+				calls++
+				if calls == 1 {
+					return tt.firstErr
+				}
+				return nil
+			}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+
+			if wantErr := tt.wantAttempts == 1; (err != nil) != wantErr {
+				t.Fatalf("run() error = %v, wantErr %v", err, wantErr)
+			}
+			if calls != tt.wantAttempts {
+				t.Fatalf("got %d attempts, want %d", calls, tt.wantAttempts)
+			}
+		})
 	}
 }
