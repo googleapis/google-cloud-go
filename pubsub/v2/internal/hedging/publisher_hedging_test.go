@@ -18,15 +18,8 @@ package hedging_test
 // limitations under the License.
 
 import (
-	"cloud.google.com/go/internal/testutil"
-	pubsub "cloud.google.com/go/pubsub/v2"
-	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
-	"cloud.google.com/go/pubsub/v2/pstest"
 	"context"
 	"fmt"
-	"google.golang.org/api/option"
-	"google.golang.org/grpc"
-	"google.golang.org/grpc/credentials/insecure"
 	"math/rand"
 	"sort"
 	"strings"
@@ -34,6 +27,14 @@ import (
 	"sync/atomic"
 	"testing"
 	"time"
+
+	"cloud.google.com/go/internal/testutil"
+	pubsub "cloud.google.com/go/pubsub/v2"
+	pb "cloud.google.com/go/pubsub/v2/apiv1/pubsubpb"
+	"cloud.google.com/go/pubsub/v2/pstest"
+	"google.golang.org/api/option"
+	"google.golang.org/grpc"
+	"google.golang.org/grpc/credentials/insecure"
 )
 
 func makeLatencyInterceptor(rpcAttempts *int64) grpc.UnaryClientInterceptor {
@@ -175,22 +176,22 @@ func TestPublishHedgingPerformance(t *testing.T) {
 	// MaxTokens impact under normal 5% tail latency (should be identical since none starve)
 	t.Run("MaxTokens5", func(t *testing.T) {
 		runHedgingSimulation(t, "MaxTokens5", &pubsub.HedgingSettings{
-			Delay:      100 * time.Millisecond,
-			MaxTokens:  5,
+			Delay:       100 * time.Millisecond,
+			MaxTokens:   5,
 			RefillRatio: 0.1,
 		})
 	})
 	t.Run("MaxTokens25", func(t *testing.T) {
 		runHedgingSimulation(t, "MaxTokens25", &pubsub.HedgingSettings{
-			Delay:      100 * time.Millisecond,
-			MaxTokens:  25,
+			Delay:       100 * time.Millisecond,
+			MaxTokens:   25,
 			RefillRatio: 0.1,
 		})
 	})
 	t.Run("MaxTokens50", func(t *testing.T) {
 		runHedgingSimulation(t, "MaxTokens50", &pubsub.HedgingSettings{
-			Delay:      100 * time.Millisecond,
-			MaxTokens:  50,
+			Delay:       100 * time.Millisecond,
+			MaxTokens:   50,
 			RefillRatio: 0.1,
 		})
 	})
@@ -198,22 +199,22 @@ func TestPublishHedgingPerformance(t *testing.T) {
 	// Refill Ratio impact (0.05 should starve and expose 4s latency, 0.1 and 0.2 should protect completely)
 	t.Run("Ratio0.05", func(t *testing.T) {
 		runHedgingSimulation(t, "Ratio0.05", &pubsub.HedgingSettings{
-			Delay:      100 * time.Millisecond,
-			MaxTokens:  100,
+			Delay:       100 * time.Millisecond,
+			MaxTokens:   100,
 			RefillRatio: 0.05,
 		})
 	})
 	t.Run("Ratio0.1", func(t *testing.T) {
 		runHedgingSimulation(t, "Ratio0.1", &pubsub.HedgingSettings{
-			Delay:      100 * time.Millisecond,
-			MaxTokens:  100,
+			Delay:       100 * time.Millisecond,
+			MaxTokens:   100,
 			RefillRatio: 0.1,
 		})
 	})
 	t.Run("Ratio0.2", func(t *testing.T) {
 		runHedgingSimulation(t, "Ratio0.2", &pubsub.HedgingSettings{
-			Delay:      100 * time.Millisecond,
-			MaxTokens:  100,
+			Delay:       100 * time.Millisecond,
+			MaxTokens:   100,
 			RefillRatio: 0.2,
 		})
 	})

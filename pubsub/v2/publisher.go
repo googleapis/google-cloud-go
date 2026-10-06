@@ -134,6 +134,12 @@ type PublishSettings struct {
 	// are compressed for transport. Only takes effect if EnableCompression is true.
 	CompressionBytesThreshold int
 
+	// HedgingSettings enables publish hedging when non-nil. Hedging sends
+	// additional copies of a slow publish request to reduce tail latency, and
+	// can result in duplicate messages. See HedgingSettings for details.
+	//
+	// Defaults to nil (hedging disabled). Hedging cannot be used with
+	// Publisher.EnableMessageOrdering.
 	HedgingSettings *HedgingSettings
 }
 

@@ -48,7 +48,41 @@ const (
 
 var errPublisherHedgingAndOrderingEnabled = errors.New("pubsub: Hedging and MessageOrdering cannot both be enabled on the Publisher")
 
-// HedgingSettings enables the publisher to issue hedged requests.
+// HedgingSettings configures publish hedging, which reduces publish tail
+// latency by sending additional copies of a slow publish request.
+//
+// When hedging is enabled, each batch of messages is first published as
+// usual. If that request has not completed after Delay, the publisher sends a
+// hedged copy of the same batch, and continues to send another copy every
+// Delay while the batch remains unresolved and hedging tokens are available.
+// The first successful response is used to resolve the PublishResults for the
+// batch, and all other outstanding attempts for that batch are cancelled.
+// Hedged attempts are not retried, and their errors are ignored; only the
+// original request's error can fail the batch.
+//
+// Hedging can result in duplicate messages. A cancelled attempt may already
+// have been persisted by the server, in which case the same message is
+// published more than once with distinct message IDs. PublishResult only
+// reports the ID from the attempt that resolved the batch. Subscribers should
+// be prepared to handle duplicates.
+//
+// The number of hedged requests is limited by a token bucket shared by all
+// batches on the Publisher. Each hedged request consumes one token, and each
+// successful publish adds RefillRatio tokens, up to MaxTokens. The bucket
+// starts empty, so hedging only begins after RefillRatio has accumulated at
+// least one token from successful publishes. If no token is available when a
+// hedge is due, that batch is not hedged further and waits for its original
+// request.
+//
+// Hedging cannot be used together with Publisher.EnableMessageOrdering; if
+// both are set, Publish returns a PublishResult with an error. Hedging is also
+// skipped for a batch when PublishSettings.Timeout is set and is less than or
+// equal to Delay.
+//
+// Once Publisher.Stop is called, no new hedged requests are sent, including
+// for batches that are flushed during Stop.
+//
+// The zero value of each field selects its default.
 type HedgingSettings struct {
 	// Delay configures the delay of when the hedged RPC should be attempted.
 	// Default is 1s.
