@@ -2788,11 +2788,12 @@ func TestGRPCWriter_TwoLayerStallAndRetryDeadline(t *testing.T) {
 		if err == nil {
 			t.Fatal("expected retry deadline error, got nil")
 		}
-		if !strings.Contains(err.Error(), "retry deadline") {
-			t.Fatalf("expected retry deadline error, got: %v", err)
+		var deadlineErr *chunkRetryDeadlineError
+		if !errors.As(err, &deadlineErr) {
+			t.Fatalf("expected chunkRetryDeadlineError, got: %v", err)
 		}
-		if !strings.Contains(err.Error(), errStallTimeout.Error()) {
-			t.Fatalf("expected retry deadline error to mention last stall error %q, got: %v", errStallTimeout.Error(), err)
+		if !errors.Is(err, errStallTimeout) {
+			t.Fatalf("expected the retry deadline error to wrap the last stall, got: %v", err)
 		}
 	})
 
@@ -2937,7 +2938,8 @@ func TestGRPCWriter_TwoLayerStallAndRetryDeadline(t *testing.T) {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
 		}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
-		if err == nil || !strings.Contains(err.Error(), "retry deadline") {
+		var deadlineErr *chunkRetryDeadlineError
+		if !errors.As(err, &deadlineErr) || !errors.Is(err, errStallTimeout) {
 			t.Fatalf("expected retry deadline error on attempt 2 after stall, got: %v", err)
 		}
 		sender.mu.Lock()

@@ -90,6 +90,17 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			return err
 		}
 	}
+	// flushTo flushes w and checks that GCS reports want bytes persisted.
+	flushTo := func(w *Writer, want int64) error {
+		got, err := w.Flush()
+		if err != nil {
+			return err
+		}
+		if got != want {
+			return fmt.Errorf("Flush() = %d, want %d", got, want)
+		}
+		return nil
+	}
 
 	tests := []struct {
 		name         string
@@ -185,6 +196,27 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			wantStreams: 2,
 		},
 		{
+			// Close without finalizing: the final ack carries no object, so
+			// the watchdog must pause once every byte is acknowledged.
+			name:   "AppendableUnfinalizedClose_NoFalseStall",
+			budget: 10 * time.Second,
+			configure: func(w *Writer) {
+				w.Append = true
+				w.FinalizeOnClose = false
+			},
+			wantStreams: 1,
+		},
+		{
+			name:         "AppendableUnfinalizedStallAfterHandle_Recovers",
+			instructions: []string{stallAfter(3072)},
+			budget:       stallEmuRecoverBudget,
+			configure: func(w *Writer) {
+				w.Append = true
+				w.FinalizeOnClose = false
+			},
+			wantStreams: 2,
+		},
+		{
 			name:         "TimeoutDisabled_StallNotDetected",
 			instructions: []string{stallAfter(1024)},
 			budget:       stallEmuHangBudget,
@@ -249,6 +281,57 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 				return err
 			},
 			wantStreams: 1,
+		},
+		{
+			// The stall in the second chunk is recovered inside Write, so the
+			// following Flush must report every byte written.
+			name:         "AppendableStallBeforeFlush_FlushReturnsOffset",
+			instructions: []string{stallAfter(3072)},
+			budget:       stallEmuRecoverBudget,
+			configure: func(w *Writer) {
+				w.Append = true
+				w.FinalizeOnClose = true
+			},
+			write: func(w *Writer) error {
+				if _, err := w.Write(data[:4*1024*1024]); err != nil {
+					return err
+				}
+				if err := flushTo(w, 4*1024*1024); err != nil {
+					return err
+				}
+				_, err := w.Write(data[4*1024*1024 : stallEmuObjectSize])
+				return err
+			},
+			wantStreams: 2,
+		},
+		{
+			// The first Flush obtains the WriteHandle. The second Flush's
+			// request stalls, so the Flush itself is retried and must report
+			// every byte written.
+			name:         "AppendableFlushStalls_RetriedFlushReturnsOffset",
+			instructions: []string{stallAfter(1536)},
+			budget:       stallEmuRecoverBudget,
+			configure: func(w *Writer) {
+				w.Append = true
+				w.FinalizeOnClose = true
+			},
+			write: func(w *Writer) error {
+				if _, err := w.Write(data[:1024*1024]); err != nil {
+					return err
+				}
+				if err := flushTo(w, 1024*1024); err != nil {
+					return err
+				}
+				if _, err := w.Write(data[1024*1024 : 2*1024*1024]); err != nil {
+					return err
+				}
+				if err := flushTo(w, 2*1024*1024); err != nil {
+					return err
+				}
+				_, err := w.Write(data[2*1024*1024 : stallEmuObjectSize])
+				return err
+			},
+			wantStreams: 2,
 		},
 		{
 			// Every attempt stalls at the same offset, so ChunkRetryDeadline
@@ -317,10 +400,7 @@ func TestGRPCWriterStallEmulated(t *testing.T) {
 			}
 
 			start := time.Now()
-			err = write(w)
-			if cerr := w.Close(); err == nil {
-				err = cerr
-			}
+			err = errors.Join(write(w), w.Close())
 			elapsed := time.Since(start)
 
 			if tc.wantErr == nil {
