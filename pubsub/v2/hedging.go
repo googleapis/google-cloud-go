@@ -82,7 +82,8 @@ var errPublisherHedgingAndOrderingEnabled = errors.New("pubsub: Hedging and Mess
 // Once Publisher.Stop is called, no new hedged requests are sent, including
 // for batches that are flushed during Stop.
 //
-// The zero value of each field selects its default.
+// The zero value of each field selects its default. HedgingSettings is read
+// on the first call to Publish; later changes have no effect.
 type HedgingSettings struct {
 	// Delay configures the delay of when the hedged RPC should be attempted.
 	// Default is 1s.
@@ -397,16 +398,9 @@ func (t *Publisher) processHedgingQueue() {
 		if req.isDone() {
 			continue
 		}
-		t.hedgingMu.Lock()
-		hasToken := t.hedgingTokenBucket >= tokenScaleFactor
-		if hasToken {
-			t.hedgingTokenBucket -= tokenScaleFactor
-		}
-		t.hedgingMu.Unlock()
-
 		// If the token bucket is empty (< 1 token), the scheduled hedged attempt is
 		// discarded and NOT returned to the queue.
-		if hasToken {
+		if t.tryAcquireHedgingToken() {
 			go t.fireHedgedAttempt(req)
 		}
 	}
@@ -481,28 +475,62 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 	}
 }
 
-func (t *Publisher) replenishHedgingTokens() {
-	t.hedgingMu.Lock()
-	defer t.hedgingMu.Unlock()
-
-	ratio := defaultHedgingRatio
-	maxTokens := defaultMaxHedgingTokens
-	if t.PublishSettings.HedgingSettings != nil {
-		if t.PublishSettings.HedgingSettings.RefillRatio > 0 {
-			ratio = t.PublishSettings.HedgingSettings.RefillRatio
-		}
-		if t.PublishSettings.HedgingSettings.MaxTokens > 0 {
-			maxTokens = t.PublishSettings.HedgingSettings.MaxTokens
-		}
+// initHedging validates PublishSettings.HedgingSettings and snapshots the
+// effective hedging configuration. It is called once, from initBundler, so
+// later changes to HedgingSettings have no effect.
+func (t *Publisher) initHedging() {
+	hs := t.PublishSettings.HedgingSettings
+	if hs == nil || t.EnableMessageOrdering {
+		return
+	}
+	if err := validateHedgingSettings(hs); err != nil {
+		t.hedgingSettingsErr = err
+		return
 	}
 
-	refillMilliTokens := int64(math.Round(ratio * float64(tokenScaleFactor)))
-	maxMilliTokens := maxTokens * tokenScaleFactor
+	delay := hs.Delay
+	if delay == 0 {
+		delay = defaultHedgingDelay
+	}
+	ratio := hs.RefillRatio
+	if !(ratio > 0) { // also catches NaN, which passes validation
+		ratio = defaultHedgingRatio
+	}
+	maxTokens := hs.MaxTokens
+	if maxTokens == 0 {
+		maxTokens = defaultMaxHedgingTokens
+	}
 
-	if t.hedgingTokenBucket < maxMilliTokens {
-		t.hedgingTokenBucket += refillMilliTokens
-		if t.hedgingTokenBucket > maxMilliTokens {
-			t.hedgingTokenBucket = maxMilliTokens
+	t.hedgingDelay = delay
+	t.hedgingRefillMilliTokens = int64(math.Round(ratio * float64(tokenScaleFactor)))
+	t.hedgingMaxMilliTokens = maxTokens * tokenScaleFactor
+}
+
+// tryAcquireHedgingToken takes one token from the bucket if a full token is
+// available, and reports whether it did.
+func (t *Publisher) tryAcquireHedgingToken() bool {
+	for {
+		cur := t.hedgingTokenBucket.Load()
+		if cur < tokenScaleFactor {
+			return false
+		}
+		if t.hedgingTokenBucket.CompareAndSwap(cur, cur-tokenScaleFactor) {
+			return true
+		}
+	}
+}
+
+// replenishHedgingTokens adds the per-success refill to the bucket, capped at
+// the configured maximum. It is called after every successful publish.
+func (t *Publisher) replenishHedgingTokens() {
+	for {
+		cur := t.hedgingTokenBucket.Load()
+		if cur >= t.hedgingMaxMilliTokens {
+			return
+		}
+		next := min(cur+t.hedgingRefillMilliTokens, t.hedgingMaxMilliTokens)
+		if t.hedgingTokenBucket.CompareAndSwap(cur, next) {
+			return
 		}
 	}
 }

@@ -24,6 +24,7 @@ import (
 	"runtime"
 	"strings"
 	"sync"
+	"sync/atomic"
 	"time"
 
 	ipubsub "cloud.google.com/go/internal/pubsub"
@@ -92,9 +93,21 @@ type Publisher struct {
 	// will be cancelled.
 	hedgingDelay time.Duration
 
+	// hedgingMaxMilliTokens and hedgingRefillMilliTokens are the token
+	// bucket's capacity and per-success refill, scaled by tokenScaleFactor.
+	// Like hedgingDelay, they are snapshotted from HedgingSettings by
+	// initHedging and never change afterwards.
+	hedgingMaxMilliTokens    int64
+	hedgingRefillMilliTokens int64
+
+	// hedgingSettingsErr is the validation error for HedgingSettings, if any,
+	// computed once by initHedging. Publish fails with it when non-nil.
+	hedgingSettingsErr error
+
 	// hedgingTokenBucket stores the current token count scaled by tokenScaleFactor
 	// (1 token = 1,000 units), limiting the number of hedged requests that can be sent.
-	hedgingTokenBucket int64
+	// It starts empty to prevent unnecessary hedging during startup.
+	hedgingTokenBucket atomic.Int64
 
 	hedgingMu      sync.Mutex
 	hedgingQueue   []*hedgedRequest
@@ -185,11 +198,10 @@ func (c *Client) Publisher(topicNameOrID string) *Publisher {
 
 func newPublisher(c *Client, name string) *Publisher {
 	return &Publisher{
-		c:                  c,
-		name:               name,
-		PublishSettings:    DefaultPublishSettings,
-		enableTracing:      c.enableTracing,
-		hedgingTokenBucket: 0, // Token bucket starts empty to prevent unnecessary hedging during startup
+		c:               c,
+		name:            name,
+		PublishSettings: DefaultPublishSettings,
+		enableTracing:   c.enableTracing,
 	}
 }
 
@@ -256,13 +268,6 @@ func (t *Publisher) Publish(ctx context.Context, msg *Message) *PublishResult {
 		spanRecordError(createSpan, errPublisherHedgingAndOrderingEnabled)
 		return r
 	}
-	if t.PublishSettings.HedgingSettings != nil {
-		if err := validateHedgingSettings(t.PublishSettings.HedgingSettings); err != nil {
-			ipubsub.SetPublishResult(r, "", err)
-			spanRecordError(createSpan, err)
-			return r
-		}
-	}
 
 	// Calculate the size of the encoded proto message by accounting
 	// for the length of an individual PubSubMessage and Data/Attributes field.
@@ -281,6 +286,11 @@ func (t *Publisher) Publish(ctx context.Context, msg *Message) *PublishResult {
 	if t.stopped {
 		ipubsub.SetPublishResult(r, "", ErrPublisherStopped)
 		spanRecordError(createSpan, ErrPublisherStopped)
+		return r
+	}
+	if t.hedgingSettingsErr != nil {
+		ipubsub.SetPublishResult(r, "", t.hedgingSettingsErr)
+		spanRecordError(createSpan, t.hedgingSettingsErr)
 		return r
 	}
 
@@ -432,12 +442,7 @@ func (t *Publisher) initBundler() {
 	// not the scheduler or bundler. Disable this by setting to MaxInt.
 	t.scheduler.BufferedByteLimit = math.MaxInt
 
-	if t.PublishSettings.HedgingSettings != nil && !t.EnableMessageOrdering {
-		t.hedgingDelay = t.PublishSettings.HedgingSettings.Delay
-		if t.hedgingDelay == 0 {
-			t.hedgingDelay = defaultHedgingDelay
-		}
-	}
+	t.initHedging()
 }
 
 // encodePubsubClientTelemetry serializes PubsubClientTelemetry (PublishOperation with

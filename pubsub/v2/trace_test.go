@@ -324,7 +324,7 @@ func TestTrace_PublishHedgedSpan(t *testing.T) {
 		MaxTokens:   50,
 		RefillRatio: 0.1,
 	}
-	publisher.hedgingTokenBucket = tokenScaleFactor
+	publisher.hedgingTokenBucket.Store(tokenScaleFactor)
 
 	r := publisher.Publish(ctx, m)
 	_, err = r.Get(ctx)

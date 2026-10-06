@@ -234,7 +234,7 @@ func TestPublishHedging_ResultWaitsForLosingHedges(t *testing.T) {
 	p := mustCreateTopic(t, c, topic)
 	defer p.Stop()
 	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: 100 * time.Millisecond}
-	p.hedgingTokenBucket = 5 * tokenScaleFactor
+	p.hedgingTokenBucket.Store(5 * tokenScaleFactor)
 
 	msg := &Message{Data: []byte("payload"), Attributes: map[string]string{"k": "v"}}
 	if _, err := p.Publish(ctx, msg).Get(ctx); err != nil {
@@ -291,7 +291,7 @@ func newHedgingPublisher(t *testing.T, ic grpc.UnaryClientInterceptor, tokens in
 	p := mustCreateTopic(t, c, topic)
 	t.Cleanup(p.Stop)
 	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay}
-	p.hedgingTokenBucket = tokens * tokenScaleFactor
+	p.hedgingTokenBucket.Store(tokens * tokenScaleFactor)
 	return p
 }
 
@@ -409,8 +409,8 @@ func TestPublishHedging_HedgesUntilTokensRunOut(t *testing.T) {
 	}
 	p.hedgingMu.Lock()
 	defer p.hedgingMu.Unlock()
-	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket != want {
-		t.Errorf("got %d milli-tokens after publish, want %d (2 spent, then one 0.1 refill)", p.hedgingTokenBucket, want)
+	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket.Load() != want {
+		t.Errorf("got %d milli-tokens after publish, want %d (2 spent, then one 0.1 refill)", p.hedgingTokenBucket.Load(), want)
 	}
 }
 
@@ -436,8 +436,8 @@ func TestPublishHedging_NoHedgeWithoutTokens(t *testing.T) {
 	}
 	p.hedgingMu.Lock()
 	defer p.hedgingMu.Unlock()
-	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket != want {
-		t.Errorf("got %d milli-tokens after a successful publish, want %d", p.hedgingTokenBucket, want)
+	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket.Load() != want {
+		t.Errorf("got %d milli-tokens after a successful publish, want %d", p.hedgingTokenBucket.Load(), want)
 	}
 }
 
@@ -563,8 +563,8 @@ func TestPublishHedging_TokenBucket(t *testing.T) {
 	pub := mustCreateTopic(t, c, topic)
 	defer pub.Stop()
 
-	if pub.hedgingTokenBucket != 0 {
-		t.Fatalf("expected initial hedgingTokenBucket to be 0 (empty), got %d", pub.hedgingTokenBucket)
+	if pub.hedgingTokenBucket.Load() != 0 {
+		t.Fatalf("expected initial hedgingTokenBucket to be 0 (empty), got %d", pub.hedgingTokenBucket.Load())
 	}
 
 	const maxTokens = 50
@@ -573,24 +573,73 @@ func TestPublishHedging_TokenBucket(t *testing.T) {
 		MaxTokens:   maxTokens,
 		RefillRatio: 0.1,
 	}
+	pub.initHedging()
+	// Settings are snapshotted by initHedging; later changes have no effect.
+	pub.PublishSettings.HedgingSettings.MaxTokens = 1
+	pub.PublishSettings.HedgingSettings.RefillRatio = 0.2
 
 	// Replenishing 10 times with ratio 0.1 must reach exactly 1 full token (1000 milli-tokens)
 	// without IEEE-754 float64 accumulation drift (where 0.1 * 10 == 0.9999999999999999 < 1.0).
 	for i := 0; i < 10; i++ {
 		pub.replenishHedgingTokens()
 	}
-	if pub.hedgingTokenBucket != tokenScaleFactor {
-		t.Errorf("expected hedgingTokenBucket after 10 replenishes at 0.1 ratio to be %d, got %d", tokenScaleFactor, pub.hedgingTokenBucket)
+	if pub.hedgingTokenBucket.Load() != tokenScaleFactor {
+		t.Errorf("expected hedgingTokenBucket after 10 replenishes at 0.1 ratio to be %d, got %d", tokenScaleFactor, pub.hedgingTokenBucket.Load())
 	}
 
 	// Refills are capped at MaxTokens, including a partial refill that would overshoot.
 	maxMilli := int64(maxTokens) * tokenScaleFactor
-	pub.hedgingTokenBucket = maxMilli - tokenScaleFactor/20
+	pub.hedgingTokenBucket.Store(maxMilli - tokenScaleFactor/20)
 	for i := 0; i < 2; i++ {
 		pub.replenishHedgingTokens()
-		if pub.hedgingTokenBucket != maxMilli {
-			t.Errorf("replenish %d near the cap: got %d milli-tokens, want %d (MaxTokens)", i, pub.hedgingTokenBucket, maxMilli)
+		if pub.hedgingTokenBucket.Load() != maxMilli {
+			t.Errorf("replenish %d near the cap: got %d milli-tokens, want %d (MaxTokens)", i, pub.hedgingTokenBucket.Load(), maxMilli)
 		}
+	}
+
+	// Acquiring takes exactly one whole token and fails below one token.
+	pub.hedgingTokenBucket.Store(tokenScaleFactor + tokenScaleFactor/2)
+	if !pub.tryAcquireHedgingToken() {
+		t.Error("tryAcquireHedgingToken with 1.5 tokens: got false, want true")
+	}
+	if pub.tryAcquireHedgingToken() {
+		t.Error("tryAcquireHedgingToken with 0.5 tokens: got true, want false")
+	}
+	if got, want := pub.hedgingTokenBucket.Load(), tokenScaleFactor/2; got != want {
+		t.Errorf("got %d milli-tokens after acquiring, want %d", got, want)
+	}
+}
+
+// Concurrent refills and acquisitions must not lose updates or exceed the cap.
+func TestPublishHedging_TokenBucketConcurrent(t *testing.T) {
+	p := &Publisher{hedgingMaxMilliTokens: 1000 * tokenScaleFactor, hedgingRefillMilliTokens: tokenScaleFactor}
+	const n = 500
+	p.hedgingTokenBucket.Store(n * tokenScaleFactor)
+
+	var wg sync.WaitGroup
+	var acquired atomic.Int64
+	for i := 0; i < n; i++ {
+		wg.Add(2)
+		go func() {
+			defer wg.Done()
+			p.replenishHedgingTokens()
+		}()
+		go func() {
+			defer wg.Done()
+			if p.tryAcquireHedgingToken() {
+				acquired.Add(1)
+			}
+		}()
+	}
+	wg.Wait()
+
+	// Starting at n tokens, n acquisitions always succeed, and n refills of
+	// one token each land below the cap, so the bucket ends where it started.
+	if got := acquired.Load(); got != n {
+		t.Errorf("got %d successful acquisitions, want %d", got, n)
+	}
+	if got, want := p.hedgingTokenBucket.Load(), int64(n*tokenScaleFactor); got != want {
+		t.Errorf("got %d milli-tokens, want %d", got, want)
 	}
 }
 
