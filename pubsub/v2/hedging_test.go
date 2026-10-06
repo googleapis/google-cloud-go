@@ -16,9 +16,12 @@ package pubsub
 
 import (
 	"context"
+	"encoding/base64"
 	"errors"
 	"fmt"
+	"sort"
 	"strings"
+	"sync"
 	"sync/atomic"
 	"testing"
 	"time"
@@ -30,7 +33,9 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/credentials/insecure"
+	"google.golang.org/grpc/metadata"
 	"google.golang.org/grpc/status"
+	"google.golang.org/protobuf/proto"
 )
 
 func TestCancellationSharer(t *testing.T) {
@@ -248,33 +253,191 @@ func TestPublishHedging_ResultWaitsForLosingHedges(t *testing.T) {
 	msg.Data[0] = 'X'
 }
 
-func TestPublishHedging(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newFake(t)
-	defer c.Close()
-	defer srv.Close()
-
-	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging", testutil.ProjID())
-	publisher := mustCreateTopic(t, c, topic)
-	defer publisher.Stop()
-
-	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay: 100 * time.Millisecond,
+// publishOperation decodes the x-goog-pubsub-client-telemetry header attached
+// to an outgoing Publish call. It is safe to call from interceptor goroutines.
+func publishOperation(t *testing.T, ctx context.Context) *pb.PubsubClientTelemetry_PublishOperation {
+	md, _ := metadata.FromOutgoingContext(ctx)
+	vals := md.Get(pubsubClientTelemetryHeader)
+	if len(vals) != 1 {
+		t.Errorf("got %d %s header values, want 1", len(vals), pubsubClientTelemetryHeader)
+		return nil
 	}
-	publisher.hedgingTokenBucket = tokenScaleFactor
-
-	srv.SetAutoPublishResponse(false)
-	for i := 0; i < 10; i++ {
-		addSingleResponse(srv, "msg-123")
-	}
-
-	res := publishSingleMessage(ctx, publisher, "test data")
-	id, err := res.Get(ctx)
+	raw, err := base64.StdEncoding.DecodeString(vals[0])
 	if err != nil {
-		t.Fatalf("res.Get got err: %v", err)
+		t.Errorf("decoding %s header: %v", pubsubClientTelemetryHeader, err)
+		return nil
 	}
-	if id != "msg-123" {
-		t.Errorf("got msg ID %q, want msg-123", id)
+	var tel pb.PubsubClientTelemetry
+	if err := proto.Unmarshal(raw, &tel); err != nil {
+		t.Errorf("unmarshalling %s header: %v", pubsubClientTelemetryHeader, err)
+		return nil
+	}
+	if tel.GetPublishOperation() == nil {
+		t.Errorf("%s header has no publish_operation", pubsubClientTelemetryHeader)
+	}
+	return tel.GetPublishOperation()
+}
+
+// newHedgingPublisher returns a publisher whose Publish RPCs go through ic,
+// with hedging enabled at the minimum delay and the given number of tokens.
+func newHedgingPublisher(t *testing.T, ic grpc.UnaryClientInterceptor, tokens int64) *Publisher {
+	t.Helper()
+	c, srv := newFakeWithInterceptor(t, ic)
+	t.Cleanup(func() {
+		c.Close()
+		srv.Close()
+	})
+	topic := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), strings.ReplaceAll(t.Name(), "/", "-"))
+	p := mustCreateTopic(t, c, topic)
+	t.Cleanup(p.Stop)
+	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay}
+	p.hedgingTokenBucket = tokens * tokenScaleFactor
+	return p
+}
+
+func isPublish(method string) bool { return strings.HasSuffix(method, "/Publish") }
+
+// When the original attempt stalls, the hedged attempt's response resolves
+// the publish and the original attempt is cancelled. Both attempts carry the
+// client telemetry header with their attempt number and a shared start time.
+func TestPublishHedging_HedgeWins(t *testing.T) {
+	ctx := context.Background()
+	var (
+		mu         sync.Mutex
+		ops        []*pb.PubsubClientTelemetry_PublishOperation
+		hedgeIDs   []string
+		origCancel = make(chan struct{}, 1)
+	)
+	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		if !isPublish(method) {
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}
+		op := publishOperation(t, ctx)
+		mu.Lock()
+		ops = append(ops, op)
+		mu.Unlock()
+		if op.GetHedgedAttemptCount() == 0 {
+			// Original attempt: stall until the winning hedge cancels it.
+			select {
+			case <-ctx.Done():
+				select {
+				case origCancel <- struct{}{}:
+				default:
+				}
+				return ctx.Err()
+			case <-time.After(10 * time.Second):
+				return status.Error(codes.PermissionDenied, "original attempt was never cancelled")
+			}
+		}
+		if err := invoker(ctx, method, req, reply, cc, opts...); err != nil {
+			return err
+		}
+		mu.Lock()
+		hedgeIDs = append(hedgeIDs, reply.(*pb.PublishResponse).MessageIds...)
+		mu.Unlock()
+		return nil
+	}
+	p := newHedgingPublisher(t, ic, 1)
+
+	id, err := publishSingleMessage(ctx, p, "payload").Get(ctx)
+	if err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+
+	mu.Lock()
+	defer mu.Unlock()
+	if len(hedgeIDs) != 1 || id != hedgeIDs[0] {
+		t.Errorf("got message ID %q, want the hedged attempt's ID (hedge returned %v)", id, hedgeIDs)
+	}
+	select {
+	case <-origCancel:
+	default:
+		t.Error("original attempt was not cancelled after the hedge won")
+	}
+	if len(ops) != 2 {
+		t.Fatalf("got %d Publish attempts, want 2 (original + 1 hedge)", len(ops))
+	}
+	for i, op := range ops {
+		if got := op.GetHedgedAttemptCount(); got != int32(i) {
+			t.Errorf("attempt %d: got hedged_attempt_count %d, want %d", i, got, i)
+		}
+		if op.GetPublishStartTime() == nil {
+			t.Errorf("attempt %d: publish_start_time not set", i)
+		}
+	}
+	if !proto.Equal(ops[0].GetPublishStartTime(), ops[1].GetPublishStartTime()) {
+		t.Errorf("publish_start_time differs between attempts: %v vs %v", ops[0].GetPublishStartTime(), ops[1].GetPublishStartTime())
+	}
+}
+
+// While the original attempt is slow, a new hedge is sent every Delay until
+// the token bucket runs out; once a due hedge finds no token, the chain stops.
+func TestPublishHedging_HedgesUntilTokensRunOut(t *testing.T) {
+	ctx := context.Background()
+	var (
+		mu     sync.Mutex
+		counts []int
+	)
+	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		if !isPublish(method) {
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}
+		n := int(publishOperation(t, ctx).GetHedgedAttemptCount())
+		mu.Lock()
+		counts = append(counts, n)
+		mu.Unlock()
+		if n == 0 {
+			// Original attempt outlives several hedge intervals, then succeeds.
+			time.Sleep(5 * minHedgingDelay)
+			return invoker(ctx, method, req, reply, cc, opts...)
+		}
+		<-ctx.Done() // hedges stall until the original wins
+		return ctx.Err()
+	}
+	p := newHedgingPublisher(t, ic, 2)
+
+	if _, err := publishSingleMessage(ctx, p, "payload").Get(ctx); err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+
+	mu.Lock()
+	got := append([]int(nil), counts...)
+	mu.Unlock()
+	sort.Ints(got)
+	if want := []int{0, 1, 2}; fmt.Sprint(got) != fmt.Sprint(want) {
+		t.Errorf("got hedged_attempt_counts %v, want %v (original + one hedge per token)", got, want)
+	}
+	p.hedgingMu.Lock()
+	defer p.hedgingMu.Unlock()
+	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket != want {
+		t.Errorf("got %d milli-tokens after publish, want %d (2 spent, then one 0.1 refill)", p.hedgingTokenBucket, want)
+	}
+}
+
+// The token bucket starts empty, so the first slow publish is never hedged,
+// and a successful publish refills it.
+func TestPublishHedging_NoHedgeWithoutTokens(t *testing.T) {
+	ctx := context.Background()
+	var calls int64
+	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		if isPublish(method) {
+			atomic.AddInt64(&calls, 1)
+			time.Sleep(3 * minHedgingDelay)
+		}
+		return invoker(ctx, method, req, reply, cc, opts...)
+	}
+	p := newHedgingPublisher(t, ic, 0)
+
+	if _, err := publishSingleMessage(ctx, p, "payload").Get(ctx); err != nil {
+		t.Fatalf("Get: %v", err)
+	}
+	if got := atomic.LoadInt64(&calls); got != 1 {
+		t.Errorf("got %d Publish attempts with an empty token bucket, want 1", got)
+	}
+	p.hedgingMu.Lock()
+	defer p.hedgingMu.Unlock()
+	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket != want {
+		t.Errorf("got %d milli-tokens after a successful publish, want %d", p.hedgingTokenBucket, want)
 	}
 }
 
@@ -299,51 +462,17 @@ func TestPublishHedgingWithOrdering(t *testing.T) {
 	}
 }
 
-func TestPublishDynamicMultiHedging(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newFake(t)
-	defer c.Close()
-	defer srv.Close()
-
-	topic := fmt.Sprintf("projects/%s/topics/test-topic-multi-hedging", testutil.ProjID())
-	publisher := mustCreateTopic(t, c, topic)
-	defer publisher.Stop()
-
-	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay: 100 * time.Millisecond,
-	}
-	publisher.hedgingTokenBucket = 5 * tokenScaleFactor
-
-	srv.SetAutoPublishResponse(false)
-	for i := 0; i < 10; i++ {
-		addSingleResponse(srv, "msg-multi-123")
-	}
-
-	res := publishSingleMessage(ctx, publisher, "test data")
-	id, err := res.Get(ctx)
-	if err != nil {
-		t.Fatalf("res.Get got err: %v", err)
-	}
-	if id != "msg-multi-123" {
-		t.Errorf("got msg ID %q, want msg-multi-123", id)
-	}
-}
-
 func TestValidateHedgingSettings(t *testing.T) {
-	ctx := context.Background()
-	c, srv := newFake(t)
-	defer c.Close()
-	defer srv.Close()
-
-	topic := "projects/proj-id/topics/test-topic-hedging-validation"
-	basePub := mustCreateTopic(t, c, topic)
-	basePub.Stop()
-
 	tests := []struct {
 		name     string
 		settings *HedgingSettings
 		wantErr  bool
 	}{
+		{
+			name:     "nil (hedging disabled)",
+			settings: nil,
+			wantErr:  false,
+		},
 		{
 			name:     "defaults (all zero)",
 			settings: &HedgingSettings{},
@@ -401,23 +530,31 @@ func TestValidateHedgingSettings(t *testing.T) {
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			pub := c.Publisher(topic)
-			defer pub.Stop()
-			pub.PublishSettings.HedgingSettings = tc.settings
-
-			res := pub.Publish(ctx, &Message{Data: []byte("test")})
-			_, err := res.Get(ctx)
-			if tc.wantErr && err == nil {
-				t.Errorf("expected validation error for %+v, got nil", tc.settings)
-			}
-			if !tc.wantErr && err != nil {
-				t.Errorf("unexpected error for %+v: %v", tc.settings, err)
+			err := validateHedgingSettings(tc.settings)
+			if gotErr := err != nil; gotErr != tc.wantErr {
+				t.Errorf("validateHedgingSettings(%+v) = %v, wantErr %t", tc.settings, err, tc.wantErr)
 			}
 		})
 	}
 }
 
-func TestPublishHedging_TokenBucketStartsEmptyAndFixedPointScaling(t *testing.T) {
+// Invalid HedgingSettings fail the PublishResult rather than being ignored.
+func TestPublishHedging_InvalidSettingsFailPublish(t *testing.T) {
+	ctx := context.Background()
+	c, srv := newFake(t)
+	defer c.Close()
+	defer srv.Close()
+
+	p := mustCreateTopic(t, c, "projects/proj-id/topics/test-topic-hedging-invalid")
+	defer p.Stop()
+	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay - time.Millisecond}
+
+	if _, err := publishSingleMessage(ctx, p, "payload").Get(ctx); err == nil || !strings.Contains(err.Error(), "HedgingSettings.Delay") {
+		t.Errorf("got err %v, want a HedgingSettings.Delay validation error", err)
+	}
+}
+
+func TestPublishHedging_TokenBucket(t *testing.T) {
 	c, srv := newFake(t)
 	defer c.Close()
 	defer srv.Close()
@@ -430,9 +567,10 @@ func TestPublishHedging_TokenBucketStartsEmptyAndFixedPointScaling(t *testing.T)
 		t.Fatalf("expected initial hedgingTokenBucket to be 0 (empty), got %d", pub.hedgingTokenBucket)
 	}
 
+	const maxTokens = 50
 	pub.PublishSettings.HedgingSettings = &HedgingSettings{
 		Delay:       100 * time.Millisecond,
-		MaxTokens:   50,
+		MaxTokens:   maxTokens,
 		RefillRatio: 0.1,
 	}
 
@@ -444,50 +582,37 @@ func TestPublishHedging_TokenBucketStartsEmptyAndFixedPointScaling(t *testing.T)
 	if pub.hedgingTokenBucket != tokenScaleFactor {
 		t.Errorf("expected hedgingTokenBucket after 10 replenishes at 0.1 ratio to be %d, got %d", tokenScaleFactor, pub.hedgingTokenBucket)
 	}
+
+	// Refills are capped at MaxTokens, including a partial refill that would overshoot.
+	maxMilli := int64(maxTokens) * tokenScaleFactor
+	pub.hedgingTokenBucket = maxMilli - tokenScaleFactor/20
+	for i := 0; i < 2; i++ {
+		pub.replenishHedgingTokens()
+		if pub.hedgingTokenBucket != maxMilli {
+			t.Errorf("replenish %d near the cap: got %d milli-tokens, want %d (MaxTokens)", i, pub.hedgingTokenBucket, maxMilli)
+		}
+	}
 }
 
 func TestPublishHedging_DiscardsAllHedgedErrors(t *testing.T) {
 	ctx := context.Background()
-	srv := pstest.NewServer()
-	defer srv.Close()
-
 	var attemptCount int32
-	c, err := NewClient(ctx, "proj-id",
-		option.WithEndpoint(srv.Addr),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-			if method == "/google.pubsub.v1.Publisher/Publish" {
-				n := atomic.AddInt32(&attemptCount, 1)
-				if n == 1 {
-					// Delay the original attempt so the hedged attempt fires and finishes first.
-					time.Sleep(180 * time.Millisecond)
-					return invoker(ctx, method, req, reply, cc, opts...)
-				}
-				// Hedged attempt fails with a permanent error (PermissionDenied); it must be discarded.
-				return status.Error(codes.PermissionDenied, "hedged permanent error should be discarded")
+	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+		if isPublish(method) {
+			n := atomic.AddInt32(&attemptCount, 1)
+			if n == 1 {
+				// Delay the original attempt so the hedged attempt fires and finishes first.
+				time.Sleep(180 * time.Millisecond)
+				return invoker(ctx, method, req, reply, cc, opts...)
 			}
-			return invoker(ctx, method, req, reply, cc, opts...)
-		})),
-	)
-	if err != nil {
-		t.Fatal(err)
+			// Hedged attempt fails with a permanent error (PermissionDenied); it must be discarded.
+			return status.Error(codes.PermissionDenied, "hedged permanent error should be discarded")
+		}
+		return invoker(ctx, method, req, reply, cc, opts...)
 	}
-	defer c.Close()
+	pub := newHedgingPublisher(t, ic, 1)
 
-	topic := "projects/proj-id/topics/test-topic-discard-hedged-err"
-	pub := mustCreateTopic(t, c, topic)
-	defer pub.Stop()
-
-	pub.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay:       100 * time.Millisecond,
-		MaxTokens:   50,
-		RefillRatio: 0.1,
-	}
-	pub.hedgingTokenBucket = tokenScaleFactor
-
-	res := pub.Publish(ctx, &Message{Data: []byte("hello")})
-	id, err := res.Get(ctx)
+	id, err := pub.Publish(ctx, &Message{Data: []byte("hello")}).Get(ctx)
 	if err != nil {
 		t.Fatalf("expected original publish attempt to succeed after discarding hedged PermissionDenied error, got err: %v", err)
 	}
