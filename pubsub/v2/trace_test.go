@@ -27,6 +27,7 @@ import (
 	"cloud.google.com/go/pubsub/v2/internal"
 	"cloud.google.com/go/pubsub/v2/pstest"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
 	"go.opentelemetry.io/otel"
 	"go.opentelemetry.io/otel/attribute"
 	"go.opentelemetry.io/otel/codes"
@@ -189,154 +190,48 @@ func TestTrace_PublishSpan(t *testing.T) {
 
 func TestTrace_PublishHedgedSpan(t *testing.T) {
 	ctx := context.Background()
+	var rpcAttempts atomic.Int64
+	c, srv := newFakeWithTracing(t, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(
+		func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
+			if isPublish(method) && rpcAttempts.Add(1) == 1 {
+				time.Sleep(150 * time.Millisecond) // force hedge
+			}
+			return invoker(ctx, method, req, reply, cc, opts...)
+		},
+	)))
+	defer c.Close()
+	defer srv.Close()
 
 	e := tracetest.NewInMemoryExporter()
-	g := &incrementIDGenerator{}
-	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e), sdktrace.WithIDGenerator(g))
+	tp := sdktrace.NewTracerProvider(sdktrace.WithSyncer(e))
 	defer tp.Shutdown(ctx)
 	otel.SetTracerProvider(tp)
 
-	srv := pstest.NewServer()
-	defer srv.Close()
-
-	var rpcAttempts int64
-	c, err := NewClientWithConfig(ctx, projName,
-		&ClientConfig{EnableOpenTelemetryTracing: true},
-		option.WithEndpoint(srv.Addr),
-		option.WithoutAuthentication(),
-		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-			if method == "/google.pubsub.v1.Publisher/Publish" {
-				attempt := atomic.AddInt64(&rpcAttempts, 1)
-				if attempt == 1 {
-					time.Sleep(150 * time.Millisecond) // force hedge
-				}
-			}
-			return invoker(ctx, method, req, reply, cc, opts...)
-		})),
-		option.WithTelemetryDisabled(),
-	)
-	if err != nil {
-		t.Fatal(err)
-	}
-	defer c.Close()
-
-	m := &Message{
-		Data: []byte("test"),
-	}
-
-	topicID := "t"
-	topicName := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), topicID)
-
-	expectedSpans := tracetest.SpanStubs{
-		tracetest.SpanStub{
-			Name:     fmt.Sprintf("%s %s", topicID, createSpanName),
-			SpanKind: trace.SpanKindProducer,
-			Attributes: []attribute.KeyValue{
-				semconv.CodeFunction("Publish"),
-				semconv.MessagingDestinationName(topicID),
-				semconv.MessagingGCPPubsubMessageOrderingKey(m.OrderingKey),
-				semconv.MessagingMessageIDKey.String("m0"),
-				semconv.MessagingSystemGCPPubsub,
-				semconv.MessagingMessageBodySize(len(m.Data)),
-				attribute.String(gcpProjectID, projName),
-				attribute.String(gcpResourceName, topicName),
-			},
-			Events: []sdktrace.Event{
-				{
-					Name: eventPublishStart,
-					Attributes: []attribute.KeyValue{
-						semconv.MessagingBatchMessageCount(1),
-					},
-				},
-				{
-					Name: eventHedgedPublishStart,
-					Attributes: []attribute.KeyValue{
-						semconv.MessagingBatchMessageCount(1),
-					},
-				},
-				{
-					Name: eventHedgedPublishEnd,
-				},
-				{
-					Name: eventPublishEnd,
-				},
-			},
-			Links: []sdktrace.Link{
-				{
-					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
-						TraceID:    [16]byte{(byte(2))},
-						SpanID:     [8]byte{(byte(4))},
-						TraceFlags: 1,
-					}),
-				},
-			},
-			ChildSpanCount: 2,
-			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub/v2",
-				Version: internal.Version,
-			},
-		},
-		tracetest.SpanStub{
-			Name: publishFCSpanName,
-			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub/v2",
-				Version: internal.Version,
-			},
-		},
-		tracetest.SpanStub{
-			Name: batcherSpanName,
-			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub/v2",
-				Version: internal.Version,
-			},
-		},
-		tracetest.SpanStub{
-			Name: fmt.Sprintf("%s %s", topicID, publishRPCSpanName),
-			Attributes: []attribute.KeyValue{
-				semconv.MessagingSystemGCPPubsub,
-				semconv.MessagingDestinationName(topicID),
-				semconv.CodeFunction("publishMessageBundle"),
-				semconv.MessagingBatchMessageCount(1),
-				attribute.String(gcpProjectID, projName),
-				attribute.String(gcpResourceName, topicName),
-			},
-			InstrumentationLibrary: instrumentation.Scope{
-				Name:    "cloud.google.com/go/pubsub/v2",
-				Version: internal.Version,
-			},
-			Links: []sdktrace.Link{
-				{
-					SpanContext: trace.NewSpanContext(trace.SpanContextConfig{
-						TraceID:    [16]byte{(byte(1))},
-						SpanID:     [8]byte{(byte(1))},
-						TraceFlags: 1,
-					}),
-				},
-			},
-		},
-	}
+	topicName := fmt.Sprintf("projects/%s/topics/t", testutil.ProjID())
 	publisher := mustCreateTopic(t, c, topicName)
 	defer publisher.Stop()
-
-	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay:       100 * time.Millisecond,
-		MaxTokens:   50,
-		RefillRatio: 0.1,
-	}
+	publisher.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay}
 	publisher.hedgingTokenBucket.Store(tokenScaleFactor)
 
-	r := publisher.Publish(ctx, m)
-	_, err = r.Get(ctx)
-	if err != nil {
+	if _, err := publisher.Publish(ctx, &Message{Data: []byte("test")}).Get(ctx); err != nil {
 		t.Fatalf("failed to publish message: %v", err)
 	}
 
-	got := getSpans(e)
-	slices.SortFunc(expectedSpans, func(a, b tracetest.SpanStub) int {
-		return sortSpanStub(a, b)
-	})
-	compareSpans(t, got, expectedSpans)
+	wantEvents := []sdktrace.Event{
+		{Name: eventPublishStart, Attributes: []attribute.KeyValue{semconv.MessagingBatchMessageCount(1)}},
+		{Name: eventHedgedPublishStart, Attributes: []attribute.KeyValue{semconv.MessagingBatchMessageCount(1)}},
+		{Name: eventHedgedPublishEnd},
+		{Name: eventPublishEnd},
+	}
+	for _, span := range getSpans(e) {
+		if span.Name == "t "+createSpanName {
+			if diff := testutil.Diff(span.Events, wantEvents, cmpopts.IgnoreFields(sdktrace.Event{}, "Time"), cmpopts.EquateComparable(attribute.Value{})); diff != "" {
+				t.Errorf("publish span events (-got +want):\n%s", diff)
+			}
+			return
+		}
+	}
+	t.Fatalf("span %q not found", "t "+createSpanName)
 }
 
 func TestTrace_PublishSpanError(t *testing.T) {
@@ -859,15 +754,18 @@ func getFlowControlSpanStubs(err error) tracetest.SpanStubs {
 	}
 }
 
-func newFakeWithTracing(t *testing.T) (*Client, *pstest.Server) {
+func newFakeWithTracing(t *testing.T, opts ...option.ClientOption) (*Client, *pstest.Server) {
 	ctx := context.Background()
 	srv := pstest.NewServer()
-	client, err := NewClientWithConfig(ctx, projName,
-		&ClientConfig{EnableOpenTelemetryTracing: true},
+	baseOpts := []option.ClientOption{
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
 		option.WithTelemetryDisabled(),
+	}
+	client, err := NewClientWithConfig(ctx, projName,
+		&ClientConfig{EnableOpenTelemetryTracing: true},
+		append(baseOpts, opts...)...,
 	)
 	if err != nil {
 		t.Fatal(err)

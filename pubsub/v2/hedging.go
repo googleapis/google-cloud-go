@@ -48,63 +48,36 @@ const (
 
 var errPublisherHedgingAndOrderingEnabled = errors.New("pubsub: Hedging and MessageOrdering cannot both be enabled on the Publisher")
 
-// HedgingSettings configures publish hedging, which reduces publish tail
-// latency by sending additional copies of a slow publish request.
+// HedgingSettings configures publish hedging, which sends additional copies of
+// slow publish requests to help reduce tail latency.
 //
-// When hedging is enabled, each batch of messages is first published as
-// usual. If that request has not completed after Delay, the publisher sends a
-// hedged copy of the same batch, and continues to send another copy every
-// Delay while the batch remains unresolved and hedging tokens are available.
-// The first successful response is used to resolve the PublishResults for the
-// batch, and all other outstanding attempts for that batch are cancelled.
-// Hedged attempts are not retried, and their errors are ignored; only the
-// original request's error can fail the batch.
+// If a publish request does not complete within Delay, the publisher may send
+// hedged copies of the batch at Delay intervals while tokens are available in
+// the Publisher's token bucket. The first successful response resolves the
+// batch and cancels the other attempts; errors from hedged attempts are
+// ignored.
 //
-// Hedging can result in duplicate messages. A cancelled attempt may already
-// have been persisted by the server, in which case the same message is
-// published more than once with distinct message IDs. PublishResult only
-// reports the ID from the attempt that resolved the batch. Subscribers should
-// be prepared to handle duplicates.
+// Because a cancelled attempt may still be processed by the server, hedging
+// can produce duplicate messages with distinct message IDs. PublishResult
+// returns the ID from the attempt that resolved the batch.
 //
-// The number of hedged requests is limited by a token bucket shared by all
-// batches on the Publisher. Each hedged request consumes one token, and each
-// successful publish adds RefillRatio tokens, up to MaxTokens. The bucket
-// starts empty, so hedging only begins after RefillRatio has accumulated at
-// least one token from successful publishes. If no token is available when a
-// hedge is due, that batch is not hedged further and waits for its original
-// request.
+// Hedging cannot be used with Publisher.EnableMessageOrdering; if both are
+// enabled, Publish returns a PublishResult with an error.
 //
-// Hedging cannot be used together with Publisher.EnableMessageOrdering; if
-// both are set, Publish returns a PublishResult with an error. Hedging is also
-// skipped for a batch when PublishSettings.Timeout is set and is less than or
-// equal to Delay.
-//
-// Once Publisher.Stop is called, no new hedged requests are sent, including
-// for batches that are flushed during Stop.
-//
-// The zero value of each field selects its default. HedgingSettings is read
-// on the first call to Publish; later changes have no effect.
+// The zero value of each field uses its default.
 type HedgingSettings struct {
-	// Delay configures the delay of when the hedged RPC should be attempted.
-	// Default is 1s.
-	// Must be between >= 0.1s and <= 10s.
+	// Delay is how long to wait before sending a hedged publish request.
+	// Defaults to 1s. Must be in [100ms, 10s].
 	Delay time.Duration
 
-	// MaxTokens configures the upper bound of the internal token bucket limiter.
-	//
-	// Every time an RPC exceeds the hedging delay, it consumes 1 token to fire
-	// a hedged request. Therefore, MaxTokens bounds the number of
-	// hedged requests the client can issue in a period of time if it is not
-	// refilled by successful requests, see RefillRatio.
-	//
-	// Default is 50.
-	// Must be between > 0 and <= 250.
+	// MaxTokens is the capacity of the token bucket that rate-limits hedged
+	// requests. Sending a hedged request consumes 1 token.
+	// Defaults to 50. Must be in [1, 250].
 	MaxTokens int64
 
-	// RefillRatio is the amount of tokens added to the bucket per successful publish.
-	// Represents the % of requests that can be hedged.
-	// Default is 0.1.
-	// Must be between >= 0.001 and <= 0.2.
+	// RefillRatio is the number of tokens added to the bucket for each
+	// successful publish, up to MaxTokens.
+	// Defaults to 0.1. Must be in [0.001, 0.2].
 	RefillRatio float64
 }
 
@@ -124,19 +97,9 @@ func validateHedgingSettings(hs *HedgingSettings) error {
 	return nil
 }
 
-type attemptResult struct {
-	res *pb.PublishResponse
-	err error
-	id  int
-}
-
-// hedgedRequest is a scheduled hedged attempt waiting in the hedging queue.
-//
-// It intentionally holds no reference to the batch payload. Every batch that
-// is eligible for hedging enqueues one of these, and it stays in the queue
-// until sendAfter even if the publish resolved long before. The payload lives
-// on the cancellationSharer instead, which drops it as soon as the publish
-// resolves.
+// hedgedRequest is a scheduled hedged attempt in the hedging queue. It holds no
+// reference to the batch payload, which lives on cs and is released as soon as
+// the publish resolves, even while the request remains queued until sendAfter.
 type hedgedRequest struct {
 	attemptID int
 	sendAfter time.Time
@@ -152,21 +115,16 @@ func (req *hedgedRequest) isDone() bool {
 type hedgeBatch struct {
 	ctx       context.Context
 	startTime time.Time
-	resCh     chan attemptResult
+	resCh     chan *pb.PublishResponse
 	pbMsgs    []*pb.PubsubMessage
 	gaxOpts   []gax.CallOption
 	bmsgs     []*bundledMessage
 }
 
-// cancellationSharer coordinates cancellation between all publish attempts.
-// When one attempt completes, it cancels all other attempts to minimize
-// duplicate messages on the server.
-//
-// It also owns the batch payload used by hedged attempts. The payload is
-// released when the publish resolves (win or cancelAll), and inflight tracks
-// hedged attempts that are still using it so the publisher can wait for them
-// to exit before handing results (and ownership of message data) back to the
-// user.
+// cancellationSharer coordinates cancellation across publish attempts and owns
+// the shared batch payload. The payload is cleared on win or cancelAll, and
+// inflight tracks active hedged attempts so publishHedged can wait for them to
+// exit before returning results to the caller.
 type cancellationSharer struct {
 	mu       sync.Mutex
 	cancels  map[int]context.CancelFunc
@@ -203,11 +161,9 @@ func (cs *cancellationSharer) add(cancel context.CancelFunc) int {
 	return id
 }
 
-// acquireHedge registers a new hedged attempt. It returns the attempt ID, a
-// cancellable context derived from the batch context, and the batch payload.
-// ok is false if the publish has already resolved, in which case the caller
-// must not send the attempt. On success the caller must call releaseHedge once
-// it no longer uses the payload.
+// acquireHedge registers a hedged attempt and returns its ID, cancellable
+// context, and batch payload, or ok=false if the publish has already resolved.
+// The caller must call releaseHedge when done with the payload.
 func (cs *cancellationSharer) acquireHedge() (id int, ctx context.Context, b *hedgeBatch, ok bool) {
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
@@ -218,13 +174,11 @@ func (cs *cancellationSharer) acquireHedge() (id int, ctx context.Context, b *he
 	id = cs.nextID
 	cs.nextID++
 	cs.cancels[id] = cancel
-	// Add is done under mu while !done, so it always happens before the Wait in
-	// wait(), which is only called after cancelAll has set done.
+	// Add under mu while !done so it precedes wait(), which is called after cancelAll.
 	cs.inflight.Add(1)
 	return id, ctx, cs.batch, true
 }
 
-// releaseHedge marks a hedged attempt acquired via acquireHedge as finished.
 func (cs *cancellationSharer) releaseHedge() {
 	cs.inflight.Done()
 }
@@ -264,15 +218,11 @@ func (cs *cancellationSharer) wait() {
 	cs.inflight.Wait()
 }
 
-// publishHedged publishes pbMsgs with hedging enabled. The original attempt
-// runs synchronously on the calling goroutine; hedged attempts are scheduled
-// through the hedging queue and fire every hedgingDelay while tokens are
-// available. The first successful response wins and cancels the others.
-//
-// It returns only after every hedged attempt for this batch has exited, so the
-// caller may release flow control and hand results back to the user.
+// publishHedged sends the initial publish synchronously and schedules hedged
+// attempts via the hedging queue. It waits for any in-flight hedged attempts to
+// exit before returning.
 func (t *Publisher) publishHedged(ctx context.Context, start time.Time, pbMsgs []*pb.PubsubMessage, bms []*bundledMessage, gaxOpts []gax.CallOption) (*pb.PublishResponse, error) {
-	resCh := make(chan attemptResult, 1)
+	resCh := make(chan *pb.PublishResponse, 1)
 	cs := newCancellationSharer(&hedgeBatch{
 		ctx:       ctx,
 		startTime: start,
@@ -302,7 +252,7 @@ func (t *Publisher) publishHedged(ctx context.Context, start time.Time, pbMsgs [
 
 	if e == nil {
 		select {
-		case resCh <- attemptResult{res: r, err: nil, id: mainID}:
+		case resCh <- r:
 			cs.win(mainID)
 		default:
 		}
@@ -315,23 +265,15 @@ func (t *Publisher) publishHedged(ctx context.Context, start time.Time, pbMsgs [
 	var res *pb.PublishResponse
 	var err error
 	select {
-	case winner := <-resCh:
-		res = winner.res
-		err = winner.err
-		if err == nil {
-			t.replenishHedgingTokens()
-		}
+	case res = <-resCh:
+		t.replenishHedgingTokens()
 	default:
-		res = r
-		err = e
+		res, err = r, e
 	}
 
-	// Resolve the publish before releasing flow control and setting
-	// results: cancel outstanding hedged attempts, drop the shared
-	// payload so queued hedgedRequests don't keep it alive, and wait for
-	// in-flight hedges to exit. After this, no hedge goroutine can still
-	// be reading message Data/Attributes, which the user may reuse as
-	// soon as PublishResult.Get returns.
+	// Cancel outstanding hedges, release the shared payload, and wait for
+	// in-flight hedges to exit before the caller releases flow control and
+	// resolves PublishResults (after which the user may mutate msg.Data/Attributes).
 	cs.cancelAll()
 	cs.wait()
 	return res, err
@@ -356,11 +298,7 @@ func (t *Publisher) enqueueHedgedRequest(req *hedgedRequest) {
 	}
 	t.hedgingQueue = append(t.hedgingQueue, req)
 	if len(t.hedgingQueue) == 1 {
-		delay := time.Until(req.sendAfter)
-		if delay < 0 {
-			delay = 0
-		}
-		t.hedgingTimer = time.AfterFunc(delay, t.processHedgingQueue)
+		t.hedgingTimer = time.AfterFunc(max(time.Until(req.sendAfter), 0), t.processHedgingQueue)
 	}
 }
 
@@ -384,23 +322,14 @@ func (t *Publisher) processHedgingQueue() {
 	}
 
 	if len(t.hedgingQueue) > 0 {
-		nextDelay := time.Until(t.hedgingQueue[0].sendAfter)
-		if nextDelay < 0 {
-			nextDelay = 0
-		}
-		t.hedgingTimer = time.AfterFunc(nextDelay, t.processHedgingQueue)
+		t.hedgingTimer = time.AfterFunc(max(time.Until(t.hedgingQueue[0].sendAfter), 0), t.processHedgingQueue)
 	} else {
 		t.hedgingTimer = nil
 	}
 	t.hedgingMu.Unlock()
 
 	for _, req := range ready {
-		if req.isDone() {
-			continue
-		}
-		// If the token bucket is empty (< 1 token), the scheduled hedged attempt is
-		// discarded and NOT returned to the queue.
-		if t.tryAcquireHedgingToken() {
+		if !req.isDone() && t.tryAcquireHedgingToken() {
 			go t.fireHedgedAttempt(req)
 		}
 	}
@@ -431,12 +360,10 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 	if timeout <= 0 {
 		return
 	}
-	if timeout > 10*time.Second {
-		timeout = 10 * time.Second
-	}
+	timeout = min(timeout, 10*time.Second)
 
-	// Hedged attempts should not be retried. Any errors from hedged attempts
-	// are discarded so they do not prematurely fail the overall publish request.
+	// Hedged attempts are not retried; their errors are ignored so they do not
+	// fail the batch while the original attempt is still running.
 	opts := append([]gax.CallOption(nil), b.gaxOpts...)
 	opts = append(opts,
 		gax.WithRetry(func() gax.Retryer { return gax.OnCodes([]codes.Code{}, gax.Backoff{}) }),
@@ -468,16 +395,15 @@ func (t *Publisher) fireHedgedAttempt(req *hedgedRequest) {
 
 	if e == nil {
 		select {
-		case b.resCh <- attemptResult{res: r, err: nil, id: id}:
+		case b.resCh <- r:
 			req.cs.win(id)
 		default:
 		}
 	}
 }
 
-// initHedging validates PublishSettings.HedgingSettings and snapshots the
-// effective hedging configuration. It is called once, from initBundler, so
-// later changes to HedgingSettings have no effect.
+// initHedging validates HedgingSettings and snapshots the effective hedging
+// configuration. It is called once from initBundler.
 func (t *Publisher) initHedging() {
 	hs := t.PublishSettings.HedgingSettings
 	if hs == nil || t.EnableMessageOrdering {

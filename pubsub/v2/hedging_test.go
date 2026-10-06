@@ -19,7 +19,7 @@ import (
 	"encoding/base64"
 	"errors"
 	"fmt"
-	"sort"
+	"slices"
 	"strings"
 	"sync"
 	"sync/atomic"
@@ -43,32 +43,34 @@ func TestCancellationSharer(t *testing.T) {
 	mainCtx, mainCancel := context.WithCancel(ctx)
 	hedgedCtx, hedgedCancel := context.WithCancel(ctx)
 
-	cs := newCancellationSharer(nil)
+	cs := newCancellationSharer(&hedgeBatch{ctx: ctx})
 	mainID := cs.add(mainCancel)
-	_ = cs.add(hedgedCancel)
+	cs.add(hedgedCancel)
 
-	// Test that winning main cancels hedged
+	// Winning main cancels hedged and releases the shared batch, leaving main active.
 	cs.win(mainID)
 	if hedgedCtx.Err() == nil {
-		t.Errorf("expected hedgedCtx to be cancelled when win(mainID) is called")
+		t.Error("expected hedgedCtx to be cancelled when win(mainID) is called")
 	}
 	if mainCtx.Err() != nil {
-		t.Errorf("expected mainCtx to not be cancelled yet")
+		t.Error("expected mainCtx to not be cancelled yet")
+	}
+	if cs.batch != nil {
+		t.Error("win did not release the shared batch payload")
 	}
 
 	cs.cancelAll()
 	if mainCtx.Err() == nil {
-		t.Errorf("expected mainCtx to be cancelled after cancelAll()")
+		t.Error("expected mainCtx to be cancelled after cancelAll()")
 	}
 
-	// Test adding after done returns -1 and cancels immediately
+	// Adding after done returns -1 and cancels immediately.
 	lateCtx, lateCancel := context.WithCancel(ctx)
-	lateID := cs.add(lateCancel)
-	if lateID != -1 {
-		t.Errorf("expected lateID to be -1, got %d", lateID)
+	if got := cs.add(lateCancel); got != -1 {
+		t.Errorf("add after done: got %d, want -1", got)
 	}
 	if lateCtx.Err() == nil {
-		t.Errorf("expected lateCtx to be cancelled immediately upon add after done")
+		t.Error("expected lateCtx to be cancelled immediately upon add after done")
 	}
 }
 
@@ -77,21 +79,15 @@ func TestCancellationSharer_ReleasesBatchAndWaitsForHedges(t *testing.T) {
 	cs := newCancellationSharer(batch)
 
 	id, hctx, b, ok := cs.acquireHedge()
-	if !ok {
-		t.Fatal("acquireHedge: got ok=false before the publish resolved")
-	}
-	if b != batch {
-		t.Fatalf("acquireHedge: got batch %p, want %p", b, batch)
+	if !ok || b != batch {
+		t.Fatalf("acquireHedge: got (%v, %p), want (true, %p)", ok, b, batch)
 	}
 
 	cs.cancelAll()
 	if hctx.Err() == nil {
 		t.Errorf("hedge %d context not cancelled by cancelAll", id)
 	}
-	cs.mu.Lock()
-	gotBatch := cs.batch
-	cs.mu.Unlock()
-	if gotBatch != nil {
+	if cs.batch != nil {
 		t.Error("cancelAll did not release the shared batch payload")
 	}
 	if _, _, _, ok := cs.acquireHedge(); ok {
@@ -117,62 +113,53 @@ func TestCancellationSharer_ReleasesBatchAndWaitsForHedges(t *testing.T) {
 	}
 }
 
-func TestCancellationSharer_WinReleasesBatch(t *testing.T) {
-	cs := newCancellationSharer(&hedgeBatch{ctx: context.Background()})
-	id, _, _, ok := cs.acquireHedge()
-	if !ok {
-		t.Fatal("acquireHedge: got ok=false")
-	}
-	cs.win(id)
-	cs.mu.Lock()
-	gotBatch := cs.batch
-	cs.mu.Unlock()
-	if gotBatch != nil {
-		t.Error("win did not release the shared batch payload")
-	}
-	cs.releaseHedge()
-	cs.cancelAll()
-	cs.wait()
-}
-
-// newFakeWithInterceptor is like newFake but installs a unary client interceptor.
-func newFakeWithInterceptor(t *testing.T, ic grpc.UnaryClientInterceptor) (*Client, *pstest.Server) {
+// newHedgingPublisher returns a publisher with hedging enabled at the minimum
+// delay and the given number of tokens. If ic is non-nil, it intercepts unary RPCs.
+func newHedgingPublisher(t *testing.T, ic grpc.UnaryClientInterceptor, tokens int64) *Publisher {
 	t.Helper()
 	srv := pstest.NewServer()
-	client, err := NewClient(context.Background(), projName,
+	opts := []option.ClientOption{
 		option.WithEndpoint(srv.Addr),
 		option.WithoutAuthentication(),
 		option.WithGRPCDialOption(grpc.WithTransportCredentials(insecure.NewCredentials())),
-		option.WithGRPCDialOption(grpc.WithUnaryInterceptor(ic)),
 		option.WithTelemetryDisabled(),
-	)
+	}
+	if ic != nil {
+		opts = append(opts, option.WithGRPCDialOption(grpc.WithUnaryInterceptor(ic)))
+	}
+	c, err := NewClient(context.Background(), projName, opts...)
 	if err != nil {
 		srv.Close()
 		t.Fatal(err)
 	}
-	return client, srv
+	t.Cleanup(func() {
+		c.Close()
+		srv.Close()
+	})
+	topic := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), strings.ReplaceAll(t.Name(), "/", "-"))
+	p := mustCreateTopic(t, c, topic)
+	t.Cleanup(p.Stop)
+	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay}
+	p.hedgingTokenBucket.Store(tokens * tokenScaleFactor)
+	return p
 }
+
+func isPublish(method string) bool { return strings.HasSuffix(method, "/Publish") }
 
 // Queued hedgedRequests stay in the hedging queue until their sendAfter time,
 // even when the publish resolves immediately. They must not keep the batch
 // payload alive after flow control has released it.
 func TestPublishHedging_QueueDoesNotRetainPayload(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newFake(t)
-	defer c.Close()
-	defer srv.Close()
-
-	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging-retain", testutil.ProjID())
-	p := mustCreateTopic(t, c, topic)
-	defer p.Stop()
-	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: maxHedgingDelay}
+	p := newHedgingPublisher(t, nil, 0)
+	p.PublishSettings.HedgingSettings.Delay = maxHedgingDelay
 
 	if _, err := publishSingleMessage(ctx, p, "payload").Get(ctx); err != nil {
 		t.Fatalf("Get: %v", err)
 	}
 
 	p.hedgingMu.Lock()
-	queue := append([]*hedgedRequest(nil), p.hedgingQueue...)
+	queue := slices.Clone(p.hedgingQueue)
 	p.hedgingMu.Unlock()
 	if len(queue) != 1 {
 		t.Fatalf("got %d queued hedged requests, want 1 (the not-yet-due initial hedge)", len(queue))
@@ -180,11 +167,8 @@ func TestPublishHedging_QueueDoesNotRetainPayload(t *testing.T) {
 	cs := queue[0].cs
 	cs.mu.Lock()
 	defer cs.mu.Unlock()
-	if !cs.done {
-		t.Error("queued request's cancellationSharer is not done after the publish resolved")
-	}
-	if cs.batch != nil {
-		t.Error("queued hedged request still retains the batch payload after the publish resolved")
+	if !cs.done || cs.batch != nil {
+		t.Errorf("queued request's cancellationSharer: done=%v, batch=%v; want done=true, batch=nil", cs.done, cs.batch)
 	}
 }
 
@@ -194,26 +178,21 @@ func TestPublishHedging_QueueDoesNotRetainPayload(t *testing.T) {
 // results.
 func TestPublishHedging_ResultWaitsForLosingHedges(t *testing.T) {
 	ctx := context.Background()
-	var (
-		publishCalls   int64
-		inflightHedges int64
-		hedgesStarted  int64
-	)
+	var publishCalls, inflightHedges, hedgesStarted atomic.Int64
 	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
-		if !strings.HasSuffix(method, "/Publish") {
+		if !isPublish(method) {
 			return invoker(ctx, method, req, reply, cc, opts...)
 		}
-		if atomic.AddInt64(&publishCalls, 1) == 1 {
+		if publishCalls.Add(1) == 1 {
 			// Original attempt: slow enough for hedges to fire, then succeed.
-			time.Sleep(300 * time.Millisecond)
+			time.Sleep(3 * minHedgingDelay)
 			return invoker(ctx, method, req, reply, cc, opts...)
 		}
 		// Hedged attempt: block until cancelled by the winner, then keep
-		// reading the request for a bit to model an RPC that is still
-		// serializing when cancellation arrives.
-		atomic.AddInt64(&hedgesStarted, 1)
-		atomic.AddInt64(&inflightHedges, 1)
-		defer atomic.AddInt64(&inflightHedges, -1)
+		// reading the request for a bit to model an RPC still serializing.
+		hedgesStarted.Add(1)
+		inflightHedges.Add(1)
+		defer inflightHedges.Add(-1)
 		<-ctx.Done()
 		deadline := time.Now().Add(50 * time.Millisecond)
 		for time.Now().Before(deadline) {
@@ -226,29 +205,20 @@ func TestPublishHedging_ResultWaitsForLosingHedges(t *testing.T) {
 		}
 		return ctx.Err()
 	}
-	c, srv := newFakeWithInterceptor(t, ic)
-	defer c.Close()
-	defer srv.Close()
-
-	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging-wait", testutil.ProjID())
-	p := mustCreateTopic(t, c, topic)
-	defer p.Stop()
-	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: 100 * time.Millisecond}
-	p.hedgingTokenBucket.Store(5 * tokenScaleFactor)
+	p := newHedgingPublisher(t, ic, 5)
 
 	msg := &Message{Data: []byte("payload"), Attributes: map[string]string{"k": "v"}}
 	if _, err := p.Publish(ctx, msg).Get(ctx); err != nil {
 		t.Fatalf("Get: %v", err)
 	}
-	if n := atomic.LoadInt64(&inflightHedges); n != 0 {
+	if n := inflightHedges.Load(); n != 0 {
 		t.Errorf("PublishResult resolved while %d hedged attempt(s) were still in flight", n)
 	}
-	if atomic.LoadInt64(&hedgesStarted) == 0 {
+	if hedgesStarted.Load() == 0 {
 		t.Fatal("no hedged attempts were sent; test did not exercise the race")
 	}
 
-	// Reusing the message after Get must not race with hedged attempts
-	// (detected under -race; concurrent map access would also be fatal).
+	// Reusing the message after Get must not race with hedged attempts.
 	msg.Attributes["k"] = "reused"
 	msg.Data[0] = 'X'
 }
@@ -278,35 +248,16 @@ func publishOperation(t *testing.T, ctx context.Context) *pb.PubsubClientTelemet
 	return tel.GetPublishOperation()
 }
 
-// newHedgingPublisher returns a publisher whose Publish RPCs go through ic,
-// with hedging enabled at the minimum delay and the given number of tokens.
-func newHedgingPublisher(t *testing.T, ic grpc.UnaryClientInterceptor, tokens int64) *Publisher {
-	t.Helper()
-	c, srv := newFakeWithInterceptor(t, ic)
-	t.Cleanup(func() {
-		c.Close()
-		srv.Close()
-	})
-	topic := fmt.Sprintf("projects/%s/topics/%s", testutil.ProjID(), strings.ReplaceAll(t.Name(), "/", "-"))
-	p := mustCreateTopic(t, c, topic)
-	t.Cleanup(p.Stop)
-	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay}
-	p.hedgingTokenBucket.Store(tokens * tokenScaleFactor)
-	return p
-}
-
-func isPublish(method string) bool { return strings.HasSuffix(method, "/Publish") }
-
 // When the original attempt stalls, the hedged attempt's response resolves
 // the publish and the original attempt is cancelled. Both attempts carry the
 // client telemetry header with their attempt number and a shared start time.
 func TestPublishHedging_HedgeWins(t *testing.T) {
 	ctx := context.Background()
 	var (
-		mu         sync.Mutex
-		ops        []*pb.PubsubClientTelemetry_PublishOperation
-		hedgeIDs   []string
-		origCancel = make(chan struct{}, 1)
+		mu            sync.Mutex
+		ops           []*pb.PubsubClientTelemetry_PublishOperation
+		hedgeID       string
+		origCancelled atomic.Bool
 	)
 	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		if !isPublish(method) {
@@ -318,22 +269,15 @@ func TestPublishHedging_HedgeWins(t *testing.T) {
 		mu.Unlock()
 		if op.GetHedgedAttemptCount() == 0 {
 			// Original attempt: stall until the winning hedge cancels it.
-			select {
-			case <-ctx.Done():
-				select {
-				case origCancel <- struct{}{}:
-				default:
-				}
-				return ctx.Err()
-			case <-time.After(10 * time.Second):
-				return status.Error(codes.PermissionDenied, "original attempt was never cancelled")
-			}
+			<-ctx.Done()
+			origCancelled.Store(true)
+			return ctx.Err()
 		}
 		if err := invoker(ctx, method, req, reply, cc, opts...); err != nil {
 			return err
 		}
 		mu.Lock()
-		hedgeIDs = append(hedgeIDs, reply.(*pb.PublishResponse).MessageIds...)
+		hedgeID = reply.(*pb.PublishResponse).MessageIds[0]
 		mu.Unlock()
 		return nil
 	}
@@ -346,12 +290,10 @@ func TestPublishHedging_HedgeWins(t *testing.T) {
 
 	mu.Lock()
 	defer mu.Unlock()
-	if len(hedgeIDs) != 1 || id != hedgeIDs[0] {
-		t.Errorf("got message ID %q, want the hedged attempt's ID (hedge returned %v)", id, hedgeIDs)
+	if id != hedgeID {
+		t.Errorf("got message ID %q, want hedged attempt's ID %q", id, hedgeID)
 	}
-	select {
-	case <-origCancel:
-	default:
+	if !origCancelled.Load() {
 		t.Error("original attempt was not cancelled after the hedge won")
 	}
 	if len(ops) != 2 {
@@ -401,16 +343,14 @@ func TestPublishHedging_HedgesUntilTokensRunOut(t *testing.T) {
 	}
 
 	mu.Lock()
-	got := append([]int(nil), counts...)
+	got := slices.Clone(counts)
 	mu.Unlock()
-	sort.Ints(got)
-	if want := []int{0, 1, 2}; fmt.Sprint(got) != fmt.Sprint(want) {
+	slices.Sort(got)
+	if want := []int{0, 1, 2}; !slices.Equal(got, want) {
 		t.Errorf("got hedged_attempt_counts %v, want %v (original + one hedge per token)", got, want)
 	}
-	p.hedgingMu.Lock()
-	defer p.hedgingMu.Unlock()
-	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket.Load() != want {
-		t.Errorf("got %d milli-tokens after publish, want %d (2 spent, then one 0.1 refill)", p.hedgingTokenBucket.Load(), want)
+	if got, want := p.hedgingTokenBucket.Load(), int64(tokenScaleFactor/10); got != want {
+		t.Errorf("got %d milli-tokens after publish, want %d (2 spent, then one 0.1 refill)", got, want)
 	}
 }
 
@@ -418,10 +358,10 @@ func TestPublishHedging_HedgesUntilTokensRunOut(t *testing.T) {
 // and a successful publish refills it.
 func TestPublishHedging_NoHedgeWithoutTokens(t *testing.T) {
 	ctx := context.Background()
-	var calls int64
+	var calls atomic.Int64
 	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		if isPublish(method) {
-			atomic.AddInt64(&calls, 1)
+			calls.Add(1)
 			time.Sleep(3 * minHedgingDelay)
 		}
 		return invoker(ctx, method, req, reply, cc, opts...)
@@ -431,32 +371,20 @@ func TestPublishHedging_NoHedgeWithoutTokens(t *testing.T) {
 	if _, err := publishSingleMessage(ctx, p, "payload").Get(ctx); err != nil {
 		t.Fatalf("Get: %v", err)
 	}
-	if got := atomic.LoadInt64(&calls); got != 1 {
+	if got := calls.Load(); got != 1 {
 		t.Errorf("got %d Publish attempts with an empty token bucket, want 1", got)
 	}
-	p.hedgingMu.Lock()
-	defer p.hedgingMu.Unlock()
-	if want := int64(tokenScaleFactor / 10); p.hedgingTokenBucket.Load() != want {
-		t.Errorf("got %d milli-tokens after a successful publish, want %d", p.hedgingTokenBucket.Load(), want)
+	if got, want := p.hedgingTokenBucket.Load(), int64(tokenScaleFactor/10); got != want {
+		t.Errorf("got %d milli-tokens after a successful publish, want %d", got, want)
 	}
 }
 
 func TestPublishHedgingWithOrdering(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newFake(t)
-	defer c.Close()
-	defer srv.Close()
+	p := newHedgingPublisher(t, nil, 0)
+	p.EnableMessageOrdering = true
 
-	topic := fmt.Sprintf("projects/%s/topics/test-topic-hedging-ordering", testutil.ProjID())
-	publisher := mustCreateTopic(t, c, topic)
-	defer publisher.Stop()
-
-	publisher.EnableMessageOrdering = true
-	publisher.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay: 100 * time.Millisecond,
-	}
-
-	res := publishSingleMessageWithKey(ctx, publisher, "test", "key")
+	res := publishSingleMessageWithKey(ctx, p, "test", "key")
 	if _, err := res.Get(ctx); !errors.Is(err, errPublisherHedgingAndOrderingEnabled) {
 		t.Errorf("got %v, want errPublisherHedgingAndOrderingEnabled", err)
 	}
@@ -468,70 +396,21 @@ func TestValidateHedgingSettings(t *testing.T) {
 		settings *HedgingSettings
 		wantErr  bool
 	}{
-		{
-			name:     "nil (hedging disabled)",
-			settings: nil,
-			wantErr:  false,
-		},
-		{
-			name:     "defaults (all zero)",
-			settings: &HedgingSettings{},
-			wantErr:  false,
-		},
-		{
-			name: "valid boundary min",
-			settings: &HedgingSettings{
-				Delay:       100 * time.Millisecond,
-				MaxTokens:   1,
-				RefillRatio: 0.001,
-			},
-			wantErr: false,
-		},
-		{
-			name: "valid boundary max",
-			settings: &HedgingSettings{
-				Delay:       10 * time.Second,
-				MaxTokens:   250,
-				RefillRatio: 0.2,
-			},
-			wantErr: false,
-		},
-		{
-			name:     "delay too low (< 100ms)",
-			settings: &HedgingSettings{Delay: 50 * time.Millisecond},
-			wantErr:  true,
-		},
-		{
-			name:     "delay too high (> 10s)",
-			settings: &HedgingSettings{Delay: 11 * time.Second},
-			wantErr:  true,
-		},
-		{
-			name:     "maxTokens negative",
-			settings: &HedgingSettings{MaxTokens: -1},
-			wantErr:  true,
-		},
-		{
-			name:     "maxTokens too high (> 250)",
-			settings: &HedgingSettings{MaxTokens: 251},
-			wantErr:  true,
-		},
-		{
-			name:     "refillRatio too low (< 0.001)",
-			settings: &HedgingSettings{RefillRatio: 0.0005},
-			wantErr:  true,
-		},
-		{
-			name:     "refillRatio too high (> 0.2)",
-			settings: &HedgingSettings{RefillRatio: 0.25},
-			wantErr:  true,
-		},
+		{"nil (hedging disabled)", nil, false},
+		{"defaults (all zero)", &HedgingSettings{}, false},
+		{"valid boundary min", &HedgingSettings{Delay: 100 * time.Millisecond, MaxTokens: 1, RefillRatio: 0.001}, false},
+		{"valid boundary max", &HedgingSettings{Delay: 10 * time.Second, MaxTokens: 250, RefillRatio: 0.2}, false},
+		{"delay too low (< 100ms)", &HedgingSettings{Delay: 50 * time.Millisecond}, true},
+		{"delay too high (> 10s)", &HedgingSettings{Delay: 11 * time.Second}, true},
+		{"maxTokens negative", &HedgingSettings{MaxTokens: -1}, true},
+		{"maxTokens too high (> 250)", &HedgingSettings{MaxTokens: 251}, true},
+		{"refillRatio too low (< 0.001)", &HedgingSettings{RefillRatio: 0.0005}, true},
+		{"refillRatio too high (> 0.2)", &HedgingSettings{RefillRatio: 0.25}, true},
 	}
 
 	for _, tc := range tests {
 		t.Run(tc.name, func(t *testing.T) {
-			err := validateHedgingSettings(tc.settings)
-			if gotErr := err != nil; gotErr != tc.wantErr {
+			if err := validateHedgingSettings(tc.settings); (err != nil) != tc.wantErr {
 				t.Errorf("validateHedgingSettings(%+v) = %v, wantErr %t", tc.settings, err, tc.wantErr)
 			}
 		})
@@ -541,13 +420,8 @@ func TestValidateHedgingSettings(t *testing.T) {
 // Invalid HedgingSettings fail the PublishResult rather than being ignored.
 func TestPublishHedging_InvalidSettingsFailPublish(t *testing.T) {
 	ctx := context.Background()
-	c, srv := newFake(t)
-	defer c.Close()
-	defer srv.Close()
-
-	p := mustCreateTopic(t, c, "projects/proj-id/topics/test-topic-hedging-invalid")
-	defer p.Stop()
-	p.PublishSettings.HedgingSettings = &HedgingSettings{Delay: minHedgingDelay - time.Millisecond}
+	p := newHedgingPublisher(t, nil, 0)
+	p.PublishSettings.HedgingSettings.Delay = minHedgingDelay - time.Millisecond
 
 	if _, err := publishSingleMessage(ctx, p, "payload").Get(ctx); err == nil || !strings.Contains(err.Error(), "HedgingSettings.Delay") {
 		t.Errorf("got err %v, want a HedgingSettings.Delay validation error", err)
@@ -555,36 +429,31 @@ func TestPublishHedging_InvalidSettingsFailPublish(t *testing.T) {
 }
 
 func TestPublishHedging_TokenBucket(t *testing.T) {
-	c, srv := newFake(t)
-	defer c.Close()
-	defer srv.Close()
-
-	topic := "projects/proj-id/topics/test-topic-hedging-bucket"
-	pub := mustCreateTopic(t, c, topic)
-	defer pub.Stop()
-
-	if pub.hedgingTokenBucket.Load() != 0 {
-		t.Fatalf("expected initial hedgingTokenBucket to be 0 (empty), got %d", pub.hedgingTokenBucket.Load())
-	}
-
 	const maxTokens = 50
-	pub.PublishSettings.HedgingSettings = &HedgingSettings{
-		Delay:       100 * time.Millisecond,
-		MaxTokens:   maxTokens,
-		RefillRatio: 0.1,
+	pub := &Publisher{
+		PublishSettings: PublishSettings{
+			HedgingSettings: &HedgingSettings{
+				Delay:       minHedgingDelay,
+				MaxTokens:   maxTokens,
+				RefillRatio: 0.1,
+			},
+		},
 	}
+	if got := pub.hedgingTokenBucket.Load(); got != 0 {
+		t.Fatalf("expected initial hedgingTokenBucket to be 0 (empty), got %d", got)
+	}
+
 	pub.initHedging()
 	// Settings are snapshotted by initHedging; later changes have no effect.
 	pub.PublishSettings.HedgingSettings.MaxTokens = 1
 	pub.PublishSettings.HedgingSettings.RefillRatio = 0.2
 
-	// Replenishing 10 times with ratio 0.1 must reach exactly 1 full token (1000 milli-tokens)
-	// without IEEE-754 float64 accumulation drift (where 0.1 * 10 == 0.9999999999999999 < 1.0).
+	// Replenishing 10 times with ratio 0.1 must reach 1 full token without float64 drift.
 	for i := 0; i < 10; i++ {
 		pub.replenishHedgingTokens()
 	}
-	if pub.hedgingTokenBucket.Load() != tokenScaleFactor {
-		t.Errorf("expected hedgingTokenBucket after 10 replenishes at 0.1 ratio to be %d, got %d", tokenScaleFactor, pub.hedgingTokenBucket.Load())
+	if got := pub.hedgingTokenBucket.Load(); got != tokenScaleFactor {
+		t.Errorf("after 10 replenishes at 0.1 ratio: got %d milli-tokens, want %d", got, tokenScaleFactor)
 	}
 
 	// Refills are capped at MaxTokens, including a partial refill that would overshoot.
@@ -592,12 +461,12 @@ func TestPublishHedging_TokenBucket(t *testing.T) {
 	pub.hedgingTokenBucket.Store(maxMilli - tokenScaleFactor/20)
 	for i := 0; i < 2; i++ {
 		pub.replenishHedgingTokens()
-		if pub.hedgingTokenBucket.Load() != maxMilli {
-			t.Errorf("replenish %d near the cap: got %d milli-tokens, want %d (MaxTokens)", i, pub.hedgingTokenBucket.Load(), maxMilli)
+		if got := pub.hedgingTokenBucket.Load(); got != maxMilli {
+			t.Errorf("replenish %d near the cap: got %d milli-tokens, want %d (MaxTokens)", i, got, maxMilli)
 		}
 	}
 
-	// Acquiring takes exactly one whole token and fails below one token.
+	// Acquiring takes one whole token and fails below one token.
 	pub.hedgingTokenBucket.Store(tokenScaleFactor + tokenScaleFactor/2)
 	if !pub.tryAcquireHedgingToken() {
 		t.Error("tryAcquireHedgingToken with 1.5 tokens: got false, want true")
@@ -605,7 +474,7 @@ func TestPublishHedging_TokenBucket(t *testing.T) {
 	if pub.tryAcquireHedgingToken() {
 		t.Error("tryAcquireHedgingToken with 0.5 tokens: got true, want false")
 	}
-	if got, want := pub.hedgingTokenBucket.Load(), tokenScaleFactor/2; got != want {
+	if got, want := pub.hedgingTokenBucket.Load(), int64(tokenScaleFactor/2); got != want {
 		t.Errorf("got %d milli-tokens after acquiring, want %d", got, want)
 	}
 }
@@ -645,16 +514,13 @@ func TestPublishHedging_TokenBucketConcurrent(t *testing.T) {
 
 func TestPublishHedging_DiscardsAllHedgedErrors(t *testing.T) {
 	ctx := context.Background()
-	var attemptCount int32
+	var attempts atomic.Int32
 	ic := func(ctx context.Context, method string, req, reply interface{}, cc *grpc.ClientConn, invoker grpc.UnaryInvoker, opts ...grpc.CallOption) error {
 		if isPublish(method) {
-			n := atomic.AddInt32(&attemptCount, 1)
-			if n == 1 {
-				// Delay the original attempt so the hedged attempt fires and finishes first.
+			if attempts.Add(1) == 1 {
 				time.Sleep(180 * time.Millisecond)
 				return invoker(ctx, method, req, reply, cc, opts...)
 			}
-			// Hedged attempt fails with a permanent error (PermissionDenied); it must be discarded.
 			return status.Error(codes.PermissionDenied, "hedged permanent error should be discarded")
 		}
 		return invoker(ctx, method, req, reply, cc, opts...)
@@ -662,13 +528,10 @@ func TestPublishHedging_DiscardsAllHedgedErrors(t *testing.T) {
 	pub := newHedgingPublisher(t, ic, 1)
 
 	id, err := pub.Publish(ctx, &Message{Data: []byte("hello")}).Get(ctx)
-	if err != nil {
-		t.Fatalf("expected original publish attempt to succeed after discarding hedged PermissionDenied error, got err: %v", err)
+	if err != nil || id == "" {
+		t.Fatalf("Get: got (%q, %v), want non-empty ID and nil error", id, err)
 	}
-	if id == "" {
-		t.Errorf("expected non-empty message ID")
-	}
-	if got := atomic.LoadInt32(&attemptCount); got < 2 {
+	if got := attempts.Load(); got < 2 {
 		t.Errorf("expected at least 2 RPC attempts (1 original + 1 hedged), got %d", got)
 	}
 }

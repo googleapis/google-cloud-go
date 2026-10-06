@@ -40,7 +40,6 @@ import (
 	"google.golang.org/grpc"
 	"google.golang.org/grpc/encoding/gzip"
 	"google.golang.org/grpc/metadata"
-	"google.golang.org/protobuf/encoding/protowire"
 	"google.golang.org/protobuf/proto"
 	"google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -86,33 +85,15 @@ type Publisher struct {
 	// disabling tracing even when a tracer provider is detectd.
 	enableTracing bool
 
-	// if non-zero, publish requests will be hedged after this delay.
-	// The first request will be sent immediately, and if it has not
-	// completed after the hedging delay, a second request will be sent.
-	// The first response to arrive will be used, and the other request
-	// will be cancelled.
-	hedgingDelay time.Duration
-
-	// hedgingMaxMilliTokens and hedgingRefillMilliTokens are the token
-	// bucket's capacity and per-success refill, scaled by tokenScaleFactor.
-	// Like hedgingDelay, they are snapshotted from HedgingSettings by
-	// initHedging and never change afterwards.
+	hedgingDelay             time.Duration
 	hedgingMaxMilliTokens    int64
 	hedgingRefillMilliTokens int64
-
-	// hedgingSettingsErr is the validation error for HedgingSettings, if any,
-	// computed once by initHedging. Publish fails with it when non-nil.
-	hedgingSettingsErr error
-
-	// hedgingTokenBucket stores the current token count scaled by tokenScaleFactor
-	// (1 token = 1,000 units), limiting the number of hedged requests that can be sent.
-	// It starts empty to prevent unnecessary hedging during startup.
-	hedgingTokenBucket atomic.Int64
-
-	hedgingMu      sync.Mutex
-	hedgingQueue   []*hedgedRequest
-	hedgingTimer   *time.Timer
-	hedgingStopped bool
+	hedgingSettingsErr       error
+	hedgingTokenBucket       atomic.Int64 // scaled by tokenScaleFactor; starts empty
+	hedgingMu                sync.Mutex
+	hedgingQueue             []*hedgedRequest
+	hedgingTimer             *time.Timer
+	hedgingStopped           bool
 }
 
 // PublishSettings control the bundling of published messages.
@@ -147,12 +128,8 @@ type PublishSettings struct {
 	// are compressed for transport. Only takes effect if EnableCompression is true.
 	CompressionBytesThreshold int
 
-	// HedgingSettings enables publish hedging when non-nil. Hedging sends
-	// additional copies of a slow publish request to reduce tail latency, and
-	// can result in duplicate messages. See HedgingSettings for details.
-	//
-	// Defaults to nil (hedging disabled). Hedging cannot be used with
-	// Publisher.EnableMessageOrdering.
+	// HedgingSettings enables publish hedging when non-nil. See HedgingSettings
+	// for details. Defaults to nil (hedging disabled).
 	HedgingSettings *HedgingSettings
 }
 
@@ -445,25 +422,16 @@ func (t *Publisher) initBundler() {
 	t.initHedging()
 }
 
-// encodePubsubClientTelemetry serializes PubsubClientTelemetry (PublishOperation with
-// hedged_attempt_count=1 and publish_start_time=2) and base64-encodes it for the
-// x-goog-pubsub-client-telemetry gRPC metadata header.
 func encodePubsubClientTelemetry(hedgedAttemptCount int, startTime time.Time) string {
-	var publishOp []byte
-	if hedgedAttemptCount > 0 {
-		publishOp = protowire.AppendTag(publishOp, 1, protowire.VarintType)
-		publishOp = protowire.AppendVarint(publishOp, uint64(int32(hedgedAttemptCount)))
-	}
-	if !startTime.IsZero() {
-		if tsBytes, err := proto.Marshal(timestamppb.New(startTime)); err == nil {
-			publishOp = protowire.AppendTag(publishOp, 2, protowire.BytesType)
-			publishOp = protowire.AppendBytes(publishOp, tsBytes)
-		}
-	}
-	var telemetry []byte
-	telemetry = protowire.AppendTag(telemetry, 1, protowire.BytesType)
-	telemetry = protowire.AppendBytes(telemetry, publishOp)
-	return base64.StdEncoding.EncodeToString(telemetry)
+	b, _ := proto.Marshal(&pb.PubsubClientTelemetry{
+		Operation: &pb.PubsubClientTelemetry_PublishOperation_{
+			PublishOperation: &pb.PubsubClientTelemetry_PublishOperation{
+				HedgedAttemptCount: int32(hedgedAttemptCount),
+				PublishStartTime:   timestamppb.New(startTime),
+			},
+		},
+	})
+	return base64.StdEncoding.EncodeToString(b)
 }
 
 // ErrPublishingPaused is a custom error indicating that the publish paused for the specified ordering key.
