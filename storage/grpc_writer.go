@@ -228,13 +228,15 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		lastSegmentStart: lastSegmentStart,
 		sendableUnits:    sendableUnits,
 		bufUnsentIdx:     0,
-		bufFlushedIdx:    -1, // Handle flushes to length 0
+		bufFlushedIdx:    0,
 		bufBaseOffset:    0,
+		awaitingFirstAck: true,
 
-		chunkRetryDeadline:   chunkRetryDeadline,
+		budget: chunkRetryBudget{
+			deadline: chunkRetryDeadline,
+			now:      time.Now,
+		},
 		chunkTransferTimeout: params.chunkTransferTimeout,
-		abandonRetriesTime:   time.Time{},
-		attempts:             0,
 		lastErr:              nil,
 		streamSender:         nil,
 
@@ -260,7 +262,7 @@ func (c *grpcStorageClient) OpenWriter(params *openWriterParams, opts ...storage
 		w.streamResult = checkCanceled(run(w.preRunCtx, func(ctx context.Context) error {
 			w.lastErr = w.writeLoop(ctx)
 			return w.lastErr
-		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.consumeProgress)))
+		}, writerRetry, w.settings.idempotent, withOperation("WriteObject"), withBucket(w.bucket), withObject(w.attrs.Name), withProgressReset(w.budget.consumeProgress)))
 		w.setError(w.streamResult)
 		close(w.donec)
 	}()
@@ -310,32 +312,109 @@ type gRPCWriter struct {
 	bufUnsentIdx     int
 	bufFlushedIdx    int
 	bufBaseOffset    int64
+	// awaitingFirstAck is true until the server has confirmed any offset,
+	// including offset 0. Flush waits for that first confirmation.
+	awaitingFirstAck bool
 
-	chunkRetryDeadline   time.Duration
+	budget               chunkRetryBudget
 	chunkTransferTimeout time.Duration
-	abandonRetriesTime   time.Time
-	attempts             int
-	progressMade         bool
 	lastErr              error
 	streamSender         gRPCBidiWriteBufferSender
 
 	// Communication from the user goroutine to the stream management goroutines
-	writesChan         chan gRPCWriterCommand
-	currentCommand     gRPCWriterCommand
-	forcedStreamResult error
-	streamResult       error
-	donec              chan struct{}
+	writesChan     chan gRPCWriterCommand
+	currentCommand gRPCWriterCommand
+	streamResult   error
+	donec          chan struct{}
 }
 
-// consumeProgress reports whether the writer made strict forward progress
-// since the last call, and clears the flag. run() uses it to reset the
-// attempt count and backoff for the next chunk.
-func (w *gRPCWriter) consumeProgress() bool {
-	if w.progressMade {
-		w.progressMade = false
+// chunkRetryBudget bounds how long the writer keeps retrying without the
+// server confirming new bytes. The stopwatch runs only while data is in
+// flight (see gRPCWriter.isActive) and restarts whenever a completion
+// confirms strictly more bytes than before.
+//
+// All methods must be called from the writer goroutine.
+type chunkRetryBudget struct {
+	// deadline is the configured ChunkRetryDeadline. Zero disables the budget.
+	deadline time.Duration
+	// now returns the current time; nil means time.Now.
+	now func() time.Time
+
+	// expiresAt is zero while the stopwatch is stopped.
+	expiresAt time.Time
+	// attempts counts writeLoop invocations since the last confirmed progress.
+	attempts int
+	// progressMade is set by recordProgress and cleared by consumeProgress.
+	progressMade bool
+}
+
+func (b *chunkRetryBudget) clock() time.Time {
+	if b.now == nil {
+		return time.Now()
+	}
+	return b.now()
+}
+
+func (b *chunkRetryBudget) enabled() bool { return b.deadline > 0 }
+
+// start arms the stopwatch if it is not already running.
+func (b *chunkRetryBudget) start() {
+	if b.enabled() && b.expiresAt.IsZero() {
+		b.expiresAt = b.clock().Add(b.deadline)
+	}
+}
+
+// stop clears the stopwatch so idle time does not count against the chunk.
+func (b *chunkRetryBudget) stop() { b.expiresAt = time.Time{} }
+
+// expired reports whether a running stopwatch has elapsed.
+func (b *chunkRetryBudget) expired() bool {
+	return !b.expiresAt.IsZero() && b.clock().After(b.expiresAt)
+}
+
+// recordProgress resets the budget after the server confirmed new bytes and
+// restarts the stopwatch if data is still in flight.
+func (b *chunkRetryBudget) recordProgress(stillActive bool) {
+	b.stop()
+	b.attempts = 0
+	b.progressMade = true
+	if stillActive {
+		b.start()
+	}
+}
+
+// consumeProgress reports and clears whether progress was recorded since the
+// last call. run() uses it, via withProgressReset, to reset its own attempt
+// counter and backoff.
+func (b *chunkRetryBudget) consumeProgress() bool {
+	if b.progressMade {
+		b.progressMade = false
 		return true
 	}
 	return false
+}
+
+// chunkRetryDeadlineError is returned by writeLoop once ChunkRetryDeadline
+// elapses without the server confirming new bytes. It wraps the last transport
+// error for errors.Is/As; writerRetryConfig treats it as terminal regardless
+// of what it wraps.
+type chunkRetryDeadlineError struct {
+	deadline time.Duration
+	attempts int
+	err      error
+}
+
+func (e *chunkRetryDeadlineError) Error() string {
+	return fmt.Sprintf("storage: retry deadline of %s reached after %v attempts; last error: %v", e.deadline, e.attempts, e.err)
+}
+
+func (e *chunkRetryDeadlineError) Unwrap() error { return e.err }
+
+// isChunkRetryDeadlineError reports whether err is, or wraps, a
+// chunkRetryDeadlineError.
+func isChunkRetryDeadlineError(err error) bool {
+	var target *chunkRetryDeadlineError
+	return errors.As(err, &target)
 }
 
 func (w *gRPCWriter) pickBufferSender() gRPCBidiWriteBufferSender {
@@ -375,9 +454,7 @@ func (w *gRPCWriter) sendBufferToTarget(cs gRPCWriterCommandHandleChans, buf []b
 			q = flushAt - sent
 		}
 
-		if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
-			w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-		}
+		w.budget.start()
 
 		req := gRPCBidiWriteRequest{
 			buf:    buf[:q],
@@ -408,17 +485,14 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 		w.setObj(newObjectFromProto(c.resource))
 	}
 
-	// Already handled this completion
-	if c.flushOffset <= w.bufBaseOffset+int64(w.bufFlushedIdx) {
+	// prevConfirmed is the highest offset GCS had confirmed before this
+	// completion; it is meaningless until the first completion.
+	prevConfirmed := w.bufBaseOffset + int64(w.bufFlushedIdx)
+	if !w.awaitingFirstAck && c.flushOffset <= prevConfirmed {
+		// Already handled this completion.
 		return
 	}
-
-	// prevConfirmed is the highest offset GCS had confirmed before this
-	// completion. bufFlushedIdx is -1 until the first completion, so clamp it
-	// to 0. Only a completion past prevConfirmed counts as progress: a
-	// reconnect that reports the same persisted size must not reset the retry
-	// budget.
-	prevConfirmed := w.bufBaseOffset + int64(max(0, w.bufFlushedIdx))
+	w.awaitingFirstAck = false
 
 	w.bufFlushedIdx = int(c.flushOffset - w.bufBaseOffset)
 	if w.bufFlushedIdx >= len(w.buf) {
@@ -432,16 +506,10 @@ func (w *gRPCWriter) handleCompletion(c gRPCBidiWriteCompletion) {
 	w.setSize(c.flushOffset)
 	w.progress(c.flushOffset)
 
+	// A reconnect that reports the same persisted size is not progress and
+	// must not reset the retry budget.
 	if c.flushOffset > prevConfirmed || c.resource != nil {
-		// We made forward progress on the network! Reset the retry stopwatch.
-		w.abandonRetriesTime = time.Time{}
-		w.attempts = 0
-		w.progressMade = true
-
-		// Restart the stopwatch if there is still more data waiting to be sent.
-		if w.chunkRetryDeadline > 0 && w.isActive() {
-			w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-		}
+		w.budget.recordProgress(w.isActive())
 	}
 }
 
@@ -477,7 +545,6 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 			w.buf = w.buf[:origLen+len(v.p)]
 			copy(w.buf[origLen:], v.p)
 			close(v.done)
-			break
 		case *gRPCWriterCommandClose:
 			// If we get here, data (if any) fits in w.buf, so we can force oneshot.
 			w.forceOneShot = true
@@ -495,19 +562,15 @@ func (w *gRPCWriter) gatherFirstBuffer() error {
 }
 
 func (w *gRPCWriter) writeLoop(ctx context.Context) error {
-	w.attempts++
-	if w.chunkRetryDeadline > 0 {
-		if w.isActive() {
-			if w.abandonRetriesTime.IsZero() {
-				w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-			}
-			// Return an error if we've been waiting for a single operation for too long.
-			if time.Now().After(w.abandonRetriesTime) {
-				return fmt.Errorf("storage: retry deadline of %s reached after %v attempts; last error: %v", w.chunkRetryDeadline, w.attempts, w.lastErr)
-			}
-		} else {
-			w.abandonRetriesTime = time.Time{}
+	w.budget.attempts++
+	if w.isActive() {
+		w.budget.start()
+		// Give up if we have been retrying the same chunk for too long.
+		if w.budget.expired() {
+			return &chunkRetryDeadlineError{deadline: w.budget.deadline, attempts: w.budget.attempts, err: w.lastErr}
 		}
+	} else {
+		w.budget.stop()
 	}
 	// Allow each request in w.buf to be sent and result in a completion without
 	// blocking.
@@ -567,9 +630,9 @@ Loop:
 					return err
 				}
 				w.currentCommand = nil
-				// Pause the stopwatch if we are completely idle and waiting for the user's next Write() call.
-				if w.chunkRetryDeadline > 0 && !w.isActive() {
-					w.abandonRetriesTime = time.Time{}
+				// Stop the stopwatch if we are completely idle and waiting for the user's next Write() call.
+				if !w.isActive() {
+					w.budget.stop()
 				}
 			}
 			select {
@@ -598,9 +661,7 @@ Loop:
 
 	if closeErr.err == nil {
 		// Clean shutdown. Send any remaining tail.
-		if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
-			w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-		}
+		w.budget.start()
 
 		req := gRPCBidiWriteRequest{
 			buf:         w.buf[w.bufUnsentIdx:],
@@ -726,14 +787,11 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	wblen := len(w.buf)
 	allKnownBytes := wblen + len(c.p)
 	fullBufs := allKnownBytes / cap(w.buf)
-	partialBuf := allKnownBytes % cap(w.buf)
-	if partialBuf == 0 {
+	if allKnownBytes%cap(w.buf) == 0 {
 		// If we would exactly fill some number of cap(w.buf) units, we don't need
 		// to block on the flush for the last one. We know that c.p is not empty, so
-		// allKnownBytes is not 0 and therefore if partialBuf is 0, fullBufs is not
-		// 0.
+		// allKnownBytes is not 0 and therefore fullBufs is not 0.
 		fullBufs--
-		partialBuf = cap(w.buf)
 	}
 
 	if fullBufs == 0 {
@@ -773,9 +831,8 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	firstFullBufFromCmd := cap(w.buf) - len(w.buf)
 
 	sending := w.buf[w.bufUnsentIdx:]
-	sentOffset, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
-		w.handleCompletion)
-	if !ok {
+	if _, ok := w.sendBufferToTarget(cs, sending, w.bufBaseOffset+int64(w.bufUnsentIdx), cap(sending),
+		w.handleCompletion); !ok {
 		return w.streamSender.err()
 	}
 
@@ -798,7 +855,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		cmdBaseOffset = bufTail
 	}
 	offset := cmdBaseOffset
-	sentOffset, ok = w.sendBufferToTarget(cs, cmdBuf, offset, firstFullBufFromCmd,
+	sentOffset, ok := w.sendBufferToTarget(cs, cmdBuf, offset, firstFullBufFromCmd,
 		trimCommandBuf)
 	if !ok {
 		return w.streamSender.err()
@@ -829,7 +886,7 @@ func (c *gRPCWriterCommandWrite) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		return w.streamSender.err()
 	}
 	ackOutstanding := true
-	for ackOutstanding || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < offset {
+	for ackOutstanding || w.awaitingFirstAck || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < offset {
 		select {
 		case cmp, ok := <-cs.completions:
 			if !ok {
@@ -900,9 +957,7 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 	// We know that there are at most w.writeQuantum bytes in
 	// w.buf[w.bufUnsentIdx:], because we send anything more inline when handling
 	// a write.
-	if w.chunkRetryDeadline > 0 && w.abandonRetriesTime.IsZero() {
-		w.abandonRetriesTime = time.Now().Add(w.chunkRetryDeadline)
-	}
+	w.budget.start()
 
 	req := gRPCBidiWriteRequest{
 		buf:         w.buf[w.bufUnsentIdx:],
@@ -914,7 +969,7 @@ func (c *gRPCWriterCommandFlush) handle(w *gRPCWriter, cs gRPCWriterCommandHandl
 		return w.streamSender.err()
 	}
 	// Successful flushes will clear w.buf.
-	for (w.bufBaseOffset + int64(w.bufFlushedIdx)) < flushTarget {
+	for w.awaitingFirstAck || (w.bufBaseOffset+int64(w.bufFlushedIdx)) < flushTarget {
 		c, ok := <-cs.completions
 		if !ok {
 			// Stream failure
@@ -1391,7 +1446,6 @@ type gRPCAppendBidiWriteBufferSender struct {
 
 	firstMessage    *storagepb.BidiWriteObjectRequest
 	finalizeOnClose bool
-	objResource     *storagepb.Object
 
 	// Checksum related settings.
 	sendCRC32C          bool
@@ -1766,6 +1820,9 @@ func (w *gRPCWriter) writerRetryConfig() *retryConfig {
 			// RetryNever is configured.
 			newr.policy = RetryAlways
 			newr.shouldRetry = func(err error, retryCtx *RetryContext) bool {
+				if isChunkRetryDeadlineError(err) {
+					return false
+				}
 				return errors.Is(err, bidiWriteObjectRedirectionError{})
 			}
 		}
@@ -1779,6 +1836,11 @@ func (w *gRPCWriter) writerRetryConfig() *retryConfig {
 	// RetryIdempotent.
 	newr.policy = RetryAlways
 	newr.shouldRetry = func(err error, retryCtx *RetryContext) bool {
+		// The per-chunk budget is exhausted; retrying would re-enter writeLoop
+		// with the same expired budget. Checked before any user ErrorFunc.
+		if isChunkRetryDeadlineError(err) {
+			return false
+		}
 		if w.append && errors.Is(err, bidiWriteObjectRedirectionError{}) {
 			return true
 		}

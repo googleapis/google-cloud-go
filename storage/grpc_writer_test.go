@@ -469,161 +469,233 @@ func (i *instantFailSender) canResumeSession() bool {
 	return i.canResume
 }
 
+// fakeClock is a manually advanced clock for chunkRetryBudget. Now may be
+// called from the writer goroutine while the test goroutine calls Advance.
+type fakeClock struct {
+	mu sync.Mutex
+	t  time.Time
+}
+
+func newFakeClock() *fakeClock {
+	return &fakeClock{t: time.Date(2026, time.January, 1, 0, 0, 0, 0, time.UTC)}
+}
+
+func (c *fakeClock) Now() time.Time {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	return c.t
+}
+
+func (c *fakeClock) Advance(d time.Duration) {
+	c.mu.Lock()
+	defer c.mu.Unlock()
+	c.t = c.t.Add(d)
+}
+
+func testBudget(clk *fakeClock, deadline time.Duration) chunkRetryBudget {
+	return chunkRetryBudget{deadline: deadline, now: clk.Now}
+}
+
+// progressRecorder captures w.progress callbacks so a test can wait for the
+// writer goroutine to finish handleCompletion. A command sent after waitFor
+// observes the post-completion state.
+type progressRecorder struct {
+	ch chan int64
+}
+
+func newProgressRecorder() *progressRecorder {
+	return &progressRecorder{ch: make(chan int64, 64)}
+}
+
+func (p *progressRecorder) report(n int64) { p.ch <- n }
+
+func (p *progressRecorder) waitFor(t *testing.T, offset int64) {
+	t.Helper()
+	timeout := time.After(5 * time.Second)
+	for {
+		select {
+		case got := <-p.ch:
+			if got >= offset {
+				return
+			}
+		case <-timeout:
+			t.Fatalf("timed out waiting for progress to reach %d", offset)
+		}
+	}
+}
+
+// attemptWriteLoop mirrors the closure OpenWriter hands to run(): it records
+// the result in w.lastErr so a later chunkRetryDeadlineError wraps it.
+func attemptWriteLoop(ctx context.Context, w *gRPCWriter) error {
+	w.lastErr = w.writeLoop(ctx)
+	return w.lastErr
+}
+
 func TestGRPCWriter_ChunkRetryDeadline_TimeoutEnforcedAcrossRetries(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 100 * time.Millisecond
-	sender := &instantFailSender{errResult: errors.New("transient network error")}
+	transientErr := errors.New("transient network error")
+	sender := &instantFailSender{errResult: transientErr}
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufUnsentIdx:       100, // Makes isActive() == true.
-		bufFlushedIdx:      0,
-		buf:                make([]byte, 100),
-		sendableUnits:      1,
-		writeQuantum:       100,
-		chunkSize:          100,
-		writesChan:         make(chan gRPCWriterCommand, 1),
+		budget:        testBudget(clk, deadline),
+		streamSender:  sender,
+		settings:      &settings{},
+		bufUnsentIdx:  100, // Makes isActive() == true.
+		bufFlushedIdx: 0,
+		buf:           make([]byte, 100),
+		sendableUnits: 1,
+		writeQuantum:  100,
+		chunkSize:     100,
+		writesChan:    make(chan gRPCWriterCommand, 1),
 	}
 
-	var err error
-	for i := 0; i < 20; i++ {
-		err = w.writeLoop(ctx)
-		if err != nil && strings.Contains(err.Error(), "retry deadline") {
-			break
-		}
-		time.Sleep(20 * time.Millisecond)
+	// Attempt 1 arms the stopwatch and fails.
+	if err := attemptWriteLoop(ctx, w); !errors.Is(err, transientErr) {
+		t.Fatalf("attempt 1: got %v, want %v", err, transientErr)
 	}
 
-	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
-		t.Fatalf("expected retry deadline error, got: %v", err)
+	// Attempt 2, just inside the budget, must still be a plain transport error.
+	clk.Advance(deadline - time.Millisecond)
+	if err := attemptWriteLoop(ctx, w); isChunkRetryDeadlineError(err) {
+		t.Fatalf("attempt 2: deadline reached too early: %v", err)
 	}
-	if w.attempts < 2 {
-		t.Errorf("expected multiple attempts before deadline was reached, got %d", w.attempts)
+
+	// Attempt 3, just past the budget, must fail with the deadline error.
+	clk.Advance(2 * time.Millisecond)
+	err := attemptWriteLoop(ctx, w)
+	var deadlineErr *chunkRetryDeadlineError
+	if !errors.As(err, &deadlineErr) {
+		t.Fatalf("attempt 3: got %T %v, want *chunkRetryDeadlineError", err, err)
+	}
+	if deadlineErr.attempts != 3 {
+		t.Errorf("deadlineErr.attempts = %d, want 3", deadlineErr.attempts)
+	}
+	if deadlineErr.deadline != deadline {
+		t.Errorf("deadlineErr.deadline = %v, want %v", deadlineErr.deadline, deadline)
+	}
+	// The transport error is reachable through errors.Is and the message keeps
+	// the "retry deadline" phrase that integration tests match.
+	if !errors.Is(err, transientErr) {
+		t.Errorf("errors.Is(err, transientErr) = false; err: %v", err)
+	}
+	if !strings.Contains(err.Error(), "retry deadline") {
+		t.Errorf("err = %q, want it to mention \"retry deadline\"", err)
 	}
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_TimeoutResetOnProgress(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 200 * time.Millisecond
-	sender := &instantFailSender{errResult: errors.New("transient network error")}
+	transientErr := errors.New("transient network error")
+	sender := &instantFailSender{errResult: transientErr}
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufBaseOffset:      0,
-		bufUnsentIdx:       100,
-		bufFlushedIdx:      0,
-		buf:                make([]byte, 100),
-		sendableUnits:      1,
-		writeQuantum:       100,
-		chunkSize:          100,
-		writesChan:         make(chan gRPCWriterCommand, 1),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
+		budget:        testBudget(clk, deadline),
+		streamSender:  sender,
+		settings:      &settings{},
+		bufBaseOffset: 0,
+		bufUnsentIdx:  100,
+		bufFlushedIdx: 0,
+		buf:           make([]byte, 100),
+		sendableUnits: 1,
+		writeQuantum:  100,
+		chunkSize:     100,
+		writesChan:    make(chan gRPCWriterCommand, 1),
+		setSize:       func(int64) {},
+		progress:      func(int64) {},
 	}
 
-	// Attempt 1: Start the clock.
-	_ = w.writeLoop(ctx)
+	// Attempt 1: start the clock.
+	_ = attemptWriteLoop(ctx, w)
 
-	// Sleep to consume more than half the deadline.
-	time.Sleep(120 * time.Millisecond)
+	// Consume more than half the deadline.
+	clk.Advance(120 * time.Millisecond)
 
-	// Attempt 2: Clock should not be expired yet.
-	err := w.writeLoop(ctx)
-	if err != nil && strings.Contains(err.Error(), "retry deadline") {
-		t.Fatalf("deadline reached too early: %v", err)
-	}
-	if err == nil || !strings.Contains(err.Error(), "transient network error") {
-		t.Fatalf("expected transient network error, got: %v", err)
+	// Attempt 2: clock should not be expired yet.
+	if err := attemptWriteLoop(ctx, w); !errors.Is(err, transientErr) || isChunkRetryDeadlineError(err) {
+		t.Fatalf("attempt 2: got %v, want %v", err, transientErr)
 	}
 
-	// Simulate forward progress by invoking handleCompletion.
+	// Forward progress resets the stopwatch.
 	w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 50})
 
-	// Sleep to consume another portion of the original deadline.
-	// If the timer wasn't reset, the next writeLoop would fail since
-	// 120ms + 120ms = 240ms > 200ms.
-	time.Sleep(120 * time.Millisecond)
+	// Another 120ms: 240ms since the original start, but only 120ms since the
+	// reset.
+	clk.Advance(120 * time.Millisecond)
 
-	// Attempt 3: Clock was reset, so this should NOT fail with deadline exceeded.
-	err = w.writeLoop(ctx)
-	if err != nil && strings.Contains(err.Error(), "retry deadline") {
-		t.Fatalf("timer was not reset by forward progress, got deadline error: %v", err)
-	}
-	if err == nil || !strings.Contains(err.Error(), "transient network error") {
-		t.Fatalf("expected transient network error, got: %v", err)
+	// Attempt 3: must not be a deadline error.
+	if err := attemptWriteLoop(ctx, w); !errors.Is(err, transientErr) || isChunkRetryDeadlineError(err) {
+		t.Fatalf("attempt 3: timer was not reset by forward progress: %v", err)
 	}
 
-	// Attempt 4: Wait for the reset timer to actually expire.
-	time.Sleep(100 * time.Millisecond)
-	err = w.writeLoop(ctx)
-	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
-		t.Fatalf("expected retry deadline error after reset timer expired, got: %v", err)
+	// Attempt 4: the reset stopwatch has now expired (220ms > 200ms).
+	clk.Advance(100 * time.Millisecond)
+	if err := attemptWriteLoop(ctx, w); !isChunkRetryDeadlineError(err) {
+		t.Fatalf("attempt 4: got %v, want chunkRetryDeadlineError", err)
 	}
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_TimeoutPausedOnIdle(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 100 * time.Millisecond
 	sender := &instantFailSender{errResult: errors.New("transient network error")}
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufUnsentIdx:       0, // Makes isActive() == false.
-		bufFlushedIdx:      0,
-		buf:                make([]byte, 0, 100),
-		sendableUnits:      1,
-		writeQuantum:       100,
-		chunkSize:          100,
-		writesChan:         make(chan gRPCWriterCommand, 1),
+		budget:        testBudget(clk, deadline),
+		streamSender:  sender,
+		settings:      &settings{},
+		bufUnsentIdx:  0, // Makes isActive() == false.
+		bufFlushedIdx: 0,
+		buf:           make([]byte, 0, 100),
+		sendableUnits: 1,
+		writeQuantum:  100,
+		chunkSize:     100,
+		writesChan:    make(chan gRPCWriterCommand, 1),
 	}
 
-	// Call writeLoop. Because isActive() is false, it should set abandonRetriesTime to zero.
-	_ = w.writeLoop(ctx)
-
-	if !w.abandonRetriesTime.IsZero() {
-		t.Fatalf("expected timer to be zeroed when idle, but got: %v", w.abandonRetriesTime)
+	// Because isActive() is false, writeLoop must leave the stopwatch stopped.
+	_ = attemptWriteLoop(ctx, w)
+	if !w.budget.expiresAt.IsZero() {
+		t.Fatalf("expected stopwatch to be stopped when idle, got expiresAt=%v", w.budget.expiresAt)
 	}
 
-	// Wait way past the deadline.
-	time.Sleep(150 * time.Millisecond)
-
-	// Next call should still not fail with deadline exceeded.
-	err := w.writeLoop(ctx)
-	if err != nil && strings.Contains(err.Error(), "retry deadline") {
+	// Way past the deadline, still idle: must not be a deadline error.
+	clk.Advance(10 * deadline)
+	if err := attemptWriteLoop(ctx, w); isChunkRetryDeadlineError(err) {
 		t.Fatalf("expected no deadline error when idle, got: %v", err)
 	}
 }
 
+// checkTimerCmd reports the budget's expiry from the writer goroutine.
 type checkTimerCmd struct {
 	timerCh chan time.Time
 }
 
 func (c *checkTimerCmd) handle(w *gRPCWriter, cs gRPCWriterCommandHandleChans) error {
-	c.timerCh <- w.abandonRetriesTime
+	c.timerCh <- w.budget.expiresAt
 	return nil
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_TimerStartsOnlyWhenBufferFills(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 100 * time.Millisecond
 	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: true}
 
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufUnsentIdx:       0,
-		bufFlushedIdx:      0,
-		buf:                make([]byte, 0, 100),
-		sendableUnits:      1,
-		writeQuantum:       100,
-		chunkSize:          100,
-		writesChan:         make(chan gRPCWriterCommand, 3),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
+		budget:        testBudget(clk, deadline),
+		streamSender:  sender,
+		settings:      &settings{},
+		bufUnsentIdx:  0,
+		bufFlushedIdx: 0,
+		buf:           make([]byte, 0, 100),
+		sendableUnits: 1,
+		writeQuantum:  100,
+		chunkSize:     100,
+		writesChan:    make(chan gRPCWriterCommand, 3),
+		setSize:       func(int64) {},
+		progress:      func(int64) {},
 	}
 
 	errCh := make(chan error, 1)
@@ -636,11 +708,11 @@ func TestGRPCWriter_ChunkRetryDeadline_TimerStartsOnlyWhenBufferFills(t *testing
 		w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 20), done: done}
 		<-done
 
-		// Assert the timer is not started yet because the chunk size hasn't been reached.
+		// The stopwatch must not be armed before the buffer fills.
 		timerCh := make(chan time.Time)
 		w.writesChan <- &checkTimerCmd{timerCh: timerCh}
-		if abandonRetriesTime := <-timerCh; !abandonRetriesTime.IsZero() {
-			t.Fatalf("expected timer to NOT be started before buffer fills, but it was %v after %d writes", abandonRetriesTime, i+1)
+		if expiresAt := <-timerCh; !expiresAt.IsZero() {
+			t.Fatalf("expected stopwatch to be stopped before buffer fills, but expiresAt=%v after %d writes", expiresAt, i+1)
 		}
 	}
 
@@ -652,30 +724,32 @@ func TestGRPCWriter_ChunkRetryDeadline_TimerStartsOnlyWhenBufferFills(t *testing
 	if err == nil || !strings.Contains(err.Error(), "transient network error") {
 		t.Fatalf("expected transient network error when buffer fills and triggers send, got: %v", err)
 	}
-	if w.abandonRetriesTime.IsZero() {
-		t.Fatalf("expected timer to be started when buffer fills and triggers send, but it was zero")
+	if want := clk.Now().Add(deadline); !w.budget.expiresAt.Equal(want) {
+		t.Fatalf("expected stopwatch armed at %v when buffer fills and triggers send, got %v", want, w.budget.expiresAt)
 	}
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_StaleTimerOnPartialBuffer(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 100 * time.Millisecond
 	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: false, respondToAllData: true}
+	progress := newProgressRecorder()
 
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufUnsentIdx:       0,
-		bufFlushedIdx:      -1,
-		buf:                make([]byte, 0, 1000),
-		sendableUnits:      1,
-		writeQuantum:       100,
-		chunkSize:          1000,
-		writesChan:         make(chan gRPCWriterCommand, 3),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
-		setObj:             func(*ObjectAttrs) {},
+		budget:           testBudget(clk, deadline),
+		streamSender:     sender,
+		settings:         &settings{},
+		bufUnsentIdx:     0,
+		awaitingFirstAck: true,
+		buf:              make([]byte, 0, 1000),
+		sendableUnits:    1,
+		writeQuantum:     100,
+		chunkSize:        1000,
+		writesChan:       make(chan gRPCWriterCommand, 3),
+		setSize:          func(int64) {},
+		progress:         progress.report,
+		setObj:           func(*ObjectAttrs) {},
 	}
 
 	errCh := make(chan error, 1)
@@ -683,33 +757,30 @@ func TestGRPCWriter_ChunkRetryDeadline_StaleTimerOnPartialBuffer(t *testing.T) {
 		errCh <- w.writeLoop(ctx)
 	}()
 
-	// Write 150 bytes (writeQuantum is 100).
-	// 100 bytes will be sent and ACKed, 50 bytes will remain unsent in buf.
+	// Write 150 bytes (writeQuantum is 100): 100 bytes are sent and acked, 50
+	// remain unsent in buf.
 	done := make(chan struct{})
 	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 150), done: done}
 	<-done
+	progress.waitFor(t, 100)
 
-	// Wait a bit to ensure completion for the 100 bytes is processed.
-	time.Sleep(50 * time.Millisecond)
-
-	// Assert that timer is cleared when remaining unsent bytes (50) < writeQuantum (100).
+	// With only 50 unsent bytes (< writeQuantum) the writer is idle, so the
+	// stopwatch must be stopped.
 	timerCh := make(chan time.Time)
 	w.writesChan <- &checkTimerCmd{timerCh: timerCh}
-	abandonRetriesTime := <-timerCh
-
-	if !abandonRetriesTime.IsZero() {
-		t.Fatalf("expected timer to be cleared when remaining unsent bytes < writeQuantum, but got: %v", abandonRetriesTime)
+	if expiresAt := <-timerCh; !expiresAt.IsZero() {
+		t.Fatalf("expected stopwatch to be stopped when remaining unsent bytes < writeQuantum, got expiresAt=%v", expiresAt)
 	}
 
-	// Wait for old timer duration to pass.
-	time.Sleep(150 * time.Millisecond)
+	// Idle for longer than the deadline.
+	clk.Advance(deadline + 50*time.Millisecond)
 
 	// Now fail on data requests.
 	sender.mu.Lock()
 	sender.failOnData = true
 	sender.mu.Unlock()
 
-	// Write 50 more bytes to complete the next quantum (100 total unsent bytes).
+	// Write 50 more bytes to complete the next quantum (100 unsent bytes).
 	done2 := make(chan struct{})
 	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done2}
 
@@ -718,37 +789,39 @@ func TestGRPCWriter_ChunkRetryDeadline_StaleTimerOnPartialBuffer(t *testing.T) {
 		t.Fatalf("expected transient network error, got: %v", err)
 	}
 
-	// Retry writeLoop. It should NOT instantly fail with retry deadline error due to a stale timer.
-	err = w.writeLoop(ctx)
-	if err != nil && strings.Contains(err.Error(), "retry deadline") {
+	// The retry must not fail instantly because of a stale stopwatch.
+	if err := attemptWriteLoop(ctx, w); isChunkRetryDeadlineError(err) {
 		t.Fatalf("retry failed instantly due to stale timer: %v", err)
 	}
 }
 
 // TestGRPCWriter_ChunkRetryDeadline_OversizedWriteStaleTimerOnClose tests that an oversized write (len(p) > chunkSize)
-// that leaves unsent leftover bytes (< writeQuantum) in w.buf properly clears abandonRetriesTime when idle,
+// that leaves unsent leftover bytes (< writeQuantum) in w.buf properly stops the chunk retry stopwatch when idle,
 // so that a subsequent Close() operation after an idle delay does not fail with a stale retry deadline error.
+
 func TestGRPCWriter_ChunkRetryDeadline_OversizedWriteStaleTimerOnClose(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 100 * time.Millisecond
 	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: false, respondToAllData: true}
+	progress := newProgressRecorder()
 
 	// chunkSize = 1000, writeQuantum = 350 (350 is NOT a factor of 1000; 1000 / 350 = 2 with remainder 300)
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufUnsentIdx:       0,
-		bufFlushedIdx:      -1,
-		buf:                make([]byte, 0, 1000),
-		sendableUnits:      3,
-		writeQuantum:       350,
-		chunkSize:          1000,
-		lastSegmentStart:   700,
-		writesChan:         make(chan gRPCWriterCommand, 3),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
-		setObj:             func(*ObjectAttrs) {},
+		budget:           testBudget(clk, deadline),
+		streamSender:     sender,
+		settings:         &settings{},
+		bufUnsentIdx:     0,
+		awaitingFirstAck: true,
+		buf:              make([]byte, 0, 1000),
+		sendableUnits:    3,
+		writeQuantum:     350,
+		chunkSize:        1000,
+		lastSegmentStart: 700,
+		writesChan:       make(chan gRPCWriterCommand, 3),
+		setSize:          func(int64) {},
+		progress:         progress.report,
+		setObj:           func(*ObjectAttrs) {},
 	}
 	errCh := make(chan error, 1)
 	go func() {
@@ -759,16 +832,16 @@ func TestGRPCWriter_ChunkRetryDeadline_OversizedWriteStaleTimerOnClose(t *testin
 	done := make(chan struct{})
 	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 1500), done: done}
 	<-done
-	time.Sleep(50 * time.Millisecond)
+	progress.waitFor(t, 1350)
 
 	timerCh := make(chan time.Time)
 	w.writesChan <- &checkTimerCmd{timerCh: timerCh}
 	if t1 := <-timerCh; !t1.IsZero() {
-		t.Fatalf("expected timer to be zero after sending large write with 150 unsent bytes < 350 quantum, got: %v", t1)
+		t.Fatalf("expected stopwatch to be stopped after sending large write with 150 unsent bytes < 350 quantum, got: %v", t1)
 	}
 
-	// 2. Sleep past deadline while idle with 150 unsent bytes.
-	time.Sleep(150 * time.Millisecond)
+	// 2. Idle past the deadline with 150 unsent bytes.
+	clk.Advance(deadline + 50*time.Millisecond)
 
 	// 3. Fail on data requests now.
 	sender.mu.Lock()
@@ -784,31 +857,32 @@ func TestGRPCWriter_ChunkRetryDeadline_OversizedWriteStaleTimerOnClose(t *testin
 	}
 
 	// 5. Retry writeLoop — must NOT fail with stale retry deadline error!
-	err = w.writeLoop(ctx)
-	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+	err = attemptWriteLoop(ctx, w)
+	if err == nil || !strings.Contains(err.Error(), "transient network error") || isChunkRetryDeadlineError(err) {
 		t.Fatalf("expected retry to fail with transient network error, got: %v", err)
 	}
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_SingleShotCloseError(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 100 * time.Millisecond
 	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: true}
 
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufUnsentIdx:       0,
-		bufFlushedIdx:      -1,
-		buf:                make([]byte, 0, 1000),
-		sendableUnits:      1,
-		writeQuantum:       1000,
-		chunkSize:          1000,
-		writesChan:         make(chan gRPCWriterCommand, 3),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
-		setObj:             func(*ObjectAttrs) {},
+		budget:           testBudget(clk, deadline),
+		streamSender:     sender,
+		settings:         &settings{},
+		bufUnsentIdx:     0,
+		awaitingFirstAck: true,
+		buf:              make([]byte, 0, 1000),
+		sendableUnits:    1,
+		writeQuantum:     1000,
+		chunkSize:        1000,
+		writesChan:       make(chan gRPCWriterCommand, 3),
+		setSize:          func(int64) {},
+		progress:         func(int64) {},
+		setObj:           func(*ObjectAttrs) {},
 	}
 
 	errCh := make(chan error, 1)
@@ -830,31 +904,33 @@ func TestGRPCWriter_ChunkRetryDeadline_SingleShotCloseError(t *testing.T) {
 	}
 
 	// Retry writeLoop while failOnData is true. It must return transient network error, NOT a stale retry deadline error.
-	err = w.writeLoop(ctx)
-	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+	err = attemptWriteLoop(ctx, w)
+	if err == nil || !strings.Contains(err.Error(), "transient network error") || isChunkRetryDeadlineError(err) {
 		t.Fatalf("expected retry to fail with transient network error, got: %v", err)
 	}
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_PartialQuantumCloseStaleTimer(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 100 * time.Millisecond
 	sender := &mockSender{errResult: errors.New("transient network error"), failOnData: false, respondToAllData: true}
+	progress := newProgressRecorder()
 
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufUnsentIdx:       0,
-		bufFlushedIdx:      -1,
-		buf:                make([]byte, 0, 1000),
-		sendableUnits:      10,
-		writeQuantum:       100,
-		chunkSize:          1000,
-		writesChan:         make(chan gRPCWriterCommand, 3),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
-		setObj:             func(*ObjectAttrs) {},
+		budget:           testBudget(clk, deadline),
+		streamSender:     sender,
+		settings:         &settings{},
+		bufUnsentIdx:     0,
+		awaitingFirstAck: true,
+		buf:              make([]byte, 0, 1000),
+		sendableUnits:    10,
+		writeQuantum:     100,
+		chunkSize:        1000,
+		writesChan:       make(chan gRPCWriterCommand, 3),
+		setSize:          func(int64) {},
+		progress:         progress.report,
+		setObj:           func(*ObjectAttrs) {},
 	}
 
 	errCh := make(chan error, 1)
@@ -862,14 +938,14 @@ func TestGRPCWriter_ChunkRetryDeadline_PartialQuantumCloseStaleTimer(t *testing.
 		errCh <- w.writeLoop(ctx)
 	}()
 
-	// 1. Write 150 bytes: 100 sent/ACKed, 50 unsent in buf.
+	// 1. Write 150 bytes: 100 sent/acked, 50 unsent in buf.
 	done := make(chan struct{})
 	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 150), done: done}
 	<-done
-	time.Sleep(50 * time.Millisecond)
+	progress.waitFor(t, 100)
 
-	// Wait past deadline while idle with 50 unsent bytes.
-	time.Sleep(120 * time.Millisecond)
+	// Idle past the deadline with 50 unsent bytes.
+	clk.Advance(deadline + 20*time.Millisecond)
 
 	// Fail on data requests now.
 	sender.mu.Lock()
@@ -885,8 +961,8 @@ func TestGRPCWriter_ChunkRetryDeadline_PartialQuantumCloseStaleTimer(t *testing.
 	}
 
 	// 3. Retry writeLoop while failOnData is true. Must return transient network error, NOT a stale retry deadline error.
-	err = w.writeLoop(ctx)
-	if err == nil || !strings.Contains(err.Error(), "transient network error") {
+	err = attemptWriteLoop(ctx, w)
+	if err == nil || !strings.Contains(err.Error(), "transient network error") || isChunkRetryDeadlineError(err) {
 		t.Fatalf("expected retry on Close tail to fail with transient network error, got: %v", err)
 	}
 }
@@ -1223,138 +1299,153 @@ func (s *reconnectStatusSender) canResumeSession() bool { return false }
 
 func TestGRPCWriter_ChunkRetryDeadline_NoResetOnUnchangedOffsetAfterPartialShift(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 200 * time.Millisecond
+	transientErr := errors.New("transient network error")
 	sender := &reconnectStatusSender{
 		persistedSize: 50,
-		errResult:     errors.New("transient network error"),
+		errResult:     transientErr,
 	}
 
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufBaseOffset:      0,
-		bufUnsentIdx:       100,
-		bufFlushedIdx:      -1,
-		buf:                make([]byte, 100),
-		sendableUnits:      2,
-		writeQuantum:       50,
-		chunkSize:          100,
-		writesChan:         make(chan gRPCWriterCommand, 1),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
-		setObj:             func(*ObjectAttrs) {},
+		budget:           testBudget(clk, deadline),
+		streamSender:     sender,
+		settings:         &settings{},
+		bufBaseOffset:    0,
+		bufUnsentIdx:     100,
+		awaitingFirstAck: true,
+		buf:              make([]byte, 100),
+		sendableUnits:    2,
+		writeQuantum:     50,
+		chunkSize:        100,
+		writesChan:       make(chan gRPCWriterCommand, 1),
+		setSize:          func(int64) {},
+		progress:         func(int64) {},
+		setObj:           func(*ObjectAttrs) {},
 	}
 
-	// Attempt 1: QueryWriteStatus reports 50 bytes persisted (strict progress from 0 -> 50).
-	// writeLoop drains the completion, resets abandonRetriesTime to ~now+200ms,
-	// shifts w.buf by 50 bytes (setting w.bufBaseOffset = 50, w.bufFlushedIdx = 0),
-	// and then returns transient network error.
-	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
-		t.Fatalf("expected transient network error on attempt 1, got: %v", err)
+	// Attempt 1: QueryWriteStatus reports 50 bytes persisted (strict progress
+	// from 0 -> 50). writeLoop drains the completion, restarts the stopwatch,
+	// shifts w.buf by 50 bytes (bufBaseOffset = 50, bufFlushedIdx = 0), and
+	// then returns the transport error.
+	if err := attemptWriteLoop(ctx, w); !errors.Is(err, transientErr) {
+		t.Fatalf("attempt 1: got %v, want %v", err, transientErr)
 	}
-	firstDeadline := w.abandonRetriesTime
-	if firstDeadline.IsZero() {
-		t.Fatalf("expected abandonRetriesTime to be set after partial progress")
+	firstExpiry := w.budget.expiresAt
+	if want := clk.Now().Add(deadline); !firstExpiry.Equal(want) {
+		t.Fatalf("expected stopwatch restarted at %v after partial progress, got %v", want, firstExpiry)
 	}
 	if w.bufBaseOffset != 50 || w.bufFlushedIdx != 0 {
 		t.Fatalf("expected bufBaseOffset=50 and bufFlushedIdx=0 after shift, got base=%d flushed=%d", w.bufBaseOffset, w.bufFlushedIdx)
 	}
-	if !w.consumeProgress() {
+	if w.awaitingFirstAck {
+		t.Fatalf("expected awaitingFirstAck to be cleared by the first completion")
+	}
+	if !w.budget.consumeProgress() {
 		t.Fatalf("expected consumeProgress() == true after strict forward progress to offset 50")
 	}
 
 	// Consume more than half of the retry deadline.
-	time.Sleep(120 * time.Millisecond)
+	clk.Advance(120 * time.Millisecond)
 
-	// Attempt 2: Reconnect reports the SAME persistedSize = 50.
-	// Must NOT reset abandonRetriesTime or attempts.
-	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
-		t.Fatalf("expected transient network error on attempt 2, got: %v", err)
+	// Attempt 2: reconnect reports the SAME persistedSize = 50. Must not
+	// restart the stopwatch or reset attempts.
+	if err := attemptWriteLoop(ctx, w); !errors.Is(err, transientErr) {
+		t.Fatalf("attempt 2: got %v, want %v", err, transientErr)
 	}
-	if !w.abandonRetriesTime.Equal(firstDeadline) {
-		t.Fatalf("expected abandonRetriesTime to remain %v on unchanged offset, got %v", firstDeadline, w.abandonRetriesTime)
+	if !w.budget.expiresAt.Equal(firstExpiry) {
+		t.Fatalf("expected expiresAt to remain %v on unchanged offset, got %v", firstExpiry, w.budget.expiresAt)
 	}
-	if w.attempts != 1 {
-		t.Fatalf("expected w.attempts to be 1 (not reset to 0), got %d", w.attempts)
+	if w.budget.attempts != 1 {
+		t.Fatalf("expected budget.attempts to be 1 (not reset to 0), got %d", w.budget.attempts)
 	}
-	if w.consumeProgress() {
+	if w.budget.consumeProgress() {
 		t.Fatalf("expected consumeProgress() == false when offset remained unchanged at 50")
 	}
 
-	// Sleep past the original deadline (120ms + 100ms > 200ms).
-	time.Sleep(100 * time.Millisecond)
+	// Past the deadline (120ms + 100ms > 200ms).
+	clk.Advance(100 * time.Millisecond)
 
-	// Attempt 3: Must fail with retry deadline exceeded because no progress was made since offset 50.
-	err := w.writeLoop(ctx)
-	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
-		t.Fatalf("expected retry deadline error on attempt 3, got: %v", err)
+	// Attempt 3: must fail with the deadline error because no progress was
+	// made since offset 50.
+	err := attemptWriteLoop(ctx, w)
+	var deadlineErr *chunkRetryDeadlineError
+	if !errors.As(err, &deadlineErr) {
+		t.Fatalf("attempt 3: got %v, want *chunkRetryDeadlineError", err)
+	}
+	if deadlineErr.attempts != 2 {
+		t.Errorf("deadlineErr.attempts = %d, want 2", deadlineErr.attempts)
 	}
 }
 
 func TestGRPCWriter_ChunkRetryDeadline_NoResetOnZeroOffsetReconnect(t *testing.T) {
 	ctx := context.Background()
+	clk := newFakeClock()
 	deadline := 200 * time.Millisecond
+	transientErr := errors.New("transient network error")
 	sender := &reconnectStatusSender{
 		persistedSize: 0,
-		errResult:     errors.New("transient network error"),
+		errResult:     transientErr,
 	}
 
 	w := &gRPCWriter{
-		chunkRetryDeadline: deadline,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufBaseOffset:      0,
-		bufUnsentIdx:       100,
-		bufFlushedIdx:      -1,
-		buf:                make([]byte, 100),
-		sendableUnits:      1,
-		writeQuantum:       100,
-		chunkSize:          100,
-		writesChan:         make(chan gRPCWriterCommand, 1),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
-		setObj:             func(*ObjectAttrs) {},
+		budget:           testBudget(clk, deadline),
+		streamSender:     sender,
+		settings:         &settings{},
+		bufBaseOffset:    0,
+		bufUnsentIdx:     100,
+		awaitingFirstAck: true,
+		buf:              make([]byte, 100),
+		sendableUnits:    1,
+		writeQuantum:     100,
+		chunkSize:        100,
+		writesChan:       make(chan gRPCWriterCommand, 1),
+		setSize:          func(int64) {},
+		progress:         func(int64) {},
+		setObj:           func(*ObjectAttrs) {},
 	}
 
-	// Attempt 1 starts the deadline clock and receives flushOffset == 0.
-	// Because 0 is not strict progress past 0, neither abandonRetriesTime nor attempts should be reset.
-	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
-		t.Fatalf("expected transient network error on attempt 1, got: %v", err)
+	// Attempt 1 arms the stopwatch and receives flushOffset == 0. That clears
+	// awaitingFirstAck but is not strict progress past 0, so neither the
+	// stopwatch nor attempts are reset.
+	if err := attemptWriteLoop(ctx, w); !errors.Is(err, transientErr) {
+		t.Fatalf("attempt 1: got %v, want %v", err, transientErr)
 	}
-	firstDeadline := w.abandonRetriesTime
-	if firstDeadline.IsZero() {
-		t.Fatalf("expected abandonRetriesTime to be set")
+	firstExpiry := w.budget.expiresAt
+	if want := clk.Now().Add(deadline); !firstExpiry.Equal(want) {
+		t.Fatalf("expected stopwatch armed at %v, got %v", want, firstExpiry)
 	}
-	if w.attempts != 1 {
-		t.Fatalf("expected w.attempts == 1 after 0-offset completion, got %d", w.attempts)
+	if w.awaitingFirstAck {
+		t.Fatalf("expected awaitingFirstAck to be cleared by the 0-offset completion")
 	}
-	if w.consumeProgress() {
+	if w.budget.attempts != 1 {
+		t.Fatalf("expected budget.attempts == 1 after 0-offset completion, got %d", w.budget.attempts)
+	}
+	if w.budget.consumeProgress() {
 		t.Fatalf("expected consumeProgress() == false after 0-offset completion")
 	}
 
-	time.Sleep(120 * time.Millisecond)
+	clk.Advance(120 * time.Millisecond)
 
 	// Attempt 2 also receives flushOffset == 0.
-	if err := w.writeLoop(ctx); err == nil || !strings.Contains(err.Error(), "transient network error") {
-		t.Fatalf("expected transient network error on attempt 2, got: %v", err)
+	if err := attemptWriteLoop(ctx, w); !errors.Is(err, transientErr) {
+		t.Fatalf("attempt 2: got %v, want %v", err, transientErr)
 	}
-	if !w.abandonRetriesTime.Equal(firstDeadline) {
-		t.Fatalf("expected abandonRetriesTime to remain %v, got %v", firstDeadline, w.abandonRetriesTime)
+	if !w.budget.expiresAt.Equal(firstExpiry) {
+		t.Fatalf("expected expiresAt to remain %v, got %v", firstExpiry, w.budget.expiresAt)
 	}
-	if w.attempts != 2 {
-		t.Fatalf("expected w.attempts == 2, got %d", w.attempts)
+	if w.budget.attempts != 2 {
+		t.Fatalf("expected budget.attempts == 2, got %d", w.budget.attempts)
 	}
-	if w.consumeProgress() {
+	if w.budget.consumeProgress() {
 		t.Fatalf("expected consumeProgress() == false on attempt 2 with 0-offset completion")
 	}
 
-	time.Sleep(100 * time.Millisecond)
+	clk.Advance(100 * time.Millisecond)
 
 	// Attempt 3 must hit the retry deadline.
-	err := w.writeLoop(ctx)
-	if err == nil || !strings.Contains(err.Error(), "retry deadline") {
-		t.Fatalf("expected retry deadline error on attempt 3, got: %v", err)
+	if err := attemptWriteLoop(ctx, w); !isChunkRetryDeadlineError(err) {
+		t.Fatalf("attempt 3: got %v, want chunkRetryDeadlineError", err)
 	}
 }
 
@@ -1366,20 +1457,20 @@ func TestGRPCWriter_PerChunkMaxAttemptsResetOnStrictProgress(t *testing.T) {
 	}
 
 	w := &gRPCWriter{
-		chunkRetryDeadline: 5 * time.Second,
-		streamSender:       sender,
-		settings:           &settings{},
-		bufBaseOffset:      0,
-		bufUnsentIdx:       100,
-		bufFlushedIdx:      -1,
-		buf:                make([]byte, 100),
-		sendableUnits:      2,
-		writeQuantum:       50,
-		chunkSize:          100,
-		writesChan:         make(chan gRPCWriterCommand, 1),
-		setSize:            func(int64) {},
-		progress:           func(int64) {},
-		setObj:             func(*ObjectAttrs) {},
+		budget:           testBudget(newFakeClock(), 5*time.Second),
+		streamSender:     sender,
+		settings:         &settings{},
+		bufBaseOffset:    0,
+		bufUnsentIdx:     100,
+		awaitingFirstAck: true,
+		buf:              make([]byte, 100),
+		sendableUnits:    2,
+		writeQuantum:     50,
+		chunkSize:        100,
+		writesChan:       make(chan gRPCWriterCommand, 1),
+		setSize:          func(int64) {},
+		progress:         func(int64) {},
+		setObj:           func(*ObjectAttrs) {},
 	}
 
 	retry := &retryConfig{
@@ -1398,9 +1489,8 @@ func TestGRPCWriter_PerChunkMaxAttemptsResetOnStrictProgress(t *testing.T) {
 			sender.persistedSize = 50
 			sender.mu.Unlock()
 		}
-		w.lastErr = w.writeLoop(ctx)
-		return w.lastErr
-	}, retry, true, withProgressReset(w.consumeProgress))
+		return attemptWriteLoop(ctx, w)
+	}, retry, true, withProgressReset(w.budget.consumeProgress))
 
 	if err == nil || !strings.Contains(err.Error(), "retry failed after 2 attempts") {
 		t.Fatalf("expected retry failed after 2 attempts error, got: %v", err)
@@ -1418,5 +1508,266 @@ func TestGRPCWriter_PerChunkMaxAttemptsResetOnStrictProgress(t *testing.T) {
 	}
 	if w.bufFlushedIdx != 0 {
 		t.Errorf("bufFlushedIdx = %d, want 0", w.bufFlushedIdx)
+	}
+}
+
+// TestGRPCWriter_ChunkRetryDeadlineError_IsTerminal checks that the writer's
+// retry predicate never retries a chunkRetryDeadlineError, even though the
+// transport error it wraps is retryable and regardless of any user ErrorFunc.
+func TestGRPCWriter_ChunkRetryDeadlineError_IsTerminal(t *testing.T) {
+	// The context deadline bounds the test if run() keeps retrying.
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	clk := newFakeClock()
+	deadline := 100 * time.Millisecond
+	transientErr := status.Error(codes.Unavailable, "transient")
+	sender := &instantFailSender{errResult: transientErr, canResume: true}
+	retryEverything := func(error, *RetryContext) bool { return true }
+
+	w := &gRPCWriter{
+		budget:       testBudget(clk, deadline),
+		streamSender: sender,
+		settings: &settings{
+			idempotent: true,
+			retry: &retryConfig{
+				policy:      RetryAlways,
+				backoff:     &gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond},
+				shouldRetry: retryEverything,
+			},
+		},
+		bufUnsentIdx:  100,
+		bufFlushedIdx: 0,
+		buf:           make([]byte, 100),
+		sendableUnits: 1,
+		writeQuantum:  100,
+		chunkSize:     100,
+		writesChan:    make(chan gRPCWriterCommand, 1),
+	}
+
+	calls := 0
+	err := run(ctx, func(ctx context.Context) error {
+		calls++
+		if calls == 2 {
+			// Expire the budget armed by call 1 before call 2 checks it.
+			clk.Advance(deadline + time.Millisecond)
+		}
+		return attemptWriteLoop(ctx, w)
+	}, w.writerRetryConfig(), w.settings.idempotent, withProgressReset(w.budget.consumeProgress))
+
+	if calls != 2 {
+		t.Fatalf("run() made %d calls, want 2 (deadline error must not be retried)", calls)
+	}
+	var deadlineErr *chunkRetryDeadlineError
+	if !errors.As(err, &deadlineErr) {
+		t.Fatalf("got %T %v, want *chunkRetryDeadlineError", err, err)
+	}
+	if !errors.Is(err, transientErr) {
+		t.Errorf("errors.Is(err, transientErr) = false; the deadline error should wrap the last transport error")
+	}
+	if got := status.Code(err); got != codes.Unavailable {
+		t.Errorf("status.Code(err) = %v, want %v (wrapped status must stay visible)", got, codes.Unavailable)
+	}
+
+	// The guard must hold for every writerRetryConfig shape, including the
+	// append + RetryNever path that otherwise retries redirections.
+	t.Run("shouldRetry refuses deadline errors under every policy", func(t *testing.T) {
+		for _, tc := range []struct {
+			name    string
+			policy  RetryPolicy
+			append  bool
+			wrapped error
+		}{
+			{"RetryAlways wrapping Unavailable", RetryAlways, false, transientErr},
+			{"RetryIdempotent wrapping Unavailable", RetryIdempotent, false, transientErr},
+			{"RetryNever append wrapping redirection", RetryNever, true, bidiWriteObjectRedirectionError{}},
+			{"RetryAlways append wrapping redirection", RetryAlways, true, bidiWriteObjectRedirectionError{}},
+		} {
+			t.Run(tc.name, func(t *testing.T) {
+				w := &gRPCWriter{
+					append:       tc.append,
+					streamSender: &instantFailSender{canResume: true},
+					settings: &settings{
+						idempotent: true,
+						retry:      &retryConfig{policy: tc.policy, shouldRetry: retryEverything},
+					},
+				}
+				cfg := w.writerRetryConfig()
+				if cfg.shouldRetry == nil {
+					t.Fatal("writerRetryConfig() returned no shouldRetry predicate")
+				}
+				err := &chunkRetryDeadlineError{deadline: deadline, attempts: 3, err: tc.wrapped}
+				if cfg.shouldRetry(err, &RetryContext{}) {
+					t.Errorf("shouldRetry(%v) = true, want false", err)
+				}
+				// Sanity check: the same predicate does retry the bare wrapped error.
+				if !cfg.shouldRetry(tc.wrapped, &RetryContext{}) {
+					t.Errorf("shouldRetry(%v) = false, want true; the guard should only affect deadline errors", tc.wrapped)
+				}
+			})
+		}
+	})
+}
+
+func TestChunkRetryBudget(t *testing.T) {
+	clk := newFakeClock()
+	b := testBudget(clk, 100*time.Millisecond)
+
+	if b.expired() {
+		t.Fatal("a stopped budget must not be expired")
+	}
+	b.start()
+	armedAt := b.expiresAt
+	if want := clk.Now().Add(100 * time.Millisecond); !armedAt.Equal(want) {
+		t.Fatalf("start(): expiresAt = %v, want %v", armedAt, want)
+	}
+
+	// start is idempotent while running.
+	clk.Advance(50 * time.Millisecond)
+	b.start()
+	if !b.expiresAt.Equal(armedAt) {
+		t.Fatalf("start() on a running budget moved expiresAt from %v to %v", armedAt, b.expiresAt)
+	}
+	if b.expired() {
+		t.Fatal("budget expired at 50ms of 100ms")
+	}
+
+	// Exactly at the deadline is not yet expired; one tick later is.
+	clk.Advance(50 * time.Millisecond)
+	if b.expired() {
+		t.Fatal("budget expired exactly at the deadline; want strictly after")
+	}
+	clk.Advance(time.Nanosecond)
+	if !b.expired() {
+		t.Fatal("budget not expired after the deadline")
+	}
+
+	// stop clears the stopwatch; an expired-then-stopped budget is not expired.
+	b.stop()
+	if b.expired() || !b.expiresAt.IsZero() {
+		t.Fatalf("stop(): expired=%v expiresAt=%v, want false/zero", b.expired(), b.expiresAt)
+	}
+
+	// recordProgress resets attempts, flags progress once, and restarts the
+	// stopwatch only if the writer is still active.
+	b.attempts = 7
+	b.recordProgress(false)
+	if b.attempts != 0 || !b.expiresAt.IsZero() {
+		t.Fatalf("recordProgress(false): attempts=%d expiresAt=%v, want 0/zero", b.attempts, b.expiresAt)
+	}
+	if !b.consumeProgress() || b.consumeProgress() {
+		t.Fatal("consumeProgress() should report true exactly once per recordProgress")
+	}
+	b.recordProgress(true)
+	if want := clk.Now().Add(100 * time.Millisecond); !b.expiresAt.Equal(want) {
+		t.Fatalf("recordProgress(true): expiresAt = %v, want %v", b.expiresAt, want)
+	}
+
+	// A zero deadline disables the budget entirely.
+	disabled := testBudget(clk, 0)
+	disabled.start()
+	disabled.recordProgress(true)
+	if !disabled.expiresAt.IsZero() || disabled.expired() {
+		t.Fatalf("disabled budget: expiresAt=%v expired=%v, want zero/false", disabled.expiresAt, disabled.expired())
+	}
+
+	// A nil clock falls back to time.Now.
+	wallClock := chunkRetryBudget{deadline: time.Hour}
+	wallClock.start()
+	if wallClock.expiresAt.IsZero() || wallClock.expired() {
+		t.Fatalf("nil clock: expiresAt=%v expired=%v", wallClock.expiresAt, wallClock.expired())
+	}
+}
+
+// TestGRPCWriter_AwaitingFirstAck checks that the first completion at offset
+// 0 is processed but not counted as progress, and that the same offset is
+// then dropped as a duplicate.
+func TestGRPCWriter_AwaitingFirstAck(t *testing.T) {
+	var progressCalls []int64
+	w := &gRPCWriter{
+		budget:           testBudget(newFakeClock(), time.Second),
+		awaitingFirstAck: true,
+		buf:              make([]byte, 0, 100),
+		writeQuantum:     100,
+		chunkSize:        100,
+		setSize:          func(int64) {},
+		progress:         func(n int64) { progressCalls = append(progressCalls, n) },
+		setObj:           func(*ObjectAttrs) {},
+	}
+
+	w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 0})
+	if w.awaitingFirstAck {
+		t.Fatal("awaitingFirstAck still set after the first completion")
+	}
+	if len(progressCalls) != 1 || progressCalls[0] != 0 {
+		t.Fatalf("progress calls after first 0-offset ack = %v, want [0]", progressCalls)
+	}
+	if w.budget.consumeProgress() {
+		t.Fatal("a 0-offset first ack must not count as forward progress")
+	}
+
+	// The same offset again is a duplicate and must be dropped.
+	w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 0})
+	if len(progressCalls) != 1 {
+		t.Fatalf("duplicate 0-offset ack was processed; progress calls = %v", progressCalls)
+	}
+
+	// Strict progress past the confirmed offset is still recorded.
+	w.buf = w.buf[:50]
+	w.bufUnsentIdx = 50
+	w.handleCompletion(gRPCBidiWriteCompletion{flushOffset: 50})
+	if !w.budget.consumeProgress() {
+		t.Fatal("expected progress after the confirmed offset advanced 0 -> 50")
+	}
+	if w.bufBaseOffset != 50 || len(w.buf) != 0 {
+		t.Fatalf("buffer not cleared after full ack: base=%d len=%d", w.bufBaseOffset, len(w.buf))
+	}
+}
+
+// TestGRPCWriter_ZeroByteFlushWaitsForFirstAck checks that a Flush issued
+// before any data has been acked blocks until the server's first completion.
+func TestGRPCWriter_ZeroByteFlushWaitsForFirstAck(t *testing.T) {
+	requests := make(chan gRPCBidiWriteRequest, 1)
+	completions := make(chan gRPCBidiWriteCompletion, 1)
+	cs := gRPCWriterCommandHandleChans{requests: requests, requestAcks: make(chan struct{}), completions: completions}
+	w := &gRPCWriter{
+		budget:           testBudget(newFakeClock(), time.Second),
+		awaitingFirstAck: true,
+		buf:              make([]byte, 0, 100),
+		writeQuantum:     100,
+		chunkSize:        100,
+		setSize:          func(int64) {},
+		progress:         func(int64) {},
+		setObj:           func(*ObjectAttrs) {},
+		streamSender:     &instantFailSender{errResult: errors.New("stream closed")},
+	}
+	flush := &gRPCWriterCommandFlush{done: make(chan int64, 1)}
+
+	errCh := make(chan error, 1)
+	go func() { errCh <- flush.handle(w, cs) }()
+
+	req := <-requests
+	if !req.flush || len(req.buf) != 0 || req.offset != 0 {
+		t.Fatalf("flush request = %+v, want empty flush at offset 0", req)
+	}
+	select {
+	case err := <-errCh:
+		t.Fatalf("Flush returned %v before the server acked anything", err)
+	case <-time.After(50 * time.Millisecond):
+	}
+
+	completions <- gRPCBidiWriteCompletion{flushOffset: 0}
+	select {
+	case err := <-errCh:
+		if err != nil {
+			t.Fatalf("Flush returned %v after the 0-offset ack", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("Flush did not return after the 0-offset ack")
+	}
+	if got := <-flush.done; got != 0 {
+		t.Fatalf("Flush reported offset %d, want 0", got)
+	}
+	if w.awaitingFirstAck {
+		t.Fatal("awaitingFirstAck still set after the ack")
 	}
 }
