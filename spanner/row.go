@@ -466,6 +466,8 @@ func SelectAll(rows rowIterator, destination interface{}, options ...DecodeOptio
 	isFirstRow := true
 	var err error
 	return rows.Do(func(row *Row) error {
+		// The destination keeps the decoded values after the iterator moved on.
+		row = detachRow(row)
 		sliceItem := reflect.New(itemType)
 		if !isPrimitive {
 			if isFirstRow {

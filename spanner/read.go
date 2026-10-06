@@ -33,7 +33,6 @@ import (
 	"google.golang.org/api/iterator"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
-	"google.golang.org/protobuf/proto"
 	proto3 "google.golang.org/protobuf/types/known/structpb"
 )
 
@@ -42,6 +41,17 @@ import (
 type streamingReceiver interface {
 	Recv() (*sppb.PartialResultSet, error)
 	Context() context.Context
+}
+
+// streamRPC starts a stream that resumes the results at resumeToken, if set.
+type streamRPC = func(ctx context.Context, resumeToken []byte, opts ...gax.CallOption) (streamingReceiver, error)
+
+// receivedPartialResultSet is a PartialResultSet that was received from a
+// stream. It is a *sppb.PartialResultSet, unless the client is built with the
+// spanner_vtproto build tag. See vtproto_stream.go.
+type receivedPartialResultSet interface {
+	GetResumeToken() []byte
+	GetLast() bool
 }
 
 type streamingFinalizer interface {
@@ -114,8 +124,13 @@ func streamWithTransactionCallbacks(
 ) *RowIterator {
 	ctx, cancel := context.WithCancel(ctx)
 	ctx, _ = startSpan(ctx, "RowIterator")
+	vt := newVTStream()
+	if vt != nil {
+		rpc = vt.withCodec(rpc)
+	}
 	streamd := newResumableStreamDecoder(ctx, cancel, logger, rpc, reqIDProvider, retryResourceExhausted, allowRetryResourceExhaustedWithoutDelay)
 	streamd.meterTracerFactory = meterTracerFactory
+	streamd.vt = vt
 	return &RowIterator{
 		streamd:              streamd,
 		rowd:                 &partialResultSetDecoder{},
@@ -192,37 +207,13 @@ func (r *RowIterator) next() (*Row, error) {
 	if r.err != nil {
 		return nil, r.err
 	}
+	if r.streamd.vt != nil {
+		return r.streamd.vt.next(r)
+	}
 	for len(r.rows) == 0 && r.streamd.next() {
-		prs := r.streamd.get()
-		if r.setTransactionID != nil {
-			// this is when Read/Query is executed using ReadWriteTransaction
-			// and server returned the first stream response.
-			if prs.Metadata != nil && prs.Metadata.Transaction != nil {
-				r.setTransactionID(prs.Metadata.Transaction.GetId())
-			} else {
-				// This code block should never run ideally, server is expected to return a transactionID in response
-				// if request contains TransactionSelector::Begin option, this is here as fallback to retry with
-				// explicit transactionID after a retry.
-				r.setTransactionID(nil)
-				r.err = r.updateTxState(errInlineBeginTransactionFailed(nil))
-				return nil, r.err
-			}
-			r.setTransactionID = nil
-		}
-		if r.updatePrecommitToken != nil {
-			r.updatePrecommitToken(prs.GetPrecommitToken())
-		}
-		if prs.Stats != nil {
-			r.sawStats = true
-			r.QueryPlan = prs.Stats.QueryPlan
-			r.QueryStats = protostruct.DecodeToMap(prs.Stats.QueryStats)
-			if prs.Stats.RowCount != nil {
-				rc, err := extractRowCount(prs.Stats)
-				if err != nil {
-					return nil, err
-				}
-				r.RowCount = rc
-			}
+		prs := r.streamd.get().(*sppb.PartialResultSet)
+		if err := r.handlePartialResultSet(prs.Metadata, prs.Stats, prs.GetPrecommitToken()); err != nil {
+			return nil, err
 		}
 		var metadata *sppb.ResultSetMetadata
 		r.rows, metadata, r.err = r.rowd.add(prs)
@@ -242,6 +233,48 @@ func (r *RowIterator) next() (*Row, error) {
 		r.rows = r.rows[1:]
 		return row, nil
 	}
+	return nil, r.endOfResults()
+}
+
+// handlePartialResultSet passes the metadata, stats and precommit token of a
+// PartialResultSet to the iterator and its callbacks.
+func (r *RowIterator) handlePartialResultSet(metadata *sppb.ResultSetMetadata, stats *sppb.ResultSetStats, precommitToken *sppb.MultiplexedSessionPrecommitToken) error {
+	if r.setTransactionID != nil {
+		// this is when Read/Query is executed using ReadWriteTransaction
+		// and server returned the first stream response.
+		if metadata != nil && metadata.Transaction != nil {
+			r.setTransactionID(metadata.Transaction.GetId())
+		} else {
+			// This code block should never run ideally, server is expected to return a transactionID in response
+			// if request contains TransactionSelector::Begin option, this is here as fallback to retry with
+			// explicit transactionID after a retry.
+			r.setTransactionID(nil)
+			r.err = r.updateTxState(errInlineBeginTransactionFailed(nil))
+			return r.err
+		}
+		r.setTransactionID = nil
+	}
+	if r.updatePrecommitToken != nil {
+		r.updatePrecommitToken(precommitToken)
+	}
+	if stats != nil {
+		r.sawStats = true
+		r.QueryPlan = stats.QueryPlan
+		r.QueryStats = protostruct.DecodeToMap(stats.QueryStats)
+		if stats.RowCount != nil {
+			rc, err := extractRowCount(stats)
+			if err != nil {
+				return err
+			}
+			r.RowCount = rc
+		}
+	}
+	return nil
+}
+
+// endOfResults sets and returns the error of an iterator that has no more
+// rows.
+func (r *RowIterator) endOfResults() error {
 	if err := r.streamd.lastErr(); err != nil {
 		r.err = r.updateTxState(ToSpannerError(err))
 	} else if !r.rowd.done() {
@@ -250,7 +283,7 @@ func (r *RowIterator) next() (*Row, error) {
 		r.cancel = nil
 		r.err = iterator.Done
 	}
-	return nil, r.err
+	return r.err
 }
 
 func extractRowCount(stats *sppb.ResultSetStats) (int64, error) {
@@ -309,6 +342,9 @@ func (r *RowIterator) Stop() {
 			defer trace.EndSpan(r.streamd.ctx, nil)
 		}
 	}
+	if r.streamd != nil && r.streamd.vt != nil {
+		r.streamd.vt.stop(r.streamd)
+	}
 	if r.cancel != nil {
 		r.cancel()
 	}
@@ -329,7 +365,7 @@ func (r *RowIterator) Stop() {
 // partialResultQueue implements a simple FIFO queue.  The zero value is a valid
 // queue.
 type partialResultQueue struct {
-	q     []*sppb.PartialResultSet
+	q     []receivedPartialResultSet
 	first int
 	last  int
 	n     int // number of elements in queue
@@ -347,7 +383,7 @@ func errEmptyQueue() error {
 
 // peekLast returns the last item in partialResultQueue; if the queue
 // is empty, it returns error.
-func (q *partialResultQueue) peekLast() (*sppb.PartialResultSet, error) {
+func (q *partialResultQueue) peekLast() (receivedPartialResultSet, error) {
 	if q.empty() {
 		return nil, errEmptyQueue()
 	}
@@ -355,12 +391,12 @@ func (q *partialResultQueue) peekLast() (*sppb.PartialResultSet, error) {
 }
 
 // push adds an item to the tail of partialResultQueue.
-func (q *partialResultQueue) push(r *sppb.PartialResultSet) {
+func (q *partialResultQueue) push(r receivedPartialResultSet) {
 	if q.q == nil {
-		q.q = make([]*sppb.PartialResultSet, 8 /* arbitrary */)
+		q.q = make([]receivedPartialResultSet, 8 /* arbitrary */)
 	}
 	if q.n == cap(q.q) {
-		buf := make([]*sppb.PartialResultSet, cap(q.q)*2)
+		buf := make([]receivedPartialResultSet, cap(q.q)*2)
 		for i := 0; i < q.n; i++ {
 			buf[i] = q.q[(q.first+i)%cap(q.q)]
 		}
@@ -374,7 +410,7 @@ func (q *partialResultQueue) push(r *sppb.PartialResultSet) {
 }
 
 // pop removes an item from the head of partialResultQueue and returns it.
-func (q *partialResultQueue) pop() *sppb.PartialResultSet {
+func (q *partialResultQueue) pop() receivedPartialResultSet {
 	if q.n == 0 {
 		return nil
 	}
@@ -385,15 +421,18 @@ func (q *partialResultQueue) pop() *sppb.PartialResultSet {
 	return r
 }
 
-// clear empties partialResultQueue.
+// clear empties partialResultQueue and releases the PartialResultSets in it.
 func (q *partialResultQueue) clear() {
+	for !q.empty() {
+		releasePartialResultSet(q.pop())
+	}
 	*q = partialResultQueue{}
 }
 
 // dump retrieves all items from partialResultQueue and return them in a slice.
 // It is used only in tests.
-func (q *partialResultQueue) dump() []*sppb.PartialResultSet {
-	var dq []*sppb.PartialResultSet
+func (q *partialResultQueue) dump() []receivedPartialResultSet {
+	var dq []receivedPartialResultSet
 	for i := q.first; len(dq) < q.n; i = (i + 1) % cap(q.q) {
 		dq = append(dq, q.q[i])
 	}
@@ -458,7 +497,7 @@ type resumableStreamDecoder struct {
 
 	// np is the next sppb.PartialResultSet ready to be returned
 	// to caller of resumableStreamDecoder.Get().
-	np *sppb.PartialResultSet
+	np receivedPartialResultSet
 
 	// resumeToken stores the resume token that resumableStreamDecoder has
 	// last revealed to caller.
@@ -481,6 +520,10 @@ type resumableStreamDecoder struct {
 	// retryAttempt is is incremented whenever a retry happens, and it is
 	// reset whenever a new reqIDInjector is created afresh.
 	retryAttempt uint32
+
+	// vt decodes the PartialResultSets with vtprotobuf. It is only set with
+	// the spanner_vtproto build tag.
+	vt *vtStream
 
 	// streamOperationMetrics records the built-in metrics operation of the
 	// result stream.
@@ -660,7 +703,7 @@ func (d *resumableStreamDecoder) next() bool {
 				d.tryRecv(retryer)
 				continue
 			}
-			if d.isNewResumeToken(last.ResumeToken) {
+			if d.isNewResumeToken(last.GetResumeToken()) {
 				// Got new resume token, return buffered sppb.PartialResultSets
 				// to caller.
 				d.np = d.q.pop()
@@ -668,7 +711,7 @@ func (d *resumableStreamDecoder) next() bool {
 					d.bytesBetweenResumeTokens = 0
 					// The new resume token was just popped out from queue,
 					// record it.
-					d.resumeToken = d.np.ResumeToken
+					d.resumeToken = d.np.GetResumeToken()
 					d.changeState(queueingRetryable)
 				}
 				return true
@@ -714,8 +757,8 @@ func (d *resumableStreamDecoder) next() bool {
 
 // tryRecv attempts to receive a PartialResultSet from gRPC stream.
 func (d *resumableStreamDecoder) tryRecv(retryer gax.Retryer) {
-	var res *sppb.PartialResultSet
-	res, d.err = d.stream.Recv()
+	var res receivedPartialResultSet
+	res, d.err = recvPartialResultSet(d.vt, d.stream)
 	if d.err == nil {
 		d.q.push(res)
 		if res.GetLast() {
@@ -728,7 +771,7 @@ func (d *resumableStreamDecoder) tryRecv(retryer gax.Retryer) {
 				cancel := d.cancel
 				d.cancel = nil
 				go func() {
-					_, _ = d.stream.Recv()
+					drainStream(d.vt, d.stream)
 					cancel()
 				}()
 			}
@@ -736,8 +779,8 @@ func (d *resumableStreamDecoder) tryRecv(retryer gax.Retryer) {
 			d.changeState(finished)
 			return
 		}
-		if d.state == queueingRetryable && !d.isNewResumeToken(res.ResumeToken) {
-			d.bytesBetweenResumeTokens += int32(proto.Size(res))
+		if d.state == queueingRetryable && !d.isNewResumeToken(res.GetResumeToken()) {
+			d.bytesBetweenResumeTokens += int32(partialResultSetSize(res))
 		}
 		d.changeState(d.state)
 		return
@@ -777,7 +820,7 @@ func (d *resumableStreamDecoder) tryRecv(retryer gax.Retryer) {
 }
 
 // get returns the most recent PartialResultSet generated by a call to next.
-func (d *resumableStreamDecoder) get() *sppb.PartialResultSet {
+func (d *resumableStreamDecoder) get() receivedPartialResultSet {
 	return d.np
 }
 
@@ -832,18 +875,7 @@ func errChunkedEmptyRow() error {
 // rows that have been completed as a result.
 func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.ResultSetMetadata, error) {
 	var rows []*Row
-	if r.Metadata != nil {
-		// Metadata should only be returned in the first result.
-		if p.row.fields == nil {
-			p.row.fields = r.Metadata.RowType.Fields
-		}
-		if p.tx == nil && r.Metadata.Transaction != nil {
-			p.tx = r.Metadata.Transaction
-			if p.tx.ReadTimestamp != nil {
-				p.ts = time.Unix(p.tx.ReadTimestamp.Seconds, int64(p.tx.ReadTimestamp.Nanos))
-			}
-		}
-	}
+	p.observeMetadata(r.Metadata)
 	if len(r.Values) == 0 {
 		return nil, r.Metadata, nil
 	}
@@ -881,6 +913,24 @@ func (p *partialResultSetDecoder) add(r *sppb.PartialResultSet) ([]*Row, *sppb.R
 		p.chunked = true
 	}
 	return rows, r.Metadata, nil
+}
+
+// observeMetadata records the row type and the transaction of the metadata of
+// a PartialResultSet.
+func (p *partialResultSetDecoder) observeMetadata(metadata *sppb.ResultSetMetadata) {
+	if metadata == nil {
+		return
+	}
+	// Metadata should only be returned in the first result.
+	if p.row.fields == nil {
+		p.row.fields = metadata.RowType.Fields
+	}
+	if p.tx == nil && metadata.Transaction != nil {
+		p.tx = metadata.Transaction
+		if p.tx.ReadTimestamp != nil {
+			p.ts = time.Unix(p.tx.ReadTimestamp.Seconds, int64(p.tx.ReadTimestamp.Nanos))
+		}
+	}
 }
 
 // isMergeable returns if a protobuf Value can be potentially merged with other

@@ -505,7 +505,7 @@ func (t *txReadOnly) ReadRowWithOptions(ctx context.Context, table string, key K
 	case iterator.Done:
 		return nil, errRowNotFound(table, key)
 	case nil:
-		return row, nil
+		return detachRow(row), nil
 	default:
 		return nil, err
 	}
@@ -532,6 +532,7 @@ func (t *txReadOnly) ReadRowUsingIndex(ctx context.Context, table string, index 
 	case iterator.Done:
 		return nil, errRowNotFoundByIndex(table, key, index)
 	case nil:
+		row = detachRow(row)
 		// If more than one row found, return an error.
 		_, err := iter.Next()
 		switch err {

@@ -185,3 +185,63 @@ client-metrics export.
 
 On Spanner Omni, the Cloud Monitoring export is unavailable and always off.
 Use `ClientMetricsProvider` to export client metrics from an Omni client.
+
+## Experimental faster decoding with the `spanner_vtproto` build tag
+
+Applications that read many rows can build with the `spanner_vtproto` build tag
+to spend less CPU and allocate less memory per row:
+
+```sh
+go build -tags spanner_vtproto ./...
+```
+
+With the tag, the client decodes the results of queries and reads with
+[vtprotobuf](https://github.com/planetscale/vtprotobuf) generated code. The
+strings in the rows reference the gRPC receive buffer instead of being copied,
+the client reuses the decoded values once they are released, and a
+`RowIterator` returns the same `*Row` from every call to `Next`.
+
+Only the streaming RPCs that the client reads rows with, `ExecuteStreamingSql`
+for queries and `StreamingRead` for reads, use vtprotobuf. Their cost grows with
+every value in every row. The other RPCs, such as `Commit`, `ExecuteSql`,
+`BeginTransaction` and `BatchWrite`, are unchanged: the client builds and reads
+their messages with the public protobuf types, so decoding them with
+vtprotobuf would mean converting every request and response, which costs more
+than it saves.
+
+**Expect shorter lifetimes for all rows when you use the tag.** A row, the
+values returned by its `ColumnValue` method, and everything decoded from it,
+such as strings and `GenericColumnValue` values, are only valid until the next
+call to `Next` or `Stop` on its `RowIterator`. After that they can contain other
+data. Copy everything you keep before you call `Next` again:
+
+```go
+iter := client.Single().Query(ctx, spanner.NewStatement("SELECT Name FROM Singers"))
+defer iter.Stop()
+var names []string
+for {
+	row, err := iter.Next()
+	if err == iterator.Done {
+		break
+	}
+	if err != nil {
+		return err
+	}
+	var name string
+	if err := row.Column(0, &name); err != nil {
+		return err
+	}
+	// Assignment and proto.Clone share the storage of strings, so clone them.
+	names = append(names, strings.Clone(name))
+}
+```
+
+Do not keep rows in a slice, and do not pass rows or decoded values to other
+goroutines that use them after the next call to `Next` or `Stop`. `ReadRow`,
+`ReadRowWithOptions`, `ReadRowUsingIndex` and `SelectAll` return copies that
+stay valid. The `Metadata`, `QueryPlan`, `QueryStats` and `RowCount` fields of a
+`RowIterator` also stay valid.
+
+Without the tag nothing changes, and no vtprotobuf code is linked into your
+binary. The tag is experimental and unsupported: it can change or be removed in
+any release.
