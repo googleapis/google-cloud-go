@@ -2553,6 +2553,13 @@ func TestGRPCWriter_ChunkTransferTimeout_RetryPolicy(t *testing.T) {
 			wantAttempts: 1,
 		},
 		{
+			name:         "RetryIdempotent_NoPreconditions_AfterSession_Retried",
+			policy:       RetryIdempotent,
+			canResume:    true,
+			firstErr:     stallErr,
+			wantAttempts: 2,
+		},
+		{
 			name:         "RetryNever_NotRetried",
 			policy:       RetryNever,
 			canResume:    true,
