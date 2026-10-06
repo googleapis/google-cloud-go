@@ -1818,7 +1818,7 @@ func TestGRPCWriter_ZeroByteFlushWaitsForFirstAck(t *testing.T) {
 // generation directly.
 func TestWriteStallWatchdog_StaleCallbackIgnored(t *testing.T) {
 	stalls := 0
-	w := newWriteStallWatchdog(time.Hour, func() { stalls++ })
+	w := newWriteStallWatchdog(time.Hour, "", func(string) { stalls++ })
 	defer w.stop()
 	currentGen := func() uint64 {
 		w.mu.Lock()
@@ -1826,7 +1826,7 @@ func TestWriteStallWatchdog_StaleCallbackIgnored(t *testing.T) {
 		return w.gen
 	}
 
-	w.start()
+	w.resume()
 	stale := currentGen()
 	w.reset()
 	w.fire(stale)
@@ -1863,6 +1863,25 @@ func (s *hangingConnectSender) err() error {
 }
 
 func (s *hangingConnectSender) canResumeSession() bool { return false }
+
+// hangingStartSender hangs in connect like a resumable sender whose
+// StartResumableWrite call never returns.
+type hangingStartSender struct {
+	hangingConnectSender
+}
+
+func (s *hangingStartSender) connectStage() string { return "StartResumableWrite" }
+
+func TestGRPCResumableBidiWriteBufferSender_ConnectStage(t *testing.T) {
+	start := &gRPCResumableBidiWriteBufferSender{startWriteRequest: &storagepb.StartResumableWriteRequest{}}
+	if got := start.connectStage(); got != "StartResumableWrite" {
+		t.Errorf("new session: connectStage() = %q, want StartResumableWrite", got)
+	}
+	resume := &gRPCResumableBidiWriteBufferSender{upid: "upload-id"}
+	if got := resume.connectStage(); got != "QueryWriteStatus" {
+		t.Errorf("resumed session: connectStage() = %q, want QueryWriteStatus", got)
+	}
+}
 
 type hangingDataSender struct {
 	errResult error
@@ -1967,7 +1986,7 @@ func TestGRPCWriter_ChunkTransferTimeout_DataStall(t *testing.T) {
 func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
 	ctx := context.Background()
 	timeout := 40 * time.Millisecond
-	sender := &hangingConnectSender{}
+	sender := &hangingStartSender{}
 
 	mr := sdkmetric.NewManualReader()
 	provider := sdkmetric.NewMeterProvider(sdkmetric.WithReader(mr))
@@ -1999,8 +2018,12 @@ func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
 	}
 
 	err = w.writeLoop(ctx)
-	if !errors.Is(err, errStallTimeout) {
-		t.Fatalf("expected errStallTimeout, got: %v", err)
+	var stallErr *stallTimeoutError
+	if !errors.As(err, &stallErr) {
+		t.Fatalf("expected stallTimeoutError, got: %v", err)
+	}
+	if stallErr.stage != "StartResumableWrite" {
+		t.Errorf("stallTimeoutError.stage = %q, want StartResumableWrite", stallErr.stage)
 	}
 
 	var rm metricdata.ResourceMetrics
@@ -2021,8 +2044,8 @@ func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
 				if dp.Sum != timeout.Seconds() {
 					t.Errorf("expected sum %v, got %v", timeout.Seconds(), dp.Sum)
 				}
-				if getHistAttr(dp, "rpc.method") != "BidiWriteObject" {
-					t.Errorf("expected rpc.method BidiWriteObject, got %v", getHistAttr(dp, "rpc.method"))
+				if getHistAttr(dp, "rpc.method") != "StartResumableWrite" {
+					t.Errorf("expected rpc.method StartResumableWrite, got %v", getHistAttr(dp, "rpc.method"))
 				}
 				if getHistAttr(dp, "rpc.system.name") != "grpc" {
 					t.Errorf("expected rpc.system.name grpc, got %v", getHistAttr(dp, "rpc.system.name"))
@@ -2038,25 +2061,81 @@ func TestGRPCWriter_ChunkTransferTimeout_Telemetry(t *testing.T) {
 	}
 }
 
+// slowAckSender acknowledges flushes in order, each ackDelay after the
+// previous one, like a slow but live server.
+type slowAckSender struct {
+	ackDelay  time.Duration
+	errResult error
+}
+
+func (s *slowAckSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	flushed := make(chan int64, 64)
+	go func() {
+		defer close(flushed)
+		for {
+			select {
+			case <-ctx.Done():
+				return
+			case r, ok := <-cs.requests:
+				if !ok {
+					return
+				}
+				if r.requestAck {
+					cs.requestAcks <- struct{}{}
+				}
+				if r.flush {
+					flushed <- r.offset + int64(len(r.buf))
+				}
+			}
+		}
+	}()
+	go func() {
+		defer close(cs.completions)
+		for off := range flushed {
+			select {
+			case <-time.After(s.ackDelay):
+			case <-ctx.Done():
+				s.errResult = ctx.Err()
+				return
+			}
+			select {
+			case cs.completions <- gRPCBidiWriteCompletion{flushOffset: off}:
+			case <-ctx.Done():
+				s.errResult = ctx.Err()
+				return
+			}
+		}
+	}()
+}
+
+func (s *slowAckSender) err() error             { return s.errResult }
+func (s *slowAckSender) canResumeSession() bool { return false }
+
+// A Write spanning several chunks keeps the watchdog armed until its last
+// flush is acknowledged. The acks together take longer than the timeout, so
+// the upload succeeds only if each ack restarts the timer.
 func TestGRPCWriter_ChunkTransferTimeout_ProgressAdvancesTimer(t *testing.T) {
 	ctx := context.Background()
-	timeout := 80 * time.Millisecond
-	sender := &mockSender{respondToAllData: true}
+	timeout := 100 * time.Millisecond
+	const chunkSize, chunks = 50, 5
+	sender := &slowAckSender{ackDelay: 40 * time.Millisecond}
+	allAcked := make(chan struct{})
 
 	w := &gRPCWriter{
 		chunkTransferTimeout: timeout,
 		streamSender:         sender,
 		settings:             &settings{},
-		chunkSize:            100,
-		writeQuantum:         50,
-		buf:                  nil,
-		bufBaseOffset:        0,
-		bufUnsentIdx:         0,
+		chunkSize:            chunkSize,
+		writeQuantum:         chunkSize,
 		awaitingFirstAck:     true,
 		sendableUnits:        2,
 		writesChan:           make(chan gRPCWriterCommand, 1),
 		setSize:              func(int64) {},
-		progress:             func(int64) {},
+		progress: func(n int64) {
+			if n == chunkSize*chunks {
+				close(allAcked)
+			}
+		},
 	}
 
 	errCh := make(chan error, 1)
@@ -2064,18 +2143,19 @@ func TestGRPCWriter_ChunkTransferTimeout_ProgressAdvancesTimer(t *testing.T) {
 		errCh <- w.writeLoop(ctx)
 	}()
 
-	// Perform 3 writes, each with a 30ms sleep (total ~90ms > 80ms timeout).
-	// Because progress is acked on each write, the timer advances and doesn't stall.
-	for i := 0; i < 3; i++ {
-		done := make(chan struct{})
-		w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done}
-		<-done
-		time.Sleep(30 * time.Millisecond)
+	start := time.Now()
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, chunkSize*chunks), done: make(chan struct{})}
+	select {
+	case <-allAcked:
+	case err := <-errCh:
+		t.Fatalf("writeLoop returned %v before every chunk was acknowledged", err)
+	}
+	if elapsed := time.Since(start); elapsed <= timeout {
+		t.Fatalf("acks took %v; they must span more than the %v timeout", elapsed, timeout)
 	}
 
-	w.writesChan <- &gRPCWriterCommandClose{err: nil}
-	err := <-errCh
-	if err != nil {
+	w.writesChan <- &gRPCWriterCommandClose{}
+	if err := <-errCh; err != nil {
 		t.Fatalf("expected nil error on progress, got: %v", err)
 	}
 }
@@ -2084,6 +2164,7 @@ func TestGRPCWriter_ChunkTransferTimeout_PausedOnIdle(t *testing.T) {
 	ctx := context.Background()
 	timeout := 50 * time.Millisecond
 	sender := &mockSender{respondToAllData: true}
+	acked := make(chan struct{})
 
 	w := &gRPCWriter{
 		chunkTransferTimeout: timeout,
@@ -2098,7 +2179,11 @@ func TestGRPCWriter_ChunkTransferTimeout_PausedOnIdle(t *testing.T) {
 		sendableUnits:        2,
 		writesChan:           make(chan gRPCWriterCommand, 1),
 		setSize:              func(int64) {},
-		progress:             func(int64) {},
+		progress: func(n int64) {
+			if n == 50 {
+				close(acked)
+			}
+		},
 	}
 
 	errCh := make(chan error, 1)
@@ -2110,7 +2195,7 @@ func TestGRPCWriter_ChunkTransferTimeout_PausedOnIdle(t *testing.T) {
 	done := make(chan struct{})
 	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done}
 	<-done
-	time.Sleep(20 * time.Millisecond)
+	<-acked
 
 	// Writer is now idle waiting for caller's next Write().
 	// Sleep 80ms (> 50ms timeout). Watchdog must be paused so no stall occurs.
@@ -2354,6 +2439,72 @@ func TestGRPCWriter_ChunkTransferTimeout_FinalRequest(t *testing.T) {
 				t.Fatalf("writeLoop() = %v, want context.DeadlineExceeded", err)
 			}
 		})
+	}
+}
+
+// delayedCloseSender acks every request like mockSender but delays closing the
+// completions channel, modelling a slow stream teardown after the final ack.
+type delayedCloseSender struct {
+	mockSender
+	closeDelay time.Duration
+	// cancelled reports whether the attempt context was cancelled before the
+	// completions channel was closed.
+	cancelled bool
+}
+
+func (s *delayedCloseSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	inner := make(chan gRPCBidiWriteCompletion, cap(cs.completions))
+	s.mockSender.connect(ctx, gRPCBufSenderChans{cs.requests, cs.requestAcks, inner}, opts...)
+	go func() {
+		for c := range inner {
+			cs.completions <- c
+		}
+		time.Sleep(s.closeDelay) // teardown slower than the watchdog
+		s.cancelled = ctx.Err() != nil
+		close(cs.completions)
+	}()
+}
+
+func TestGRPCWriter_ChunkTransferTimeout_SlowTeardownIsNotAStall(t *testing.T) {
+	ctx := context.Background()
+	timeout := 50 * time.Millisecond
+	sender := &delayedCloseSender{
+		mockSender: mockSender{respondToAllData: true},
+		closeDelay: 4 * timeout,
+	}
+
+	// Appendable and not finalized on close, so the final ack carries no
+	// resource.
+	w := &gRPCWriter{
+		append:               true,
+		finalizeOnClose:      false,
+		chunkTransferTimeout: timeout,
+		streamSender:         sender,
+		settings:             &settings{},
+		chunkSize:            100,
+		writeQuantum:         50,
+		awaitingFirstAck:     true,
+		sendableUnits:        2,
+		writesChan:           make(chan gRPCWriterCommand, 1),
+		setSize:              func(int64) {},
+		progress:             func(int64) {},
+		setObj:               func(*ObjectAttrs) {},
+	}
+
+	errCh := make(chan error, 1)
+	go func() {
+		errCh <- w.writeLoop(ctx)
+	}()
+
+	done := make(chan struct{})
+	w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 50), done: done}
+	<-done
+	w.writesChan <- &gRPCWriterCommandClose{}
+	if err := <-errCh; err != nil {
+		t.Fatalf("clean close with all bytes acked returned %v; want nil", err)
+	}
+	if sender.cancelled {
+		t.Error("watchdog cancelled the attempt during stream teardown")
 	}
 }
 

@@ -149,10 +149,10 @@ type Writer struct {
 	// the in-flight attempt and retries if the retry policy permits. Retries may
 	// continue until the ChunkRetryDeadline is reached.
 	//
-	// For gRPC clients, ChunkTransferTimeout also applies to appendable uploads.
-	// It does not apply to non-appendable uploads sent in a single request,
-	// which happens when ChunkSize is 0 or the entire object fits within one
-	// chunk.
+	// For gRPC clients, ChunkTransferTimeout applies to resumable and appendable
+	// uploads. It is not supported for one-shot uploads, which send the whole
+	// object in a single request. A non-appendable upload is one-shot when
+	// ChunkSize is 0 or the object's total size is at most ChunkSize.
 	//
 	// The default value is no timeout (0).
 	ChunkTransferTimeout time.Duration

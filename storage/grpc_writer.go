@@ -54,6 +54,14 @@ const (
 // exceeds Writer.ChunkTransferTimeout without server acknowledgement.
 var errStallTimeout = errors.New("storage: chunk transfer timeout")
 
+// RPCs a gRPC write stall can occur in. They name the stage in
+// stallTimeoutError and the rpc.method attribute of the stall metric.
+const (
+	rpcStartResumableWrite = "StartResumableWrite"
+	rpcQueryWriteStatus    = "QueryWriteStatus"
+	rpcBidiWriteObject     = "BidiWriteObject"
+)
+
 type stallTimeoutError struct {
 	timeout time.Duration
 	stage   string
@@ -614,30 +622,38 @@ func (w *gRPCWriter) writeLoop(ctx context.Context) (retErr error) {
 	// Oneshot uploads are excluded: there is no upload session, so a commit
 	// abandoned by a stall-cancelled attempt could still land after the retry.
 	if w.chunkTransferTimeout > 0 && !w.usesOneshotSender() {
-		watchdog := newWriteStallWatchdog(w.chunkTransferTimeout, func() {
+		stage := rpcBidiWriteObject
+		if s, ok := w.streamSender.(interface{ connectStage() string }); ok {
+			stage = s.connectStage()
+		}
+		watchdog := newWriteStallWatchdog(w.chunkTransferTimeout, stage, func(stage string) {
 			if w.c != nil && w.c.metrics != nil {
 				target := stripPort(metricsStateFromContext(w.preRunCtx).getTarget())
-				w.c.metrics.recordStallDuration(attemptCtx, w.chunkTransferTimeout, "BidiWriteObject", "grpc", target)
+				w.c.metrics.recordStallDuration(attemptCtx, w.chunkTransferTimeout, stage, "grpc", target)
 			}
 			attemptCancel()
 		})
 		w.watchdog = watchdog
 		defer func() {
 			watchdog.stop()
-			if watchdog.isStalled() {
+			// Report a stall only if it is what ended a failed attempt.
+			if retErr != nil && ctx.Err() == nil && watchdog.isStalled() {
 				retErr = &stallTimeoutError{
 					timeout: w.chunkTransferTimeout,
-					stage:   "BidiWriteObject",
+					stage:   watchdog.currentStage(),
 				}
 			}
 			w.watchdog = nil
 		}()
 		// Stage 1: StartResumableWrite, QueryWriteStatus, and initial BidiWriteObject
 		// stream connection share the ChunkTransferTimeout duration.
-		watchdog.start()
+		watchdog.resume()
 	}
 
 	w.streamSender.connect(attemptCtx, bscs, w.settings.gax...)
+	if w.watchdog != nil {
+		w.watchdog.setStage(rpcBidiWriteObject)
+	}
 
 	// Drain any initial completions (like QueryWriteStatus results).
 Loop:
@@ -744,10 +760,12 @@ Loop:
 	}
 
 	close(requests)
+	finalizes := !w.append || w.finalizeOnClose
 	for c := range completions {
 		w.handleCompletion(c)
-		// The finalized object has been returned; only stream teardown remains.
-		if w.watchdog != nil && c.resource != nil && c.flushOffset >= finalOffset {
+		// Once every byte is acknowledged and, if the close finalizes, the
+		// object has been returned, only stream teardown remains.
+		if w.watchdog != nil && c.flushOffset >= finalOffset && (c.resource != nil || !finalizes) {
 			w.watchdog.pause()
 		}
 	}
@@ -768,14 +786,33 @@ type writeStallWatchdog struct {
 	gen           uint64
 	running       bool
 	stallOccurred bool
-	onStall       func()
+	// stage names the RPC being timed. It is frozen once a stall fires.
+	stage   string
+	onStall func(stage string)
 }
 
-func newWriteStallWatchdog(timeout time.Duration, onStall func()) *writeStallWatchdog {
+func newWriteStallWatchdog(timeout time.Duration, stage string, onStall func(stage string)) *writeStallWatchdog {
 	return &writeStallWatchdog{
 		timeout: timeout,
+		stage:   stage,
 		onStall: onStall,
 	}
+}
+
+// setStage names the RPC being timed. It has no effect after a stall.
+func (w *writeStallWatchdog) setStage(stage string) {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	if !w.stallOccurred {
+		w.stage = stage
+	}
+}
+
+// currentStage returns the RPC being timed, or the one that stalled.
+func (w *writeStallWatchdog) currentStage() string {
+	w.mu.Lock()
+	defer w.mu.Unlock()
+	return w.stage
 }
 
 // arm stops any current timer and starts a new one for the full timeout.
@@ -797,22 +834,7 @@ func (w *writeStallWatchdog) disarm() {
 	w.running = false
 }
 
-func (w *writeStallWatchdog) start() {
-	if w == nil || w.timeout <= 0 {
-		return
-	}
-	w.mu.Lock()
-	defer w.mu.Unlock()
-	if w.stallOccurred {
-		return
-	}
-	w.arm()
-}
-
 func (w *writeStallWatchdog) reset() {
-	if w == nil || w.timeout <= 0 {
-		return
-	}
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.stallOccurred {
@@ -822,9 +844,6 @@ func (w *writeStallWatchdog) reset() {
 }
 
 func (w *writeStallWatchdog) pause() {
-	if w == nil || w.timeout <= 0 {
-		return
-	}
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.stallOccurred || !w.running {
@@ -834,9 +853,6 @@ func (w *writeStallWatchdog) pause() {
 }
 
 func (w *writeStallWatchdog) resume() {
-	if w == nil || w.timeout <= 0 {
-		return
-	}
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	if w.stallOccurred || w.running {
@@ -846,18 +862,12 @@ func (w *writeStallWatchdog) resume() {
 }
 
 func (w *writeStallWatchdog) stop() {
-	if w == nil {
-		return
-	}
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	w.disarm()
 }
 
 func (w *writeStallWatchdog) isStalled() bool {
-	if w == nil {
-		return false
-	}
 	w.mu.Lock()
 	defer w.mu.Unlock()
 	return w.stallOccurred
@@ -872,11 +882,11 @@ func (w *writeStallWatchdog) fire(gen uint64) {
 	}
 	w.stallOccurred = true
 	w.running = false
-	onStall := w.onStall
+	onStall, stage := w.onStall, w.stage
 	w.mu.Unlock()
 
 	if onStall != nil {
-		onStall()
+		onStall(stage)
 	}
 }
 
@@ -1524,6 +1534,15 @@ func (w *gRPCWriter) newGRPCResumableBidiWriteBufferSender() *gRPCResumableBidiW
 
 func (s *gRPCResumableBidiWriteBufferSender) err() error             { return s.streamErr }
 func (s *gRPCResumableBidiWriteBufferSender) canResumeSession() bool { return s.upid != "" }
+
+// connectStage names the RPC that connect blocks on before it opens the
+// stream.
+func (s *gRPCResumableBidiWriteBufferSender) connectStage() string {
+	if s.startWriteRequest != nil {
+		return rpcStartResumableWrite
+	}
+	return rpcQueryWriteStatus
+}
 
 func (s *gRPCResumableBidiWriteBufferSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
 	s.streamErr = nil
