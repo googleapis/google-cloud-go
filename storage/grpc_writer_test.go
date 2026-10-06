@@ -2604,3 +2604,404 @@ func TestGRPCWriter_ChunkTransferTimeout_RetryPolicy(t *testing.T) {
 		})
 	}
 }
+
+type scriptedStallSender struct {
+	mu           sync.Mutex
+	attempts     int
+	stallAttempt map[int]bool
+	sendDelay    time.Duration
+	errResult    error
+}
+
+func (s *scriptedStallSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	s.mu.Lock()
+	s.attempts++
+	attempt := s.attempts
+	shouldStall := s.stallAttempt[attempt]
+	delay := s.sendDelay
+	s.errResult = nil
+	s.mu.Unlock()
+
+	go func() {
+		defer close(cs.completions)
+		for {
+			select {
+			case <-ctx.Done():
+				s.mu.Lock()
+				s.errResult = ctx.Err()
+				s.mu.Unlock()
+				return
+			case r, ok := <-cs.requests:
+				if !ok {
+					return
+				}
+				if r.requestAck {
+					select {
+					case cs.requestAcks <- struct{}{}:
+					case <-ctx.Done():
+						s.mu.Lock()
+						s.errResult = ctx.Err()
+						s.mu.Unlock()
+						return
+					}
+					continue
+				}
+				if shouldStall {
+					<-ctx.Done()
+					s.mu.Lock()
+					s.errResult = ctx.Err()
+					s.mu.Unlock()
+					return
+				}
+				if delay > 0 {
+					select {
+					case <-time.After(delay):
+					case <-ctx.Done():
+						s.mu.Lock()
+						s.errResult = ctx.Err()
+						s.mu.Unlock()
+						return
+					}
+				}
+				select {
+				case cs.completions <- gRPCBidiWriteCompletion{
+					flushOffset: r.offset + int64(len(r.buf)),
+				}:
+				case <-ctx.Done():
+					s.mu.Lock()
+					s.errResult = ctx.Err()
+					s.mu.Unlock()
+					return
+				}
+			}
+		}
+	}()
+}
+
+func (s *scriptedStallSender) err() error {
+	s.mu.Lock()
+	defer s.mu.Unlock()
+	return s.errResult
+}
+
+func (s *scriptedStallSender) canResumeSession() bool { return false }
+
+type funcSender struct {
+	mu        sync.Mutex
+	connectFn func(ctx context.Context, cs gRPCBufSenderChans) error
+	errResult error
+}
+
+func (f *funcSender) connect(ctx context.Context, cs gRPCBufSenderChans, opts ...gax.CallOption) {
+	go func() {
+		defer close(cs.completions)
+		err := f.connectFn(ctx, cs)
+		f.mu.Lock()
+		f.errResult = err
+		f.mu.Unlock()
+	}()
+}
+
+func (f *funcSender) err() error {
+	f.mu.Lock()
+	defer f.mu.Unlock()
+	return f.errResult
+}
+
+func (f *funcSender) canResumeSession() bool { return false }
+
+func TestGRPCWriter_TwoLayerStallAndRetryDeadline(t *testing.T) {
+	t.Run("StallDetectedAndRecovered", func(t *testing.T) {
+		ctx := context.Background()
+		sender := &scriptedStallSender{
+			stallAttempt: map[int]bool{1: true},
+		}
+		w := &gRPCWriter{
+			preRunCtx:            ctx,
+			chunkTransferTimeout: 40 * time.Millisecond,
+			budget:               chunkRetryBudget{deadline: 500 * time.Millisecond},
+			streamSender:         sender,
+			settings: &settings{
+				retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+				idempotent: true,
+			},
+			chunkSize:        100,
+			writeQuantum:     100,
+			buf:              make([]byte, 100),
+			bufBaseOffset:    0,
+			bufUnsentIdx:     0,
+			awaitingFirstAck: true,
+			sendableUnits:    1,
+			writesChan:       make(chan gRPCWriterCommand, 2),
+			setSize:          func(int64) {},
+			progress:         func(int64) {},
+			setObj:           func(*ObjectAttrs) {},
+		}
+		w.writesChan <- &gRPCWriterCommandClose{err: nil}
+
+		err := run(w.preRunCtx, func(ctx context.Context) error {
+			w.lastErr = w.writeLoop(ctx)
+			return w.lastErr
+		}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+		if err != nil {
+			t.Fatalf("expected stall recovery to succeed, got: %v", err)
+		}
+		sender.mu.Lock()
+		gotAttempts := sender.attempts
+		sender.mu.Unlock()
+		if gotAttempts != 2 {
+			t.Fatalf("expected 2 attempts (1 stall + 1 recovery), got %d", gotAttempts)
+		}
+	})
+
+	t.Run("RepeatedStallsExhaustRetryDeadline", func(t *testing.T) {
+		ctx := context.Background()
+		sender := &scriptedStallSender{
+			stallAttempt: map[int]bool{1: true, 2: true, 3: true, 4: true, 5: true, 6: true},
+		}
+		w := &gRPCWriter{
+			preRunCtx:            ctx,
+			chunkTransferTimeout: 40 * time.Millisecond,
+			budget:               chunkRetryBudget{deadline: 110 * time.Millisecond},
+			streamSender:         sender,
+			settings: &settings{
+				retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+				idempotent: true,
+			},
+			chunkSize:        100,
+			writeQuantum:     100,
+			buf:              make([]byte, 100),
+			bufBaseOffset:    0,
+			bufUnsentIdx:     0,
+			awaitingFirstAck: true,
+			sendableUnits:    1,
+			writesChan:       make(chan gRPCWriterCommand, 2),
+			setSize:          func(int64) {},
+			progress:         func(int64) {},
+			setObj:           func(*ObjectAttrs) {},
+		}
+
+		err := run(w.preRunCtx, func(ctx context.Context) error {
+			w.lastErr = w.writeLoop(ctx)
+			return w.lastErr
+		}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+		if err == nil {
+			t.Fatal("expected retry deadline error, got nil")
+		}
+		var deadlineErr *chunkRetryDeadlineError
+		if !errors.As(err, &deadlineErr) {
+			t.Fatalf("expected chunkRetryDeadlineError, got: %v", err)
+		}
+		if !errors.Is(err, errStallTimeout) {
+			t.Fatalf("expected the retry deadline error to wrap the last stall, got: %v", err)
+		}
+	})
+
+	t.Run("ProgressResetsBothTimers", func(t *testing.T) {
+		ctx := context.Background()
+		// ChunkRetryDeadline is 120ms, ChunkTransferTimeout is 50ms.
+		// Attempt 1 (Chunk 1): stalls (50ms) -> fails with errStallTimeout.
+		// Attempt 2 (Chunk 1): succeeds and ACKs offset 100 -> resets ChunkRetryDeadline!
+		// Attempt 2 then receives Chunk 2 (offset 100..200), which we stall on Attempt 2 by failing after offset 100.
+		// Instead, we can drive two writes sequentially where Attempt 1 stalls (50ms), Attempt 2 succeeds on Chunk 1 (100 bytes),
+		// and then stalls on Chunk 2 (another 50ms, total 100ms + backoff > 120ms if not reset), and Attempt 3 succeeds on Chunk 2.
+		var mu sync.Mutex
+		attempt := 0
+		chunk1Acked := make(chan struct{})
+		var chunk1Once sync.Once
+
+		customSender := &funcSender{
+			connectFn: func(ctx context.Context, cs gRPCBufSenderChans) error {
+				mu.Lock()
+				attempt++
+				curAttempt := attempt
+				mu.Unlock()
+
+				for {
+					select {
+					case <-ctx.Done():
+						return ctx.Err()
+					case r, ok := <-cs.requests:
+						if !ok {
+							return nil
+						}
+						if r.requestAck {
+							select {
+							case cs.requestAcks <- struct{}{}:
+							case <-ctx.Done():
+								return ctx.Err()
+							}
+							continue
+						}
+						endOffset := r.offset + int64(len(r.buf))
+						// Attempt 1 stalls on Chunk 1 (endOffset == 100).
+						if curAttempt == 1 && endOffset == 100 {
+							<-ctx.Done()
+							return ctx.Err()
+						}
+						// Attempt 2 ACKs Chunk 1 (endOffset == 100), then stalls on Chunk 2 (endOffset == 200).
+						if curAttempt == 2 && endOffset == 200 {
+							<-ctx.Done()
+							return ctx.Err()
+						}
+						select {
+						case cs.completions <- gRPCBidiWriteCompletion{flushOffset: endOffset}:
+							if endOffset == 100 {
+								chunk1Once.Do(func() { close(chunk1Acked) })
+							}
+						case <-ctx.Done():
+							return ctx.Err()
+						}
+					}
+				}
+			},
+		}
+
+		w := &gRPCWriter{
+			preRunCtx:            ctx,
+			chunkTransferTimeout: 50 * time.Millisecond,
+			budget:               chunkRetryBudget{deadline: 90 * time.Millisecond},
+			streamSender:         customSender,
+			settings: &settings{
+				retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+				idempotent: true,
+			},
+			chunkSize:        100,
+			writeQuantum:     100,
+			buf:              make([]byte, 0, 100),
+			bufBaseOffset:    0,
+			bufUnsentIdx:     0,
+			awaitingFirstAck: true,
+			sendableUnits:    2,
+			writesChan:       make(chan gRPCWriterCommand, 4),
+			setSize:          func(int64) {},
+			progress:         func(int64) {},
+			setObj:           func(*ObjectAttrs) {},
+		}
+
+		go func() {
+			done1 := make(chan struct{})
+			w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 100), done: done1}
+			<-done1
+			<-chunk1Acked
+
+			done2 := make(chan struct{})
+			w.writesChan <- &gRPCWriterCommandWrite{p: make([]byte, 100), done: done2}
+			<-done2
+
+			w.writesChan <- &gRPCWriterCommandClose{err: nil}
+		}()
+
+		err := run(w.preRunCtx, func(ctx context.Context) error {
+			w.lastErr = w.writeLoop(ctx)
+			return w.lastErr
+		}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+		if err != nil {
+			t.Fatalf("expected both chunks to succeed after progress reset timers, got: %v", err)
+		}
+		mu.Lock()
+		gotAttempts := attempt
+		mu.Unlock()
+		if gotAttempts != 3 {
+			t.Fatalf("expected 3 attempts across 2 chunks, got %d", gotAttempts)
+		}
+	})
+
+	t.Run("StallTimeoutLongerThanRetryDeadline", func(t *testing.T) {
+		ctx := context.Background()
+		sender := &scriptedStallSender{
+			stallAttempt: map[int]bool{1: true, 2: true},
+		}
+		w := &gRPCWriter{
+			preRunCtx:            ctx,
+			chunkTransferTimeout: 80 * time.Millisecond,
+			budget:               chunkRetryBudget{deadline: 30 * time.Millisecond},
+			streamSender:         sender,
+			settings: &settings{
+				retry:      &retryConfig{backoff: &gax.Backoff{Initial: 5 * time.Millisecond}},
+				idempotent: true,
+			},
+			chunkSize:        100,
+			writeQuantum:     100,
+			buf:              make([]byte, 100),
+			bufBaseOffset:    0,
+			bufUnsentIdx:     0,
+			awaitingFirstAck: true,
+			sendableUnits:    1,
+			writesChan:       make(chan gRPCWriterCommand, 2),
+			setSize:          func(int64) {},
+			progress:         func(int64) {},
+			setObj:           func(*ObjectAttrs) {},
+		}
+
+		err := run(w.preRunCtx, func(ctx context.Context) error {
+			w.lastErr = w.writeLoop(ctx)
+			return w.lastErr
+		}, w.writerRetryConfig(), w.settings.idempotent, withOperation("WriteObject"))
+		var deadlineErr *chunkRetryDeadlineError
+		if !errors.As(err, &deadlineErr) || !errors.Is(err, errStallTimeout) {
+			t.Fatalf("expected retry deadline error on attempt 2 after stall, got: %v", err)
+		}
+		sender.mu.Lock()
+		gotAttempts := sender.attempts
+		sender.mu.Unlock()
+		if gotAttempts != 1 {
+			t.Fatalf("expected only 1 stream connect before retry deadline aborted attempt 2, got %d", gotAttempts)
+		}
+	})
+
+	t.Run("ZeroTimeoutDisablesStallDetection", func(t *testing.T) {
+		ctx := context.Background()
+		sender := &scriptedStallSender{
+			sendDelay: 60 * time.Millisecond,
+		}
+		w := &gRPCWriter{
+			preRunCtx:            ctx,
+			chunkTransferTimeout: 0, // Disabled
+			budget:               chunkRetryBudget{deadline: 500 * time.Millisecond},
+			streamSender:         sender,
+			settings:             &settings{idempotent: true},
+			chunkSize:            100,
+			writeQuantum:         100,
+			buf:                  make([]byte, 100),
+			bufBaseOffset:        0,
+			bufUnsentIdx:         0,
+			awaitingFirstAck:     true,
+			sendableUnits:        1,
+			writesChan:           make(chan gRPCWriterCommand, 2),
+			setSize:              func(int64) {},
+			progress:             func(int64) {},
+			setObj:               func(*ObjectAttrs) {},
+		}
+		w.writesChan <- &gRPCWriterCommandClose{err: nil}
+
+		if err := w.writeLoop(ctx); err != nil {
+			t.Fatalf("expected success when chunkTransferTimeout is 0, got: %v", err)
+		}
+	})
+
+	t.Run("UserContextCancelPrecedence", func(t *testing.T) {
+		ctx, cancel := context.WithCancel(context.Background())
+		sender := &hangingConnectSender{}
+		w := &gRPCWriter{
+			preRunCtx:            ctx,
+			chunkTransferTimeout: 500 * time.Millisecond,
+			streamSender:         sender,
+			settings:             &settings{},
+			writesChan:           make(chan gRPCWriterCommand, 1),
+		}
+
+		go func() {
+			time.Sleep(30 * time.Millisecond)
+			cancel()
+		}()
+
+		err := w.writeLoop(ctx)
+		if !errors.Is(err, context.Canceled) {
+			t.Fatalf("expected context.Canceled when user cancels parent context, got: %v", err)
+		}
+		if errors.Is(err, errStallTimeout) {
+			t.Fatalf("expected user cancellation not to be masked as errStallTimeout, got: %v", err)
+		}
+	})
+}

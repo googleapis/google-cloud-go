@@ -3417,7 +3417,7 @@ func checkRetryTestCompleted(t *testing.T, testID string) {
 }
 
 func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
-	transportClientTest(skipGRPC("service is not implemented"), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
+	transportClientTest(context.Background(), t, func(t *testing.T, ctx context.Context, project, bucket string, client storageClient) {
 		_, err := client.CreateBucket(ctx, project, bucket, &BucketAttrs{}, nil)
 		if err != nil {
 			t.Fatalf("creating bucket: %v", err)
@@ -3434,7 +3434,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -3442,7 +3442,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
@@ -3450,7 +3450,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-2s-after-3072K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -3458,7 +3458,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-second-chunk-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-3072K"},
+					"storage.objects.insert": {"stall-for-2s-after-3072K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
@@ -3466,7 +3466,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-zero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K", "stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 0,
 				expectedSuccess:      false,
@@ -3474,7 +3474,7 @@ func TestWriterChunkTransferTimeoutEmulated(t *testing.T) {
 			{
 				name: "stall-on-first-chunk-twice-with-chunk-transfer-timeout-nonzero",
 				instructions: map[string][]string{
-					"storage.objects.insert": {"stall-for-10s-after-1024K", "stall-for-10s-after-1024K"},
+					"storage.objects.insert": {"stall-for-2s-after-1024K", "stall-for-2s-after-1024K"},
 				},
 				chunkTransferTimeout: 100 * time.Millisecond,
 				expectedSuccess:      true,
