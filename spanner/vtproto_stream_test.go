@@ -889,3 +889,341 @@ func TestVTReceiveBufferPool(t *testing.T) {
 		t.Errorf("Get(4000) returned a capacity of %d, want 4096", cap(*got))
 	}
 }
+
+func TestVTRowIteratorDoLifecycle(t *testing.T) {
+	s := &codecStream{prs: []*sppb.PartialResultSet{
+		{Metadata: kvMeta, Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(0)), structpb.NewStringValue(valStr(0)),
+			structpb.NewStringValue(keyStr(1)), structpb.NewStringValue(valStr(1)),
+		}, ResumeToken: EncodeResumeToken(2)},
+		{Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(2)), structpb.NewStringValue(valStr(2)),
+		}, ResumeToken: EncodeResumeToken(3)},
+	}}
+	iter := codecStreamIterator(t, s)
+
+	var (
+		firstRow       *Row
+		rowPointers    []*Row
+		unclonedKeys   []string
+		clonedKeys     []string
+		iterationCount int
+	)
+
+	err := iter.Do(func(row *Row) error {
+		if firstRow == nil {
+			firstRow = row
+		} else if row != firstRow {
+			t.Errorf("iteration %d: Do passed a different *Row pointer %p, want %p", iterationCount, row, firstRow)
+		}
+		rowPointers = append(rowPointers, row)
+
+		var k string
+		if err := row.Column(0, &k); err != nil {
+			return err
+		}
+		// uncloned: shares receive buffer
+		unclonedKeys = append(unclonedKeys, k)
+		// cloned: safe copy
+		clonedKeys = append(clonedKeys, strings.Clone(k))
+
+		iterationCount++
+		return nil
+	})
+	if err != nil {
+		t.Fatalf("iter.Do failed: %v", err)
+	}
+
+	wCount, gCount := 3, iterationCount
+	if wCount != gCount {
+		t.Fatalf("row count mismatch:\n Want: %v\n  Got: %v", wCount, gCount)
+	}
+
+	// Verify all row pointers collected are identical (the reused pointer).
+	for i, r := range rowPointers {
+		if r != firstRow {
+			t.Errorf("row %d has different pointer %p, want %p", i, r, firstRow)
+		}
+	}
+
+	// Verify that cloned keys survived Do and Stop.
+	wantKeys := []string{keyStr(0), keyStr(1), keyStr(2)}
+	if diff := cmpDiff(clonedKeys, wantKeys); diff != "" {
+		t.Errorf("clonedKeys mismatch (-got +want):\n%s", diff)
+	}
+
+	// Because overwriteReleasedBuffers is true in tests, the first two uncloned keys
+	// must have been overwritten when their buffers were released.
+	for i := 0; i < 2; i++ {
+		if unclonedKeys[i] == wantKeys[i] {
+			t.Errorf("unclonedKeys[%d] unexpectedly retained valid value %q; expected memory overwrite", i, unclonedKeys[i])
+		}
+	}
+}
+
+func TestVTRowToStructLifecycle(t *testing.T) {
+	type KV struct {
+		Key   string `spanner:"Key"`
+		Value string `spanner:"Value"`
+	}
+
+	s := &codecStream{prs: []*sppb.PartialResultSet{
+		{Metadata: kvMeta, Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(0)), structpb.NewStringValue(valStr(0)),
+		}, ResumeToken: EncodeResumeToken(1)},
+		{Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(1)), structpb.NewStringValue(valStr(1)),
+		}, ResumeToken: EncodeResumeToken(2)},
+	}}
+	iter := codecStreamIterator(t, s)
+	defer iter.Stop()
+
+	var collectedUncloned []KV
+	var collectedCloned []KV
+
+	for i := 0; i < 2; i++ {
+		row, err := iter.Next()
+		if err != nil {
+			t.Fatalf("Next(%d) failed: %v", i, err)
+		}
+		var item KV
+		if err := row.ToStruct(&item); err != nil {
+			t.Fatalf("ToStruct(%d) failed: %v", i, err)
+		}
+
+		collectedUncloned = append(collectedUncloned, item)
+		collectedCloned = append(collectedCloned, KV{
+			Key:   strings.Clone(item.Key),
+			Value: strings.Clone(item.Value),
+		})
+	}
+
+	// Trigger next/stop so that all receive buffers are released and overwritten.
+	if _, err := iter.Next(); err != iterator.Done {
+		t.Fatalf("expected iterator.Done, got: %v", err)
+	}
+	iter.Stop()
+
+	// Verify cloned struct fields retained original values.
+	wantCloned := []KV{
+		{Key: keyStr(0), Value: valStr(0)},
+		{Key: keyStr(1), Value: valStr(1)},
+	}
+	if diff := cmpDiff(collectedCloned, wantCloned); diff != "" {
+		t.Errorf("collectedCloned mismatch (-got +want):\n%s", diff)
+	}
+
+	// Verify uncloned struct string fields had their underlying buffers overwritten.
+	if collectedUncloned[0].Key == keyStr(0) {
+		t.Errorf("collectedUncloned[0].Key retained original value %q; expected memory overwrite", collectedUncloned[0].Key)
+	}
+}
+
+func TestVTGenericColumnValueAndColumnValueLifecycle(t *testing.T) {
+	s := &codecStream{prs: []*sppb.PartialResultSet{
+		{Metadata: kvMeta, Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(0)), structpb.NewStringValue(valStr(0)),
+		}, ResumeToken: EncodeResumeToken(1)},
+		{Values: []*structpb.Value{
+			structpb.NewStringValue(keyStr(1)), structpb.NewStringValue(valStr(1)),
+		}, ResumeToken: EncodeResumeToken(2)},
+	}}
+	iter := codecStreamIterator(t, s)
+	defer iter.Stop()
+
+	row0, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first Next() failed: %v", err)
+	}
+
+	// Capture GenericColumnValue and ColumnValue from row0.
+	var genVal GenericColumnValue
+	if err := row0.Column(0, &genVal); err != nil {
+		t.Fatalf("Column(0, &genVal) failed: %v", err)
+	}
+	colVal := row0.ColumnValue(0)
+
+	// Detach row0 to ensure detachRow creates a safe independent copy.
+	detachedRow0 := detachRow(row0)
+	var detachedGenVal GenericColumnValue
+	if err := detachedRow0.Column(0, &detachedGenVal); err != nil {
+		t.Fatalf("detachedRow0.Column(0, &detachedGenVal) failed: %v", err)
+	}
+
+	// Advance iterator to row1; row0's buffer is released and overwritten.
+	_, err = iter.Next()
+	if err != nil {
+		t.Fatalf("second Next() failed: %v", err)
+	}
+
+	// The detached row must remain completely valid.
+	wDetached, gDetached := keyStr(0), detachedGenVal.Value.GetStringValue()
+	if wDetached != gDetached {
+		t.Errorf("detached value mismatch:\n Want: %v\n  Got: %v", wDetached, gDetached)
+	}
+
+	// The uncloned GenericColumnValue / ColumnValue string should have been overwritten.
+	if genVal.Value.GetStringValue() == keyStr(0) {
+		t.Errorf("GenericColumnValue unexpectedly retained original string %q; expected buffer overwrite", genVal.Value.GetStringValue())
+	}
+	if colVal.GetStringValue() == keyStr(0) {
+		t.Errorf("ColumnValue unexpectedly retained original string %q; expected buffer overwrite", colVal.GetStringValue())
+	}
+}
+
+func TestVTReceiveBufferPoolEdgeCases(t *testing.T) {
+	p := &receiveBufferPool{}
+
+	t.Run("NilPut", func(t *testing.T) {
+		defer func() {
+			if r := recover(); r != nil {
+				t.Fatalf("Put(nil) panicked: %v", r)
+			}
+		}()
+		p.Put(nil)
+	})
+
+	t.Run("NonPositiveLengths", func(t *testing.T) {
+		for _, length := range []int{0, -1, -100} {
+			b := p.Get(length)
+			if len(*b) != 0 {
+				t.Errorf("Get(%d) returned len %d, want 0", length, len(*b))
+			}
+			p.Put(b)
+		}
+	})
+
+	t.Run("ClassBoundaries", func(t *testing.T) {
+		// Test lengths immediately around power-of-two boundaries.
+		for _, base := range []int{1024, 4096, 65536} {
+			for _, delta := range []int{-1, 0, 1} {
+				length := base + delta
+				b := p.Get(length)
+				if len(*b) != length {
+					t.Errorf("Get(%d) returned len %d", length, len(*b))
+				}
+				if cap(*b) < length {
+					t.Errorf("Get(%d) returned cap %d < len %d", length, cap(*b), length)
+				}
+				p.Put(b)
+			}
+		}
+	})
+
+	t.Run("NonPowerOfTwoCapacityNotPooled", func(t *testing.T) {
+		oddBuffer := make([]byte, 100, 300) // 300 is not a power of two
+		p.Put(&oddBuffer)
+	})
+}
+
+func TestVTRowIteratorEarlyStopFreesAllQueuedBuffers(t *testing.T) {
+	pool := &countingBufferPool{}
+	s := &codecStream{pool: pool}
+
+	// Push 5 PartialResultSets without resume tokens so that resumableStreamDecoder
+	// queues them in d.q.
+	for i := 0; i < 5; i++ {
+		r := &sppb.PartialResultSet{
+			Values: []*structpb.Value{
+				structpb.NewStringValue(keyStr(i)),
+				structpb.NewStringValue(valStr(i)),
+			},
+		}
+		if i == 0 {
+			r.Metadata = kvMeta
+		}
+		s.prs = append(s.prs, r)
+	}
+
+	iter := codecStreamIterator(t, s)
+
+	// Read only the first row.
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("first Next() failed: %v", err)
+	}
+	if row == nil {
+		t.Fatal("first Next() returned nil row")
+	}
+
+	// Early Stop before consuming remaining queued messages.
+	iter.Stop()
+
+	// Verify that all buffers allocated for queued and pending messages were freed.
+	wOutstanding, gOutstanding := int64(0), pool.outstanding.Load()
+	if wOutstanding != gOutstanding {
+		t.Errorf("outstanding buffers mismatch after early Stop():\n Want: %v\n  Got: %v", wOutstanding, gOutstanding)
+	}
+}
+
+func TestVTMultiStageChunkedRows(t *testing.T) {
+	pool := &countingBufferPool{}
+	part1 := "hello "
+	part2 := "world "
+	part3 := "from spanner"
+	expectedMerged := part1 + part2 + part3
+
+	s := &codecStream{
+		pool: pool,
+		prs: []*sppb.PartialResultSet{
+			{
+				Metadata:     kvMeta,
+				Values:       []*structpb.Value{structpb.NewStringValue(keyStr(0)), structpb.NewStringValue(part1)},
+				ChunkedValue: true,
+				ResumeToken:  EncodeResumeToken(1),
+			},
+			{
+				Values:       []*structpb.Value{structpb.NewStringValue(part2)},
+				ChunkedValue: true,
+				ResumeToken:  EncodeResumeToken(2),
+			},
+			{
+				Values:       []*structpb.Value{structpb.NewStringValue(part3)},
+				ChunkedValue: false,
+				ResumeToken:  EncodeResumeToken(3),
+			},
+		},
+	}
+
+	iter := codecStreamIterator(t, s)
+	defer iter.Stop()
+
+	row, err := iter.Next()
+	if err != nil {
+		t.Fatalf("Next() failed: %v", err)
+	}
+
+	var key, val string
+	if err := row.Column(0, &key); err != nil {
+		t.Fatal(err)
+	}
+	if err := row.Column(1, &val); err != nil {
+		t.Fatal(err)
+	}
+
+	wKey, gKey := keyStr(0), key
+	if wKey != gKey {
+		t.Errorf("key mismatch:\n Want: %v\n  Got: %v", wKey, gKey)
+	}
+
+	wVal, gVal := expectedMerged, val
+	if wVal != gVal {
+		t.Errorf("merged value mismatch:\n Want: %v\n  Got: %v", wVal, gVal)
+	}
+
+	// While row is active, intermediate chunk buffers must remain retained.
+	if pool.outstanding.Load() == 0 {
+		t.Error("expected receive buffers to remain allocated while row is active")
+	}
+
+	// Advancing to iterator.Done releases the row and all 3 underlying chunk buffers.
+	if _, err := iter.Next(); err != iterator.Done {
+		t.Fatalf("expected iterator.Done, got %v", err)
+	}
+	iter.Stop()
+
+	wOutstanding, gOutstanding := int64(0), pool.outstanding.Load()
+	if wOutstanding != gOutstanding {
+		t.Errorf("outstanding buffers mismatch after consuming multi-chunk row:\n Want: %v\n  Got: %v", wOutstanding, gOutstanding)
+	}
+}

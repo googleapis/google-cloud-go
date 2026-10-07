@@ -166,6 +166,9 @@ type receiveBufferPool struct {
 const receiveBufferClasses = 25
 
 func (p *receiveBufferPool) Get(length int) *[]byte {
+	if length < 0 {
+		length = 0
+	}
 	class := bits.Len(uint(length - 1))
 	if length <= 0 || class >= receiveBufferClasses {
 		b := make([]byte, length)
@@ -180,6 +183,9 @@ func (p *receiveBufferPool) Get(length int) *[]byte {
 }
 
 func (p *receiveBufferPool) Put(b *[]byte) {
+	if b == nil {
+		return
+	}
 	c := cap(*b)
 	class := bits.Len(uint(c - 1))
 	if c > 0 && class < receiveBufferClasses && c == 1<<class {
