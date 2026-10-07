@@ -3769,10 +3769,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qOid1 := coll.Where("key", ">", oid1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qOid1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qOid1, []string{"doc3", "doc2"})
 
 		qOid2 := coll.Where("key", "in", []interface{}{oid1, oid2}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qOid2, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qOid2, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderInt32", func(t *testing.T) {
@@ -3789,10 +3789,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qInt1 := coll.Where("key", ">=", i2).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qInt1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qInt1, []string{"doc3", "doc2"})
 
 		qInt2 := coll.Where("key", "not-in", []interface{}{i2}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qInt2, []string{"doc3", "doc1"})
+		assertBSONQueryOrder(ctx, t, qInt2, []string{"doc3", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderDecimal128", func(t *testing.T) {
@@ -3809,10 +3809,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qDec1 := coll.Where("key", ">=", BSONDecimal128("-1.1")).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qDec1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qDec1, []string{"doc3", "doc2"})
 
 		qDec2 := coll.Where("key", "not-in", []interface{}{BSONDecimal128("1.2e-3")}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qDec2, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qDec2, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderBsonTimestamp", func(t *testing.T) {
@@ -3829,10 +3829,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qBt1 := coll.Where("key", ">", bt1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBt1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qBt1, []string{"doc3", "doc2"})
 
 		qBt2 := coll.Where("key", "!=", bt1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBt2, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qBt2, []string{"doc3", "doc2"})
 	})
 
 	t.Run("canFilterAndOrderBsonBinaryData", func(t *testing.T) {
@@ -3849,10 +3849,10 @@ func testIntegrationBSONQueries(t *testing.T) {
 		})
 
 		qBb1 := coll.Where("key", ">", bb1).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBb1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qBb1, []string{"doc3", "doc2"})
 
 		qBb2 := coll.Where("key", ">=", bb1).Where("key", "<", bb3).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBb2, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qBb2, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderRegexValues", func(t *testing.T) {
@@ -3874,7 +3874,7 @@ func testIntegrationBSONQueries(t *testing.T) {
 				PropertyFilter{Path: "key", Operator: "!=", Value: BSONRegex{Pattern: "^bar", Options: "x"}},
 			},
 		}).OrderBy("key", Desc)
-		assertQueryOrder(ctx, t, qBr1, []string{"doc3", "doc1"})
+		assertBSONQueryOrder(ctx, t, qBr1, []string{"doc3", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderMinKeys", func(t *testing.T) {
@@ -3888,7 +3888,7 @@ func testIntegrationBSONQueries(t *testing.T) {
 
 		qMin1 := coll.Where("key", "==", BSONMinKey{}).OrderBy("key", Desc)
 		// MinKeys are equal, would sort by documentId as secondary order
-		assertQueryOrder(ctx, t, qMin1, []string{"doc2", "doc1"})
+		assertBSONQueryOrder(ctx, t, qMin1, []string{"doc2", "doc1"})
 	})
 
 	t.Run("canFilterAndOrderMaxKeys", func(t *testing.T) {
@@ -3902,7 +3902,7 @@ func testIntegrationBSONQueries(t *testing.T) {
 
 		qMax1 := coll.Where("key", "==", BSONMaxKey{}).OrderBy("key", Desc)
 		// MaxKeys are equal, would sort by documentId as secondary order
-		assertQueryOrder(ctx, t, qMax1, []string{"doc3", "doc2"})
+		assertBSONQueryOrder(ctx, t, qMax1, []string{"doc3", "doc2"})
 	})
 }
 
@@ -3952,7 +3952,7 @@ func testIntegrationBSONCrossTypeOrder(t *testing.T) {
 	}
 
 	q := coll.OrderBy("key", Desc)
-	assertQueryOrder(ctx, t, q, expectedResult)
+	assertBSONQueryOrder(ctx, t, q, expectedResult)
 }
 
 func testIntegrationBSONValidationRejection(t *testing.T) {
@@ -3990,7 +3990,10 @@ func testIntegrationBSONValidationRejection(t *testing.T) {
 	})
 }
 
-func assertQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
+// assertBSONQueryOrder verifies server-side query ordering for BSON query tests.
+// Watch streams (Query.Snapshots) are not checked here because BSON is only
+// supported on Enterprise databases, which do not support Listen queries.
+func assertBSONQueryOrder(ctx context.Context, t *testing.T, q Query, wantDocIDs []string) {
 	t.Helper()
 	iter := q.Documents(ctx)
 	defer iter.Stop()
