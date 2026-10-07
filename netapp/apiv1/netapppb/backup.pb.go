@@ -184,10 +184,9 @@ type Backup struct {
 	// Output only. Type of backup, manually created or created by a backup
 	// policy.
 	BackupType Backup_Type `protobuf:"varint,5,opt,name=backup_type,json=backupType,proto3,enum=google.cloud.netapp.v1.Backup_Type" json:"backup_type,omitempty"`
-	// Volume full name of this backup belongs to.
-	// Either source_volume or ontap_source should be provided.
-	// Format:
-	// `projects/{projects_id}/locations/{location}/volumes/{volume_id}`
+	// The resource name of the volume that this backup belongs to. You must
+	// provide either `source_volume` or `ontap_source`. Format:
+	// `projects/{project_id}/locations/{location}/volumes/{volume_id}`
 	SourceVolume string `protobuf:"bytes,6,opt,name=source_volume,json=sourceVolume,proto3" json:"source_volume,omitempty"`
 	// If specified, backup will be created from the given snapshot.
 	// If not specified, there will be a new snapshot taken to initiate the backup
@@ -213,8 +212,11 @@ type Backup struct {
 	BackupRegion string `protobuf:"bytes,14,opt,name=backup_region,json=backupRegion,proto3" json:"backup_region,omitempty"`
 	// Output only. The time until which the backup is not deletable.
 	EnforcedRetentionEndTime *timestamppb.Timestamp `protobuf:"bytes,15,opt,name=enforced_retention_end_time,json=enforcedRetentionEndTime,proto3" json:"enforced_retention_end_time,omitempty"`
-	unknownFields            protoimpl.UnknownFields
-	sizeCache                protoimpl.SizeCache
+	// Optional. Represents source details for ONTAP backups.
+	// Either source_volume or ontap_source should be provided.
+	OntapSource   *OntapSource `protobuf:"bytes,16,opt,name=ontap_source,json=ontapSource,proto3" json:"ontap_source,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *Backup) Reset() {
@@ -348,6 +350,13 @@ func (x *Backup) GetBackupRegion() string {
 func (x *Backup) GetEnforcedRetentionEndTime() *timestamppb.Timestamp {
 	if x != nil {
 		return x.EnforcedRetentionEndTime
+	}
+	return nil
+}
+
+func (x *Backup) GetOntapSource() *OntapSource {
+	if x != nil {
+		return x.OntapSource
 	}
 	return nil
 }
@@ -735,11 +744,77 @@ func (x *UpdateBackupRequest) GetBackup() *Backup {
 	return nil
 }
 
+// Represents ONTAP source details.
+type OntapSource struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. Name of the storage pool. This must be specified for creating
+	// backups for ONTAP mode volumes. Format:
+	// `projects/{projects_id}/locations/{location}/storagePools/{storage_pool_id}`
+	StoragePool *string `protobuf:"bytes,1,opt,name=storage_pool,json=storagePool,proto3,oneof" json:"storage_pool,omitempty"`
+	// Required. The UUID of the ONTAP source volume.
+	VolumeUuid string `protobuf:"bytes,2,opt,name=volume_uuid,json=volumeUuid,proto3" json:"volume_uuid,omitempty"`
+	// Optional. The UUID of the ONTAP source snapshot.
+	SnapshotUuid  string `protobuf:"bytes,3,opt,name=snapshot_uuid,json=snapshotUuid,proto3" json:"snapshot_uuid,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *OntapSource) Reset() {
+	*x = OntapSource{}
+	mi := &file_google_cloud_netapp_v1_backup_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *OntapSource) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*OntapSource) ProtoMessage() {}
+
+func (x *OntapSource) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_netapp_v1_backup_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use OntapSource.ProtoReflect.Descriptor instead.
+func (*OntapSource) Descriptor() ([]byte, []int) {
+	return file_google_cloud_netapp_v1_backup_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *OntapSource) GetStoragePool() string {
+	if x != nil && x.StoragePool != nil {
+		return *x.StoragePool
+	}
+	return ""
+}
+
+func (x *OntapSource) GetVolumeUuid() string {
+	if x != nil {
+		return x.VolumeUuid
+	}
+	return ""
+}
+
+func (x *OntapSource) GetSnapshotUuid() string {
+	if x != nil {
+		return x.SnapshotUuid
+	}
+	return ""
+}
+
 var File_google_cloud_netapp_v1_backup_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_backup_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/netapp/v1/backup.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xaf\n" +
+	"#google/cloud/netapp/v1/backup.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xfc\n" +
 	"\n" +
 	"\x06Backup\x12\x17\n" +
 	"\x04name\x18\x01 \x01(\tB\x03\xe0A\bR\x04name\x12?\n" +
@@ -763,7 +838,8 @@ const file_google_cloud_netapp_v1_backup_proto_rawDesc = "" +
 	"!locations.googleapis.com/LocationR\fvolumeRegion\x12N\n" +
 	"\rbackup_region\x18\x0e \x01(\tB)\xe0A\x03\xfaA#\n" +
 	"!locations.googleapis.com/LocationR\fbackupRegion\x12^\n" +
-	"\x1benforced_retention_end_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18enforcedRetentionEndTime\x1a9\n" +
+	"\x1benforced_retention_end_time\x18\x0f \x01(\v2\x1a.google.protobuf.TimestampB\x03\xe0A\x03R\x18enforcedRetentionEndTime\x12K\n" +
+	"\fontap_source\x18\x10 \x01(\v2#.google.cloud.netapp.v1.OntapSourceB\x03\xe0A\x01R\vontapSource\x1a9\n" +
 	"\vLabelsEntry\x12\x10\n" +
 	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
 	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"m\n" +
@@ -806,7 +882,14 @@ const file_google_cloud_netapp_v1_backup_proto_rawDesc = "" +
 	"\x13UpdateBackupRequest\x12@\n" +
 	"\vupdate_mask\x18\x01 \x01(\v2\x1a.google.protobuf.FieldMaskB\x03\xe0A\x02R\n" +
 	"updateMask\x12;\n" +
-	"\x06backup\x18\x02 \x01(\v2\x1e.google.cloud.netapp.v1.BackupB\x03\xe0A\x02R\x06backupB\xad\x01\n" +
+	"\x06backup\x18\x02 \x01(\v2\x1e.google.cloud.netapp.v1.BackupB\x03\xe0A\x02R\x06backup\"\xc1\x01\n" +
+	"\vOntapSource\x12Q\n" +
+	"\fstorage_pool\x18\x01 \x01(\tB)\xe0A\x02\xfaA#\n" +
+	"!netapp.googleapis.com/StoragePoolH\x00R\vstoragePool\x88\x01\x01\x12$\n" +
+	"\vvolume_uuid\x18\x02 \x01(\tB\x03\xe0A\x02R\n" +
+	"volumeUuid\x12(\n" +
+	"\rsnapshot_uuid\x18\x03 \x01(\tB\x03\xe0A\x01R\fsnapshotUuidB\x0f\n" +
+	"\r_storage_poolB\xad\x01\n" +
 	"\x1acom.google.cloud.netapp.v1B\vBackupProtoP\x01Z2cloud.google.com/go/netapp/apiv1/netapppb;netapppb\xaa\x02\x16Google.Cloud.NetApp.V1\xca\x02\x16Google\\Cloud\\NetApp\\V1\xea\x02\x19Google::Cloud::NetApp::V1b\x06proto3"
 
 var (
@@ -822,7 +905,7 @@ func file_google_cloud_netapp_v1_backup_proto_rawDescGZIP() []byte {
 }
 
 var file_google_cloud_netapp_v1_backup_proto_enumTypes = make([]protoimpl.EnumInfo, 2)
-var file_google_cloud_netapp_v1_backup_proto_msgTypes = make([]protoimpl.MessageInfo, 8)
+var file_google_cloud_netapp_v1_backup_proto_msgTypes = make([]protoimpl.MessageInfo, 9)
 var file_google_cloud_netapp_v1_backup_proto_goTypes = []any{
 	(Backup_State)(0),             // 0: google.cloud.netapp.v1.Backup.State
 	(Backup_Type)(0),              // 1: google.cloud.netapp.v1.Backup.Type
@@ -833,25 +916,27 @@ var file_google_cloud_netapp_v1_backup_proto_goTypes = []any{
 	(*CreateBackupRequest)(nil),   // 6: google.cloud.netapp.v1.CreateBackupRequest
 	(*DeleteBackupRequest)(nil),   // 7: google.cloud.netapp.v1.DeleteBackupRequest
 	(*UpdateBackupRequest)(nil),   // 8: google.cloud.netapp.v1.UpdateBackupRequest
-	nil,                           // 9: google.cloud.netapp.v1.Backup.LabelsEntry
-	(*timestamppb.Timestamp)(nil), // 10: google.protobuf.Timestamp
-	(*fieldmaskpb.FieldMask)(nil), // 11: google.protobuf.FieldMask
+	(*OntapSource)(nil),           // 9: google.cloud.netapp.v1.OntapSource
+	nil,                           // 10: google.cloud.netapp.v1.Backup.LabelsEntry
+	(*timestamppb.Timestamp)(nil), // 11: google.protobuf.Timestamp
+	(*fieldmaskpb.FieldMask)(nil), // 12: google.protobuf.FieldMask
 }
 var file_google_cloud_netapp_v1_backup_proto_depIdxs = []int32{
 	0,  // 0: google.cloud.netapp.v1.Backup.state:type_name -> google.cloud.netapp.v1.Backup.State
 	1,  // 1: google.cloud.netapp.v1.Backup.backup_type:type_name -> google.cloud.netapp.v1.Backup.Type
-	10, // 2: google.cloud.netapp.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
-	9,  // 3: google.cloud.netapp.v1.Backup.labels:type_name -> google.cloud.netapp.v1.Backup.LabelsEntry
-	10, // 4: google.cloud.netapp.v1.Backup.enforced_retention_end_time:type_name -> google.protobuf.Timestamp
-	2,  // 5: google.cloud.netapp.v1.ListBackupsResponse.backups:type_name -> google.cloud.netapp.v1.Backup
-	2,  // 6: google.cloud.netapp.v1.CreateBackupRequest.backup:type_name -> google.cloud.netapp.v1.Backup
-	11, // 7: google.cloud.netapp.v1.UpdateBackupRequest.update_mask:type_name -> google.protobuf.FieldMask
-	2,  // 8: google.cloud.netapp.v1.UpdateBackupRequest.backup:type_name -> google.cloud.netapp.v1.Backup
-	9,  // [9:9] is the sub-list for method output_type
-	9,  // [9:9] is the sub-list for method input_type
-	9,  // [9:9] is the sub-list for extension type_name
-	9,  // [9:9] is the sub-list for extension extendee
-	0,  // [0:9] is the sub-list for field type_name
+	11, // 2: google.cloud.netapp.v1.Backup.create_time:type_name -> google.protobuf.Timestamp
+	10, // 3: google.cloud.netapp.v1.Backup.labels:type_name -> google.cloud.netapp.v1.Backup.LabelsEntry
+	11, // 4: google.cloud.netapp.v1.Backup.enforced_retention_end_time:type_name -> google.protobuf.Timestamp
+	9,  // 5: google.cloud.netapp.v1.Backup.ontap_source:type_name -> google.cloud.netapp.v1.OntapSource
+	2,  // 6: google.cloud.netapp.v1.ListBackupsResponse.backups:type_name -> google.cloud.netapp.v1.Backup
+	2,  // 7: google.cloud.netapp.v1.CreateBackupRequest.backup:type_name -> google.cloud.netapp.v1.Backup
+	12, // 8: google.cloud.netapp.v1.UpdateBackupRequest.update_mask:type_name -> google.protobuf.FieldMask
+	2,  // 9: google.cloud.netapp.v1.UpdateBackupRequest.backup:type_name -> google.cloud.netapp.v1.Backup
+	10, // [10:10] is the sub-list for method output_type
+	10, // [10:10] is the sub-list for method input_type
+	10, // [10:10] is the sub-list for extension type_name
+	10, // [10:10] is the sub-list for extension extendee
+	0,  // [0:10] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_netapp_v1_backup_proto_init() }
@@ -860,13 +945,14 @@ func file_google_cloud_netapp_v1_backup_proto_init() {
 		return
 	}
 	file_google_cloud_netapp_v1_backup_proto_msgTypes[0].OneofWrappers = []any{}
+	file_google_cloud_netapp_v1_backup_proto_msgTypes[7].OneofWrappers = []any{}
 	type x struct{}
 	out := protoimpl.TypeBuilder{
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_netapp_v1_backup_proto_rawDesc), len(file_google_cloud_netapp_v1_backup_proto_rawDesc)),
 			NumEnums:      2,
-			NumMessages:   8,
+			NumMessages:   9,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

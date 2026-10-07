@@ -81,6 +81,10 @@ type Fulfillment struct {
 	// fulfillment is being called, but it could be used for other purposes.
 	// This field is required if `webhook` is specified.
 	Tag string `protobuf:"bytes,3,opt,name=tag,proto3" json:"tag,omitempty"`
+	// Optional. The name of the code block function to execute, if this is a code
+	// block fulfillment. The code block itself is implied by the fulfillment's
+	// parent, e.g. a playbook.
+	CodeBlockFunction string `protobuf:"bytes,17,opt,name=code_block_function,json=codeBlockFunction,proto3" json:"code_block_function,omitempty"`
 	// Set parameter values before executing the webhook.
 	SetParameterActions []*Fulfillment_SetParameterAction `protobuf:"bytes,4,rep,name=set_parameter_actions,json=setParameterActions,proto3" json:"set_parameter_actions,omitempty"`
 	// Conditional cases for this fulfillment.
@@ -154,6 +158,13 @@ func (x *Fulfillment) GetReturnPartialResponses() bool {
 func (x *Fulfillment) GetTag() string {
 	if x != nil {
 		return x.Tag
+	}
+	return ""
+}
+
+func (x *Fulfillment) GetCodeBlockFunction() string {
+	if x != nil {
+		return x.CodeBlockFunction
 	}
 	return ""
 }
@@ -525,13 +536,14 @@ var File_google_cloud_dialogflow_cx_v3beta1_fulfillment_proto protoreflect.FileD
 
 const file_google_cloud_dialogflow_cx_v3beta1_fulfillment_proto_rawDesc = "" +
 	"\n" +
-	"4google/cloud/dialogflow/cx/v3beta1/fulfillment.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/cloud/dialogflow/cx/v3beta1/advanced_settings.proto\x1a9google/cloud/dialogflow/cx/v3beta1/response_message.proto\x1a\x1cgoogle/protobuf/struct.proto\"\x85\r\n" +
+	"4google/cloud/dialogflow/cx/v3beta1/fulfillment.proto\x12\"google.cloud.dialogflow.cx.v3beta1\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1a:google/cloud/dialogflow/cx/v3beta1/advanced_settings.proto\x1a9google/cloud/dialogflow/cx/v3beta1/response_message.proto\x1a\x1cgoogle/protobuf/struct.proto\"\xba\r\n" +
 	"\vFulfillment\x12O\n" +
 	"\bmessages\x18\x01 \x03(\v23.google.cloud.dialogflow.cx.v3beta1.ResponseMessageR\bmessages\x12@\n" +
 	"\awebhook\x18\x02 \x01(\tB&\xfaA#\n" +
 	"!dialogflow.googleapis.com/WebhookR\awebhook\x128\n" +
 	"\x18return_partial_responses\x18\b \x01(\bR\x16returnPartialResponses\x12\x10\n" +
-	"\x03tag\x18\x03 \x01(\tR\x03tag\x12v\n" +
+	"\x03tag\x18\x03 \x01(\tR\x03tag\x123\n" +
+	"\x13code_block_function\x18\x11 \x01(\tB\x03\xe0A\x01R\x11codeBlockFunction\x12v\n" +
 	"\x15set_parameter_actions\x18\x04 \x03(\v2B.google.cloud.dialogflow.cx.v3beta1.Fulfillment.SetParameterActionR\x13setParameterActions\x12m\n" +
 	"\x11conditional_cases\x18\x05 \x03(\v2@.google.cloud.dialogflow.cx.v3beta1.Fulfillment.ConditionalCasesR\x10conditionalCases\x12a\n" +
 	"\x11advanced_settings\x18\a \x01(\v24.google.cloud.dialogflow.cx.v3beta1.AdvancedSettingsR\x10advancedSettings\x12<\n" +

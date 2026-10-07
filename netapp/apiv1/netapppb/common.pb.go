@@ -530,6 +530,55 @@ func (OsType) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{8}
 }
 
+// The flex performance tier of this location.
+type LocationMetadata_FlexPerformanceTier int32
+
+const (
+	// Unspecified flex performance tier.
+	LocationMetadata_FLEX_PERFORMANCE_TIER_UNSPECIFIED LocationMetadata_FlexPerformanceTier = 0
+	// Flex performance tier is limited.
+	LocationMetadata_LIMITED LocationMetadata_FlexPerformanceTier = 1
+)
+
+// Enum value maps for LocationMetadata_FlexPerformanceTier.
+var (
+	LocationMetadata_FlexPerformanceTier_name = map[int32]string{
+		0: "FLEX_PERFORMANCE_TIER_UNSPECIFIED",
+		1: "LIMITED",
+	}
+	LocationMetadata_FlexPerformanceTier_value = map[string]int32{
+		"FLEX_PERFORMANCE_TIER_UNSPECIFIED": 0,
+		"LIMITED":                           1,
+	}
+)
+
+func (x LocationMetadata_FlexPerformanceTier) Enum() *LocationMetadata_FlexPerformanceTier {
+	p := new(LocationMetadata_FlexPerformanceTier)
+	*p = x
+	return p
+}
+
+func (x LocationMetadata_FlexPerformanceTier) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (LocationMetadata_FlexPerformanceTier) Descriptor() protoreflect.EnumDescriptor {
+	return file_google_cloud_netapp_v1_common_proto_enumTypes[9].Descriptor()
+}
+
+func (LocationMetadata_FlexPerformanceTier) Type() protoreflect.EnumType {
+	return &file_google_cloud_netapp_v1_common_proto_enumTypes[9]
+}
+
+func (x LocationMetadata_FlexPerformanceTier) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use LocationMetadata_FlexPerformanceTier.Descriptor instead.
+func (LocationMetadata_FlexPerformanceTier) EnumDescriptor() ([]byte, []int) {
+	return file_google_cloud_netapp_v1_common_proto_rawDescGZIP(), []int{0, 0}
+}
+
 // Metadata for a given
 // [google.cloud.location.Location][google.cloud.location.Location].
 type LocationMetadata struct {
@@ -542,8 +591,10 @@ type LocationMetadata struct {
 	HasVcp bool `protobuf:"varint,3,opt,name=has_vcp,json=hasVcp,proto3" json:"has_vcp,omitempty"`
 	// Output only. Indicates if the location has ONTAP Proxy support.
 	HasOntapProxy bool `protobuf:"varint,4,opt,name=has_ontap_proxy,json=hasOntapProxy,proto3" json:"has_ontap_proxy,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	// Output only. Indicates the flex performance tier of this location.
+	FlexPerformanceTier LocationMetadata_FlexPerformanceTier `protobuf:"varint,5,opt,name=flex_performance_tier,json=flexPerformanceTier,proto3,enum=google.cloud.netapp.v1.LocationMetadata_FlexPerformanceTier" json:"flex_performance_tier,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
 }
 
 func (x *LocationMetadata) Reset() {
@@ -604,6 +655,13 @@ func (x *LocationMetadata) GetHasOntapProxy() bool {
 	return false
 }
 
+func (x *LocationMetadata) GetFlexPerformanceTier() LocationMetadata_FlexPerformanceTier {
+	if x != nil {
+		return x.FlexPerformanceTier
+	}
+	return LocationMetadata_FLEX_PERFORMANCE_TIER_UNSPECIFIED
+}
+
 // UserCommands contains the commands to be executed by the customer.
 type UserCommands struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -654,12 +712,16 @@ var File_google_cloud_netapp_v1_common_proto protoreflect.FileDescriptor
 
 const file_google_cloud_netapp_v1_common_proto_rawDesc = "" +
 	"\n" +
-	"#google/cloud/netapp/v1/common.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xae\x02\n" +
+	"#google/cloud/netapp/v1/common.proto\x12\x16google.cloud.netapp.v1\x1a\x1fgoogle/api/field_behavior.proto\"\xf0\x03\n" +
 	"\x10LocationMetadata\x12c\n" +
 	"\x18supported_service_levels\x18\x01 \x03(\x0e2$.google.cloud.netapp.v1.ServiceLevelB\x03\xe0A\x03R\x16supportedServiceLevels\x12j\n" +
 	"\x1asupported_flex_performance\x18\x02 \x03(\x0e2'.google.cloud.netapp.v1.FlexPerformanceB\x03\xe0A\x03R\x18supportedFlexPerformance\x12\x1c\n" +
 	"\ahas_vcp\x18\x03 \x01(\bB\x03\xe0A\x03R\x06hasVcp\x12+\n" +
-	"\x0fhas_ontap_proxy\x18\x04 \x01(\bB\x03\xe0A\x03R\rhasOntapProxy\"/\n" +
+	"\x0fhas_ontap_proxy\x18\x04 \x01(\bB\x03\xe0A\x03R\rhasOntapProxy\x12u\n" +
+	"\x15flex_performance_tier\x18\x05 \x01(\x0e2<.google.cloud.netapp.v1.LocationMetadata.FlexPerformanceTierB\x03\xe0A\x03R\x13flexPerformanceTier\"I\n" +
+	"\x13FlexPerformanceTier\x12%\n" +
+	"!FLEX_PERFORMANCE_TIER_UNSPECIFIED\x10\x00\x12\v\n" +
+	"\aLIMITED\x10\x01\"/\n" +
 	"\fUserCommands\x12\x1f\n" +
 	"\bcommands\x18\x01 \x03(\tB\x03\xe0A\x03R\bcommands*_\n" +
 	"\fServiceLevel\x12\x1d\n" +
@@ -717,29 +779,31 @@ func file_google_cloud_netapp_v1_common_proto_rawDescGZIP() []byte {
 	return file_google_cloud_netapp_v1_common_proto_rawDescData
 }
 
-var file_google_cloud_netapp_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 9)
+var file_google_cloud_netapp_v1_common_proto_enumTypes = make([]protoimpl.EnumInfo, 10)
 var file_google_cloud_netapp_v1_common_proto_msgTypes = make([]protoimpl.MessageInfo, 2)
 var file_google_cloud_netapp_v1_common_proto_goTypes = []any{
-	(ServiceLevel)(0),              // 0: google.cloud.netapp.v1.ServiceLevel
-	(FlexPerformance)(0),           // 1: google.cloud.netapp.v1.FlexPerformance
-	(EncryptionType)(0),            // 2: google.cloud.netapp.v1.EncryptionType
-	(DirectoryServiceType)(0),      // 3: google.cloud.netapp.v1.DirectoryServiceType
-	(StoragePoolType)(0),           // 4: google.cloud.netapp.v1.StoragePoolType
-	(ScaleType)(0),                 // 5: google.cloud.netapp.v1.ScaleType
-	(HybridReplicationSchedule)(0), // 6: google.cloud.netapp.v1.HybridReplicationSchedule
-	(QosType)(0),                   // 7: google.cloud.netapp.v1.QosType
-	(OsType)(0),                    // 8: google.cloud.netapp.v1.OsType
-	(*LocationMetadata)(nil),       // 9: google.cloud.netapp.v1.LocationMetadata
-	(*UserCommands)(nil),           // 10: google.cloud.netapp.v1.UserCommands
+	(ServiceLevel)(0),                         // 0: google.cloud.netapp.v1.ServiceLevel
+	(FlexPerformance)(0),                      // 1: google.cloud.netapp.v1.FlexPerformance
+	(EncryptionType)(0),                       // 2: google.cloud.netapp.v1.EncryptionType
+	(DirectoryServiceType)(0),                 // 3: google.cloud.netapp.v1.DirectoryServiceType
+	(StoragePoolType)(0),                      // 4: google.cloud.netapp.v1.StoragePoolType
+	(ScaleType)(0),                            // 5: google.cloud.netapp.v1.ScaleType
+	(HybridReplicationSchedule)(0),            // 6: google.cloud.netapp.v1.HybridReplicationSchedule
+	(QosType)(0),                              // 7: google.cloud.netapp.v1.QosType
+	(OsType)(0),                               // 8: google.cloud.netapp.v1.OsType
+	(LocationMetadata_FlexPerformanceTier)(0), // 9: google.cloud.netapp.v1.LocationMetadata.FlexPerformanceTier
+	(*LocationMetadata)(nil),                  // 10: google.cloud.netapp.v1.LocationMetadata
+	(*UserCommands)(nil),                      // 11: google.cloud.netapp.v1.UserCommands
 }
 var file_google_cloud_netapp_v1_common_proto_depIdxs = []int32{
 	0, // 0: google.cloud.netapp.v1.LocationMetadata.supported_service_levels:type_name -> google.cloud.netapp.v1.ServiceLevel
 	1, // 1: google.cloud.netapp.v1.LocationMetadata.supported_flex_performance:type_name -> google.cloud.netapp.v1.FlexPerformance
-	2, // [2:2] is the sub-list for method output_type
-	2, // [2:2] is the sub-list for method input_type
-	2, // [2:2] is the sub-list for extension type_name
-	2, // [2:2] is the sub-list for extension extendee
-	0, // [0:2] is the sub-list for field type_name
+	9, // 2: google.cloud.netapp.v1.LocationMetadata.flex_performance_tier:type_name -> google.cloud.netapp.v1.LocationMetadata.FlexPerformanceTier
+	3, // [3:3] is the sub-list for method output_type
+	3, // [3:3] is the sub-list for method input_type
+	3, // [3:3] is the sub-list for extension type_name
+	3, // [3:3] is the sub-list for extension extendee
+	0, // [0:3] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_netapp_v1_common_proto_init() }
@@ -752,7 +816,7 @@ func file_google_cloud_netapp_v1_common_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_netapp_v1_common_proto_rawDesc), len(file_google_cloud_netapp_v1_common_proto_rawDesc)),
-			NumEnums:      9,
+			NumEnums:      10,
 			NumMessages:   2,
 			NumExtensions: 0,
 			NumServices:   0,

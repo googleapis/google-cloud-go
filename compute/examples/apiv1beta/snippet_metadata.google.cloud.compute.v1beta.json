@@ -17359,6 +17359,52 @@
           "fullName": "google.cloud.compute.v1beta.InterconnectsClient",
           "shortName": "InterconnectsClient"
         },
+        "fullName": "google.cloud.compute.v1beta.InterconnectsClient.SetName",
+        "method": {
+          "fullName": "google.cloud.compute.v1beta.Interconnects.SetName",
+          "service": {
+            "fullName": "google.cloud.compute.v1beta.Interconnects",
+            "shortName": "Interconnects"
+          },
+          "shortName": "SetName"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "computepb.SetNameInterconnectRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "*Operation",
+        "shortName": "SetName"
+      },
+      "description": "SetName sets name of an interconnect.",
+      "file": "InterconnectsClient/SetName/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "compute_v1beta_generated_Interconnects_SetName_sync",
+      "segments": [
+        {
+          "end": 58,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "compute SetName Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.compute.v1beta.InterconnectsClient",
+          "shortName": "InterconnectsClient"
+        },
         "fullName": "google.cloud.compute.v1beta.InterconnectsClient.TestIamPermissions",
         "method": {
           "fullName": "google.cloud.compute.v1beta.Interconnects.TestIamPermissions",

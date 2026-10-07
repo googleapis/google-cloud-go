@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -100,16 +100,11 @@ func (HealthStatus) EnumDescriptor() ([]byte, []int) {
 	return file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDescGZIP(), []int{0}
 }
 
-// ResourceInfo represents the information/status of an app connector resource.
-// Such as:
-// - remote_agent
-//   - container
-//   - runtime
-//   - appgateway
-//   - appconnector
-//   - appconnection
-//   - tunnel
-//   - logagent
+// ResourceInfo represents the information or status of an app connector
+// resource component that's used to report on various parts of the system. For
+// example, ResourceInfo can be used to convey the status of a remote_agent,
+// including the status of an appgateway for an runtime environment in a
+// container instance.
 type ResourceInfo struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Required. Unique Id for the resource.
@@ -193,6 +188,116 @@ func (x *ResourceInfo) GetSub() []*ResourceInfo {
 	return nil
 }
 
+// ContainerHealthDetails reflects the health details of a container.
+type ContainerHealthDetails struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// The version of the expected config.
+	ExpectedConfigVersion string `protobuf:"bytes,1,opt,name=expected_config_version,json=expectedConfigVersion,proto3" json:"expected_config_version,omitempty"`
+	// The version of the current config.
+	CurrentConfigVersion string `protobuf:"bytes,2,opt,name=current_config_version,json=currentConfigVersion,proto3" json:"current_config_version,omitempty"`
+	// The extended status. Such as ExitCode, StartedAt, FinishedAt, etc.
+	ExtendedStatus map[string]string `protobuf:"bytes,3,rep,name=extended_status,json=extendedStatus,proto3" json:"extended_status,omitempty" protobuf_key:"bytes,1,opt,name=key" protobuf_val:"bytes,2,opt,name=value"`
+	// The latest error message.
+	ErrorMsg      string `protobuf:"bytes,4,opt,name=error_msg,json=errorMsg,proto3" json:"error_msg,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ContainerHealthDetails) Reset() {
+	*x = ContainerHealthDetails{}
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_msgTypes[1]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ContainerHealthDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ContainerHealthDetails) ProtoMessage() {}
+
+func (x *ContainerHealthDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_msgTypes[1]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ContainerHealthDetails.ProtoReflect.Descriptor instead.
+func (*ContainerHealthDetails) Descriptor() ([]byte, []int) {
+	return file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDescGZIP(), []int{1}
+}
+
+func (x *ContainerHealthDetails) GetExpectedConfigVersion() string {
+	if x != nil {
+		return x.ExpectedConfigVersion
+	}
+	return ""
+}
+
+func (x *ContainerHealthDetails) GetCurrentConfigVersion() string {
+	if x != nil {
+		return x.CurrentConfigVersion
+	}
+	return ""
+}
+
+func (x *ContainerHealthDetails) GetExtendedStatus() map[string]string {
+	if x != nil {
+		return x.ExtendedStatus
+	}
+	return nil
+}
+
+func (x *ContainerHealthDetails) GetErrorMsg() string {
+	if x != nil {
+		return x.ErrorMsg
+	}
+	return ""
+}
+
+// RemoteAgentDetails reflects the details of a remote agent.
+type RemoteAgentDetails struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *RemoteAgentDetails) Reset() {
+	*x = RemoteAgentDetails{}
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_msgTypes[2]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *RemoteAgentDetails) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*RemoteAgentDetails) ProtoMessage() {}
+
+func (x *RemoteAgentDetails) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_msgTypes[2]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use RemoteAgentDetails.ProtoReflect.Descriptor instead.
+func (*RemoteAgentDetails) Descriptor() ([]byte, []int) {
+	return file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDescGZIP(), []int{2}
+}
+
 var File_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto protoreflect.FileDescriptor
 
 const file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDesc = "" +
@@ -203,7 +308,16 @@ const file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDesc 
 	"\x06status\x18\x02 \x01(\x0e26.google.cloud.beyondcorp.appconnectors.v1.HealthStatusR\x06status\x120\n" +
 	"\bresource\x18\x03 \x01(\v2\x14.google.protobuf.AnyR\bresource\x12.\n" +
 	"\x04time\x18\x04 \x01(\v2\x1a.google.protobuf.TimestampR\x04time\x12H\n" +
-	"\x03sub\x18\x05 \x03(\v26.google.cloud.beyondcorp.appconnectors.v1.ResourceInfoR\x03sub*i\n" +
+	"\x03sub\x18\x05 \x03(\v26.google.cloud.beyondcorp.appconnectors.v1.ResourceInfoR\x03sub\"\xe5\x02\n" +
+	"\x16ContainerHealthDetails\x126\n" +
+	"\x17expected_config_version\x18\x01 \x01(\tR\x15expectedConfigVersion\x124\n" +
+	"\x16current_config_version\x18\x02 \x01(\tR\x14currentConfigVersion\x12}\n" +
+	"\x0fextended_status\x18\x03 \x03(\v2T.google.cloud.beyondcorp.appconnectors.v1.ContainerHealthDetails.ExtendedStatusEntryR\x0eextendedStatus\x12\x1b\n" +
+	"\terror_msg\x18\x04 \x01(\tR\berrorMsg\x1aA\n" +
+	"\x13ExtendedStatusEntry\x12\x10\n" +
+	"\x03key\x18\x01 \x01(\tR\x03key\x12\x14\n" +
+	"\x05value\x18\x02 \x01(\tR\x05value:\x028\x01\"\x14\n" +
+	"\x12RemoteAgentDetails*i\n" +
 	"\fHealthStatus\x12\x1d\n" +
 	"\x19HEALTH_STATUS_UNSPECIFIED\x10\x00\x12\v\n" +
 	"\aHEALTHY\x10\x01\x12\r\n" +
@@ -225,23 +339,27 @@ func file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDescGZ
 }
 
 var file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_msgTypes = make([]protoimpl.MessageInfo, 1)
+var file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_msgTypes = make([]protoimpl.MessageInfo, 4)
 var file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_goTypes = []any{
-	(HealthStatus)(0),             // 0: google.cloud.beyondcorp.appconnectors.v1.HealthStatus
-	(*ResourceInfo)(nil),          // 1: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
-	(*anypb.Any)(nil),             // 2: google.protobuf.Any
-	(*timestamppb.Timestamp)(nil), // 3: google.protobuf.Timestamp
+	(HealthStatus)(0),              // 0: google.cloud.beyondcorp.appconnectors.v1.HealthStatus
+	(*ResourceInfo)(nil),           // 1: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
+	(*ContainerHealthDetails)(nil), // 2: google.cloud.beyondcorp.appconnectors.v1.ContainerHealthDetails
+	(*RemoteAgentDetails)(nil),     // 3: google.cloud.beyondcorp.appconnectors.v1.RemoteAgentDetails
+	nil,                            // 4: google.cloud.beyondcorp.appconnectors.v1.ContainerHealthDetails.ExtendedStatusEntry
+	(*anypb.Any)(nil),              // 5: google.protobuf.Any
+	(*timestamppb.Timestamp)(nil),  // 6: google.protobuf.Timestamp
 }
 var file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_depIdxs = []int32{
 	0, // 0: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo.status:type_name -> google.cloud.beyondcorp.appconnectors.v1.HealthStatus
-	2, // 1: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo.resource:type_name -> google.protobuf.Any
-	3, // 2: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo.time:type_name -> google.protobuf.Timestamp
+	5, // 1: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo.resource:type_name -> google.protobuf.Any
+	6, // 2: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo.time:type_name -> google.protobuf.Timestamp
 	1, // 3: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo.sub:type_name -> google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
-	4, // [4:4] is the sub-list for method output_type
-	4, // [4:4] is the sub-list for method input_type
-	4, // [4:4] is the sub-list for extension type_name
-	4, // [4:4] is the sub-list for extension extendee
-	0, // [0:4] is the sub-list for field type_name
+	4, // 4: google.cloud.beyondcorp.appconnectors.v1.ContainerHealthDetails.extended_status:type_name -> google.cloud.beyondcorp.appconnectors.v1.ContainerHealthDetails.ExtendedStatusEntry
+	5, // [5:5] is the sub-list for method output_type
+	5, // [5:5] is the sub-list for method input_type
+	5, // [5:5] is the sub-list for extension type_name
+	5, // [5:5] is the sub-list for extension extendee
+	0, // [0:5] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_init() }
@@ -255,7 +373,7 @@ func file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_init() {
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDesc), len(file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   1,
+			NumMessages:   4,
 			NumExtensions: 0,
 			NumServices:   0,
 		},

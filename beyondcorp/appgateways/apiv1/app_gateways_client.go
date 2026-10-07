@@ -131,6 +131,11 @@ type internalClient interface {
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppGatewaysService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -168,16 +173,22 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // ListAppGateways lists AppGateways in a given project and location.
+//
+// Deprecated: ListAppGateways may be removed in a future version.
 func (c *Client) ListAppGateways(ctx context.Context, req *appgatewayspb.ListAppGatewaysRequest, opts ...gax.CallOption) *AppGatewayIterator {
 	return c.internalClient.ListAppGateways(ctx, req, opts...)
 }
 
 // GetAppGateway gets details of a single AppGateway.
+//
+// Deprecated: GetAppGateway may be removed in a future version.
 func (c *Client) GetAppGateway(ctx context.Context, req *appgatewayspb.GetAppGatewayRequest, opts ...gax.CallOption) (*appgatewayspb.AppGateway, error) {
 	return c.internalClient.GetAppGateway(ctx, req, opts...)
 }
 
 // CreateAppGateway creates a new AppGateway in a given project and location.
+//
+// Deprecated: CreateAppGateway may be removed in a future version.
 func (c *Client) CreateAppGateway(ctx context.Context, req *appgatewayspb.CreateAppGatewayRequest, opts ...gax.CallOption) (*CreateAppGatewayOperation, error) {
 	return c.internalClient.CreateAppGateway(ctx, req, opts...)
 }
@@ -189,6 +200,8 @@ func (c *Client) CreateAppGatewayOperation(name string) *CreateAppGatewayOperati
 }
 
 // DeleteAppGateway deletes a single AppGateway.
+//
+// Deprecated: DeleteAppGateway may be removed in a future version.
 func (c *Client) DeleteAppGateway(ctx context.Context, req *appgatewayspb.DeleteAppGatewayRequest, opts ...gax.CallOption) (*DeleteAppGatewayOperation, error) {
 	return c.internalClient.DeleteAppGateway(ctx, req, opts...)
 }
@@ -205,6 +218,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -302,6 +330,11 @@ type gRPCClient struct {
 //
 // The AppGatewaysService service provides methods to manage
 // (create/read/update/delete) BeyondCorp AppGateways.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppGatewaysService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {

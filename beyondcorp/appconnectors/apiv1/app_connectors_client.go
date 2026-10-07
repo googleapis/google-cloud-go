@@ -44,21 +44,22 @@ var newClientHook clientHook
 
 // CallOptions contains the retry settings for each method of Client.
 type CallOptions struct {
-	ListAppConnectors  []gax.CallOption
-	GetAppConnector    []gax.CallOption
-	CreateAppConnector []gax.CallOption
-	UpdateAppConnector []gax.CallOption
-	DeleteAppConnector []gax.CallOption
-	ReportStatus       []gax.CallOption
-	GetLocation        []gax.CallOption
-	ListLocations      []gax.CallOption
-	GetIamPolicy       []gax.CallOption
-	SetIamPolicy       []gax.CallOption
-	TestIamPermissions []gax.CallOption
-	CancelOperation    []gax.CallOption
-	DeleteOperation    []gax.CallOption
-	GetOperation       []gax.CallOption
-	ListOperations     []gax.CallOption
+	ListAppConnectors     []gax.CallOption
+	GetAppConnector       []gax.CallOption
+	CreateAppConnector    []gax.CallOption
+	UpdateAppConnector    []gax.CallOption
+	DeleteAppConnector    []gax.CallOption
+	ResolveInstanceConfig []gax.CallOption
+	ReportStatus          []gax.CallOption
+	GetLocation           []gax.CallOption
+	ListLocations         []gax.CallOption
+	GetIamPolicy          []gax.CallOption
+	SetIamPolicy          []gax.CallOption
+	TestIamPermissions    []gax.CallOption
+	CancelOperation       []gax.CallOption
+	DeleteOperation       []gax.CallOption
+	GetOperation          []gax.CallOption
+	ListOperations        []gax.CallOption
 }
 
 func defaultGRPCClientOptions() []option.ClientOption {
@@ -78,21 +79,22 @@ func defaultGRPCClientOptions() []option.ClientOption {
 
 func defaultCallOptions() *CallOptions {
 	return &CallOptions{
-		ListAppConnectors:  []gax.CallOption{},
-		GetAppConnector:    []gax.CallOption{},
-		CreateAppConnector: []gax.CallOption{},
-		UpdateAppConnector: []gax.CallOption{},
-		DeleteAppConnector: []gax.CallOption{},
-		ReportStatus:       []gax.CallOption{},
-		GetLocation:        []gax.CallOption{},
-		ListLocations:      []gax.CallOption{},
-		GetIamPolicy:       []gax.CallOption{},
-		SetIamPolicy:       []gax.CallOption{},
-		TestIamPermissions: []gax.CallOption{},
-		CancelOperation:    []gax.CallOption{},
-		DeleteOperation:    []gax.CallOption{},
-		GetOperation:       []gax.CallOption{},
-		ListOperations:     []gax.CallOption{},
+		ListAppConnectors:     []gax.CallOption{},
+		GetAppConnector:       []gax.CallOption{},
+		CreateAppConnector:    []gax.CallOption{},
+		UpdateAppConnector:    []gax.CallOption{},
+		DeleteAppConnector:    []gax.CallOption{},
+		ResolveInstanceConfig: []gax.CallOption{},
+		ReportStatus:          []gax.CallOption{},
+		GetLocation:           []gax.CallOption{},
+		ListLocations:         []gax.CallOption{},
+		GetIamPolicy:          []gax.CallOption{},
+		SetIamPolicy:          []gax.CallOption{},
+		TestIamPermissions:    []gax.CallOption{},
+		CancelOperation:       []gax.CallOption{},
+		DeleteOperation:       []gax.CallOption{},
+		GetOperation:          []gax.CallOption{},
+		ListOperations:        []gax.CallOption{},
 	}
 }
 
@@ -109,6 +111,7 @@ type internalClient interface {
 	UpdateAppConnectorOperation(name string) *UpdateAppConnectorOperation
 	DeleteAppConnector(context.Context, *appconnectorspb.DeleteAppConnectorRequest, ...gax.CallOption) (*DeleteAppConnectorOperation, error)
 	DeleteAppConnectorOperation(name string) *DeleteAppConnectorOperation
+	ResolveInstanceConfig(context.Context, *appconnectorspb.ResolveInstanceConfigRequest, ...gax.CallOption) (*appconnectorspb.ResolveInstanceConfigResponse, error)
 	ReportStatus(context.Context, *appconnectorspb.ReportStatusRequest, ...gax.CallOption) (*ReportStatusOperation, error)
 	ReportStatusOperation(name string) *ReportStatusOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
@@ -139,6 +142,11 @@ type internalClient interface {
 //
 // The AppConnectorsService provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnectors.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppConnectorsService may be removed in a future version.
 type Client struct {
 	// The internal transport-dependent client.
 	internalClient internalClient
@@ -176,16 +184,22 @@ func (c *Client) Connection() *grpc.ClientConn {
 }
 
 // ListAppConnectors lists AppConnectors in a given project and location.
+//
+// Deprecated: ListAppConnectors may be removed in a future version.
 func (c *Client) ListAppConnectors(ctx context.Context, req *appconnectorspb.ListAppConnectorsRequest, opts ...gax.CallOption) *AppConnectorIterator {
 	return c.internalClient.ListAppConnectors(ctx, req, opts...)
 }
 
 // GetAppConnector gets details of a single AppConnector.
+//
+// Deprecated: GetAppConnector may be removed in a future version.
 func (c *Client) GetAppConnector(ctx context.Context, req *appconnectorspb.GetAppConnectorRequest, opts ...gax.CallOption) (*appconnectorspb.AppConnector, error) {
 	return c.internalClient.GetAppConnector(ctx, req, opts...)
 }
 
 // CreateAppConnector creates a new AppConnector in a given project and location.
+//
+// Deprecated: CreateAppConnector may be removed in a future version.
 func (c *Client) CreateAppConnector(ctx context.Context, req *appconnectorspb.CreateAppConnectorRequest, opts ...gax.CallOption) (*CreateAppConnectorOperation, error) {
 	return c.internalClient.CreateAppConnector(ctx, req, opts...)
 }
@@ -197,6 +211,8 @@ func (c *Client) CreateAppConnectorOperation(name string) *CreateAppConnectorOpe
 }
 
 // UpdateAppConnector updates the parameters of a single AppConnector.
+//
+// Deprecated: UpdateAppConnector may be removed in a future version.
 func (c *Client) UpdateAppConnector(ctx context.Context, req *appconnectorspb.UpdateAppConnectorRequest, opts ...gax.CallOption) (*UpdateAppConnectorOperation, error) {
 	return c.internalClient.UpdateAppConnector(ctx, req, opts...)
 }
@@ -208,6 +224,8 @@ func (c *Client) UpdateAppConnectorOperation(name string) *UpdateAppConnectorOpe
 }
 
 // DeleteAppConnector deletes a single AppConnector.
+//
+// Deprecated: DeleteAppConnector may be removed in a future version.
 func (c *Client) DeleteAppConnector(ctx context.Context, req *appconnectorspb.DeleteAppConnectorRequest, opts ...gax.CallOption) (*DeleteAppConnectorOperation, error) {
 	return c.internalClient.DeleteAppConnector(ctx, req, opts...)
 }
@@ -218,7 +236,17 @@ func (c *Client) DeleteAppConnectorOperation(name string) *DeleteAppConnectorOpe
 	return c.internalClient.DeleteAppConnectorOperation(name)
 }
 
+// ResolveInstanceConfig gets instance configuration for a given AppConnector.
+// An internal method called by a AppConnector to get its container config.
+//
+// Deprecated: ResolveInstanceConfig may be removed in a future version.
+func (c *Client) ResolveInstanceConfig(ctx context.Context, req *appconnectorspb.ResolveInstanceConfigRequest, opts ...gax.CallOption) (*appconnectorspb.ResolveInstanceConfigResponse, error) {
+	return c.internalClient.ResolveInstanceConfig(ctx, req, opts...)
+}
+
 // ReportStatus report status for a given connector.
+//
+// Deprecated: ReportStatus may be removed in a future version.
 func (c *Client) ReportStatus(ctx context.Context, req *appconnectorspb.ReportStatusRequest, opts ...gax.CallOption) (*ReportStatusOperation, error) {
 	return c.internalClient.ReportStatus(ctx, req, opts...)
 }
@@ -235,6 +263,21 @@ func (c *Client) GetLocation(ctx context.Context, req *locationpb.GetLocationReq
 }
 
 // ListLocations lists information about the supported locations for this service.
+//
+// This method lists locations based on the resource scope provided in
+// the [ListLocationsRequest.name (at http://ListLocationsRequest.name)][google.cloud.location.ListLocationsRequest.name (at http://google.cloud.location.ListLocationsRequest.name)] field: *
+// Global locations: If name is empty, the method lists the
+// public locations available to all projects. * Project-specific
+// locations: If name follows the format
+// projects/{project}, the method lists locations visible to that
+// specific project. This includes public, private, or other
+// project-specific locations enabled for the project.
+//
+// For gRPC and client library implementations, the resource name is
+// passed as the name field. For direct service calls, the resource
+// name is
+// incorporated into the request path based on the specific service
+// implementation and version.
 func (c *Client) ListLocations(ctx context.Context, req *locationpb.ListLocationsRequest, opts ...gax.CallOption) *LocationIterator {
 	return c.internalClient.ListLocations(ctx, req, opts...)
 }
@@ -332,6 +375,11 @@ type gRPCClient struct {
 //
 // The AppConnectorsService provides methods to manage
 // (create/read/update/delete) BeyondCorp AppConnectors.
+//
+// Deprecated: App Connector is deprecated and creation of new App Connector
+// resources is no longer permitted. Use Security Gateway instead.
+//
+// Deprecated: AppConnectorsService may be removed in a future version.
 func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error) {
 	clientOpts := defaultGRPCClientOptions()
 	if gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
@@ -385,6 +433,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateAppConnector = append(client.CallOptions.CreateAppConnector, gax.WithClientMetrics(metrics))
 		client.CallOptions.UpdateAppConnector = append(client.CallOptions.UpdateAppConnector, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteAppConnector = append(client.CallOptions.DeleteAppConnector, gax.WithClientMetrics(metrics))
+		client.CallOptions.ResolveInstanceConfig = append(client.CallOptions.ResolveInstanceConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.ReportStatus = append(client.CallOptions.ReportStatus, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
@@ -412,6 +461,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateAppConnector = append(client.CallOptions.CreateAppConnector, gax.WithClientTracing(tracing))
 		client.CallOptions.UpdateAppConnector = append(client.CallOptions.UpdateAppConnector, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteAppConnector = append(client.CallOptions.DeleteAppConnector, gax.WithClientTracing(tracing))
+		client.CallOptions.ResolveInstanceConfig = append(client.CallOptions.ResolveInstanceConfig, gax.WithClientTracing(tracing))
 		client.CallOptions.ReportStatus = append(client.CallOptions.ReportStatus, gax.WithClientTracing(tracing))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
@@ -440,6 +490,7 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.CreateAppConnector = append(client.CallOptions.CreateAppConnector, gax.WithClientLogging(logging))
 		client.CallOptions.UpdateAppConnector = append(client.CallOptions.UpdateAppConnector, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteAppConnector = append(client.CallOptions.DeleteAppConnector, gax.WithClientLogging(logging))
+		client.CallOptions.ResolveInstanceConfig = append(client.CallOptions.ResolveInstanceConfig, gax.WithClientLogging(logging))
 		client.CallOptions.ReportStatus = append(client.CallOptions.ReportStatus, gax.WithClientLogging(logging))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
@@ -642,6 +693,27 @@ func (c *gRPCClient) DeleteAppConnector(ctx context.Context, req *appconnectorsp
 	return &DeleteAppConnectorOperation{
 		lro: lro,
 	}, nil
+}
+
+func (c *gRPCClient) ResolveInstanceConfig(ctx context.Context, req *appconnectorspb.ResolveInstanceConfigRequest, opts ...gax.CallOption) (*appconnectorspb.ResolveInstanceConfigResponse, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "app_connector", url.QueryEscape(req.GetAppConnector()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/ResolveInstanceConfig")
+	}
+	opts = append((*c.CallOptions).ResolveInstanceConfig[0:len((*c.CallOptions).ResolveInstanceConfig):len((*c.CallOptions).ResolveInstanceConfig)], opts...)
+	var resp *appconnectorspb.ResolveInstanceConfigResponse
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.ResolveInstanceConfig, req, settings.GRPC, c.logger, "ResolveInstanceConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) ReportStatus(ctx context.Context, req *appconnectorspb.ReportStatusRequest, opts ...gax.CallOption) (*ReportStatusOperation, error) {

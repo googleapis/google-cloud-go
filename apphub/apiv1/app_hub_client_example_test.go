@@ -343,6 +343,31 @@ func ExampleClient_GetApplication() {
 	_ = resp
 }
 
+func ExampleClient_GetBoundary() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apphub.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apphubpb.GetBoundaryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apphub/apiv1/apphubpb#GetBoundaryRequest.
+	}
+	resp, err := c.GetBoundary(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
 func ExampleClient_GetDiscoveredService() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.
@@ -386,6 +411,31 @@ func ExampleClient_GetDiscoveredWorkload() {
 		// See https://pkg.go.dev/cloud.google.com/go/apphub/apiv1/apphubpb#GetDiscoveredWorkloadRequest.
 	}
 	resp, err := c.GetDiscoveredWorkload(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_GetExtendedMetadataSchema() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apphub.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apphubpb.GetExtendedMetadataSchemaRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apphub/apiv1/apphubpb#GetExtendedMetadataSchemaRequest.
+	}
+	resp, err := c.GetExtendedMetadataSchema(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
@@ -576,6 +626,43 @@ func ExampleClient_ListDiscoveredWorkloads() {
 		// Otherwise, remove this line. Only populated after
 		// first call to Next(). Not safe for concurrent access.
 		_ = it.Response.(*apphubpb.ListDiscoveredWorkloadsResponse)
+	}
+}
+
+func ExampleClient_ListExtendedMetadataSchemas() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apphub.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apphubpb.ListExtendedMetadataSchemasRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apphub/apiv1/apphubpb#ListExtendedMetadataSchemasRequest.
+	}
+	it := c.ListExtendedMetadataSchemas(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apphubpb.ListExtendedMetadataSchemasResponse)
 	}
 }
 
@@ -783,6 +870,36 @@ func ExampleClient_UpdateApplication() {
 		// See https://pkg.go.dev/cloud.google.com/go/apphub/apiv1/apphubpb#UpdateApplicationRequest.
 	}
 	op, err := c.UpdateApplication(ctx, req)
+	if err != nil {
+		// TODO: Handle error.
+	}
+
+	resp, err := op.Wait(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	// TODO: Use resp.
+	_ = resp
+}
+
+func ExampleClient_UpdateBoundary() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apphub.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apphubpb.UpdateBoundaryRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apphub/apiv1/apphubpb#UpdateBoundaryRequest.
+	}
+	op, err := c.UpdateBoundary(ctx, req)
 	if err != nil {
 		// TODO: Handle error.
 	}
