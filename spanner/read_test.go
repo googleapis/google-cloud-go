@@ -197,16 +197,18 @@ func genProtoListValue(v ...string) *proto3.Value_ListValue {
 }
 
 // Test Row generation logics of partialResultSetDecoder.
-func TestPartialResultSetDecoder(t *testing.T) {
-	restore := setMaxBytesBetweenResumeTokens()
-	defer restore()
-	var tests = []struct {
-		input    []*sppb.PartialResultSet
-		wantF    []*Row
-		wantTxID transactionID
-		wantTs   time.Time
-		wantD    bool
-	}{
+type partialResultSetDecoderTest struct {
+	input    []*sppb.PartialResultSet
+	wantF    []*Row
+	wantTxID transactionID
+	wantTs   time.Time
+	wantD    bool
+}
+
+// partialResultSetDecoderTests returns test cases that assemble
+// PartialResultSets into rows.
+func partialResultSetDecoderTests() []partialResultSetDecoderTest {
+	return []partialResultSetDecoderTest{
 		{
 			// Empty input.
 			wantD: true,
@@ -585,9 +587,13 @@ func TestPartialResultSetDecoder(t *testing.T) {
 			wantD:    true,
 		},
 	}
+}
 
+func TestPartialResultSetDecoder(t *testing.T) {
+	restore := setMaxBytesBetweenResumeTokens()
+	defer restore()
 nextTest:
-	for i, test := range tests {
+	for i, test := range partialResultSetDecoderTests() {
 		var rows []*Row
 		p := &partialResultSetDecoder{}
 		for j, v := range test.input {
@@ -888,7 +894,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 						if item == nil {
 							break
 						}
-						q = append(q, item)
+						q = append(q, item.(*sppb.PartialResultSet))
 					}
 					if !testEqual(q, test.queue) {
 						t.Fatalf("PartialResultSets still queued: \n%v\n, want \n%v\n", q, test.queue)
@@ -905,7 +911,7 @@ func TestRsdNonblockingStates(t *testing.T) {
 				}
 				// Receive next decoded item.
 				if r.next() {
-					rs = append(rs, r.get())
+					rs = append(rs, r.get().(*sppb.PartialResultSet))
 				}
 			}
 		})
@@ -1159,7 +1165,9 @@ func TestRsdBlockingStates(t *testing.T) {
 					st = append(st, rs)
 					if len(st) == hl {
 						lastErr = r.lastErr()
-						q = r.q.dump()
+						for _, item := range r.q.dump() {
+							q = append(q, item.(*sppb.PartialResultSet))
+						}
 						close(stateDone)
 					}
 				}
@@ -1180,7 +1188,7 @@ func TestRsdBlockingStates(t *testing.T) {
 						return
 					}
 					mutex.Lock()
-					rs = append(rs, r.get())
+					rs = append(rs, r.get().(*sppb.PartialResultSet))
 					mutex.Unlock()
 				}
 			}()
@@ -1426,7 +1434,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	want := []*Row{
@@ -1463,7 +1471,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	// Since resumableStreamDecoder is already at queueingUnretryable state,
@@ -1490,7 +1498,7 @@ func TestResumeToken(t *testing.T) {
 		if err != nil {
 			t.Fatalf("failed to get next value: %v", err)
 		}
-		rows = append(rows, row)
+		rows = append(rows, detachRow(row))
 	}
 
 	// Verify if a normal server side EOF flushes all queued rows.
