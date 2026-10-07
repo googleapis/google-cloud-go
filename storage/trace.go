@@ -197,11 +197,13 @@ func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
 }
 
-// recordRetryBackoff records the backoff that followed retry attempt number
-// attempt, which began at start and ends now, as a RetryBackoff child span of
-// the span in ctx. The child span makes the wait visible as a block in Trace
-// Explorer waterfall charts. It is a no-op unless dev tracing is enabled and
-// the span in ctx is recording.
+// recordRetryBackoff records the backoff that started at start and follows the
+// given failed attempt as a RetryBackoff child span of the span in ctx. It is a
+// no-op unless dev tracing is enabled and the span in ctx is recording.
+//
+// Attempt numbers can repeat under one span: when run is given
+// withProgressReset (as the gRPC writer does), the attempt count restarts at 1
+// after each call that made progress.
 func recordRetryBackoff(ctx context.Context, attempt int, start time.Time) {
 	if !isOTelTracingDevEnabled() {
 		return
@@ -210,8 +212,7 @@ func recordRetryBackoff(ctx context.Context, attempt int, start time.Time) {
 	if !span.IsRecording() {
 		return
 	}
-	end := time.Now()
 	attrs := trace.WithAttributes(attribute.Int("gcp.client.retry.attempt_number", attempt))
 	_, backoffSpan := startSpan(ctx, "RetryBackoff", trace.WithTimestamp(start), attrs)
-	backoffSpan.End(trace.WithTimestamp(end))
+	backoffSpan.End()
 }
