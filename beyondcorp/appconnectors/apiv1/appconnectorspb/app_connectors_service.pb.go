@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -29,6 +29,7 @@ import (
 	_ "google.golang.org/genproto/googleapis/api/annotations"
 	protoreflect "google.golang.org/protobuf/reflect/protoreflect"
 	protoimpl "google.golang.org/protobuf/runtime/protoimpl"
+	_ "google.golang.org/protobuf/types/known/emptypb"
 	fieldmaskpb "google.golang.org/protobuf/types/known/fieldmaskpb"
 	timestamppb "google.golang.org/protobuf/types/known/timestamppb"
 )
@@ -103,7 +104,7 @@ func (x AppConnector_State) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use AppConnector_State.Descriptor instead.
 func (AppConnector_State) EnumDescriptor() ([]byte, []int) {
-	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{7, 0}
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{9, 0}
 }
 
 // Request message for BeyondCorp.ListAppConnectors.
@@ -116,8 +117,8 @@ type ListAppConnectorsRequest struct {
 	// If not specified, a default value of 50 will be used by the service.
 	// Regardless of the page_size value, the response may include a partial list
 	// and a caller should only rely on response's
-	// [next_page_token][BeyondCorp.ListAppConnectorsResponse.next_page_token] to
-	// determine if there are more instances left to be queried.
+	// [next_page_token][google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse.next_page_token]
+	// to determine if there are more instances left to be queried.
 	PageSize int32 `protobuf:"varint,2,opt,name=page_size,json=pageSize,proto3" json:"page_size,omitempty"`
 	// Optional. The next_page_token value returned from a previous
 	// ListAppConnectorsRequest, if any.
@@ -329,8 +330,8 @@ type CreateAppConnectorRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -427,8 +428,8 @@ type UpdateAppConnectorRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -512,8 +513,8 @@ type DeleteAppConnectorRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes after the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -579,6 +580,99 @@ func (x *DeleteAppConnectorRequest) GetValidateOnly() bool {
 	return false
 }
 
+// Request message for BeyondCorp.ResolveInstanceConfig.
+type ResolveInstanceConfigRequest struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Required. BeyondCorp AppConnector name using the form:
+	// `projects/{project_id}/locations/{location_id}/appConnectors/{app_connector}`
+	AppConnector  string `protobuf:"bytes,1,opt,name=app_connector,json=appConnector,proto3" json:"app_connector,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *ResolveInstanceConfigRequest) Reset() {
+	*x = ResolveInstanceConfigRequest{}
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[6]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolveInstanceConfigRequest) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolveInstanceConfigRequest) ProtoMessage() {}
+
+func (x *ResolveInstanceConfigRequest) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[6]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolveInstanceConfigRequest.ProtoReflect.Descriptor instead.
+func (*ResolveInstanceConfigRequest) Descriptor() ([]byte, []int) {
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{6}
+}
+
+func (x *ResolveInstanceConfigRequest) GetAppConnector() string {
+	if x != nil {
+		return x.AppConnector
+	}
+	return ""
+}
+
+// Response message for BeyondCorp.ResolveInstanceConfig.
+type ResolveInstanceConfigResponse struct {
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// AppConnectorInstanceConfig.
+	InstanceConfig *AppConnectorInstanceConfig `protobuf:"bytes,1,opt,name=instance_config,json=instanceConfig,proto3" json:"instance_config,omitempty"`
+	unknownFields  protoimpl.UnknownFields
+	sizeCache      protoimpl.SizeCache
+}
+
+func (x *ResolveInstanceConfigResponse) Reset() {
+	*x = ResolveInstanceConfigResponse{}
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[7]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ResolveInstanceConfigResponse) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ResolveInstanceConfigResponse) ProtoMessage() {}
+
+func (x *ResolveInstanceConfigResponse) ProtoReflect() protoreflect.Message {
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[7]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ResolveInstanceConfigResponse.ProtoReflect.Descriptor instead.
+func (*ResolveInstanceConfigResponse) Descriptor() ([]byte, []int) {
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{7}
+}
+
+func (x *ResolveInstanceConfigResponse) GetInstanceConfig() *AppConnectorInstanceConfig {
+	if x != nil {
+		return x.InstanceConfig
+	}
+	return nil
+}
+
 // Request report the connector status.
 type ReportStatusRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
@@ -592,8 +686,8 @@ type ReportStatusRequest struct {
 	// ignore the request if it has already been completed. The server will
 	// guarantee that for at least 60 minutes since the first request.
 	//
-	// For example, consider a situation where you make an initial request and t
-	// he request times out. If you make the request again with the same request
+	// For example, consider a situation where you make an initial request and
+	// the request times out. If you make the request again with the same request
 	// ID, the server can check if original operation with the same request ID
 	// was received, and if so, will ignore the second request. This prevents
 	// clients from accidentally creating duplicate commitments.
@@ -610,7 +704,7 @@ type ReportStatusRequest struct {
 
 func (x *ReportStatusRequest) Reset() {
 	*x = ReportStatusRequest{}
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[6]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[8]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -622,7 +716,7 @@ func (x *ReportStatusRequest) String() string {
 func (*ReportStatusRequest) ProtoMessage() {}
 
 func (x *ReportStatusRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[6]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[8]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -635,7 +729,7 @@ func (x *ReportStatusRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ReportStatusRequest.ProtoReflect.Descriptor instead.
 func (*ReportStatusRequest) Descriptor() ([]byte, []int) {
-	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{6}
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{8}
 }
 
 func (x *ReportStatusRequest) GetAppConnector() string {
@@ -700,7 +794,7 @@ type AppConnector struct {
 
 func (x *AppConnector) Reset() {
 	*x = AppConnector{}
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[7]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[9]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -712,7 +806,7 @@ func (x *AppConnector) String() string {
 func (*AppConnector) ProtoMessage() {}
 
 func (x *AppConnector) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[7]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[9]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -725,7 +819,7 @@ func (x *AppConnector) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppConnector.ProtoReflect.Descriptor instead.
 func (*AppConnector) Descriptor() ([]byte, []int) {
-	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{7}
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{9}
 }
 
 func (x *AppConnector) GetName() string {
@@ -806,9 +900,10 @@ type AppConnectorOperationMetadata struct {
 	StatusMessage string `protobuf:"bytes,5,opt,name=status_message,json=statusMessage,proto3" json:"status_message,omitempty"`
 	// Output only. Identifies whether the user has requested cancellation
 	// of the operation. Operations that have successfully been cancelled
-	// have [Operation.error][] value with a
-	// [google.rpc.Status.code][google.rpc.Status.code] of 1, corresponding to
-	// `Code.CANCELLED`.
+	// have
+	// [google.longrunning.Operation.error][google.longrunning.Operation.error]
+	// value with a [google.rpc.Status.code][google.rpc.Status.code] of `1`,
+	// corresponding to `Code.CANCELLED`.
 	RequestedCancellation bool `protobuf:"varint,6,opt,name=requested_cancellation,json=requestedCancellation,proto3" json:"requested_cancellation,omitempty"`
 	// Output only. API version used to start the operation.
 	ApiVersion    string `protobuf:"bytes,7,opt,name=api_version,json=apiVersion,proto3" json:"api_version,omitempty"`
@@ -818,7 +913,7 @@ type AppConnectorOperationMetadata struct {
 
 func (x *AppConnectorOperationMetadata) Reset() {
 	*x = AppConnectorOperationMetadata{}
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[8]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[10]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -830,7 +925,7 @@ func (x *AppConnectorOperationMetadata) String() string {
 func (*AppConnectorOperationMetadata) ProtoMessage() {}
 
 func (x *AppConnectorOperationMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[8]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[10]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -843,7 +938,7 @@ func (x *AppConnectorOperationMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppConnectorOperationMetadata.ProtoReflect.Descriptor instead.
 func (*AppConnectorOperationMetadata) Descriptor() ([]byte, []int) {
-	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{8}
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{10}
 }
 
 func (x *AppConnectorOperationMetadata) GetCreateTime() *timestamppb.Timestamp {
@@ -908,7 +1003,7 @@ type AppConnector_PrincipalInfo struct {
 
 func (x *AppConnector_PrincipalInfo) Reset() {
 	*x = AppConnector_PrincipalInfo{}
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[9]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[11]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -920,7 +1015,7 @@ func (x *AppConnector_PrincipalInfo) String() string {
 func (*AppConnector_PrincipalInfo) ProtoMessage() {}
 
 func (x *AppConnector_PrincipalInfo) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[9]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[11]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -933,7 +1028,7 @@ func (x *AppConnector_PrincipalInfo) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use AppConnector_PrincipalInfo.ProtoReflect.Descriptor instead.
 func (*AppConnector_PrincipalInfo) Descriptor() ([]byte, []int) {
-	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{7, 0}
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{9, 0}
 }
 
 func (x *AppConnector_PrincipalInfo) GetType() isAppConnector_PrincipalInfo_Type {
@@ -974,7 +1069,7 @@ type AppConnector_PrincipalInfo_ServiceAccount struct {
 
 func (x *AppConnector_PrincipalInfo_ServiceAccount) Reset() {
 	*x = AppConnector_PrincipalInfo_ServiceAccount{}
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[11]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[13]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -986,7 +1081,7 @@ func (x *AppConnector_PrincipalInfo_ServiceAccount) String() string {
 func (*AppConnector_PrincipalInfo_ServiceAccount) ProtoMessage() {}
 
 func (x *AppConnector_PrincipalInfo_ServiceAccount) ProtoReflect() protoreflect.Message {
-	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[11]
+	mi := &file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[13]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -999,7 +1094,7 @@ func (x *AppConnector_PrincipalInfo_ServiceAccount) ProtoReflect() protoreflect.
 
 // Deprecated: Use AppConnector_PrincipalInfo_ServiceAccount.ProtoReflect.Descriptor instead.
 func (*AppConnector_PrincipalInfo_ServiceAccount) Descriptor() ([]byte, []int) {
-	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{7, 0, 0}
+	return file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDescGZIP(), []int{9, 0, 0}
 }
 
 func (x *AppConnector_PrincipalInfo_ServiceAccount) GetEmail() string {
@@ -1013,7 +1108,7 @@ var File_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto p
 
 const file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDesc = "" +
 	"\n" +
-	"Egoogle/cloud/beyondcorp/appconnectors/v1/app_connectors_service.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aLgoogle/cloud/beyondcorp/appconnectors/v1/app_connector_instance_config.proto\x1a<google/cloud/beyondcorp/appconnectors/v1/resource_info.proto\x1a#google/longrunning/operations.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\x01\n" +
+	"Egoogle/cloud/beyondcorp/appconnectors/v1/app_connectors_service.proto\x12(google.cloud.beyondcorp.appconnectors.v1\x1a\x1cgoogle/api/annotations.proto\x1a\x17google/api/client.proto\x1a\x1fgoogle/api/field_behavior.proto\x1a\x19google/api/resource.proto\x1aLgoogle/cloud/beyondcorp/appconnectors/v1/app_connector_instance_config.proto\x1a<google/cloud/beyondcorp/appconnectors/v1/resource_info.proto\x1a#google/longrunning/operations.proto\x1a\x1bgoogle/protobuf/empty.proto\x1a google/protobuf/field_mask.proto\x1a\x1fgoogle/protobuf/timestamp.proto\"\xe5\x01\n" +
 	"\x18ListAppConnectorsRequest\x12F\n" +
 	"\x06parent\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\x12&beyondcorp.googleapis.com/AppConnectorR\x06parent\x12 \n" +
 	"\tpage_size\x18\x02 \x01(\x05B\x03\xe0A\x01R\bpageSize\x12\"\n" +
@@ -1047,7 +1142,12 @@ const file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto
 	"&beyondcorp.googleapis.com/AppConnectorR\x04name\x12\"\n" +
 	"\n" +
 	"request_id\x18\x02 \x01(\tB\x03\xe0A\x01R\trequestId\x12(\n" +
-	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"\x9a\x02\n" +
+	"\rvalidate_only\x18\x03 \x01(\bB\x03\xe0A\x01R\fvalidateOnly\"s\n" +
+	"\x1cResolveInstanceConfigRequest\x12S\n" +
+	"\rapp_connector\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
+	"&beyondcorp.googleapis.com/AppConnectorR\fappConnector\"\x8e\x01\n" +
+	"\x1dResolveInstanceConfigResponse\x12m\n" +
+	"\x0finstance_config\x18\x01 \x01(\v2D.google.cloud.beyondcorp.appconnectors.v1.AppConnectorInstanceConfigR\x0einstanceConfig\"\x9a\x02\n" +
 	"\x13ReportStatusRequest\x12S\n" +
 	"\rapp_connector\x18\x01 \x01(\tB.\xe0A\x02\xfaA(\n" +
 	"&beyondcorp.googleapis.com/AppConnectorR\fappConnector\x12`\n" +
@@ -1092,18 +1192,19 @@ const file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto
 	"\x0estatus_message\x18\x05 \x01(\tB\x03\xe0A\x03R\rstatusMessage\x12:\n" +
 	"\x16requested_cancellation\x18\x06 \x01(\bB\x03\xe0A\x03R\x15requestedCancellation\x12$\n" +
 	"\vapi_version\x18\a \x01(\tB\x03\xe0A\x03R\n" +
-	"apiVersion2\xde\f\n" +
-	"\x14AppConnectorsService\x12\xe0\x01\n" +
-	"\x11ListAppConnectors\x12B.google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsRequest\x1aC.google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse\"B\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1/{parent=projects/*/locations/*}/appConnectors\x12\xcd\x01\n" +
-	"\x0fGetAppConnector\x12@.google.cloud.beyondcorp.appconnectors.v1.GetAppConnectorRequest\x1a6.google.cloud.beyondcorp.appconnectors.v1.AppConnector\"@\xdaA\x04name\x82\xd3\xe4\x93\x023\x121/v1/{name=projects/*/locations/*/appConnectors/*}\x12\x9b\x02\n" +
-	"\x12CreateAppConnector\x12C.google.cloud.beyondcorp.appconnectors.v1.CreateAppConnectorRequest\x1a\x1d.google.longrunning.Operation\"\xa0\x01\xcaA-\n" +
-	"\fAppConnector\x12\x1dAppConnectorOperationMetadata\xdaA%parent,app_connector,app_connector_id\x82\xd3\xe4\x93\x02B:\rapp_connector\"1/v1/{parent=projects/*/locations/*}/appConnectors\x12\x9d\x02\n" +
-	"\x12UpdateAppConnector\x12C.google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest\x1a\x1d.google.longrunning.Operation\"\xa2\x01\xcaA-\n" +
-	"\fAppConnector\x12\x1dAppConnectorOperationMetadata\xdaA\x19app_connector,update_mask\x82\xd3\xe4\x93\x02P:\rapp_connector2?/v1/{app_connector.name=projects/*/locations/*/appConnectors/*}\x12\xf3\x01\n" +
-	"\x12DeleteAppConnector\x12C.google.cloud.beyondcorp.appconnectors.v1.DeleteAppConnectorRequest\x1a\x1d.google.longrunning.Operation\"y\xcaA6\n" +
-	"\x15google.protobuf.Empty\x12\x1dAppConnectorOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x023*1/v1/{name=projects/*/locations/*/appConnectors/*}\x12\x8f\x02\n" +
-	"\fReportStatus\x12=.google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest\x1a\x1d.google.longrunning.Operation\"\xa0\x01\xcaA-\n" +
-	"\fAppConnector\x12\x1dAppConnectorOperationMetadata\xdaA\x1bapp_connector,resource_info\x82\xd3\xe4\x93\x02L:\x01*\"G/v1/{app_connector=projects/*/locations/*/appConnectors/*}:reportStatus\x1aM\xcaA\x19beyondcorp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platformB\xa4\x02\n" +
+	"apiVersion2\x8b\x0f\n" +
+	"\x14AppConnectorsService\x12\xe3\x01\n" +
+	"\x11ListAppConnectors\x12B.google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsRequest\x1aC.google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse\"E\xdaA\x06parent\x82\xd3\xe4\x93\x023\x121/v1/{parent=projects/*/locations/*}/appConnectors\x88\x02\x01\x12\xd0\x01\n" +
+	"\x0fGetAppConnector\x12@.google.cloud.beyondcorp.appconnectors.v1.GetAppConnectorRequest\x1a6.google.cloud.beyondcorp.appconnectors.v1.AppConnector\"C\xdaA\x04name\x82\xd3\xe4\x93\x023\x121/v1/{name=projects/*/locations/*/appConnectors/*}\x88\x02\x01\x12\x9e\x02\n" +
+	"\x12CreateAppConnector\x12C.google.cloud.beyondcorp.appconnectors.v1.CreateAppConnectorRequest\x1a\x1d.google.longrunning.Operation\"\xa3\x01\xcaA-\n" +
+	"\fAppConnector\x12\x1dAppConnectorOperationMetadata\xdaA%parent,app_connector,app_connector_id\x82\xd3\xe4\x93\x02B:\rapp_connector\"1/v1/{parent=projects/*/locations/*}/appConnectors\x88\x02\x01\x12\xa0\x02\n" +
+	"\x12UpdateAppConnector\x12C.google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest\x1a\x1d.google.longrunning.Operation\"\xa5\x01\xcaA-\n" +
+	"\fAppConnector\x12\x1dAppConnectorOperationMetadata\xdaA\x19app_connector,update_mask\x82\xd3\xe4\x93\x02P:\rapp_connector2?/v1/{app_connector.name=projects/*/locations/*/appConnectors/*}\x88\x02\x01\x12\xf6\x01\n" +
+	"\x12DeleteAppConnector\x12C.google.cloud.beyondcorp.appconnectors.v1.DeleteAppConnectorRequest\x1a\x1d.google.longrunning.Operation\"|\xcaA6\n" +
+	"\x15google.protobuf.Empty\x12\x1dAppConnectorOperationMetadata\xdaA\x04name\x82\xd3\xe4\x93\x023*1/v1/{name=projects/*/locations/*/appConnectors/*}\x88\x02\x01\x12\x95\x02\n" +
+	"\x15ResolveInstanceConfig\x12F.google.cloud.beyondcorp.appconnectors.v1.ResolveInstanceConfigRequest\x1aG.google.cloud.beyondcorp.appconnectors.v1.ResolveInstanceConfigResponse\"k\xdaA\rapp_connector\x82\xd3\xe4\x93\x02R\x12P/v1/{app_connector=projects/*/locations/*/appConnectors/*}:resolveInstanceConfig\x88\x02\x01\x12\x92\x02\n" +
+	"\fReportStatus\x12=.google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest\x1a\x1d.google.longrunning.Operation\"\xa3\x01\xcaA-\n" +
+	"\fAppConnector\x12\x1dAppConnectorOperationMetadata\xdaA\x1bapp_connector,resource_info\x82\xd3\xe4\x93\x02L:\x01*\"G/v1/{app_connector=projects/*/locations/*/appConnectors/*}:reportStatus\x88\x02\x01\x1aP\xcaA\x19beyondcorp.googleapis.com\xd2A.https://www.googleapis.com/auth/cloud-platform\x88\x02\x01B\xa4\x02\n" +
 	",com.google.cloud.beyondcorp.appconnectors.v1B\x19AppConnectorsServiceProtoP\x01ZRcloud.google.com/go/beyondcorp/appconnectors/apiv1/appconnectorspb;appconnectorspb\xaa\x02(Google.Cloud.BeyondCorp.AppConnectors.V1\xca\x02(Google\\Cloud\\BeyondCorp\\AppConnectors\\V1\xea\x02,Google::Cloud::BeyondCorp::AppConnectors::V1b\x06proto3"
 
 var (
@@ -1119,7 +1220,7 @@ func file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_
 }
 
 var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_enumTypes = make([]protoimpl.EnumInfo, 1)
-var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes = make([]protoimpl.MessageInfo, 12)
+var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes = make([]protoimpl.MessageInfo, 14)
 var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_goTypes = []any{
 	(AppConnector_State)(0),                           // 0: google.cloud.beyondcorp.appconnectors.v1.AppConnector.State
 	(*ListAppConnectorsRequest)(nil),                  // 1: google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsRequest
@@ -1128,49 +1229,55 @@ var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_g
 	(*CreateAppConnectorRequest)(nil),                 // 4: google.cloud.beyondcorp.appconnectors.v1.CreateAppConnectorRequest
 	(*UpdateAppConnectorRequest)(nil),                 // 5: google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest
 	(*DeleteAppConnectorRequest)(nil),                 // 6: google.cloud.beyondcorp.appconnectors.v1.DeleteAppConnectorRequest
-	(*ReportStatusRequest)(nil),                       // 7: google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest
-	(*AppConnector)(nil),                              // 8: google.cloud.beyondcorp.appconnectors.v1.AppConnector
-	(*AppConnectorOperationMetadata)(nil),             // 9: google.cloud.beyondcorp.appconnectors.v1.AppConnectorOperationMetadata
-	(*AppConnector_PrincipalInfo)(nil),                // 10: google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo
-	nil,                                               // 11: google.cloud.beyondcorp.appconnectors.v1.AppConnector.LabelsEntry
-	(*AppConnector_PrincipalInfo_ServiceAccount)(nil), // 12: google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo.ServiceAccount
-	(*fieldmaskpb.FieldMask)(nil),                     // 13: google.protobuf.FieldMask
-	(*ResourceInfo)(nil),                              // 14: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
-	(*timestamppb.Timestamp)(nil),                     // 15: google.protobuf.Timestamp
-	(*longrunningpb.Operation)(nil),                   // 16: google.longrunning.Operation
+	(*ResolveInstanceConfigRequest)(nil),              // 7: google.cloud.beyondcorp.appconnectors.v1.ResolveInstanceConfigRequest
+	(*ResolveInstanceConfigResponse)(nil),             // 8: google.cloud.beyondcorp.appconnectors.v1.ResolveInstanceConfigResponse
+	(*ReportStatusRequest)(nil),                       // 9: google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest
+	(*AppConnector)(nil),                              // 10: google.cloud.beyondcorp.appconnectors.v1.AppConnector
+	(*AppConnectorOperationMetadata)(nil),             // 11: google.cloud.beyondcorp.appconnectors.v1.AppConnectorOperationMetadata
+	(*AppConnector_PrincipalInfo)(nil),                // 12: google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo
+	nil,                                               // 13: google.cloud.beyondcorp.appconnectors.v1.AppConnector.LabelsEntry
+	(*AppConnector_PrincipalInfo_ServiceAccount)(nil), // 14: google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo.ServiceAccount
+	(*fieldmaskpb.FieldMask)(nil),                     // 15: google.protobuf.FieldMask
+	(*AppConnectorInstanceConfig)(nil),                // 16: google.cloud.beyondcorp.appconnectors.v1.AppConnectorInstanceConfig
+	(*ResourceInfo)(nil),                              // 17: google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
+	(*timestamppb.Timestamp)(nil),                     // 18: google.protobuf.Timestamp
+	(*longrunningpb.Operation)(nil),                   // 19: google.longrunning.Operation
 }
 var file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_depIdxs = []int32{
-	8,  // 0: google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse.app_connectors:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
-	8,  // 1: google.cloud.beyondcorp.appconnectors.v1.CreateAppConnectorRequest.app_connector:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
-	13, // 2: google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest.update_mask:type_name -> google.protobuf.FieldMask
-	8,  // 3: google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest.app_connector:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
-	14, // 4: google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest.resource_info:type_name -> google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
-	15, // 5: google.cloud.beyondcorp.appconnectors.v1.AppConnector.create_time:type_name -> google.protobuf.Timestamp
-	15, // 6: google.cloud.beyondcorp.appconnectors.v1.AppConnector.update_time:type_name -> google.protobuf.Timestamp
-	11, // 7: google.cloud.beyondcorp.appconnectors.v1.AppConnector.labels:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.LabelsEntry
-	0,  // 8: google.cloud.beyondcorp.appconnectors.v1.AppConnector.state:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.State
-	10, // 9: google.cloud.beyondcorp.appconnectors.v1.AppConnector.principal_info:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo
-	14, // 10: google.cloud.beyondcorp.appconnectors.v1.AppConnector.resource_info:type_name -> google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
-	15, // 11: google.cloud.beyondcorp.appconnectors.v1.AppConnectorOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
-	15, // 12: google.cloud.beyondcorp.appconnectors.v1.AppConnectorOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
-	12, // 13: google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo.service_account:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo.ServiceAccount
-	1,  // 14: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ListAppConnectors:input_type -> google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsRequest
-	3,  // 15: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.GetAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.GetAppConnectorRequest
-	4,  // 16: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.CreateAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.CreateAppConnectorRequest
-	5,  // 17: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.UpdateAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest
-	6,  // 18: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.DeleteAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.DeleteAppConnectorRequest
-	7,  // 19: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ReportStatus:input_type -> google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest
-	2,  // 20: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ListAppConnectors:output_type -> google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse
-	8,  // 21: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.GetAppConnector:output_type -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
-	16, // 22: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.CreateAppConnector:output_type -> google.longrunning.Operation
-	16, // 23: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.UpdateAppConnector:output_type -> google.longrunning.Operation
-	16, // 24: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.DeleteAppConnector:output_type -> google.longrunning.Operation
-	16, // 25: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ReportStatus:output_type -> google.longrunning.Operation
-	20, // [20:26] is the sub-list for method output_type
-	14, // [14:20] is the sub-list for method input_type
-	14, // [14:14] is the sub-list for extension type_name
-	14, // [14:14] is the sub-list for extension extendee
-	0,  // [0:14] is the sub-list for field type_name
+	10, // 0: google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse.app_connectors:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
+	10, // 1: google.cloud.beyondcorp.appconnectors.v1.CreateAppConnectorRequest.app_connector:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
+	15, // 2: google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest.update_mask:type_name -> google.protobuf.FieldMask
+	10, // 3: google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest.app_connector:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
+	16, // 4: google.cloud.beyondcorp.appconnectors.v1.ResolveInstanceConfigResponse.instance_config:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnectorInstanceConfig
+	17, // 5: google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest.resource_info:type_name -> google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
+	18, // 6: google.cloud.beyondcorp.appconnectors.v1.AppConnector.create_time:type_name -> google.protobuf.Timestamp
+	18, // 7: google.cloud.beyondcorp.appconnectors.v1.AppConnector.update_time:type_name -> google.protobuf.Timestamp
+	13, // 8: google.cloud.beyondcorp.appconnectors.v1.AppConnector.labels:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.LabelsEntry
+	0,  // 9: google.cloud.beyondcorp.appconnectors.v1.AppConnector.state:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.State
+	12, // 10: google.cloud.beyondcorp.appconnectors.v1.AppConnector.principal_info:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo
+	17, // 11: google.cloud.beyondcorp.appconnectors.v1.AppConnector.resource_info:type_name -> google.cloud.beyondcorp.appconnectors.v1.ResourceInfo
+	18, // 12: google.cloud.beyondcorp.appconnectors.v1.AppConnectorOperationMetadata.create_time:type_name -> google.protobuf.Timestamp
+	18, // 13: google.cloud.beyondcorp.appconnectors.v1.AppConnectorOperationMetadata.end_time:type_name -> google.protobuf.Timestamp
+	14, // 14: google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo.service_account:type_name -> google.cloud.beyondcorp.appconnectors.v1.AppConnector.PrincipalInfo.ServiceAccount
+	1,  // 15: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ListAppConnectors:input_type -> google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsRequest
+	3,  // 16: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.GetAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.GetAppConnectorRequest
+	4,  // 17: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.CreateAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.CreateAppConnectorRequest
+	5,  // 18: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.UpdateAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.UpdateAppConnectorRequest
+	6,  // 19: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.DeleteAppConnector:input_type -> google.cloud.beyondcorp.appconnectors.v1.DeleteAppConnectorRequest
+	7,  // 20: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ResolveInstanceConfig:input_type -> google.cloud.beyondcorp.appconnectors.v1.ResolveInstanceConfigRequest
+	9,  // 21: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ReportStatus:input_type -> google.cloud.beyondcorp.appconnectors.v1.ReportStatusRequest
+	2,  // 22: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ListAppConnectors:output_type -> google.cloud.beyondcorp.appconnectors.v1.ListAppConnectorsResponse
+	10, // 23: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.GetAppConnector:output_type -> google.cloud.beyondcorp.appconnectors.v1.AppConnector
+	19, // 24: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.CreateAppConnector:output_type -> google.longrunning.Operation
+	19, // 25: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.UpdateAppConnector:output_type -> google.longrunning.Operation
+	19, // 26: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.DeleteAppConnector:output_type -> google.longrunning.Operation
+	8,  // 27: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ResolveInstanceConfig:output_type -> google.cloud.beyondcorp.appconnectors.v1.ResolveInstanceConfigResponse
+	19, // 28: google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService.ReportStatus:output_type -> google.longrunning.Operation
+	22, // [22:29] is the sub-list for method output_type
+	15, // [15:22] is the sub-list for method input_type
+	15, // [15:15] is the sub-list for extension type_name
+	15, // [15:15] is the sub-list for extension extendee
+	0,  // [0:15] is the sub-list for field type_name
 }
 
 func init() { file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_init() }
@@ -1180,7 +1287,7 @@ func file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_
 	}
 	file_google_cloud_beyondcorp_appconnectors_v1_app_connector_instance_config_proto_init()
 	file_google_cloud_beyondcorp_appconnectors_v1_resource_info_proto_init()
-	file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[9].OneofWrappers = []any{
+	file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_msgTypes[11].OneofWrappers = []any{
 		(*AppConnector_PrincipalInfo_ServiceAccount_)(nil),
 	}
 	type x struct{}
@@ -1189,7 +1296,7 @@ func file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDesc), len(file_google_cloud_beyondcorp_appconnectors_v1_app_connectors_service_proto_rawDesc)),
 			NumEnums:      1,
-			NumMessages:   12,
+			NumMessages:   14,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -35,28 +35,41 @@ import (
 const _ = grpc.SupportPackageIsVersion7
 
 const (
-	AppConnectorsService_ListAppConnectors_FullMethodName  = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/ListAppConnectors"
-	AppConnectorsService_GetAppConnector_FullMethodName    = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/GetAppConnector"
-	AppConnectorsService_CreateAppConnector_FullMethodName = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/CreateAppConnector"
-	AppConnectorsService_UpdateAppConnector_FullMethodName = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/UpdateAppConnector"
-	AppConnectorsService_DeleteAppConnector_FullMethodName = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/DeleteAppConnector"
-	AppConnectorsService_ReportStatus_FullMethodName       = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/ReportStatus"
+	AppConnectorsService_ListAppConnectors_FullMethodName     = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/ListAppConnectors"
+	AppConnectorsService_GetAppConnector_FullMethodName       = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/GetAppConnector"
+	AppConnectorsService_CreateAppConnector_FullMethodName    = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/CreateAppConnector"
+	AppConnectorsService_UpdateAppConnector_FullMethodName    = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/UpdateAppConnector"
+	AppConnectorsService_DeleteAppConnector_FullMethodName    = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/DeleteAppConnector"
+	AppConnectorsService_ResolveInstanceConfig_FullMethodName = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/ResolveInstanceConfig"
+	AppConnectorsService_ReportStatus_FullMethodName          = "/google.cloud.beyondcorp.appconnectors.v1.AppConnectorsService/ReportStatus"
 )
 
 // AppConnectorsServiceClient is the client API for AppConnectorsService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Deprecated: Do not use.
 type AppConnectorsServiceClient interface {
+	// Deprecated: Do not use.
 	// Lists AppConnectors in a given project and location.
 	ListAppConnectors(ctx context.Context, in *ListAppConnectorsRequest, opts ...grpc.CallOption) (*ListAppConnectorsResponse, error)
+	// Deprecated: Do not use.
 	// Gets details of a single AppConnector.
 	GetAppConnector(ctx context.Context, in *GetAppConnectorRequest, opts ...grpc.CallOption) (*AppConnector, error)
+	// Deprecated: Do not use.
 	// Creates a new AppConnector in a given project and location.
 	CreateAppConnector(ctx context.Context, in *CreateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates the parameters of a single AppConnector.
 	UpdateAppConnector(ctx context.Context, in *UpdateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Deletes a single AppConnector.
 	DeleteAppConnector(ctx context.Context, in *DeleteAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
+	// Gets instance configuration for a given AppConnector.
+	// An internal method called by a AppConnector to get its container config.
+	ResolveInstanceConfig(ctx context.Context, in *ResolveInstanceConfigRequest, opts ...grpc.CallOption) (*ResolveInstanceConfigResponse, error)
+	// Deprecated: Do not use.
 	// Report status for a given connector.
 	ReportStatus(ctx context.Context, in *ReportStatusRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
 }
@@ -65,10 +78,12 @@ type appConnectorsServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
+// Deprecated: Do not use.
 func NewAppConnectorsServiceClient(cc grpc.ClientConnInterface) AppConnectorsServiceClient {
 	return &appConnectorsServiceClient{cc}
 }
 
+// Deprecated: Do not use.
 func (c *appConnectorsServiceClient) ListAppConnectors(ctx context.Context, in *ListAppConnectorsRequest, opts ...grpc.CallOption) (*ListAppConnectorsResponse, error) {
 	out := new(ListAppConnectorsResponse)
 	err := c.cc.Invoke(ctx, AppConnectorsService_ListAppConnectors_FullMethodName, in, out, opts...)
@@ -78,6 +93,7 @@ func (c *appConnectorsServiceClient) ListAppConnectors(ctx context.Context, in *
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectorsServiceClient) GetAppConnector(ctx context.Context, in *GetAppConnectorRequest, opts ...grpc.CallOption) (*AppConnector, error) {
 	out := new(AppConnector)
 	err := c.cc.Invoke(ctx, AppConnectorsService_GetAppConnector_FullMethodName, in, out, opts...)
@@ -87,6 +103,7 @@ func (c *appConnectorsServiceClient) GetAppConnector(ctx context.Context, in *Ge
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectorsServiceClient) CreateAppConnector(ctx context.Context, in *CreateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppConnectorsService_CreateAppConnector_FullMethodName, in, out, opts...)
@@ -96,6 +113,7 @@ func (c *appConnectorsServiceClient) CreateAppConnector(ctx context.Context, in 
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectorsServiceClient) UpdateAppConnector(ctx context.Context, in *UpdateAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppConnectorsService_UpdateAppConnector_FullMethodName, in, out, opts...)
@@ -105,6 +123,7 @@ func (c *appConnectorsServiceClient) UpdateAppConnector(ctx context.Context, in 
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectorsServiceClient) DeleteAppConnector(ctx context.Context, in *DeleteAppConnectorRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppConnectorsService_DeleteAppConnector_FullMethodName, in, out, opts...)
@@ -114,6 +133,17 @@ func (c *appConnectorsServiceClient) DeleteAppConnector(ctx context.Context, in 
 	return out, nil
 }
 
+// Deprecated: Do not use.
+func (c *appConnectorsServiceClient) ResolveInstanceConfig(ctx context.Context, in *ResolveInstanceConfigRequest, opts ...grpc.CallOption) (*ResolveInstanceConfigResponse, error) {
+	out := new(ResolveInstanceConfigResponse)
+	err := c.cc.Invoke(ctx, AppConnectorsService_ResolveInstanceConfig_FullMethodName, in, out, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
+// Deprecated: Do not use.
 func (c *appConnectorsServiceClient) ReportStatus(ctx context.Context, in *ReportStatusRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppConnectorsService_ReportStatus_FullMethodName, in, out, opts...)
@@ -126,17 +156,29 @@ func (c *appConnectorsServiceClient) ReportStatus(ctx context.Context, in *Repor
 // AppConnectorsServiceServer is the server API for AppConnectorsService service.
 // All implementations should embed UnimplementedAppConnectorsServiceServer
 // for forward compatibility
+//
+// Deprecated: Do not use.
 type AppConnectorsServiceServer interface {
+	// Deprecated: Do not use.
 	// Lists AppConnectors in a given project and location.
 	ListAppConnectors(context.Context, *ListAppConnectorsRequest) (*ListAppConnectorsResponse, error)
+	// Deprecated: Do not use.
 	// Gets details of a single AppConnector.
 	GetAppConnector(context.Context, *GetAppConnectorRequest) (*AppConnector, error)
+	// Deprecated: Do not use.
 	// Creates a new AppConnector in a given project and location.
 	CreateAppConnector(context.Context, *CreateAppConnectorRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates the parameters of a single AppConnector.
 	UpdateAppConnector(context.Context, *UpdateAppConnectorRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Deletes a single AppConnector.
 	DeleteAppConnector(context.Context, *DeleteAppConnectorRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
+	// Gets instance configuration for a given AppConnector.
+	// An internal method called by a AppConnector to get its container config.
+	ResolveInstanceConfig(context.Context, *ResolveInstanceConfigRequest) (*ResolveInstanceConfigResponse, error)
+	// Deprecated: Do not use.
 	// Report status for a given connector.
 	ReportStatus(context.Context, *ReportStatusRequest) (*longrunningpb.Operation, error)
 }
@@ -160,6 +202,9 @@ func (UnimplementedAppConnectorsServiceServer) UpdateAppConnector(context.Contex
 func (UnimplementedAppConnectorsServiceServer) DeleteAppConnector(context.Context, *DeleteAppConnectorRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method DeleteAppConnector not implemented")
 }
+func (UnimplementedAppConnectorsServiceServer) ResolveInstanceConfig(context.Context, *ResolveInstanceConfigRequest) (*ResolveInstanceConfigResponse, error) {
+	return nil, status.Errorf(codes.Unimplemented, "method ResolveInstanceConfig not implemented")
+}
 func (UnimplementedAppConnectorsServiceServer) ReportStatus(context.Context, *ReportStatusRequest) (*longrunningpb.Operation, error) {
 	return nil, status.Errorf(codes.Unimplemented, "method ReportStatus not implemented")
 }
@@ -171,6 +216,7 @@ type UnsafeAppConnectorsServiceServer interface {
 	mustEmbedUnimplementedAppConnectorsServiceServer()
 }
 
+// Deprecated: Do not use.
 func RegisterAppConnectorsServiceServer(s grpc.ServiceRegistrar, srv AppConnectorsServiceServer) {
 	s.RegisterService(&AppConnectorsService_ServiceDesc, srv)
 }
@@ -265,6 +311,24 @@ func _AppConnectorsService_DeleteAppConnector_Handler(srv interface{}, ctx conte
 	return interceptor(ctx, in, info, handler)
 }
 
+func _AppConnectorsService_ResolveInstanceConfig_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(ResolveInstanceConfigRequest)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(AppConnectorsServiceServer).ResolveInstanceConfig(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: AppConnectorsService_ResolveInstanceConfig_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(AppConnectorsServiceServer).ResolveInstanceConfig(ctx, req.(*ResolveInstanceConfigRequest))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _AppConnectorsService_ReportStatus_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(ReportStatusRequest)
 	if err := dec(in); err != nil {
@@ -309,6 +373,10 @@ var AppConnectorsService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "DeleteAppConnector",
 			Handler:    _AppConnectorsService_DeleteAppConnector_Handler,
+		},
+		{
+			MethodName: "ResolveInstanceConfig",
+			Handler:    _AppConnectorsService_ResolveInstanceConfig_Handler,
 		},
 		{
 			MethodName: "ReportStatus",

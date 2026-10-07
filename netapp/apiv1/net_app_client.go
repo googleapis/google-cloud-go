@@ -62,6 +62,8 @@ type CallOptions struct {
 	UpdateVolume                []gax.CallOption
 	DeleteVolume                []gax.CallOption
 	RevertVolume                []gax.CallOption
+	StartSplit                  []gax.CallOption
+	GetSplitStatus              []gax.CallOption
 	EstablishVolumePeering      []gax.CallOption
 	ListSnapshots               []gax.CallOption
 	GetSnapshot                 []gax.CallOption
@@ -120,6 +122,9 @@ type CallOptions struct {
 	ExecuteOntapGet             []gax.CallOption
 	ExecuteOntapDelete          []gax.CallOption
 	ExecuteOntapPatch           []gax.CallOption
+	RestoreVolume               []gax.CallOption
+	ListBackupConfigs           []gax.CallOption
+	UpdateBackupConfig          []gax.CallOption
 	GetLocation                 []gax.CallOption
 	ListLocations               []gax.CallOption
 	CancelOperation             []gax.CallOption
@@ -216,6 +221,8 @@ func defaultCallOptions() *CallOptions {
 		RevertVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		StartSplit:             []gax.CallOption{},
+		GetSplitStatus:         []gax.CallOption{},
 		EstablishVolumePeering: []gax.CallOption{},
 		ListSnapshots: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -480,6 +487,9 @@ func defaultCallOptions() *CallOptions {
 		ExecuteOntapGet:    []gax.CallOption{},
 		ExecuteOntapDelete: []gax.CallOption{},
 		ExecuteOntapPatch:  []gax.CallOption{},
+		RestoreVolume:      []gax.CallOption{},
+		ListBackupConfigs:  []gax.CallOption{},
+		UpdateBackupConfig: []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		CancelOperation:    []gax.CallOption{},
@@ -558,6 +568,8 @@ func defaultRESTCallOptions() *CallOptions {
 		RevertVolume: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
 		},
+		StartSplit:             []gax.CallOption{},
+		GetSplitStatus:         []gax.CallOption{},
 		EstablishVolumePeering: []gax.CallOption{},
 		ListSnapshots: []gax.CallOption{
 			gax.WithTimeout(60000 * time.Millisecond),
@@ -808,6 +820,9 @@ func defaultRESTCallOptions() *CallOptions {
 		ExecuteOntapGet:    []gax.CallOption{},
 		ExecuteOntapDelete: []gax.CallOption{},
 		ExecuteOntapPatch:  []gax.CallOption{},
+		RestoreVolume:      []gax.CallOption{},
+		ListBackupConfigs:  []gax.CallOption{},
+		UpdateBackupConfig: []gax.CallOption{},
 		GetLocation:        []gax.CallOption{},
 		ListLocations:      []gax.CallOption{},
 		CancelOperation:    []gax.CallOption{},
@@ -844,6 +859,9 @@ type internalClient interface {
 	DeleteVolumeOperation(name string) *DeleteVolumeOperation
 	RevertVolume(context.Context, *netapppb.RevertVolumeRequest, ...gax.CallOption) (*RevertVolumeOperation, error)
 	RevertVolumeOperation(name string) *RevertVolumeOperation
+	StartSplit(context.Context, *netapppb.StartSplitRequest, ...gax.CallOption) (*StartSplitOperation, error)
+	StartSplitOperation(name string) *StartSplitOperation
+	GetSplitStatus(context.Context, *netapppb.GetSplitStatusRequest, ...gax.CallOption) (*netapppb.SplitStatus, error)
 	EstablishVolumePeering(context.Context, *netapppb.EstablishVolumePeeringRequest, ...gax.CallOption) (*EstablishVolumePeeringOperation, error)
 	EstablishVolumePeeringOperation(name string) *EstablishVolumePeeringOperation
 	ListSnapshots(context.Context, *netapppb.ListSnapshotsRequest, ...gax.CallOption) *SnapshotIterator
@@ -937,6 +955,11 @@ type internalClient interface {
 	ExecuteOntapGet(context.Context, *netapppb.ExecuteOntapGetRequest, ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error)
 	ExecuteOntapDelete(context.Context, *netapppb.ExecuteOntapDeleteRequest, ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error)
 	ExecuteOntapPatch(context.Context, *netapppb.ExecuteOntapPatchRequest, ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error)
+	RestoreVolume(context.Context, *netapppb.RestoreVolumeRequest, ...gax.CallOption) (*RestoreVolumeOperation, error)
+	RestoreVolumeOperation(name string) *RestoreVolumeOperation
+	ListBackupConfigs(context.Context, *netapppb.ListBackupConfigsRequest, ...gax.CallOption) *VolumeBackupConfigIterator
+	UpdateBackupConfig(context.Context, *netapppb.UpdateBackupConfigRequest, ...gax.CallOption) (*UpdateBackupConfigOperation, error)
+	UpdateBackupConfigOperation(name string) *UpdateBackupConfigOperation
 	GetLocation(context.Context, *locationpb.GetLocationRequest, ...gax.CallOption) (*locationpb.Location, error)
 	ListLocations(context.Context, *locationpb.ListLocationsRequest, ...gax.CallOption) *LocationIterator
 	CancelOperation(context.Context, *longrunningpb.CancelOperationRequest, ...gax.CallOption) error
@@ -1106,6 +1129,27 @@ func (c *Client) RevertVolume(ctx context.Context, req *netapppb.RevertVolumeReq
 // The name must be that of a previously created RevertVolumeOperation, possibly from a different process.
 func (c *Client) RevertVolumeOperation(name string) *RevertVolumeOperation {
 	return c.internalClient.RevertVolumeOperation(name)
+}
+
+// StartSplit splits a clone volume from its source volume.
+// This operation will only work for volumes which have clone_details
+// set(clones).
+// For volumes that are not clones, this operation will return an error.
+func (c *Client) StartSplit(ctx context.Context, req *netapppb.StartSplitRequest, opts ...gax.CallOption) (*StartSplitOperation, error) {
+	return c.internalClient.StartSplit(ctx, req, opts...)
+}
+
+// StartSplitOperation returns a new StartSplitOperation from a given name.
+// The name must be that of a previously created StartSplitOperation, possibly from a different process.
+func (c *Client) StartSplitOperation(name string) *StartSplitOperation {
+	return c.internalClient.StartSplitOperation(name)
+}
+
+// GetSplitStatus retrieves the current state, progress, and details of a split operation for
+// a volume. This method is relevant when the volume is a clone. For volumes
+// that are not clones, this method will return an error.
+func (c *Client) GetSplitStatus(ctx context.Context, req *netapppb.GetSplitStatusRequest, opts ...gax.CallOption) (*netapppb.SplitStatus, error) {
+	return c.internalClient.GetSplitStatus(ctx, req, opts...)
 }
 
 // EstablishVolumePeering establish volume peering. This is used to establish cluster and svm
@@ -1597,28 +1641,55 @@ func (c *Client) DeleteHostGroupOperation(name string) *DeleteHostGroupOperation
 	return c.internalClient.DeleteHostGroupOperation(name)
 }
 
-// ExecuteOntapPost ExecuteOntapPost dispatches the ONTAP POST request to the
+// ExecuteOntapPost ExecuteOntapPost sends the ONTAP POST request to the
 // StoragePool cluster.
 func (c *Client) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
 	return c.internalClient.ExecuteOntapPost(ctx, req, opts...)
 }
 
-// ExecuteOntapGet ExecuteOntapGet dispatches the ONTAP GET request to the
+// ExecuteOntapGet ExecuteOntapGet sends the ONTAP GET request to the
 // StoragePool cluster.
 func (c *Client) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
 	return c.internalClient.ExecuteOntapGet(ctx, req, opts...)
 }
 
-// ExecuteOntapDelete ExecuteOntapDelete dispatches the ONTAP DELETE request to the
+// ExecuteOntapDelete ExecuteOntapDelete sends the ONTAP DELETE request to the
 // StoragePool cluster.
 func (c *Client) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
 	return c.internalClient.ExecuteOntapDelete(ctx, req, opts...)
 }
 
-// ExecuteOntapPatch ExecuteOntapPatch dispatches the ONTAP PATCH request to the
+// ExecuteOntapPatch ExecuteOntapPatch sends the ONTAP PATCH request to the
 // StoragePool cluster.
 func (c *Client) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
 	return c.internalClient.ExecuteOntapPatch(ctx, req, opts...)
+}
+
+// RestoreVolume restores a backup to an ONTAP-mode volume.
+func (c *Client) RestoreVolume(ctx context.Context, req *netapppb.RestoreVolumeRequest, opts ...gax.CallOption) (*RestoreVolumeOperation, error) {
+	return c.internalClient.RestoreVolume(ctx, req, opts...)
+}
+
+// RestoreVolumeOperation returns a new RestoreVolumeOperation from a given name.
+// The name must be that of a previously created RestoreVolumeOperation, possibly from a different process.
+func (c *Client) RestoreVolumeOperation(name string) *RestoreVolumeOperation {
+	return c.internalClient.RestoreVolumeOperation(name)
+}
+
+// ListBackupConfigs lists backup configurations for all volumes in an ONTAP-mode Storage Pool.
+func (c *Client) ListBackupConfigs(ctx context.Context, req *netapppb.ListBackupConfigsRequest, opts ...gax.CallOption) *VolumeBackupConfigIterator {
+	return c.internalClient.ListBackupConfigs(ctx, req, opts...)
+}
+
+// UpdateBackupConfig updates the backup configuration for an ONTAP-mode volume.
+func (c *Client) UpdateBackupConfig(ctx context.Context, req *netapppb.UpdateBackupConfigRequest, opts ...gax.CallOption) (*UpdateBackupConfigOperation, error) {
+	return c.internalClient.UpdateBackupConfig(ctx, req, opts...)
+}
+
+// UpdateBackupConfigOperation returns a new UpdateBackupConfigOperation from a given name.
+// The name must be that of a previously created UpdateBackupConfigOperation, possibly from a different process.
+func (c *Client) UpdateBackupConfigOperation(name string) *UpdateBackupConfigOperation {
+	return c.internalClient.UpdateBackupConfigOperation(name)
 }
 
 // GetLocation gets information about a location.
@@ -1758,6 +1829,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.UpdateVolume = append(client.CallOptions.UpdateVolume, gax.WithClientMetrics(metrics))
 		client.CallOptions.DeleteVolume = append(client.CallOptions.DeleteVolume, gax.WithClientMetrics(metrics))
 		client.CallOptions.RevertVolume = append(client.CallOptions.RevertVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.StartSplit = append(client.CallOptions.StartSplit, gax.WithClientMetrics(metrics))
+		client.CallOptions.GetSplitStatus = append(client.CallOptions.GetSplitStatus, gax.WithClientMetrics(metrics))
 		client.CallOptions.EstablishVolumePeering = append(client.CallOptions.EstablishVolumePeering, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientMetrics(metrics))
@@ -1816,6 +1889,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ExecuteOntapGet = append(client.CallOptions.ExecuteOntapGet, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExecuteOntapDelete = append(client.CallOptions.ExecuteOntapDelete, gax.WithClientMetrics(metrics))
 		client.CallOptions.ExecuteOntapPatch = append(client.CallOptions.ExecuteOntapPatch, gax.WithClientMetrics(metrics))
+		client.CallOptions.RestoreVolume = append(client.CallOptions.RestoreVolume, gax.WithClientMetrics(metrics))
+		client.CallOptions.ListBackupConfigs = append(client.CallOptions.ListBackupConfigs, gax.WithClientMetrics(metrics))
+		client.CallOptions.UpdateBackupConfig = append(client.CallOptions.UpdateBackupConfig, gax.WithClientMetrics(metrics))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientMetrics(metrics))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientMetrics(metrics))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientMetrics(metrics))
@@ -1847,6 +1923,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.UpdateVolume = append(client.CallOptions.UpdateVolume, gax.WithClientTracing(tracing))
 		client.CallOptions.DeleteVolume = append(client.CallOptions.DeleteVolume, gax.WithClientTracing(tracing))
 		client.CallOptions.RevertVolume = append(client.CallOptions.RevertVolume, gax.WithClientTracing(tracing))
+		client.CallOptions.StartSplit = append(client.CallOptions.StartSplit, gax.WithClientTracing(tracing))
+		client.CallOptions.GetSplitStatus = append(client.CallOptions.GetSplitStatus, gax.WithClientTracing(tracing))
 		client.CallOptions.EstablishVolumePeering = append(client.CallOptions.EstablishVolumePeering, gax.WithClientTracing(tracing))
 		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientTracing(tracing))
 		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientTracing(tracing))
@@ -1905,6 +1983,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ExecuteOntapGet = append(client.CallOptions.ExecuteOntapGet, gax.WithClientTracing(tracing))
 		client.CallOptions.ExecuteOntapDelete = append(client.CallOptions.ExecuteOntapDelete, gax.WithClientTracing(tracing))
 		client.CallOptions.ExecuteOntapPatch = append(client.CallOptions.ExecuteOntapPatch, gax.WithClientTracing(tracing))
+		client.CallOptions.RestoreVolume = append(client.CallOptions.RestoreVolume, gax.WithClientTracing(tracing))
+		client.CallOptions.ListBackupConfigs = append(client.CallOptions.ListBackupConfigs, gax.WithClientTracing(tracing))
+		client.CallOptions.UpdateBackupConfig = append(client.CallOptions.UpdateBackupConfig, gax.WithClientTracing(tracing))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientTracing(tracing))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientTracing(tracing))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientTracing(tracing))
@@ -1937,6 +2018,8 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.UpdateVolume = append(client.CallOptions.UpdateVolume, gax.WithClientLogging(logging))
 		client.CallOptions.DeleteVolume = append(client.CallOptions.DeleteVolume, gax.WithClientLogging(logging))
 		client.CallOptions.RevertVolume = append(client.CallOptions.RevertVolume, gax.WithClientLogging(logging))
+		client.CallOptions.StartSplit = append(client.CallOptions.StartSplit, gax.WithClientLogging(logging))
+		client.CallOptions.GetSplitStatus = append(client.CallOptions.GetSplitStatus, gax.WithClientLogging(logging))
 		client.CallOptions.EstablishVolumePeering = append(client.CallOptions.EstablishVolumePeering, gax.WithClientLogging(logging))
 		client.CallOptions.ListSnapshots = append(client.CallOptions.ListSnapshots, gax.WithClientLogging(logging))
 		client.CallOptions.GetSnapshot = append(client.CallOptions.GetSnapshot, gax.WithClientLogging(logging))
@@ -1995,6 +2078,9 @@ func NewClient(ctx context.Context, opts ...option.ClientOption) (*Client, error
 		client.CallOptions.ExecuteOntapGet = append(client.CallOptions.ExecuteOntapGet, gax.WithClientLogging(logging))
 		client.CallOptions.ExecuteOntapDelete = append(client.CallOptions.ExecuteOntapDelete, gax.WithClientLogging(logging))
 		client.CallOptions.ExecuteOntapPatch = append(client.CallOptions.ExecuteOntapPatch, gax.WithClientLogging(logging))
+		client.CallOptions.RestoreVolume = append(client.CallOptions.RestoreVolume, gax.WithClientLogging(logging))
+		client.CallOptions.ListBackupConfigs = append(client.CallOptions.ListBackupConfigs, gax.WithClientLogging(logging))
+		client.CallOptions.UpdateBackupConfig = append(client.CallOptions.UpdateBackupConfig, gax.WithClientLogging(logging))
 		client.CallOptions.GetLocation = append(client.CallOptions.GetLocation, gax.WithClientLogging(logging))
 		client.CallOptions.ListLocations = append(client.CallOptions.ListLocations, gax.WithClientLogging(logging))
 		client.CallOptions.CancelOperation = append(client.CallOptions.CancelOperation, gax.WithClientLogging(logging))
@@ -2120,6 +2206,8 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UpdateVolume = append(callOpts.UpdateVolume, gax.WithClientMetrics(metrics))
 		callOpts.DeleteVolume = append(callOpts.DeleteVolume, gax.WithClientMetrics(metrics))
 		callOpts.RevertVolume = append(callOpts.RevertVolume, gax.WithClientMetrics(metrics))
+		callOpts.StartSplit = append(callOpts.StartSplit, gax.WithClientMetrics(metrics))
+		callOpts.GetSplitStatus = append(callOpts.GetSplitStatus, gax.WithClientMetrics(metrics))
 		callOpts.EstablishVolumePeering = append(callOpts.EstablishVolumePeering, gax.WithClientMetrics(metrics))
 		callOpts.ListSnapshots = append(callOpts.ListSnapshots, gax.WithClientMetrics(metrics))
 		callOpts.GetSnapshot = append(callOpts.GetSnapshot, gax.WithClientMetrics(metrics))
@@ -2178,6 +2266,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ExecuteOntapGet = append(callOpts.ExecuteOntapGet, gax.WithClientMetrics(metrics))
 		callOpts.ExecuteOntapDelete = append(callOpts.ExecuteOntapDelete, gax.WithClientMetrics(metrics))
 		callOpts.ExecuteOntapPatch = append(callOpts.ExecuteOntapPatch, gax.WithClientMetrics(metrics))
+		callOpts.RestoreVolume = append(callOpts.RestoreVolume, gax.WithClientMetrics(metrics))
+		callOpts.ListBackupConfigs = append(callOpts.ListBackupConfigs, gax.WithClientMetrics(metrics))
+		callOpts.UpdateBackupConfig = append(callOpts.UpdateBackupConfig, gax.WithClientMetrics(metrics))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientMetrics(metrics))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientMetrics(metrics))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientMetrics(metrics))
@@ -2209,6 +2300,8 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UpdateVolume = append(callOpts.UpdateVolume, gax.WithClientTracing(tracing))
 		callOpts.DeleteVolume = append(callOpts.DeleteVolume, gax.WithClientTracing(tracing))
 		callOpts.RevertVolume = append(callOpts.RevertVolume, gax.WithClientTracing(tracing))
+		callOpts.StartSplit = append(callOpts.StartSplit, gax.WithClientTracing(tracing))
+		callOpts.GetSplitStatus = append(callOpts.GetSplitStatus, gax.WithClientTracing(tracing))
 		callOpts.EstablishVolumePeering = append(callOpts.EstablishVolumePeering, gax.WithClientTracing(tracing))
 		callOpts.ListSnapshots = append(callOpts.ListSnapshots, gax.WithClientTracing(tracing))
 		callOpts.GetSnapshot = append(callOpts.GetSnapshot, gax.WithClientTracing(tracing))
@@ -2267,6 +2360,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ExecuteOntapGet = append(callOpts.ExecuteOntapGet, gax.WithClientTracing(tracing))
 		callOpts.ExecuteOntapDelete = append(callOpts.ExecuteOntapDelete, gax.WithClientTracing(tracing))
 		callOpts.ExecuteOntapPatch = append(callOpts.ExecuteOntapPatch, gax.WithClientTracing(tracing))
+		callOpts.RestoreVolume = append(callOpts.RestoreVolume, gax.WithClientTracing(tracing))
+		callOpts.ListBackupConfigs = append(callOpts.ListBackupConfigs, gax.WithClientTracing(tracing))
+		callOpts.UpdateBackupConfig = append(callOpts.UpdateBackupConfig, gax.WithClientTracing(tracing))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientTracing(tracing))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientTracing(tracing))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientTracing(tracing))
@@ -2299,6 +2395,8 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.UpdateVolume = append(callOpts.UpdateVolume, gax.WithClientLogging(logging))
 		callOpts.DeleteVolume = append(callOpts.DeleteVolume, gax.WithClientLogging(logging))
 		callOpts.RevertVolume = append(callOpts.RevertVolume, gax.WithClientLogging(logging))
+		callOpts.StartSplit = append(callOpts.StartSplit, gax.WithClientLogging(logging))
+		callOpts.GetSplitStatus = append(callOpts.GetSplitStatus, gax.WithClientLogging(logging))
 		callOpts.EstablishVolumePeering = append(callOpts.EstablishVolumePeering, gax.WithClientLogging(logging))
 		callOpts.ListSnapshots = append(callOpts.ListSnapshots, gax.WithClientLogging(logging))
 		callOpts.GetSnapshot = append(callOpts.GetSnapshot, gax.WithClientLogging(logging))
@@ -2357,6 +2455,9 @@ func NewRESTClient(ctx context.Context, opts ...option.ClientOption) (*Client, e
 		callOpts.ExecuteOntapGet = append(callOpts.ExecuteOntapGet, gax.WithClientLogging(logging))
 		callOpts.ExecuteOntapDelete = append(callOpts.ExecuteOntapDelete, gax.WithClientLogging(logging))
 		callOpts.ExecuteOntapPatch = append(callOpts.ExecuteOntapPatch, gax.WithClientLogging(logging))
+		callOpts.RestoreVolume = append(callOpts.RestoreVolume, gax.WithClientLogging(logging))
+		callOpts.ListBackupConfigs = append(callOpts.ListBackupConfigs, gax.WithClientLogging(logging))
+		callOpts.UpdateBackupConfig = append(callOpts.UpdateBackupConfig, gax.WithClientLogging(logging))
 		callOpts.GetLocation = append(callOpts.GetLocation, gax.WithClientLogging(logging))
 		callOpts.ListLocations = append(callOpts.ListLocations, gax.WithClientLogging(logging))
 		callOpts.CancelOperation = append(callOpts.CancelOperation, gax.WithClientLogging(logging))
@@ -2796,6 +2897,54 @@ func (c *gRPCClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 	return &RevertVolumeOperation{
 		lro: lro,
 	}, nil
+}
+
+func (c *gRPCClient) StartSplit(ctx context.Context, req *netapppb.StartSplitRequest, opts ...gax.CallOption) (*StartSplitOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/StartSplit")
+	}
+	opts = append((*c.CallOptions).StartSplit[0:len((*c.CallOptions).StartSplit):len((*c.CallOptions).StartSplit)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.StartSplit, req, settings.GRPC, c.logger, "StartSplit")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.StartSplitOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &StartSplitOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) GetSplitStatus(ctx context.Context, req *netapppb.GetSplitStatusRequest, opts ...gax.CallOption) (*netapppb.SplitStatus, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetSplitStatus")
+	}
+	opts = append((*c.CallOptions).GetSplitStatus[0:len((*c.CallOptions).GetSplitStatus):len((*c.CallOptions).GetSplitStatus)], opts...)
+	var resp *netapppb.SplitStatus
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.GetSplitStatus, req, settings.GRPC, c.logger, "GetSplitStatus")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	return resp, nil
 }
 
 func (c *gRPCClient) EstablishVolumePeering(ctx context.Context, req *netapppb.EstablishVolumePeeringRequest, opts ...gax.CallOption) (*EstablishVolumePeeringOperation, error) {
@@ -4478,6 +4627,109 @@ func (c *gRPCClient) ExecuteOntapPatch(ctx context.Context, req *netapppb.Execut
 	return resp, nil
 }
 
+func (c *gRPCClient) RestoreVolume(ctx context.Context, req *netapppb.RestoreVolumeRequest, opts ...gax.CallOption) (*RestoreVolumeOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RestoreVolume")
+	}
+	opts = append((*c.CallOptions).RestoreVolume[0:len((*c.CallOptions).RestoreVolume):len((*c.CallOptions).RestoreVolume)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.RestoreVolume, req, settings.GRPC, c.logger, "RestoreVolume")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.RestoreVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &RestoreVolumeOperation{
+		lro: lro,
+	}, nil
+}
+
+func (c *gRPCClient) ListBackupConfigs(ctx context.Context, req *netapppb.ListBackupConfigsRequest, opts ...gax.CallOption) *VolumeBackupConfigIterator {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "parent", url.QueryEscape(req.GetParent()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/ListBackupConfigs")
+	}
+	opts = append((*c.CallOptions).ListBackupConfigs[0:len((*c.CallOptions).ListBackupConfigs):len((*c.CallOptions).ListBackupConfigs)], opts...)
+	it := &VolumeBackupConfigIterator{}
+	req = proto.CloneOf(req)
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.VolumeBackupConfig, string, error) {
+		resp := &netapppb.ListBackupConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			var err error
+			resp, err = executeRPC(ctx, c.client.ListBackupConfigs, req, settings.GRPC, c.logger, "ListBackupConfigs")
+			return err
+		}, opts...)
+		if err != nil {
+			return nil, "", err
+		}
+
+		it.Response = resp
+		return resp.GetVolumeBackupConfigs(), resp.GetNextPageToken(), nil
+	}
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+func (c *gRPCClient) UpdateBackupConfig(ctx context.Context, req *netapppb.UpdateBackupConfigRequest, opts ...gax.CallOption) (*UpdateBackupConfigOperation, error) {
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	ctx = gax.InsertMetadataIntoOutgoingContext(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackupConfig")
+	}
+	opts = append((*c.CallOptions).UpdateBackupConfig[0:len((*c.CallOptions).UpdateBackupConfig):len((*c.CallOptions).UpdateBackupConfig)], opts...)
+	var resp *longrunningpb.Operation
+	err := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		var err error
+		resp, err = executeRPC(ctx, c.client.UpdateBackupConfig, req, settings.GRPC, c.logger, "UpdateBackupConfig")
+		return err
+	}, opts...)
+	if err != nil {
+		return nil, err
+	}
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateBackupConfigOperation{
+		lro: lro,
+	}, nil
+}
+
 func (c *gRPCClient) GetLocation(ctx context.Context, req *locationpb.GetLocationRequest, opts ...gax.CallOption) (*locationpb.Location, error) {
 	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
 
@@ -5544,6 +5796,132 @@ func (c *restClient) RevertVolume(ctx context.Context, req *netapppb.RevertVolum
 		lro:      lro,
 		pollPath: override,
 	}, nil
+}
+
+// StartSplit splits a clone volume from its source volume.
+// This operation will only work for volumes which have clone_details
+// set(clones).
+// For volumes that are not clones, this operation will return an error.
+func (c *restClient) StartSplit(ctx context.Context, req *netapppb.StartSplitRequest, opts ...gax.CallOption) (*StartSplitOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:startSplit", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/StartSplit")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:startSplit")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "StartSplit")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.StartSplitOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &StartSplitOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// GetSplitStatus retrieves the current state, progress, and details of a split operation for
+// a volume. This method is relevant when the volume is a clone. For volumes
+// that are not clones, this method will return an error.
+func (c *restClient) GetSplitStatus(ctx context.Context, req *netapppb.GetSplitStatusRequest, opts ...gax.CallOption) (*netapppb.SplitStatus, error) {
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:getSplitStatus", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/GetSplitStatus")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/volumes/*}:getSplitStatus")
+	}
+	opts = append((*c.CallOptions).GetSplitStatus[0:len((*c.CallOptions).GetSplitStatus):len((*c.CallOptions).GetSplitStatus)], opts...)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &netapppb.SplitStatus{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "GetSplitStatus")
+		if err != nil {
+			return err
+		}
+
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+	return resp, nil
 }
 
 // EstablishVolumePeering establish volume peering. This is used to establish cluster and svm
@@ -9238,7 +9616,7 @@ func (c *restClient) DeleteHostGroup(ctx context.Context, req *netapppb.DeleteHo
 	}, nil
 }
 
-// ExecuteOntapPost ExecuteOntapPost dispatches the ONTAP POST request to the
+// ExecuteOntapPost ExecuteOntapPost sends the ONTAP POST request to the
 // StoragePool cluster.
 func (c *restClient) ExecuteOntapPost(ctx context.Context, req *netapppb.ExecuteOntapPostRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPostResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -9299,7 +9677,7 @@ func (c *restClient) ExecuteOntapPost(ctx context.Context, req *netapppb.Execute
 	return resp, nil
 }
 
-// ExecuteOntapGet ExecuteOntapGet dispatches the ONTAP GET request to the
+// ExecuteOntapGet ExecuteOntapGet sends the ONTAP GET request to the
 // StoragePool cluster.
 func (c *restClient) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteOntapGetRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapGetResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -9354,7 +9732,7 @@ func (c *restClient) ExecuteOntapGet(ctx context.Context, req *netapppb.ExecuteO
 	return resp, nil
 }
 
-// ExecuteOntapDelete ExecuteOntapDelete dispatches the ONTAP DELETE request to the
+// ExecuteOntapDelete ExecuteOntapDelete sends the ONTAP DELETE request to the
 // StoragePool cluster.
 func (c *restClient) ExecuteOntapDelete(ctx context.Context, req *netapppb.ExecuteOntapDeleteRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapDeleteResponse, error) {
 	baseUrl, err := url.Parse(c.endpoint)
@@ -9409,7 +9787,7 @@ func (c *restClient) ExecuteOntapDelete(ctx context.Context, req *netapppb.Execu
 	return resp, nil
 }
 
-// ExecuteOntapPatch ExecuteOntapPatch dispatches the ONTAP PATCH request to the
+// ExecuteOntapPatch ExecuteOntapPatch sends the ONTAP PATCH request to the
 // StoragePool cluster.
 func (c *restClient) ExecuteOntapPatch(ctx context.Context, req *netapppb.ExecuteOntapPatchRequest, opts ...gax.CallOption) (*netapppb.ExecuteOntapPatchResponse, error) {
 	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
@@ -9468,6 +9846,224 @@ func (c *restClient) ExecuteOntapPatch(ctx context.Context, req *netapppb.Execut
 		return nil, e
 	}
 	return resp, nil
+}
+
+// RestoreVolume restores a backup to an ONTAP-mode volume.
+func (c *restClient) RestoreVolume(ctx context.Context, req *netapppb.RestoreVolumeRequest, opts ...gax.CallOption) (*RestoreVolumeOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:restoreVolume", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/RestoreVolume")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}:restoreVolume")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "RestoreVolume")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.RestoreVolumeOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &RestoreVolumeOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
+}
+
+// ListBackupConfigs lists backup configurations for all volumes in an ONTAP-mode Storage Pool.
+func (c *restClient) ListBackupConfigs(ctx context.Context, req *netapppb.ListBackupConfigsRequest, opts ...gax.CallOption) *VolumeBackupConfigIterator {
+	it := &VolumeBackupConfigIterator{}
+	req = proto.CloneOf(req)
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	it.InternalFetch = func(pageSize int, pageToken string) ([]*netapppb.VolumeBackupConfig, string, error) {
+		resp := &netapppb.ListBackupConfigsResponse{}
+		if pageToken != "" {
+			req.PageToken = pageToken
+		}
+		if pageSize > math.MaxInt32 {
+			req.PageSize = math.MaxInt32
+		} else if pageSize != 0 {
+			req.PageSize = int32(pageSize)
+		}
+		baseUrl, err := url.Parse(c.endpoint)
+		if err != nil {
+			return nil, "", err
+		}
+		baseUrl.Path += fmt.Sprintf("/v1/%v/backupConfigs", req.GetParent())
+
+		params := url.Values{}
+		params.Add("$alt", "json;enum-encoding=int")
+		if req.GetFilter() != "" {
+			params.Add("filter", fmt.Sprintf("%v", req.GetFilter()))
+		}
+		if req.GetOrderBy() != "" {
+			params.Add("orderBy", fmt.Sprintf("%v", req.GetOrderBy()))
+		}
+		if req.GetPageSize() != 0 {
+			params.Add("pageSize", fmt.Sprintf("%v", req.GetPageSize()))
+		}
+		if req.GetPageToken() != "" {
+			params.Add("pageToken", fmt.Sprintf("%v", req.GetPageToken()))
+		}
+
+		baseUrl.RawQuery = params.Encode()
+
+		// Build HTTP headers from client and context metadata.
+		hds := append(c.xGoogHeaders, "Content-Type", "application/json")
+		headers := gax.BuildHeaders(ctx, hds...)
+		e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+			if settings.Path != "" {
+				baseUrl.Path = settings.Path
+			}
+			httpReq, err := http.NewRequest("GET", baseUrl.String(), nil)
+			if err != nil {
+				return err
+			}
+			httpReq.Header = headers
+
+			buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, nil, "ListBackupConfigs")
+			if err != nil {
+				return err
+			}
+			if err := unm.Unmarshal(buf, resp); err != nil {
+				return err
+			}
+
+			return nil
+		}, opts...)
+		if e != nil {
+			return nil, "", e
+		}
+		it.Response = resp
+		return resp.GetVolumeBackupConfigs(), resp.GetNextPageToken(), nil
+	}
+
+	fetch := func(pageSize int, pageToken string) (string, error) {
+		items, nextPageToken, err := it.InternalFetch(pageSize, pageToken)
+		if err != nil {
+			return "", err
+		}
+		it.items = append(it.items, items...)
+		return nextPageToken, nil
+	}
+
+	it.pageInfo, it.nextFunc = iterator.NewPageInfo(fetch, it.bufLen, it.takeBuf)
+	it.pageInfo.MaxSize = int(req.GetPageSize())
+	it.pageInfo.Token = req.GetPageToken()
+
+	return it
+}
+
+// UpdateBackupConfig updates the backup configuration for an ONTAP-mode volume.
+func (c *restClient) UpdateBackupConfig(ctx context.Context, req *netapppb.UpdateBackupConfigRequest, opts ...gax.CallOption) (*UpdateBackupConfigOperation, error) {
+	m := protojson.MarshalOptions{AllowPartial: true, UseEnumNumbers: true}
+	jsonReq, err := m.Marshal(req)
+	if err != nil {
+		return nil, err
+	}
+
+	baseUrl, err := url.Parse(c.endpoint)
+	if err != nil {
+		return nil, err
+	}
+	baseUrl.Path += fmt.Sprintf("/v1/%v:updateBackupConfig", req.GetName())
+
+	params := url.Values{}
+	params.Add("$alt", "json;enum-encoding=int")
+
+	baseUrl.RawQuery = params.Encode()
+
+	// Build HTTP headers from client and context metadata.
+	hds := []string{"x-goog-request-params", fmt.Sprintf("%s=%v", "name", url.QueryEscape(req.GetName()))}
+
+	hds = append(c.xGoogHeaders, hds...)
+	hds = append(hds, "Content-Type", "application/json")
+	headers := gax.BuildHeaders(ctx, hds...)
+	if gax.IsFeatureEnabled("METRICS") || gax.IsFeatureEnabled("TRACING") || gax.IsFeatureEnabled("LOGGING") {
+		ctx = callctx.WithTelemetryContext(ctx, "rpc_method", "google.cloud.netapp.v1.NetApp/UpdateBackupConfig")
+		ctx = callctx.WithTelemetryContext(ctx, "url_template", "/v1/{name=projects/*/locations/*/storagePools/*}:updateBackupConfig")
+	}
+	unm := protojson.UnmarshalOptions{AllowPartial: true, DiscardUnknown: true}
+	resp := &longrunningpb.Operation{}
+	e := gax.Invoke(ctx, func(ctx context.Context, settings gax.CallSettings) error {
+		if settings.Path != "" {
+			baseUrl.Path = settings.Path
+		}
+		httpReq, err := http.NewRequest("POST", baseUrl.String(), bytes.NewReader(jsonReq))
+		if err != nil {
+			return err
+		}
+		httpReq = httpReq.WithContext(ctx)
+		httpReq.Header = headers
+
+		buf, err := executeHTTPRequest(ctx, c.httpClient, httpReq, c.logger, jsonReq, "UpdateBackupConfig")
+		if err != nil {
+			return err
+		}
+		if err := unm.Unmarshal(buf, resp); err != nil {
+			return err
+		}
+
+		return nil
+	}, opts...)
+	if e != nil {
+		return nil, e
+	}
+
+	override := fmt.Sprintf("/v1/%s", resp.GetName())
+	lro := longrunning.InternalNewOperationWithMetadata(*c.LROClient, resp, "*netapp.UpdateBackupConfigOperation")
+	if gax.IsFeatureEnabled("TRACING") {
+		lro.SetParentSpanContext(trace.SpanContextFromContext(ctx))
+	}
+	return &UpdateBackupConfigOperation{
+		lro:      lro,
+		pollPath: override,
+	}, nil
 }
 
 // GetLocation gets information about a location.
@@ -10310,6 +10906,24 @@ func (c *restClient) RestoreBackupFilesOperation(name string) *RestoreBackupFile
 	}
 }
 
+// RestoreVolumeOperation returns a new RestoreVolumeOperation from a given name.
+// The name must be that of a previously created RestoreVolumeOperation, possibly from a different process.
+func (c *gRPCClient) RestoreVolumeOperation(name string) *RestoreVolumeOperation {
+	return &RestoreVolumeOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.RestoreVolumeOperation"),
+	}
+}
+
+// RestoreVolumeOperation returns a new RestoreVolumeOperation from a given name.
+// The name must be that of a previously created RestoreVolumeOperation, possibly from a different process.
+func (c *restClient) RestoreVolumeOperation(name string) *RestoreVolumeOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &RestoreVolumeOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.RestoreVolumeOperation"),
+		pollPath: override,
+	}
+}
+
 // ResumeReplicationOperation returns a new ResumeReplicationOperation from a given name.
 // The name must be that of a previously created ResumeReplicationOperation, possibly from a different process.
 func (c *gRPCClient) ResumeReplicationOperation(name string) *ResumeReplicationOperation {
@@ -10360,6 +10974,24 @@ func (c *restClient) RevertVolumeOperation(name string) *RevertVolumeOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &RevertVolumeOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.RevertVolumeOperation"),
+		pollPath: override,
+	}
+}
+
+// StartSplitOperation returns a new StartSplitOperation from a given name.
+// The name must be that of a previously created StartSplitOperation, possibly from a different process.
+func (c *gRPCClient) StartSplitOperation(name string) *StartSplitOperation {
+	return &StartSplitOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.StartSplitOperation"),
+	}
+}
+
+// StartSplitOperation returns a new StartSplitOperation from a given name.
+// The name must be that of a previously created StartSplitOperation, possibly from a different process.
+func (c *restClient) StartSplitOperation(name string) *StartSplitOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &StartSplitOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.StartSplitOperation"),
 		pollPath: override,
 	}
 }
@@ -10450,6 +11082,24 @@ func (c *restClient) UpdateBackupOperation(name string) *UpdateBackupOperation {
 	override := fmt.Sprintf("/v1/%s", name)
 	return &UpdateBackupOperation{
 		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupOperation"),
+		pollPath: override,
+	}
+}
+
+// UpdateBackupConfigOperation returns a new UpdateBackupConfigOperation from a given name.
+// The name must be that of a previously created UpdateBackupConfigOperation, possibly from a different process.
+func (c *gRPCClient) UpdateBackupConfigOperation(name string) *UpdateBackupConfigOperation {
+	return &UpdateBackupConfigOperation{
+		lro: longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupConfigOperation"),
+	}
+}
+
+// UpdateBackupConfigOperation returns a new UpdateBackupConfigOperation from a given name.
+// The name must be that of a previously created UpdateBackupConfigOperation, possibly from a different process.
+func (c *restClient) UpdateBackupConfigOperation(name string) *UpdateBackupConfigOperation {
+	override := fmt.Sprintf("/v1/%s", name)
+	return &UpdateBackupConfigOperation{
+		lro:      longrunning.InternalNewOperationWithMetadata(*c.LROClient, &longrunningpb.Operation{Name: name}, "*netapp.UpdateBackupConfigOperation"),
 		pollPath: override,
 	}
 }

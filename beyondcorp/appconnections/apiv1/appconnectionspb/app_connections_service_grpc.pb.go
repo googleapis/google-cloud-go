@@ -1,4 +1,4 @@
-// Copyright 2025 Google LLC
+// Copyright 2026 Google LLC
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -46,17 +46,25 @@ const (
 // AppConnectionsServiceClient is the client API for AppConnectionsService service.
 //
 // For semantics around ctx use and closing/ending streaming RPCs, please refer to https://pkg.go.dev/google.golang.org/grpc/?tab=doc#ClientConn.NewStream.
+//
+// Deprecated: Do not use.
 type AppConnectionsServiceClient interface {
+	// Deprecated: Do not use.
 	// Lists AppConnections in a given project and location.
 	ListAppConnections(ctx context.Context, in *ListAppConnectionsRequest, opts ...grpc.CallOption) (*ListAppConnectionsResponse, error)
+	// Deprecated: Do not use.
 	// Gets details of a single AppConnection.
 	GetAppConnection(ctx context.Context, in *GetAppConnectionRequest, opts ...grpc.CallOption) (*AppConnection, error)
+	// Deprecated: Do not use.
 	// Creates a new AppConnection in a given project and location.
 	CreateAppConnection(ctx context.Context, in *CreateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates the parameters of a single AppConnection.
 	UpdateAppConnection(ctx context.Context, in *UpdateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Deletes a single AppConnection.
 	DeleteAppConnection(ctx context.Context, in *DeleteAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Resolves AppConnections details for a given AppConnector.
 	// An internal method called by a connector to find AppConnections to connect
 	// to.
@@ -67,10 +75,12 @@ type appConnectionsServiceClient struct {
 	cc grpc.ClientConnInterface
 }
 
+// Deprecated: Do not use.
 func NewAppConnectionsServiceClient(cc grpc.ClientConnInterface) AppConnectionsServiceClient {
 	return &appConnectionsServiceClient{cc}
 }
 
+// Deprecated: Do not use.
 func (c *appConnectionsServiceClient) ListAppConnections(ctx context.Context, in *ListAppConnectionsRequest, opts ...grpc.CallOption) (*ListAppConnectionsResponse, error) {
 	out := new(ListAppConnectionsResponse)
 	err := c.cc.Invoke(ctx, AppConnectionsService_ListAppConnections_FullMethodName, in, out, opts...)
@@ -80,6 +90,7 @@ func (c *appConnectionsServiceClient) ListAppConnections(ctx context.Context, in
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectionsServiceClient) GetAppConnection(ctx context.Context, in *GetAppConnectionRequest, opts ...grpc.CallOption) (*AppConnection, error) {
 	out := new(AppConnection)
 	err := c.cc.Invoke(ctx, AppConnectionsService_GetAppConnection_FullMethodName, in, out, opts...)
@@ -89,6 +100,7 @@ func (c *appConnectionsServiceClient) GetAppConnection(ctx context.Context, in *
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectionsServiceClient) CreateAppConnection(ctx context.Context, in *CreateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppConnectionsService_CreateAppConnection_FullMethodName, in, out, opts...)
@@ -98,6 +110,7 @@ func (c *appConnectionsServiceClient) CreateAppConnection(ctx context.Context, i
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectionsServiceClient) UpdateAppConnection(ctx context.Context, in *UpdateAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppConnectionsService_UpdateAppConnection_FullMethodName, in, out, opts...)
@@ -107,6 +120,7 @@ func (c *appConnectionsServiceClient) UpdateAppConnection(ctx context.Context, i
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectionsServiceClient) DeleteAppConnection(ctx context.Context, in *DeleteAppConnectionRequest, opts ...grpc.CallOption) (*longrunningpb.Operation, error) {
 	out := new(longrunningpb.Operation)
 	err := c.cc.Invoke(ctx, AppConnectionsService_DeleteAppConnection_FullMethodName, in, out, opts...)
@@ -116,6 +130,7 @@ func (c *appConnectionsServiceClient) DeleteAppConnection(ctx context.Context, i
 	return out, nil
 }
 
+// Deprecated: Do not use.
 func (c *appConnectionsServiceClient) ResolveAppConnections(ctx context.Context, in *ResolveAppConnectionsRequest, opts ...grpc.CallOption) (*ResolveAppConnectionsResponse, error) {
 	out := new(ResolveAppConnectionsResponse)
 	err := c.cc.Invoke(ctx, AppConnectionsService_ResolveAppConnections_FullMethodName, in, out, opts...)
@@ -128,17 +143,25 @@ func (c *appConnectionsServiceClient) ResolveAppConnections(ctx context.Context,
 // AppConnectionsServiceServer is the server API for AppConnectionsService service.
 // All implementations should embed UnimplementedAppConnectionsServiceServer
 // for forward compatibility
+//
+// Deprecated: Do not use.
 type AppConnectionsServiceServer interface {
+	// Deprecated: Do not use.
 	// Lists AppConnections in a given project and location.
 	ListAppConnections(context.Context, *ListAppConnectionsRequest) (*ListAppConnectionsResponse, error)
+	// Deprecated: Do not use.
 	// Gets details of a single AppConnection.
 	GetAppConnection(context.Context, *GetAppConnectionRequest) (*AppConnection, error)
+	// Deprecated: Do not use.
 	// Creates a new AppConnection in a given project and location.
 	CreateAppConnection(context.Context, *CreateAppConnectionRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Updates the parameters of a single AppConnection.
 	UpdateAppConnection(context.Context, *UpdateAppConnectionRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Deletes a single AppConnection.
 	DeleteAppConnection(context.Context, *DeleteAppConnectionRequest) (*longrunningpb.Operation, error)
+	// Deprecated: Do not use.
 	// Resolves AppConnections details for a given AppConnector.
 	// An internal method called by a connector to find AppConnections to connect
 	// to.
@@ -175,6 +198,7 @@ type UnsafeAppConnectionsServiceServer interface {
 	mustEmbedUnimplementedAppConnectionsServiceServer()
 }
 
+// Deprecated: Do not use.
 func RegisterAppConnectionsServiceServer(s grpc.ServiceRegistrar, srv AppConnectionsServiceServer) {
 	s.RegisterService(&AppConnectionsService_ServiceDesc, srv)
 }

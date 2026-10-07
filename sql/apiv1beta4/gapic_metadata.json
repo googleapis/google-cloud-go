@@ -5,6 +5,70 @@
   "protoPackage": "google.cloud.sql.v1beta4",
   "libraryPackage": "cloud.google.com/go/sql/apiv1beta4",
   "services": {
+    "BlueGreenDeploymentsService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "BlueGreenDeploymentsClient",
+          "rpcs": {
+            "CreateBlueGreenDeployment": {
+              "methods": [
+                "CreateBlueGreenDeployment"
+              ]
+            },
+            "DeleteBlueGreenDeployment": {
+              "methods": [
+                "DeleteBlueGreenDeployment"
+              ]
+            },
+            "GetBlueGreenDeployment": {
+              "methods": [
+                "GetBlueGreenDeployment"
+              ]
+            },
+            "ListBlueGreenDeployments": {
+              "methods": [
+                "ListBlueGreenDeployments"
+              ]
+            },
+            "SwitchoverBlueGreenDeployment": {
+              "methods": [
+                "SwitchoverBlueGreenDeployment"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "BlueGreenDeploymentsClient",
+          "rpcs": {
+            "CreateBlueGreenDeployment": {
+              "methods": [
+                "CreateBlueGreenDeployment"
+              ]
+            },
+            "DeleteBlueGreenDeployment": {
+              "methods": [
+                "DeleteBlueGreenDeployment"
+              ]
+            },
+            "GetBlueGreenDeployment": {
+              "methods": [
+                "GetBlueGreenDeployment"
+              ]
+            },
+            "ListBlueGreenDeployments": {
+              "methods": [
+                "ListBlueGreenDeployments"
+              ]
+            },
+            "SwitchoverBlueGreenDeployment": {
+              "methods": [
+                "SwitchoverBlueGreenDeployment"
+              ]
+            }
+          }
+        }
+      }
+    },
     "SqlBackupRunsService": {
       "clients": {
         "grpc": {
@@ -903,6 +967,70 @@
             "Update": {
               "methods": [
                 "Update"
+              ]
+            }
+          }
+        }
+      }
+    },
+    "SqlWorkloadCapturesService": {
+      "clients": {
+        "grpc": {
+          "libraryClient": "SqlWorkloadCapturesClient",
+          "rpcs": {
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Start": {
+              "methods": [
+                "Start"
+              ]
+            },
+            "StartReplay": {
+              "methods": [
+                "StartReplay"
+              ]
+            },
+            "Stop": {
+              "methods": [
+                "Stop"
+              ]
+            },
+            "StopReplay": {
+              "methods": [
+                "StopReplay"
+              ]
+            }
+          }
+        },
+        "rest": {
+          "libraryClient": "SqlWorkloadCapturesClient",
+          "rpcs": {
+            "List": {
+              "methods": [
+                "List"
+              ]
+            },
+            "Start": {
+              "methods": [
+                "Start"
+              ]
+            },
+            "StartReplay": {
+              "methods": [
+                "StartReplay"
+              ]
+            },
+            "Stop": {
+              "methods": [
+                "Stop"
+              ]
+            },
+            "StopReplay": {
+              "methods": [
+                "StopReplay"
               ]
             }
           }

@@ -107,6 +107,52 @@
           "fullName": "google.cloud.apptopology.v1.Client",
           "shortName": "Client"
         },
+        "fullName": "google.cloud.apptopology.v1.Client.ExploreSchema",
+        "method": {
+          "fullName": "google.cloud.apptopology.v1.AppTopology.ExploreSchema",
+          "service": {
+            "fullName": "google.cloud.apptopology.v1.AppTopology",
+            "shortName": "AppTopology"
+          },
+          "shortName": "ExploreSchema"
+        },
+        "parameters": [
+          {
+            "name": "ctx",
+            "type": "context.Context"
+          },
+          {
+            "name": "req",
+            "type": "apptopologypb.ExploreSchemaRequest"
+          },
+          {
+            "name": "opts",
+            "type": "...gax.CallOption"
+          }
+        ],
+        "resultType": "NodeTypeIterator",
+        "shortName": "ExploreSchema"
+      },
+      "description": "ExploreSchema explores the topology schema starting from given node types or label names\nup to a specified hop depth.",
+      "file": "Client/ExploreSchema/main.go",
+      "language": "GO",
+      "origin": "API_DEFINITION",
+      "regionTag": "apptopology_v1_generated_AppTopology_ExploreSchema_sync",
+      "segments": [
+        {
+          "end": 68,
+          "start": 18,
+          "type": "FULL"
+        }
+      ],
+      "title": "apptopology ExploreSchema Sample"
+    },
+    {
+      "clientMethod": {
+        "client": {
+          "fullName": "google.cloud.apptopology.v1.Client",
+          "shortName": "Client"
+        },
         "fullName": "google.cloud.apptopology.v1.Client.GenerateDiscoveredResourcesTopology",
         "method": {
           "fullName": "google.cloud.apptopology.v1.AppTopology.GenerateDiscoveredResourcesTopology",

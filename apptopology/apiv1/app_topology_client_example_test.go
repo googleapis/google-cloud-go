@@ -60,6 +60,43 @@ func ExampleNewRESTClient() {
 	_ = c
 }
 
+func ExampleClient_ExploreSchema() {
+	ctx := context.Background()
+	// This snippet has been automatically generated and should be regarded as a code template only.
+	// It will require modifications to work:
+	// - It may require correct/in-range values for request initialization.
+	// - It may require specifying regional endpoints when creating the service client as shown in:
+	//   https://pkg.go.dev/cloud.google.com/go#hdr-Client_Options
+	c, err := apptopology.NewClient(ctx)
+	if err != nil {
+		// TODO: Handle error.
+	}
+	defer c.Close()
+
+	req := &apptopologypb.ExploreSchemaRequest{
+		// TODO: Fill request struct fields.
+		// See https://pkg.go.dev/cloud.google.com/go/apptopology/apiv1/apptopologypb#ExploreSchemaRequest.
+	}
+	it := c.ExploreSchema(ctx, req)
+	for {
+		resp, err := it.Next()
+		if err == iterator.Done {
+			break
+		}
+		if err != nil {
+			// TODO: Handle error.
+		}
+		// TODO: Use resp.
+		_ = resp
+
+		// If you need to access the underlying RPC response,
+		// you can do so by casting the `Response` as below.
+		// Otherwise, remove this line. Only populated after
+		// first call to Next(). Not safe for concurrent access.
+		_ = it.Response.(*apptopologypb.ExploreSchemaResponse)
+	}
+}
+
 func ExampleClient_GenerateDiscoveredResourcesTopology() {
 	ctx := context.Background()
 	// This snippet has been automatically generated and should be regarded as a code template only.

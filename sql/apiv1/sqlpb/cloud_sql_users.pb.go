@@ -56,8 +56,8 @@ const (
 	// Read-only. Login for a service account that belongs to the
 	// Cloud IAM group.
 	User_CLOUD_IAM_GROUP_SERVICE_ACCOUNT User_SqlUserType = 5
-	// Cloud IAM workforce identity user managed via workforce identity
-	// federation.
+	// Cloud IAM workforce identity managed by Workforce Identity
+	// Federation.
 	User_CLOUD_IAM_WORKFORCE_IDENTITY User_SqlUserType = 6
 	// Microsoft Entra ID user.
 	User_ENTRAID_USER User_SqlUserType = 7
@@ -1006,9 +1006,9 @@ func (*User_SqlserverUserDetails) isUser_UserDetails() {}
 // Represents a Sql Server user on the Cloud SQL instance.
 type SqlServerUserDetails struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
-	// If the user has been disabled
+	// Indicates if the user has been disabled.
 	Disabled bool `protobuf:"varint,1,opt,name=disabled,proto3" json:"disabled,omitempty"`
-	// The server roles for this user
+	// Indicates the server roles for this user.
 	ServerRoles   []string `protobuf:"bytes,2,rep,name=server_roles,json=serverRoles,proto3" json:"server_roles,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache

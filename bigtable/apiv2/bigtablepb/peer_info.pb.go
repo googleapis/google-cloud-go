@@ -43,7 +43,7 @@ const (
 	// The transport type is unknown.
 	PeerInfo_TRANSPORT_TYPE_UNKNOWN PeerInfo_TransportType = 0
 	// The client connected to this peer via an external network
-	// (e.g. outside Google Coud).
+	// (e.g. outside Google Cloud).
 	PeerInfo_TRANSPORT_TYPE_EXTERNAL PeerInfo_TransportType = 1
 	// The client connected to this peer via CloudPath.
 	PeerInfo_TRANSPORT_TYPE_CLOUD_PATH PeerInfo_TransportType = 2
