@@ -31,8 +31,6 @@ import (
 	"github.com/google/uuid"
 	gax "github.com/googleapis/gax-go/v2"
 	"github.com/googleapis/gax-go/v2/callctx"
-	"go.opentelemetry.io/otel/attribute"
-	"go.opentelemetry.io/otel/trace"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -120,12 +118,6 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 
 	attempts := 1
 	invocationID := uuid.New().String()
-	if isOTelTracingDevEnabled() {
-		span := trace.SpanFromContext(ctx)
-		if span.IsRecording() {
-			span.SetAttributes(attribute.String("gcp.storage.gccl-invocation-id", fmt.Sprintf("gccl-invocation-id/%s", invocationID)))
-		}
-	}
 	retryCtx := &RetryContext{
 		Attempt:      attempts,
 		InvocationID: invocationID,
@@ -156,11 +148,7 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 	}
 
 	var lastErr error
-	var attemptEnd time.Time
 	for {
-		if attempts > 1 && !attemptEnd.IsZero() {
-			recordRetryBackoffEvent(ctx, attempts-1, attemptEnd, invocationID)
-		}
 		if retry.maxRetryDuration != 0 {
 			select {
 			case <-quitAfterTimer.C:
@@ -194,15 +182,17 @@ func run(ctx context.Context, call func(ctx context.Context) error, retry *retry
 		if ctxErr := ctx.Err(); errors.Is(ctxErr, context.Canceled) || errors.Is(ctxErr, context.DeadlineExceeded) {
 			retryable = false
 		}
-		if retryable && isOTelTracingDevEnabled() {
-			attemptEnd = time.Now()
-		}
 		if !retryable {
 			return lastErr
 		}
 
 		attempts++
-		if ctxErr := gax.Sleep(ctx, bo.Pause()); ctxErr != nil {
+		backoffStart := time.Now()
+		ctxErr := gax.Sleep(ctx, bo.Pause())
+		// The backoff is recorded even if ctx ended during the sleep so that the
+		// trace shows the time spent waiting before giving up.
+		recordRetryBackoff(ctx, attempts-1, backoffStart)
+		if ctxErr != nil {
 			return wrappedCallErr{ctxErr: ctxErr, wrappedErr: lastErr}
 		}
 	}

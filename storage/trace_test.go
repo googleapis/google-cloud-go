@@ -18,13 +18,14 @@ import (
 	"context"
 	"fmt"
 	"net/http"
-	"strings"
 	"testing"
 	"time"
 
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	"github.com/google/go-cmp/cmp"
+	"github.com/google/go-cmp/cmp/cmpopts"
+	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/sdk/instrumentation"
@@ -352,7 +353,53 @@ func TestEndSpanEviction(t *testing.T) {
 	}
 }
 
-func TestMetadataRetryBackoffTracing(t *testing.T) {
+// findSpans returns the spans in spans named with the package-qualified form
+// of name.
+func findSpans(spans tracetest.SpanStubs, name string) tracetest.SpanStubs {
+	want := appendPackageName(name)
+	var found tracetest.SpanStubs
+	for _, s := range spans {
+		if s.Name == want {
+			found = append(found, s)
+		}
+	}
+	return found
+}
+
+// retryAttemptNumber returns the value of the retry attempt number attribute
+// in attrs and whether it is present.
+func retryAttemptNumber(attrs []attribute.KeyValue) (int64, bool) {
+	for _, a := range attrs {
+		if a.Key == "gcp.client.retry.attempt_number" {
+			return a.Value.AsInt64(), true
+		}
+	}
+	return 0, false
+}
+
+// checkRetryBackoffs checks that the single Bucket.Attrs span in spans has
+// one RetryBackoff child span per entry in wantAttempts, carrying that retry
+// attempt number.
+func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantAttempts []int64) {
+	t.Helper()
+	parents := findSpans(spans, "Bucket.Attrs")
+	if len(parents) != 1 {
+		t.Fatalf("got %d Bucket.Attrs spans, want 1", len(parents))
+	}
+	var spanAttempts []int64
+	for _, s := range findSpans(spans, "RetryBackoff") {
+		if got, want := s.Parent.SpanID(), parents[0].SpanContext.SpanID(); got != want {
+			t.Errorf("RetryBackoff span parent ID = %v, want %v", got, want)
+		}
+		n, _ := retryAttemptNumber(s.Attributes)
+		spanAttempts = append(spanAttempts, n)
+	}
+	if diff := cmp.Diff(wantAttempts, spanAttempts, cmpopts.EquateEmpty()); diff != "" {
+		t.Errorf("RetryBackoff span attempt numbers mismatch (-want +got):\n%s", diff)
+	}
+}
+
+func TestRecordRetryBackoff(t *testing.T) {
 	ctx := context.Background()
 	te := testutil.NewOpenTelemetryTestExporter()
 	t.Cleanup(func() {
@@ -360,141 +407,146 @@ func TestMetadataRetryBackoffTracing(t *testing.T) {
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
 
-	// Test metadata operation (e.g. Bucket.Attrs or ObjectsListCall) experiencing 2 retries.
-	spanName := "Bucket.Attrs"
-	ctx, _ = startSpan(ctx, spanName)
-	testInvID := "123e4567-e89b-12d3-a456-426614174000"
-	recordRetryBackoffEvent(ctx, 1, time.Now().Add(-100*time.Millisecond), testInvID)
-	recordRetryBackoffEvent(ctx, 2, time.Now().Add(-200*time.Millisecond), testInvID)
-	endSpan(ctx, nil)
+	spanCtx, _ := startSpan(ctx, "Bucket.Attrs")
+	start := time.Now().Add(-100 * time.Millisecond)
+	recordRetryBackoff(spanCtx, 1, start)
+	endSpan(spanCtx, nil)
 
 	spans := te.Spans()
-	if len(spans) != 3 {
-		t.Fatalf("expected 3 spans (1 parent metadata span + 2 RetryBackoff child spans), got %d", len(spans))
+	checkRetryBackoffs(t, spans, []int64{1})
+	if t.Failed() {
+		return
 	}
-
-	var parentSpan tracetest.SpanStub
-	var backoffCount int
-	for _, s := range spans {
-		if strings.HasSuffix(s.Name, "RetryBackoff") {
-			backoffCount++
-		} else if strings.HasSuffix(s.Name, spanName) {
-			parentSpan = s
-		}
+	backoff := findSpans(spans, "RetryBackoff")[0]
+	if !backoff.StartTime.Equal(start) {
+		t.Errorf("RetryBackoff span start time = %v, want %v", backoff.StartTime, start)
 	}
-	if backoffCount != 2 {
-		t.Errorf("expected 2 RetryBackoff child spans, got %d", backoffCount)
-	}
-	if parentSpan.Name == "" {
-		t.Fatalf("failed to find parent metadata span %q", spanName)
-	}
-	if len(parentSpan.Events) != 2 {
-		t.Fatalf("expected 2 gcp.storage.retry.backoff events on metadata span, got %d", len(parentSpan.Events))
-	}
-	for i, ev := range parentSpan.Events {
-		if ev.Name != "gcp.storage.retry.backoff" {
-			t.Errorf("event %d: got name %q, want %q", i, ev.Name, "gcp.storage.retry.backoff")
-		}
-		foundAttempt, foundInvID := false, false
-		for _, a := range ev.Attributes {
-			if string(a.Key) == "gcp.storage.retry.attempt" {
-				foundAttempt = true
-				if got, want := a.Value.AsInt64(), int64(i+1); got != want {
-					t.Errorf("event %d: gcp.storage.retry.attempt = %d, want %d", i, got, want)
-				}
-			}
-			if string(a.Key) == "gcp.storage.gccl-invocation-id" {
-				foundInvID = true
-				if got, want := a.Value.AsString(), "gccl-invocation-id/"+testInvID; got != want {
-					t.Errorf("event %d: gcp.storage.gccl-invocation-id = %q, want %q", i, got, want)
-				}
-			}
-		}
-		if !foundAttempt {
-			t.Errorf("event %d: gcp.storage.retry.attempt attribute missing", i)
-		}
-		if !foundInvID {
-			t.Errorf("event %d: gcp.storage.gccl-invocation-id attribute missing", i)
-		}
+	if !backoff.EndTime.After(start) {
+		t.Errorf("RetryBackoff span end time = %v, want after %v", backoff.EndTime, start)
 	}
 }
 
-func TestRecordRetryBackoffEventDevTracingDisabled(t *testing.T) {
+func TestRunRetryBackoffTracing(t *testing.T) {
+	fastBackoff := &gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}
+	maxAttempts := 2
+	retryableErr := &googleapi.Error{Code: http.StatusServiceUnavailable}
+	nonRetryableErr := &googleapi.Error{Code: http.StatusBadRequest}
+
+	for _, tc := range []struct {
+		name  string
+		retry *retryConfig
+		// errs[i] is returned by attempt i+1. Later attempts succeed.
+		errs []error
+		// timeout, if set, is applied to the context passed to run.
+		timeout time.Duration
+		wantErr bool
+		// wantAttempts are the attempt numbers of the recorded backoffs.
+		wantAttempts []int64
+	}{
+		{
+			name:  "success on first attempt",
+			retry: &retryConfig{backoff: fastBackoff},
+		},
+		{
+			name:         "one retry",
+			retry:        &retryConfig{backoff: fastBackoff},
+			errs:         []error{retryableErr},
+			wantAttempts: []int64{1},
+		},
+		{
+			name:         "two retries",
+			retry:        &retryConfig{backoff: fastBackoff},
+			errs:         []error{retryableErr, retryableErr},
+			wantAttempts: []int64{1, 2},
+		},
+		{
+			name:    "non-retryable error",
+			retry:   &retryConfig{backoff: fastBackoff},
+			errs:    []error{nonRetryableErr},
+			wantErr: true,
+		},
+		{
+			name:         "max attempts reached",
+			retry:        &retryConfig{backoff: fastBackoff, maxAttempts: &maxAttempts},
+			errs:         []error{retryableErr, retryableErr, retryableErr},
+			wantErr:      true,
+			wantAttempts: []int64{1},
+		},
+		{
+			name:    "retry never",
+			retry:   &retryConfig{backoff: fastBackoff, policy: RetryNever},
+			errs:    []error{retryableErr},
+			wantErr: true,
+		},
+		{
+			name:         "context done during backoff",
+			retry:        &retryConfig{backoff: &gax.Backoff{Initial: time.Hour, Max: time.Hour}},
+			errs:         []error{retryableErr},
+			timeout:      50 * time.Millisecond,
+			wantErr:      true,
+			wantAttempts: []int64{1},
+		},
+	} {
+		t.Run(tc.name, func(t *testing.T) {
+			ctx := context.Background()
+			te := testutil.NewOpenTelemetryTestExporter()
+			t.Cleanup(func() {
+				te.Unregister(ctx)
+			})
+			t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+			spanCtx, _ := startSpan(ctx, "Bucket.Attrs")
+			runCtx := spanCtx
+			if tc.timeout > 0 {
+				var cancel context.CancelFunc
+				runCtx, cancel = context.WithTimeout(spanCtx, tc.timeout)
+				defer cancel()
+			}
+			attempt := 0
+			err := run(runCtx, func(context.Context) error {
+				attempt++
+				if attempt <= len(tc.errs) {
+					return tc.errs[attempt-1]
+				}
+				return nil
+			}, tc.retry, true)
+			endSpan(spanCtx, err)
+
+			if gotErr := err != nil; gotErr != tc.wantErr {
+				t.Fatalf("run() = %v, want error: %t", err, tc.wantErr)
+			}
+			checkRetryBackoffs(t, te.Spans(), tc.wantAttempts)
+		})
+	}
+}
+
+func TestRunRetryBackoffTracingDisabled(t *testing.T) {
 	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
 
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() {
-		te.Unregister(ctx)
-	})
-
-	ctx, span := tracer().Start(ctx, "Bucket.Attrs")
-	recordRetryBackoffEvent(ctx, 1, time.Now().Add(-100*time.Millisecond), "test-inv-id")
-	span.End()
-
-	spans := te.Spans()
-	if len(spans) != 1 {
-		t.Fatalf("expected 1 span, got %d", len(spans))
-	}
-	if len(spans[0].Events) > 0 {
-		t.Errorf("expected 0 events when dev tracing is disabled, got %d", len(spans[0].Events))
-	}
-}
-
-func TestRunInvocationIDTracing(t *testing.T) {
-	ctx := context.Background()
-	te := testutil.NewOpenTelemetryTestExporter()
-	t.Cleanup(func() {
-		te.Unregister(ctx)
-	})
-	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
-
-	ctx, _ = startSpan(ctx, "Bucket.Attrs")
-	attempts := 0
-	err := run(ctx, func(c context.Context) error {
-		attempts++
-		if attempts == 1 {
-			return &googleapi.Error{Code: 503}
+	// The span is started directly so that it is recording even though dev
+	// tracing is disabled, proving that the environment gate alone prevents
+	// the backoff from being recorded.
+	spanCtx, span := tracer().Start(ctx, "Bucket.Attrs")
+	attempt := 0
+	err := run(spanCtx, func(context.Context) error {
+		attempt++
+		if attempt == 1 {
+			return &googleapi.Error{Code: http.StatusServiceUnavailable}
 		}
 		return nil
-	}, defaultRetry, true)
+	}, &retryConfig{backoff: &gax.Backoff{Initial: time.Millisecond, Max: time.Millisecond}}, true)
+	span.End()
 
 	if err != nil {
-		t.Fatalf("run failed: %v", err)
+		t.Fatalf("run() = %v, want nil", err)
 	}
-	endSpan(ctx, nil)
-
 	spans := te.Spans()
-	var parentSpan tracetest.SpanStub
-	var backoffSpanCount int
-	for _, s := range spans {
-		if strings.HasSuffix(s.Name, "RetryBackoff") {
-			backoffSpanCount++
-		} else if strings.HasSuffix(s.Name, "Bucket.Attrs") {
-			parentSpan = s
-		}
-	}
-
-	if parentSpan.Name == "" {
-		t.Fatalf("Bucket.Attrs parent span not found")
-	}
-	foundInvID := false
-	for _, a := range parentSpan.Attributes {
-		if string(a.Key) == "gcp.storage.gccl-invocation-id" {
-			foundInvID = true
-			if !strings.HasPrefix(a.Value.AsString(), "gccl-invocation-id/") {
-				t.Errorf("gcp.storage.gccl-invocation-id = %q, want prefix gccl-invocation-id/", a.Value.AsString())
-			}
-		}
-	}
-	if !foundInvID {
-		t.Errorf("gcp.storage.gccl-invocation-id attribute not found on parent span")
-	}
-
-	if backoffSpanCount != 1 {
-		t.Errorf("expected 1 RetryBackoff child span, got %d", backoffSpanCount)
-	}
-	if len(parentSpan.Events) != 1 {
-		t.Errorf("expected 1 retry event on parent span, got %d", len(parentSpan.Events))
+	if len(spans) != 1 {
+		t.Errorf("run() produced %d spans, want 1", len(spans))
 	}
 }
