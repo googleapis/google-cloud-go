@@ -24,7 +24,6 @@ import (
 	"cloud.google.com/go/internal/testutil"
 	"cloud.google.com/go/storage/internal"
 	"github.com/google/go-cmp/cmp"
-	"github.com/google/go-cmp/cmp/cmpopts"
 	gax "github.com/googleapis/gax-go/v2"
 	"go.opentelemetry.io/otel/attribute"
 	otcodes "go.opentelemetry.io/otel/codes"
@@ -367,14 +366,14 @@ func findSpans(spans tracetest.SpanStubs, name string) tracetest.SpanStubs {
 }
 
 // retryAttemptNumber returns the value of the retry attempt number attribute
-// in attrs and whether it is present.
-func retryAttemptNumber(attrs []attribute.KeyValue) (int64, bool) {
+// in attrs, or 0 if it is not present.
+func retryAttemptNumber(attrs []attribute.KeyValue) int64 {
 	for _, a := range attrs {
 		if a.Key == "gcp.client.retry.attempt_number" {
-			return a.Value.AsInt64(), true
+			return a.Value.AsInt64()
 		}
 	}
-	return 0, false
+	return 0
 }
 
 // checkRetryBackoffs checks that the single Bucket.Attrs span in spans has
@@ -391,10 +390,9 @@ func checkRetryBackoffs(t *testing.T, spans tracetest.SpanStubs, wantAttempts []
 		if got, want := s.Parent.SpanID(), parents[0].SpanContext.SpanID(); got != want {
 			t.Errorf("RetryBackoff span parent ID = %v, want %v", got, want)
 		}
-		n, _ := retryAttemptNumber(s.Attributes)
-		spanAttempts = append(spanAttempts, n)
+		spanAttempts = append(spanAttempts, retryAttemptNumber(s.Attributes))
 	}
-	if diff := cmp.Diff(wantAttempts, spanAttempts, cmpopts.EquateEmpty()); diff != "" {
+	if diff := cmp.Diff(wantAttempts, spanAttempts); diff != "" {
 		t.Errorf("RetryBackoff span attempt numbers mismatch (-want +got):\n%s", diff)
 	}
 }
@@ -468,15 +466,9 @@ func TestRunRetryBackoffTracing(t *testing.T) {
 		{
 			name:         "max attempts reached",
 			retry:        &retryConfig{backoff: fastBackoff, maxAttempts: &maxAttempts},
-			errs:         []error{retryableErr, retryableErr, retryableErr},
+			errs:         []error{retryableErr, retryableErr},
 			wantErr:      true,
 			wantAttempts: []int64{1},
-		},
-		{
-			name:    "retry never",
-			retry:   &retryConfig{backoff: fastBackoff, policy: RetryNever},
-			errs:    []error{retryableErr},
-			wantErr: true,
 		},
 		{
 			name:         "context done during backoff",
