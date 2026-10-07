@@ -28,6 +28,7 @@ import (
 	"go.opentelemetry.io/otel/attribute"
 	otelcodes "go.opentelemetry.io/otel/codes"
 	"go.opentelemetry.io/otel/trace"
+	"go.opentelemetry.io/otel/trace/noop"
 	"google.golang.org/api/googleapi"
 	"google.golang.org/grpc/codes"
 	"google.golang.org/grpc/status"
@@ -194,4 +195,17 @@ func getCommonAttributes() []attribute.KeyValue {
 
 func appendPackageName(spanName string) string {
 	return fmt.Sprintf("%s.%s", gcpClientArtifact, spanName)
+}
+
+// startChecksumSpan starts a T5 internal operation span for computing or verifying data checksums.
+func startChecksumSpan(ctx context.Context, checksumType string) (context.Context, trace.Span) {
+	if !isOTelTracingDevEnabled() {
+		// Return a no-op span so that ending it does not end the parent span in ctx.
+		span := noop.Span{}
+		return trace.ContextWithSpan(ctx, span), span
+	}
+	opts := []trace.SpanStartOption{
+		trace.WithAttributes(attribute.String("gcp.storage.checksum.type", checksumType)),
+	}
+	return startSpan(ctx, "Storage.CalculateChecksum", opts...)
 }

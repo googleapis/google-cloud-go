@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -348,5 +349,67 @@ func TestEndSpanEviction(t *testing.T) {
 				t.Errorf("expected bucket to remain in cache")
 			}
 		})
+	}
+}
+
+func TestStartChecksumSpan(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "true")
+
+	chkCtx, _ := startChecksumSpan(ctx, "CRC32C")
+	endSpan(chkCtx, nil)
+
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("expected 1 span, got %d", len(spans))
+	}
+	gotSpan := spans[0]
+	if got, want := gotSpan.Name, "cloud.google.com/go/storage.Storage.CalculateChecksum"; got != want {
+		t.Errorf("got span name %q, want %q", got, want)
+	}
+	foundChecksumType := false
+	for _, a := range gotSpan.Attributes {
+		if string(a.Key) == "gcp.storage.checksum.type" {
+			foundChecksumType = true
+			if got, want := a.Value.AsString(), "CRC32C"; got != want {
+				t.Errorf("checksum type = %q, want %q", got, want)
+			}
+		}
+	}
+	if !foundChecksumType {
+		t.Errorf("gcp.storage.checksum.type attribute not found on span")
+	}
+}
+
+func TestChecksumSpanDevTracingDisabled(t *testing.T) {
+	ctx := context.Background()
+	te := testutil.NewOpenTelemetryTestExporter()
+	t.Cleanup(func() {
+		te.Unregister(ctx)
+	})
+	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
+
+	// The parent span stands in for a long-lived span such as Object.Reader.
+	parentCtx, parent := tracer().Start(ctx, "parent")
+	chkCtx, span := startChecksumSpan(parentCtx, "CRC32C")
+	endSpan(chkCtx, errors.New("bad CRC"))
+
+	if span.SpanContext().IsValid() {
+		t.Errorf("startChecksumSpan() span context = %v, want invalid", span.SpanContext())
+	}
+	if !parent.IsRecording() {
+		t.Error("endSpan() on the checksum context ended the parent span")
+	}
+	parent.End()
+	spans := te.Spans()
+	if len(spans) != 1 {
+		t.Fatalf("got %d ended spans, want 1 (the parent)", len(spans))
+	}
+	if got := spans[0].Status.Code; got == otcodes.Error {
+		t.Errorf("parent span status = %v, want the checksum error not recorded on the parent", got)
 	}
 }
