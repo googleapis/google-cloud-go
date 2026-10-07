@@ -16,6 +16,7 @@ package storage
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"net/http"
 	"testing"
@@ -392,14 +393,23 @@ func TestChecksumSpanDevTracingDisabled(t *testing.T) {
 	})
 	t.Setenv("GO_STORAGE_DEV_OTEL_TRACING", "false")
 
-	chkCtx, span := startChecksumSpan(ctx, "CRC32C")
-	endSpan(chkCtx, nil)
+	// The parent span stands in for a long-lived span such as Object.Reader.
+	parentCtx, parent := tracer().Start(ctx, "parent")
+	chkCtx, span := startChecksumSpan(parentCtx, "CRC32C")
+	endSpan(chkCtx, errors.New("bad CRC"))
 
 	if span.SpanContext().IsValid() {
-		t.Errorf("expected invalid span context when dev tracing is disabled, got %v", span.SpanContext())
+		t.Errorf("startChecksumSpan() span context = %v, want invalid", span.SpanContext())
 	}
+	if !parent.IsRecording() {
+		t.Error("endSpan() on the checksum context ended the parent span")
+	}
+	parent.End()
 	spans := te.Spans()
-	if len(spans) > 0 {
-		t.Fatalf("expected 0 ended spans because dev tracing is disabled, but got %d ended spans: %v", len(spans), spans[0].Name)
+	if len(spans) != 1 {
+		t.Fatalf("got %d ended spans, want 1 (the parent)", len(spans))
+	}
+	if got := spans[0].Status.Code; got == otcodes.Error {
+		t.Errorf("parent span status = %v, want the checksum error not recorded on the parent", got)
 	}
 }
